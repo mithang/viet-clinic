@@ -6,13 +6,13 @@
           <el-button
             style="width: 100px"
             @click="changeToRetail"
-            >零售收费</el-button
+            >Thu phí bán lẻ</el-button
           >
         </el-row> -->
         <el-row style="display: flex; justify-content: flex-start">
           <el-input
             v-model="selectCondition"
-            placeholder="请输入患者姓名/卡号"
+            placeholder="Vui lòng nhập tên bệnh nhân/Số thẻ"
             prefix-icon="el-icon-search"
             class="input-with-select"
             @keydown.enter.native="search"
@@ -22,14 +22,14 @@
             slot="append"
             icon="el-icon-search"
             @click="search"
-            >搜索</el-button
+            >Tìm kiếm</el-button
           > -->
         </el-row>
         <el-row>
           <el-tabs stretch v-model="chargeStatusActiveName">
             <el-tab-pane name="1">
               <span slot="label">
-                待完成
+                Chờ hoàn thành
                 <el-badge
                   :value="patientTotalCount"
                   :max="99"
@@ -117,7 +117,7 @@
             </el-tab-pane>
             <el-tab-pane  name="2">
               <span slot="label">
-                已完成
+                Đã hoàn thành
                 <el-badge
                   :value="isPayTotalCount"
                   :max="99"
@@ -181,7 +181,7 @@
                         >
                           <el-descriptions-item
                             contentStyle="font-weight: bold;margin-top: 6px;"
-                            >{{ o.recipelInfo.name }} <span v-if="o.recipelInfo.dispensionStatus===-1" style="font-weight: bold;margin-left: 15px;color:red">已退药</span> </el-descriptions-item
+                            >{{ o.recipelInfo.name }} <span v-if="o.recipelInfo.dispensionStatus===-1" style="font-weight: bold;margin-left: 15px;color:red">Đã trả thuốc</span> </el-descriptions-item
                           >
                           <el-descriptions-item
                             >{{ o.recipelInfo.id }}
@@ -203,7 +203,7 @@
               >
               </el-pagination>
             </el-tab-pane>
-            <!-- <el-tab-pane label="已退费" name="3">
+            <!-- <el-tab-pane label="Đã hoàn phí" name="3">
               <el-scrollbar view-style="height:calc(100vh - 267px);">
                 <el-collapse
                   v-model="patientInfoRow"
@@ -246,10 +246,10 @@
                           <el-descriptions-item
                             >{{ o.recipelInfo.id }}
                             <!-- <span style="position: relative">
-                                            <div v-if="o.recipelInfo.status === -1" class="refundBox">作废</div>
-                                            <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === 0" class="refundBox">未收费</div>
-                                            <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === 1" class="refundBox">已收费</div>
-                                            <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === -1" class="refundBox">已退费</div>
+                                            <div v-if="o.recipelInfo.status === -1" class="refundBox">Hủy bỏ</div>
+                                            <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === 0" class="refundBox">Chưa thu phí</div>
+                                            <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === 1" class="refundBox">Đã thu phí</div>
+                                            <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === -1" class="refundBox">Đã hoàn phí</div>
                                         </span> -->
                           <!-- </el-descriptions-item>
                         </el-descriptions>
@@ -274,30 +274,30 @@
     </el-aside>
     <el-main>
       <el-card class="box-card sub-card" style="height: 50px; display: flex">
-        <!-- <div style="font-weight: bold">收费</div> -->
+        <!-- <div style="font-weight: bold">Thu phí</div> -->
         <div class="flex-space-between">
           <!-- <div class="goods-back" v-if="chargeStatusActiveName == '3'&&!isRetail">
-            已退费
+            Đã hoàn phí
           </div>
           <div class="goods-back" v-if="chargeStatusActiveName === '2'&&!isRetail">
-            已收费
+            Đã thu phí
           </div> -->
           <div  style="margin-right:10px">
-            医嘱执行
+            Thực hiện y lệnh
           </div>
           <!-- <el-button
             type="primary"
             @click="chargeClick(1)"
             v-if="chargeStatusActiveName === '1' && payState && !isRetail"
-            >收费</el-button
+            >Thu phí</el-button
           >
           <el-popconfirm
             style="margin-right:10px"
-            title="确定退费吗？"
+            title="Bạn có chắc muốn hoàn phí không？"
             @confirm="chargeClick(2)"
             v-if="chargeStatusActiveName === '2' && selRowChargeStatus !== 4 && medicalEditTabs.length>0"
           >
-            <el-button style="height:30px" slot="reference" type="primary" plain>退费</el-button>
+            <el-button style="height:30px" slot="reference" type="primary" plain>Hoàn phí</el-button>
 
           </el-popconfirm> -->
 
@@ -305,7 +305,7 @@
             v-if="chargeStatusActiveName === '2' && medicalEditTabs.length>0"
             type="primary"
             @click="print"
-            >打印</el-button
+            >In</el-button
           > -->
         </div>
       </el-card>
@@ -322,7 +322,7 @@
             >
               <el-row :gutter="24">
                 <el-col :span="8">
-                  <el-form-item label="患者姓名" prop="name">
+                  <el-form-item label="Tên bệnh nhân" prop="name">
                     <el-input
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.name"
@@ -330,7 +330,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item label="性别" prop="gender">
+                  <el-form-item label="Giới tính" prop="gender">
                     <el-select
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.gender.name"
@@ -342,27 +342,27 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item label="年龄" prop="age">
+                  <el-form-item label="Tuổi" prop="age">
                     <el-input
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.age"
                       style="width: 49%"
                     >
-                      <template slot="append">岁</template>
+                      <template slot="append">tuổi</template>
                     </el-input>
                     <el-input
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.month"
                       style="width: 49%"
                     >
-                      <template slot="append">月</template>
+                      <template slot="append">tháng</template>
                     </el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row :gutter="24">
                 <el-col :span="6">
-                  <el-form-item label="体温" prop="temperature">
+                  <el-form-item label="Nhiệt độ cơ thể" prop="temperature">
                     <div class="ipt-box">
                       <el-input
                         :maxlength="45"
@@ -374,31 +374,31 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="脉搏" prop="pulse">
+                  <el-form-item label="Mạch" prop="pulse">
                     <div class="ipt-box">
                       <el-input
                         :maxlength="45"
                         :disabled="isBaseReadOnly"
                         v-model="patientInfoForm.pulse"
                       ></el-input>
-                      <span>&nbsp;次/min</span>
+                      <span>&nbsp;lần/min</span>
                     </div>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="呼吸" prop="breathe">
+                  <el-form-item label="Nhịp thở" prop="breathe">
                     <div class="ipt-box">
                       <el-input
                         :maxlength="45"
                         :disabled="isBaseReadOnly"
                         v-model="patientInfoForm.breathe"
                       ></el-input>
-                      <span>&nbsp;次/min</span>
+                      <span>&nbsp;lần/min</span>
                     </div>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="血压" prop="bloodPressure">
+                  <el-form-item label="Huyết áp" prop="bloodPressure">
                     <div class="ipt-box">
                       <el-input
                         :maxlength="45"
@@ -412,7 +412,7 @@
               </el-row>
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <el-form-item label="联系电话" prop="phone">
+                  <el-form-item label="Số điện thoại liên hệ" prop="phone">
                     <el-input
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.phone"
@@ -420,7 +420,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="身份证号" prop="card">
+                  <el-form-item label="Số CMND/CCCD" prop="card">
                     <el-input
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.card"
@@ -430,7 +430,7 @@
               </el-row>
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <el-form-item label="西医诊断" prop="westernDiagnose">
+                  <el-form-item label="Chẩn đoán tây y" prop="westernDiagnose">
                     <el-input
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.westernDiagnose"
@@ -438,7 +438,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="中医诊断" prop="chinaDiagnose">
+                  <el-form-item label="Chẩn đoán đông y" prop="chinaDiagnose">
                     <el-input
                       :disabled="isBaseReadOnly"
                       v-model="patientInfoForm.chinaDiagnose"
@@ -462,11 +462,11 @@
                   highlight-current-row
                   @row-click="RowClickDrugTable"
                 >
-                  <el-table-column prop="goodsName" label="药品名称">
+                  <el-table-column prop="goodsName" label="Tên thuốc">
                   </el-table-column>
-                  <el-table-column prop="type.name" label="药品类型" width="100">
+                  <el-table-column prop="type.name" label="Loại thuốc" width="100">
                   </el-table-column>
-                  <el-table-column prop="gg" label="规格" width="100">
+                  <el-table-column prop="gg" label="Quy cách" width="100">
                     <template slot-scope="scope">
                       {{ scope.row.dosis }}{{ scope.row.dosisUnit.name }} *
                       {{ scope.row.preparation
@@ -475,9 +475,9 @@
                       }}
                     </template>
                   </el-table-column>
-                  <el-table-column prop="factory.name" label="厂家" width="100">
+                  <el-table-column prop="factory.name" label="Nhà sản xuất" width="100">
                   </el-table-column>
-                  <el-table-column label="单位" width="80">
+                  <el-table-column label="Đơn vị" width="80">
                     <template slot-scope="scope">
                       {{
                         scope.row.isUnpackSell === "1" ||
@@ -487,7 +487,7 @@
                       }}
                     </template>
                   </el-table-column>
-                  <el-table-column prop="price" label="零售价" width="80">
+                  <el-table-column prop="price" label="Giá bán lẻ" width="80">
                     <template slot-scope="scope">
                       {{
                         scope.row.isUnpackSell === "1" ||
@@ -499,7 +499,7 @@
                       }}
                     </template>
                   </el-table-column>
-                  <el-table-column prop="stockText" label="库存" width="100">
+                  <el-table-column prop="stockText" label="Tồn kho" width="100">
                   </el-table-column>
                 </el-table>
                 <el-input
@@ -509,7 +509,7 @@
                   slot="reference"
                   v-model="SearchDrugName"
                   @input="GetDrugTable"
-                  placeholder="输入药品名称或拼音码"
+                  placeholder="Nhập tên thuốc hoặc mã pinyin"
                 ></el-input>
               </el-popover>
             </div> -->
@@ -531,38 +531,38 @@
                   </span>
                   <el-row style="padding-top:8px" type="flex" justify="space-between" align="center" v-if="chargeStatusActiveName === '1' && payState">
                     <!-- <div class="single">
-                      本处方费用：{{ item.content.recipelInfo.fee }}元
+                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.fee }}VNĐ
                     </div>
                     <el-popconfirm
-                        title="确定收费吗？"
+                        title="Bạn có chắc muốn thu phí không？"
                         @confirm="singleCharge(1)"
                         style="padding-top:7px"
                       >
-                        <el-button style="height:30px" slot="reference" type="primary" plain>本处方收费</el-button>
+                        <el-button style="height:30px" slot="reference" type="primary" plain>Thu phí đơn thuốc này</el-button>
 
                       </el-popconfirm> -->
                   </el-row>
                   <el-row type="flex" justify="space-between" align="center" style="padding-top:8px" v-if="chargeStatusActiveName === '2' && medicalEditTabs.length>0">
                     <!-- <div class="single">
-                      本处方费用：{{ item.content.recipelInfo.fee }}元
+                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.fee }}VNĐ
                     </div>
                     <el-popconfirm
-                        title="确定退费吗？"
+                        title="Bạn có chắc muốn hoàn phí không？"
                         @confirm="singleCharge(2)"
                         style="padding-top:7px"
                       >
-                        <el-button style="height:30px" slot="reference" type="primary" plain>本处方退费</el-button>
+                        <el-button style="height:30px" slot="reference" type="primary" plain>Hoàn phí đơn thuốc này</el-button>
 
                       </el-popconfirm> -->
                   </el-row>
                   <el-row style="padding-top:8px" v-if="chargeStatusActiveName === '3' && medicalEditTabs.length>0">
                     <!-- <div class="single">
-                      本处方费用：{{ item.content.recipelInfo.fee }}元
+                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.fee }}VNĐ
                     </div> -->
                   </el-row>
                  <div v-if="item.type!=='recipelType_2'">
                     <el-row>
-                    <el-divider content-position="left">处方信息</el-divider>
+                    <el-divider content-position="left">Thông tin đơn thuốc</el-divider>
 
                     <el-input
                       disabled
@@ -575,7 +575,7 @@
                  </div>
                   <div v-else style="">
                      <el-row>
-                    <el-divider content-position="left">处方信息</el-divider>
+                    <el-divider content-position="left">Thông tin đơn thuốc</el-divider>
 
                     <el-input
                       disabled
@@ -588,23 +588,23 @@
                   </div>
                   <div v-if="item.type!=='recipelType_2'">
                     <el-table :data="item.content.notExtra" style="width: 100%">
-                    <el-table-column label="序号" type="index" align="center">
+                    <el-table-column label="Số thứ tự" type="index" align="center">
                     </el-table-column>
                     <el-table-column
                       prop="drugStuffId.name"
-                      label="药品信息"
+                      label="Thông tin thuốc"
                       width="width"
                     >
                     </el-table-column>
                     <el-table-column
                       prop="drugStuffId.drug.factory.name"
-                      label="厂家"
+                      label="Nhà sản xuất"
                       width="width"
                     >
                     </el-table-column>
                     <el-table-column
                       prop="unitPrice"
-                      label="单价"
+                      label="Đơn giá"
                       width="width"
                     >
                       <!-- <template slot-scope="scope">
@@ -613,7 +613,7 @@
                     </el-table-column>
                     <el-table-column
                       prop="singleDosage"
-                      label="单次用量"
+                      label="Liều dùng mỗi lần"
                       width="width"
                       v-if="item.type!=='recipelType_3'"
                     >
@@ -621,7 +621,7 @@
                   <template>{{ scope.row.singleDosage+''+scope.row.drugStuffId.preparationUnit.name }}</template>
                 </template>
                     </el-table-column>
-                    <el-table-column prop="total" label="数量" width="150">
+                    <el-table-column prop="total" label="Số lượng" width="150">
                       <!-- <template slot-scope="scope">
                   <el-input
                     v-model="scope.row.total"
@@ -632,7 +632,7 @@
                     <el-select
                       v-model="scope.row.selectDrugTypeItem"
                       slot="append"
-                      placeholder="请选择"
+                      placeholder="Vui lòng chọn"
                       @change="chengeDrugTypeItems"
                       style="width: 60px"
                     >
@@ -652,9 +652,9 @@
                 </template> -->
 
                     </el-table-column>
-                    <el-table-column prop="allFee" label="总额">
+                    <el-table-column prop="allFee" label="Tổng tiền">
                     </el-table-column>
-                    <!-- <el-table-column label="操作" align="center" v-if="!IsOnlyRead">
+                    <!-- <el-table-column label="Thao tác" align="center" v-if="!IsOnlyRead">
                 <template slot-scope="scope">
                   <i
                     class="el-icon-circle-close"
@@ -669,11 +669,11 @@
                       <div v-for="(items,index) in item.infusion.zushu" :key="index" style="border:1px solid #DCDCDC;padding:10px;margin:10px;">
 
                         <div>
-                        <span  style="float:left;height:25px;line-height:25px;font-size:14px;">&nbsp;&nbsp;第{{index+1}}组</span>
-                        <el-button style="margin-left:10px;" v-if="item.infusion.infusionProject[index][0].executions!==item.infusion.infusionProject[index][0].days.name-0&&item.infusion.infusionProject[index][0].infuseType===0" type="warning" round>今日待输</el-button>
-                         <el-button style="margin-left:10px;" v-else-if="item.infusion.infusionProject[index][0].executions===item.infusion.infusionProject[index][0].days.name-0||item.infusion.infusionProject[index][0].infuseType===1" type="success" round>已完成</el-button>
+                        <span  style="float:left;height:25px;line-height:25px;font-size:14px;">&nbsp;&nbsp;thứ{{index+1}}nhóm</span>
+                        <el-button style="margin-left:10px;" v-if="item.infusion.infusionProject[index][0].executions!==item.infusion.infusionProject[index][0].days.name-0&&item.infusion.infusionProject[index][0].infuseType===0" type="warning" round>Chờ truyền hôm nay</el-button>
+                         <el-button style="margin-left:10px;" v-else-if="item.infusion.infusionProject[index][0].executions===item.infusion.infusionProject[index][0].days.name-0||item.infusion.infusionProject[index][0].infuseType===1" type="success" round>Đã hoàn thành</el-button>
                         <el-button style="float:right;width:10%" type="primary" @click="execute(item.infusion.infusionProject[index])">执行</el-button>
-                      <!-- <span  style="float:right;height:25px;line-height:25px;font-size:14px;">&nbsp;&nbsp;滴/分钟</span>
+                      <!-- <span  style="float:right;height:25px;line-height:25px;font-size:14px;">&nbsp;&nbsp;giọt/Phút</span>
 
                              <el-input
                               style="float:right;width:10%"
@@ -686,7 +686,7 @@
 
                             </el-input>
 
-                            <span  style="float:right;height:25px;line-height:25px;font-size:14px;">&nbsp;&nbsp;天&nbsp;&nbsp;</span>
+                            <span  style="float:right;height:25px;line-height:25px;font-size:14px;">&nbsp;&nbsp;ngày&nbsp;&nbsp;</span>
                              <el-input
                               style="float:right;width:10%"
                               :value="item.infusion.days[index].name"
@@ -704,7 +704,7 @@
                                true
                               "
 
-                              placeholder="请选择天数"
+                              placeholder="Vui lòng chọn số ngày"
                             >
                               <el-option
                                 v-for="item in DayNumOption"
@@ -733,7 +733,7 @@
                                true
                               "
 
-                              placeholder="请选择频次"
+                              placeholder="Vui lòng chọn tần suất"
                             >
                               <el-option
                                 v-for="item in FrequencyOption"
@@ -761,7 +761,7 @@
                               :disabled="
                                 true
                               "
-                              placeholder="请选择用法"
+                              placeholder="Vui lòng chọn cách dùng"
                             >
                               <el-option
                                 v-for="item in infuseUseOption"
@@ -774,26 +774,26 @@
                         </div>
                         <div style="border:17px solid #0000"></div>
                            <el-table :data="item.infusion.infusionProject[index]" style="width: 100%">
-                    <!-- <el-table-column label="组数" prop="infuseGroup" width="width">
+                    <!-- <el-table-column label="Số nhóm" prop="infuseGroup" width="width">
 
                     </el-table-column> -->
-                    <el-table-column label="序号" type="index" align="center">
+                    <el-table-column label="Số thứ tự" type="index" align="center">
                     </el-table-column>
                     <el-table-column
                       prop="drugStuffId.name"
-                      label="药品信息"
+                      label="Thông tin thuốc"
                       width="width"
                     >
                     </el-table-column>
                     <el-table-column
                       prop="skinTest.name"
-                      label="皮试"
+                      label="Test da"
                       width="width"
                     >
                     </el-table-column>
                       <el-table-column
                       prop="singleDosage"
-                      label="单次用量"
+                      label="Liều dùng mỗi lần"
                       width="width"
                     >
                       <template slot-scope="scope">
@@ -802,29 +802,29 @@
                     </el-table-column>
                      <el-table-column
                       prop="frequency.name"
-                      label="频次"
+                      label="Tần suất"
                       width="width"
                     >
 
                     </el-table-column>
                     <el-table-column
                       prop="infuseUse.name"
-                      label="用法"
+                      label="Cách dùng"
                       width="width"
                     >
 
                     </el-table-column>
-                    <el-table-column prop="drippingSpeed" label="滴速" width="width">
+                    <el-table-column prop="drippingSpeed" label="Tốc độ truyền" width="width">
                         <template slot-scope="scope">
-                        <template>{{scope.row.drippingSpeed?scope.row.drippingSpeed:0}}滴/分钟</template>
+                        <template>{{scope.row.drippingSpeed?scope.row.drippingSpeed:0}}giọt/Phút</template>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="days.name" label="天数" width="width">
+                    <el-table-column prop="days.name" label="Số ngày" width="width">
                       <template slot-scope="scope">
-                        <template>{{scope.row.days.name}}天</template>
+                        <template>{{scope.row.days.name}}ngày</template>
                       </template>
                     </el-table-column>
-                     <el-table-column prop="executions" label="执行进度"  width="width">
+                     <el-table-column prop="executions" label="Tiến độ thực hiện"  width="width">
                       <template slot-scope="scope">
                         <template>{{scope.row.executions}}/{{scope.row.days.name}}</template>
                       </template>
@@ -833,33 +833,33 @@
                       </div>
                   </div>
                   <!-- <el-divider style="margin-top: 5px" content-position="left"
-                    >附加费</el-divider
+                    >Phí phụ thêm</el-divider
                   >
                   <el-table :data="item.content.isExtra" style="width: 100%">
-                    <el-table-column label="序号" type="index" align="center">
+                    <el-table-column label="Số thứ tự" type="index" align="center">
                     </el-table-column>
                     <el-table-column
                       prop="drugStuffId.name"
-                      label="名称"
+                      label="Tên"
                       width="width"
                     >
                     </el-table-column>
                     <el-table-column
                       prop="drugStuffId.drug.factory.name"
-                      label="厂家"
+                      label="Nhà sản xuất"
                       width="width"
                     >
                     </el-table-column>
                     <el-table-column
                       prop="unitPrice"
-                      label="单价"
+                      label="Đơn giá"
                       width="width"
                     > -->
                       <!-- <template slot-scope="scope">
                   <template>{{ GetDrugFee(scope.$index, scope.row) }}</template>
                 </template> -->
                     <!-- </el-table-column>
-                    <el-table-column prop="total" label="数量" width="150"> -->
+                    <el-table-column prop="total" label="Số lượng" width="150"> -->
                       <!-- <template slot-scope="scope">
                   <el-input
                     v-model="scope.row.total"
@@ -870,7 +870,7 @@
                     <el-select
                       v-model="scope.row.selectDrugTypeItem"
                       slot="append"
-                      placeholder="请选择"
+                      placeholder="Vui lòng chọn"
                       @change="chengeDrugTypeItems"
                       style="width: 60px"
                     >
@@ -889,9 +889,9 @@
                   </el-input>
                 </template> -->
                     <!-- </el-table-column>
-                    <el-table-column prop="allFee" label="总额">
+                    <el-table-column prop="allFee" label="Tổng tiền">
                     </el-table-column> -->
-                    <!-- <el-table-column label="操作" align="center" v-if="!IsOnlyRead">
+                    <!-- <el-table-column label="Thao tác" align="center" v-if="!IsOnlyRead">
                 <template slot-scope="scope">
                   <i
                     class="el-icon-circle-close"
@@ -901,7 +901,7 @@
               </el-table-column> -->
                   <!-- </el-table> -->
                   <el-row>
-                    <el-divider content-position="left">医嘱事项</el-divider>
+                    <el-divider content-position="left">Hạng mục y lệnh</el-divider>
                     <el-input
                       type="textarea"
                       :rows="4"
@@ -918,7 +918,7 @@
       </el-card>
     </el-main>
     <el-dialog
-      title="收费"
+      title="Thu phí"
       :visible.sync="chargeDialogVisible"
       width="40%"
       :close-on-click-modal="false"
@@ -926,35 +926,35 @@
     >
 
       <div slot="footer">
-        <el-button @click="singleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="singleChargeBtn(1)">确认收费</el-button>
+        <el-button @click="singleDialogVisible = false">Hủy</el-button>
+        <el-button type="primary" @click="singleChargeBtn(1)">Xác nhận thu phí</el-button>
       </div>
     </el-dialog>
 
-     <!-- 待执行弹出框 -->
+     <!-- Hộp thoại chờ thực hiện -->
     <el-dialog
-    title="执行划扣"
+    title="Thực hiện khấu trừ"
     :visible.sync="executeDialogVisible"
     width="30%"
     :before-close="handleClose">
     <div style="border:1px solid #CCCC"></div>
 
     <div style="margin-top:10px;" >
-      <!-- <el-link v-if="this.compare" type="warning" :underline="false" >今日待输</el-link>
-      <el-link v-else type="warning" :underline="false" >已完成</el-link> -->
-       <span style="float:left;margin-top:5px;">执行时间：</span>
+      <!-- <el-link v-if="this.compare" type="warning" :underline="false" >Chờ truyền hôm nay</el-link>
+      <el-link v-else type="warning" :underline="false" >Đã hoàn thành</el-link> -->
+       <span style="float:left;margin-top:5px;">Thời gian thực hiện：</span>
         <el-date-picker
          style="float:left;"
           v-model="executeDate"
           type="datetime"
           :picker-options="pickerOptions"
-          placeholder="选择日期时间">
+          placeholder="Chọn ngày giờ">
         </el-date-picker>
 
     </div>
     <div style="margin-top:10px;">
      <el-table :data="updateExecute" style="width: 100%">
-                    <el-table-column label="序号" type="index" align="center"  width="width">
+                    <el-table-column label="Số thứ tự" type="index" align="center"  width="width">
                     </el-table-column>
                     <el-table-column
                       prop="patientIdName"
@@ -963,14 +963,14 @@
                       align="center"
                     >
                     </el-table-column>
-                  <el-table-column prop="executions" label="执行进度"  width="width" align="center">
+                  <el-table-column prop="executions" label="Tiến độ thực hiện"  width="width" align="center">
                       <template slot-scope="scope">
                         <template>{{scope.row.executions}}/{{scope.row.days.name}}</template>
                       </template>
                   </el-table-column>
                     <el-table-column
                       prop="excuteNum"
-                      label="本次执行"
+                      label="Thực hiện lần này"
                       width="width"
                       align="center"
                     >
@@ -981,19 +981,19 @@
       </el-table>
       </div>
       <div style="margin-top:10px;">
-        <div>执行记录：</div>
+        <div>Bản ghi thực hiện：</div>
 
         <div v-for="(item,index) in recordList" :key="index" style="margin-top:10px;">
           <span style="font-siza:10px;">{{GetCreateBy(index, item)}} &nbsp; {{item.executeDate}}
-            &nbsp; <el-button v-if="item.delType==='0' && dateChange(item.updateDate)" type="text" @click="revocation(index,item)">撤销</el-button>
-            <el-button v-else-if="item.delType==='0' && !dateChange(item.updateDate)" disabled type="text">已完成</el-button>
-            <el-button v-else-if="item.delType==='1'" disabled type="text">已撤销</el-button>
+            &nbsp; <el-button v-if="item.delType==='0' && dateChange(item.updateDate)" type="text" @click="revocation(index,item)">Thu hồi</el-button>
+            <el-button v-else-if="item.delType==='0' && !dateChange(item.updateDate)" disabled type="text">Đã hoàn thành</el-button>
+            <el-button v-else-if="item.delType==='1'" disabled type="text">Đã thu hồi</el-button>
           </span>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="executeDialogVisible = false">取 消</el-button>
-        <el-button type="primary" v-if="executeDisable"  @click="save">保 存</el-button>
+        <el-button @click="executeDialogVisible = false">Hủy</el-button>
+        <el-button type="primary" v-if="executeDisable"  @click="save">Lưu</el-button>
       </span>
       </el-dialog>
   </el-container>
@@ -1017,11 +1017,11 @@ export default {
   data() {
     let cardIdNo = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("身份证号不能为空"));
+        return callback(new Error("Số CMND/CCCD không được để trống"));
       } else {
         let reg = /((^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$))/;
         if (!reg.test(value)) {
-          callback(new Error("请输入正确的身份证号"));
+          callback(new Error("Vui lòng nhập đúng số CMND/CCCD"));
         } else {
           callback();
         }
@@ -1043,9 +1043,9 @@ export default {
       executeDate:new Date(),
       patientIdName:'',
       isBaseReadOnly: true,
-      isRetail: false, //是否零售
-      selectCondition: "", //病人查询条件
-      chargeStatusActiveName: "1", //收费状态标签页
+      isRetail: false, //Có bán lẻ không
+      selectCondition: "", //Điều kiện truy vấn bệnh nhân
+      chargeStatusActiveName: "1", //Tab trạng thái thu phí
       chargeDialogVisible: false,
       singleDialogVisible: false,
       chargeTotalFee: 100,
@@ -1083,16 +1083,16 @@ export default {
         infuseType:0
 
       },
-      patientList: [], //未收费病人列表
-      isPayPatientList: [], //已收费病人列表
-      returnPatientList: [], //已退费病人列表
-      patientTotalCount: 0, //未收费病人总数
-      isPayTotalCount: 0, //已收费病人总数
-      returnTotalCount: 0, //已退费病人总数
-      patientPageSize: 15, //每页显示的病人数量
-      patientCurrentPage: 1, //未收费病人当前页
-      isPayPatientCurrentPage: 1, //已收费病人当前页
-      returnPatientCurrentPage: 1, //已退费病人当前页
+      patientList: [], //Danh sách bệnh nhân chưa thu phí
+      isPayPatientList: [], //Danh sách bệnh nhân đã thu phí
+      returnPatientList: [], //Danh sách bệnh nhân đã hoàn phí
+      patientTotalCount: 0, //Tổng số bệnh nhân chưa thu phí
+      isPayTotalCount: 0, //Tổng số bệnh nhân đã thu phí
+      returnTotalCount: 0, //Tổng số bệnh nhân đã hoàn phí
+      patientPageSize: 15, //Số bệnh nhân hiển thị mỗi trang
+      patientCurrentPage: 1, //Trang hiện tại của bệnh nhân chưa thu phí
+      isPayPatientCurrentPage: 1, //Trang hiện tại của bệnh nhân đã thu phí
+      returnPatientCurrentPage: 1, //Trang hiện tại của bệnh nhân đã hoàn phí
       patientInfoForm: {
         name: "",
         gender: {
@@ -1104,21 +1104,21 @@ export default {
         phone: "",
         phone: "",
         card: "",
-        westernDiagnose: "无",
-        chinaDiagnose: "无",
+        westernDiagnose: "Không có",
+        chinaDiagnose: "Không có",
       },
       patientInfoNoRules: null,
       patientInfoRules: {
         name: [
-          { required: true, message: "请输入姓名", trigger: "blur" },
-          { min: 1, max: 50, message: "长度在1到50个字符", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập họ tên", trigger: "blur" },
+          { min: 1, max: 50, message: "Độ dài trong khoảng1đến50ký tự", trigger: "blur" },
         ],
-        gender: [{ required: true, message: "请选择性别", trigger: "blur" }],
-        age: [{ required: true, message: "请输入年龄(岁)", trigger: "blur" }],
-        month: [{ required: true, message: "请输入年龄(月)", trigger: "blur" }],
+        gender: [{ required: true, message: "Vui lòng chọn giới tính", trigger: "blur" }],
+        age: [{ required: true, message: "Vui lòng nhập tuổi", trigger: "blur" }],
+        month: [{ required: true, message: "Vui lòng nhập tuổi (tháng)", trigger: "blur" }],
         phone: [
-          { required: true, message: "请输入联系电话", trigger: "blur" },
-          { min: 1, max: 20, message: "长度在1-20个字符", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập số điện thoại liên hệ", trigger: "blur" },
+          { min: 1, max: 20, message: "Độ dài trong khoảng1-20ký tự", trigger: "blur" },
         ],
         card: [
           {
@@ -1138,7 +1138,7 @@ export default {
           name: "女",
         },
       ],
-      /*待收费处方列表*/
+      /*Danh sách đơn thuốc chờ thu phí*/
       prescriptionMainList: [],
       refundPrescriptionMainList: [
         {
@@ -1186,34 +1186,34 @@ export default {
           ],
         },
       ],
-      //所有患者
+      //Tất cả bệnh nhân
       AllPatientOption: [],
-      //选择处方
+      //Chọn đơn thuốc
       WesternCheck: true,
       ChineseCheck: true,
       InfusionCheck: true,
       SurchargeCheck: true,
       CostItemCheck: true,
-      //当前病历
+      //Bệnh án hiện tại
       medicalRecord: {},
-      //当前就诊号
+      //Số khám hiện tại
       VisitId: "",
-      //选中的左侧收费记录的收费状态
+      //Trạng thái thu phí của bản ghi thu phí bên trái đang chọn
       selRowChargeStatus: false,
       DrugAllTable: [],
       SearchDrugName: "",
       RetailTable: [],
-      //点击患者显示的处方列表
+      //Danh sách đơn thuốc hiển thị khi nhấn vào bệnh nhân
       AlreadyPatientDescriptions: [],
-      //只读
+      //Chỉ đọc
       isOnlyRead: false,
       BASE_API: process.env.BASE_API,
-      totalMoney: 0, //总金额
+      totalMoney: 0, //Tổng số tiền
       payState: true,
       medicalEditTabs: [],
       medicalEditTabsValue: {},
       medicalClickTabsValue: {},
-      //新的传参实体类
+      //Lớp thực thể tham số mới
       PageRegistration: {
         columnName: "",
         limit: 0,
@@ -1227,14 +1227,14 @@ export default {
         patientName:null,
         patientCode:null,
       },
-      defaultNumber:1,//默认组号
+      defaultNumber:1,//Số nhóm mặc định
       infusionProject:[[]],
-      drippingSpeed:[""],  //滴速
-      days:[{}],    //天数
-      frequency:[{}],   //频次
-      infuseUse:[{}],     //用法
+      drippingSpeed:[""],  //Tốc độ truyền
+      days:[{}],    //Số ngày
+      frequency:[{}],   //Tần suất
+      infuseUse:[{}],     //Cách dùng
       zushu:[1],
-      excharge:[],  //输液附加费
+      excharge:[],  //Phí phụ thêm truyền dịch
       overColor:0,
       //查询皮试结果
       strc:{
@@ -1335,7 +1335,7 @@ export default {
       //return
       saveCureManagement(item).then((res)=>{
         if(res.code===100){
-          this.$message.success("撤销成功")
+          this.$message.success("Thu hồi thành công")
           this.getSaveInfo(this.getUserId)
           this.search()
           this.executeDialogVisible=false
@@ -1346,14 +1346,14 @@ export default {
         let date = new Date(e);
 
           date = date.getFullYear() + '-'
-              + (date.getMonth()+1) + '-'   // 这里加1是因为getMonth()的返回值是为0~11
+              + (date.getMonth()+1) + '-'   // 这里加1là vìgetMonth()giá trị trả về là0~11
               + date.getDate() + ' '
                   + date.getHours() + ':'
                   + date.getMinutes() + ':'
                   + date.getSeconds();
-          date = Date.parse(new Date(date))/1000; // 转换成时间戳，返回值是ms，除1000后转化成秒
-          date += (86400); // 一天是86400秒
-          let newDate = new Date(parseInt(date) * 1000); // 把时间戳转换成日期
+          date = Date.parse(new Date(date))/1000; // Chuyển thành dấu thời gian，Giá trị trả về làms，chia1000sau đó chuyển thành giây
+          date += (86400); // Một ngày là86400giây
+          let newDate = new Date(parseInt(date) * 1000); // Chuyển dấu thời gian thành ngày
           // let myDate = date.getFullYear() + '-'
           //               + (date.getMonth()+1) + '-'
           //               + date.getDate() + ' '
@@ -1367,7 +1367,7 @@ export default {
          }
       },
 
-    //执行保存
+    //Thực hiện lưu
     save(){
       this.updateExecute[0].executions=this.updateExecute[0].executions+this.updateExecute[0].excuteNum
       let executeModel={
@@ -1384,7 +1384,7 @@ export default {
       //return
       saveCureManagement(executeModel).then((res)=>{
         if(res.code===100){
-          this.$message.success("执行成功")
+          this.$message.success("Thực hiện thành công")
           this.saveInfusion
 
           this.compare=false
@@ -1456,8 +1456,8 @@ export default {
         ],
         offset: 0,
         limit: 100,
-        columnName: "", // 排序字段名
-        order: "", // 排序
+        columnName: "", // Tên trường sắp xếp
+        order: "", // Sắp xếp
       }
 
      if(executeRow.executions===executeRow.days.name-0||executeRow.infuseType===1){
@@ -1524,8 +1524,8 @@ export default {
         phone: "",
         phone: "",
         card: "",
-        westernDiagnose: "无",
-        chinaDiagnose: "无",
+        westernDiagnose: "Không có",
+        chinaDiagnose: "Không có",
       }
       this.medicalEditTabs = []
       this.medicalEditTabsValue = {}
@@ -1541,7 +1541,7 @@ export default {
     },
     print() {
       if (this.prescriptionMainList.length === 0) {
-        this.$message.error("未选择数据");
+        this.$message.error("Chưa chọn dữ liệu");
         return;
       }
       let arr = []
@@ -1583,7 +1583,7 @@ export default {
     },
     isPayChange(val) {
     },
-    //单独收费
+    //Thu phí riêng
     singleCharge(type){
       if(type===1){
         this.IsSingleCorrect();
@@ -1592,17 +1592,17 @@ export default {
         this.singleChargeBtn(2)
       }
     },
-    /*收费退费按钮点击*/
+    /*Nhấn nút thu phí/hoàn phí*/
     chargeClick(type) {
       if (this.prescriptionMainList.length === 0) {
-        this.$message.error("未选择数据");
+        this.$message.error("Chưa chọn dữ liệu");
         return;
       }
       if (type === 1) {
         if (!this.isRetail) {
           let IsOpen = this.IsChargeCorrect("0");
           if (!IsOpen) {
-            this.$message("当前选择处方不正确！");
+            this.$message("Đơn thuốc đang chọn không đúng！");
             return;
           }
         } else {
@@ -1612,14 +1612,14 @@ export default {
       } else {
         if (
           this.prescriptionMainList[0].recipelInfo.recipelType.name ===
-          "零售处方"
+          "Đơn thuốc bán lẻ"
         ) {
           let IsOpen = this.IsChargeCorrect("1");
-          if (!IsOpen) this.$message("当前选择处方不正确！");
+          if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng！");
           else this.OutRetailSaveRetailPrescription();
         } else {
           let IsOpen = this.IsChargeCorrect("1");
-          if (!IsOpen) this.$message("当前选择处方不正确！");
+          if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng！");
           else this.chargeBtn(2);
         }
       }
@@ -1633,7 +1633,7 @@ export default {
       });
       return totalCost;
     },
-    /*计算当前退费处方合计*/
+    /*Tính tổng đơn thuốc hoàn phí hiện tại*/
     getRefundTotalCost() {
       let totalCost = 0;
       this.refundPrescriptionMainList.forEach((element) => {
@@ -1643,9 +1643,9 @@ export default {
       });
       return totalCost;
     },
-    /*切换到零售*/
+    /*Chuyển sang bán lẻ*/
     changeToRetail() {
-      //清空病人
+      //Xóa bệnh nhân
       this.patientInfoForm = {
         name: "",
         gender: {
@@ -1656,8 +1656,8 @@ export default {
         month: "",
         phone: "",
         card: "",
-        westernDiagnose: "无",
-        chinaDiagnose: "无",
+        westernDiagnose: "Không có",
+        chinaDiagnose: "Không có",
       };
       this.RetailTable = [];
       this.isRetail = true;
@@ -1665,7 +1665,7 @@ export default {
         this.$refs.patientInfoForm.resetFields();
       });
     },
-    /*病人列表点击*/
+    /*Nhấn vào danh sách bệnh nhân*/
     selectPatientChange() {
       if (!this.patientInfoRow) {
         return;
@@ -1676,7 +1676,7 @@ export default {
       });
       if (this.chargeStatusActiveName === "1") this.payState = true;
       this.prescriptionMainList = [];
-      //根据登记信息获取病例信息
+      //Lấy thông tin bệnh án theo thông tin đăng ký
       // let medicalSearch={
       //   params: [
       //      {
@@ -1694,8 +1694,8 @@ export default {
       //   ],
       //   offset: 0,
       //   limit: 10,
-      //   columnName: "", // 排序字段名
-      //   order: "", // 排序
+      //   columnName: "", // Tên trường sắp xếp
+      //   order: "", // Sắp xếp
       // }
 
       // listMedicalRecordPage(medicalSearch).then((res)=>{
@@ -1704,13 +1704,13 @@ export default {
       //     if(res.data.rows[0].westernDiagnose!=undefined){
       //         this.patientInfoForm.westernDiagnose=res.data.rows[0].westernDiagnose
       //       }else{
-      //         this.patientInfoForm.westernDiagnose="无"
+      //         this.patientInfoForm.westernDiagnose="Không có"
       //       }
       //       console.log(res.data.rows[0].chinaDiagnose);
       //       if(res.data.rows[0].chinaDiagnose!=undefined){
       //         this.patientInfoForm.chinaDiagnose=res.data.rows[0].chinaDiagnose
       //       }else{
-      //         this.patientInfoForm.chinaDiagnose="无"
+      //         this.patientInfoForm.chinaDiagnose="Không có"
       //       }
       //   }
       // }).catch(()=>{})
@@ -1719,16 +1719,16 @@ export default {
       this.getSaveInfo(this.patientInfoRow.id);
       this.overColor=0
     },
-    //获取就诊患者的个人信息
+    //Lấy thông tin cá nhân của bệnh nhân đang khám
     getPatientById(id) {
       return this.AllPatientOption.find((item) => item.id === id);
     },
-    /*查询病人*/
+    /*Truy vấn bệnh nhân*/
     selectPatientList() {
       const now = new Date();
       this.patientQueryCondition.limit = this.patientPageSize;
       this.patientQueryCondition.companyId = this.Company.id;
-      /*待收费*/
+      /*Chờ thu phí*/
       this.isOnlyRead = false;
       this.patientQueryCondition.offset =
         (this.patientCurrentPage - 1) * this.patientPageSize;
@@ -1776,7 +1776,7 @@ export default {
           this.$message.error(error);
         });
     },
-    //查询已收费列表
+    //Truy vấn danh sách đã thu phí
     getIsPayPatientList() {
       const now = new Date();
       this.patientQueryCondition.limit = this.patientPageSize;
@@ -1811,7 +1811,7 @@ export default {
         });
     },
 
-    //查询已退费列表
+    //Truy vấn danh sách đã hoàn phí
     returnPayPatientList() {
       const now = new Date();
       this.patientQueryCondition.limit = this.patientPageSize;
@@ -1847,7 +1847,7 @@ export default {
         });
     },
 
-    //根据就诊人id查询处方病例
+    //Theo người khámidTruy vấn bệnh án đơn thuốc
     getSaveInfo(visitId) {
       this.getUserId=visitId
       this.VisitRecordsList = [];
@@ -1942,12 +1942,12 @@ export default {
         element.uuid = element.recipelInfo.id;
         if(element.recipelInfo.recipelType.value==="recipelType_2"){
            let infusion={
-            defaultNumber:1,//默认组号
+            defaultNumber:1,//Số nhóm mặc định
             infusionProject:[[]],
-            drippingSpeed:[""],  //滴速
-            days:[{}],    //天数
-            frequency:[{}],   //频次
-            infuseUse:[{}],     //用法
+            drippingSpeed:[""],  //Tốc độ truyền
+            days:[{}],    //Số ngày
+            frequency:[{}],   //Tần suất
+            infuseUse:[{}],     //Cách dùng
             zushu:[1],
             compare:true
          }
@@ -2009,7 +2009,7 @@ export default {
       this.medicalEditTabsValue = this.medicalEditTabs[0];
       this.medicalClickTabsValue = this.medicalEditTabsValue;
     },
-    //获取所有患者详情
+    //Lấy chi tiết tất cả bệnh nhân
     GetAllPatient() {
       let searchModel = {
         params: [
@@ -2065,7 +2065,7 @@ export default {
 
       const pattern2 = new RegExp("[A-Za-z]+");
       if (pattern2.test(this.SearchDrugName)) {
-        // console.log(this.SearchWesternInput,'字符');
+        // console.log(this.SearchWesternInput,'Ký tự');
         SearchModel.params[1].value = this.SearchDrugName.toUpperCase();
         SearchModel.params[1].columnName = "pinyin_code";
       } else {
@@ -2075,14 +2075,14 @@ export default {
       listAllStock(SearchModel).then((responseData) => {
         if (responseData.code === 100) {
           responseData.data.forEach((element) => {
-            let isUnpackSell = element.isUnpackSell; //允许拆零销售
-            let stockNumber = element.stockNumber; //库存数量
-            let packName = element.pack.name; //包装（单位）
-            let preparation = element.preparation; //制剂
-            let preparationUnit = element.preparationUnit.name; //制剂单位
-            let price = element.price; //售价
-            let retailPrice = element.retailPrice; //拆开后零售价
-            let type = element.type.value; //药品类型： medicalType_1 - 中药   medicalType_0 - 西药
+            let isUnpackSell = element.isUnpackSell; //Cho phép bán lẻ tách hộp
+            let stockNumber = element.stockNumber; //Số lượng tồn kho
+            let packName = element.pack.name; //Đóng gói（Đơn vị）
+            let preparation = element.preparation; //Chế phẩm
+            let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
+            let price = element.price; //Giá bán
+            let retailPrice = element.retailPrice; //Giá bán lẻ sau khi tách hộp
+            let type = element.type.value; //Loại thuốc： medicalType_1 - Thuốc đông y   medicalType_0 - Thuốc tây
 
             let stockText = "";
             let selectDrugTypeItems = [];
@@ -2104,9 +2104,9 @@ export default {
                 name: element.pack.name,
                 isUnpackSell: 0,
               });
-              //向下取整
+              //Làm tròn xuống
               let p1 = Math.floor(stockNumber / preparation);
-              //取余
+              //Lấy phần dư
               let p2 = stockNumber % preparation;
               if (p1 > 0) {
                 stockText = p1 + packName;
@@ -2158,12 +2158,12 @@ export default {
 
     chengeDrugTypeItems(sel) {
     },
-    //根据是否零售与新增还是查看获取单位
+    //Lấy đơn vị theo bán lẻ hay thêm mới/xem
     GetDrugUnit(index, row) {
       if (row.preparationUnit) {
         if (row.isUnpackSell === "1") {
           return row.preparationUnit.name;
-        } else if (row.type.name === "中药") {
+        } else if (row.type.name === "Thuốc đông y") {
           return row.dosisUnit.name;
         } else {
           return row.pack.name;
@@ -2171,7 +2171,7 @@ export default {
       } else {
         if (
           row.drugStuffId.drug.isUnpackSell === "1" ||
-          row.drugStuffId.drug.type.name === "中药"
+          row.drugStuffId.drug.type.name === "Thuốc đông y"
         ) {
           return row.drugStuffId.drug.preparationUnit.name;
         } else {
@@ -2181,7 +2181,7 @@ export default {
     },
 
     GetAllDrugFee(index, row) {
-      if (row.isUnpackSell === "1" && row.type.name !== "中药") {
+      if (row.isUnpackSell === "1" && row.type.name !== "Thuốc đông y") {
         row.allFee = row.total * row.retailPrice;
       } else {
         row.allFee = row.total * row.price;
@@ -2204,13 +2204,13 @@ export default {
     },
     GetPrescriptionStatus(status) {
       let returnStatus;
-      if (status === 0) returnStatus = "待收费";
-      else if (status === 1) returnStatus = "已收费";
-      else if (status === -1) returnStatus = "已退费";
+      if (status === 0) returnStatus = "Chờ thu phí";
+      else if (status === 1) returnStatus = "Đã thu phí";
+      else if (status === -1) returnStatus = "Đã hoàn phí";
       return returnStatus;
     },
 
-    //计算实际收费
+    //Tính phí thực tế
     GetAmountReceived() {
       let discount = this.chargeForm.discount;
       if (this.chargeForm.discount === 0) {
@@ -2236,14 +2236,14 @@ export default {
       this.singleForm.amountReceivable = allFee.toFixed(2);
       this.singleForm.amountReceived = allFee.toFixed(2);
     },
-    //收费数据是否合格
+    //Dữ liệu thu phí có đạt không
     IsChargeCorrect(type) {
       let IsSure = true;
       let allFee = 0;
       const typeNum = Number(type);
       this.prescriptionMainList.map((item) => {
         if (
-          item.recipelInfo.recipelType.name === "西药处方" &&
+          item.recipelInfo.recipelType.name === "Đơn thuốc tây" &&
           this.WesternCheck
         ) {
           if (item.recipelInfo.chargeStatus !== typeNum) {
@@ -2252,7 +2252,7 @@ export default {
             allFee += item.recipelInfo.fee;
           }
         } else if (
-          item.recipelInfo.recipelType.name === "中药处方" &&
+          item.recipelInfo.recipelType.name === "Đơn thuốc đông y" &&
           this.ChineseCheck
         ) {
           if (item.recipelInfo.chargeStatus !== typeNum) {
@@ -2261,7 +2261,7 @@ export default {
             allFee += item.recipelInfo.fee;
           }
         } else if (
-          item.recipelInfo.recipelType.name === "输液处方" &&
+          item.recipelInfo.recipelType.name === "Đơn truyền dịch" &&
           this.InfusionCheck
         ) {
           if (item.recipelInfo.chargeStatus !== typeNum) {
@@ -2270,7 +2270,7 @@ export default {
             allFee += item.recipelInfo.fee;
           }
         } else if (
-          item.recipelInfo.recipelType.name === "诊疗项目" &&
+          item.recipelInfo.recipelType.name === "Hạng mục khám chữa bệnh" &&
           this.CostItemCheck
         ) {
           if (item.recipelInfo.chargeStatus !== typeNum) {
@@ -2279,7 +2279,7 @@ export default {
             allFee += item.recipelInfo.fee;
           }
         } else if (
-          item.recipelInfo.recipelType.name === "附加费" &&
+          item.recipelInfo.recipelType.name === "Phí phụ thêm" &&
           this.SurchargeCheck
         ) {
           if (item.recipelInfo.chargeStatus !== typeNum) {
@@ -2287,7 +2287,7 @@ export default {
           } else {
             allFee += item.recipelInfo.fee;
           }
-        } else if (item.recipelInfo.recipelType.name === "零售处方") {
+        } else if (item.recipelInfo.recipelType.name === "Đơn thuốc bán lẻ") {
           if (typeNum === 0) {
             IsSure = false;
           } else if (
@@ -2344,7 +2344,7 @@ export default {
       return recipelDetailEvtList;
     },
 
-    //确定收费-退费按钮(type: 1收费 2退费)
+    //Xác nhận thu phí-Nút hoàn phí(type: 1Thu phí 2Hoàn phí)
     chargeBtn(type) {
       if (!this.isRetail) {
         this.chargeSave(type);
@@ -2353,7 +2353,7 @@ export default {
       }
     },
 
-    //零售退费
+    //Hoàn phí bán lẻ
     OutRetailSaveRetailPrescription() {
       let tollInfo = {
         company: {
@@ -2365,15 +2365,15 @@ export default {
         amountDiscounted: 0,
         discount: this.chargeForm.discount * 0.1,
         paymentType: {
-          name: "现金",
+          name: "Tiền mặt",
           value: "payType_0",
         },
         amountStatus: {
-          name: "已退费",
+          name: "Đã hoàn phí",
           value: "amountStatus_2",
         },
         tollType: {
-          name: "零售",
+          name: "Bán lẻ",
           value: "tollType_2",
         },
         patient: {
@@ -2395,7 +2395,7 @@ export default {
       this.saveTollTollInfo(model);
     },
 
-    //零售收费
+    //Thu phí bán lẻ
     SaveRetailPrescription() {
       let recipelDetailEvtList = this.GetRetailRecipelDetailEvtList(2);
       let paymentType = {
@@ -2404,20 +2404,20 @@ export default {
       };
       switch (this.chargeForm.paymentType) {
         case "payType_0":
-          paymentType.name = "现金";
+          paymentType.name = "Tiền mặt";
           break;
         case "payType_1":
           paymentType.name = "支付宝";
           break;
         case "payType_2":
-          paymentType.name = "微信";
+          paymentType.name = "WeChat";
           break;
         case "payType_3":
           paymentType.name = "银行卡";
           break;
         default:
           paymentType = {
-            name: "现金",
+            name: "Tiền mặt",
             value: "payType_0",
           };
           break;
@@ -2432,11 +2432,11 @@ export default {
         discount: this.chargeForm.discount * 0.1,
         paymentType: paymentType,
         amountStatus: {
-          name: "已收费",
+          name: "Đã thu phí",
           value: "amountStatus_1",
         },
         tollType: {
-          name: "零售",
+          name: "Bán lẻ",
           value: "tollType_2",
         },
         patient: {
@@ -2448,7 +2448,7 @@ export default {
       let recipelInfo = {
         company: this.Company,
         recipelType: {
-          name: "零售处方",
+          name: "Đơn thuốc bán lẻ",
           value: "recipelType_5",
         },
         fee: this.chargeForm.amountReceivable,
@@ -2472,20 +2472,20 @@ export default {
       };
       switch (this.singleForm.paymentType) {
         case "payType_0":
-          paymentType.name = "现金";
+          paymentType.name = "Tiền mặt";
           break;
         case "payType_1":
           paymentType.name = "支付宝";
           break;
         case "payType_2":
-          paymentType.name = "微信";
+          paymentType.name = "WeChat";
           break;
         case "payType_3":
           paymentType.name = "银行卡";
           break;
         default:
           paymentType = {
-            name: "现金",
+            name: "Tiền mặt",
             value: "payType_0",
           };
           break;
@@ -2518,13 +2518,13 @@ export default {
       });
       if(type===1){
         tollInfo.amountStatus = {
-          name: "已收费",
+          name: "Đã thu phí",
           value: "amountStatus_1",
         };
         chargeStatus = "2"
       }else{
         tollInfo.amountStatus = {
-            name: "已退费",
+            name: "Đã hoàn phí",
             value: "amountStatus_2",
           };
           chargeStatus = "4";
@@ -2539,7 +2539,7 @@ export default {
       //return
       this.saveTollTollInfo(model);
     },
-    //确定收费-退费按钮(type: 1收费 2退费)
+    //Xác nhận thu phí-Nút hoàn phí(type: 1Thu phí 2Hoàn phí)
     chargeSave(type) {
       let paymentType = {
         name: "",
@@ -2547,20 +2547,20 @@ export default {
       };
       switch (this.chargeForm.paymentType) {
         case "payType_0":
-          paymentType.name = "现金";
+          paymentType.name = "Tiền mặt";
           break;
         case "payType_1":
           paymentType.name = "支付宝";
           break;
         case "payType_2":
-          paymentType.name = "微信";
+          paymentType.name = "WeChat";
           break;
         case "payType_3":
           paymentType.name = "银行卡";
           break;
         default:
           paymentType = {
-            name: "现金",
+            name: "Tiền mặt",
             value: "payType_0",
           };
           break;
@@ -2589,7 +2589,7 @@ export default {
 
       this.prescriptionMainList.map((item) => {
         switch (item.recipelInfo.recipelType.name) {
-          case "中药处方":
+          case "Đơn thuốc đông y":
             if (type === 1 && item.recipelInfo.chargeStatus === 1) IsAll += 1;
             else if (type === 2 && item.recipelInfo.chargeStatus === -1) IsAll += 1;
             if (this.ChineseCheck) {
@@ -2601,7 +2601,7 @@ export default {
               });
             }
             break;
-          case "西药处方":
+          case "Đơn thuốc tây":
             if (type === 1 && item.recipelInfo.chargeStatus === 1) IsAll += 1;
             else if (type === 2 && item.recipelInfo.chargeStatus === -1) IsAll += 1;
             if (this.WesternCheck) {
@@ -2613,7 +2613,7 @@ export default {
               });
             }
             break;
-          case "输液处方":
+          case "Đơn truyền dịch":
             if (type === 1 && item.recipelInfo.chargeStatus === 1) IsAll += 1;
             else if (type === 2 && item.recipelInfo.chargeStatus === -1) IsAll += 1;
             if (this.InfusionCheck) {
@@ -2625,7 +2625,7 @@ export default {
               });
             }
             break;
-          case "诊疗项目":
+          case "Hạng mục khám chữa bệnh":
             if (type === 1 && item.recipelInfo.chargeStatus === 1) IsAll += 1;
             else if (type === 2 && item.recipelInfo.chargeStatus === -1) IsAll += 1;
             if (this.CostItemCheck) {
@@ -2637,7 +2637,7 @@ export default {
               });
             }
             break;
-          case "附加费":
+          case "Phí phụ thêm":
             if (type === 1 && item.recipelInfo.chargeStatus === 1) IsAll += 1;
             else if (type === 2 && item.recipelInfo.chargeStatus === -1) IsAll += 1;
             if (this.SurchargeCheck) {
@@ -2658,13 +2658,13 @@ export default {
       if (IsAll === this.prescriptionMainList.length) {
         if (type === 1) {
           tollInfo.amountStatus = {
-            name: "已收费",
+            name: "Đã thu phí",
             value: "amountStatus_1",
           };
           chargeStatus = "2";
         } else {
           tollInfo.amountStatus = {
-            name: "已退费",
+            name: "Đã hoàn phí",
             value: "amountStatus_2",
           };
           chargeStatus = "4";
@@ -2672,13 +2672,13 @@ export default {
       } else {
         if (type === 1) {
           tollInfo.amountStatus = {
-            name: "已收费",
+            name: "Đã thu phí",
             value: "amountStatus_1",
           };
           chargeStatus = "1";
         } else {
           tollInfo.amountStatus = {
-            name: "已退费",
+            name: "Đã hoàn phí",
             value: "amountStatus_2",
           };
           chargeStatus = "3";
@@ -2695,7 +2695,7 @@ export default {
       }
 
       if(state){
-        this.$message.error('有处方已发药但未退药，请先退药')
+        this.$message.error('Có đơn thuốc đã phát thuốc nhưng chưa trả thuốc，Vui lòng trả thuốc trước')
         return
       }
       let model = {
@@ -2705,13 +2705,13 @@ export default {
       };
       this.saveTollTollInfo(model);
     },
-    //收费
+    //Thu phí
     saveTollTollInfo(model) {
       let type = "null";
       saveTollTollInfo(model, type)
         .then((responseData) => {
           if (responseData.code === 100) {
-            this.$message.success("操作成功！");
+            this.$message.success("Thao tác thành công！");
             this.selectPatientList();
             // if (this.VisitId) {
             //   this.getSaveInfo();

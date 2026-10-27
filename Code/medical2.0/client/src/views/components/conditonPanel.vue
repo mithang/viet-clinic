@@ -4,66 +4,66 @@
       <el-col :span='11'>
         <el-col :span='3'>
           <span v-if='idx === 0' style='text-align: center;display:block;'>一组</span>
-          <el-select v-else v-model='groupOne[idx].logic' placeholder='请选择逻辑符'>
+          <el-select v-else v-model='groupOne[idx].logic' placeholder='Vui lòng chọn toán tử logic'>
               <el-option v-for='item in logics' :key='item.value' :label='item.label' :value='item.value'></el-option>
           </el-select>
         </el-col>
         <el-col :span='5'>
-          <el-select v-model='groupOne[idx].column' value-key='name' @change='onColumnChange(groupOne[idx].column, groupOne, idx)' placeholder='请选择字段'>
+          <el-select v-model='groupOne[idx].column' value-key='name' @change='onColumnChange(groupOne[idx].column, groupOne, idx)' placeholder='Vui lòng chọn trường'>
               <el-option v-for="col in columns.filter(item => item['name'] !== exclude)" :key='col.name' :label='col.comments' :value='col'></el-option>
           </el-select>
         </el-col>
         <el-col :span='4'>
-          <el-select v-model='groupOne[idx].queryType' @change='onQueryTypeChange(groupOne[idx].queryType, groupOne, idx)' placeholder='请选择操作符'>
+          <el-select v-model='groupOne[idx].queryType' @change='onQueryTypeChange(groupOne[idx].queryType, groupOne, idx)' placeholder='Vui lòng chọn toán tử'>
             <el-option v-for='opr in groupOne[idx].operations' :key='opr.value' :label='opr.label' :value='opr.value'></el-option>
           </el-select>
         </el-col>
         <el-col :span='12'>
           <div v-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'MultipleInput'">
-            <el-input v-model='groupOne[idx].value' :clearable='true' placeholder='请输入条件值' ></el-input>
+            <el-input v-model='groupOne[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'SingleInput'">
             <div v-if="groupOne[idx].column && (groupOne[idx].column.javaType.value === 'Long' || groupOne[idx].column.javaType.value === 'Integer' || groupOne[idx].column.javaType.value === 'Double' || groupOne[idx].column.javaType.value === 'Float' || groupOne[idx].column.javaType.value === 'java.math.BigDecimal')">
               <number-range-input v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" v-model='groupOne[idx].value'></number-range-input>
-              <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupOne[idx].column.decimalLenth" placeholder='请输入条件值'></number-input>
+              <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupOne[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
             </div>
-            <el-input v-else v-model='groupOne[idx].value' :clearable='true' placeholder='请输入条件值' ></el-input>
+            <el-input v-else v-model='groupOne[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'DatePicker'">
             <data-range-picker v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" v-model='groupOne[idx].value' type='daterange'></data-range-picker>
-            <el-date-picker v-else v-model='groupOne[idx].value' placeholder='请选择日期11' type='date' value-format='yyyy-MM-dd'></el-date-picker>
+            <el-date-picker v-else v-model='groupOne[idx].value' placeholder='Vui lòng chọn ngày11' type='date' value-format='yyyy-MM-dd'></el-date-picker>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'DateTimePicker'">
             <data-range-picker v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" v-model='groupOne[idx].value' type='datetimerange'></data-range-picker>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'TimePicker'">
-            <el-time-picker v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" is-range v-model='groupOne[idx].value' range-separator='至' start-placeholder='开始时间' end-placeholder='结束时间' placeholder='选择时间范围' value-format='HH:mm:ss'></el-time-picker>
-            <el-time-picker v-else  v-model='groupOne[idx].value' placeholder='请选择时间' value-format='HH:mm:ss'></el-time-picker>
+            <el-time-picker v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" is-range v-model='groupOne[idx].value' range-separator='đến' start-placeholder='Thời gian bắt đầu' end-placeholder='Thời gian kết thúc' placeholder='Chọn khoảng thời gian' value-format='HH:mm:ss'></el-time-picker>
+            <el-time-picker v-else  v-model='groupOne[idx].value' placeholder='Vui lòng chọn thời gian' value-format='HH:mm:ss'></el-time-picker>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'Switch'">
             <el-switch v-model='groupOne[idx].value' active-color='#13ce66' inactive-color='#dbdfe6' :active-value='1' :inactive-value='0'></el-switch>
           </div>
           <!--<div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value == 'IncNumber'">
             <number-range-input v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" v-model='groupOne[idx].value'></number-range-input>
-            <el-input-number v-else v-model='groupOne[idx].value' controls-position='right' :controls='false' placeholder='请输入条件值'></el-input-number>
+            <el-input-number v-else v-model='groupOne[idx].value' controls-position='right' :controls='false' placeholder='Vui lòng nhập giá trị điều kiện'></el-input-number>
           </div>-->
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && (groupOne[idx].column.showType.value === 'InputNumber' || groupOne[idx].column.showType.value === 'IncNumber')">
             <number-range-input v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" v-model='groupOne[idx].value' :type="groupOne[idx].column.javaType.value" :precision="groupOne[idx].column.decimalLenth"></number-range-input>
-            <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupOne[idx].column.decimalLenth" placeholder='请输入条件值'></number-input>
+            <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupOne[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'Select'">
-            <el-select v-if="groupOne[idx].queryType === 'in' || groupOne[idx].queryType === 'not in'" v-model='groupOne[idx].value' :value-key='groupOne[idx].column.fieldId' multiple filterable placeholder='请选择条件值'>
+            <el-select v-if="groupOne[idx].queryType === 'in' || groupOne[idx].queryType === 'not in'" v-model='groupOne[idx].value' :value-key='groupOne[idx].column.fieldId' multiple filterable placeholder='Vui lòng chọn giá trị điều kiện'>
                 <el-option v-for="item in pp[idx]" :key='item[groupOne[idx].column.fieldId]' :label='item[groupOne[idx].column.fieldName]' :value='item[groupOne[idx].column.fieldId]'></el-option>
             </el-select>
-            <el-select v-else v-model='groupOne[idx].value' :value-key='groupOne[idx].column.fieldId'   filterable clearable placeholder='请选择条件值'>
+            <el-select v-else v-model='groupOne[idx].value' :value-key='groupOne[idx].column.fieldId'   filterable clearable placeholder='Vui lòng chọn giá trị điều kiện'>
                <el-option v-for="item in pp[idx]" :key='item[groupOne[idx].column.fieldId]' :label='item[groupOne[idx].column.fieldName]' :value='item[groupOne[idx].column.fieldId]'></el-option>
             </el-select>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'SelectTree'">
-            <el-cascader v-if="groupOne[idx].queryType === 'in' || groupOne[idx].queryType === 'not in'" v-model='groupOne[idx].value' :options="pp[idx]" :props='{value: groupOne[idx].column.fieldId, label: groupOne[idx].column.fieldName, checkStrictly: true, emitPath: false, multiple: true}' filterable clearable placeholder='请选择条件值'></el-cascader>
-            <el-cascader v-else v-model='groupOne[idx].value' :options="pp[idx]" :props='{value: groupOne[idx].column.fieldId, label: groupOne[idx].column.fieldName, checkStrictly: true, emitPath: false}' filterable clearable placeholder='请选择条件值'></el-cascader>
+            <el-cascader v-if="groupOne[idx].queryType === 'in' || groupOne[idx].queryType === 'not in'" v-model='groupOne[idx].value' :options="pp[idx]" :props='{value: groupOne[idx].column.fieldId, label: groupOne[idx].column.fieldName, checkStrictly: true, emitPath: false, multiple: true}' filterable clearable placeholder='Vui lòng chọn giá trị điều kiện'></el-cascader>
+            <el-cascader v-else v-model='groupOne[idx].value' :options="pp[idx]" :props='{value: groupOne[idx].column.fieldId, label: groupOne[idx].column.fieldName, checkStrictly: true, emitPath: false}' filterable clearable placeholder='Vui lòng chọn giá trị điều kiện'></el-cascader>
           </div>
-          <el-input v-else v-model='groupOne[idx].value' :clearable='true' placeholder='请输入条件值' ></el-input>
+          <el-input v-else v-model='groupOne[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
         </el-col>
     </el-col>
       <el-col :span='2'>
@@ -77,66 +77,66 @@
       <el-col :span='11'>
           <el-col :span='3'>
             <span v-if='idx === 0' style='text-align: center;display:block;'>二组</span>
-            <el-select v-else v-model='groupTwo[idx].logic' placeholder='请选择逻辑符'>
+            <el-select v-else v-model='groupTwo[idx].logic' placeholder='Vui lòng chọn toán tử logic'>
                 <el-option v-for='item in logics' :key='item.value' :label='item.label' :value='item.value'></el-option>
             </el-select>
           </el-col>
           <el-col :span='5'>
-            <el-select v-model='groupTwo[idx].column' value-key='name' @change='onColumnChange(groupTwo[idx].column, groupTwo, idx)'  placeholder='请选择字段'>
+            <el-select v-model='groupTwo[idx].column' value-key='name' @change='onColumnChange(groupTwo[idx].column, groupTwo, idx)'  placeholder='Vui lòng chọn trường'>
                 <el-option v-for="col in columns.filter(item => item['name'] !== exclude)" :key='col.name' :label='col.comments' :value='col'></el-option>
             </el-select>
           </el-col>
           <el-col :span='4'>
-            <el-select v-model='groupTwo[idx].queryType' @change='onQueryTypeChange(groupTwo[idx].queryType, groupTwo, idx)' placeholder='请选择操作符'>
+            <el-select v-model='groupTwo[idx].queryType' @change='onQueryTypeChange(groupTwo[idx].queryType, groupTwo, idx)' placeholder='Vui lòng chọn toán tử'>
               <el-option v-for='opr in groupTwo[idx].operations' :key='opr.value' :label='opr.label' :value='opr.value'></el-option>
             </el-select>
           </el-col>
           <el-col :span='12'>
             <div v-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'MultipleInput'">
-              <el-input v-model='groupTwo[idx].value' :clearable='true' placeholder='请输入条件值' ></el-input>
+              <el-input v-model='groupTwo[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'SingleInput'">
               <div v-if="groupTwo[idx].column && (groupTwo[idx].column.javaType.value === 'Long' || groupTwo[idx].column.javaType.value === 'Integer' || groupTwo[idx].column.javaType.value === 'Double' || groupTwo[idx].column.javaType.value === 'Float'  || groupTwo[idx].column.javaType.value === 'java.math.BigDecimal')">
                 <number-range-input v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" v-model='groupTwo[idx].value'></number-range-input>
-                <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='请输入条件值'></number-input>
+                <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
               </div>
-              <el-input v-else v-model='groupTwo[idx].value' :clearable='true' placeholder='请输入条件值' ></el-input>
+              <el-input v-else v-model='groupTwo[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'DatePicker'">
               <data-range-picker v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" v-model='groupTwo[idx].value' type='daterange'></data-range-picker>
-              <el-date-picker v-else v-model='groupTwo[idx].value' placeholder='请选择日期' type='date' value-format='yyyy-MM-dd'></el-date-picker>
+              <el-date-picker v-else v-model='groupTwo[idx].value' placeholder='Vui lòng chọn ngày' type='date' value-format='yyyy-MM-dd'></el-date-picker>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'DateTimePicker'">
               <data-range-picker v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" v-model='groupTwo[idx].value' type='datetimerange'></data-range-picker>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'TimePicker'">
-              <el-time-picker v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" is-range v-model='groupTwo[idx].value' range-separator='至' start-placeholder='开始时间' end-placeholder='结束时间' placeholder='选择时间范围' value-format='HH:mm:ss'></el-time-picker>
-              <el-time-picker v-else  v-model='groupTwo[idx].value' placeholder='请选择时间' value-format='HH:mm:ss'></el-time-picker>
+              <el-time-picker v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" is-range v-model='groupTwo[idx].value' range-separator='đến' start-placeholder='Thời gian bắt đầu' end-placeholder='Thời gian kết thúc' placeholder='Chọn khoảng thời gian' value-format='HH:mm:ss'></el-time-picker>
+              <el-time-picker v-else  v-model='groupTwo[idx].value' placeholder='Vui lòng chọn thời gian' value-format='HH:mm:ss'></el-time-picker>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'Switch'">
               <el-switch v-model='groupTwo[idx].value' active-color='#13ce66' inactive-color='#dbdfe6' :active-value='1' :inactive-value='0'></el-switch>
             </div>
             <!--<div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value == 'IncNumber'">
               <number-range-input v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" v-model='groupTwo[idx].value'></number-range-input>
-              <el-input-number v-else v-model='groupTwo[idx].value' controls-position='right' :controls='false' placeholder='请输入条件值'></el-input-number>
+              <el-input-number v-else v-model='groupTwo[idx].value' controls-position='right' :controls='false' placeholder='Vui lòng nhập giá trị điều kiện'></el-input-number>
             </div>-->
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && (groupTwo[idx].column.showType.value === 'InputNumber' || groupTwo[idx].column.showType.value === 'IncNumber')">
               <number-range-input v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" v-model='groupTwo[idx].value' :type="groupTwo[idx].column.javaType.value" :precision="groupTwo[idx].column.decimalLenth" ></number-range-input>
-              <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='请输入条件值'></number-input>
+              <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'Select'">
-              <el-select v-if="groupTwo[idx].queryType === 'in' || groupTwo[idx].queryType === 'not in'" v-model='groupTwo[idx].value' :value-key='groupTwo[idx].column.fieldId' multiple filterable placeholder='请选择条件值'>
+              <el-select v-if="groupTwo[idx].queryType === 'in' || groupTwo[idx].queryType === 'not in'" v-model='groupTwo[idx].value' :value-key='groupTwo[idx].column.fieldId' multiple filterable placeholder='Vui lòng chọn giá trị điều kiện'>
                   <el-option v-for="item in pp[idx + 3]" :key='item[groupTwo[idx].column.fieldId]' :label='item[groupTwo[idx].column.fieldName]' :value='item[groupTwo[idx].column.fieldId]'></el-option>
               </el-select>
-              <el-select v-else v-model='groupTwo[idx].value' :value-key='groupTwo[idx].column.fieldId'   filterable clearable placeholder='请选择条件值'>
+              <el-select v-else v-model='groupTwo[idx].value' :value-key='groupTwo[idx].column.fieldId'   filterable clearable placeholder='Vui lòng chọn giá trị điều kiện'>
                  <el-option v-for="item in pp[idx + 3]" :key='item[groupTwo[idx].column.fieldId]' :label='item[groupTwo[idx].column.fieldName]' :value='item[groupTwo[idx].column.fieldId]'></el-option>
               </el-select>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'SelectTree'">
-              <el-cascader v-if="groupTwo[idx].queryType === 'in' || groupTwo[idx].queryType === 'not in'" v-model='groupTwo[idx].value' :options="pp[idx + 3]" :props='{value: groupTwo[idx].column.fieldId, label: groupTwo[idx].column.fieldName, checkStrictly: true, emitPath: false, multiple: true}' filterable clearable placeholder='请选择条件值'></el-cascader>
-              <el-cascader v-else v-model='groupTwo[idx].value' :options="pp[idx + 3]" :props='{value: groupTwo[idx].column.fieldId, label: groupTwo[idx].column.fieldName, checkStrictly: true, emitPath: false}' filterable clearable placeholder='请选择条件值'></el-cascader>
+              <el-cascader v-if="groupTwo[idx].queryType === 'in' || groupTwo[idx].queryType === 'not in'" v-model='groupTwo[idx].value' :options="pp[idx + 3]" :props='{value: groupTwo[idx].column.fieldId, label: groupTwo[idx].column.fieldName, checkStrictly: true, emitPath: false, multiple: true}' filterable clearable placeholder='Vui lòng chọn giá trị điều kiện'></el-cascader>
+              <el-cascader v-else v-model='groupTwo[idx].value' :options="pp[idx + 3]" :props='{value: groupTwo[idx].column.fieldId, label: groupTwo[idx].column.fieldName, checkStrictly: true, emitPath: false}' filterable clearable placeholder='Vui lòng chọn giá trị điều kiện'></el-cascader>
             </div>
-            <el-input v-else v-model='groupTwo[idx].value' :clearable='true' placeholder='请输入条件值' ></el-input>
+            <el-input v-else v-model='groupTwo[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
           </el-col>
         </el-col>
     </el-row>
@@ -163,7 +163,7 @@ export default {
       columns: [],  // 字段列表
       logics: [
         {value: 'AND', label: '且'},
-        {value: 'OR', label: '或'}
+        {value: 'OR', label: 'hoặc'}
       ],
       groupOne: [
         {logic: 'AND', column: null, queryType: '', value: null, operations: []},
@@ -189,7 +189,7 @@ export default {
     schemeId: {
       type: String
     },
-    // 不作为条件的字段
+    // Trường không làm điều kiện
     exclude: {
       type: String,
       default: () => {return null}
@@ -440,7 +440,7 @@ export default {
       })
     },
     onQueryTypeChange(queryType, group, index) {
-      // 根据操作符 和显示类型确定初始值，有待测试  变化时同步修改dataPermistion.vue onQueryTypeChange(rule)方法
+      // 根据操作符 和显示类型确定初始值，有待测试  变化时同步修改dataPermistion.vue onQueryTypeChange(rule)Phương pháp
       if(group[index].column && (group[index].column.showType.value === "Select" || group[index].column.showType.value === "SelectTree") && (queryType === "in" || queryType === "not in")) {
         group[index].value = []
       } else {
@@ -458,50 +458,50 @@ export default {
       if(column && column.showType) {
         if(column.showType.value === 'MultipleInput') {
           group[index].operations = [
-            {value: '=', label: '等于'},
-            {value: '<>', label: '不等于'},
-            {value: 'like', label: '包含'},
-            {value: 'not like', label: '不包含'}
+            {value: '=', label: 'Bằng'},
+            {value: '<>', label: 'Không bằng'},
+            {value: 'like', label: 'Bao gồm'},
+            {value: 'not like', label: 'Không bao gồm'}
           ]
           group[index].queryType = 'like'
         } else if(column.showType.value === 'SingleInput') {
           if(column.javaType.value === 'Long' || column.javaType.value === 'Integer' || column.javaType.value === 'Double' || column.javaType.value === 'Float' || column.javaType.value === 'java.math.BigDecimal') {
             group[index].operations = [
-              {value: '=', label: '等于'},
-              {value: '<>', label: '不等于'},
-              {value: 'between', label: '介于'},
-              {value: 'not between', label: '不介于'}
+              {value: '=', label: 'Bằng'},
+              {value: '<>', label: 'Không bằng'},
+              {value: 'between', label: 'Nằm trong khoảng'},
+              {value: 'not between', label: 'Không nằm trong khoảng'}
             ]
             group[index].queryType = '='
           } else {
             group[index].operations = [
-              {value: '=', label: '等于'},
-              {value: '<>', label: '不等于'},
-              {value: 'like', label: '包含'},
-              {value: 'not like', label: '不包含'}
+              {value: '=', label: 'Bằng'},
+              {value: '<>', label: 'Không bằng'},
+              {value: 'like', label: 'Bao gồm'},
+              {value: 'not like', label: 'Không bao gồm'}
             ]
             group[index].queryType = 'like'
           }
         } else if(column.showType.value === 'DatePicker' || column.showType.value === 'DateTimePicker' || column.showType.value === 'TimePicker') {
           group[index].operations = [
-            {value: '=', label: '等于'},
-            {value: '<>', label: '不等于'},
-            {value: 'between', label: '介于'},
-            {value: 'not between', label: '不介于'}
+            {value: '=', label: 'Bằng'},
+            {value: '<>', label: 'Không bằng'},
+            {value: 'between', label: 'Nằm trong khoảng'},
+            {value: 'not between', label: 'Không nằm trong khoảng'}
           ]
           group[index].queryType = '='
         } else if(column.showType.value === 'Switch') {
           group[index].operations = [
-            {value: '=', label: '等于'},
-            {value: '<>', label: '不等于'}
+            {value: '=', label: 'Bằng'},
+            {value: '<>', label: 'Không bằng'}
           ]
           group[index].queryType = '='
         } else if(column.showType.value === 'IncNumber' || column.showType.value === 'InputNumber') {
           group[index].operations = [
-            {value: '=', label: '等于'},
-            {value: '<>', label: '不等于'},
-            {value: 'between', label: '介于'},
-            {value: 'not between', label: '不介于'}
+            {value: '=', label: 'Bằng'},
+            {value: '<>', label: 'Không bằng'},
+            {value: 'between', label: 'Nằm trong khoảng'},
+            {value: 'not between', label: 'Không nằm trong khoảng'}
           ]
           group[index].queryType = '='
         } else if(column.showType.value === 'Select' || column.showType.value === 'SelectTree') {
@@ -513,8 +513,8 @@ export default {
             group[index].queryType = 'right_like'
           } else {
             group[index].operations = [
-              {value: '=', label: '等于'},
-              {value: '<>', label: '不等于'},
+              {value: '=', label: 'Bằng'},
+              {value: '<>', label: 'Không bằng'},
               {value: 'in', label: '在列表'},
               {value: 'not in', label: '不在列表'}
             ]
@@ -536,7 +536,7 @@ export default {
         this.initOptions(This, operates, column, group === this.groupOne ? index : index + 3)
       }
     },
-    // This curNode； column 选择的字段； index 0~2 groupOne的，3~5 groupTwo
+    // This curNode； column 选择的字段； index 0~2 groupOnecủa，3~5 groupTwo
     initOptions(This, operates, column, index) {
       // 选项列表数据
       let className = column.customType.genTable.className
@@ -547,7 +547,7 @@ export default {
       } else {
         fnOption = require('@/api/' + apiPath)['list' + className + 'All']
       }
-      // 联动参数
+      // Tham số liên kết
       let parameters = []
       if(column.parameters) {
         eval('parameters = [' + column.parameters + ']')
@@ -563,7 +563,7 @@ export default {
         }
       })
 
-      // 数据权限
+      // Quyền dữ liệu
       let search = {params: parameters, offset: 0, limit: 10, columnName: '', order: ''}
       this.pushDataPermissions(search.params, this.$route.meta.routerId, column.customType.genTable.id)
 

@@ -17,7 +17,7 @@
             max-height="250">
             <el-table-column
                type="index"
-               label='序号'
+               label='Số thứ tự'
                width="width"
                align="center"
             >
@@ -30,49 +30,49 @@
             </el-table-column>
             <el-table-column
               prop="executeschedule"
-              label="执行状态"
+              label="Trạng thái thực hiện"
               align="center"
               width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.executeschedule==='0'" style="color:orange;">
-                  待执行
+                  Chờ thực hiện
                 </span>
                 <span v-if="scope.row.executeschedule==='1'" style="color:lightgreen;">
-                  已执行
+                  Đã thực hiện
                 </span>
               </template>
             </el-table-column>
             <el-table-column
               prop="updateBy"
-              label="执行人"
+              label="Người thực hiện"
               align="center"
               width="width">
             </el-table-column>
             <el-table-column
               prop="updateDate"
-              label="执行时间"
+              label="Thời gian thực hiện"
               align="center"
               width="width">
             </el-table-column>
             <el-table-column
               prop="auditType"
-              label="审核状态"
+              label="Trạng thái xét duyệt"
               align="center"
               width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.auditType==='0'" style="color:orange">
-                    待审核
+                    Chờ xét duyệt
                 </span>
                  <span v-if="scope.row.auditType==='1'" style="color:lightgreen">
-                    已审核
+                    Đã xét duyệt
                 </span>
                 <span v-if="scope.row.auditType==='2'" style="color:red">
-                    未通过
+                    Chưa qua
                 </span>
               </template>
             </el-table-column>
             <el-table-column
-              label="操作"
+              label="Thao tác"
               width="120">
               <template slot-scope="scope">
                 <el-button
@@ -80,14 +80,14 @@
                   @click.native.prevent="auditStart(scope.$index, scope.row)"
                   type="text"
                   size="small">
-                  审核
+                  Duyệt
                 </el-button>
                  <el-button
                   v-if="scope.row.auditType==='1'||scope.row.auditType==='2'"
                   @click.native.prevent="check(scope.$index, scope.row)"
                   type="text"
                   size="small">
-                  查看
+                  Xem
                 </el-button>
               </template>
             </el-table-column>
@@ -95,31 +95,31 @@
     </div>
   <div v-else>
   <div>
-     <div class="specifications">任务详情</div>
+     <div class="specifications">Chi tiết nhiệm vụ</div>
         <div style="width:80%;margin-left:100px">
            <div>
-             任务类型：{{this.indexdata.tasktype==='0'?"常规任务":"宣传活动"}}
+             Loại nhiệm vụ：{{this.indexdata.tasktype==='0'?"Nhiệm vụ thường xuyên":"Hoạt động tuyên truyền"}}
            </div>
            <div>
-             任务名称：{{this.indexdata.taskname}}
+             Tên nhiệm vụ：{{this.indexdata.taskname}}
            </div>
            <div>
-             任务描述：{{this.indexdata.taskdescribe}}
+             Mô tả nhiệm vụ：{{this.indexdata.taskdescribe}}
               <upload-file  :objectId="uploadFiles" @getFileList="getFileList" :action="flags" @deleteFile="deleteFile"></upload-file>
            </div>
             <div>
-             任务发起人：{{this.indexdata.user.name}}
+             Người khởi tạo nhiệm vụ：{{this.indexdata.user.name}}
            </div>
             <div>
-             任务截至时间：{{this.indexdata.taskdeadline}}
+             Thời hạn nhiệm vụ：{{this.indexdata.taskdeadline}}
            </div>
         </div>
          <br>
         <br>
-        <div class="specifications">执行情况反馈</div>
+        <div class="specifications">Phản hồi tình hình thực hiện</div>
          <div style="width:80%;margin-left:100px">
            <div>
-             执行进度：{{this.feedbacklist[0]===undefined?"":this.feedbacklist[0].executeschedule}}
+             Tiến độ thực hiện：{{this.feedbacklist[0]===undefined?"":this.feedbacklist[0].executeschedule}}
            </div>
 
            <div>
@@ -127,41 +127,41 @@
            </div>
 
             <div>
-             备注：{{this.feedbacklist[0]===undefined?"---":this.feedbacklist[0].remark}}
+             Ghi chú：{{this.feedbacklist[0]===undefined?"---":this.feedbacklist[0].remark}}
            </div>
         </div>
-<!-- <el-descriptions title="任务详情" :column="1" >
-    <el-descriptions-item label="任务类型">{{this.indexdata.tasktype=this.indexdata.tasktype==="0"?"常规任务":"宣传活动"}}</el-descriptions-item>
-    <el-descriptions-item label="任务名称">{{this.indexdata.taskname}}</el-descriptions-item>
-    <el-descriptions-item label="任务描述">{{this.indexdata.taskdescribe}}</el-descriptions-item>
-    <el-descriptions-item label="任务发起人">{{this.indexdata.taskinitiatorname}}</el-descriptions-item>
-    <el-descriptions-item label="任务截止时间">{{this.indexdata.taskdeadline}}</el-descriptions-item>
+<!-- <el-descriptions title="Chi tiết nhiệm vụ" :column="1" >
+    <el-descriptions-item label="Loại nhiệm vụ">{{this.indexdata.tasktype=this.indexdata.tasktype==="0"?"Nhiệm vụ thường xuyên":"Hoạt động tuyên truyền"}}</el-descriptions-item>
+    <el-descriptions-item label="Tên nhiệm vụ">{{this.indexdata.taskname}}</el-descriptions-item>
+    <el-descriptions-item label="Mô tả nhiệm vụ">{{this.indexdata.taskdescribe}}</el-descriptions-item>
+    <el-descriptions-item label="Người khởi tạo nhiệm vụ">{{this.indexdata.taskinitiatorname}}</el-descriptions-item>
+    <el-descriptions-item label="Thời hạn nhiệm vụ">{{this.indexdata.taskdeadline}}</el-descriptions-item>
     <el-descriptions-item >
     <upload-file  :objectId="uploadFiles" @getFileList="getFileList" :action="flags" @deleteFile="deleteFile"></upload-file>
     </el-descriptions-item>
 </el-descriptions> -->
 
 
-<!-- <el-descriptions title="执行情况反馈" :column="1" >
-    <el-descriptions-item label="执行进度">{{this.zxjd}}</el-descriptions-item>
+<!-- <el-descriptions title="Phản hồi tình hình thực hiện" :column="1" >
+    <el-descriptions-item label="Tiến độ thực hiện">{{this.zxjd}}</el-descriptions-item>
 
     <el-descriptions-item>
       <upload-file-1  :objectId="uploadFilesfee" @getFileList="getFileListfee" :action="flagsfee" @deleteFile="deleteFile"></upload-file-1>
     </el-descriptions-item>
 
 
-    <el-descriptions-item label="备注">{{this.feedbacklist[0]===undefined?"---":this.feedbacklist[0].remark}}</el-descriptions-item>
+    <el-descriptions-item label="Ghi chú">{{this.feedbacklist[0]===undefined?"---":this.feedbacklist[0].remark}}</el-descriptions-item>
 </el-descriptions> -->
 
-<el-descriptions title="审核结果" ></el-descriptions>
+<el-descriptions title="Kết quả xét duyệt" ></el-descriptions>
     <el-form  @open="onDialogOpen()" :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="审核结果" prop="auditresult">
+      <el-form-item label="Kết quả xét duyệt" prop="auditresult">
     <el-radio-group :disabled="checkFlage" v-model="ruleForm.auditresult">
-      <el-radio :label="'0'">通过</el-radio>
-      <el-radio :label="'1'">不通过</el-radio>
+      <el-radio :label="'0'">Qua</el-radio>
+      <el-radio :label="'1'">Không qua</el-radio>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="备注" >
+  <el-form-item label="Ghi chú" >
     <el-input :disabled="checkFlage" type="textarea" v-model="ruleForm.taskremark"></el-input>
   </el-form-item>
     </el-form>
@@ -170,8 +170,8 @@
 
       </div>
     <span slot='footer' class='dialog-footer'>
-      <el-button :disabled="flag" type='primary' v-if="!checkFlage" :plain='true' @click="submitForm('ruleForm')">保 存</el-button>
-      <el-button :plain='true' type="primary" @click='onDialogClose1()'>取 消</el-button>
+      <el-button :disabled="flag" type='primary' v-if="!checkFlage" :plain='true' @click="submitForm('ruleForm')">Lưu</el-button>
+      <el-button :plain='true' type="primary" @click='onDialogClose1()'>Hủy</el-button>
     </span>
   </div>
     </el-dialog>
@@ -216,23 +216,23 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
             { required: true, message: '请选择审核结果', trigger: 'change' }
           ],
        },
-       fileName:'',  //文件名称
+       fileName:'',  //Tên tệp
        bizFormModel:{
-        fileIdFile:[],   //文件
-        uploadFile:[],  //文件
+        fileIdFile:[],   //Tệp
+        uploadFile:[],  //Tệp
         inspectionCheckInfo:{}
       },
       bizFormModel2:{
-        fileIdFile:[],   //文件
-        uploadFile:[],  //文件
+        fileIdFile:[],   //Tệp
+        uploadFile:[],  //Tệp
         inspectionCheckInfo:{}
       },
       flags:true,
       flagsfee:true,
       fileIds:[],
-      flags:false,  //防止重复提交
+      flags:false,  //Ngăn gửi trùng lặp
       uploadFiles:'',
-      taskaccessoryid:'',//附件id
+      taskaccessoryid:'',//Tệp đính kèmid
       uploadFilesfee:'',
       zxjd:'',
       bz:'',
@@ -276,18 +276,18 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
                 };
                 this.getFeedbacktableList(this.taskManagementId)
                 this.onDialogClose1();
-                this.$message.success("审核成功")
+                this.$message.success("Xét duyệt thành công")
               }
           })
         }
       })
     },
-    //预览
+    //Xem trước
     look(row){
 
       //  var blob = this.dataURLtoBlob(row)
       //   const elink = document.createElement('a')
-      //   // 设置下载文件名
+      //   // Đặt tên tệp tải xuống
       //   const timedate = Date.parse(new Date())
       //   elink.download = this.fileName
       //   elink.style.display = 'none'
@@ -297,7 +297,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
       //   document.body.removeChild(elink)
      window.open("http://192.168.0.31:8099/ffview/onlinePreview?url=" + encodeURIComponent(Base64.encode(row)));
     },
-    // 将base64转换为blob
+    // Sẽbase64Chuyển đổi thànhblob
     dataURLtoBlob: function (dataurl) {
       const arr = dataurl.split(',')
       const mime = arr[0].match(/:(.*?);/)[1]
@@ -370,8 +370,8 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
         ],
         offset: 0,
         limit: 2000,
-        columnName: "", // 排序字段名
-        order: "", // 排序
+        columnName: "", // Tên trường sắp xếp
+        order: "", // Sắp xếp
       }
       listMyTaskPage(search).then((res)=>{
         if(res.code===100){
@@ -396,7 +396,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
                 companyId:row.companyId,
                 createdBy:row.createdBy,
                 createdDate:row.createdDate,
-                executeschedule:row.executeschedule === 1 ? "已完成":"进行中",
+                executeschedule:row.executeschedule === 1 ? "Đã hoàn thành":"Đang thực hiện",
                 fileid:row.fileid,
                 id:row.id,
                 remark:row.remark?row.remark:"",
@@ -428,7 +428,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
                 companyId:row.companyId,
                 createdBy:row.createdBy,
                 createdTime:row.createdDate,
-                executeschedule:row.executeschedule === 1 ? "已完成":"进行中",
+                executeschedule:row.executeschedule === 1 ? "Đã hoàn thành":"Đang thực hiện",
                 fileid:row.fileid,
                 id:row.id,
                 remark:row.remark?row.remark:"",

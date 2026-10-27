@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 库存盘点详情Controller
- * @author 超级管理员
+ * Chi tiết kiểm kê tồn khoController
+ * @author Quản trị viên cấp cao
  * @version 2022-11-02
  */
 @RestController

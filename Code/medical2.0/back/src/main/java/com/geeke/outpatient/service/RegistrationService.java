@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 挂号信息Service
+ * Thông tin đăng ký khámService
  * @author txl
  * @version 2022-06-15
  */
@@ -40,7 +40,7 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     private final MedicalRecordService medicalRecordService;
 
-    //医保挂号
+    //Đăng ký khám BHYT
     private final MdRegistrationService mdRegistrationService;
 
     public RegistrationService(RegistrationDao registrationDao, MedicalRecordDao medicalRecordDao,
@@ -60,15 +60,15 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
     @Transactional(readOnly = false)
     public int updateStatusByCompanyId(String companyId){
-        //计算过期时间（24小时前）
+        //Tínhhết hạnThời gian(24nhỏ giờtrước)
         long time = new Date().getTime();
         Date date = new Date(time - 24 * 60 * 60 * 1000);
         return dao.updateStatusByCompanyId(companyId, date, date);
     }
 
     /**
-     * 从分页结果的第一条记录中提取companyId，并更新过期状态
-     * 消除 Controller 中重复的 companyId 提取逻辑
+     * Từ  phúttrangKết quả của Dòng mộtmụcBản ghi trong đề xuấtlấycompanyId, vàCập nhậthết hạnTrạng thái
+     * Xóa bỏ Controller  trong trùng lặp của  companyId đề xuấtlấylogic
      */
     @Transactional(readOnly = false)
     public <T> void updateExpiredStatusFromPage(Page<T> result, java.util.function.Function<T, String> companyIdExtractor) {
@@ -80,7 +80,7 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
     /**
-     * 退号
+     * hủy số khám
      * @author lin.zeng
      **/
     @Transactional(readOnly = false)
@@ -143,8 +143,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             entity.preInsert();
             this.doInsert(entity);
             Action created = this.createAction("created", entity);
-            created.setCreateBy("微信");
-            created.setUpdateBy("微信");
+            created.setCreateBy("WeChat");
+            created.setUpdateBy("WeChat");
             this.saveAction(created);
         } else {
             entity.preUpdate();
@@ -161,7 +161,7 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         String openId = (String) params.get(1).getValue();
         String companyId = (String) params.get(0).getValue();
 
-        // 使用数据库分页，避免内存分页和N+1查询
+        // sử dụngDữ liệukho phúttrang, Tránhbộ nhớ phúttrang và N+1Truy vấn
         return paginate(
             () -> this.dao.countByOpenId(openId, companyId),
             () -> this.dao.listByOpenId(openId, companyId, offset, limit)

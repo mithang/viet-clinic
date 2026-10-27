@@ -29,12 +29,12 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
 
     @Transactional
     public void save(MyTask myTask, MultipartFile[] fileIdUploads, String[] deleteIds) throws IOException {
-        //保存上传文件
+        //Lưu tệp đã tải lên
         List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, myTask.getId());
         if(sysFiles!=null&&sysFiles.size()>0){
             myTask.setFileId(sysFiles.get(0).getId());
         }
-        // 根据附件ID删除附件信息
+        // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
         if (null != deleteIds && deleteIds.length > 0) {
             sysFileService.delete(deleteIds);
         }

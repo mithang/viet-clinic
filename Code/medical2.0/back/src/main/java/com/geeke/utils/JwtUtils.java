@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Jwt工具类
+ * JwtLớp công cụ
  * 
  * @author Lining
  * @date 2017/11/2
@@ -33,14 +33,14 @@ public class JwtUtils {
 	private String secret;
 	
 	/**
-	 * 存活时间（毫秒）
+	 * lưusốngThời gian(Mili giây)
 	 */
 	@Value(value = "${jwtUtils.ttlMillis:3600000}")
 	private long ttlMillis;
 	
 
 	/**
-	 * 生成加密key
+	 * TạoMã hóakey
 	 * 
 	 * @return
 	 */
@@ -54,7 +54,7 @@ public class JwtUtils {
 	}
 
 	/**
-	 * 创建jwt
+	 * Tạojwt
 	 * 
 	 * @param subject
 	 * @return
@@ -71,22 +71,22 @@ public class JwtUtils {
 			Date exp = new Date(expMillis);
 			builder.setExpiration(exp);
 
-			SecurityUtils.getSubject().getSession().setTimeout(ttlMillis);  // session到期时间
+			SecurityUtils.getSubject().getSession().setTimeout(ttlMillis);  // sessionĐếnkỳThời gian
 		}
 		return builder.compact();
 	}
 
 	/**
-	 * 解密jwt
+	 * Giải mãjwt
 	 *
 	 * @param jwt
 	 * @return
-	 * @throws ExpiredJwtException token过期时抛出
-	 * @throws io.jsonwebtoken.SignatureException 签名验证失败时抛出
+	 * @throws ExpiredJwtException tokenhết hạn giờném ra
+	 * @throws io.jsonwebtoken.SignatureException chữ kýXác thựcThất bại giờném ra
 	 */
 	public Claims parseJWT(String jwt) {
 		SecretKey key = generalKey();
-		// 不再吞掉 ExpiredJwtException — 过期token应被视为无效
+		// khônglại吞rơi ExpiredJwtException — hết hạntokennênbịxem là không hợp lệ
 		Claims claims = Jwts.parser()
 				.setSigningKey(key)
 				.parseClaimsJws(jwt)
@@ -95,11 +95,11 @@ public class JwtUtils {
 	}
 
 	/**
-	 * 解密jwt，过期时返回null而非抛出异常
-	 * 用于需要静默处理过期token的场景（如从过期token中提取sessionId做清理）
+	 * Giải mãjwt, hết hạn giờTrả vềnullmàkhông phảiném rangoại lệ
+	 * dùng đểCần静默Xử lýhết hạntoken của trường hợp(Như Từ hết hạntoken trong đề xuấtlấysessionIdlàmsạchlý)
 	 *
 	 * @param jwt
-	 * @return claims，过期时返回null
+	 * @return claims, hết hạn giờTrả vềnull
 	 */
 	public Claims parseJWTLenient(String jwt) {
 		SecretKey key = generalKey();

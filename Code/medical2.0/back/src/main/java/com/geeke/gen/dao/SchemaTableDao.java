@@ -5,7 +5,7 @@ import com.geeke.gen.entity.GenTable;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 系统表控件DAO接口
+ * Điều khiển bảng hệ thốngDAOGiao diện
  * @author lys
  * @version 2019-08-31
  */

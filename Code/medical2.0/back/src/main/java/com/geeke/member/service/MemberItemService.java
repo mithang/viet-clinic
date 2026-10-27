@@ -15,7 +15,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 会员卡详情Service
+ * Chi tiết thẻ hội viênService
  * @author rys
  * @version 2022-10-25
  */
@@ -31,7 +31,7 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
         List<MemberItem> memberItemList=this.dao.getByMemberSetId(memberSetId);
         for (MemberItem memberItem : memberItemList) {
             memberItem.setName(memberItem.getCostItem().getId());
-            //根据诊疗项目id获取诊疗项目
+            //Theohạng mục khám chữa bệnhidLấyhạng mục khám chữa bệnh
             CostItem costItem = costItemService.get(memberItem.getCostItem().getId());
             memberItem.setCostItem(costItem);
         }

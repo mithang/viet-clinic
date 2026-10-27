@@ -15,7 +15,7 @@ import com.geeke.common.controller.SearchParams;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 库存盘点Controller
+ * Kiểm kê tồn khoController
  * @author rys
  * @version 2022-11-02
  */

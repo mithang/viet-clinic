@@ -11,7 +11,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 租户管理Service
+ * Quản lý tenantService
  * @author txl
  * @version 2022-05-23
  */

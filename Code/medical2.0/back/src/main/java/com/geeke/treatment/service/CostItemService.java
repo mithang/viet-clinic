@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 诊疗项目Service
+ * Hạng mục khám chữa bệnhService
  * @author txl
  * @version 2022-05-30
  */
@@ -40,7 +40,7 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
     @Autowired
     SequenceService sequenceService;
 
-    /** 费用项目为机构共享字典：允许同机构下诊所访问机构诊所的数据（与列表 #{institution} SQL 一致） */
+    /** Chi phíhạng mục là Cơ sởtừ điển dùng chung: Cho phép phòng khám thuộc cùng cơ sở truy cập dữ liệu phòng khám của cơ sở(Với danh sách #{institution} SQL Nhất quán) */
     @Override
     protected boolean isInstitutionShared() {
         return true;
@@ -51,7 +51,7 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
     @Override
     @Transactional(readOnly = false)
     public CostItem save(CostItem costItem) {
-        // 新增时, 处理自动编号字段
+        // Khi thêm mới, Xử lý trường tự động đánh số
         if (StringUtils.isBlank(costItem.getId())){
             String sn = sequenceService.generate(SessionUtils.getLoginTenantId(), "treatment_item_code", costItem);
             costItem.setItemCode(sn);
@@ -59,7 +59,7 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         String id = this.dao.GetIDByName(costItem.getItemName(),SessionUtils.getLoginTenantId());
         if(null!=id && !id.equals(costItem.getId()))
         {
-            throw new ServiceException("已经存在一个相同的项目名，请重新输入！");
+            throw new ServiceException("ĐãTồn tạimộtCáigiống hệt của hạng mụctên, Vui lòng nhập lại!");
         }
         CostItem costItemTemp = super.save(costItem);
         return costItemTemp;

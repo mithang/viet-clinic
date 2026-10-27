@@ -9,7 +9,7 @@ import com.geeke.sys.entity.PersonalTheme;
 import com.geeke.sys.service.PersonalThemeService;
 
 /**
- * 系统主题Controller
+ * Chủ đề hệ thốngController
  * @author lys
  * @version 2021-07-16
  */

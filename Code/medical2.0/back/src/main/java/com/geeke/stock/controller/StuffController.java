@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * 材料信息Controller
+ * Thông tin vật tưController
  * @author txl
  * @version 2022-06-22
  */
@@ -94,7 +94,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
     }
 
     /**
-     * 只查询租户的材料
+     * chỉTruy vấntenant của Vật tư
      *
      * @param searchParams
      * @return
@@ -106,7 +106,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
     }
 
     /**
-     * 只查询本公司的材料
+     * chỉTruy vấnnàycông ty của Vật tư
      *
      * @param searchParams
      * @return
@@ -118,7 +118,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
     }
 
     /**
-     * 租户材料同步至诊所
+     * tenantVật tưđồng bộđếnPhòng khám
      *
      * @param entitys
      * @return

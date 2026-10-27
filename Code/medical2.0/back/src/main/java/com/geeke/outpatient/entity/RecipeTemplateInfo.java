@@ -13,19 +13,19 @@ public class RecipeTemplateInfo extends DataEntity<RecipeTemplateInfo> {
     private String id;
     private Company company;
     private Recipetemplate recipetemplate;
-    private String dosage;		// 剂量
-    private DictItem recipelUse;      // 用法
-    private DictItem frequency;      // 频次用量
-    private DictItem takeFrequency;      // 服用频次
-    private String singleDosage;		// 单次用量
-    private BigDecimal fee;		// 处方总价
-    private String remaks;     //备注信息
-    private DictItem smallType;   //处方小类
-    private String entrust;     //医嘱
-//    private String createBy;   //创建人
-//    private Date createDate;   //创建时间
-//    private String updateBy;   //修改人
-//    private Date updateDate;   //修改时间
-   // private String delFlag;   //删除标志
-    private int seq;         //顺序
+    private String dosage;		// Liều lượng
+    private DictItem recipelUse;      // Cách dùng
+    private DictItem frequency;      // Tần suất và liều dùng
+    private DictItem takeFrequency;      // dùngdùngtần suất lần
+    private String singleDosage;		// Liều dùng mỗi lần
+    private BigDecimal fee;		// Đơn thuốctổng giá
+    private String remaks;     //Thông tin ghi chú
+    private DictItem smallType;   //Tiểu loại đơn thuốc
+    private String entrust;     //Y lệnh
+//    private String createBy;   //Người tạo
+//    private Date createDate;   //Thời gian tạo
+//    private String updateBy;   //Sửangười
+//    private Date updateDate;   //SửaThời gian
+   // private String delFlag;   //Xóacờ
+    private int seq;         //thứ tự
 }

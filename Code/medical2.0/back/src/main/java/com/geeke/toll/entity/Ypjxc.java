@@ -5,125 +5,125 @@ import lombok.Data;
 @Data
 public class Ypjxc {
     /*
-    机构id
+    Cơ sởid
      */
     private String jgid;
     /*
-    机构名称
+    Cơ sởTên
      */
     private String jgmc;
     /**
-     * 药品编码
+     * Mã thuốc
      */
     private String ypbm;
     /*
-    药品名称
+    Tên thuốc
      */
     private String ypmc;
     /*
-    条形码
+    Mã vạch
      */
     private  String txm;
     /*
-    国药准字
+    Số đăng ký thuốc quốc gia
      */
     private  String gyzz;
     /*
-    规格
+    Quy cách
      */
     private  String gg;
     /*
-    生产厂家
+    Nhà sản xuất
      */
     private  String sccj;
     /*
-    供应商
+    Nhà cung cấp
      */
     private  String gys;
     /*
-    零售价
+    Giá bán lẻ
      */
     private  String lsj;
     /*
-    成本价
+    Giá vốn
      */
     private  String cbj;
     /*
-    批号
+    Số lô
      */
     private  String ph;
     /*
-    有效期
+    Thời hạn hiệu lực
      */
     private  String yxq;
     /*
-    期初数量
+    kỳban đầuSố lượng
      */
     private  Integer qcsl;
     /*
-    期初成本
+    kỳban đầuthànhnày
      */
     private  Integer qccb;
     /*
-    本期入库数量
+    nàykỳnhập khoSố lượng
      */
     private  Integer bqrk;
     /*
-    本期入库成本
+    nàykỳnhập khothànhnày
      */
     private  Integer bqrkcb;
     /*
-    本期入库销售额
+    Doanh số nhập kho trong kỳ này
      */
     private  Integer bqrkxse;
     /*
-    本期出库数量
+    nàykỳXuất khoSố lượng
      */
     private  Integer bqcksl;
     /*
-    本期出库成本
+    nàykỳXuất khothànhnày
      */
     private  Integer bqckcb;
     /*
-    本期出库销售额
+    nàykỳXuất khobán hàngsố tiền
      */
     private  Integer bqckxse;
     /*
-    本期盘点数量
+    nàykỳkiểm kêSố lượng
      */
     private  Integer bqpdsl;
     /*
-    本期盘点成本
+    nàykỳkiểm kêthànhnày
      */
     private  Integer bqpdcb;
     /*
-    本期盘点销售额
+    Doanh số kiểm kê trong kỳ này
      */
     private  Integer bqpdxse;
     /*
-    期末数量
+    kỳcuốiSố lượng
      */
     private  Integer qmsl;
     /*
-    期末成本
+    kỳcuốithànhnày
      */
     private  Integer qmcb;
     /*
-    期末销售额
+    kỳcuốibán hàngsố tiền
      */
     private  Integer qmxse;
 
     /**
-     * 分类
+     * Phân loại
      */
     private  String fl;
     /**
-     * 制剂
+     * Chế phẩm
      */
     private Integer zj;
     private String zxdw;
     /**
-     * 猜测时 处方详情使用天数 字典项的name(这个字典的name是数字)
+     * 猜测 giờ Đơn thuốcChi tiếtsử dụng ngàysố mục từ điển của name(nàyCáitừ điển của name có Số)
      */
     private String dw;
 

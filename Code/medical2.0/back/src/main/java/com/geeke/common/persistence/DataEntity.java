@@ -16,7 +16,7 @@ import com.geeke.utils.StringUtils;
 import javax.validation.constraints.NotNull;
 
 /**
- * 数据Entity类
+ * Dữ liệuEntityLớp
  * @author lys
  * @version 2014-05-16
  */
@@ -25,14 +25,14 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 
 	private static final long serialVersionUID = 1L;
 
-	protected Company company;      // 诊所ID
-	protected String name;		//名称
-	protected String remarks;	// 备注
-	protected String createBy;	// 创建者
-	protected Date createDate;	// 创建日期
-	protected String updateBy;	// 更新者
-	protected Date updateDate;	// 更新日期
-	protected String delFlag; 	// 删除标记（0：正常；1：删除；2：审核）
+	protected Company company;      // Phòng khámID
+	protected String name;		//Tên
+	protected String remarks;	// Ghi chú
+	protected String createBy;	// Người tạo
+	protected Date createDate;	// tạoNgày
+	protected String updateBy;	// Người cập nhật
+	protected Date updateDate;	// Cập nhậtNgày
+	protected String delFlag; 	// Cờ xóa(0: Bình thường; 1: Xóa; 2: Duyệt)
 
 	public DataEntity() {
 		super();
@@ -44,7 +44,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 	}
 	
 	/**
-	 * 插入之前执行方法，需要手动调用
+	 * Phương thức thực thi trước khi chèn, Cần gọi thủ công
 	 */
 	@Override
 	@JsonIgnore
@@ -60,7 +60,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 	}
 
 	/**
-	 * 更新之前执行方法，需要手动调用
+	 * Phương thức thực thi trước khi cập nhật, Cần gọi thủ công
 	 */
 	@Override
 	@JsonIgnore
@@ -73,7 +73,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 		this.updateDate = new Date();
 	}
 
-	@NotNull(message="诊所ID不能为空")
+	@NotNull(message="Phòng khámIDKhông được để trống")
 	public Company getCompany() {
 		return company;
 	}
@@ -82,7 +82,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 		this.company = company;
 	}
 	
-	@Length(min=1, max=100, message="名称长度必须介于 1 和 64 之间")
+	@Length(min=1, max=100, message="TênĐộ dài phải nằm trong khoảng 1 đến 64 ")
 	public String getName() {
 		return name;
 	}

@@ -7,7 +7,7 @@
         <div class='permission-container'>
           <el-input
             style="margin-bottom: 10px"
-            placeholder="输入关键字进行搜索"
+            placeholder="Nhập từ khóa để tìm kiếm"
             v-model="searchText">
           </el-input>
           <div class="tree-container">
@@ -24,7 +24,7 @@
             <span class='custom-tree-node' slot-scope='{ node, data }'>
               <span>{{ node.label }}</span>
               <span v-if='canDataPermission(data, node)'>
-                <el-button type='text' @click='() => onDataPermission(data)'>数据权限</el-button>
+                <el-button type='text' @click='() => onDataPermission(data)'>Quyền dữ liệu</el-button>
               </span>
             </span>
             </el-tree>
@@ -33,8 +33,8 @@
       </el-col>
     </el-row>
     <span slot='footer' class='dialog-footer'>
-      <el-button type='primary' :plain='true' @click='doSavePermission()'>确 定</el-button>
-      <el-button :plain='true' @click='handleDialogClose()'>取 消</el-button>
+      <el-button type='primary' :plain='true' @click='doSavePermission()'>Xác nhận</el-button>
+      <el-button :plain='true' @click='handleDialogClose()'>Hủy</el-button>
     </span>
   </el-dialog>
 </template>
@@ -53,9 +53,9 @@ export default {
     return {
       loading: false,
       searchText: '',
-      permissionTreeNodes: [],  // 可用的路由和资源树结构
-      permissionKeys: [],     // 已分配权限资源Id列表
-      dataPermissions: [],    // 数据权限列表
+      permissionTreeNodes: [],  // Cấu trúc cây tuyến đường và tài nguyên khả dụng
+      permissionKeys: [],     // Tài nguyên quyền đã phân bổIdDanh sách
+      dataPermissions: [],    // Danh sách quyền dữ liệu
       role: {
         id: 0,
         name: ''
@@ -90,7 +90,7 @@ export default {
     async componentInit(role) {
       this.loading = true
       this.role = role
-      this.dialogProps.title = '权限设置 - ' + this.role.name
+      this.dialogProps.title = 'Cài đặt quyền - ' + this.role.name
       this.permissionKeys = []
       this.dataPermissions = []
       try {
@@ -166,14 +166,14 @@ export default {
     },
     canDataPermission(data, node) {
       if(data.type === 'router' && this.isRouterLeaf(data)) {
-        // 全选 或半选状态
+        // Chọn tất cả hoặc trạng thái chọn một phần
         if(this.isHalfOrChecked(node)) {
           // 元数据配置文件存在
           try {
             let metas = require('@/views/' + data.code + '/metadata').metadata
             return true
           }catch (e) {
-            console.warn('没有找到元数据描述文件：%s', '@/views/' + data.code + '/metadata')
+            console.warn('Không tìm thấy tệp mô tả siêu dữ liệu：%s', '@/views/' + data.code + '/metadata')
           }
         }
       }

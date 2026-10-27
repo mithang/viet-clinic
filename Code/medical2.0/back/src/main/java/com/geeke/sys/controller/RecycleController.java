@@ -14,8 +14,8 @@ import com.geeke.sys.service.RecycleService;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 操作日志Controller
- * @author lys   手工编写
+ * Nhật ký thao tácController
+ * @author lys   手công việcbiênviết
  * @version 2019-12-12
  */
 @RestController

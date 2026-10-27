@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
@@ -11,9 +11,9 @@
       <div class="tab-item" v-show='tabIndex==="1"'>  
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='处方' prop='recipel.id' >
+          <el-form-item label='Đơn thuốc' prop='recipel.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.recipel.name'></el-input>
-            <el-select v-else v-model='bizFormModel.recipel' value-key='id' filterable clearable placeholder='请选择处方' 
+            <el-select v-else v-model='bizFormModel.recipel' value-key='id' filterable clearable placeholder='Vui lòng chọn đơn thuốc' 
               @clear='bizFormModel.recipel={
                 "id": null,
                                 "name": null,
@@ -23,7 +23,7 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='收费主表' prop='tollId.id' >
+          <el-form-item label='Bảng thu phí chính' prop='tollId.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.tollId.name'></el-input>
             <el-select v-else v-model='bizFormModel.tollId' value-key='id' filterable clearable placeholder='请选择收费主表' 
               @clear='bizFormModel.tollId={
@@ -38,9 +38,9 @@
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("tollDetailForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("tollDetailForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -61,8 +61,8 @@ export default {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: '1',
-          recipel_List: [],  // 处方
-          tollId_List: [],  // 收费主表
+          recipel_List: [],  // Đơn thuốc
+          tollId_List: [],  // Bảng thu phí chính
        dialogProps: {
         visible: false,
         action: '',
@@ -73,7 +73,7 @@ export default {
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -104,7 +104,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改收费明细管理'
+      this.dialogProps.title = 'Sửa quản lý chi tiết thu phí'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -117,11 +117,11 @@ export default {
     },
     initFormModel(This) {
       return {
-        'recipel': {     // 处方
+        'recipel': {     // Đơn thuốc
           'id': null,
           'name': null,
         },
-        'tollId': {     // 父表 收费主表
+        'tollId': {     // Bảng cha Bảng thu phí chính
           'id': validatenull(This) || validatenull(This.tollId) ? null : This.tollId.id,
           'name': validatenull(This) || validatenull(This.tollId) ? null : This.tollId.name,
         },
@@ -132,9 +132,9 @@ export default {
       let recipel_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         recipel_search.params.push.apply(recipel_search.params, [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}])
-      // 数据权限: 处方信息recipel_info
+      // Quyền dữ liệu: Thông tin đơn thuốcrecipel_info
       this.pushDataPermissions(recipel_search.params, this.$route.meta.routerId, '1014474470772900008')
       this.recipel_List.splice(0, this.recipel_List.length)
       listRecipelInfoAll(recipel_search).then(responseData => {
@@ -143,9 +143,9 @@ export default {
       let tollId_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         tollId_search.params.push.apply(tollId_search.params, [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}])
-      // 数据权限: 收费主表toll_info
+      // Quyền dữ liệu: Bảng thu phí chínhtoll_info
       this.pushDataPermissions(tollId_search.params, this.$route.meta.routerId, '1024846610635145502')
       this.tollId_List.splice(0, this.tollId_List.length)
       listTollInfoAll(tollId_search).then(responseData => {
@@ -162,7 +162,7 @@ export default {
     },
     openEditTollDetailDialog(tollDetail) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改收费明细管理'
+      this.dialogProps.title = 'Sửa quản lý chi tiết thu phí'
       this.bizFormModel = {...this.initFormModel(), ...tollDetail}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -170,7 +170,7 @@ export default {
     },
     openAddTollDetailDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加收费明细管理'
+      this.dialogProps.title = 'Thêm quản lý chi tiết thu phí'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -178,11 +178,11 @@ export default {
     },
     openCopyTollDetailDialog(tollDetail) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加收费明细管理'
+      this.dialogProps.title = 'Thêm quản lý chi tiết thu phí'
       this.bizFormModel = {...this.initFormModel(), ...tollDetail}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
-      this.bizFormModel.id = null   //把id设置为空，添加一个新的
+      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
       this.dialogProps.visible = true
     }
   },

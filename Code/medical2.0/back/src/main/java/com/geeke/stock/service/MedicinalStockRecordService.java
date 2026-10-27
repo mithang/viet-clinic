@@ -14,7 +14,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 库存操作记录Service
+ * Bản ghi thao tác tồn khoService
  * @author hl
  * @version 2022-09-26
  */

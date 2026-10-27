@@ -10,20 +10,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 检验检查详情Entity
+ * Chi tiết xét nghiệm và kiểm traEntity
  * @author rys
  * @version 2022-10-19
  */
 public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 
 	private static final long serialVersionUID = 1213629183723971393L;
-	private InspectionCheckInfo inspectionCheckInfo;      // 明细表id 
-	private Company company;      // 诊所id 
-	private CostItem costItem;      // 对应项目id 
-	private String conclusion;		// 结果
-	private int sign;		// 指数高低标记
-	private String describes;		// 描述
-	private int seq;          //排序
+	private InspectionCheckInfo inspectionCheckInfo;      // Chi tiếtbảngid 
+	private Company company;      // Phòng khámid 
+	private CostItem costItem;      // Hạng mục tương ứngid 
+	private String conclusion;		// Kết quả
+	private int sign;		// Cờ đánh dấu chỉ số cao/thấp
+	private String describes;		// Mô tả
+	private int seq;          //Sắp xếp
 	
 	public InspectionCheckDetail() {
 		super();
@@ -34,7 +34,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 	}
 	
 
-	@NotNull(message="明细表id不能为空")
+	@NotNull(message="Chi tiếtbảngidKhông được để trống")
     public InspectionCheckInfo getInspectionCheckInfo() {
         return inspectionCheckInfo;
     }
@@ -43,7 +43,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
         this.inspectionCheckInfo = inspectionCheckInfo;
     }
     
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -52,7 +52,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
         this.company = company;
     }
     
-	@NotNull(message="对应项目id不能为空")
+	@NotNull(message="Hạng mục tương ứngidKhông được để trống")
     public CostItem getCostItem() {
         return costItem;
     }
@@ -61,7 +61,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
         this.costItem = costItem;
     }
     
-	@Length(min=0, max=255, message="结果长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="Kết quảĐộ dài phải nằm trong khoảng 0 đến 255 ")
 	public String getConclusion() {
 		return conclusion;
 	}
@@ -70,7 +70,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 	}
 	
 	
-	@Length(min=0, max=100, message="指数高低标记长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Cờ đánh dấu chỉ số cao/thấpĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public int getSign() {
 		return sign;
 	}
@@ -79,7 +79,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 	}
 	
 	
-	@Length(min=0, max=255, message="描述长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="Mô tảĐộ dài phải nằm trong khoảng 0 đến 255 ")
 	public String getDescribes() {
 		return describes;
 	}
@@ -96,7 +96,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -105,7 +105,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -115,7 +115,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

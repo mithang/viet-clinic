@@ -5,58 +5,58 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 诊断信息
+ * Thông tin chẩn đoán
  */
 @Data
 public class MdPsnDiseData {
-    /** 诊断信息 ID */
-    private String diagInfoId;  // 字符型，30字符
+    /** Thông tin chẩn đoán ID */
+    private String diagInfoId;  // Kiểu ký tự, 30Ký tự
 
-    /** 就诊 ID */
-    private String mdtrtId;  // 字符型，30字符
+    /** Khám bệnh ID */
+    private String mdtrtId;  // Kiểu ký tự, 30Ký tự
 
-    /** 人员编号 */
-    private String psnNo;  // 字符型，30字符
+    /** Mã nhân viên */
+    private String psnNo;  // Kiểu ký tự, 30Ký tự
 
-    /** 出入院诊断类别 */
-    private String inoutDiagType;  // 字符型，3字符
+    /** ranhập việnLoại chẩn đoán */
+    private String inoutDiagType;  // Kiểu ký tự, 3Ký tự
 
-    /** 诊断类别 */
-    private String diagType;  // 字符型，3字符
+    /** Loại chẩn đoán */
+    private String diagType;  // Kiểu ký tự, 3Ký tự
 
-    /** 主诊断标志 */
-    private String maindiagFlag;  // 字符型，3字符
+    /** Cờ chẩn đoán chính */
+    private String maindiagFlag;  // Kiểu ký tự, 3Ký tự
 
-    /** 诊断排序号 */
-    private Integer diagSrtNo;  // 数值型，2字符
+    /** Chẩn đoán排số thứ tự */
+    private Integer diagSrtNo;  // Kiểu số, 2Ký tự
 
-    /** 诊断代码 */
-    private String diagCode;  // 字符型，20字符
+    /** Mã chẩn đoán */
+    private String diagCode;  // Kiểu ký tự, 20Ký tự
 
-    /** 诊断名称 */
-    private String diagName;  // 字符型，100字符
+    /** Tên chẩn đoán */
+    private String diagName;  // Kiểu ký tự, 100Ký tự
 
-    /** 入院病情 */
-    private String admCond;  // 字符型，500字符
+    /** nhập việnbệnh情 */
+    private String admCond;  // Kiểu ký tự, 500Ký tự
 
-    /** 诊断科室 */
-    private String diagDept;  // 字符型，50字符
+    /** Chẩn đoánKhoa */
+    private String diagDept;  // Kiểu ký tự, 50Ký tự
 
-    /** 诊断医生编码 */
-    private String diseDorNo;  // 字符型，30字符
+    /** Chẩn đoánBác sĩMã */
+    private String diseDorNo;  // Kiểu ký tự, 30Ký tự
 
-    /** 诊断医生姓名 */
-    private String diseDorName;  // 字符型，50字符
+    /** Chẩn đoánBác sĩTên */
+    private String diseDorName;  // Kiểu ký tự, 50Ký tự
 
-    /** 诊断时间 */
-    private LocalDateTime diagTime;  // 日期时间型，格式：yyyy-MM-dd HH:mm:ss
+    /** Thời gian chẩn đoán */
+    private LocalDateTime diagTime;  // Kiểu ngày giờ, Định dạng: yyyy-MM-dd HH:mm:ss
 
-    /** 经办人 ID */
-    private String opterId;  // 字符型，20字符
+    /** Người thực hiện ID */
+    private String opterId;  // Kiểu ký tự, 20Ký tự
 
-    /** 经办人姓名 */
-    private String opterName;  // 字符型，50字符
+    /** Tên người thực hiện */
+    private String opterName;  // Kiểu ký tự, 50Ký tự
 
-    /** 经办时间 */
-    private LocalDateTime optTime;  // 日期时间型，格式：yyyy-MM-dd HH:mm:ss
+    /** qua办Thời gian */
+    private LocalDateTime optTime;  // Kiểu ngày giờ, Định dạng: yyyy-MM-dd HH:mm:ss
 }

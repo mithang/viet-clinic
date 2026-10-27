@@ -11,7 +11,7 @@ import com.geeke.basicdata.entity.ManufactureFactory;
 import java.util.List;
 
 /**
- * 生产厂家DAO接口
+ * Nhà sản xuấtDAOGiao diện
  * @author txl
  * @version 2022-06-22
  */

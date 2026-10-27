@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.toll.entity.TollDetail;
 
 /**
- * 收费管理DAO接口
+ * Quản lý thu phíDAOGiao diện
  * @author lc
  * @version 2022-06-15
  */

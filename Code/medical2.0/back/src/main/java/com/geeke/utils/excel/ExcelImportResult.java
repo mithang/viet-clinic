@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Excel导入结果
+ * ExcelNhậpKết quả
  *
- * @param <T> 实体类型
+ * @param <T> Loại thực thể
  */
 public class ExcelImportResult<T> {
 
-    /** 成功解析的数据列表 */
+    /** Thành côngphân tích của Dữ liệuDanh sách */
     private final List<T> dataList;
 
-    /** 错误信息列表 */
+    /** Thông tin lỗiDanh sách */
     private final List<ImportError> errors;
 
-    /** 成功数 */
+    /** Thành côngsố */
     private int successCount;
 
-    /** 失败数 */
+    /** Thất bạisố */
     private int failCount;
 
     public ExcelImportResult() {
@@ -54,14 +54,14 @@ public class ExcelImportResult<T> {
     }
 
     /**
-     * 是否有错误
+     * Có hay khôngcóLỗi
      */
     public boolean hasErrors() {
         return !errors.isEmpty();
     }
 
     /**
-     * 获取所有错误信息的文本摘要
+     * Lấytất cảThông tin lỗi của văn bảnnày摘cần
      */
     public String getErrorSummary() {
         StringBuilder sb = new StringBuilder();
@@ -72,7 +72,7 @@ public class ExcelImportResult<T> {
     }
 
     /**
-     * 转换为前端期望的格式 [成功数, 失败数, 错误信息]
+     * Chuyển đổi thànhtrướcđầukỳ望 của định dạng [Thành côngsố, Thất bạisố, Thông tin lỗi]
      */
     public List<String> toResponseList() {
         List<String> response = new ArrayList<>();

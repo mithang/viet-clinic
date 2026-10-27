@@ -1,157 +1,157 @@
 package com.geeke.common.constants;
 
 /**
- * 业务状态/类型常量定义
- * 与 sys_dict_item 表中的 value 字段一致
+ * nghiệp vụTrạng thái/Loạithườnglượngđịnh nghĩa
+ *  và  sys_dict_item bảngTrong value TrườngNhất quán
  *
- * 消除代码中散布的魔法字符串（如 "amountStatus_1"、"tollType_0" 等）
- * 如果字典值发生变更，只需修改此文件
+ * Xóa bỏmã trong phân tánphát hành của 魔phương phápchuỗi(Như  "amountStatus_1", "tollType_0"  v.v. )
+ * Nếutừ điểnGiá trịphátsinhthay đổi, chỉcầnSửanàyTệp
  */
 public final class BizConstants {
 
     private BizConstants() {}
 
-    // ========== 挂号状态 registrationStatus ==========
-    /** 待就诊 */
+    // ========== Đăng ký khámTrạng thái registrationStatus ==========
+    /** Chờ khám */
     public static final String REG_STATUS_PENDING = "registrationStatus_0";
-    /** 已就诊 */
+    /** Đãkhám bệnh */
     public static final String REG_STATUS_VISITED = "registrationStatus_1";
-    /** 退号 */
+    /** hủy số khám */
     public static final String REG_STATUS_REFUNDED = "registrationStatus_2";
-    /** 待签到 */
+    /** chờkýĐến */
     public static final String REG_STATUS_PENDING_CHECKIN = "registrationStatus_3";
-    /** 已失效 */
+    /** Đãhết hiệu lực */
     public static final String REG_STATUS_FEE_REFUNDED = "registrationStatus_4";
-    /** 待分诊 */
+    /** chờ phútkhám */
     public static final String REG_STATUS_PENDING_TRIAGE = "registrationStatus_5";
 
-    // ========== 收费状态 amountStatus ==========
-    /** 未收费 */
+    // ========== Trạng thái thu phí amountStatus ==========
+    /** ChưaThu phí */
     public static final String AMOUNT_STATUS_UNPAID = "amountStatus_0";
-    /** 已收费 */
+    /** Đã thu phí */
     public static final String AMOUNT_STATUS_PAID = "amountStatus_1";
-    /** 已退费 */
+    /** Đã hoàn phí */
     public static final String AMOUNT_STATUS_REFUNDED = "amountStatus_2";
 
-    // ========== 收费类型 tollType ==========
-    /** 西药处方 */
+    // ========== Loại thu phí tollType ==========
+    /** Đơn thuốc tây */
     public static final String TOLL_TYPE_WESTERN = "tollType_0";
-    /** 中药处方 */
+    /** Đơn thuốc đông y */
     public static final String TOLL_TYPE_CHINESE = "tollType_1";
-    /** 输液 */
+    /** Truyền dịch */
     public static final String TOLL_TYPE_INFUSION = "tollType_2";
-    /** 治疗 */
+    /** Điều trị */
     public static final String TOLL_TYPE_TREATMENT = "tollType_3";
-    /** 检验检查 */
+    /** Xét nghiệm và kiểm tra */
     public static final String TOLL_TYPE_EXAMINATION = "tollType_4";
-    /** 挂号费 */
+    /** Phí đăng ký khám */
     public static final String TOLL_TYPE_REGISTRATION = "tollType_5";
 
-    // ========== 处方类型 recipelType ==========
-    /** 西药处方 */
+    // ========== Đơn thuốcLoại recipelType ==========
+    /** Đơn thuốc tây */
     public static final String RECIPEL_TYPE_WESTERN = "recipelType_0";
-    /** 中药处方 */
+    /** Đơn thuốc đông y */
     public static final String RECIPEL_TYPE_CHINESE = "recipelType_1";
-    /** 输液处方 */
+    /** Đơn truyền dịch */
     public static final String RECIPEL_TYPE_INFUSION = "recipelType_2";
-    /** 其他处方 */
+    /** khácĐơn thuốc */
     public static final String RECIPEL_TYPE_OTHER = "recipelType_3";
-    /** 中成药处方 */
+    /**  trong thànhthuốcĐơn thuốc */
     public static final String RECIPEL_TYPE_PATENT = "recipelType_4";
-    /** 外配处方 */
+    /** ngoàiphốiĐơn thuốc */
     public static final String RECIPEL_TYPE_EXTERNAL = "recipelType_5";
 
-    // ========== 就诊类型 treatType ==========
-    /** 普通门诊 */
+    // ========== khám bệnhLoại treatType ==========
+    /** thông thườngngoại trú */
     public static final String TREAT_TYPE_NORMAL = "treatType_0";
-    /** 复诊 */
+    /** Tái khám */
     public static final String TREAT_TYPE_FOLLOWUP = "treatType_1";
 
-    // ========== 药品/材料类型 stuffType ==========
-    /** 药品 */
+    // ========== Thuốc/Loại vật tư stuffType ==========
+    /** Thuốc */
     public static final String STUFF_TYPE_DRUG = "stuffType_0";
-    /** 材料 */
+    /** Vật tư */
     public static final String STUFF_TYPE_MATERIAL = "stuffType_1";
-    /** 诊疗项目 */
+    /** Hạng mục khám chữa bệnh */
     public static final String STUFF_TYPE_COST_ITEM = "stuffType_2";
 
-    // ========== 门诊类型 medicalType ==========
-    /** 西药 */
+    // ========== ngoại trúLoại medicalType ==========
+    /** Thuốc tây */
     public static final String MEDICAL_TYPE_WESTERN = "medicalType_0";
-    /** 中草药 */
+    /** Dược liệu đông y */
     public static final String MEDICAL_TYPE_HERBAL = "medicalType_1";
-    /** 中成药 */
+    /** Thuốc thành phẩm đông y */
     public static final String MEDICAL_TYPE_PATENT = "medicalType_2";
 
-    // ========== 治疗项目类型 treatmentItemType ==========
-    /** 检验 */
+    // ========== điều trịhạng mụcLoại treatmentItemType ==========
+    /** Xét nghiệm */
     public static final String TREATMENT_ITEM_TYPE_LAB = "treatmentItemType_0";
-    /** 检查 */
+    /** Kiểm tra */
     public static final String TREATMENT_ITEM_TYPE_EXAM = "treatmentItemType_1";
 
-    // ========== 性别 gender ==========
-    /** 男 */
+    // ========== Giới tính gender ==========
+    /** Nam */
     public static final String GENDER_MALE = "gender_0";
-    /** 女 */
+    /** Nữ */
     public static final String GENDER_FEMALE = "gender_1";
 
-    // ========== 角色编码 ==========
-    /** 管理员角色编码 */
+    // ========== Vai tròMã ==========
+    /** Quản lýnhân viênVai tròMã */
     public static final String ROLE_ADMIN = "admin";
 
-    // ========== 支付方式 payType ==========
-    /** 现金支付 */
+    // ========== phương thức thanh toán payType ==========
+    /** tiền mặtthanh toán */
     public static final String PAY_TYPE_CASH = "payType_0";
-    /** 支付宝支付 */
+    /** thanh toánbảothanh toán */
     public static final String PAY_TYPE_ALIPAY = "payType_1";
-    /** 微信支付 */
+    /** WeChatthanh toán */
     public static final String PAY_TYPE_WECHAT = "payType_2";
-    /** 银行卡支付 */
+    /** ngân hàng dòngthẻthanh toán */
     public static final String PAY_TYPE_BANK_CARD = "payType_3";
-    /** 医保支付 */
+    /** BHYTthanh toán */
     public static final String PAY_TYPE_MEDICAL = "payType_4";
 
-    // ========== 传染病类型 infectType ==========
-    /** 无传染病 */
+    // ========== Bệnh truyền nhiễmLoại infectType ==========
+    /** khôngBệnh truyền nhiễm */
     public static final String INFECT_TYPE_NONE = "infectType_0";
 
-    // ========== 挂号来源 registrationSource ==========
-    /** 初诊 */
+    // ========== Đăng ký khámđếnnguồn registrationSource ==========
+    /** Khám lần đầu */
     public static final String REG_SOURCE_NORMAL = "registrationSource_0";
-    /** 快速接诊 */
+    /** Tiếp nhận nhanh */
     public static final String REG_SOURCE_QUICK = "registrationSource_2";
-    /** 零售收费 */
+    /** Thu phí bán lẻ */
     public static final String REG_SOURCE_RETAIL = "registrationSource_3";
 
-    // ========== 供应商入库审核状态 supplierStorageExamineStatus ==========
-    /** 审核通过 */
+    // ========== Nhà cung cấpnhập khoTrạng thái xét duyệt supplierStorageExamineStatus ==========
+    /** xét duyệtQua */
     public static final String SUPPLIER_STORAGE_EXAMINE_PASS = "supplierStorageExamineStatus_0";
-    /** 已作废 */
+    /** Đãhủy */
     public static final String SUPPLIER_STORAGE_EXAMINE_VOIDED = "supplierStorageExamineStatus_2";
-    /** 待审核 */
+    /** Chờ xét duyệt */
     public static final String SUPPLIER_STORAGE_EXAMINE_PENDING = "supplierStorageExamineStatus_3";
 
-    // ========== 字典类型ID（sys_dict_type.id） ==========
-    /** 药品类型 */
+    // ========== Loại từ điểnID(sys_dict_type.id) ==========
+    /** Loại thuốc */
     public static final String DICT_TYPE_DRUG_TYPE = "1004078055755374603";
-    /** 药品性质 */
+    /** Thuốctính chất */
     public static final String DICT_TYPE_DRUG_NATURE = "1004078055755374607";
-    /** 剂量单位 */
+    /** Đơn vị liều lượng */
     public static final String DICT_TYPE_DOSAGE_UNIT = "1004406758192578588";
-    /** 制剂单位 */
+    /** Đơn vị bào chế */
     public static final String DICT_TYPE_PREPARATION_UNIT = "1004406758192578593";
-    /** 包装规格 */
+    /** Quy cách đóng gói */
     public static final String DICT_TYPE_PACK_SPEC = "1004406758192578597";
-    /** 材料类型 */
+    /** Loại vật tư */
     public static final String DICT_TYPE_STUFF_TYPE = "1004462867645374476";
-    /** 机构类型 */
+    /** Cơ sởLoại */
     public static final String DICT_TYPE_INSTITUTION_TYPE = "998465736089977631";
-    /** 机构单位 */
+    /** Cơ sởĐơn vị */
     public static final String DICT_TYPE_INSTITUTION_UNIT = "999976636865404934";
 
-    // ========== 业务实体ID（需要后续改为动态配置） ==========
-    /** 默认供应商ID（院版供应商） */
+    // ========== nghiệp vụthực thểID(Cầnsautiếp tụcsửa là độngcấu hình) ==========
+    /** Mặc địnhNhà cung cấpID(bản việnNhà cung cấp) */
     public static final String DEFAULT_SUPPLIER_ID = "2098053487889309725";
-    /** 入库审核通过字典项ID */
+    /** nhập khoxét duyệtQuamục từ điểnID */
     public static final String DICT_ITEM_STORAGE_EXAMINE_PASS = "1005787933775863930";
 }

@@ -4,73 +4,73 @@
       <el-col :span="24">
         <div style="margin:0 0 10px 0;">
           <el-radio-group v-model="YpjxcRc.orderby" size="mini" @change="orderbyChange">
-            <el-radio-button label="batch_no">批号</el-radio-button>
-            <el-radio-button label="code">商品</el-radio-button>
+            <el-radio-button label="batch_no">Số lô</el-radio-button>
+            <el-radio-button label="code">Hàng hóa</el-radio-button>
 
           </el-radio-group>
         </div>
       </el-col>
       <el-col :span="24">
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
-          <el-form-item label="查询时间" style="margin-right: 3px;">
+          <el-form-item label="Thời gian truy vấn" style="margin-right: 3px;">
             <div class="block" style="width:50%">
               <el-date-picker
                 v-model="TimeInterval"
                 type="datetimerange"
                 :picker-options="pickerOptions"
                 :default-time="['00:00:00','23:59:59']"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
+                range-separator="đến"
+                start-placeholder="Ngày bắt đầu"
+                end-placeholder="Ngày kết thúc"
                 align="right"
                 :clearable="false">
               </el-date-picker>
             </div>
           </el-form-item>
-          <el-form-item label="类型" style="margin-right: 3px;">
-            <el-select v-model="formInline.lx" placeholder="类型">
-              <el-option label="全部" value="qb"></el-option>
-              <el-option label="西药" value="medicalType_0"></el-option>
-              <el-option label="中草药" value="medicalType_1"></el-option>
-              <el-option label="中成药" value="medicalType_2"></el-option>
+          <el-form-item label="Loại" style="margin-right: 3px;">
+            <el-select v-model="formInline.lx" placeholder="Loại">
+              <el-option label="Tất cả" value="qb"></el-option>
+              <el-option label="Thuốc tây" value="medicalType_0"></el-option>
+              <el-option label="Dược liệu đông y" value="medicalType_1"></el-option>
+              <el-option label="Thuốc thành phẩm đông y" value="medicalType_2"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="状态" style="margin-right: 3px;">
-            <el-select v-model="formInline.zt" placeholder="状态">
-              <el-option label="全部" value="qb"></el-option>
-              <el-option label="停用" value="0"></el-option>
-              <el-option label="启用" value="1"></el-option>
+          <el-form-item label="Trạng thái" style="margin-right: 3px;">
+            <el-select v-model="formInline.zt" placeholder="Trạng thái">
+              <el-option label="Tất cả" value="qb"></el-option>
+              <el-option label="Ngừng sử dụng" value="0"></el-option>
+              <el-option label="Kích hoạt" value="1"></el-option>
             </el-select>
           </el-form-item>
 
-          <el-form-item label="批号" style="margin-right: 3px;">
-            <el-input v-model="formInline.ph" placeholder="请输入批号"></el-input>
+          <el-form-item label="Số lô" style="margin-right: 3px;">
+            <el-input v-model="formInline.ph" placeholder="Vui lòng nhập số lô"></el-input>
           </el-form-item>
-          <el-form-item label="商品名" style="margin-right: 3px;">
-            <el-input v-model="formInline.spm" placeholder="请输入商品名"></el-input>
+          <el-form-item label="Tên hàng hóa" style="margin-right: 3px;">
+            <el-input v-model="formInline.spm" placeholder="Vui lòng nhập tên hàng hóa"></el-input>
           </el-form-item>
 
           <!-- <el-collapse-transition style="margin-right: 5px;">
             <div v-show="show3">
-              <el-form-item label="批号" style="margin-right: 5px;">
-        <el-input v-model="formInline.ph" placeholder="请输入批号"></el-input>
+              <el-form-item label="Số lô" style="margin-right: 5px;">
+        <el-input v-model="formInline.ph" placeholder="Vui lòng nhập số lô"></el-input>
       </el-form-item>
-        <el-form-item label="商品名" style="float:left;margin-right: 5px;">
-        <el-input v-model="formInline.spm" placeholder="请输入商品名"></el-input>
+        <el-form-item label="Tên hàng hóa" style="float:left;margin-right: 5px;">
+        <el-input v-model="formInline.spm" placeholder="Vui lòng nhập tên hàng hóa"></el-input>
       </el-form-item>
             </div>
           </el-collapse-transition> -->
 
-          <!-- <el-form-item label="批号">
-            <el-input v-model="formInline.ph" placeholder="请输入批号"></el-input>
+          <!-- <el-form-item label="Số lô">
+            <el-input v-model="formInline.ph" placeholder="Vui lòng nhập số lô"></el-input>
           </el-form-item>
-            <el-form-item label="商品名">
-            <el-input v-model="formInline.spm" placeholder="请输入商品名"></el-input>
+            <el-form-item label="Tên hàng hóa">
+            <el-input v-model="formInline.spm" placeholder="Vui lòng nhập tên hàng hóa"></el-input>
           </el-form-item> -->
           <el-form-item style="margin-right: 3px;">
-            <el-button type="primary" @click="onSubmit">查询</el-button>
-            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
-            <!-- <el-button @click="show3 = !show3">{{show3==true?"收起":"展开"}}</el-button> -->
+            <el-button type="primary" @click="onSubmit">Truy vấn</el-button>
+            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
+            <!-- <el-button @click="show3 = !show3">{{show3==true?"Thu gọn":"Mở rộng"}}</el-button> -->
           </el-form-item>
         </el-form>
       </el-col>
@@ -84,7 +84,7 @@
           show-summary
         >
           <el-table-column
-            label="序号"
+            label="Số thứ tự"
             type="index"
             :index="indexMethod"
             align="center">
@@ -92,93 +92,93 @@
           <el-table-column
             align="center"
             prop="ypbm"
-            label="药品编码">
+            label="Mã thuốc">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="ypmc"
-            label="药品名称">
+            label="Tên thuốc">
           </el-table-column>
           <el-table-column
             width="200px"
             align="center"
             prop="fl"
             :formatter="stateFormat"
-            label="分类">
+            label="Phân loại">
           </el-table-column>
           <el-table-column
             width="120px"
             prop="ph"
-            label="批号">
+            label="Số lô">
           </el-table-column>
           <el-table-column
             width="150px"
             prop="txm"
-            label="条形码">
+            label="Mã vạch">
           </el-table-column>
           <el-table-column
             width="150px"
             prop="gyzz"
-            label="国药准字">
+            label="Số đăng ký thuốc quốc gia">
           </el-table-column>
           <el-table-column
             prop="gg"
             width="150px"
             align="center"
-            label="规格">
+            label="Quy cách">
           </el-table-column>
           <el-table-column
             prop="sccj"
-            label="生产厂家">
+            label="Nhà sản xuất">
           </el-table-column>
           <el-table-column
             align="center"
             prop="gys"
-            label="供应商">
+            label="Nhà cung cấp">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="lsj"
-            label="零售价">
+            label="Giá bán lẻ">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="cbj"
-            label="成本价">
+            label="Giá vốn">
           </el-table-column>
 
           <el-table-column
             width="200px"
             align="center"
             prop="yxq"
-            label="有效期">
+            label="Hạn sử dụng">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="qcsl"
-            label="期初数量">
+            label="Số lượng đầu kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="qccb"
-            label="期初成本">
+            label="Chi phí đầu kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="bqrk"
-            label="本期入库数量">
+            label="Số lượng nhập kho trong kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="bqrkcb"
-            label="本期入库成本">
+            label="Chi phí nhập kho trong kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
@@ -190,13 +190,13 @@
             width="150px"
             align="center"
             prop="bqcksl"
-            label="本期出库数量">
+            label="Số lượng xuất kho trong kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="bqckcb"
-            label="本期出库成本">
+            label="Chi phí xuất kho trong kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
@@ -208,13 +208,13 @@
             width="150px"
             align="center"
             prop="bqpdsl"
-            label="本期盘点数量">
+            label="Số lượng kiểm kê trong kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="bqpdcb"
-            label="本期盘点成本">
+            label="Chi phí kiểm kê trong kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
@@ -226,13 +226,13 @@
             width="150px"
             align="center"
             prop="qmsl"
-            label="期末数量">
+            label="Số lượng cuối kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
             align="center"
             prop="qmcb"
-            label="期末成本">
+            label="Chi phí cuối kỳ">
           </el-table-column>
           <el-table-column
             width="150px"
@@ -270,7 +270,7 @@ export default {
   data() {
     return {
       show3: false,
-      //时间选择
+      //Chọn thời gian
       TimeInterval: this.getInitializeDate(),
       formInline: {
         spm: '',
@@ -281,7 +281,7 @@ export default {
 
       pickerOptions: {
         shortcuts: [{
-          text: '最近一周',
+          text: 'Tuần gần nhất',
           onClick(picker) {
             const end = new Date();
             const start = new Date();
@@ -289,7 +289,7 @@ export default {
             picker.$emit('pick', [start, end]);
           }
         }, {
-          text: '最近一个月',
+          text: 'Tháng gần nhất',
           onClick(picker) {
             const end = new Date();
             const start = new Date();
@@ -297,7 +297,7 @@ export default {
             picker.$emit('pick', [start, end]);
           }
         }, {
-          text: '最近三个月',
+          text: '3 tháng gần nhất',
           onClick(picker) {
             const end = new Date();
             const start = new Date();
@@ -356,37 +356,37 @@ export default {
   methods: {
     stateFormat(row, column) {
       if (row.fl === "medicalType_0") {
-        return '西药'
+        return 'Thuốc tây'
       } else if (row.fl === "medicalType_1") {
-        return '中草药'
+        return 'Dược liệu đông y'
       } else if (row.fl === "medicalType_2") {
-        return '中成药'
+        return 'Thuốc thành phẩm đông y'
       } else {
         return ''
       }
     },
-    //设置默认日期
+    //Đặt ngày mặc định
     getInitializeDate() {
-      let date = new Date()//获取新的时间
-      //获取当前年份,并且转为字符串
+      let date = new Date()//Lấy thời gian mới
+      //Lấy năm hiện tại,và chuyển thành chuỗi
       let year = date.getFullYear().toString()
-      //获取当前月份，因为月份是要从0开始，此处要加1，
-      //使用三元表达式，判断是否小于10，如果是的话，就在字符串前面拼接'0'
+      //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
+      //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
       let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-      //获取天，判断是否小于10，如果是的话，就在在字符串前面拼接'0'
+      //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
       let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-      //字符串拼接，将开始时间和结束时间进行拼接
-      let start = year + '-' + month + '-01' + ' 00:00:00'    //当月第一天
+      //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+      let start = year + '-' + month + '-01' + ' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
       //let end=new Date(year, month, 0).getDate();
-      let end = year + '-' + month + '-' + day + ' 23:59:59'  //当天
-      return [start, end] //将值设置给组件DatePicker 绑定的数据
+      let end = year + '-' + month + '-' + day + ' 23:59:59'  //Trong ngày
+      return [start, end] //Gán giá trị cho thành phầnDatePicker Dữ liệu đã liên kết
     },
     getSummaries(param) {
       const {columns, data} = param;
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = '总价';
+          sums[index] = 'Tổng giá';
           return;
         }
           // else if (index === 8 || index ===9 ||index >11){
@@ -409,22 +409,22 @@ export default {
         }
 
       });
-      // sums[10] = new BigNumber(Number(this.allTotal.lsj)).toFormat(2)+'元'
-      // sums[11] = new BigNumber(Number(this.allTotal.cbj)).toFormat(2)+'元'
+      // sums[10] = new BigNumber(Number(this.allTotal.lsj)).toFormat(2)+'VNĐ'
+      // sums[11] = new BigNumber(Number(this.allTotal.cbj)).toFormat(2)+'VNĐ'
       // sums[13] = new BigNumber(Number(this.allTotal.qcsl)).toFormat(2)
-      sums[14] = new BigNumber(Number(this.allTotal.qccb)).toFormat(2) + '元'
+      sums[14] = new BigNumber(Number(this.allTotal.qccb)).toFormat(2) + 'VNĐ'
       // sums[15] = new BigNumber(Number(this.allTotal.bqrk)).toFormat(2)
-      sums[16] = new BigNumber(Number(this.allTotal.bqrkcb)).toFormat(2) + '元'
-      sums[17] = new BigNumber(Number(this.allTotal.bqrkxse)).toFormat(2) + '元'
+      sums[16] = new BigNumber(Number(this.allTotal.bqrkcb)).toFormat(2) + 'VNĐ'
+      sums[17] = new BigNumber(Number(this.allTotal.bqrkxse)).toFormat(2) + 'VNĐ'
       // sums[18] = new BigNumber(Number(this.allTotal.bqcksl)).toFormat(2)
-      sums[19] = new BigNumber(Number(this.allTotal.bqckcb)).toFormat(2) + '元'
-      sums[20] = new BigNumber(Number(this.allTotal.bqckxse)).toFormat(2) + '元'
+      sums[19] = new BigNumber(Number(this.allTotal.bqckcb)).toFormat(2) + 'VNĐ'
+      sums[20] = new BigNumber(Number(this.allTotal.bqckxse)).toFormat(2) + 'VNĐ'
       // sums[21] = new BigNumber(Number(this.allTotal.bqpdsl)).toFormat(2)
-      sums[22] = new BigNumber(Number(this.allTotal.bqpdcb)).toFormat(2) + '元'
-      sums[23] = new BigNumber(Number(this.allTotal.bqpdxse)).toFormat(2) + '元'
+      sums[22] = new BigNumber(Number(this.allTotal.bqpdcb)).toFormat(2) + 'VNĐ'
+      sums[23] = new BigNumber(Number(this.allTotal.bqpdxse)).toFormat(2) + 'VNĐ'
       // sums[24] = new BigNumber(Number(this.allTotal.qmsl)).toFormat(2)
-      sums[25] = new BigNumber(Number(this.allTotal.qmcb)).toFormat(2) + '元'
-      sums[26] = new BigNumber(Number(this.allTotal.qmxse)).toFormat(2) + '元'
+      sums[25] = new BigNumber(Number(this.allTotal.qmcb)).toFormat(2) + 'VNĐ'
+      sums[26] = new BigNumber(Number(this.allTotal.qmxse)).toFormat(2) + 'VNĐ'
 
       return sums;
     },
@@ -501,7 +501,7 @@ export default {
                 cbj: item.cbj,
                 ph: item.ph,
                 yxq: item.yxq,
-                // qcsl:item.qcsl, zj 制剂
+                // qcsl:item.qcsl, zj Chế phẩm
                 // qcsl: Math.floor(item.qcsl / item.zj) >= 0 ? Math.floor(item.qcsl / item.zj) + (item.dw) + ((item.qcsl % item.zj > 0) ? (item.qcsl % item.zj) + item.zxdw : "") : item.sl + item.zxdw,
                 // qccb: item.qccb,
                 // bqrk: Math.floor(item.bqrk / item.zj) >= 0 ? Math.floor(item.bqrk / item.zj) + (item.dw) + ((item.bqrk % item.zj > 0) ? (item.bqrk % item.zj) + item.zxdw : "") : item.bqrk + item.zxdw,

@@ -3,7 +3,7 @@ package com.geeke.utils;
 
 
 import com.alibaba.fastjson.JSONObject;
-// vo实体类参数
+// vothực thểLớpTham số
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,7 @@ public class WechatUtil {
 	}
 
 	/**
-	 * 获取小程序code换取openid、session_key
+	 * Lấynhỏquy trìnhthứ tựcodeđổilấyopenid, session_key
 	 */
 	public JSONObject getOpenId(String code) {
 		String url = WECHAT_SESSION_URL;
@@ -45,13 +45,13 @@ public class WechatUtil {
 			String response = restTemplate.getForObject(url, String.class, uriVars);
 			return JSONObject.parseObject(response);
 		} catch (Exception e) {
-			log.error("微信请求失败", e);
+			log.error("WeChatVui lòngyêu cầuThất bại", e);
 		}
 		return null;
 	}
 
 	/**
-	 * 获取access_token
+	 * Lấyaccess_token
 	 */
 	public JSONObject getToken() {
 		String url = WECHAT_TOKEN_URL;
@@ -62,13 +62,13 @@ public class WechatUtil {
 			String response = restTemplate.getForObject(url, String.class, uriVars);
 			return JSONObject.parseObject(response);
 		} catch (Exception e) {
-			log.error("微信请求失败", e);
+			log.error("WeChatVui lòngyêu cầuThất bại", e);
 		}
 		return null;
 	}
 
 	/**
-	 * 获取手机号
+	 * Lấysố điện thoại di động
 	 */
 	public JSONObject getPhoneNumber(String code, String token) {
 		String url = WECHAT_PHONE_URL + token;
@@ -78,7 +78,7 @@ public class WechatUtil {
 			String response = restTemplate.postForObject(url, data, String.class);
 			return JSONObject.parseObject(response);
 		} catch (Exception e) {
-			log.error("微信获取手机号失败", e);
+			log.error("WeChatLấysố điện thoại di độngThất bại", e);
 		}
 		return null;
 	}

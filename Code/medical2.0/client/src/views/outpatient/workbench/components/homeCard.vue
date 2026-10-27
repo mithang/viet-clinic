@@ -4,7 +4,7 @@
       <div class="card-header">
         <span class="card-title">不合格处方查询</span>
         <div>
-          <el-button style=" padding: 3px 0" type="text" @click="onClearAll">忽略全部</el-button>
+          <el-button style=" padding: 3px 0" type="text" @click="onClearAll">Bỏ qua tất cả</el-button>
           <el-badge :value="total<10?total:'10+'" class="badge" @click="onOpenAll"></el-badge>
         </div>
       </div>
@@ -40,11 +40,11 @@
       },
       btnOne:{
         type: String,
-        default: "查看"
+        default: "Xem"
       },
       btnTwo:{
         type: String,
-        default: "忽略"
+        default: "Bỏ qua"
       }
     },
     watch:{

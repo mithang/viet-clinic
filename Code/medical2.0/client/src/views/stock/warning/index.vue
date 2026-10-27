@@ -4,25 +4,25 @@
         <!-- 药品和材料预警 -->
          <div style="margin-top:-20px;margin-left:-20px">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="药品预警" name="0">
+                <el-tab-pane label="Cảnh báo thuốc" name="0">
                 </el-tab-pane>
-                <el-tab-pane label="材料预警" name="1">
+                <el-tab-pane label="Cảnh báo vật tư" name="1">
                 </el-tab-pane>
             </el-tabs>
         </div>
 
-         <!-- 药品预警 -->
+         <!-- Cảnh báo thuốc -->
      <div v-if="activeName==='0'">
          <drug-warning :drugActiveName="drugType" @changeCurrentPage="changeCurrentPage" @changeTotal="changeTotal" :getCurrentPage="currentPage" :getSizeChange="pageSize"></drug-warning>
      </div>
 
-     <!-- 材料预警 -->
+     <!-- Cảnh báo vật tư -->
      <div v-else>
          <stuff-warning :stuffActiveName="stuffType" @changeCurrentPage="changeCurrentPage" @changeTotal="changeTotal" :getCurrentPage="currentPage" :getSizeChange="pageSize"></stuff-warning>
      </div>
 
 
-      <!-- 分页栏     开始 -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <el-pagination
@@ -38,7 +38,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </el-card>
 
 </el-row>
@@ -59,7 +59,7 @@ export default {
   components:{drugWarning,stuffWarning},
   data() {
     return {
-       activeName:'0',    //预警切换
+       activeName:'0',    //Chuyển đổi cảnh báo
        currentPage: 1,
        pageSize: 20,
        dispensingTotal: 0,
@@ -83,7 +83,7 @@ export default {
         this.activeName = tab.name
     },
 
-    //分页切换
+    //Chuyển trang
     onSizeChange(val) {
       this.currentPage = 1;
       this.pageSize = val
@@ -96,7 +96,7 @@ export default {
     //       this.stuffInit()
     //   }
     },
-    //分页切换
+    //Chuyển trang
     onCurrentChange(val) {
     //   this.search.offset = (val - 1) * this.search.limit;
 
@@ -109,7 +109,7 @@ export default {
     },
   },
   watch: {
-     //监听activeName切换
+     //监听activeNameChuyển đổi
     //  activeName:{
     //      handler(newVal,oldVal){
     //          if(newVal==)

@@ -3,7 +3,7 @@
 <mapper namespace="com.geeke.cure.dao.StmanagementDao">
 
     <select id="stmanagementtotal" resultType="com.geeke.cure.entity.Stmanagement">
-        select c.id detailid ,c.ststate pszt,e.name hzxm,(if(f.allergy_history!='',f.allergy_history,'未明确')) gmqk,
+        select c.id detailid ,c.ststate pszt,e.name hzxm,(if(f.allergy_history!='',f.allergy_history,'Chưa rõ')) gmqk,
         c.create_date kdsj,c.create_by kdys,d.goods_name ypmc,d.dosis,g.name dosisunit,d.preparation,
         h.name preparationunit,i.name pack,j.name yf,c.stexecutetime zxsj,c.stexecuteby zxr,c.stresult ,c.sttime
         from registration a
@@ -33,7 +33,7 @@
     </select>
 
     <select id="stmanagementlist" resultType="com.geeke.cure.entity.Stmanagement">
-        select c.id detailid ,c.ststate pszt,e.name hzxm,(if(f.allergy_history!='',f.allergy_history,'未明确')) gmqk,
+        select c.id detailid ,c.ststate pszt,e.name hzxm,(if(f.allergy_history!='',f.allergy_history,'Chưa rõ')) gmqk,
         c.create_date kdsj,c.create_by kdys,d.goods_name ypmc,d.dosis,g.name dosisunit,d.preparation,
         h.name preparationunit,i.name pack,j.name yf,c.stexecutetime zxsj,c.stexecuteby zxr,c.stresult ,c.sttime
         from registration a

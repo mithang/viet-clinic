@@ -17,7 +17,7 @@ import com.google.common.collect.Maps;
 import org.springframework.util.CollectionUtils;
 
 /**
- * 检验检查Service
+ * Xét nghiệm và kiểm traService
  * @author rys
  * @version 2022-10-18
  */
@@ -47,7 +47,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
     }
 
     public void deleteByRecipelInfoId(String recipelInfoId) {
-        //通过recipelInfoId获取id
+        //QuarecipelInfoIdLấyid
         List<InspectionCheck> byRecipelInfoId = this.dao.getByRecipelInfoId(recipelInfoId);
         if(!CollectionUtils.isEmpty(byRecipelInfoId)) {
             for (InspectionCheck inspectionCheck : byRecipelInfoId) {

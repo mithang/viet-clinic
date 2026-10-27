@@ -19,7 +19,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     
     
 	/**
-	 * 驼峰命名法工具
+	 * Công cụ đặt tên camelCase
 	 * @return
 	 * 		toCamelCase("hello_world") == "helloWorld" 
 	 * 		toCapitalizeCamelCase("hello_world") == "HelloWorld"
@@ -51,7 +51,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-	 * 驼峰命名法工具
+	 * Công cụ đặt tên camelCase
 	 * @return
 	 * 		toCamelCase("hello_world") == "helloWorld" 
 	 * 		toCapitalizeCamelCase("hello_world") == "HelloWorld"
@@ -66,7 +66,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
     
     /**
-	 * 驼峰命名法工具
+	 * Công cụ đặt tên camelCase
 	 * @return
 	 * 		toCamelCase("hello_world") == "helloWorld" 
 	 * 		toCapitalizeCamelCase("hello_world") == "HelloWorld"

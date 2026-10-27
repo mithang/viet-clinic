@@ -5,12 +5,12 @@ module.exports = {
   title: 'Jeeke demo',
   /**
    * @type {string} up-down-dark | up-down-light | left-right-dark | left-right-light
-   * @description 主题风格 style
+   * @description Phong cách chủ đề style
    */
   style: 'up-down',
   /**
    * @type {string} #018cb7
-   * @description 主题色 theme
+   * @description Màu chủ đề theme
    */
   theme: '#018cb7',
   /**
@@ -46,7 +46,7 @@ module.exports = {
   
   /**
    * @type {boolean} true | false
-   * @description 是否显示 logo
+   * @description Có hiển thị không logo
    */
   showLogo: true
 }

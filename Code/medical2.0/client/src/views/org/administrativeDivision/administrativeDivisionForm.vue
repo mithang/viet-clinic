@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
@@ -11,7 +11,7 @@
       <div class="tab-item" v-show='tabIndex==="1"'>  
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='上级区划代码' prop='parten.id' >
+          <el-form-item label='Mã khu vực cấp trên' prop='parten.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.parten.name'></el-input>
             <el-select v-else v-model='bizFormModel.parten' value-key='id' filterable clearable placeholder='请选择上级区划代码' 
               @clear='bizFormModel.parten={
@@ -25,14 +25,14 @@
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='区划名称' prop='name' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "请输入区划名称"' ></el-input>
+          <el-form-item label='Tên khu vực' prop='name' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên khu vực"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='区划级别' prop='level' >
+          <el-form-item label='Cấp khu vực' prop='level' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.level'></el-input>
             <number-input v-else v-model="bizFormModel.level"  :precision="0"></number-input>
           </el-form-item>
@@ -41,9 +41,9 @@
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("administrativeDivisionForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("administrativeDivisionForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -64,7 +64,7 @@ export default {
       bizFormModel: this.initFormModel(),
       tabIndex: '1',
        flag:false,
-          parten_List: [],  // 上级区划代码
+          parten_List: [],  // Mã khu vực cấp trên
        dialogProps: {
         visible: false,
         action: '',
@@ -76,7 +76,7 @@ export default {
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -111,7 +111,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改行政区域划分'
+      this.dialogProps.title = 'Sửa phân chia khu vực hành chính'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -124,12 +124,12 @@ export default {
     },
     initFormModel(This) {
       return {
-        'parten': {     // 上级节点 上级区划代码
+        'parten': {     // Nút cấp trên Mã khu vực cấp trên
           'id': validatenull(This) || validatenull(This.id) ? null : This.id,
           'name': validatenull(This) || validatenull(This.name) ? null : This.name,
         },
-        'name': '',   // 区划名称
-        'level': 0,    // 区划级别
+        'name': '',   // Tên khu vực
+        'level': 0,    // Cấp khu vực
 
       }
     },
@@ -137,7 +137,7 @@ export default {
       let parten_search = {
         params: []
       }
-      // 数据权限: 行政区划分administrative_division
+      // Quyền dữ liệu: Phân chia hành chínhadministrative_division
       this.pushDataPermissions(parten_search.params, this.$route.meta.routerId, '986666876811870222')
       this.parten_List.splice(0, this.parten_List.length)
       listAdministrativeDivisionAll(parten_search).then(responseData => {
@@ -154,7 +154,7 @@ export default {
     },
     openEditAdministrativeDivisionDialog(administrativeDivision) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改行政区域划分'
+      this.dialogProps.title = 'Sửa phân chia khu vực hành chính'
       this.bizFormModel = {...this.initFormModel(), ...administrativeDivision}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -162,7 +162,7 @@ export default {
     },
     openAddAdministrativeDivisionDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加行政区域划分'
+      this.dialogProps.title = 'Thêm phân chia khu vực hành chính'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -170,7 +170,7 @@ export default {
     },
     openCopyAdministrativeDivisionDialog(administrativeDivision) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加行政区域划分'
+      this.dialogProps.title = 'Thêm phân chia khu vực hành chính'
       this.bizFormModel = {...this.initFormModel(), ...administrativeDivision}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

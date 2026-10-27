@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
- * 诊疗项目DAO接口
+ * Hạng mục khám chữa bệnhDAOGiao diện
  * @author txl
  * @version 2022-05-30
  */

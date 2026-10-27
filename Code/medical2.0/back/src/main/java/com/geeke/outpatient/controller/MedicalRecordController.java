@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 病历填写Controller
+ * Điền bệnh ánController
  * @author txl
  * @version 2022-06-13
  */
@@ -67,7 +67,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
 
     @PostMapping(value = "saveWithFile")
     public ResponseEntity<JSONObject> saveWithFile(@RequestParam("entity") String strEntity,
-      @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // 文件: 上传附件
+      @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Tải lên tệp đính kèm
       @RequestParam("deleteIds")String strDeleteIds) throws java.io.IOException {
         MedicalRecord entity = JSONObject.parseObject(strEntity, MedicalRecord.class);
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
@@ -91,7 +91,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
 
     @PostMapping(value = "allSave")
     public ResponseEntity<JSONObject> allSave(@RequestParam("entity") String strEntity,
-                                              @RequestParam(name = "fileIdUploads",required=false) MultipartFile[] fileIdUploads,  // 文件: 上传附件
+                                              @RequestParam(name = "fileIdUploads",required=false) MultipartFile[] fileIdUploads,  // Tệp: Tải lên tệp đính kèm
                                               @RequestParam(name = "deleteIds",required=false)String strDeleteIds) throws java.io.IOException {
         MedicalRecipelEvt medicalRecipelEvt = JSONObject.parseObject(strEntity, MedicalRecipelEvt.class);
         Registration registration = medicalRecordService.allSave(medicalRecipelEvt, fileIdUploads, strDeleteIds);
@@ -158,7 +158,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    // 通过挂号id添加病例信息
+    // QuaĐăng ký khámidThêmca bệnhThông tin
     @PostMapping(value = "registerSave")
     public ResponseEntity<JSONObject> registerSave(@RequestBody MedicalRecord entity) {
         Registration medicalRecord = registrationService.get(entity.getRegistration().getId());
@@ -169,7 +169,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
 
 
     /**
-     * 获取系统诊断
+     * LấyHệ thốngChẩn đoán
      * @param searchParam
      * @return
      */
@@ -182,17 +182,17 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
                 .and(!StringUtils.isEmpty(searchParam),wrapper -> wrapper
                         .like(XtZd::getZdmc, searchParam)
                         .or()
-                        .like( XtZd::getPy, searchParam) // Py 字段模糊匹配
+                        .like( XtZd::getPy, searchParam) // Py Trườngmờkhớp
                         .or()
                         .like(XtZd::getZdcode, searchParam)
-                ); // Zdcode 字段模糊匹配
+                ); // Zdcode Trườngmờkhớp
         IPage<XtZd> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(1, 30);
         page = zdService.page(page, queryWrapper);
         return ResponseEntity.ok(ResultUtil.successJson(page));
     }
 
     /**
-     * 获取系统中医证候
+     * LấyHệ thốngChứng hậu Đông y
      * @param searchParam
      * @return
      */

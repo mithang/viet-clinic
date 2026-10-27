@@ -13,22 +13,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * Excel导出构建器 - 基于 EasyExcel，流式API
+ * ExcelXuấtxây dựngthiết bị - Dựa trên EasyExcel, dạng luồngAPI
  *
- * <p>使用示例:</p>
+ * <p>Ví dụ sử dụng:</p>
  * <pre>{@code
- * new ExcelExportBuilder("药品明细")
+ * new ExcelExportBuilder("ThuốcChi tiết")
  *     .addColumns(
- *         new ExcelExportBuilder.Column("药品名称", "drugName"),
- *         new ExcelExportBuilder.Column("规格", "spec"),
- *         new ExcelExportBuilder.Column("数量", "quantity")
+ *         new ExcelExportBuilder.Column("Tên thuốc", "drugName"),
+ *         new ExcelExportBuilder.Column("Quy cách", "spec"),
+ *         new ExcelExportBuilder.Column("Số lượng", "quantity")
  *     )
  *     .data(dataList)
- *     .write(response, "药品明细.xlsx");
+ *     .write(response, "ThuốcChi tiết.xlsx");
  * }</pre>
  *
- * <p>支持嵌套属性访问，例如 "company.name" 将调用 getCompany().getName()。</p>
- * <p>基于 EasyExcel，内存占用低，适合大数据量导出。</p>
+ * <p>Hỗ trợ truy cập thuộc tính lồng nhau, Ví dụ "company.name" Sẽ gọi getCompany().getName(). </p>
+ * <p>Dựa trên EasyExcel, bộ nhớchiếm dụng低, phù hợphợplớnDữ liệulượngXuất. </p>
  */
 public class ExcelExportBuilder implements Closeable {
 
@@ -57,7 +57,7 @@ public class ExcelExportBuilder implements Closeable {
     }
 
     /**
-     * 将Excel写入HttpServletResponse，触发浏览器下载
+     * Sẽ ExcelGhiHttpServletResponse, kích hoạttrình duyệtTải xuống
      */
     public void write(HttpServletResponse response, String fileName) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -74,7 +74,7 @@ public class ExcelExportBuilder implements Closeable {
     }
 
     /**
-     * 将Excel写入指定的输出流
+     * Sẽ Excelghichỉchỉ định của Luồng xuất
      */
     public void writeTo(OutputStream outputStream) throws IOException {
         this.outputStream = outputStream;
@@ -83,10 +83,10 @@ public class ExcelExportBuilder implements Closeable {
 
     private void buildAndWrite(OutputStream os) {
         if (columns.isEmpty()) {
-            throw new IllegalStateException("未定义任何列，请先调用 addColumns() 方法");
+            throw new IllegalStateException("Chưađịnh nghĩa任何Cột, Vui lòngtrướcgọi addColumns() Phương pháp");
         }
 
-        // 构建表头
+        // xây dựngbảngtiêu đề
         List<List<String>> head = new ArrayList<>();
         for (Column col : columns) {
             List<String> headRow = new ArrayList<>();
@@ -94,7 +94,7 @@ public class ExcelExportBuilder implements Closeable {
             head.add(headRow);
         }
 
-        // 构建数据（将对象/Map转换为List<List<Object>>）
+        // xây dựngDữ liệu(Sẽ Đối tượng/MapChuyển đổi thànhList<List<Object>>)
         List<List<Object>> data = new ArrayList<>();
         if (dataList != null) {
             for (Object rowData : dataList) {
@@ -106,7 +106,7 @@ public class ExcelExportBuilder implements Closeable {
             }
         }
 
-        // 写入 Excel
+        // Ghi Excel
         EasyExcel.write(os)
                 .head(head)
                 .sheet(sheetName)
@@ -114,7 +114,7 @@ public class ExcelExportBuilder implements Closeable {
     }
 
     /**
-     * 解析对象的属性值，支持嵌套属性和Map
+     * phân tíchĐối tượng của thuộc tínhGiá trị, hỗ trợlồng nhauthuộc tính và Map
      */
     private Object resolveValue(Object obj, String fieldPath) {
         if (obj == null || fieldPath == null) return null;
@@ -169,11 +169,11 @@ public class ExcelExportBuilder implements Closeable {
 
     @Override
     public void close() throws IOException {
-        // EasyExcel 自动管理资源
+        // EasyExcel tự độngQuản lýtài nguyên
     }
 
     /**
-     * 列定义
+     * Cộtđịnh nghĩa
      */
     public static class Column {
         private final String headerName;

@@ -5,45 +5,45 @@ import lombok.Data;
 import java.math.BigDecimal;
 @Data
 public class MdSeltInfo {
-    private String mdtrtId; // 就诊 ID
-    private String setlId; // 结算 ID
-    private String psnNo; // 人员编号
-    private String psnName; // 人员姓名
-    private String psnCertType; // 人员证件类型
-    private String certNo; // 证件号码
-    private String gend; // 性别
-    private String naty; // 民族
-    private String brdy; // 出生日期
-    private BigDecimal age; // 年龄
-    private String insutype; // 险种类型
-    private String psnType; // 人员类别
-    private String cvlservFlag; // 公务员标志
-    private String setlTime; // 结算时间
-    private String mdtrtCertType; // 就诊凭证类型
-    private String medType; // 医疗类别
-    private BigDecimal medfeeSumamt; // 医疗费总额
-    private BigDecimal fulamtOwnpayAmt; // 全自费金额
-    private BigDecimal overlmtSelfpay; // 超限价自费费用
-    private BigDecimal preselfpayAmt; // 先行自付金额
-    private BigDecimal inscpScpAmt; // 符合政策范围金额
-    private BigDecimal actPayDedc; // 实际支付起付线
-    private BigDecimal hifpPay; // 基本医疗保险统筹基金支出
-    private BigDecimal poolPropSelfpay; // 基本医疗保险统筹基金支付比例
-    private BigDecimal cvlservPay; // 公务员医疗补助资金支出
-    private BigDecimal hifesPay; // 企业补充医疗保险基金支出
-    private BigDecimal hifmiPay; // 居民大病保险资金支出
-    private BigDecimal hifobPay; // 职工大额医疗费用补助基金支出
-    private BigDecimal mafPay; // 医疗救助基金支出
-    private BigDecimal othPay; // 其他支出
-    private BigDecimal fundPaySumAmt; // 基金支付总额
-    private BigDecimal psnPartAmt; // 个人负担总金额
-    private BigDecimal acctPay; // 个人账户支出
-    private BigDecimal psnCashPay; // 个人现金支出
-    private BigDecimal hospPartAmt; // 医院负担金额
-    private BigDecimal balc; // 余额
-    private BigDecimal acctMulaidPay; // 个人账户共济支付金额
-    private String medinsSetlId; // 医药机构结算 ID
-    private String clrOptins; // 清算经办机构
-    private String clrWay; // 清算方式
-    private String clrType; // 清算类别
+    private String mdtrtId; // Khám bệnh ID
+    private String setlId; // Quyết toán ID
+    private String psnNo; // Mã nhân viên
+    private String psnName; // Tên nhân viên
+    private String psnCertType; // Loại giấy tờ nhân viên
+    private String certNo; // Số giấy tờ
+    private String gend; // Giới tính
+    private String naty; // Dân tộc
+    private String brdy; // Ngày sinh
+    private BigDecimal age; // Tuổi
+    private String insutype; // Loại hình bảo hiểm
+    private String psnType; // Loại nhân viên
+    private String cvlservFlag; // Cờ công chức
+    private String setlTime; // Quyết toánThời gian
+    private String mdtrtCertType; // Loại giấy tờ khám bệnh
+    private String medType; // Loại hình y tế
+    private BigDecimal medfeeSumamt; // y tếphítổngsố tiền
+    private BigDecimal fulamtOwnpayAmt; // toàn bộtựphíSố tiền
+    private BigDecimal overlmtSelfpay; // Vượt giá giới hạn thì tự trảChi phí
+    private BigDecimal preselfpayAmt; // trước dòngtự thangSố tiền
+    private BigDecimal inscpScpAmt; // Số tiền phù hợp phạm vi chính sách
+    private BigDecimal actPayDedc; // Mức khởi điểm thanh toán thực tế
+    private BigDecimal hifpPay; // Quỹ điều phối BHYT cơ bảnChi tiêu
+    private BigDecimal poolPropSelfpay; // Tỷ lệ thanh toán của quỹ điều phối BHYT cơ bản
+    private BigDecimal cvlservPay; // Quỹ trợ cấp y tế cho công chứcChi tiêu
+    private BigDecimal hifesPay; // Quỹ BHYT bổ sung của doanh nghiệpChi tiêu
+    private BigDecimal hifmiPay; // Quỹ bảo hiểm bệnh nặng cho dân cưChi tiêu
+    private BigDecimal hifobPay; // chức vụcông việclớnsố tiềny tếChi phí补giúp基金Chi tiêu
+    private BigDecimal mafPay; // y tế救giúp基金Chi tiêu
+    private BigDecimal othPay; // khácChi tiêu
+    private BigDecimal fundPaySumAmt; // thanh toán từ quỹtổngsố tiền
+    private BigDecimal psnPartAmt; // Cá nhânâm担tổngSố tiền
+    private BigDecimal acctPay; // Cá nhântài khoảnChi tiêu
+    private BigDecimal psnCashPay; // Cá nhântiền mặtChi tiêu
+    private BigDecimal hospPartAmt; // Bệnh việnâm担Số tiền
+    private BigDecimal balc; // Số dư
+    private BigDecimal acctMulaidPay; // Cá nhântài khoảnTổng 济thanh toánSố tiền
+    private String medinsSetlId; // y dượcCơ sởQuyết toán ID
+    private String clrOptins; // thanh toánqua办Cơ sở
+    private String clrWay; // thanh toáncách
+    private String clrType; // thanh toánLớploại
 }

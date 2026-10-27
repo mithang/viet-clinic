@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * 公司管理Controller
+ * Quản lý công tyController
  * @author lys
  * @version 2022-05-25
  */
@@ -58,7 +58,7 @@ public class CompanyController extends CrudController<CompanyService, Company> {
     }
 
     /**
-     * 获取租户下面所有的诊所
+     * Lấytenantdướimặttất cả của Phòng khám
      *
      * @return
      */

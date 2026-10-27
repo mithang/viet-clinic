@@ -1,37 +1,37 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <supplier-form ref='supplierForm' :permission='permission' @save-finished='loadData'></supplier-form>
     <el-card class="page-container">
-        <!--  搜索栏  开始 -->
+        <!--  Thanh tìm kiếm  Bắt đầu -->
         <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
                       <el-col :span="6">
-              <el-form-item label='名称' prop='name'>
-                <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入名称'></el-input>
+              <el-form-item label='Tên' prop='name'>
+                <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên'></el-input>
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='联系人' prop='linkman'>
-                <el-input v-model='queryModel.linkman' :clearable='true' placeholder='请输入联系人'></el-input>
+              <el-form-item label='Người liên hệ' prop='linkman'>
+                <el-input v-model='queryModel.linkman' :clearable='true' placeholder='Vui lòng nhập người liên hệ'></el-input>
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='电话' prop='phone'>
-                <el-input v-model='queryModel.phone' :clearable='true' placeholder='请输入电话'></el-input>
+              <el-form-item label='Điện thoại' prop='phone'>
+                <el-input v-model='queryModel.phone' :clearable='true' placeholder='Vui lòng nhập số điện thoại'></el-input>
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='地址' prop='address'>
-                <el-input v-model='queryModel.address' placeholder='请输入地址'></el-input>
+              <el-form-item label='Địa chỉ' prop='address'>
+                <el-input v-model='queryModel.address' placeholder='Vui lòng nhập địa chỉ'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='厂商类型' prop='type'>
-                  <el-select v-model="queryModel.type" placeholder="请选择供应商类型">
+              <el-form-item label='Loại hãng' prop='type'>
+                  <el-select v-model="queryModel.type" placeholder="Vui lòng chọn loại nhà cung cấp">
                     <el-option
                       v-for="item in types"
                       :key="item.value"
@@ -47,13 +47,13 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
             </el-col>
             <el-col :span="15" style="text-align:right;padding-right:5px">
               <el-button-group>
@@ -62,7 +62,7 @@
                     type="primary"
                     icon="el-icon-plus"                   
                     @click="onCreateEntity('supplierForm')"
-                    >添加</el-button
+                    >Thêm</el-button
                   >
               </el-button-group>
             </el-col>
@@ -70,19 +70,19 @@
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </div>
-        <!--  搜索栏  结束 -->
+        <!--  Thanh tìm kiếm  Kết thúc -->
 
-        <!-- 工具栏 开始 -->
+        <!-- Thanh công cụ Bắt đầu -->
         
-        <!-- 工具栏 结束 -->
+        <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>        
             <el-table ref="tableRef" height="calc(100vh - 300px)" class='drag_table' :data='supplierList' border @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>                
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -94,32 +94,32 @@
                   </span>
                   <span v-else-if="columnViews[index].showType === 'Radios'">
                     <span v-if='getAttrValue(row, columnViews[index].prop) === "1"'>
-                      药品供应商
+                      Nhà cung cấp thuốc
                     </span>
                     <span v-else-if='getAttrValue(row, columnViews[index].prop) === "2"'>
-                      材料供应商
+                      Nhà cung cấp vật tư
                     </span>
                   </span>
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='140 + "px"' :key="'operate'">        
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='140 + "px"' :key="'operate'">        
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='supplierList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view' 
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
                     @click='onViewEntity(scope.$index, scope.row, "supplierForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit' 
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit' 
                     @click='onEditEntity(scope.$index, scope.row, "supplierForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document' 
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document' 
                     @click='onCopyEntity(scope.$index, scope.row, "supplierForm")'></OperationIcon>
-                  <!-- <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete' 
+                  <!-- <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete' 
                     @click='onDeleteSupplier(scope.$index, scope.row)'></OperationIcon> -->
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info' 
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -127,8 +127,8 @@
     	  </div>	          
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -143,7 +143,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->     </el-card>
+      <!-- Thanh phân trang     Kết thúc -->     </el-card>
   </el-row>
 </template>
 
@@ -170,7 +170,7 @@ export default {
   },
   data() {
     return {
-      // listViewMixin 配置
+      // listViewMixin Cấu hình
       listApi: listSupplierPage,
       getApi: getSupplierById,
       deleteApi: deleteSupplier,
@@ -186,23 +186,23 @@ export default {
       types:[
         {
           value: '1',
-          label: '药品供应商'
+          label: 'Nhà cung cấp thuốc'
         },
         {
           value: '2',
-          label: '材料供应商'
+          label: 'Nhà cung cấp vật tư'
         },
       ],//供应商类型
       queryModel: {
-        'name': '',   // 名称
-        'linkman': '',   // 联系人
-        'phone': '',   // 电话
-        'address': '',   // 地址
+        'name': '',   // Tên
+        'linkman': '',   // Người liên hệ
+        'phone': '',   // Điện thoại
+        'address': '',   // Địa chỉ
       },
       supplierTotal: 0,
       supplierList: [],
 
-      oprColumnWidth: 140,  // 操作列宽
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1005526731044757538',
       schemeId: '1005526731044757555'
     }
@@ -230,13 +230,13 @@ export default {
   },
   watch: {
    
-     // tableData是el-table绑定的数据
+     // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
-          // 解决表格显示错位问题
+          // Khắc phục lỗi hiển thị lệch bảng
           handler () {
               this.$nextTick(() => {
-                  // tableRef是el-table绑定的ref属性值
-                  this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+                  // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+                  this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
               })
           },
           deep: true

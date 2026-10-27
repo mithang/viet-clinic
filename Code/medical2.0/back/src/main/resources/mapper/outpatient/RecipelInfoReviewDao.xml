@@ -113,8 +113,8 @@
             <include refid="Common.whereParams"/>
         </where>
         <choose>
-            <!--使用mysql的RAND()实现随机排序，这里 NOW() 返回当前时间戳，确保每次查询都提供不同的随机种子，从而得到不同的结果。每次查询的结果都会因为不同的种子值而不同。
-        如果以后因为数据量大了，查询很慢，可以换成java代码来随机 的方式-->
+            <!--Sử dụngmysql của RAND()Triển khaingẫu nhiênsắp xếp, Ở đây NOW() Trả vềHiện tạiThời giandấu, Đảm bảo mỗi lần truy vấn đều cung cấp seed ngẫu nhiên khác nhau, Từ màđượcĐếnkhác nhau của Kết quả. Kết quả mỗi lần truy vấn đều khác nhau do giá trị seed khác nhau. 
+        Nếubằngsaudo là Dữ liệulượnglớnrồi, Truy vấn很chậm, Có thểđổithànhjavamãđếnngẫu nhiên  của cách-->
             <when test="order == '`RAND(NOW())`'">
                 ORDER BY RAND(NOW())
             </when>

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 路由管理Service
+ * Quản lý tuyến đườngService
  * @author lys
  * @version 2021-11-18
  */

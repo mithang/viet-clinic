@@ -12,7 +12,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -29,23 +29,23 @@
       class="edit-form"
     >
       <div class="tab-item" v-show="tabIndex === '1'">
-        <!-- 主表单  开始-->
+        <!-- Biểu mẫu chính  Bắt đầu-->
 
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="姓名" prop="name">
+            <el-form-item label="Họ tên" prop="name">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.name"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入用户名'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên đăng nhập'
                 "
               ></el-input>
             </el-form-item>
           </el-col>
           <!-- <el-col :span="24 / 2">
-            <el-form-item label="性别" prop="userExt.sex">
+            <el-form-item label="Giới tính" prop="userExt.sex">
               <el-radio v-model="bizFormModel.userExt.sex" label="1"
                 >男</el-radio
               >
@@ -57,22 +57,22 @@
         </el-row>
         <el-row>
           <!-- <el-col :span="24 / 2">
-            <el-form-item label="民族" prop="userExt.nation">
+            <el-form-item label="Dân tộc" prop="userExt.nation">
               <el-input
                 v-model="bizFormModel.userExt.nation"
                 :maxlength="128"
-                :placeholder="'请输入民族'"
+                :placeholder="'Vui lòng nhập dân tộc'"
               ></el-input>
             </el-form-item>
           </el-col> -->
           <el-col :span="24 / 2">
-            <el-form-item label="手机号" prop="phone">
+            <el-form-item label="Số điện thoại di động" prop="phone">
               <el-input
                 :disabled="dialogProps.action === 'view'||  dialogProps.action === 'edit'"
                 v-model="bizFormModel.phone"
                 :maxlength="11"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入手机号'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số điện thoại di động'
                 "
               ></el-input>
             </el-form-item>
@@ -80,16 +80,16 @@
         </el-row>
         <el-row>
           <!-- <el-col :span="24 / 2">
-            <el-form-item label="民族" prop="userExt.nation">
+            <el-form-item label="Dân tộc" prop="userExt.nation">
               <el-input
                 v-model="bizFormModel.userExt.nation"
                 :maxlength="128"
-                :placeholder="'请输入民族'"
+                :placeholder="'Vui lòng nhập dân tộc'"
               ></el-input>
             </el-form-item>
           </el-col> -->
           <el-col :span="24 / 2">
-            <el-form-item label="执业编码" prop="pracPsnCode">
+            <el-form-item label="Mã hành nghề" prop="pracPsnCode">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.userExt.pracPsnCode"
@@ -103,17 +103,17 @@
         </el-row>
         <el-row>
           <!-- <el-col :span="24 / 2">
-            <el-form-item label="出生日期" prop="userExt.birthday">
+            <el-form-item label="Ngày sinh" prop="userExt.birthday">
               <el-date-picker
                 v-model="bizFormModel.userExt.birthday"
                 type="date"
-                placeholder="选择日期"
+                placeholder="Chọn ngày"
               >
               </el-date-picker>
             </el-form-item>
           </el-col> -->
           <el-col :span="24 / 2">
-            <el-form-item label="上传头像" prop="userHeader">
+            <el-form-item label="Tải ảnh đại diện lên" prop="userHeader">
               <el-upload
                 class="avatar-uploader"
                 :show-file-list="false"
@@ -133,35 +133,35 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="证件类型" prop="userExt.creditType">
+            <el-form-item label="Loại giấy tờ" prop="userExt.creditType">
               <el-select
                 v-model="bizFormModel.userExt.creditType"
-                placeholder="请选择证件类型"
+                placeholder="Vui lòng chọn loại giấy tờ"
               >
-                <el-option label="身份证" value="身份证"> </el-option>
-                <el-option label="驾驶证" value="驾驶证"> </el-option>
+                <el-option label="CMND/CCCD" value="CMND/CCCD"> </el-option>
+                <el-option label="Giấy phép lái xe" value="Giấy phép lái xe"> </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="证件号码" prop="userExt.creditNum">
+            <el-form-item label="Số giấy tờ" prop="userExt.creditNum">
               <el-input
                 v-model="bizFormModel.userExt.creditNum"
                 :maxlength="18"
-                :placeholder="'请输入证件号码'"
+                :placeholder="'Vui lòng nhập số giấy tờ'"
               ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="科室" prop="userExt.office">
+            <el-form-item label="Khoa" prop="userExt.office">
               <!-- <el-select
                 v-model="bizFormModel.userExt.office"
-                placeholder="请选择科室"
+                placeholder="Vui lòng chọn khoa/phòng"
               >
-                <el-option label="科室1" value="科室1"> </el-option>
-                <el-option label="科室2" value="科室2"> </el-option>
+                <el-option label="Khoa1" value="Khoa1"> </el-option>
+                <el-option label="Khoa2" value="Khoa2"> </el-option>
               </el-select> -->
 
               <el-select
@@ -170,7 +170,7 @@
                 value-key="id"
                 filterable
                 clearable
-                placeholder="请选择所属诊所"
+                placeholder="Vui lòng chọn phòng khám trực thuộc"
               >
                 <el-option
                   v-for="company in department_List"
@@ -182,17 +182,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="医保职称" prop="userExt.post">
+            <el-form-item label="Chức danh bảo hiểm y tế" prop="userExt.post">
               <el-select
                 v-model="bizFormModel.userExt.post"
-                placeholder="医保职称"
+                placeholder="Chức danh bảo hiểm y tế"
               >
                 <!-- 医生相关的选项 -->
-                <el-option v-if="bizFormModel.userExt.jobType === '医生'" label="主任医师" value="231"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '医生'" label="副主任医师" value="232"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '医生'" label="主诊医师" value="233"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '医生'" label="医师" value="234"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '医生'" label="医士" value="235"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="主任医师" value="231"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="副主任医师" value="232"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="主诊医师" value="233"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="医师" value="234"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="医士" value="235"></el-option>
 
                 <!-- 药师相关的选项 -->
                 <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="执业药师" value="1"></el-option>
@@ -208,18 +208,18 @@
         <el-row>
           <el-col>
             <el-form-item label="类别" prop="userExt.jobType">
-              <el-radio v-model="bizFormModel.userExt.jobType" label="医生">医生</el-radio>
+              <el-radio v-model="bizFormModel.userExt.jobType" label="Bác sĩ">Bác sĩ</el-radio>
               <el-radio v-model="bizFormModel.userExt.jobType" label="药师">药师</el-radio>
-              <el-radio v-model="bizFormModel.userExt.jobType" label="护士">护士</el-radio>
-              <el-radio v-model="bizFormModel.userExt.jobType" label="其它">其它</el-radio>
+              <el-radio v-model="bizFormModel.userExt.jobType" label="Điều dưỡng">Điều dưỡng</el-radio>
+              <el-radio v-model="bizFormModel.userExt.jobType" label="Khác">Khác</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
 
-  <!--子表：   用户角色 开始-->
+  <!--Bảng con：   Vai trò người dùng Bắt đầu-->
         <el-row>
           <el-col>
-            <el-form-item label="用户角色" prop="userRoleList">
+            <el-form-item label="Vai trò người dùng" prop="userRoleList">
               <el-select
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.userRoleList"
@@ -227,7 +227,7 @@
                 multiple
                 clearable
                 filterable
-                placeholder="请选择角色标识"
+                placeholder="Vui lòng chọn mã vai trò"
               >
                 <el-option
                   v-for="role in role_UserRole_List"
@@ -239,7 +239,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <!--子表：   用户角色 结束-->
+        <!--Bảng con：   Vai trò người dùng Kết thúc-->
 
         <el-row>
           <el-col :span="24 / 2">
@@ -251,7 +251,7 @@
                 v-model="bizFormModel.userExt.startWorkTime"
                 type="date"
                 format="yyyy-MM-dd"
-                placeholder="开始时间"
+                placeholder="Thời gian bắt đầu"
                 :picker-options="starttime"
               >
               </el-date-picker>
@@ -263,7 +263,7 @@
                 v-model="bizFormModel.userExt.endWorkTime"
                 type="date"
                 format="yyyy-MM-dd"
-                placeholder="结束时间"
+                placeholder="Thời gian kết thúc"
                 :picker-options="endTime"
               >
               </el-date-picker>
@@ -272,7 +272,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="登录名" prop="phone">
+            <el-form-item label="Tên đăng nhập" prop="phone">
               <el-input
                 disabled='false'
                 v-model="bizFormModel.phone"
@@ -283,12 +283,12 @@
           </el-col>
           <el-col :span="24 / 2">
             <el-form-item
-              label="修改密码"
+              label="Đổi mật khẩu"
               prop="loginPasswordUpdate"
               v-if="dialogProps.action === 'edit'"
             >
               <el-checkbox v-model="bizFormModel.loginPasswordUpdate"
-                >修改密码</el-checkbox
+                >Đổi mật khẩu</el-checkbox
               >
             </el-form-item>
           </el-col>
@@ -296,7 +296,7 @@
         <el-row>
           <el-col :span="24 / 2">
             <el-form-item
-              label="密码"
+              label="Mật khẩu"
               prop="loginPassword"
               v-if="
                 dialogProps.action !== 'view' &&
@@ -310,13 +310,13 @@
                 type="password"
                 auto-complete="new-password"
                 :maxlength="64"
-                :placeholder="dialogProps.action === 'view' ? '' : '请输入密码'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập mật khẩu'"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
             <el-form-item
-              label="确认密码"
+              label="Xác nhận mật khẩu"
               prop="loginPasswordConfirm"
               v-if="
                 dialogProps.action !== 'view' &&
@@ -330,7 +330,7 @@
                 type="password"
                 :maxlength="64"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入确认密码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mật khẩu xác nhận'
                 "
               ></el-input>
             </el-form-item>
@@ -338,7 +338,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="是否启用" prop="isLocked">
+            <el-form-item label="Có kích hoạt không" prop="isLocked">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isLocked"
@@ -352,29 +352,29 @@
         </el-row>
         <!-- <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item label="Email" prop="email">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.email"
                 :maxlength="100"
-                :placeholder="dialogProps.action === 'view' ? '' : '请输入邮箱'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập email'"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="是否在职" prop="userExt.isDuty">
+            <el-form-item label="Có đang công tác không" prop="userExt.isDuty">
               <el-radio v-model="bizFormModel.userExt.isDuty" label="0"
-                >否</el-radio
+                >Không</el-radio
               >
               <el-radio v-model="bizFormModel.userExt.isDuty" label="1"
-                >是</el-radio
+                >Có</el-radio
               >
             </el-form-item>
           </el-col>
         </el-row> -->
         <el-row>
           <el-col>
-            <el-form-item label="介绍" prop="userExt.description">
+            <el-form-item label="Giới thiệu" prop="userExt.description">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.userExt.description"
@@ -388,12 +388,12 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <!-- 主表单  结束-->
+        <!-- Biểu mẫu chính  Kết thúc-->
 
       </div>
     </el-form>
 
-    <!-- 按钮  开始-->
+    <!-- Nút  Bắt đầu-->
     <span slot="footer" class="dialog-footer">
       <el-button
         v-if="dialogProps.action !== 'view'"
@@ -401,22 +401,22 @@
         :disabled="flag"
         :plain="true"
         @click="onSubmit('userForm')"
-        >保 存</el-button
+        >Lưu</el-button
       >
       <el-button
         v-if="dialogProps.action !== 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >取 消</el-button
+        >Hủy</el-button
       >
       <el-button
         v-if="dialogProps.action === 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >关 闭</el-button
+        >Đóng</el-button
       >
     </span>
-    <!-- 按钮 结束-->
+    <!-- Nút Kết thúc-->
   </el-dialog>
 </template>
 
@@ -443,9 +443,9 @@ export default {
       tabIndex: "1",
       flag:false,
       key_department: 1, // el-cascader key
-      department_List: [], // 部门
+      department_List: [], // Phòng ban
 
-      role_UserRole_List: [], // 角色标识
+      role_UserRole_List: [], // Mã vai trò
 
       dialogProps: {
         visible: false,
@@ -453,28 +453,28 @@ export default {
         title: "",
       },
       formRules: {
-        // 主表验证
+        // Xác thực bảng chính
         "company.id": [
-          { required: true, message: "请选择公司", trigger: "change" },
+          { required: true, message: "Vui lòng chọn công ty", trigger: "change" },
         ],
         "department.id": [
-          { required: false, message: "请选择部门", trigger: "change" },
+          { required: false, message: "Vui lòng chọn bộ phận", trigger: "change" },
         ],
         // "userExt.creditNum": [
-        //   { required: true, message: "请输入证件号码", trigger: "blur" },
+        //   { required: true, message: "Vui lòng nhập số giấy tờ", trigger: "blur" },
 
         //   {
         //     min: 18,
         //     max: 18,
-        //     message: "请输入18位身份证号码",
+        //     message: "Vui lòng nhập18chữ số của số CMND/CCCD",
         //     trigger: "blur",
         //   },
         // ],
         // "userExt.nation": [
-        //   { required: true, message: "请输入民族", trigger: "blur" },
+        //   { required: true, message: "Vui lòng nhập dân tộc", trigger: "blur" },
         // ],
         // "userExt.birthday": [
-        //   { required: true, message: "请选择出生日期", trigger: "change" },
+        //   { required: true, message: "Vui lòng chọn ngày sinh", trigger: "change" },
         // ],
         // "userExt.startWorkTime": [
         //   {
@@ -491,16 +491,16 @@ export default {
         //   },
         // ],
         // "userExt.creditType": [
-        //   { required: true, message: "请选择证件类型", trigger: "change" },
+        //   { required: true, message: "Vui lòng chọn loại giấy tờ", trigger: "change" },
         // ],
         // "userExt.post": [
         //   { required: true, message: "请选择职位", trigger: "blur" },
         // ],
         "userExt.office": [
-          { required: true, message: "请选择科室", trigger: "change" },
+          { required: true, message: "Vui lòng chọn khoa/phòng", trigger: "change" },
         ],
         // "userExt.sex": [
-        //   { required: true, message: "请选择性别", trigger: "change" },
+        //   { required: true, message: "Vui lòng chọn giới tính", trigger: "change" },
         // ],
         // "userExt.isDuty": [
         //   { required: true, message: "请选择是否在职", trigger: "change" },
@@ -508,20 +508,20 @@ export default {
         "userExt.jobType": [
           { required: true, message: "请选择类别", trigger: "change" },
         ],
-        name: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+        name: [{ required: true, message: "Vui lòng nhập tên đăng nhập", trigger: "blur" }],
         loginName: [
-          { required: true, message: "请输入登录名", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập tên đăng nhập", trigger: "blur" },
         ],
         loginPassword: [
-          { required: true, message: "请输入密码", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập mật khẩu", trigger: "blur" },
         ],
-        // userHeader: [{ required: true, message: "上传头像", trigger: "blur" }],
+        // userHeader: [{ required: true, message: "Tải ảnh đại diện lên", trigger: "blur" }],
         loginPasswordConfirm: [
-          { required: true, message: "请输入确认密码", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập mật khẩu xác nhận", trigger: "blur" },
           {
             validator: (rule, value, callback) => {
               if (value !== this.bizFormModel.loginPassword) {
-                callback(new Error("两次输入密码不一致!"));
+                callback(new Error("Hai lần nhập mật khẩu không khớp!"));
               } else {
                 callback();
               }
@@ -530,8 +530,8 @@ export default {
           },
         ],
         phone: [
-          { required: true, message: "请输入手机号", trigger: "blur" },
-          { min: 11, max: 11, message: "请输入11位手机号码", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập số điện thoại di động", trigger: "blur" },
+          { min: 11, max: 11, message: "Vui lòng nhập11位手机号码", trigger: "blur" },
           {
             pattern:
           // /^1(3[0-9]|4[01456879]|5[0-3,5-9]|6[2567]|7[0-8]|8[0-9]|9[0-3,5-9])d{8}$/,
@@ -540,16 +540,16 @@ export default {
           message: "请输入正确的手机号码",
           },
         ],
-        // email: [{ required: true, message: "请输入邮箱", trigger: "blur" }],
-        // 子表验证 用户角色
+        // email: [{ required: true, message: "Vui lòng nhập email", trigger: "blur" }],
+        // Xác thực bảng con Vai trò người dùng
         userRoleList: [
-          { required: true, message: "请选择角色标识", trigger: "change" },
+          { required: true, message: "Vui lòng chọn mã vai trò", trigger: "change" },
         ],
       },
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object,
     },
@@ -581,7 +581,7 @@ export default {
       if (!isLt2M) {
         this.$message.error(this.inter.sctpdx + " 2MB!");
       } else {
-        // 存储图片，点击确认按钮时统一上传
+        // 存储图片，Tải lên thống nhất khi nhấn nút xác nhận
 
         this.bizFormModel.userHeader = URL.createObjectURL(file.raw);
         this.bizFormModel.fileIdFile = file.raw;
@@ -615,7 +615,7 @@ export default {
           }
         } else {
           this.flag=false
-          // 处理校验定位
+          // Xử lý định vị kiểm tra
           let arr = [];
           let numArr = [];
           for (let i in object) {
@@ -640,7 +640,7 @@ export default {
 
     createForme() {
       this.bizFormModel.loginName = this.bizFormModel.phone;
-      //如果是新增，密码默认手机号最后6位
+      //如果是新增，密码默认手机号最后6vị
       if(this.dialogProps.action === "add"){
         this.bizFormModel.loginPassword = this.bizFormModel.phone.substring((this.bizFormModel.phone.length-6),this.bizFormModel.phone.length)
       }
@@ -698,7 +698,7 @@ export default {
     onAddUserRoleRow(tableData) {
       tableData.push({
         user: {
-          // 父表 用户标识
+          // Bảng cha 用户标识
           id:
             validatenull(parent) || validatenull(parent.user)
               ? null
@@ -709,11 +709,11 @@ export default {
               : parent.user.name,
         },
         role: {
-          // 角色标识
+          // Mã vai trò
           id: null,
           name: "",
         },
-        remarks: "", // 备注
+        remarks: "", // Ghi chú
       });
     },
     onDeleteRow(index, tableData) {
@@ -721,7 +721,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改用户";
+      this.dialogProps.title = "Sửa người dùng";
       this.initOptions(this.bizFormModel);
     },
     onDialogClose() {
@@ -735,7 +735,7 @@ export default {
     initFormModel(This) {
       return {
         company: {
-          // 父表 公司
+          // Bảng cha Công ty
           id:
             validatenull(This) || validatenull(This.company)
               ? null
@@ -758,45 +758,45 @@ export default {
               : This.company.fullName,
         },
         department: {
-          // 部门
+          // Phòng ban
           id: null,
           name: null,
           ids: null,
           code: null,
         },
-        fileIdFile: "", //图片
+        fileIdFile: "", //Hình ảnh
         userExt: {
-          sex: "", //性别
-          nation: "", // 民族
-          birthday: "", // 出生日期
-          description: "", // 介绍
-          isDuty: "", // 是否在职
-          creditType: "", // 证件类型
-          creditNum: "", // 证件号码
+          sex: "", //Giới tính
+          nation: "", // Dân tộc
+          birthday: "", // Ngày sinh
+          description: "", // Giới thiệu
+          isDuty: "", // Có đang công tác không
+          creditType: "", // Loại giấy tờ
+          creditNum: "", // Số giấy tờ
           post: "", // 职位
           postCode:"" ,//职位代码
-          office: "", // 科室名称
+          office: "", // Tên khoa/phòng
           jobType: "", // 职业类型
-          startWorkTime: "", // 开始时间
-          endWorkTime: "", //结束时间
-          pracPsnCode:"" ,//执业编码
+          startWorkTime: "", // Thời gian bắt đầu
+          endWorkTime: "", //Thời gian kết thúc
+          pracPsnCode:"" ,//Mã hành nghề
         },
         userHeader: "", // 用户头像回显
-        name: "", // 用户名
-        loginName: "", // 登录名
-        loginPassword: "", // 密码
+        name: "", // Tên đăng nhập
+        loginName: "", // Tên đăng nhập
+        loginPassword: "", // Mật khẩu
         loginPasswordUpdate:
           this.dialogProps &&
           (this.dialogProps.action === "add" ||
             this.dialogProps.action === "copy")
             ? true
             : false, // 是否修改密码
-        isLocked: 0, // 启用
-        phone: "", // 手机号
-        email: "", // 邮箱
+        isLocked: 0, // Kích hoạt
+        phone: "", // Số điện thoại di động
+        email: "", // Email
         qyOpenId: "", // 企业openid
-        remarks: "", // 备注信息
-        // userRoleList: [], // 子表列表
+        remarks: "", // Thông tin ghi chú
+        // userRoleList: [], // Danh sách bảng con
       };
     },
 
@@ -804,7 +804,7 @@ export default {
       let company_search = {
         params: [],
       };
-      // 表有禁用字段
+      // Bảng có trường bị vô hiệu hóa
       company_search.params.push.apply(company_search.params, [
         {
             columnName: "company_id",
@@ -813,7 +813,7 @@ export default {
           },
         { columnName: "is_locked", queryType: "=", value: "0" },
       ]);
-      // 数据权限: 科室clinic_office
+      // Quyền dữ liệu: Khoaclinic_office
       this.pushDataPermissions(
         company_search.params,
         this.$route.meta.routerId,
@@ -833,9 +833,9 @@ export default {
           { columnName: "company_id", queryType: "=", value: This.company.id },
         ],
       };
-      // // 字段对应表上filter条件
+      // // Trên bảng tương ứng của trườngfilterĐiều kiện
       // department_search.params.push.apply(department_search.params, []);
-      // // 数据权限: 部门org_department
+      // // Quyền dữ liệu: Phòng banorg_department
       // this.pushDataPermissions(
       //   department_search.params,
       //   this.$route.meta.routerId,
@@ -846,19 +846,19 @@ export default {
       //   // this.department_List = responseData.data;
       // });
 
-      // 子表  用户角色
+      // Bảng con  Vai trò người dùng
       This = this.userRoleCurrentRow;
       let role_UserRole_search = {
         params: [],
       };
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       role_UserRole_search.params.push.apply(role_UserRole_search.params, []);
-      // 表有禁用字段
+      // Bảng có trường bị vô hiệu hóa
       role_UserRole_search.params.push.apply(role_UserRole_search.params, [
         { columnName: "is_locked", queryType: "=", value: "0" },
         { columnName: "company_id", queryType: "=", value: company_id },
       ]);
-      // 数据权限: 角色sys_role
+      // Quyền dữ liệu: Vai tròsys_role
       this.pushDataPermissions(
         role_UserRole_search.params,
         this.$route.meta.routerId,
@@ -942,7 +942,7 @@ export default {
           this.bizFormModel = this.initFormModel()
         }
         this.dialogProps.action = "edit";
-        this.dialogProps.title = "修改用户";
+        this.dialogProps.title = "Sửa người dùng";
         this.bizFormModel = { ...this.bizFormModel, ...user };
         this.tabIndex = "1";
         this.initOptions(this.bizFormModel);
@@ -950,7 +950,7 @@ export default {
       });
       this.$on("openAddUserDialog", function (parent) {
         this.dialogProps.action = "add";
-        this.dialogProps.title = "添加用户";
+        this.dialogProps.title = "Thêm người dùng";
         this.bizFormModel = this.initFormModel(parent);
         this.initOptions(this.bizFormModel);
         this.tabIndex = "1";
@@ -958,11 +958,11 @@ export default {
       });
       this.$on("openCopyUserDialog", function (user) {
         this.dialogProps.action = "copy";
-        this.dialogProps.title = "添加用户";
+        this.dialogProps.title = "Thêm người dùng";
         this.bizFormModel = user;
         this.initOptions(this.bizFormModel);
         this.tabIndex = "1";
-        this.bizFormModel.id = null; //把id设置为空，添加一个新的
+        this.bizFormModel.id = null; //ĐặtidĐặt thành trống，Thêm mới một
         for (let i = 0; i <= this.bizFormModel.userRoleList.length - 1; i++) {
           this.bizFormModel.userRoleList[i].id = null;
         }

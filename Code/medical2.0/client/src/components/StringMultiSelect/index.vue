@@ -17,13 +17,13 @@ export default {
     }
   },
   props: {
-    // 接受外部v-model传入的值
+    // Nhận từ bên ngoàiv-modelgiá trị truyền vào
     value: {
       type: String
     },
     placeholder: {
       type: String,
-      default: () => {return '请选择'}
+      default: () => {return 'Vui lòng chọn'}
     },
     // 选择器选择项
     opts: {
@@ -46,7 +46,7 @@ export default {
         this.init()
       }
     },
-    // 判断下拉框的值是否有改变
+    // Kiểm tra giá trị hộp thả xuống có thay đổi không
     arrSelected(val, oldVal) {
       if(val!==oldVal){
         if(this.arrSelected.length > 0) {
@@ -58,7 +58,7 @@ export default {
     }
   },  
   mounted(){
-    // 初始值
+    // Giá trị ban đầu
     this.init()
   },
   methods: {

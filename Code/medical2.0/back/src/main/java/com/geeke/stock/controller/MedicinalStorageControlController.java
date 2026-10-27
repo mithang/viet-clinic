@@ -8,7 +8,7 @@ import com.geeke.stock.entity.MedicinalStorageControl;
 import com.geeke.stock.service.MedicinalStorageControlService;
 
 /**
- * 药品/材料入库明细控制Controller
+ * Thuốc/Kiểm soát chi tiết nhập kho vật tưController
  * @author hl
  * @version 2022-09-26
  */

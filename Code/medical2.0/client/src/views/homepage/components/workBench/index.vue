@@ -14,8 +14,8 @@
     <div class="often-body" style="position: relative; min-height: 210px;">
       <div v-if="currentType === 'MY_TASK'" class="empty-placeholder">暂无待办</div>
       <div v-if="currentType === 'MY_PROCESS'" class="empty-placeholder">暂无申请</div>
-      <div v-if="currentType === 'MY_APPLIED'" class="empty-placeholder">暂无记录</div>
-      <div v-if="currentType === 'MY_APPROVED'" class="empty-placeholder">暂无记录</div>
+      <div v-if="currentType === 'MY_APPLIED'" class="empty-placeholder">Chưa có bản ghi</div>
+      <div v-if="currentType === 'MY_APPROVED'" class="empty-placeholder">Chưa có bản ghi</div>
     </div>
   </el-card>
 </template>

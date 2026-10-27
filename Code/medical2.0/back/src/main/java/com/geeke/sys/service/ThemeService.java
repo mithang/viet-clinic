@@ -10,7 +10,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 系统主题Service
+ * Chủ đề hệ thốngService
  * @author lys
  * @version 2021-09-19
  */

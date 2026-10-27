@@ -22,7 +22,7 @@
         </el-pagination>
       </el-col>
     </el-row>-->
-    <div class="no-data" v-if="reportList.length === 0">暂无数据</div>
+    <div class="no-data" v-if="reportList.length === 0">Chưa có dữ liệu</div>
   </div>
 </template>
 
@@ -114,12 +114,12 @@
           this.$store.commit('report/setCanvasStyle', JSON.parse(response.data.panelStyle))
           this.$store.dispatch('panel/setPanelInfo', row)
 
-          // 刷新联动信息
+          // Làm mới thông tin liên kết
           getPanelAllLinkageInfo(row.id).then(rsp => {
             this.$store.commit('report/setNowPanelTrackInfo', rsp.data)
           })
 
-          // 刷新跳转信息
+          // Làm mới thông tin chuyển hướng
           queryPanelJumpInfo(row.id).then(rsp => {
             this.$store.commit('report/setNowPanelJumpInfo', rsp.data)
           })

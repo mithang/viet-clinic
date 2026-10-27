@@ -1,6 +1,6 @@
 
 /**
-* 两层循环实现建树 把list数据通过 id，和parentId够造成一个树
+* 两层循环实现建树 Đặtlist数据通过 id，vàparentId够造成一个树
 */
 export function buildTree(list) {
   const map = {}
@@ -29,16 +29,16 @@ export function isLightOrDark(rgbColor) {
 }
 
 /**
- * 获取 N 天前的日期
- * @param {number} days 天数
- * @returns {Date} N 天前的 Date 对象
+ * Lấy N 天前的日期
+ * @param {number} days Số ngày
+ * @returns {Date} N 天前的 Date Đối tượng
  */
 export function daysAgo(days) {
   return new Date(Date.now() - days * 86400000)
 }
 
 /**
- * 格式化日期为 YYYY-MM-DD HH:mm:ss 字符串
+ * 格式化日期为 YYYY-MM-DD HH:mm:ss Chuỗi ký tự
  * @param {Date} date 日期对象
  * @returns {string} 格式化后的日期字符串
  */
@@ -53,7 +53,7 @@ export function formatDateTime(date) {
 }
 
 /**
- * BigNumber 格式化工具（千分位，保留2位小数）
+ * BigNumber 格式化工具（Phân tách hàng nghìn，保留2chữ số thập phân）
  * 需要项目中已引入 BigNumber.js
  * @param {BigNumber} BigNumber BigNumber 构造函数
  * @returns {function} 格式化函数

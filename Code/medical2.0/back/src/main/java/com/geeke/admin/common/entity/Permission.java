@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 /**
- * 权限dto类
+ * QuyềndtoLớp
  * 
  * @author Lining
  * @date 2018/2/27

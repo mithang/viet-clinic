@@ -20,7 +20,7 @@
     :data="tableData"
     style="width: 100%">
     <el-table-column
-             label="序号"
+             label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -34,17 +34,17 @@
     </el-table-column>
     <el-table-column
       prop="name"
-      label="名称"
+      label="Tên"
       :show-overflow-tooltip="true" 
       min-width="78%">
     </el-table-column>
     <el-table-column
-      label="操作"
+      label="Thao tác"
       min-width="20%"
       >
       <template slot-scope="scope">
-        <a @click="handleClick(titletype,scope.row.id)" type="text" size="small" class="fontcolor">就诊</a>
-        <a type="text" size="small" class="fontcolor"  @click="btnoverlook(scope.row.id,titletype)" >忽略</a>
+        <a @click="handleClick(titletype,scope.row.id)" type="text" size="small" class="fontcolor">Khám bệnh</a>
+        <a type="text" size="small" class="fontcolor"  @click="btnoverlook(scope.row.id,titletype)" >Bỏ qua</a>
       </template>
     </el-table-column>
     
@@ -61,8 +61,8 @@
               </el-pagination>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button :disabled="flag" type='primary' :plain='true' @click='onDialogClose()'>确 定</el-button>
-      <el-button :plain='true' type="primary" @click='onDialogClose()'>取 消</el-button>
+      <el-button :disabled="flag" type='primary' :plain='true' @click='onDialogClose()'>Xác nhận</el-button>
+      <el-button :plain='true' type="primary" @click='onDialogClose()'>Hủy</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -109,13 +109,13 @@ fymodel: {
 
      titletype:"",
 
-//今日待就诊患者列表
+//Danh sách bệnh nhân chờ khám hôm nay
       TobeseenList: [],
-      //今日待就诊患者总数
+      //Tổng số bệnh nhân chờ khám hôm nay
       Totalsums: "",
-      //搜索患者信息
+      //Tìm thông tin bệnh nhân
       SearchPatientInfo: "",
-      //就诊搜索条件
+      //Điều kiện tìm kiếm khám bệnh
       SearchPreModel: {
         columnName: "",
         limit: 1000,
@@ -147,8 +147,8 @@ fymodel: {
       //待发药总人数
       dispensingsum:0,
 
-      //待收费
-       //新的传参实体类
+      //Chờ thu phí
+       //Lớp thực thể tham số mới
       patientQueryCondition: {
         columnName: "",
         limit: 0,
@@ -167,7 +167,7 @@ fymodel: {
       //待收费数据
       PatientchargeList:[],
       Patientchargesum:0,
-//待治疗
+//Chờ điều trị
       patientcure: {
         columnName: "",
         limit: 0,
@@ -187,7 +187,7 @@ fymodel: {
       },
       patientcurecounts:[],
       patientcuresum:0,
-//待输液
+//Chờ truyền dịch
      patientdsylist: {
         columnName: "",
         limit: 0,
@@ -208,7 +208,7 @@ fymodel: {
       patientdsylistcounts:[],
       patientdsylistsums:0,
 
-      //待检验检查
+      //Chờ xét nghiệm/kiểm tra
       searchjyjc: {
         params: [
           {columnName: 'company_id', queryType: '=', value: currentUser.company.id},
@@ -217,8 +217,8 @@ fymodel: {
           ],    
         offset: 0,
         limit: 1000,
-		columnName: '',      // 排序字段名
-        order: ''            // 排序
+		columnName: '',      // Tên trường sắp xếp
+        order: ''            // Sắp xếp
       },
       jyjclistcounts:[],
       jyjctotal:0,
@@ -230,7 +230,7 @@ fymodel: {
   },
 
   methods: {
-    //关闭弹窗
+    //Đóng hộp thoại
    onDialogClose() {
     // debugger
      this.$emit('typeclick',this.titletype);
@@ -248,12 +248,12 @@ fymodel: {
     initFormModel(This) {
       return {
         company: {
-          // 诊所id
+          // Phòng khámid
           id: currentUser.company.id,
           name: null,
         },
         withPatientNexus: {
-          // 与患者关系
+          // Quan hệ với bệnh nhân
           value: null,
           name: null,
         },
@@ -309,7 +309,7 @@ this.selectpatientdjyjclist();
   }
 },
 
-//获取待就诊患者列表
+//Lấy danh sách bệnh nhân chờ khám
     GetPreparePatientList() {
         this.tableData=[];
       let params = [
@@ -337,7 +337,7 @@ this.selectpatientdjyjclist();
       this.SearchPreModel.offset=this.fymodel.offset;
       this.SearchPreModel.limit=this.fymodel.limit;
       this.SearchPreModel.params = params;
-      this.SearchPreModel.params[1].value = "registrationStatus_0";//待就诊
+      this.SearchPreModel.params[1].value = "registrationStatus_0";//Chờ khám
       listSchedulesPage(this.SearchPreModel).then((responseData) => {
         if (responseData.code === 100) {
           
@@ -399,13 +399,13 @@ GetDispensingTable() {
       });
     },
 
-    //待收费
+    //Chờ thu phí
 selectPatientchargeList(){
   this.tableData=[];
   this.patientQueryCondition.overlook="0",
 this.patientQueryCondition.limit = this.fymodel.limit;
       this.patientQueryCondition.companyId = currentUser.company.id,
-      /*待收费*/
+      /*Chờ thu phí*/
       this.isOnlyRead = false;
       this.patientQueryCondition.offset =this.fymodel.offset;
       this.patientList = [];
@@ -442,13 +442,13 @@ this.patientQueryCondition.limit = this.fymodel.limit;
 
   },
 
-//待治疗
+//Chờ điều trị
 selectcurePatientList(){
   this.tableData=[];
   this.patientcure.overlook="0",
   this.patientcure.limit = this.fymodel.limit;
       this.patientcure.companyId = currentUser.company.id,
-      /*待完成*/
+      /*Chờ hoàn thành*/
       this.isOnlyRead = false;
       this.patientcure.offset =this.fymodel.offset;
       this.patientcure.columnName = "charge_date";
@@ -486,7 +486,7 @@ selectcurePatientList(){
           this.$message.error(error);
         });
 },
-//待输液
+//Chờ truyền dịch
 selectpatientdsylist(){
   this.tableData=[];
   this.patientdsylistsums=0;
@@ -494,7 +494,7 @@ selectpatientdsylist(){
   this.patientdsylist.overlook="0",
 this.patientdsylist.limit = this.fymodel.limit;
       this.patientdsylist.companyId = currentUser.company.id;
-      /*待收费*/
+      /*Chờ thu phí*/
       this.isOnlyRead = false;
       this.patientdsylist.offset =this.fymodel.offset;
       this.patientList = [];
@@ -534,7 +534,7 @@ this.patientdsylist.limit = this.fymodel.limit;
         });
 },
 
-//待检验检查
+//Chờ xét nghiệm/kiểm tra
 selectpatientdjyjclist(){
   this.tableData=[];
   this.searchjyjc.offset=this.fymodel.offset;
@@ -583,7 +583,7 @@ case "dfy":
   break;
 }
 },
-//获取Id进行忽略单条数据
+//LấyId进行忽略单条数据
     btnoverlook(values,types){
       this.tableData=[];
       let strRecipelInfoIds=values;
@@ -615,12 +615,12 @@ this.selectpatientdjyjclist();
       let titles = "";
       this.titletype = types;
       switch (types) {
-        case "djz": titles = "待就诊"; break;
-        case "dsf": titles = "待收费"; break;
-        case "dfy": titles = "待发药"; break;
-        case "dzl": titles = "待治疗"; break;
-        case "dsy": titles = "待输液"; break;
-        case "djyjc": titles = "待检验检查"; break;
+        case "djz": titles = "Chờ khám"; break;
+        case "dsf": titles = "Chờ thu phí"; break;
+        case "dfy": titles = "Chờ phát thuốc"; break;
+        case "dzl": titles = "Chờ điều trị"; break;
+        case "dsy": titles = "Chờ truyền dịch"; break;
+        case "djyjc": titles = "Chờ xét nghiệm/kiểm tra"; break;
       }
       this.types = types;
       this.dialogProps.action = 'add'

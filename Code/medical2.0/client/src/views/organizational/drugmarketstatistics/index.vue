@@ -3,22 +3,22 @@
     <el-card class="page-container">
       <el-row>
         <el-col style="text-align:right;margin-bottom:10px">
-          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>导出</el-button>
+          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>Xuất</el-button>
         </el-col>
       </el-row>
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
         <el-row class='search-row'>
           <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm'
                    :inline-message='true'>
             <el-col :span="8">
-              <el-form-item label='收费日期' prop='time'>
+              <el-form-item label='Ngày thu phí' prop='time'>
                 <el-date-picker
                   v-model="queryModel.dateRange"
                   type="datetimerange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
+                  range-separator="đến"
+                  start-placeholder="Ngày bắt đầu"
+                  end-placeholder="Ngày kết thúc"
                   :default-time="['00:00:00', '23:59:59']"
                   format="yyyy-MM-dd HH:mm:ss"
                 >
@@ -26,31 +26,31 @@
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label="诊所" style="margin-right: 3px;">
-                <el-select v-model="queryModel.jgid" placeholder="诊所">
-                  <el-option label="全部" value="qb"></el-option>
+              <el-form-item label="Phòng khám" style="margin-right: 3px;">
+                <el-select v-model="queryModel.jgid" placeholder="Phòng khám">
+                  <el-option label="Tất cả" value="qb"></el-option>
                   <el-option v-for="item in jglist" :value="item.jgid" :key="item.jgid" :label="item.jgmc">
                   </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='药品名称' prop='name'>
+              <el-form-item label='Tên thuốc' prop='name'>
                 <el-input
                   style="width:320px;"
                   v-model="queryModel.name"
-                  placeholder="请输入药品名称或者拼音码"
+                  placeholder="Vui lòng nhập tên thuốc hoặc mã pinyin"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='药品类型' prop='type'>
+              <el-form-item label='Loại thuốc' prop='type'>
                 <el-select
                   v-model="queryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请输入药品名称或拼音码"
+                  placeholder="Vui lòng nhập tên thuốc hoặc mã pinyin"
                   class="typeClass"
                 >
                   <el-option
@@ -67,16 +67,16 @@
 
         <el-row id="conditionOperation">
           <el-col :span="24" style="text-align:right;padding-right:5px">
-            <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>搜索</el-button>
-            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
+            <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>Tìm kiếm</el-button>
+            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
 
 
           </el-col>
         </el-row>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -98,7 +98,7 @@
               <!-- show-summary -->
               <!-- :summary-method='getTotal' -->
               <el-table-column
-                label="序号"
+                label="Số thứ tự"
                 type="index"
                 :index="indexMethod"
                 align="center">
@@ -107,32 +107,32 @@
                 align="center"
                 prop="jgid"
                 sortable v-if="false"
-                label="诊所编码">
+                label="Mã phòng khám">
               </el-table-column>
               <el-table-column
                 align="center"
                 prop="jgmc"
-                label="诊所名称">
+                label="Tên phòng khám">
               </el-table-column>
-              <el-table-column prop="type" label="药品分类">
+              <el-table-column prop="type" label="Phân loại thuốc">
               </el-table-column>
-              <el-table-column prop="name" label="药品名称"></el-table-column>
-              <el-table-column prop="dosis" label="规格">
+              <el-table-column prop="name" label="Tên thuốc"></el-table-column>
+              <el-table-column prop="dosis" label="Quy cách">
                 <template slot-scope="scope">
                   <template>
                     {{ scope.row.dosis }}{{ scope.row.dosisUnit }}*{{ scope.row.preparation }}{{ scope.row.preparationUnit }}/{{ scope.row.pack }}
                   </template>
                 </template>
               </el-table-column>
-              <el-table-column prop="total" label="数量">
+              <el-table-column prop="total" label="Số lượng">
                 <template slot-scope="scope">
                   {{ Math.floor(scope.row.total / scope.row.preparation) >= 0 ? Math.floor(scope.row.total / scope.row.preparation) + (scope.row.pack) + ((scope.row.total % scope.row.preparation > 0) ? (scope.row.total % scope.row.preparation) + scope.row.preparationUnit : "") : scope.row.total + scope.row.preparationUnit }}
                 </template>
               </el-table-column>
-              <el-table-column prop="allFee" label="总价">
+              <el-table-column prop="allFee" label="Tổng giá">
                 <template slot-scope="scope">
                   <!-- <span style="display:inline-block;width:100%;text-align:right"> -->
-                  {{ bigNum(scope.row.allFee ? scope.row.allFee : 0) }}元
+                  {{ bigNum(scope.row.allFee ? scope.row.allFee : 0) }}VNĐ
                   <!-- </span> -->
                 </template>
               </el-table-column>
@@ -140,8 +140,8 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <el-pagination
@@ -157,7 +157,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </el-card>
   </el-row>
 </template>
@@ -225,18 +225,18 @@ export default {
       let arr = []
       columns.forEach((column, index) => {
         if (index === 0) {
-          arr[index] = '合计';
+          arr[index] = 'Tổng cộng';
         } else {
           arr[index] = ''
         }
       })
       let allFee = this.allTotal != null ? this.allTotal.allFee : 0
-      arr[6] = new BigNumber(Number(allFee)).toFormat(2) + '元'
+      arr[6] = new BigNumber(Number(allFee)).toFormat(2) + 'VNĐ'
       return arr
     },
 
     appendSearchParams() {
-      // 诊所过滤
+      // Lọc phòng khám
       if (this.queryModel.jgid != null && this.queryModel.jgid !== 'qb') {
         this.search.params.push({
           columnName: " company_id",
@@ -256,7 +256,7 @@ export default {
           })
         }
       }
-      // 日期范围
+      // Khoảng ngày
       if (this.queryModel.dateRange && this.queryModel.dateRange.length) {
         this.queryModel.dateRange[0] = this.$moment(this.queryModel.dateRange[0]).format("YYYY-MM-DD HH:mm:ss")
         this.queryModel.dateRange[1] = this.$moment(this.queryModel.dateRange[1]).format("YYYY-MM-DD HH:mm:ss")
@@ -266,13 +266,13 @@ export default {
           { logic: "", queryType: ")" }
         )
       }
-      // 药品类型
+      // Loại thuốc
       this.search.params.push({
         columnName: "d.type",
         queryType: "=",
         value: validatenull(this.queryModel.type.value) ? "" : this.queryModel.type.value,
       })
-      // 药品名称
+      // Tên thuốc
       if (this.queryModel.name !== undefined && this.queryModel.name !== '') {
         this.search.params.push({
           columnName: "d.goods_name",
@@ -342,8 +342,8 @@ export default {
   },
   watch: {},
   mounted() {
-    // reportViewMixin.mounted() 已调用 this.pageInit()（内含 initOptions + 数据加载），
-    // 此处仅补充加载机构列表
+    // reportViewMixin.mounted() Đã gọi this.pageInit()（内含 initOptions + Tải dữ liệu），
+    // Tại đây chỉ bổ sung tải danh sách cơ sở
     this.Getcliniclist()
   },
 };

@@ -1,22 +1,22 @@
 <template>
   <div class="container">
     <el-form :inline="true" ref="sysParamConfigForm" :model="sysParamConfigForm" label-width="180px">
-      <el-form-item label="慢病处方最多可开">
+      <el-form-item label="Đơn thuốc bệnh mạn tính tối đa kê được">
         <el-input v-model="sysParamConfigForm.chronicDays"
-                  placeholder="请输入内容"
+                  placeholder="Vui lòng nhập nội dung"
                   @input="handleInput('chronicDays')"
                   maxlength="10"
                   @change="chronicDaysHandleChange">
-          <template slot="append">天</template>
+          <template slot="append">ngày</template>
         </el-input>
       </el-form-item>
       <el-form-item label="普通处方最多可开">
           <el-input v-model="sysParamConfigForm.normalDays"
-                    placeholder="请输入内容"
+                    placeholder="Vui lòng nhập nội dung"
                     @input="handleInput('normalDays')"
                     maxlength="10"
                     @change="normalDaysHandleChange">
-            <template slot="append">天</template>
+            <template slot="append">ngày</template>
           </el-input>
       </el-form-item>
       <el-form-item label="挂号费默认金额：">
@@ -25,7 +25,7 @@
                   type="text"
                   @change="registrationFeeHandleChange"
                   >
-          <template slot="append">元</template>
+          <template slot="append">VNĐ</template>
         </el-input>
       </el-form-item>
       <el-form-item label="药品进价是否为零售价">
@@ -36,7 +36,7 @@
 
     <!-- 保存按钮 -->
     <div class="save-button">
-      <el-button type="primary" size="medium" @click="saveData">保存</el-button>
+      <el-button type="primary" size="medium" @click="saveData">Lưu</el-button>
     </div>
   </div>
 </template>
@@ -61,10 +61,10 @@
       permissionPrefix: 'sys_param_config',
       //这个对象很重要，每次增加了类型config_name都要对应加上
       sysParamConfigForm: {
-        chronicDays: null,//慢病处方天数
-        normalDays: null,//普通处方天数
-        registrationFee: null,//默认挂号金额
-        retailPrice: null,//是否默认零售价
+        chronicDays: null,//Số ngày đơn thuốc bệnh mạn tính
+        normalDays: null,//Số ngày đơn thuốc thông thường
+        registrationFee: null,//Số tiền đăng ký khám mặc định
+        retailPrice: null,//Có mặc định giá bán lẻ không
       },
       saveMap:new Map(),
       search: {
@@ -76,7 +76,7 @@
   },
   methods: {
     /**
-     *  页面初始化，主要是将后台数据结构转换成页面需要的
+     *  Khởi tạo trang，主要是将后台数据结构转换成页面需要的
      * @returns {Promise<void>}
      */
     async pageInit() {
@@ -100,7 +100,7 @@
       })
     },
     /**
-     * 初始化saveMap
+     * Khởi tạosaveMap
      */
     initSaveDatas(){
       for (let key in this.sysParamConfigForm) {
@@ -147,14 +147,14 @@
       }
     },
     /**
-     * input中只允许输入小数并保留2位
+     * input中只允许输入小数并保留2vị
      * @param amount
      */
     //用户输入01、02等，则展示成1、2，等于非小数时过滤第一位0
     limitNum(field) {
       let amount = this.sysParamConfigForm[field]
         .replace(/[^\d.]/g, "") //只能输入数字
-        .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3") //只能输入两个小数
+        .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3") //Chỉ được nhập tối đa hai chữ số thập phân
         .replace(/\.{2,}/g, "."); //出现多个点时只保留第一个
       // 第一位不让输小数点
       if (amount === ".") {
@@ -171,7 +171,7 @@
           amount = "0";
         }
       } else {
-        // 如果第一位数字大于0（不等于0肯定就大于0），仅需考虑第二位是小数点的情况
+        // 如果第一位数字大于0（Không bằng0肯定就大于0），仅需考虑第二位是小数点的情况
         if (amount.indexOf(".") !== -1) {
           if (amount.substring(0, 1) > 0) {
           } else {
@@ -203,7 +203,7 @@
       let saveDatas = this.getSaveData();
       saveSysParamConfigList(saveDatas).then(responseData => {
         if(responseData.code === 100) {
-          this.showMessage({type: 'success', msg: '操作成功'})
+          this.showMessage({type: 'success', msg: 'Thao tác thành công'})
         } else {
           this.showMessage(responseData.msg);
         }
@@ -225,6 +225,6 @@
     display: flex;
     justify-content: center;
     margin-top: auto; /* 将按钮推到底部 */
-    padding: 20px; /* 可选：为按钮添加一些内边距 */
+    padding: 20px; /* Có thể chọn：为按钮添加一些内边距 */
   }
 </style>

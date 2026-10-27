@@ -21,7 +21,7 @@ import com.geeke.utils.ResultUtil;
 import com.geeke.utils.StringUtils;
 
 /**
- * 路由管理Controller
+ * Quản lý tuyến đườngController
  * @author lys
  * @version 2021-11-18
  */
@@ -43,7 +43,7 @@ public class RouterController extends CrudController<RouterService, Router> {
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    //获取用户是否拥有有效期预警权限
+    //LấyNgười dùngCó hay không拥cóThời hạn hiệu lựctrướccảnh báoQuyền
     @GetMapping("getUserIndateWarning/{userId}")
     public ResponseEntity<JSONObject> getUserIndateWarning(@PathVariable("userId") String userId){
         List<String> userIndateWarning = routerService.getUserIndateWarning(userId);

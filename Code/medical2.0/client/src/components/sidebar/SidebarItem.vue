@@ -57,7 +57,7 @@
       },
       handleScreenView() {
         return false
-        // 暂时禁用
+        // Tạm thời vô hiệu hóa
         // let screenWindow = null;
         // this.openWindow(screenWindow)
       },

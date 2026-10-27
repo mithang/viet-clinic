@@ -16,7 +16,7 @@ import com.geeke.sys.service.DictItemService;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 字典项Controller
+ * Mục từ điểnController
  * @author lys
  * @version 2020-06-30
  */
@@ -32,7 +32,7 @@ public class DictItemController extends CrudController<DictItemService, DictItem
 		return dictItemService;
 	}
 
-	/** 根据字典类型code获取所有字典项 */
+	/** Theo loại từ điểncodeLấy tất cả mục từ điển */
 	@GetMapping("/listByCode/{code}")
 	public ResponseEntity<JSONObject> listByCode(@PathVariable String code) {
 		List<DictItem> items = dictItemService.listByDictTypeCode(code);

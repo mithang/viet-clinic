@@ -8,17 +8,17 @@ public class Output_2201 {
     @Data
     public static class data2201_out {
         /**
-         * 就诊 ID 字符型 30 Y 医保返回唯一 流水
+         * Khám bệnh ID Kiểu ký tự 30 Y BHYTTrả vềduy nhất luồng水
          */
         private String mdtrt_id;
 
         /**
-         * 人员编号 字符型 30 Y
+         * Mã nhân viên Kiểu ký tự 30 Y
          */
         private String psn_no;
 
         /**
-         * 住院/门诊号 字符型 30 Y 院内唯一流水
+         * Nhập viện/Số khám ngoại trú Kiểu ký tự 30 Y Số thứ tự duy nhất trong viện
          */
         private String ipt_otp_no;
     }

@@ -9,7 +9,7 @@ import com.geeke.common.entity.ColumnView;
 import com.geeke.common.sequence.entity.Sequence;
 
 /**
- * 序号dao接口
+ * Số thứ tựdaoGiao diện
  * 
  * @author lys
  * @date 2021/4/30

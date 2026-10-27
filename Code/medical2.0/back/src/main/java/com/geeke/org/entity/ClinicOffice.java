@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * 科室信息Entity
+ * Thông tin khoaEntity
  * @author ch
  * @version 2022-06-14
  */
@@ -17,25 +17,25 @@ import java.time.LocalDateTime;
 public class ClinicOffice extends DataEntity<ClinicOffice> {
 
     private static final long serialVersionUID = 1026680647570219053L;
-    private Company company;      // 所属诊所
-    private String code;		// 科室编号
-    private String isLocked;		// 禁用（0：未禁用；1：禁用）
-    private String sort;		// 排序
-    private String category;		// 科室大类
-    private String address;		// 地址
-    private String itro;         //简介
-    private String deptResperName;//科室负责人
-    private String deptResperTel;//科室负责人电话
-    private LocalDateTime deptEstbdat;//科室成立日期
-    private String aprvBedCnt;//批准床位数量
-    private String poolareaNo;//统筹区编号
-    private String drPsncnt;//医师人数
-    private String pharPsncnt;//药师人数
-    private String nursPsncnt;//护士人数
-    private String tecnPsncnt;//技师人数
+    private Company company;      // thuộc vềPhòng khám
+    private String code;		// Khoamã số
+    private String isLocked;		// Vô hiệu hóa(0: ChưaVô hiệu hóa; 1: Vô hiệu hóa)
+    private String sort;		// Sắp xếp
+    private String category;		// KhoalớnLớp
+    private String address;		// Địa chỉ
+    private String itro;         //giới thiệu
+    private String deptResperName;//Khoangười phụ trách
+    private String deptResperTel;//Khoangười phụ tráchSố điện thoại
+    private LocalDateTime deptEstbdat;//KhoathànhlậpNgày
+    private String aprvBedCnt;//lôchuẩngiườngvịSố lượng
+    private String poolareaNo;//Mã vùng điều phối
+    private String drPsncnt;//Bác sĩsố người
+    private String pharPsncnt;//Dược sĩsố người
+    private String nursPsncnt;//Y tásố người
+    private String tecnPsncnt;//kỹ thuật viênsố người
 
-    private String isDefault;   //默认科室
-    private String isRegister;   //是否为登记科室
+    private String isDefault;   //Mặc địnhKhoa
+    private String isRegister;   //Có hay không là đăng kýKhoa
 
     public ClinicOffice() {
         super();
@@ -46,7 +46,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
-    @NotNull(message="所属诊所不能为空")
+    @NotNull(message="thuộc vềPhòng khámKhông thể là trống")
     public Company getCompany() {
         return company;
     }
@@ -54,7 +54,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     public void setCompany(Company company) {
         this.company = company;
     }
-    @Length(min=1, max=64, message="科室编号长度必须介于 1 和 64 之间")
+    @Length(min=1, max=64, message="Khoamã sốĐộ dài phải nằm trong khoảng 1 đến 64 ")
     public String getCode() {
         return code;
     }
@@ -63,7 +63,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
-    @Length(min=1, max=1, message="禁用（0：未禁用；1：禁用）长度必须介于 1 和 1 之间")
+    @Length(min=1, max=1, message="Vô hiệu hóa(0: ChưaVô hiệu hóa; 1: Vô hiệu hóa)Độ dài phải từ 1  và  1 Giữa")
     public String getIsLocked() {
         return isLocked;
     }
@@ -72,7 +72,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
-    @Length(min=0, max=21, message="排序长度必须介于 0 和 21 之间")
+    @Length(min=0, max=21, message="sắp xếpĐộ dài phải nằm trong khoảng 0 đến 21 ")
     public String getSort() {
         return sort;
     }
@@ -81,7 +81,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
-    @Length(min=0, max=128, message="科室大类长度必须介于 0 和 128 之间")
+    @Length(min=0, max=128, message="KhoalớnLớpĐộ dài phải nằm trong khoảng 0 đến 128 ")
     public String getCategory() {
         return category;
     }
@@ -90,7 +90,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
-    @Length(min=0, max=255, message="地址长度必须介于 0 和 255 之间")
+    @Length(min=0, max=255, message="Độ dài địa chỉ phải nằm trong khoảng 0 đến 255 ")
     public String getAddress() {
         return address;
     }
@@ -109,7 +109,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
     /**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
      */
     @Override
     @JsonIgnore
@@ -118,7 +118,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
      */
     @Override
     @JsonIgnore
@@ -128,7 +128,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
 
 
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

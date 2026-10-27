@@ -1,12 +1,12 @@
 <template>
-  <el-drawer :title='`${bussObject.name}--历史记录`' :visible.sync='drawer' direction='rtl' :modal='false' size='20%' close-on-press-escape >
+  <el-drawer :title='`${bussObject.name}--Lịch sử`' :visible.sync='drawer' direction='rtl' :modal='false' size='20%' close-on-press-escape >
     <div style='height:100%' v-loading='loading'>
       <el-timeline :reverse='false'>
         <el-timeline-item
           v-for="(activity, index) in activities"
           :key="index"
           :timestamp="activity.createDate">
-          由 {{activity.createBy}} {{activity.actionType.name}}
+          bởi {{activity.createBy}} {{activity.actionType.name}}
         </el-timeline-item>
       </el-timeline>
     </div>
@@ -47,8 +47,8 @@ export default {
           queryType: '=',
           value: objectId
         }],
-        columnName: '',       // 排序字段名
-        order: ''             // 排序
+        columnName: '',       // Tên trường sắp xếp
+        order: ''             // Sắp xếp
       }
       listActionAll(search).then(responseData => {
         if(responseData.code === 100) {

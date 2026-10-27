@@ -18,7 +18,7 @@ import com.geeke.sys.entity.SysSeting;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 系统设置Service
+ * Cài đặt hệ thốngService
  *
  * @author szy
  * @version 2021-08-26
@@ -29,14 +29,14 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
 
 
     @Autowired
-    private SysFileContentService sysFileContentService; //系统文件存储字节服务
+    private SysFileContentService sysFileContentService; //Hệ thốngTệplưu trữbytedịch vụ
 
     @Autowired
-    private SysFileService sysFileService;  //系统文件服务
+    private SysFileService sysFileService;  //Hệ thốngTệpdịch vụ
 
 
     /**
-     * 保存系统设置
+     * LưuCài đặt hệ thống
      *
      * @param entity
      * @return
@@ -45,11 +45,11 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
     @Transactional(readOnly = false)
     public SysSeting save(SysSeting entity, MultipartFile[] multipartFiles) {
 
-        //存储系统设置基本信息
+        //lưu trữCài đặt hệ thốngcơ bảnThông tin
         String id = super.save(entity).getId();
         try {
             if (StringUtils.isNotBlank(id)) {
-                //项目标志
+                //Cờ hạng mục
                 Integer projectLogoIndex = entity.getProjectLogoIndex();
                 if(projectLogoIndex >= 0 ) {
                     SysFile sysFile = entity.getProjectLogo();
@@ -58,7 +58,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                 }else {
                     entity.setProjectLogo(entity.getProjectLogo());
                 }
-                //登录标志
+                //Cờ đăng nhập
                 Integer loginLogoIndex = entity.getLoginLogoIndex();
                 if(loginLogoIndex >= 0 ) {
                     SysFile sysFile = entity.getLoginLogo();
@@ -67,7 +67,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                 }else {
                     entity.setLoginLogo(entity.getLoginLogo());
                 }
-                // 系统标志
+                // Cờ hệ thống
                 Integer sysLogoIndex = entity.getSysLogoIndex();
                 if(sysLogoIndex >= 0 ) {
                     SysFile sysFile = entity.getSysLogo();
@@ -76,7 +76,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                 }else {
                     entity.setSysLogo(entity.getSysLogo());
                 }
-                // 系统图标
+                // Biểu tượng hệ thống
                 Integer faviconIndex = entity.getFaviconIndex();
                 if(faviconIndex >= 0 ) {
                     SysFile sysFile = entity.getFavicon();
@@ -86,7 +86,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                     entity.setFavicon(entity.getFavicon());
                 }
 
-                //  登录背景图
+                //  Ảnh nền đăng nhập
                 Integer loginBgIndex = entity.getLoginBgIndex();
                 if(loginBgIndex >= 0 ) {
                     SysFile sysFile = entity.getLoginBg();
@@ -96,7 +96,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                     entity.setLoginBg(entity.getLoginBg());
                 }
 
-                //  登录背景图
+                //  Ảnh nền đăng nhập
                 Integer loginGraphIndex = entity.getLoginGraphIndex();
                 if(loginGraphIndex >= 0 ) {
                     SysFile sysFile = entity.getLoginGraph();
@@ -107,19 +107,19 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                 }
                 super.save(entity);
             } else {
-                logger.info("系统设置保存失败");
+                logger.info("Cài đặt hệ thốngLưuThất bại");
             }
         } catch (Exception e) {
-            logger.error("系统设置保存异常", e);
+            logger.error("Cài đặt hệ thốngLưungoại lệ", e);
         }
         return entity;
     }
 
     /**
      *
-     * @param multipartFile 文件对象
-     * @param id  系统设置id
-     * @param sysFile 文件
+     * @param multipartFile TệpĐối tượng
+     * @param id  Cài đặt hệ thốngid
+     * @param sysFile Tệp
      * @return
      * @throws IOException
      */
@@ -145,7 +145,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
         sysFileContentList.get(0).setFileType(file.getContentType());
         sysFile.setSysFileContentList(sysFileContentList);
 
-        //返回文件id
+        //Trả vềTệpid
         SysFile sysFileTemp =  sysFileService.save(sysFile);
         return sysFileTemp;
     }

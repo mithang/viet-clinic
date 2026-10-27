@@ -1,5 +1,5 @@
 <template>
-    <OperationIcon type='primary' content='导出excel文件' placement='top-start' icon-name='el-icon-download' @click='onExport'></OperationIcon>
+    <OperationIcon type='primary' content='XuấtexcelTệp' placement='top-start' icon-name='el-icon-download' @click='onExport'></OperationIcon>
 </template>
 
 <script>
@@ -16,7 +16,7 @@ export default {
     }
   },
   props: {
-    //接受外部v-model传入的值
+    //Nhận từ bên ngoàiv-modelgiá trị truyền vào
     value: {
       type: Array
     },
@@ -34,9 +34,9 @@ export default {
   },
   methods: {
     onExport() { 
-      // 没有数据时，提示
+      // 没有数据时，Nhắc nhở
       if(!this.data) {
-        this.$alert('没有导出数据！', '提示', {
+        this.$alert('没有导出数据！', 'Nhắc nhở', {
           type: 'info'
         })
         return

@@ -7,24 +7,24 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 处方审查VO
+ * Đơn thuốcxem xétVO
  */
 public class ReviewVO implements Serializable {
     private RecipelInfoReview recipelInfoReview;
     /**
-     * 处方明细
+     * Đơn thuốcChi tiết
      */
     private List<RecipelDetail> recipelDetails;
     /**
-     * 附加费
+     * Phí phụ thêm
      */
     private List<RecipelDetail> additionalCharges;
     /**
-     * 西医诊断
+     * Chẩn đoán tây y
      */
     private String westernDiagnose;
     /**
-     * 中医诊断
+     * Chẩn đoán đông y
      */
     private String chinaDiagnose;
 

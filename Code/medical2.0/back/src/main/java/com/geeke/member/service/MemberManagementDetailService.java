@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 会员卡管理Service
+ * Quản lý thẻ hội viênService
  * @author rys
  * @version 2022-10-26
  */
@@ -42,7 +42,7 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
             this.dao.updateUseNumber(memberManagementDetail);
         }
 
-        //修改次数后，需要修改会员卡状态
+        //Sửa lầnsốsau, CầnSửaHội viênthẻTrạng thái
         memberManagementService.updaStatus(memberManagement);
     }
 
@@ -51,7 +51,7 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
         List<MemberManagementDetail> memberManagementDetails = this.dao.getByManagementId(managementId);
         for (MemberManagementDetail memberManagementDetail : memberManagementDetails) {
             MemberItem memberItem = memberItemService.get(memberManagementDetail.getMemberItem().getId());
-            //根据会员卡详情获取项目内容
+            //TheoChi tiết thẻ hội viênLấyhạng mụcnội dung
             CostItem costItem = costItemService.get(memberItem.getCostItem().getId());
             memberItem.setCostItem(costItem);
             memberManagementDetail.setMemberItem(memberItem);

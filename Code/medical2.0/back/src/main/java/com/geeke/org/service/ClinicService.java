@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 诊所管理Service
+ * Quản lý phòng khámService
  *
  * @author txl
  * @version 2022-05-19
@@ -63,7 +63,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         }
         // save file
         sysFileService.changeAndSaveSysFileList(fileIdUploads, clinic.getFileId());
-        // 根据附件ID删除附件信息
+        // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
         if (null != deleteIds && deleteIds.length > 0) {
             sysFileService.delete(deleteIds);
         }
@@ -71,14 +71,14 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         //save clinic
         Company oldClinic = companyService.get(clinic.getId());
         if (null != oldClinic) {
-            //已存在，修改诊所
+            //Đã tồn tại, SửaPhòng khám
             companyService.save(clinic);
 
-            //用户和权限更新
+            //Người dùng và QuyềnCập nhật
             User admin = userService.getAdmin(oldClinic.getId());
             userRoleDao.updateRelationForTenant(clinic.getVersion().getRoleId(), admin.getId());
         } else {
-            //新增诊所
+            //Thêm mớiPhòng khám
             Role role = companyService.saveClinicAndRole(clinic);
 
             //save admin user and admin role
@@ -87,10 +87,10 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
             if (null == admin) {
                 User oldAdmin = userDao.getByLoginName(clinic.getPhoneNumber());
                 if (null == oldAdmin) {
-                    //没有和其他诊所关联
+                    //Không có và khácPhòng khámliên kết
                     this.createUserAndRole(clinic, role);
                 } else {
-                    //已经有诊所关联
+                    //ĐãcóPhòng khámliên kết
                     userDao.insertUserTenant(IdGen.uuid(), oldAdmin.getId(), clinic.getId(), oldAdmin.getLoginName());
                     UserRole userRole = new UserRole();
                     userRole.setUser(oldAdmin);
@@ -131,14 +131,14 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         user.setIsLocked(0);
         user.setPhone(phoneNumber);
         user.setEmail(phoneNumber + "@newtouch.com");
-        user.setName("诊所管理员");
-        user.setCreateBy("系统管理员");
+        user.setName("Quản trị viên phòng khám");
+        user.setCreateBy("Quản trị viên hệ thống");
         user.setCreateDate(new Date());
-        user.setUpdateBy("系统管理员");
+        user.setUpdateBy("Quản trị viên hệ thống");
         user.setUpdateDate(new Date());
         user.setDelFlag("0");
         user.setIsAdmin(1);
-        //设置权限
+        //ĐặtQuyền
         ClinicVersion version = entity.getVersion();
         List<UserRole> userRoleList = new ArrayList<>();
         UserRole userRole = new UserRole();
@@ -157,7 +157,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         }
         userRoleDao.insert(userRole);
         userDao.insertUserTenant(IdGen.uuid(), id1, user.getCompanyId(), user.getLoginName());
-        logger.info("后台自动生成用户：{}", id1);
+        logger.info("saumáytự độngTạoNgười dùng: {}", id1);
     }
 
     @Transactional(readOnly = false)

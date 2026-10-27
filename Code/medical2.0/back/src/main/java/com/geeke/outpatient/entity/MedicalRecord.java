@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 /**
- * 病历填写Entity
+ * Điền bệnh ánEntity
  * @author txl
  * @version 2022-06-13
  */
@@ -22,46 +22,46 @@ import java.util.Date;
 public class MedicalRecord extends DataEntity<MedicalRecord> {
 
 	private static final long serialVersionUID = 1014786989773332526L;
-	private Company company;      // 诊所id 
-	private String diagnosisId;      // 远程诊断id
-	private User doctor;      // 医生id
-	private Registration registration;      // 挂号id
-	private String patientTell;		// 主诉
-	private String nowHistory;		// 现病史
-	private String beforeHistory;		// 既往史
-	private String diagnose;		// 诊断
-	private String personalHistory;		// 个人史
-	private String allergyHistory;		// 过敏史
-	private String diseaseHistory;		// 疾病史
-	private String pregnancyHistory;		// 婚孕史
-	private String infectiousHistory;		// 传染病史
-	private String lunariaHistory;		// 月经史
-	private String familyHistory;		// 家族史
-	private String surgeryHistory;		// 手术史
-	private String transfusionHistory;		// 输血史
-	private String physiqueCheck;		// 体格检查
-	private String assistCheck;		// 辅助检查
-	private String emergencyDiagnose;		// 急诊诊断
-	private String emergencyEffect;		// 急诊效果
-	private String otherCheck;		// 其他检查
-	private String handlingSituation;		// 处理情况
-	private String healthEducation;		// 个体化健康教育
-	private String epidemicDisease;		// 流行病学史
-	private Date diagnoseDate;		// 诊断时间
-	private String doctorAdvice;		// 医嘱事项
-	private BigDecimal fee;		// 总费用
-	private String fileId;		// 上传附件
-	private String westernDiagnose; //西医诊断
-	private String chinaDiagnose; //中医诊断
-	private String diseaseId;//诊断id
-	private String chinaSyndrome;//中医证候
-	private String syndromeId;//证候id
-	private String medic; // 远程诊疗医生
-	private String department; // 远程诊疗医院
-	private String register; // 挂号
+	private Company company;      // Phòng khámid 
+	private String diagnosisId;      // từ xaChẩn đoánid
+	private User doctor;      // Bác sĩid
+	private Registration registration;      // Đăng ký khámid
+	private String patientTell;		// Lý do khám chính
+	private String nowHistory;		// Bệnh sử hiện tại
+	private String beforeHistory;		// Tiền sử
+	private String diagnose;		// Chẩn đoán
+	private String personalHistory;		// Tiền sử cá nhân
+	private String allergyHistory;		// Tiền sử dị ứng
+	private String diseaseHistory;		// Tiền sử bệnh
+	private String pregnancyHistory;		// tiền sử hôn nhân và mang thai
+	private String infectiousHistory;		// Tiền sử bệnh truyền nhiễm
+	private String lunariaHistory;		// Tiền sử kinh nguyệt
+	private String familyHistory;		// Tiền sử gia đình
+	private String surgeryHistory;		// Tiền sử phẫu thuật
+	private String transfusionHistory;		// Tiền sử truyền máu
+	private String physiqueCheck;		// Khám thực thể
+	private String assistCheck;		// Kiểm tra hỗ trợ
+	private String emergencyDiagnose;		// Chẩn đoán cấp cứu
+	private String emergencyEffect;		// Hiệu quả cấp cứu
+	private String otherCheck;		// Kiểm tra khác
+	private String handlingSituation;		// Tình hình xử lý
+	private String healthEducation;		// Giáo dục sức khỏe cá thể hóa
+	private String epidemicDisease;		// Tiền sử dịch tễ
+	private Date diagnoseDate;		// Thời gian chẩn đoán
+	private String doctorAdvice;		// Hạng mục y lệnh
+	private BigDecimal fee;		// tổngChi phí
+	private String fileId;		// Tải lên tệp đính kèm
+	private String westernDiagnose; //Chẩn đoán tây y
+	private String chinaDiagnose; //Chẩn đoán đông y
+	private String diseaseId;//Chẩn đoánid
+	private String chinaSyndrome;//Chứng hậu Đông y
+	private String syndromeId;//chứngchờid
+	private String medic; // khám chữa bệnh từ xaBác sĩ
+	private String department; // khám chữa bệnh từ xaBệnh viện
+	private String register; // Đăng ký khám
 
-	//医保字段
-	private String diagnosisCode; //诊断代码
+	//Trường BHYT
+	private String diagnosisCode; //Mã chẩn đoán
 
 
 
@@ -125,7 +125,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.registration = registration;
 	}
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -134,7 +134,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
         this.company = company;
     }
     
-	@NotNull(message="医生id不能为空")
+	@NotNull(message="Bác sĩidKhông được để trống")
     public User getDoctor() {
         return doctor;
     }
@@ -143,7 +143,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
         this.doctor = doctor;
     }
     
-	@NotNull(message="挂号id不能为空")
+	@NotNull(message="Đăng ký khámidKhông được để trống")
     public Registration getRegistration() {
         return registration;
     }
@@ -152,7 +152,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
         this.registration = registration;
     }
     
-	@Length(min=1, max=128, message="主诉长度必须介于 1 和 128 之间")
+	@Length(min=1, max=128, message="Lý do khám chínhĐộ dài phải nằm trong khoảng 1 đến 128 ")
 	public String getPatientTell() {
 		return patientTell;
 	}
@@ -161,7 +161,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="现病史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Bệnh sử hiện tạiĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getNowHistory() {
 		return nowHistory;
 	}
@@ -170,7 +170,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="既往史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sửĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getBeforeHistory() {
 		return beforeHistory;
 	}
@@ -179,7 +179,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=1, max=128, message="诊断长度必须介于 1 和 128 之间")
+	@Length(min=1, max=128, message="Độ dài chẩn đoán phải nằm trong khoảng 1 đến 128 ")
 	public String getDiagnose() {
 		return diagnose;
 	}
@@ -188,7 +188,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="个人史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử cá nhânĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getPersonalHistory() {
 		return personalHistory;
 	}
@@ -197,7 +197,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="过敏史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử dị ứngĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getAllergyHistory() {
 		return allergyHistory;
 	}
@@ -206,7 +206,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="疾病史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử bệnhĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getDiseaseHistory() {
 		return diseaseHistory;
 	}
@@ -215,7 +215,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="婚孕史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="tiền sử hôn nhân và mang thaiĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getPregnancyHistory() {
 		return pregnancyHistory;
 	}
@@ -224,7 +224,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="传染病史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử bệnh truyền nhiễmĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getInfectiousHistory() {
 		return infectiousHistory;
 	}
@@ -233,7 +233,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="月经史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử kinh nguyệtĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getLunariaHistory() {
 		return lunariaHistory;
 	}
@@ -242,7 +242,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="家族史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử gia đìnhĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getFamilyHistory() {
 		return familyHistory;
 	}
@@ -251,7 +251,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="手术史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử phẫu thuậtĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getSurgeryHistory() {
 		return surgeryHistory;
 	}
@@ -260,7 +260,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="输血史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử truyền máuĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getTransfusionHistory() {
 		return transfusionHistory;
 	}
@@ -269,7 +269,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="体格检查长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="thểôKiểm traĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getPhysiqueCheck() {
 		return physiqueCheck;
 	}
@@ -278,7 +278,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="辅助检查长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Kiểm tra hỗ trợĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getAssistCheck() {
 		return assistCheck;
 	}
@@ -287,7 +287,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="急诊诊断长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="cấp cứuĐộ dài chẩn đoán phải nằm trong khoảng 0 đến 128 ")
 	public String getEmergencyDiagnose() {
 		return emergencyDiagnose;
 	}
@@ -296,7 +296,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="急诊效果长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Hiệu quả cấp cứuĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getEmergencyEffect() {
 		return emergencyEffect;
 	}
@@ -305,7 +305,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="其他检查长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Kiểm tra khácĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getOtherCheck() {
 		return otherCheck;
 	}
@@ -313,7 +313,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.otherCheck = otherCheck;
 	}
 
-	@Length(min=0, max=128, message="处理情况长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tình hình xử lýĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getHandlingSituation() {
 		return handlingSituation;
 	}
@@ -321,7 +321,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.handlingSituation = handlingSituation;
 	}
 
-	@Length(min=0, max=128, message="个体化健康教育长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Giáo dục sức khỏe cá thể hóaĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getHealthEducation() {
 		return healthEducation;
 	}
@@ -329,7 +329,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.healthEducation = healthEducation;
 	}
 
-	@Length(min=0, max=128, message="流行病学史长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tiền sử dịch tễĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getEpidemicDisease() {
 		return epidemicDisease;
 	}
@@ -347,7 +347,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="医嘱事项长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Y lệnhviệchạng mụcĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getDoctorAdvice() {
 		return doctorAdvice;
 	}
@@ -364,7 +364,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=45, message="上传附件长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Tải lên tệp đính kèmĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getFileId() {
 		return fileId;
 	}
@@ -377,7 +377,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -386,7 +386,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -396,7 +396,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

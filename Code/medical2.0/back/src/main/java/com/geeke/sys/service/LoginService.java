@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * @author: lys
- * @description: 登录service实现类
+ * @description: Đăng nhậpserviceTriển khaiLớp
  * @date: 2018/10/24 11:53
  */
 @Service
@@ -36,7 +36,7 @@ public class LoginService extends CrudService<UserDao, User> {
     private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
 
     /*
-     * 验证用户名和密码
+     * Xác thựcNgười dùngtên và Mật khẩu
      */
     @Transactional(readOnly = false)
     public HttpStatus authLogin(String username, String password, String tenantId) {
@@ -47,20 +47,20 @@ public class LoginService extends CrudService<UserDao, User> {
         try {
             currentUser.login(token);
         } catch (UnknownAccountException e) {
-        	logger.info("用户 {} 登录账号密码错误", username);
-        	return HttpStatus.UNAUTHORIZED;			// 账号密码错误
+        	logger.info("Người dùng {} Đăng nhậpTài khoản hoặc mật khẩu sai", username);
+        	return HttpStatus.UNAUTHORIZED;			// Tài khoản hoặc mật khẩu sai
         }catch(DisabledAccountException e) {
-        	logger.info("用户 {} 账号禁用", username);
-        	return HttpStatus.FORBIDDEN;			// 账号禁用
+        	logger.info("Người dùng {} Tài khoản bị vô hiệu hóa", username);
+        	return HttpStatus.FORBIDDEN;			// Tài khoản bị vô hiệu hóa
         }catch (AuthenticationException e) {
-        	logger.info("用户 {} 验证错误", username);
-        	return HttpStatus.SERVICE_UNAVAILABLE;			// 验证错误
+        	logger.info("Người dùng {} Lỗi xác thực", username);
+        	return HttpStatus.SERVICE_UNAVAILABLE;			// Lỗi xác thực
         }
-        //保存当前用户的所有租户信息
+        //LưuHiện tạiNgười dùng của tất cảtenantThông tin
         User user = getUserFullClinics();
-        //当前登录的租户信息保存到session中
+        //Hiện tạiĐăng nhập của tenantThông tinLưuĐếnsession trong 
         SessionUtils.setLoginTenantId(tenantId);
-        // 保存登录日志
+        // LưuĐăng nhậpNgàynhật ký
         this.saveAction(this.createAction(ActionConstants.ACTION_LOGIN, user));
         return HttpStatus.OK;
     }
@@ -74,7 +74,7 @@ public class LoginService extends CrudService<UserDao, User> {
     }
 
     /**
-     * 获取需要监测登录状态用户
+     * Lấy người dùng cần giám sát trạng thái đăng nhập
      * @return
      */
     public List<User> loginUser() {
@@ -82,7 +82,7 @@ public class LoginService extends CrudService<UserDao, User> {
     }
 
     /**
-     * 默认登录
+     * Mặc địnhĐăng nhập
      * @return
      */
     public HttpStatus authLogin() {
@@ -94,13 +94,13 @@ public class LoginService extends CrudService<UserDao, User> {
     }
 
     /**
-     * 退出登录
+     * ThoátĐăng nhập
      *
      * @return
      */
     @Transactional(readOnly = false)
     public void logout() {
-        // 保存登录日志
+        // LưuĐăng nhậpNgàynhật ký
         User user = SessionUtils.getUser();
         this.saveAction(this.createAction(ActionConstants.ACTION_LOGOUT, user));
 
@@ -109,7 +109,7 @@ public class LoginService extends CrudService<UserDao, User> {
             if(currentUser.isAuthenticated())
             	currentUser.logout();
         } catch (Exception e) {
-            logger.error("退出登录失败", e);
+            logger.error("ThoátĐăng nhậpThất bại", e);
         }
     }
 
@@ -120,11 +120,11 @@ public class LoginService extends CrudService<UserDao, User> {
         try {
             currentUser.login(token);
         } catch (UnknownAccountException e) {
-            return HttpStatus.UNAUTHORIZED;			// 账号密码错误
+            return HttpStatus.UNAUTHORIZED;			// Tài khoản hoặc mật khẩu sai
         }catch(DisabledAccountException e) {
-            return HttpStatus.FORBIDDEN;			// 账号禁用
+            return HttpStatus.FORBIDDEN;			// Tài khoản bị vô hiệu hóa
         }catch (AuthenticationException e) {
-            return HttpStatus.SERVICE_UNAVAILABLE;			// 验证错误
+            return HttpStatus.SERVICE_UNAVAILABLE;			// Lỗi xác thực
         }
         return HttpStatus.OK;
     }

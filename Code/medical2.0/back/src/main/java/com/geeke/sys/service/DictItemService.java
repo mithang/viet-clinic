@@ -18,7 +18,7 @@ import com.geeke.sys.entity.DictItem;
 import com.google.common.collect.Lists;
 
 /**
- * 字典项Service
+ * Mục từ điểnService
  * @author lys
  * @version 2019-08-23
  */
@@ -37,7 +37,7 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
     }
 
     /**
-     * 重写分页查询：字典已优化为全局共享，不按租户隔离
+     * viết lạiTruy vấn phân trang: Từ điển đã được tối ưu thành dùng chung toàn cục, khôngtheotenantcách ly
      */
     @Override
     public Page<DictItem> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
@@ -48,7 +48,7 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
     }
 
     /**
-     * 重写列表查询：字典全局共享，所有租户可见
+     * viết lạiDanh sáchTruy vấn: Từ điển dùng chung toàn cục, Tất cả tenant đều thấy được
      */
     @Override
     public List<DictItem> listAll(List<Parameter> parameters, String orderby) {
@@ -63,7 +63,7 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
         @CacheEvict(value = "dict:itemsByCode", allEntries = true)
     })
     public DictItem save(DictItem entity) {
-        // 字典已优化为全局共享，不再按租户隔离，故不再设置 company
+        // Từ điển đã được tối ưu thành dùng chung toàn cục, Không còn cách ly theo tenant, 故khônglạiĐặt company
         return super.save(entity);
     }
 
@@ -77,7 +77,7 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
         return super.delete(entity);
     }
 
-    /** 根据字典类型code获取所有字典项（带缓存） */
+    /** Theo loại từ điểncodeLấy tất cả mục từ điển(kèmBộ nhớ đệm) */
     @Cacheable(value = "dict:itemsByCode", key = "#code")
     public List<DictItem> listByDictTypeCode(String code) {
         return this.dao.listByDictTypeCode(code);

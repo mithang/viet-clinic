@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 系统参数配置Service
+ * Hệ thốngTham sốcấu hìnhService
  * @author lys
  * @version 2021-07-16
  */
@@ -49,7 +49,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
         }
         ReviewVO vo = new ReviewVO();
         vo.setRecipelInfoReview(recipelInfoReview);
-        //中药西药
+        // trong thuốcTâythuốc
         List<Parameter> parameters = SearchParamsBuilder.create()
                 .eq("registration_id", recipelInfoReview.getRecipelInfo().getRegistration().getId())
                 .build();
@@ -59,7 +59,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
             vo.setWesternDiagnose(medicalRecord.getWesternDiagnose());
             vo.setChinaDiagnose(medicalRecord.getChinaDiagnose());
         }
-        //处方明细
+        //Đơn thuốcChi tiết
         List<Parameter> recipelParams = SearchParamsBuilder.create()
                 .eq("company_id", recipelInfoReview.getRecipelInfo().getCompany().getId())
                 .eq("recipel_info_id", recipelInfoId)
@@ -74,7 +74,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
             });
         }
         vo.setRecipelDetails(recipelDetailList);
-        //附加费
+        //Phí phụ thêm
         List<Parameter> additionalParams = SearchParamsBuilder.create()
                 .eq("company_id", recipelInfoReview.getRecipelInfo().getCompany().getId())
                 .eq("recipel_info_id", recipelInfoId)
@@ -105,8 +105,8 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
     }
 
     /**
-     * 处方统计
-     * @param id 机构ID，用于过滤当前机构的数据
+     * Đơn thuốcthống kê
+     * @param id Cơ sởID, dùng đểqualọcHiện tạiCơ sở của Dữ liệu
      * @return
      */
     public PrescriptionStatisticsVO prescriptionStatistics(String id,String startTime,String endTime) {

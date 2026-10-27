@@ -12,7 +12,7 @@ import com.geeke.common.controller.CrudController;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 收藏夹Controller
+ * Mục yêu thíchController
  * @author szy
  * @version 2021-07-28
  */
@@ -29,7 +29,7 @@ public class SysCollectController extends CrudController<SysCollectService, SysC
     }
 
     /**
-     * 根据用户id查询收藏列表
+     * Theo người dùngidTruy vấnyêu thíchDanh sách
      */
     @GetMapping(value = "listAllByUserId/{userId}")
     public ResponseEntity<JSONObject> listAllByUserId(@PathVariable("userId") String userId) {
@@ -38,7 +38,7 @@ public class SysCollectController extends CrudController<SysCollectService, SysC
     }
 
     /**
-     * 移动收藏触发
+     * di độngyêu thíchkích hoạt
      */
     @PostMapping(value = "updateBatch/{userId}")
     public ResponseEntity<JSONObject> updateBatch(@RequestBody List<SysCollect> sysCollectList, @PathVariable String userId) {
@@ -47,7 +47,7 @@ public class SysCollectController extends CrudController<SysCollectService, SysC
     }
 
     /**
-     * 删除收藏（保留 @DeleteMapping 以兼容前端调用）
+     * Xóayêu thích(giữ lại @DeleteMapping Để tương thích với lời gọi từ frontend)
      */
     @Override
     @DeleteMapping(value = "delete")

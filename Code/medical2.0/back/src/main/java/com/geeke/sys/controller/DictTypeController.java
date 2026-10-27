@@ -14,7 +14,7 @@ import com.geeke.sys.service.DictTypeService;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 字典类型Controller
+ * Loại từ điểnController
  * @author lys
  * @version 2021-08-20
  */

@@ -10,7 +10,7 @@ import java.util.List;
 
 
 /**
- * 权限管理DAO接口
+ * QuyềnQuản lýDAOGiao diện
  *
  * @author lys
  * @date 2019/7/26

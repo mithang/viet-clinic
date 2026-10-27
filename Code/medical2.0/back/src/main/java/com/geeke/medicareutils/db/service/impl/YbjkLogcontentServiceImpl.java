@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 /**
 * @author 47826
-* @description 针对表【ybjk_logcontent】的数据库操作Service实现
+* @description Đối với bảng[ybjk_logcontent] của Dữ liệukhothao tácServiceTriển khai
 * @createDate 2025-03-12 17:10:08
 */
 @Service

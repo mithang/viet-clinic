@@ -3,12 +3,12 @@
     <el-row type="flex" justify="space-between">
       <el-col>
         <el-radio-group v-model="tabPosition">
-          <el-radio-button label="main">汇总报表</el-radio-button>
-          <el-radio-button label="detail">明细报表</el-radio-button>
+          <el-radio-button label="main">Báo cáo tổng hợp</el-radio-button>
+          <el-radio-button label="detail">Báo cáo chi tiết</el-radio-button>
         </el-radio-group>
       </el-col>
       <el-col style="text-align:right;padding-right:5px">
-        <el-button type="primary" style="margin-left:0" icon="el-icon-s-order" @click='exportExcel'>导出</el-button>
+        <el-button type="primary" style="margin-left:0" icon="el-icon-s-order" @click='exportExcel'>Xuất</el-button>
       </el-col>
     </el-row>
     <div style="margin-top:8px;">
@@ -16,24 +16,24 @@
         <div>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">收费日期：</div>
+              <div class="condition-name">Ngày thu phí：</div>
               <el-date-picker
                 style="width:320px;"
                 v-model="mainCondition.chargeDateRange"
                 type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
+                range-separator="đến"
+                start-placeholder="Ngày bắt đầu"
+                end-placeholder="Ngày kết thúc"
                 :default-time="['00:00:00', '23:59:59']"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 format="yyyy-MM-dd HH:mm:ss"
               ></el-date-picker>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">费用类型：</div>
+              <div class="condition-name">Loại chi phí：</div>
               <el-select
                 v-model="mainCondition.tollType"
-                placeholder="费用类型"
+                placeholder="Loại chi phí"
               >
                 <el-option
                   v-for="detailCostType in detailCostTypes"
@@ -47,10 +47,10 @@
             </el-col>
 
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">收费人：</div>
+              <div class="condition-name">Người thu phí：</div>
               <el-select
                 v-model="mainCondition.create_by"
-                placeholder="收费人"
+                placeholder="Người thu phí"
                 clearable
                 filterable
                 allow-create
@@ -66,7 +66,7 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">患者姓名：</div>
+              <div class="condition-name">Tên bệnh nhân：</div>
               <el-select
                 v-model="mainCondition.name"
                 value-key="id"
@@ -75,7 +75,7 @@
                 allow-create
                 default-first-option
                 style="width: 200px"
-                placeholder="请选择患者"
+                placeholder="Vui lòng chọn bệnh nhân"
               >
                 <el-option
                   v-for="patientId in AllPatientOption"
@@ -88,18 +88,18 @@
           </el-row>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">收费单号：</div>
+              <div class="condition-name">Số phiếu thu phí：</div>
               <el-input
                 style="width:320px;"
                 v-model="mainCondition.tollNumber"
-                placeholder="收费单号"
+                placeholder="Số phiếu thu phí"
               ></el-input>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">开单科室：</div>
+              <div class="condition-name">Khoa lập phiếu：</div>
               <el-select
                 v-model="mainCondition.prescriptionDept"
-                placeholder="开单科室"
+                placeholder="Khoa lập phiếu"
                 clearable
                 filterable
                 allow-create
@@ -115,10 +115,10 @@
               </el-select>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">开单医生：</div>
+              <div class="condition-name">Bác sĩ kê đơn：</div>
               <el-select
                 v-model="mainCondition.prescriptionOper"
-                placeholder="开单医生"
+                placeholder="Bác sĩ kê đơn"
                 clearable
                 filterable
                 allow-create
@@ -134,11 +134,11 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">收费状态：</div>
+              <div class="condition-name">Trạng thái thu phí：</div>
               <el-select
                 style="width:200px;"
                 v-model="mainCondition.chargeStatu"
-                placeholder="收费状态"
+                placeholder="Trạng thái thu phí"
               >
                 <el-option
                   v-for="chargeStatu in chargeStatus"
@@ -150,10 +150,10 @@
               </el-select>
             </el-col>
             <el-col :span="18" class="flex-start">
-              <!-- <el-form-item label="诊所"  style="margin-right: 3px;"> -->
-              <div class="condition-name">诊所：</div>
-              <el-select v-model="mainCondition.jgid" placeholder="诊所" clearable filterable allow-create default-first-option>
-                <el-option label="全部" value="qb"></el-option>
+              <!-- <el-form-item label="Phòng khám"  style="margin-right: 3px;"> -->
+              <div class="condition-name">Phòng khám：</div>
+              <el-select v-model="mainCondition.jgid" placeholder="Phòng khám" clearable filterable allow-create default-first-option>
+                <el-option label="Tất cả" value="qb"></el-option>
                 <el-option v-for="item in jglist" :value="item.jgid" :key="item.jgid" :label="item.jgmc">
                 </el-option>
               </el-select>
@@ -162,9 +162,9 @@
           </el-row>
         </div>
         <div class="flex-end" style="margin-top:8px;margin-bottom:8px;padding-right:5px">
-          <el-button type="primary" icon="el-icon-search" @click='getChargeMainData' :plain='true'>搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click='getChargeMainData' :plain='true'>Tìm kiếm</el-button>
           <el-button type="info" style="margin-left:10px" icon="el-icon-refresh-left" @click='resetAll' :plain='true'>
-            重置
+            Đặt lại
           </el-button>
         </div>
         <div>
@@ -175,7 +175,7 @@
             ref="mutipleTable1"
             border id="exportTable" :data="tollList" :summary-method="getMainSummaries" show-summary
             style="width: 100%">
-            <el-table-column type='index' width="width" align="center" label="序号">
+            <el-table-column type='index' width="width" align="center" label="Số thứ tự">
               <template slot-scope="scope">
                 {{ chargeMainTablePagesize * (chargeMainTableCurrentPage - 1) + scope.$index + 1 }}
               </template>
@@ -184,114 +184,114 @@
               align="center"
               prop="company.id"
               sortable v-if="false"
-              label="诊所编码">
+              label="Mã phòng khám">
             </el-table-column>
             <el-table-column
               align="center"
               prop="company.name"
-              label="诊所名称">
+              label="Tên phòng khám">
             </el-table-column>
-            <el-table-column prop="recipel.code" label="处方编号" width="120px">
+            <el-table-column prop="recipel.code" label="Số đơn thuốc" width="120px">
               <template slot-scope="scope">
                 <span>
                   {{ scope.row.recipel.code!=='' ? scope.row.recipel.code : "/" }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="patient.name" label="患者姓名" width="width">
+            <el-table-column prop="patient.name" label="Tên bệnh nhân" width="width">
             </el-table-column>
-            <el-table-column prop="patient.gender.name" label="性别" width="60px">
+            <el-table-column prop="patient.gender.name" label="Giới tính" width="60px">
             </el-table-column>
-            <el-table-column prop="patient.age" label="年龄" width="60px">
+            <el-table-column prop="patient.age" label="Tuổi" width="60px">
             </el-table-column>
-            <el-table-column prop="tollNumber" label="收费单号" width="140px">
+            <el-table-column prop="tollNumber" label="Số phiếu thu phí" width="140px">
             </el-table-column>
-            <el-table-column prop="tollType.name" label="费用类型" width="width">
+            <el-table-column prop="tollType.name" label="Loại chi phí" width="width">
             </el-table-column>
-            <el-table-column prop="doctor.department.name" label="开单科室" width="width">
+            <el-table-column prop="doctor.department.name" label="Khoa lập phiếu" width="width">
             </el-table-column>
-            <el-table-column prop="doctor.name" label="开单医生" width="100px">
+            <el-table-column prop="doctor.name" label="Bác sĩ kê đơn" width="100px">
             </el-table-column>
-            <el-table-column prop="amountStatus.name" label="单据状态" width="width">
+            <el-table-column prop="amountStatus.name" label="Trạng thái chứng từ" width="width">
             </el-table-column>
-            <el-table-column prop="amountReceivable" label="应收(退)金额" width="100px">
+            <el-table-column prop="amountReceivable" label="Số tiền phải thu (hoàn lại)" width="100px">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.amountReceivable ? bigNum(scope.row.amountReceivable) : 0 }}元
+                  {{ scope.row.amountReceivable ? bigNum(scope.row.amountReceivable) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.amountReceivable ? '-' + bigNum(scope.row.amountReceivable) : 0 }}元
+                  {{ scope.row.amountReceivable ? '-' + bigNum(scope.row.amountReceivable) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="amountReceived" label="实收金额" width="width">
+            <el-table-column prop="amountReceived" label="Số tiền thực thu" width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.amountReceived ? bigNum(scope.row.amountReceived) : 0 }}元
+                  {{ scope.row.amountReceived ? bigNum(scope.row.amountReceived) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.amountReceived ? '-' + bigNum(scope.row.amountReceived) : 0 }}元
+                  {{ scope.row.amountReceived ? '-' + bigNum(scope.row.amountReceived) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="amountDiscounted" label="优惠金额" width="width">
+            <el-table-column prop="amountDiscounted" label="Số tiền ưu đãi" width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.amountDiscounted ? bigNum(scope.row.amountDiscounted) : 0 }}元
+                  {{ scope.row.amountDiscounted ? bigNum(scope.row.amountDiscounted) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.amountDiscounted ? '-' + bigNum(scope.row.amountDiscounted) : 0 }}元
+                  {{ scope.row.amountDiscounted ? '-' + bigNum(scope.row.amountDiscounted) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
             <el-table-column prop="paymentType.name" label="现金支付" width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_0' ? bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_0' ? bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_0' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_0' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
             <el-table-column prop="paymentType.name" label="微信支付" width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_2' ? bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_2' ? bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_2' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_2' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="paymentType.name" label="支付宝支付" width="width">
+            <el-table-column prop="paymentType.name" label="Thanh toán Alipay" width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_1' ? bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_1' ? bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_1' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_1' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="paymentType.name" label="银行卡支付" width="width">
+            <el-table-column prop="paymentType.name" label="Thanh toán bằng thẻ ngân hàng" width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_3' ? bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_3' ? bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_3' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}元
+                  {{ scope.row.paymentType ? (scope.row.paymentType.value === 'payType_3' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="createBy" label="收费人" width="100px">
+            <el-table-column prop="createBy" label="Người thu phí" width="100px">
               <template slot-scope="scope">
                 <span>
                   {{ getName(scope.row.createBy) }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="createDate" label="收费日期" width="width">
+            <el-table-column prop="createDate" label="Ngày thu phí" width="width">
             </el-table-column>
           </el-table>
         </div>
@@ -312,23 +312,23 @@
         <div>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">收费日期：</div>
+              <div class="condition-name">Ngày thu phí：</div>
               <el-date-picker
                 style="width:320px;"
                 v-model="detailCondition.chargeDateRange"
                 type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
+                range-separator="đến"
+                start-placeholder="Ngày bắt đầu"
+                end-placeholder="Ngày kết thúc"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 format="yyyy-MM-dd HH:mm:ss"
               ></el-date-picker>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">费用类型：</div>
+              <div class="condition-name">Loại chi phí：</div>
               <el-select
                 v-model="detailCondition.tollType"
-                placeholder="费用类型"
+                placeholder="Loại chi phí"
               >
                 <el-option
                   v-for="detailCostType in detailCostTypes"
@@ -341,19 +341,19 @@
               </el-select>
             </el-col>
             <!-- <el-col :span="6">
-                <el-form-item label="诊所"  style="margin-right: 3px;">
-    <el-select v-model="detailCondition.jgid" placeholder="诊所">
-      <el-option label="全部" value="qb"></el-option>
+                <el-form-item label="Phòng khám"  style="margin-right: 3px;">
+    <el-select v-model="detailCondition.jgid" placeholder="Phòng khám">
+      <el-option label="Tất cả" value="qb"></el-option>
        <el-option v-for="item in jglist" :value="item.jgid" :key="item.jgid"  :label="item.jgmc">
         </el-option>
     </el-select>
   </el-form-item>
             </el-col> -->
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">收费人：</div>
+              <div class="condition-name">Người thu phí：</div>
               <el-select
                 v-model="detailCondition.create_by"
-                placeholder="收费人"
+                placeholder="Người thu phí"
                 clearable
                 filterable
                 allow-create
@@ -369,7 +369,7 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">患者姓名：</div>
+              <div class="condition-name">Tên bệnh nhân：</div>
               <el-select
                 v-model="detailCondition.name"
                 value-key="id"
@@ -378,7 +378,7 @@
                 allow-create
                 default-first-option
                 style="width: 200px"
-                placeholder="请选择患者"
+                placeholder="Vui lòng chọn bệnh nhân"
               >
                 <el-option
                   v-for="patientId in AllPatientOption"
@@ -391,18 +391,18 @@
           </el-row>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">收费单号：</div>
+              <div class="condition-name">Số phiếu thu phí：</div>
               <el-input
                 style="width:320px;"
                 v-model="detailCondition.tollNumber"
-                placeholder="收费单号"
+                placeholder="Số phiếu thu phí"
               ></el-input>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">收费分类：</div>
+              <div class="condition-name">Phân loại thu phí：</div>
               <el-select
                 v-model="detailCondition.payType"
-                placeholder="收费分类"
+                placeholder="Phân loại thu phí"
               >
                 <el-option
                   v-for="item in payTypes"
@@ -414,10 +414,10 @@
               </el-select>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">开单科室：</div>
+              <div class="condition-name">Khoa lập phiếu：</div>
               <el-select
                 v-model="detailCondition.prescriptionDept"
-                placeholder="开单科室"
+                placeholder="Khoa lập phiếu"
                 clearable
                 filterable
                 allow-create
@@ -433,10 +433,10 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">开单医生：</div>
+              <div class="condition-name">Bác sĩ kê đơn：</div>
               <el-select
                 v-model="detailCondition.prescriptionOper"
-                placeholder="开单医生"
+                placeholder="Bác sĩ kê đơn"
                 style="width: 200px"
                 clearable
                 filterable
@@ -455,11 +455,11 @@
           </el-row>
           <el-row>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">收费状态：</div>
+              <div class="condition-name">Trạng thái thu phí：</div>
               <el-select
                 style="width:200px;"
                 v-model="detailCondition.chargeStatu"
-                placeholder="收费人"
+                placeholder="Người thu phí"
               >
                 <el-option
                   v-for="chargeStatu in chargeStatus"
@@ -471,26 +471,26 @@
               </el-select>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <!-- <el-form-item label="诊所"  style="margin-right: 3px;"> -->
-              <div class="condition-name">诊所：</div>
+              <!-- <el-form-item label="Phòng khám"  style="margin-right: 3px;"> -->
+              <div class="condition-name">Phòng khám：</div>
               <el-select v-model="detailCondition.jgid"
-                         placeholder="诊所"
+                         placeholder="Phòng khám"
                          clearable
                          filterable
                          allow-create
                          default-first-option
               >
-                <el-option label="全部" value="qb"></el-option>
+                <el-option label="Tất cả" value="qb"></el-option>
                 <el-option v-for="item in jglist" :value="item.jgid" :key="item.jgid" :label="item.jgmc">
                 </el-option>
               </el-select>
               <!-- </el-form-item> -->
             </el-col>
             <el-col :span="19" style="margin-bottom:8px;text-align:right;padding-right:5px">
-              <el-button type="primary" icon="el-icon-search" @click='getChargeDetailData' :plain='true'>搜索
+              <el-button type="primary" icon="el-icon-search" @click='getChargeDetailData' :plain='true'>Tìm kiếm
               </el-button>
               <el-button type="info" style="margin-left:10px" icon="el-icon-refresh-left" @click='resetDetail'
-                         :plain='true'>重置
+                         :plain='true'>Đặt lại
               </el-button>
             </el-col>
           </el-row>
@@ -503,7 +503,7 @@
             height="calc(100vh - 350px)"
             border id="exportTable" :data="detailList" :summary-method="getDetailSummaries" show-summary
             style="width: 100%">
-            <el-table-column type="index" label="序号" width="width" align="center">
+            <el-table-column type="index" label="Số thứ tự" width="width" align="center">
               <template slot-scope="scope">
                 {{ chargeDetailTablePagesize * (chargeDetailTableCurrentPage - 1) + scope.$index + 1 }}
               </template>
@@ -512,51 +512,51 @@
               align="center"
               prop="company.id"
               sortable v-if="false"
-              label="诊所编码">
+              label="Mã phòng khám">
             </el-table-column>
             <el-table-column
               align="center"
               prop="company.name"
-              label="诊所名称">
+              label="Tên phòng khám">
             </el-table-column>
-            <el-table-column prop="recipel.code" label="处方编号" width="120">
+            <el-table-column prop="recipel.code" label="Số đơn thuốc" width="120">
             </el-table-column>
-            <el-table-column prop="patient.name" label="患者姓名" width="width">
+            <el-table-column prop="patient.name" label="Tên bệnh nhân" width="width">
             </el-table-column>
-            <el-table-column prop="tollNumber" label="收费单号" width="150">
+            <el-table-column prop="tollNumber" label="Số phiếu thu phí" width="150">
             </el-table-column>
-            <el-table-column prop="doctor.department.name" label="科室" width="width">
+            <el-table-column prop="doctor.department.name" label="Khoa" width="width">
             </el-table-column>
-            <el-table-column prop="doctor.name" label="医生" width="120px">
+            <el-table-column prop="doctor.name" label="Bác sĩ" width="120px">
             </el-table-column>
-            <el-table-column prop="recipelDetail.drugStuffId.name" label="收费项目" width="180px">
+            <el-table-column prop="recipelDetail.drugStuffId.name" label="Hạng mục thu phí" width="180px">
             </el-table-column>
-            <el-table-column prop="tollType.name" label="费用类型" width="width">
+            <el-table-column prop="tollType.name" label="Loại chi phí" width="width">
             </el-table-column>
-            <el-table-column prop="recipelDetail.drugStuffId.isUnpackSell" label="收费分类" width="width">
+            <el-table-column prop="recipelDetail.drugStuffId.isUnpackSell" label="Phân loại thu phí" width="width">
             </el-table-column>
-            <el-table-column prop="recipelDetail.total" label="数量" width="width">
+            <el-table-column prop="recipelDetail.total" label="Số lượng" width="width">
             </el-table-column>
-            <el-table-column prop="amountStatus.name" label="单据状态" width="width">
+            <el-table-column prop="amountStatus.name" label="Trạng thái chứng từ" width="width">
             </el-table-column>
-            <el-table-column prop="amountReceivable" label="应收/退(元)" width="width">
+            <el-table-column prop="amountReceivable" label="Phải thu/Trả lại(VNĐ)" width="width">
               <template slot-scope="scope">
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
-                  {{ scope.row.amountReceivable ? bigNum(scope.row.amountReceivable) : 0 }}元
+                  {{ scope.row.amountReceivable ? bigNum(scope.row.amountReceivable) : 0 }}VNĐ
                 </span>
                 <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
-                  {{ scope.row.amountReceivable ? "-" + bigNum(scope.row.amountReceivable) : 0 }}元
+                  {{ scope.row.amountReceivable ? "-" + bigNum(scope.row.amountReceivable) : 0 }}VNĐ
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="createBy" label="收费人" width="100">
+            <el-table-column prop="createBy" label="Người thu phí" width="100">
               <template slot-scope="scope">
                 <span>
                   {{ getName(scope.row.createBy) }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="createDate" label="收费日期" width="180">
+            <el-table-column prop="createDate" label="Ngày thu phí" width="180">
             </el-table-column>
           </el-table>
         </div>
@@ -597,9 +597,9 @@ export default {
   data() {
     return {
       tabPosition: "main",
-      /*汇总报表查询条件*/
+      /*Điều kiện truy vấn báo cáo tổng hợp*/
       mainCondition: {
-        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*收费日期范围*/,
+        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*Khoảng ngày thu phí*/,
         tollType: '',
         create_by: null,
         name: "",
@@ -612,23 +612,23 @@ export default {
       tollTypeOption: [
         {
           value: '',
-          name: "全部",
+          name: "Tất cả",
         },
         {
           value: 'tollType_2',
-          name: "零售售药",
+          name: "Bán lẻ thuốc",
         },
         {
           value: 'tollType_0',
-          name: "处方",
+          name: "Đơn thuốc",
         },
         {
           value: 'tollType_1',
-          name: "挂号",
+          name: "Đăng ký khám",
         },
       ],
       detailCondition: {
-        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*收费日期范围*/,
+        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*Khoảng ngày thu phí*/,
         detailCostType: '',
         create_by: null,
         name: "",
@@ -642,14 +642,14 @@ export default {
       },
       detailCostTypes: [{
         id: '',
-        name: '全部'
+        name: 'Tất cả'
       }],
       payTypes: [{
         value: '',
-        name: '全部'
+        name: 'Tất cả'
       }, {
         value: 'stuff',
-        name: '材料'
+        name: 'Vật tư'
       }],
 
       chargeOpers: [],
@@ -659,24 +659,24 @@ export default {
       chargeStatus: [
         {
           id: '',
-          name: "全部",
+          name: "Tất cả",
         },
         {
           id: 'amountStatus_1',
-          name: "收费",
+          name: "Thu phí",
         },
         {
           id: 'amountStatus_2',
-          name: "退费",
+          name: "Hoàn phí",
         },
       ],
-      chargeMainTablePagesize: 20 /*主表页大小*/,
-      chargeMainTableCurrentPage: 1 /*当前主表页*/,
-      chargeMainTableTotal: 0 /*主表总数据量*/,
+      chargeMainTablePagesize: 20 /*Kích thước trang bảng chính*/,
+      chargeMainTableCurrentPage: 1 /*Trang bảng chính hiện tại*/,
+      chargeMainTableTotal: 0 /*Tổng dữ liệu bảng chính*/,
 
-      chargeDetailTablePagesize: 20 /*明细页大小*/,
-      chargeDetailTableCurrentPage: 1 /*当前明细页*/,
-      chargeDetailTableTotal: 0 /*明细总数据量*/,
+      chargeDetailTablePagesize: 20 /*Kích thước trang chi tiết*/,
+      chargeDetailTableCurrentPage: 1 /*Trang chi tiết hiện tại*/,
+      chargeDetailTableTotal: 0 /*Tổng dữ liệu chi tiết*/,
 
       listTollInfoAllOption: [],
       AllPatientOption: [],
@@ -758,7 +758,7 @@ export default {
     },
     addCreateDate() {
       let myDate = new Date();
-      let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //最后一个数字30可改，30天的意思
+      let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
       let lastY = lw.getFullYear();
       let lastM = lw.getMonth() + 1;
       let lastD = lw.getDate();
@@ -771,7 +771,7 @@ export default {
         (lastM < 10 ? "0" + lastM : lastM) +
         "-" +
         (lastD < 10 ? "0" + lastD : lastD) +
-        " " + housrs + ":" + minutes + ":" + seconds //三十天之前日期
+        " " + housrs + ":" + minutes + ":" + seconds //Ngày của 30 ngày trước
       let returnDate = new Date(startData)
       let newDate = this.$moment(returnDate).format(
         "YYYY-MM-DD HH:mm:ss"
@@ -781,7 +781,7 @@ export default {
     },
     resetAll() {
       this.mainCondition = {
-        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*收费日期范围*/,
+        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*Khoảng ngày thu phí*/,
         tollType: '',
         create_by: null,
         name: "",
@@ -795,7 +795,7 @@ export default {
     },
     resetDetail() {
       this.detailCondition = {
-        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*收费日期范围*/,
+        chargeDateRange: [this.addCreateDate(), this.addCreateDate2()] /*Khoảng ngày thu phí*/,
         detailCostType: '',
         create_by: null,
         name: "",
@@ -817,11 +817,11 @@ export default {
       }
     },
     getMainSummaries() {
-      let arr = ['合计', '', '', '', '', '', '', '', '', '', '', new BigNumber(this.tollTotalTable.amountReceivableTotal).toFormat(2) + "元", new BigNumber(this.tollTotalTable.amountReceivedTotal).toFormat(2) + "元", new BigNumber(this.tollTotalTable.amountReceivableTotal - this.tollTotalTable.amountReceivedTotal).toFormat(2) + "元", new BigNumber(this.tollTotalTable.cashTotal).toFormat(2) + "元", new BigNumber(this.tollTotalTable.weChatTotal).toFormat(2) + "元", new BigNumber(this.tollTotalTable.alipayTotal).toFormat(2) + "元", new BigNumber(this.tollTotalTable.bankCardPayTotal).toFormat(2) + "元"]
+      let arr = ['Tổng cộng', '', '', '', '', '', '', '', '', '', '', new BigNumber(this.tollTotalTable.amountReceivableTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.amountReceivedTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.amountReceivableTotal - this.tollTotalTable.amountReceivedTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.cashTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.weChatTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.alipayTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.bankCardPayTotal).toFormat(2) + "VNĐ"]
       return arr
     },
     getDetailSummaries() {
-      let arr = ['合计', '', '', '', '', '', '', '', '', '', '', '', new BigNumber(this.tollDetailTable.amountReceivableTotal).toFormat(2) + "元"]
+      let arr = ['Tổng cộng', '', '', '', '', '', '', '', '', '', '', '', new BigNumber(this.tollDetailTable.amountReceivableTotal).toFormat(2) + "VNĐ"]
       return arr
     },
     GetOption() {
@@ -1271,7 +1271,7 @@ export default {
         }
       })
     },
-    //导出表格
+    //Xuất bảng
     exportExcel() {
       // var xlsxParam = { raw: true } // 导出的内容只做解析，不进行格式转换
       // var table = document.querySelector('#exportTable').cloneNode(true)
@@ -1280,7 +1280,7 @@ export default {
 
       // var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
       // try {
-      //   FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '汇总报表.xlsx')
+      //   FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'Báo cáo tổng hợp.xlsx')
       // } catch (e) {
       //   if (typeof console !== 'undefined') {
       //   }
@@ -1289,27 +1289,27 @@ export default {
       let biaoge = []
       if (this.tabPosition === 'main') {
         biaoge[0] = {
-          company: "诊所名称",
-          code: "处方编号",
-          name: "患者姓名",
-          gender: "性别",
-          age: "年龄",
-          tollNumber: "收费单号",
-          tollType: "费用类型",
-          department: "开单科室",
-          doctor: "开单医生",
-          batchNo: "生产批号",
-          produceDate: "生产日期",
-          amountStatus: "单据状态",
-          amountReceivable: "应收(退)金额",
-          amountReceived: "实收金额",
-          amountDiscounted: "优惠金额",
+          company: "Tên phòng khám",
+          code: "Số đơn thuốc",
+          name: "Tên bệnh nhân",
+          gender: "Giới tính",
+          age: "Tuổi",
+          tollNumber: "Số phiếu thu phí",
+          tollType: "Loại chi phí",
+          department: "Khoa lập phiếu",
+          doctor: "Bác sĩ kê đơn",
+          batchNo: "Số lô sản xuất",
+          produceDate: "Ngày sản xuất",
+          amountStatus: "Trạng thái chứng từ",
+          amountReceivable: "Số tiền phải thu (hoàn lại)",
+          amountReceived: "Số tiền thực thu",
+          amountDiscounted: "Số tiền ưu đãi",
           cash: "现金支付",
           wx: "现金支付",
-          zfb: "支付宝支付",
-          card: "银行卡支付",
-          createBy: "收费人",
-          createDate: "收费日期"
+          zfb: "Thanh toán Alipay",
+          card: "Thanh toán bằng thẻ ngân hàng",
+          createBy: "Người thu phí",
+          createDate: "Ngày thu phí"
         }
         for (let i = 0; i < this.tollList.length; i++) {
           let arr = {
@@ -1369,7 +1369,7 @@ export default {
         let num = biaoge.length
         biaoge[num] = {
           company: "",
-          code: "合计",
+          code: "Tổng cộng",
           name: "",
           gender: "",
           age: "",
@@ -1394,7 +1394,7 @@ export default {
         let contentWs = XLSX.utils.json_to_sheet(biaoge);
         contentWs["A1"] = {
           t: "s",
-          v: this.Company.name + ' 费用报表（汇总）',
+          v: this.Company.name + ' Báo cáo chi phí（Tổng hợp）',
           s: {
             alignment: {
               horizontal: "center",
@@ -1791,11 +1791,11 @@ export default {
           },
 
         ]
-        //冻结第一行和第一列：
+        //Cố định dòng đầu tiên và cột đầu tiên：
         contentWs['!freeze'] = {
-          xSplit: "11",  //冻结列
-          ySplit: "1",  //冻结行
-          topLeftCell: "A2",  //在未冻结区域的左上角显示的单元格，默认为第一个未冻结的单元格
+          xSplit: "11",  //Cố định cột
+          ySplit: "1",  //Cố định dòng
+          topLeftCell: "A2",  //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
           state: "frozen"
         }
         contentWs["!merges"] = mergeTitle
@@ -1804,8 +1804,8 @@ export default {
         contentWs["!rows"] = {}
 
         contentWs["!margins"] = {left: 1.0, right: 1.0, top: 1.0, bottom: 1.0, header: 0.5, footer: 0.5}
-        XLSX.utils.book_append_sheet(web, contentWs, "费用报表（汇总）");
-        // //使用xlsx-style写入文件方式，使得自定义样式生效
+        XLSX.utils.book_append_sheet(web, contentWs, "Báo cáo chi phí（Tổng hợp）");
+        // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
         const tmpDown = new Blob([
           this.s2ab(
             XLSXD.write(web, {
@@ -1816,23 +1816,23 @@ export default {
             })
           )
         ])
-        this.downExcel(tmpDown, '费用报表（汇总）.xlsx')
+        this.downExcel(tmpDown, 'Báo cáo chi phí（Tổng hợp）.xlsx')
       } else {
         biaoge[0] = {
-          company: "诊所名称",
-          code: "处方编号",
-          name: "患者姓名",
-          tollNumber: "收费单号",
-          department: "科室",
-          doctor: "开单医生",
-          drugStuffId: "收费项目",
-          tollType: "费用类型",
-          isUnpackSell: "收费分类",
-          total: '数量',
-          amountStatus: "单据状态",
-          amountReceivable: "应收/退(元)",
-          createBy: "收费人",
-          createDate: "收费日期"
+          company: "Tên phòng khám",
+          code: "Số đơn thuốc",
+          name: "Tên bệnh nhân",
+          tollNumber: "Số phiếu thu phí",
+          department: "Khoa",
+          doctor: "Bác sĩ kê đơn",
+          drugStuffId: "Hạng mục thu phí",
+          tollType: "Loại chi phí",
+          isUnpackSell: "Phân loại thu phí",
+          total: 'Số lượng',
+          amountStatus: "Trạng thái chứng từ",
+          amountReceivable: "Phải thu/Trả lại(VNĐ)",
+          createBy: "Người thu phí",
+          createDate: "Ngày thu phí"
         }
         for (let i = 0; i < this.detailList.length; i++) {
           let arr = {
@@ -1874,7 +1874,7 @@ export default {
         let num = biaoge.length
         biaoge[num] = {
           company: "",
-          code: "合计",
+          code: "Tổng cộng",
           name: "",
           tollNumber: "",
           department: "",
@@ -1892,7 +1892,7 @@ export default {
         let contentWs = XLSX.utils.json_to_sheet(biaoge);
         contentWs["A1"] = {
           t: "s",
-          v: this.Company.name + ' 费用报表（明细）',
+          v: this.Company.name + ' Báo cáo chi phí（Chi tiết）',
           s: {
             alignment: {
               horizontal: "center",
@@ -2166,11 +2166,11 @@ export default {
           },
 
         ]
-        //冻结第一行和第一列：
+        //Cố định dòng đầu tiên và cột đầu tiên：
         contentWs['!freeze'] = {
-          xSplit: "11",  //冻结列
-          ySplit: "1",  //冻结行
-          topLeftCell: "A2",  //在未冻结区域的左上角显示的单元格，默认为第一个未冻结的单元格
+          xSplit: "11",  //Cố định cột
+          ySplit: "1",  //Cố định dòng
+          topLeftCell: "A2",  //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
           state: "frozen"
         }
         contentWs["!merges"] = mergeTitle
@@ -2179,8 +2179,8 @@ export default {
         contentWs["!rows"] = {}
 
         contentWs["!margins"] = {left: 1.0, right: 1.0, top: 1.0, bottom: 1.0, header: 0.5, footer: 0.5}
-        XLSX.utils.book_append_sheet(web, contentWs, "费用报表（明细）");
-        // //使用xlsx-style写入文件方式，使得自定义样式生效
+        XLSX.utils.book_append_sheet(web, contentWs, "Báo cáo chi phí（Chi tiết）");
+        // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
         const tmpDown = new Blob([
           this.s2ab(
             XLSXD.write(web, {
@@ -2191,7 +2191,7 @@ export default {
             })
           )
         ])
-        this.downExcel(tmpDown, '费用报表（明细）.xlsx')
+        this.downExcel(tmpDown, 'Báo cáo chi phí（Chi tiết）.xlsx')
       }
 
     },

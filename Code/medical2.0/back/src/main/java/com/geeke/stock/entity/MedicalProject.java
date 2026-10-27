@@ -7,7 +7,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 材料信息Entity
+ * Thông tin vật tưEntity
  * @author txl
  * @version 2022-06-22
  */
@@ -16,17 +16,17 @@ public class MedicalProject
 {
 	private String id;
 	private String name;
-	private String pinyinCode;        // 拼音码
-	private ManufactureFactory factory;      // 生产厂家
-	private String specifications;        // 规格
-	private Integer packNumber;        // 包装数量
-	private DictItem minUnit;      // 最小单位
-	private DictItem packUnit;      // 包装单位
-	private BigDecimal priceOutSell;        // 对外销售价格
-	private String isUnpackSell;        // 允许拆零销售
-	private BigDecimal retailPrice;        // 拆开后零售价
-	private String stuffType;		// 物料类型
-	private int inventory;  //库存
-	private DictItem dosisUnit; //单位
-	private DictItem pack;//包装类
+	private String pinyinCode;        // Mã pinyin
+	private ManufactureFactory factory;      // Nhà sản xuất
+	private String specifications;        // Quy cách
+	private Integer packNumber;        // Số lượng đóng gói
+	private DictItem minUnit;      // Đơn vị nhỏ nhất
+	private DictItem packUnit;      // Đơn vị đóng gói
+	private BigDecimal priceOutSell;        // Giá bán ra ngoài
+	private String isUnpackSell;        // Cho phép bán lẻ
+	private BigDecimal retailPrice;        // Giá bán lẻ sau khi tách
+	private String stuffType;		// Loại vật liệu
+	private int inventory;  //Tồn kho
+	private DictItem dosisUnit; //Đơn vị
+	private DictItem pack;//đóng góiLớp
 }

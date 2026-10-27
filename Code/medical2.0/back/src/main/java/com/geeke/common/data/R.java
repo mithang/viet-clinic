@@ -4,23 +4,23 @@ import com.geeke.utils.constants.Constants;
 import com.geeke.utils.constants.ErrorEnum;
 
 /**
- * 统一响应体泛型封装
- * 逐步替代 ResultUtil 返回的 JSONObject，提供类型安全的响应结构。
+ * Đóng gói generic thống nhất cho thân phản hồi
+ * từng步thaythay ResultUtil Trả về của  JSONObject, cung cấpLoạian toàn của phản hồicấu trúc. 
  *
- * <p>使用示例:
+ * <p>Ví dụ sử dụng:
  * <pre>
- *   // 成功
+ *   // Thành công
  *   return ResponseEntity.ok(R.ok(entity));
- *   return ResponseEntity.ok(R.ok("保存成功", id));
+ *   return ResponseEntity.ok(R.ok("LưuThành công", id));
  *
- *   // 业务警告（表单校验失败等）
+ *   // Cảnh báo nghiệp vụ(biểu mẫuKiểm traThất bại v.v. )
  *   return ResponseEntity.ok(R.warning(ErrorEnum.E_50001));
  *
- *   // 系统错误
+ *   // Lỗi hệ thống
  *   return ResponseEntity.ok(R.error(ErrorEnum.E_400));
  * </pre>
  *
- * @param <T> 响应数据类型
+ * @param <T> phản hồiDữ liệuLoại
  */
 public class R<T> {
 
@@ -39,63 +39,63 @@ public class R<T> {
         this.data = data;
     }
 
-    // ==================== 成功响应 ====================
+    // ==================== Thành côngphản hồi ====================
 
     /**
-     * 成功（无数据）
+     * Thành công(khôngDữ liệu)
      */
     public static <T> R<T> ok() {
         return new R<>(Constants.SUCCESS_CODE, Constants.SUCCESS_MSG, Constants.MSG_TYPE_SUCCESS, null);
     }
 
     /**
-     * 成功（带数据）
+     * Thành công(kèmDữ liệu)
      */
     public static <T> R<T> ok(T data) {
         return new R<>(Constants.SUCCESS_CODE, Constants.SUCCESS_MSG, Constants.MSG_TYPE_SUCCESS, data);
     }
 
     /**
-     * 成功（自定义消息 + 数据）
+     * Thành công(Thông báo tùy chỉnh + Dữ liệu)
      */
     public static <T> R<T> ok(String msg, T data) {
         return new R<>(Constants.SUCCESS_CODE, msg, Constants.MSG_TYPE_SUCCESS, data);
     }
 
     /**
-     * 草稿保存成功
+     * bản nhápLưuThành công
      */
     public static <T> R<T> okDraft(T data) {
         return new R<>(Constants.SUCCESS_CODE, Constants.SUCCESS_SAVE_DRAFT, Constants.MSG_TYPE_SUCCESS, data);
     }
 
-    // ==================== 警告响应 ====================
+    // ==================== cảnh báophản hồi ====================
 
     /**
-     * 业务警告（使用ErrorEnum默认消息）
+     * Cảnh báo nghiệp vụ(Sử dụngErrorEnumMặc địnhthông báo)
      */
     public static <T> R<T> warning(ErrorEnum errorEnum) {
         return new R<>(String.valueOf(errorEnum.getErrorCode()), errorEnum.getErrorMsg(), Constants.MSG_TYPE_WARNING, null);
     }
 
     /**
-     * 业务警告（自定义消息）
+     * Cảnh báo nghiệp vụ(Thông báo tùy chỉnh)
      */
     public static <T> R<T> warning(ErrorEnum errorEnum, String msg) {
         return new R<>(String.valueOf(errorEnum.getErrorCode()), msg, Constants.MSG_TYPE_WARNING, null);
     }
 
-    // ==================== 错误响应 ====================
+    // ==================== Lỗiphản hồi ====================
 
     /**
-     * 系统错误（使用ErrorEnum默认消息）
+     * Lỗi hệ thống(Sử dụngErrorEnumMặc địnhthông báo)
      */
     public static <T> R<T> error(ErrorEnum errorEnum) {
         return new R<>(String.valueOf(errorEnum.getErrorCode()), errorEnum.getErrorMsg(), Constants.MSG_TYPE_ERROR, null);
     }
 
     /**
-     * 系统错误（自定义消息）
+     * Lỗi hệ thống(Thông báo tùy chỉnh)
      */
     public static <T> R<T> error(ErrorEnum errorEnum, String msg) {
         return new R<>(String.valueOf(errorEnum.getErrorCode()), msg, Constants.MSG_TYPE_ERROR, null);

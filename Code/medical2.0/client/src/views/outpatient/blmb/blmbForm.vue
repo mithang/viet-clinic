@@ -20,25 +20,25 @@
           <el-col :span="8">
             <el-form-item
               prop="mbmc"
-              label="模板名称"
+              label="Tên mẫu"
             >
               <el-input v-model="formLabelAlign.mbmc" style="width:70%"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item
-              label="模板类型"
+              label="Loại mẫu"
             >
-              <el-radio v-model="mblx" label="0">通用</el-radio>
-              <el-radio v-model="mblx" label="1">个人</el-radio>
+              <el-radio v-model="mblx" label="0">Dùng chung</el-radio>
+              <el-radio v-model="mblx" label="1">Cá nhân</el-radio>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item
-              label="病历类型"
+              label="Loại bệnh án"
             >
-              <el-radio v-model="bllx" label="0">西医病历</el-radio>
-              <el-radio v-model="bllx" label="1">中医病历</el-radio>
+              <el-radio v-model="bllx" label="0">Bệnh án Tây y</el-radio>
+              <el-radio v-model="bllx" label="1">Bệnh án Đông y</el-radio>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -47,220 +47,220 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="主诉">
+            <el-form-item label="Lý do khám chính">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%"
                 v-model="formLabelAlign.zs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="个人史">
+            <el-form-item label="Tiền sử cá nhân">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%"
                 v-model="formLabelAlign.grs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="过敏史">
+            <el-form-item label="Tiền sử dị ứng">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%"
                 v-model="formLabelAlign.gms">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="疾病史">
+            <el-form-item label="Tiền sử bệnh">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.jbs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="传染病史">
+            <el-form-item label="Tiền sử bệnh truyền nhiễm">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.crbs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="手术史">
+            <el-form-item label="Tiền sử phẫu thuật">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.sss">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="输血史">
+            <el-form-item label="Tiền sử truyền máu">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.sxs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="体格检查">
+            <el-form-item label="Khám thực thể">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.tgjc">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="急诊诊断">
+            <el-form-item label="Chẩn đoán cấp cứu">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.jzzd">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="急诊效果">
+            <el-form-item label="Hiệu quả cấp cứu">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.jzxg">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="家族史">
+            <el-form-item label="Tiền sử gia đình">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.jzs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="月经史">
+            <el-form-item label="Tiền sử kinh nguyệt">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.yjz">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="婚育史">
+            <el-form-item label="Tiền sử hôn nhân/sinh đẻ">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.hys">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="辅助检查">
+            <el-form-item label="Xét nghiệm bổ sung">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.fzjc">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="现病史">
+            <el-form-item label="Bệnh sử hiện tại">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.xbs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="既往史">
+            <el-form-item label="Tiền sử bệnh">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.jws">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="流行病学史">
+            <el-form-item label="Tiền sử dịch tễ">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.lxbxs">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="其他检查">
+            <el-form-item label="Xét nghiệm khác">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.qtjc">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="处理情况">
+            <el-form-item label="Tình hình xử lý">
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.clqk">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="个体化健康教育" >
+            <el-form-item label="Giáo dục sức khỏe cá nhân hóa" >
               <el-input
                 type="textarea"
                 autosize
-                placeholder="请输入内容"
+                placeholder="Vui lòng nhập nội dung"
                 style="width:50%;"
                 v-model="formLabelAlign.gthjkjy">
               </el-input>
@@ -269,13 +269,13 @@
         </el-form>
       </el-row>
       <!-- <div class="footer">
-          <el-button type="primary" @click="submitForm('formLabelAlign')" >提交</el-button>
-          <el-button @click="resetForm('formLabelAlign')" >重置</el-button>
+          <el-button type="primary" @click="submitForm('formLabelAlign')" >Gửi</el-button>
+          <el-button @click="resetForm('formLabelAlign')" >Đặt lại</el-button>
       </div> -->
     </div>
     <span slot='footer' class='dialog-footer'>
-      <el-button :disabled="flag" type='primary' :plain='true' @click="submitForm('formLabelAlign')">保 存</el-button>
-      <el-button :plain='true' type="primary" @click='onDialogClose()'>取 消</el-button>
+      <el-button :disabled="flag" type='primary' :plain='true' @click="submitForm('formLabelAlign')">Lưu</el-button>
+      <el-button :plain='true' type="primary" @click='onDialogClose()'>Hủy</el-button>
     </span>
   </el-dialog>
 </template>
@@ -338,7 +338,7 @@
         },
         rules: {
           mbmc: [
-            {required: true, message: '请输入模板名称', trigger: 'blur'},
+            {required: true, message: 'Vui lòng nhập tên mẫu', trigger: 'blur'},
           ],
 
         },
@@ -445,9 +445,9 @@
       openAddworkbenchDialog(types) {
         let titles = "";
         if (types === "") {
-          titles = "新增"
+          titles = "Thêm mới"
         } else if (types !== "") {
-          titles = "修改"
+          titles = "Sửa"
         } else {
           titles = ""
         }

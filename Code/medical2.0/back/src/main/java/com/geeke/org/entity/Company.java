@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 /**
- * 公司管理Entity
+ * Quản lý công tyEntity
  * @author lys
  * @version 2022-05-25
  */
@@ -20,26 +20,26 @@ import java.util.Date;
 public class Company extends TreeEntity<Company> {
 
 	private static final long serialVersionUID = 41040096140492800L;
-	private String fullName;		// 全称
-	private String code;		// 编码
-	private String addressProvince;		// 地址（省）
-	private String addressCity;		// 地址（市）
-	private String addressRegion;		// 地址（区）
-	private String address;		// 地址
-	private String phoneNumber;		// 电话
-	private String licenseSubject;		// 执业许可科目
-	private String fileId;		// 诊所许可证图片
-	private Company lesseeId;      // 租户
+	private String fullName;		// toàn bộgọi là
+	private String code;		// Mã
+	private String addressProvince;		// Địa chỉ(Tỉnh)
+	private String addressCity;		// Địa chỉ(Thành phố)
+	private String addressRegion;		// Địa chỉ(Quận)
+	private String address;		// Địa chỉ
+	private String phoneNumber;		// Điện thoại
+	private String licenseSubject;		// Môn học trong giấy phép hành nghề
+	private String fileId;		// Ảnh giấy phép phòng khám
+	private Company lesseeId;      // Đơn vị thuê
 	private String contactName;
-	private String tenantryId; // 租户id
-    //医保配置
-	private  String fixmedinsCode;// 定点医疗机构代码
-	private  String fixmedinsName; //定点医疗机构名称
-	private  String mdtrtareaAdmvs;//就医地区编码
-	//电子处方配置
+	private String tenantryId; // Đơn vị thuêid
+    //Cấu hình BHYT
+	private  String fixmedinsCode;// y tế được chỉ địnhCơ sởmã
+	private  String fixmedinsName; //Tên cơ sở y tế được chỉ định
+	private  String mdtrtareaAdmvs;//thìyđịa phươngQuậnMã
+	//điện tửĐơn thuốccấu hình
 	private String appId; // appid
-	private String appSecret; //密钥
-	private String privateKey; //私钥
+	private String appSecret; //khóa bí mật
+	private String privateKey; //khóa riêng
 	private String publicKey;  //公钥
 
 
@@ -71,11 +71,11 @@ public class Company extends TreeEntity<Company> {
 	}
 
 	private Company parentId;    //zuhu id
-	private ClinicVersion version;      // 诊所版本
-	private Integer status;		// 状态 1启用 0停用
-	private Integer isInstitution;		// 是否为机构 1是 0不是
-	private Date startUseDate;		// 诊所启用时间
-	private Date expireDate;		// 诊所到期时间
+	private ClinicVersion version;      // Phiên bản phòng khám
+	private Integer status;		// Trạng thái 1Kích hoạt 0dừngdùng
+	private Integer isInstitution;		// Có hay không là Cơ sở 1 có  0không có 
+	private Date startUseDate;		// Phòng khámBậtThời gian
+	private Date expireDate;		// Phòng khámĐếnkỳThời gian
 
 	
 	public Company() {
@@ -87,7 +87,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 
-	@Length(min=1, max=512, message="全称长度必须介于 1 和 512 之间")
+	@Length(min=1, max=512, message="toàn bộgọi làĐộ dài phải nằm trong khoảng 1 đến 512 ")
 	public String getFullName() {
 		return fullName;
 	}
@@ -96,7 +96,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=1, max=64, message="编码长度必须介于 1 和 64 之间")
+	@Length(min=1, max=64, message="Độ dài mã phải nằm trong khoảng 1 đến 64 ")
 	public String getCode() {
 		return code;
 	}
@@ -105,7 +105,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=1, max=10, message="地址（省）长度必须介于 1 和 10 之间")
+	@Length(min=1, max=10, message="Địa chỉ(Tỉnh)Độ dài phải từ 1  và  10 Giữa")
 	public String getAddressProvince() {
 		return addressProvince;
 	}
@@ -114,7 +114,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=1, max=10, message="地址（市）长度必须介于 1 和 10 之间")
+	@Length(min=1, max=10, message="Địa chỉ(Thành phố)Độ dài phải từ 1  và  10 Giữa")
 	public String getAddressCity() {
 		return addressCity;
 	}
@@ -123,7 +123,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=1, max=10, message="地址（区）长度必须介于 1 和 10 之间")
+	@Length(min=1, max=10, message="Địa chỉ(Quận)Độ dài phải từ 1  và  10 Giữa")
 	public String getAddressRegion() {
 		return addressRegion;
 	}
@@ -132,7 +132,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=1, max=100, message="地址长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="Độ dài địa chỉ phải nằm trong khoảng 1 đến 100 ")
 	public String getAddress() {
 		return address;
 	}
@@ -141,7 +141,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=1, max=21, message="电话长度必须介于 1 和 21 之间")
+	@Length(min=1, max=21, message="Độ dài số điện thoại phải nằm trong khoảng 1 đến 21 ")
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -150,7 +150,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=0, max=100, message="执业许可科目长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Độ dài môn học trong giấy phép hành nghề phải nằm trong khoảng 0 đến 100 ")
 	public String getLicenseSubject() {
 		return licenseSubject;
 	}
@@ -159,7 +159,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 	
-	@Length(min=0, max=21, message="诊所许可证图片长度必须介于 0 和 21 之间")
+	@Length(min=0, max=21, message="Độ dài ảnh giấy phép phòng khám phải nằm trong khoảng 0 đến 21 ")
 	public String getFileId() {
 		return fileId;
 	}
@@ -207,7 +207,7 @@ public class Company extends TreeEntity<Company> {
 		this.expireDate = expireDate;
 	}
 
-	@NotNull(message="租户不能为空")
+	@NotNull(message="tenantKhông thể là trống")
 	public Company getLesseeId() {
 		return lesseeId;
 	}
@@ -219,7 +219,7 @@ public class Company extends TreeEntity<Company> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -228,7 +228,7 @@ public class Company extends TreeEntity<Company> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -238,7 +238,7 @@ public class Company extends TreeEntity<Company> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

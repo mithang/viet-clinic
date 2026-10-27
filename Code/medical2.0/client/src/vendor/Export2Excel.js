@@ -124,7 +124,7 @@ export function export_json_to_excel({header, data, filename='excel-list', autoW
     var wb = new Workbook(), ws = sheet_from_array_of_arrays(data);
 
     if(autoWidth){
-      /*设置worksheet每列的最大宽度*/
+      /*Cài đặtworksheet每列的最大宽度*/
       const colWidth = data.map(row => row.map(val => {
         /*先判断是否为null/undefined*/
         if (val == null) {

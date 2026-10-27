@@ -14,7 +14,7 @@ import javax.servlet.Servlet;
 
 /**
  * @author: lys
- * @description: SpringBoot启动类
+ * @description: SpringBootkhởi độngLớp
  * @date: 2017/10/24 11:55
  */
 @SpringBootApplication

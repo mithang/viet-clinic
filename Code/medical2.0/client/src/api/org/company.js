@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/org/company')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getCompanyById = baseApi.getById
 export const listCompanyPage = baseApi.listPage
 export const listCompanyAll = baseApi.listAll
@@ -18,7 +18,7 @@ export const bulkInsertCompany = baseApi.bulkInsert
 export const bulkUpdateCompany = baseApi.bulkUpdate
 export const bulkDeleteCompany = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const getCompanys = (id) =>
     request({
         url: '/org/company/getCompanys',

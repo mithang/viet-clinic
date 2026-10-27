@@ -9,7 +9,7 @@ import com.geeke.org.entity.AdministrativeDivision;
 import com.geeke.org.service.AdministrativeDivisionService;
 
 /**
- * 行政区域划分Controller
+ * Phân chia khu vực hành chínhController
  * @author txl
  * @version 2022-06-21
  */

@@ -13,7 +13,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -31,10 +31,10 @@
     >
       <div class="tab-item" v-show="tabIndex === '1'">
         <div class="registrationItemBox">
-          <h3>基本信息</h3>
+          <h3>Thông tin cơ bản</h3>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="患者" prop="name">
+              <el-form-item label="Bệnh nhân" prop="name">
                 <el-input
                   v-if="dialogProps.action !== 'add'"
                   :disabled="true"
@@ -47,7 +47,7 @@
                   filterable
                   allow-create
                   @change="GetPatientInfo()"
-                  placeholder="请选择患者"
+                  placeholder="Vui lòng chọn bệnh nhân"
                 >
                   <el-option
                     v-for="patientId in patientId_List"
@@ -65,7 +65,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="性别" prop="gender.name">
+              <el-form-item label="Giới tính" prop="gender.name">
                 <el-input
                   v-if="dialogProps.action !== 'add'"
                   :disabled="true"
@@ -77,7 +77,7 @@
                   v-model="bizFormModel.gender"
                   value-key="value"
                   filterable
-                  placeholder="请选择性别"
+                  placeholder="Vui lòng chọn giới tính"
                   @clear="
                     bizFormModel.gender = {
                       value: null,
@@ -98,7 +98,7 @@
 
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="出生日期" prop="birthday">
+              <el-form-item label="Ngày sinh" prop="birthday">
                 <el-date-picker
                   :disabled="dialogProps.action !== 'add'"
                   v-model="bizFormModel.birthday"
@@ -107,7 +107,7 @@
                   :picker-options="setDisabled"
                   value-format="yyyy-MM-dd"
                   :placeholder="
-                    dialogProps.action === 'view' ? '' : '请输入出生日期'
+                    dialogProps.action === 'view' ? '' : 'Vui lòng nhập ngày sinh'
                   "
 
                 ></el-date-picker>
@@ -115,18 +115,18 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="年龄" prop="age">
+              <el-form-item label="Tuổi" prop="age">
                 <el-col :span="24 / 2">
                   <el-input
                     :disabled="dialogProps.action !== 'add'"
                     v-model="bizFormModel.age"
                     :maxlength="20"
                     :placeholder="
-                      dialogProps.action === 'view' ? '' : '年龄'
+                      dialogProps.action === 'view' ? '' : 'Tuổi'
                     "
                   >
                     <template slot="append">
-                      岁
+                      tuổi
                     </template>
                   </el-input>
                 </el-col>
@@ -135,10 +135,10 @@
                     :disabled="dialogProps.action !== 'add'"
                     v-model="bizFormModel.month"
                     :maxlength="20"
-                    :placeholder="dialogProps.action === 'view' ? '' : '月'"
+                    :placeholder="dialogProps.action === 'view' ? '' : 'tháng'"
                   >
                     <template slot="append">
-                      月
+                      tháng
                     </template>
                   </el-input>
                 </el-col>
@@ -148,13 +148,13 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="证件号码" prop="card">
+              <el-form-item label="Số giấy tờ" prop="card">
                 <el-input
                   :disabled="dialogProps.action !== 'add'"
                   v-model="bizFormModel.card"
                   :maxlength="18"
                   :placeholder="
-                    dialogProps.action === 'view' ? '' : '请输入身份证号'
+                    dialogProps.action === 'view' ? '' : 'Vui lòng nhập số CMND/CCCD'
                   "
                   @input="getBirthday"
                 ></el-input>
@@ -173,7 +173,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择证件类型"
+                  placeholder="Vui lòng chọn loại giấy tờ"
                   @clear="
                     bizFormModel.medType = {
                       value: null,
@@ -202,33 +202,33 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="民族" prop="nation">
+              <el-form-item label="Dân tộc" prop="nation">
                 <el-input
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.nation"
                   :maxlength="45"
-                  :placeholder="dialogProps.action === 'view' ? '' : '请输入民族'"
+                  :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập dân tộc'"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="职业" prop="occupation">
+              <el-form-item label="Nghề nghiệp" prop="occupation">
                 <el-input
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.occupation"
                   :maxlength="45"
-                  :placeholder="dialogProps.action === 'view' ? '' : '请输入职业'"
+                  :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập nghề nghiệp'"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="联系方式" prop="phone">
+              <el-form-item label="Thông tin liên hệ" prop="phone">
                 <el-input
                   :disabled="dialogProps.action !== 'add'"
                   v-model="bizFormModel.phone"
                   :maxlength="45"
                   :placeholder="
-                    dialogProps.action === 'view' ? '' : '请输入联系方式'
+                    dialogProps.action === 'view' ? '' : 'Vui lòng nhập thông tin liên hệ'
                   "
                 ></el-input>
               </el-form-item>
@@ -236,39 +236,39 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="监护人姓名" prop="guardianName">
+              <el-form-item label="Họ tên người giám hộ" prop="guardianName">
                 <el-input
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.guardianName"
                   :maxlength="45"
-                  :placeholder="dialogProps.action === 'view' ? '' : '请输入监护人姓名'"
+                  :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên người giám hộ'"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="监护人电话" prop="guardianPhone">
+              <el-form-item label="Số điện thoại người giám hộ" prop="guardianPhone">
                 <el-input
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.guardianPhone"
                   :maxlength="45"
-                  :placeholder="dialogProps.action === 'view' ? '' : '请输入监护人电话'"
+                  :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập số điện thoại người giám hộ'"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="工作单位" prop="workplace">
+              <el-form-item label="Đơn vị công tác" prop="workplace">
                 <el-input
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.workplace"
                   :maxlength="45"
-                  :placeholder="dialogProps.action === 'view' ? '' : '请输入工作单位'"
+                  :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập đơn vị công tác'"
                 ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <!-- <el-col :span="24 / 2">
-              <el-form-item label="与患者关系" prop="withPatientNexus">
+              <el-form-item label="Quan hệ với bệnh nhân" prop="withPatientNexus">
                 <el-input
                   v-if="dialogProps.action !== 'add'"
                   :disabled="true"
@@ -280,7 +280,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择与患者关系"
+                  placeholder="Vui lòng chọn quan hệ với bệnh nhân"
                   @clear="
                     bizFormModel.withPatientNexus = {
                       value: null,
@@ -300,10 +300,10 @@
           </el-row>
         </div>
         <div class="registrationItemBox">
-          <h3>登记信息</h3>
+          <h3>Thông tin đăng ký</h3>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="科室" prop="clinicOffice.id">
+              <el-form-item label="Khoa" prop="clinicOffice.id">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -323,12 +323,12 @@
                   }"
                   filterable
                   clearable
-                  placeholder="请选择科室"
+                  placeholder="Vui lòng chọn khoa/phòng"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="医生" prop="doctor.name">
+              <el-form-item label="Bác sĩ" prop="doctor.name">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -340,7 +340,7 @@
                   value-key="id"
                   filterable
                   clearable
-                  placeholder="请选择医生"
+                  placeholder="Vui lòng chọn bác sĩ"
                   @clear="
                     bizFormModel.doctor = {
                       id: null,
@@ -358,7 +358,7 @@
               </el-form-item>
             </el-col>
             <!-- <el-col :span="24 / 2">
-              <el-form-item label="来源" prop="source">
+              <el-form-item label="Nguồn" prop="source">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -370,7 +370,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择来源"
+                  placeholder="Vui lòng chọn nguồn"
                   @clear="
                     bizFormModel.source = {
                       value: null,
@@ -391,7 +391,7 @@
           <el-row>
 
             <!-- <el-col :span="24 / 2">
-              <el-form-item label="治疗类型" prop="treatType.name">
+              <el-form-item label="Loại điều trị" prop="treatType.name">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -403,7 +403,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择治疗类型"
+                  placeholder="Vui lòng chọn loại điều trị"
                   @clear="
                     bizFormModel.treatType = {
                       value: null,
@@ -421,7 +421,7 @@
               </el-form-item>
             </el-col> -->
             <el-col :span="24 / 2">
-              <el-form-item label="免挂号费" prop="freeRegistrationFee">
+              <el-form-item label="Miễn phí đăng ký khám" prop="freeRegistrationFee">
                 <el-switch
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.freeRegistrationFee"
@@ -434,7 +434,7 @@
             </el-col>
             <el-col :span="24 / 2">
               <el-form-item
-                label="挂号费"
+                label="Phí đăng ký khám"
                 prop="registrationFee"
                 :rules="
                   bizFormModel.freeRegistrationFee === '0'
@@ -461,7 +461,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="治疗类型" prop="treatType.name">
+              <el-form-item label="Loại điều trị" prop="treatType.name">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -473,7 +473,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择治疗类型"
+                  placeholder="Vui lòng chọn loại điều trị"
                   @clear="
                     bizFormModel.treatType = {
                       value: null,
@@ -503,7 +503,7 @@
 <!--                  value-key="value"-->
 <!--                  filterable-->
 <!--                  clearable-->
-<!--                  placeholder="请选择医疗类型"-->
+<!--                  placeholder="Vui lòng chọn loại y tế"-->
 <!--                  @clear="-->
 <!--                    bizFormModel.medType = {-->
 <!--                      value: null,-->
@@ -523,17 +523,17 @@
           </el-row>
         </div>
         <div class="registrationItemBox">
-          <h3>其他信息</h3>
+          <h3>Thông tin khác</h3>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="体温" prop="temperature">
+              <el-form-item label="Nhiệt độ cơ thể" prop="temperature">
                 <div class="ipt-box">
                   <el-input
                     :disabled="dialogProps.action === 'view'"
                     v-model="bizFormModel.temperature"
                     :maxlength="45"
                     :placeholder="
-                      dialogProps.action === 'view' ? '' : '请输入体温'
+                      dialogProps.action === 'view' ? '' : 'Vui lòng nhập nhiệt độ cơ thể'
                     "
                   ></el-input>
                   <span>&nbsp;℃</span>
@@ -541,44 +541,44 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="脉搏" prop="pulse">
+              <el-form-item label="Mạch" prop="pulse">
                 <div class="ipt-box">
                   <el-input
                     :disabled="dialogProps.action === 'view'"
                     v-model="bizFormModel.pulse"
                     :maxlength="45"
                     :placeholder="
-                      dialogProps.action === 'view' ? '' : '请输入脉搏'
+                      dialogProps.action === 'view' ? '' : 'Vui lòng nhập mạch'
                     "
                   ></el-input>
-                  <span>&nbsp;次/min</span>
+                  <span>&nbsp;lần/min</span>
                 </div>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="呼吸" prop="breathe">
+              <el-form-item label="Nhịp thở" prop="breathe">
                 <div class="ipt-box">
                   <el-input
                     :disabled="dialogProps.action === 'view'"
                     v-model="bizFormModel.breathe"
                     :maxlength="45"
                     :placeholder="
-                      dialogProps.action === 'view' ? '' : '请输入呼吸'
+                      dialogProps.action === 'view' ? '' : 'Vui lòng nhập nhịp thở'
                     "
                   ></el-input>
-                  <span>&nbsp;次/min</span>
+                  <span>&nbsp;lần/min</span>
                 </div>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="血压" prop="bloodPressure">
+              <el-form-item label="Huyết áp" prop="bloodPressure">
                 <div class="ipt-box">
                   <el-input
                     :disabled="dialogProps.action === 'view'"
                     v-model="bizFormModel.bloodPressure"
                     :maxlength="45"
                     :placeholder="
-                      dialogProps.action === 'view' ? '' : '请输入血压'
+                      dialogProps.action === 'view' ? '' : 'Vui lòng nhập huyết áp'
                     "
                   ></el-input>
                   <span>&nbsp;mmHg</span>
@@ -587,7 +587,7 @@
             </el-col>
             <!-- <el-col :span="24 / 2">
               <el-form-item
-                label="支付方式"
+                label="Phương thức thanh toán"
                 prop="payType"
                 v-if="true"
               >
@@ -600,7 +600,7 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="是否去过疫区" prop="isGoHigharea">
+              <el-form-item label="Có từng đến vùng dịch không" prop="isGoHigharea">
                 <el-switch
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.isGoHigharea"
@@ -613,7 +613,7 @@
             </el-col>
             <el-col :span="24 / 2">
               <el-form-item
-                label="疫区地点"
+                label="Địa điểm vùng dịch"
                 prop="highArea"
                 :rules="
                   bizFormModel.isGoHigharea === '1'
@@ -633,7 +633,7 @@
                   v-model="bizFormModel.highArea"
                   :maxlength="128"
                   :placeholder="
-                    dialogProps.action === 'view' ? '' : '请输入疫区地点'
+                    dialogProps.action === 'view' ? '' : 'Vui lòng nhập địa điểm vùng dịch'
                   "
                 ></el-input>
               </el-form-item>
@@ -641,14 +641,14 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="备注信息" prop="remarks">
+              <el-form-item label="Thông tin ghi chú" prop="remarks">
                 <el-input
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.remarks"
                   type="textarea"
                   :maxlength="255"
                   :placeholder="
-                    dialogProps.action === 'view' ? '' : '请输入备注信息'
+                    dialogProps.action === 'view' ? '' : 'Vui lòng nhập thông tin ghi chú'
                   "
                   clearable
                 ></el-input>
@@ -660,15 +660,15 @@
     </el-form>
     <span slot='footer' class='dialog-footer'>
       <el-button v-if='dialogProps.action !== "view"' type='primary' :disabled="flag" :plain='true'
-                 @click='onSubmit("registrationForm")'>保 存
+                 @click='onSubmit("registrationForm")'>Lưu
       </el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
 
-    <!--收费支付弹框 开始-->
+    <!--Hộp thoại thanh toán thu phí Bắt đầu-->
     <el-dialog
-      title="收费"
+      title="Thu phí"
       :visible.sync="payRegistrationFeeVisible"
       width="40%"
       :close-on-click-modal="false"
@@ -678,22 +678,22 @@
       <div>
         <el-divider></el-divider>
         <div id="registrationTotalFee_Container">
-          <div id="registrationTotalFee_Title">应收金额（元）：</div>
+          <div id="registrationTotalFee_Title">Số tiền phải thu（VNĐ）：</div>
           <div id="registrationTotalFee_Fee">
             {{ this.bizFormModel.registrationFee }}
           </div>
         </div>
         <div class="pay-registration-flex-start">
-          <p class="pay-registration-p">实收金额</p>
+          <p class="pay-registration-p">Số tiền thực thu</p>
           <el-input
             v-model="bizFormModel.practicleRegistrationFee"
-            placeholder="请输入实收金额"
+            placeholder="Vui lòng nhập số tiền thực thu"
             type="number"
             class="pay-registration-content"
           ></el-input>
         </div>
         <div class="pay-registration-flex-start">
-          <p class="pay-registration-p">支付方式</p>
+          <p class="pay-registration-p">Phương thức thanh toán</p>
           <el-radio-group
             v-model="bizFormModel.payType.value"
             class="pay-registration-content"
@@ -708,7 +708,7 @@
           </el-radio-group>
         </div>
         <div class="pay-registration-flex-start">
-          <p class="pay-registration-p">备注</p>
+          <p class="pay-registration-p">Ghi chú</p>
           <el-input
             type="textarea"
             :rows="3"
@@ -719,13 +719,13 @@
         <el-divider></el-divider>
       </div>
       <div slot="footer">
-        <el-button @click="payRegistrationFeeVisible = false">取 消</el-button>
+        <el-button @click="payRegistrationFeeVisible = false">Hủy</el-button>
         <el-button type="primary" @click="payRegistrationFeeClick"
-        >确认收费
+        >Xác nhận thu phí
         </el-button>
       </div>
     </el-dialog>
-    <!--收费支付弹框 结束-->
+    <!--Hộp thoại thanh toán thu phí Kết thúc-->
   </el-dialog>
 </template>
 <script>
@@ -740,7 +740,7 @@ import BaseUI from "@/views/components/baseUI";
 import OperationIcon from "@/components/OperationIcon";
 import {saveTollInfo} from "@/api/toll/tollInfo";
 
-// 模块级别初始化函数 — 避免在 Vue data() 中调用 this 方法（此时 methods 尚未初始化）
+// 模块级别初始化函数 — 避免在 Vue data() 中调用 this Phương pháp（此时 methods 尚未初始化）
 function _defaultFormModel() {
   const cu = window.currentUser || {};
   const co = cu.company || {};
@@ -756,7 +756,7 @@ function _defaultFormModel() {
     cardType: { value: null, name: null },
     receptionStartDate: "",
     receptionEndDate: "",
-    source: { value: 'registrationSource_0', name: '现场' },
+    source: { value: 'registrationSource_0', name: 'Tại chỗ' },
     pulse: "", breathe: "", temperature: "",
     isGoHigharea: "0", highArea: "",
     freeRegistrationFee: '1',
@@ -764,9 +764,9 @@ function _defaultFormModel() {
     practicleRegistrationFee: 0,
     practicalRegistrationPayRemarks: "",
     refundRegistrationPayType: { value: null, name: null },
-    infectType: { value: "infectType_0", name: "否" },
-    payType: { value: "payType_0", name: "现金" },
-    status: { value: "registrationStatus_0", name: "待就诊" },
+    infectType: { value: "infectType_0", name: "Không" },
+    payType: { value: "payType_0", name: "Tiền mặt" },
+    status: { value: "registrationStatus_0", name: "Chờ khám" },
     dispensingStatus: "0", dispensingDate: "",
     chargeStatus: "0", chargeDate: "",
     name: "", age: "", month: "", birthday: "", phone: "",
@@ -804,44 +804,44 @@ export default {
     return {
       setDisabled: {
         disabledDate(time) {
-          return time.getTime() > Date.now(); // 可选历史天、可选当前天、不可选未来天
-          // return time.getTime() > Date.now() - 8.64e7;  // 可选历史天、不可选当前天、不可选未来天
-          // return time.getTime() < Date.now() - 8.64e7;  // 不可选历史天、可选当前天、可选未来天
-          // return time.getTime() < Date.now(); // 不可选历史天、不可选当前天、可选未来天
+          return time.getTime() > Date.now(); // Có thể chọn ngày trước、Có thể chọn ngày hiện tại、Không thể chọn ngày tương lai
+          // return time.getTime() > Date.now() - 8.64e7;  // Có thể chọn ngày trước、Không thể chọn ngày hiện tại、Không thể chọn ngày tương lai
+          // return time.getTime() < Date.now() - 8.64e7;  // Không thể chọn ngày trước、Có thể chọn ngày hiện tại、Có thể chọn ngày tương lai
+          // return time.getTime() < Date.now(); // Không thể chọn ngày trước、Không thể chọn ngày hiện tại、Có thể chọn ngày tương lai
 
-          /*只能选择今天前的近七天*/
+          /*Chỉ chọn được 7 ngày gần đây trước hôm nay*/
           // let now = Date.now();
           // let seven = 7 * 8.64e7;
           // let sevenDays = now - seven;
-          // return time.getTime() > now || time.getTime() < sevenDays;  //大于今天和小于七天前的禁用
+          // return time.getTime() > now || time.getTime() < sevenDays;  //Vô hiệu hóa ngày lớn hơn hôm nay và nhỏ hơn 7 ngày trước
         },
       },
 
       remove:false,
       view:false,
-      payRegistrationFeeVisible: false, //显示收费窗口
+      payRegistrationFeeVisible: false, //Hiển thị cửa sổ thu phí
       bizFormModel: {..._defaultFormModel(), ..._defaultPatientModel()},
       PatientFormModel: _defaultPatientModel(),
       tabIndex: "1",
-      flag: false,//防止重复提交
-      gender_List: [], // 性别
-      withPatientNexus_List: [], // 与患者关系
+      flag: false,//Ngăn gửi trùng lặp
+      gender_List: [], // Giới tính
+      withPatientNexus_List: [], // Quan hệ với bệnh nhân
       key_department: 1, // el-cascader key
-      department_List: [], // 科室
-      patientId_List: [], // 患者
-      doctor_List: [], // 医生
+      department_List: [], // Khoa
+      patientId_List: [], // Bệnh nhân
+      doctor_List: [], // Bác sĩ
       select_doctor: [],
-      treatType_List: [], // 治疗类型
-      medTypeList: [],//医疗类型
-      cardTypeList:[],//证件类型
-      source_List: [], // 来源
-      payType_List: [], // 支付方式
-      status_List: [], // 状态
+      treatType_List: [], // Loại điều trị
+      medTypeList: [],//Loại y tế
+      cardTypeList:[],//Loại giấy tờ
+      source_List: [], // Nguồn
+      payType_List: [], // Phương thức thanh toán
+      status_List: [], // Trạng thái
       sysParamConfigForm: {
-        chronicDays: null,//慢病处方天数
-        normalDays: null,//普通处方天数
-        registrationFee: null,//默认挂号金额
-        retailPrice: null,//是否默认零售价
+        chronicDays: null,//Số ngày đơn thuốc bệnh mạn tính
+        normalDays: null,//Số ngày đơn thuốc thông thường
+        registrationFee: null,//Số tiền đăng ký khám mặc định
+        retailPrice: null,//Có mặc định giá bán lẻ không
       },
       saveMap:new Map(),
       search: {
@@ -854,55 +854,55 @@ export default {
         action: '',
         title: '',
         source: {
-          name: '现场',
+          name: 'Tại chỗ',
           value: 'registrationSource_0'
         }
       },
       formRules: {
         registrationFee: [
-          {required: true, message: "请输入挂号费", trigger: "blur"},
+          {required: true, message: "Vui lòng nhập phí đăng ký khám", trigger: "blur"},
         ],
         highArea: [
-          {required: true, message: "请输入疫区地点", trigger: "blur"},
+          {required: true, message: "Vui lòng nhập địa điểm vùng dịch", trigger: "blur"},
         ],
         "treatType.name": [
-          { required: true, message: "请选择治疗类型", trigger: "change" },
+          { required: true, message: "Vui lòng chọn loại điều trị", trigger: "change" },
          ],
         // "medType.name": [
-        //   { required: true, message: "请选择医疗类型", trigger: "change" },
+        //   { required: true, message: "Vui lòng chọn loại y tế", trigger: "change" },
         // ],
         "doctor.name": [
-          { required: true, message: "请选择医生", trigger: "change" },
+          { required: true, message: "Vui lòng chọn bác sĩ", trigger: "change" },
         ],
         "clinicOffice.id": [
-          { required: true, message: "请选择科室", trigger: "change" },
+          { required: true, message: "Vui lòng chọn khoa/phòng", trigger: "change" },
         ],
         // "birthday": [
-        //   {required: true, message: "请选择出生日期", trigger: "change"},
+        //   {required: true, message: "Vui lòng chọn ngày sinh", trigger: "change"},
         // ],
-        //  phone: [{ required: true, message: "请输入联系方式", trigger: "blur" }],
-        age: [{required: true, message: "请输入年龄", trigger: "blur"}],
-        name: [{required: true, message: "请输入姓名", trigger: "change"}],
+        //  phone: [{ required: true, message: "Vui lòng nhập thông tin liên hệ", trigger: "blur" }],
+        age: [{required: true, message: "Vui lòng nhập tuổi", trigger: "blur"}],
+        name: [{required: true, message: "Vui lòng nhập họ tên", trigger: "change"}],
         "gender.name": [
-          {required: true, message: "请输入性别", trigger: "change"},
+          {required: true, message: "Vui lòng nhập giới tính", trigger: "change"},
         ],
         // "card": [
-        //   { required: true, message: '请输入身份证号码', trigger: 'blur' },
-        //   { min:18,max:18, message: "请输入18位身份证号码", trigger: "blur" },
-        //    {	//调用上面定义的方法校验格式是否正确
+        //   { required: true, message: 'Vui lòng nhập số CMND/CCCD', trigger: 'blur' },
+        //   { min:18,max:18, message: "Vui lòng nhập18chữ số của số CMND/CCCD", trigger: "blur" },
+        //    {	//Gọi phương thức đã định nghĩa ở trên để kiểm tra định dạng có đúng không
         //            validator: isCnNewID,trigger: "blur"
         //   }
         // ],
-        guardianName: [{required: false, message: "请输入监护人姓名", trigger: "change"},],
-        guardianPhone: [{required: false, message: "请输入监护人电话", trigger: "change"},],
-        workplace: [{required: false, message: "请输入工作单位", trigger: "change"},],
-        nation: [{required: false, message: "请输入民族", trigger: "change"},],
-        occupation: [{required: false, message: "请输入职业", trigger: "change"},]
+        guardianName: [{required: false, message: "Vui lòng nhập tên người giám hộ", trigger: "change"},],
+        guardianPhone: [{required: false, message: "Vui lòng nhập số điện thoại người giám hộ", trigger: "change"},],
+        workplace: [{required: false, message: "Vui lòng nhập đơn vị công tác", trigger: "change"},],
+        nation: [{required: false, message: "Vui lòng nhập dân tộc", trigger: "change"},],
+        occupation: [{required: false, message: "Vui lòng nhập nghề nghiệp", trigger: "change"},]
       },
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object,
     },
@@ -920,7 +920,7 @@ export default {
         this.bizFormModel.birthday = newBirthday
         this.birthdayChanges()
 
-        // 性别
+        // Giới tính
         let sexStr = this.bizFormModel.card.substring(16, 17)
         // 0女1男
         let sexName = "男";
@@ -949,12 +949,12 @@ export default {
         };
       }
       if (this.doctor_List.length !== 0) {
-        //过滤医生
+        //Lọc bác sĩ
         this.select_doctor = this.doctor_List.filter(doctor => doctor.office === clinicOffice)
       }
     },
     GetPatientInfo() {
-      //挂号id不能被覆盖
+      //Đăng ký khámidKhông thể bị ghi đè
       const id = this.bizFormModel.id;
       if (this.bizFormModel.name.id) {
         this.PatientFormModel = this.bizFormModel.name;
@@ -973,11 +973,11 @@ export default {
       const registerId = this.bizFormModel.id;
       this.bizFormModel.id = this.PatientFormModel.id;
       if (this.bizFormModel.doctor.id == null && this.bizFormModel.doctor.name == null) {
-        this.bizFormModel.status.name = "待分诊";
+        this.bizFormModel.status.name = "Chờ phân loại khám";
         this.bizFormModel.status.value = "registrationStatus_5";
       }
       if (this.bizFormModel.doctor.id != null && this.bizFormModel.doctor.name != null) {
-        this.bizFormModel.status.name = "待就诊";
+        this.bizFormModel.status.name = "Chờ khám";
         this.bizFormModel.status.value = "registrationStatus_0";
       }
       if (this.bizFormModel.id !== undefined) {
@@ -1019,7 +1019,7 @@ export default {
     },
     onSubmit(formName) {
       // if(!flagCard){
-      //   this.$message.error("身份证号码不正确，请重新输入")
+      //   this.$message.error("Số CMND/CCCD không đúng，Vui lòng nhập lại")
       //   return;
       // }
       this.flag = true
@@ -1040,7 +1040,7 @@ export default {
             if (this.bizFormModel.registrationFee === 0) {
               this.$message({
                 showClose: true,
-                message: '请填写挂号费',
+                message: 'Vui lòng điền phí đăng ký khám',
                 type: 'error'
               });
               return
@@ -1066,7 +1066,7 @@ export default {
       this.setLoad();
       if (this.bizFormModel.source.value === "registrationSourc_1") {
         this.bizFormModel.status.value = "registrationStatus_3";
-        this.bizFormModel.status.name = "待签到";
+        this.bizFormModel.status.name = "Chờ check-in";
       }
 
       this.payType_List.forEach(item => {
@@ -1077,19 +1077,19 @@ export default {
       let toll = {
         company: this.bizFormModel.company,
         registrationFeeId: '',
-        amountReceivable: this.bizFormModel.registrationFee, //应收应退
-        amountReceived: this.bizFormModel.registrationFee,  //实收
-        paymentType: this.bizFormModel.payType,//支付类型
+        amountReceivable: this.bizFormModel.registrationFee, //Phải thu/phải trả
+        amountReceived: this.bizFormModel.registrationFee,  //Thực thu
+        paymentType: this.bizFormModel.payType,//Loại thanh toán
         patient: this.bizFormModel.patientId,
         amountStatus: {
-          name: '已收费',
+          name: 'Đã thu phí',
           value: 'amountStatus_1'
-        },    //单据状态
+        },    //Trạng thái chứng từ
         tollType: {
-          name: '挂号',
+          name: 'Đăng ký khám',
           value: 'tollType_4'
-        },    //收费类型
-        remarks: this.bizFormModel.remarks   //备注信息
+        },    //Loại thu phí
+        remarks: this.bizFormModel.remarks   //Thông tin ghi chú
       }
 
       saveRegistration(this.bizFormModel)
@@ -1101,10 +1101,10 @@ export default {
             if (this.dialogProps.action === "add" && this.remove){
               this.$router.push('/medicalOutpatientRecord')
             }
-            //保存成功后，如果存在挂号费，在收费表中插入数据
+            //Sau khi lưu thành công，Nếu có phí đăng ký khám，Chèn dữ liệu vào bảng thu phí
             if (this.bizFormModel.registrationFee > 0) {
               toll.registrationFeeId = responseData.data
-              //在收费表中插入数据
+              //Chèn dữ liệu vào bảng thu phí
               saveTollInfo(toll).then((res) => {
                 if (res.code === 100) {
 
@@ -1130,7 +1130,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改登记信息";
+      this.dialogProps.title = "Sửa thông tin đăng ký";
       this.initOptions(this.bizFormModel);
     },
     onDialogClose() {
@@ -1144,47 +1144,47 @@ export default {
     initPatientModel() {
       return {
         company: {
-          // 诊所id
+          // Phòng khámid
           id: currentUser.company.id,
           name: null,
         },
-        name: "", // 患者姓名
+        name: "", // Tên bệnh nhân
         gender: {
-          // 性别null
+          // Giới tínhnull
           value: null,
           name: null,
         },
-        age: "", // 年龄
-        month: "", // 月
-        birthday: "", // 出生日期
-        phone: "", // 联系方式
-        nation: "", // 民族
-        occupation: "", // 职业
-        card: "", // 证件号
-        cardType:"",//证件类型
-        workplace: "", // 工作单位
+        age: "", // Tuổi
+        month: "", // tháng
+        birthday: "", // Ngày sinh
+        phone: "", // Thông tin liên hệ
+        nation: "", // Dân tộc
+        occupation: "", // Nghề nghiệp
+        card: "", // Số giấy tờ
+        cardType:"",//Loại giấy tờ
+        workplace: "", // Đơn vị công tác
         withPatientNexus: {
-          // 与患者关系
+          // Quan hệ với bệnh nhân
           value: null,
           name: null,
         },
-        healthCardNo: "", // 健康卡号
-        province: "", // 省
-        city: "", // 市
-        area: "", // 区
-        address: "", // 详细地址
-        remarks: "", // 备注信息
+        healthCardNo: "", // Số thẻ sức khỏe
+        province: "", // Tỉnh/Thành phố
+        city: "", // Thành phố
+        area: "", // Quận/Huyện
+        address: "", // Địa chỉ chi tiết
+        remarks: "", // Thông tin ghi chú
       };
     },
     initFormModel(This) {
       return {
         company: {
-          // 诊所id
+          // Phòng khámid
           id: currentUser.company.id,
           name: null,
         },
         clinicOffice: {
-          // 科室
+          // Khoa
           id: null,
           name: null,
         },
@@ -1194,7 +1194,7 @@ export default {
         },
         mdtrtCertNo:"",
         patientId: {
-          // 父表 患者
+          // Bảng cha Bệnh nhân
           id:
             validatenull(This) || validatenull(This.patientId)
               ? null
@@ -1206,79 +1206,79 @@ export default {
         },
 
         doctor: {
-          // 医生
+          // Bác sĩ
           id:  currentUser.id ,
           name:  currentUser.name
         },
         treatType: {
-          // 治疗类型
+          // Loại điều trị
           value: null,
           name: null,
         },
         medType: {
-          // 治疗类型
+          // Loại điều trị
           value: null,
           name: null,
         },
         cardType: {
-          // 证件类型
+          // Loại giấy tờ
           value: null,
           name: null,
         },
-        receptionStartDate: "", // 接诊开始时间
+        receptionStartDate: "", // Thời gian bắt đầu tiếp nhận khám
         source: {
-          // 来源
+          // Nguồn
           value: 'registrationSource_0',
-          name: '现场',
+          name: 'Tại chỗ',
         },
-        receptionEndDate: "", // 接诊结束时间
-        pulse: "", // 脉搏
-        breathe: "", // 呼吸
-        temperature: "", // 体温
-        isGoHigharea: "0", // 是否去过疫区
-        highArea: "", // 疫区地点
-        freeRegistrationFee: this.view ? '0': '1', // 免挂号费
-        registrationFee:  0, // 挂号费
-        practicleRegistrationFee: 0, //实际支付的挂号费
-        practicalRegistrationPayRemarks: "", //实际支付备注
+        receptionEndDate: "", // Thời gian kết thúc tiếp nhận khám
+        pulse: "", // Mạch
+        breathe: "", // Nhịp thở
+        temperature: "", // Nhiệt độ cơ thể
+        isGoHigharea: "0", // Có từng đến vùng dịch không
+        highArea: "", // Địa điểm vùng dịch
+        freeRegistrationFee: this.view ? '0': '1', // Miễn phí đăng ký khám
+        registrationFee:  0, // Phí đăng ký khám
+        practicleRegistrationFee: 0, //Phí đăng ký khám thực tế đã trả
+        practicalRegistrationPayRemarks: "", //Ghi chú thanh toán thực tế
         refundRegistrationPayType: {
           value: null,
           name: null,
         },
         infectType:{
-          //传染病
+          //Bệnh truyền nhiễm
           value: "infectType_0",
-          name: "否",
+          name: "Không",
         },
         payType: {
-          // 支付方式
+          // Phương thức thanh toán
           value: "payType_0",
-          name: "现金",
+          name: "Tiền mặt",
         },
-        remarks: "", // 备注信息
+        remarks: "", // Thông tin ghi chú
         status: {
-          // 状态
+          // Trạng thái
           value: "registrationStatus_0",
-          name: "待就诊",
+          name: "Chờ khám",
         },
-        dispensingStatus: "0", // 发药状态
-        dispensingDate: "", // 发/退药时间
-        chargeStatus: "0", // 收费状态
-        chargeDate: "", // 收费时间
+        dispensingStatus: "0", // Trạng thái phát thuốc
+        dispensingDate: "", // 发/Thời gian trả thuốc
+        chargeStatus: "0", // Trạng thái thu phí
+        chargeDate: "", // Thời gian thu phí
       };
     },
     initOptions(This) {
-      //查询患者性别
+      //Truy vấn giới tính bệnh nhân
       getDictItemsByCode(DICT_CODE.GENDER).then((data) => {
         this.gender_List = data;
       });
 
-      //查询与患者关系
+      //Truy vấn quan hệ với bệnh nhân
       getDictItemsByCode(DICT_CODE.WITH_PATIENT_NEXUS).then((data) => {
         this.withPatientNexus_List = data;
       });
 
-      //查询可挂号科室
+      //Truy vấn khoa/phòng có thể đăng ký khám
       this.key_department++;
       let department_search = {
         params: [
@@ -1293,20 +1293,20 @@ export default {
       };
 
 
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       department_search.params.push.apply(department_search.params, []);
-      // 数据权限: 部门org_department
+      // Quyền dữ liệu: Phòng banorg_department
       this.pushDataPermissions(
         department_search.params,
         this.$route.meta.routerId,
         "52676365136650250"
       );
-      this.department_List.splice(0, this.department_List.length);//查询科室请求已放入查询医生请求中
-      //查询病人列表
+      this.department_List.splice(0, this.department_List.length);//Yêu cầu truy vấn khoa/phòng đã đưa vào yêu cầu truy vấn bác sĩ
+      //Truy vấn danh sách bệnh nhân
       let patientId_search = {
         params: [],
       };
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       patientId_search.params.push.apply(patientId_search.params, [
         {
           columnName: "company_id",
@@ -1314,7 +1314,7 @@ export default {
           value: currentUser.company.id,
         },
       ]);
-      // 数据权限: 患者表patient
+      // Quyền dữ liệu: Bảng bệnh nhânpatient
       this.pushDataPermissions(
         patientId_search.params,
         this.$route.meta.routerId,
@@ -1325,7 +1325,7 @@ export default {
         this.patientId_List = responseData.data;
       });
 
-      //门诊医生查询
+      //Truy vấn bác sĩ ngoại trú
       let doctor_search = {
         params: [
           {
@@ -1335,13 +1335,13 @@ export default {
           },
         ],
       };
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       doctor_search.params.push.apply(doctor_search.params, []);
-      // 表有禁用字段
+      // Bảng có trường bị vô hiệu hóa
       doctor_search.params.push.apply(doctor_search.params, [
         {columnName: "is_locked", queryType: "=", value: "0"},
       ]);
-      // 数据权限:  用户sys_user
+      // Quyền dữ liệu:  Người dùngsys_user
       this.pushDataPermissions(
         doctor_search.params,
         this.$route.meta.routerId,
@@ -1362,36 +1362,36 @@ export default {
 
       });
 
-      //治疗类型
+      //Loại điều trị
       getDictItemsByCode(DICT_CODE.TREAT_TYPE).then((data) => {
         this.treatType_List = data;
       });
 
-      //医疗类型
+      //Loại y tế
       getDictItemsByCode(DICT_CODE.MED_TYPE).then((data) => {
         this.medTypeList = data;
       });
-      //证件类型
+      //Loại giấy tờ
       getDictItemsByCode(DICT_CODE.CARD_TYPE).then((data) => {
         this.cardTypeList = data;
       });
 
-      //病人来源
+      //Nguồn bệnh nhân
       getDictItemsByCode(DICT_CODE.REGISTRATION_SOURCE).then((data) => {
         this.source_List = data;
       });
 
-      //支付类型查询
+      //Truy vấn loại thanh toán
       getDictItemsByCode(DICT_CODE.PAY_TYPE).then((data) => {
         this.payType_List = data;
       });
 
-      //挂号状态
+      //Trạng thái đăng ký khám
       getDictItemsByCode(DICT_CODE.REGISTRATION_STATUS).then((data) => {
         this.status_List = data;
       });
     },
-    //自动计算年龄事件
+    //Sự kiện tự tính tuổi
     birthdayChanges() {
 
       if (!this.bizFormModel.birthday) {
@@ -1441,7 +1441,7 @@ export default {
       })
     },
     /**
-     * 初始化saveMap
+     * Khởi tạosaveMap
      */
     initSaveDatas(){
       for (let key in this.sysParamConfigForm) {
@@ -1458,7 +1458,7 @@ export default {
     },
     async openViewRegistrationDialog(registration) {
       this.dialogProps.action = "view";
-      this.dialogProps.title = "查看登记信息";
+      this.dialogProps.title = "Xem thông tin đăng ký";
       this.bizFormModel = {...this.initFormModel(), ...registration};
       this.initOptions(this.bizFormModel);
       getPatientById(registration.patientId.id).then((responseData) => {
@@ -1471,7 +1471,7 @@ export default {
     },
     async openEditRegistrationDialog(registration) {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改登记信息";
+      this.dialogProps.title = "Sửa thông tin đăng ký";
       this.bizFormModel = {...this.initFormModel(), ...registration};
       this.initOptions(this.bizFormModel);
       const responseData = await getPatientById(registration.patientId.id);
@@ -1488,7 +1488,7 @@ export default {
       this.remove = remove;
       this.view = view;
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加登记信息";
+      this.dialogProps.title = "Thêm thông tin đăng ký";
       this.bizFormModel = this.initFormModel();
       this.PatientFormModel = this.initPatientModel();
       this.bizFormModel = { ...this.bizFormModel, ...this.PatientFormModel };
@@ -1503,7 +1503,7 @@ export default {
     },
     openCopyRegistrationDialog(registration) {
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加登记信息";
+      this.dialogProps.title = "Thêm thông tin đăng ký";
       this.bizFormModel = {...this.initFormModel(), ...registration};
       this.initOptions(this.bizFormModel);
       getPatientById(registration.patientId.id).then((responseData) => {
@@ -1519,7 +1519,7 @@ export default {
     },
   },
   watch: {
-    //监视器监视到科室改变，获取科室内的操作员绑定
+    //Trình theo dõi phát hiện khoa/phòng thay đổi，Lấy liên kết nhân viên trong khoa/phòng
     "bizFormModel.department.id": function (val, oldVal) {
       if (val !== oldVal) {
         if (
@@ -1527,7 +1527,7 @@ export default {
           this.dialogProps.action === "edit"
         ) {
           this.bizFormModel.doctor = {
-            // 医生
+            // Bác sĩ
             id: null,
             name: null,
           };
@@ -1541,13 +1541,13 @@ export default {
             },
           ],
         };
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         doctor_search.params.push.apply(doctor_search.params, []);
-        // 表有禁用字段
+        // Bảng có trường bị vô hiệu hóa
         doctor_search.params.push.apply(doctor_search.params, [
           {columnName: "is_locked", queryType: "=", value: "0"},
         ]);
-        // 数据权限:  用户sys_user
+        // Quyền dữ liệu:  Người dùngsys_user
         this.pushDataPermissions(
           doctor_search.params,
           this.$route.meta.routerId,

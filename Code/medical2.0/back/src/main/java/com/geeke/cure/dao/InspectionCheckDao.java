@@ -9,7 +9,7 @@ import com.geeke.cure.entity.InspectionCheck;
 import java.util.List;
 
 /**
- * 检验检查DAO接口
+ * Xét nghiệm và kiểm traDAOGiao diện
  * @author rys
  * @version 2022-10-18
  */

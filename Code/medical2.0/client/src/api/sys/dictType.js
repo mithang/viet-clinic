@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/sys/dictType')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getDictTypeById = baseApi.getById
 export const listDictTypePage = baseApi.listPage
 export const listDictTypeAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertDictType = baseApi.bulkInsert
 export const bulkUpdateDictType = baseApi.bulkUpdate
 export const bulkDeleteDictType = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const importDictType = (dictType) =>
     request({
         url: '/sys/dictType/importJson',

@@ -1,38 +1,38 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow'></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <patient-form ref='patientForm' :permission='permission' @save-finished='getPatientList'></patient-form>
     <el-card class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
         <el-row v-if='!moreCodition' class='search-row'>
           <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm'
                    :inline-message='true'>
             <el-col :span="4">
-              <el-form-item label='患者姓名' prop='name'>
-                <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入患者姓名'></el-input>
+              <el-form-item label='Tên bệnh nhân' prop='name'>
+                <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên bệnh nhân'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="5">
-              <el-form-item label='身份证号' prop='card'>
-                <el-input v-model='queryModel.card' :clearable='true' placeholder='请输入身份证号'></el-input>
+              <el-form-item label='Số CMND/CCCD' prop='card'>
+                <el-input v-model='queryModel.card' :clearable='true' placeholder='Vui lòng nhập số CMND/CCCD'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='科室' prop='department'>
+              <el-form-item label='Khoa' prop='department'>
                 <el-input v-model='queryModel.department' :clearable='true' placeholder='请输入科室'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='医生' prop='medic'>
-                <el-input v-model='queryModel.medic' :clearable='true' placeholder='请输入医生姓名'></el-input>
+              <el-form-item label='Bác sĩ' prop='medic'>
+                <el-input v-model='queryModel.medic' :clearable='true' placeholder='Vui lòng nhập họ tên bác sĩ'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='状态' prop='status'>
-                <el-select v-model='queryModel.status' :clearable='true' placeholder='请选择状态' clearable>
+              <el-form-item label='Trạng thái' prop='status'>
+                <el-select v-model='queryModel.status' :clearable='true' placeholder='Vui lòng chọn trạng thái' clearable>
                   <el-option
                     v-for="item in options"
                     :key="item.value"
@@ -41,19 +41,19 @@
                   </el-option>
                 </el-select>
                 <!--
-                <el-input v-model='queryModel.status' :clearable='true' placeholder='请选择状态'></el-input>
+                <el-input v-model='queryModel.status' :clearable='true' placeholder='Vui lòng chọn trạng thái'></el-input>
                 -->
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="就诊时间" prop="diagnosisTime">
+              <el-form-item label="Thời gian khám" prop="diagnosisTime">
                 <el-date-picker
                   :picker-options="filerData.pickerOptions"
                   v-model="queryModel.diagnosisTime"
                   type="datetimerange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
+                  range-separator="đến"
+                  start-placeholder="Ngày bắt đầu"
+                  end-placeholder="Ngày kết thúc"
                   :default-time="['00:00:00', '23:59:59']"
                 >
                 </el-date-picker>
@@ -65,14 +65,14 @@
                 icon="el-icon-search"
                 @click="onSearch()"
                 :plain="true"
-              >搜索
+              >Tìm kiếm
               </el-button>
               <el-button
                 type="info"
                 icon="el-icon-refresh-left"
                 @click="reset"
                 :plain="true"
-              >重置
+              >Đặt lại
               </el-button>
             </el-col>
             <el-col :span="3" style="text-align:right;padding-right:5px">
@@ -82,7 +82,7 @@
                   type="primary"
                   icon="el-icon-plus"
                   @click="onCreatePatient()"
-                >添加
+                >Thêm
                 </el-button
                 >
               </el-button-group>
@@ -92,12 +92,12 @@
         <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :routerId='$route.meta.routerId'
                    @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 工具栏 开始 -->
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Bắt đầu -->
+      <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
@@ -105,55 +105,55 @@
                       @header-dragend='onChangeWidth' :cell-class-name='cellClassName'
                       :header-cell-class-name='headerCellClassName' highlight-current-row>
               <el-table-column
-                label="序号"
+                label="Số thứ tự"
                 width="70px"
                 type="index"
                 :index="indexMethod"
                 align="center">
               </el-table-column>
-              <el-table-column prop="name" label="姓名"></el-table-column>
-              <el-table-column prop="gender" label="性别"></el-table-column>
-              <el-table-column prop="card" label="证件号"></el-table-column>
-              <el-table-column prop="department" label="申请科室"></el-table-column>
-              <el-table-column prop="medic" label="申请医生"></el-table-column>
+              <el-table-column prop="name" label="Họ tên"></el-table-column>
+              <el-table-column prop="gender" label="Giới tính"></el-table-column>
+              <el-table-column prop="card" label="Số giấy tờ"></el-table-column>
+              <el-table-column prop="department" label="Khoa/phòng đề nghị"></el-table-column>
+              <el-table-column prop="medic" label="Bác sĩ đề nghị"></el-table-column>
               <el-table-column prop="diagnosisTime" label="诊疗时间"></el-table-column>
-              <el-table-column prop="createDate" label="创建时间"></el-table-column>
-              <el-table-column prop="status" label="状态">
+              <el-table-column prop="createDate" label="Thời gian tạo"></el-table-column>
+              <el-table-column prop="status" label="Trạng thái">
                 <template slot-scope='scope'>
-                  <span v-if="scope.row.status === '0'">未提交</span>
-                  <span v-if="scope.row.status === '1'">待确认</span>
-                  <span v-if="scope.row.status === '2'">就诊中</span>
-                  <span v-if="scope.row.status === '3'">已结束</span>
-                  <span v-if="scope.row.status === '4'">已发药</span>
-                  <span v-if="scope.row.status === '5'">已退回</span>
+                  <span v-if="scope.row.status === '0'">Chưa gửi</span>
+                  <span v-if="scope.row.status === '1'">Chờ xác nhận</span>
+                  <span v-if="scope.row.status === '2'">Đang khám</span>
+                  <span v-if="scope.row.status === '3'">Đã kết thúc</span>
+                  <span v-if="scope.row.status === '4'">Đã phát thuốc</span>
+                  <span v-if="scope.row.status === '5'">Đã trả lại</span>
                 </template>
               </el-table-column>
 
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :key="Math.random()" :width='150'>
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :key="Math.random()" :width='150'>
                 <template slot-scope='scope'>
                   <span v-if="scope.row.status === '0'" style="color: #0a7be0"
-                        @click="submit(scope.$index, scope.row)">提交&nbsp;</span>
+                        @click="submit(scope.$index, scope.row)">Gửi&nbsp;</span>
                   <span v-if="scope.row.status === '1'" style="color: #0a7be0"
-                        @click="cancel(scope.$index, scope.row)">撤销&nbsp;</span>
+                        @click="cancel(scope.$index, scope.row)">Thu hồi&nbsp;</span>
                   <span v-if="scope.row.status === '2'" style="color: #0a7be0"
-                        @click="conference(scope.$index, scope.row)">加入会议&nbsp;</span>
+                        @click="conference(scope.$index, scope.row)">Tham gia cuộc họp&nbsp;</span>
                 <!--  <span v-if="scope.row.status === '2'" style="color: #0a7be0"
                         @click="sponsorConference(scope.$index, scope.row)">发起会议&nbsp;</span>-->
-                  <span style="color: #0a7be0" @click="viewDiagnosis(scope.$index, scope.row)">详情&nbsp;</span>
+                  <span style="color: #0a7be0" @click="viewDiagnosis(scope.$index, scope.row)">Chi tiết&nbsp;</span>
                   <!--
-                  <span style="color: #0a7be0" @click="statusEdit(scope.$index, scope.row)">状态&nbsp;</span>
+                  <span style="color: #0a7be0" @click="statusEdit(scope.$index, scope.row)">Trạng thái&nbsp;</span>
                   -->
                   <span v-if="scope.row.status === '0'" style="color: red"
-                        @click="onDeleteDiagnosis(scope.$index, scope.row)">删除&nbsp;</span>
+                        @click="onDeleteDiagnosis(scope.$index, scope.row)">Xóa&nbsp;</span>
                 </template>
               </el-table-column>
             </el-table>
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏  开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -168,7 +168,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->     </el-card>
+      <!-- Thanh phân trang     Kết thúc -->     </el-card>
   </el-row>
 </template>
 
@@ -219,22 +219,22 @@
         },
         options: [{
           value: '0',
-          label: '未提交'
+          label: 'Chưa gửi'
         }, {
           value: '1',
-          label: '待确认'
+          label: 'Chờ xác nhận'
         }, {
           value: '2',
-          label: '就诊中'
+          label: 'Đang khám'
         }, {
           value: '3',
-          label: '已结束'
+          label: 'Đã kết thúc'
         }, {
           value: '4',
-          label: '已发药'
+          label: 'Đã phát thuốc'
         }, {
           value: '5',
-          label: '已退回'
+          label: 'Đã trả lại'
         }],
         queryTypes: {
           'name': 'like',
@@ -242,21 +242,21 @@
           'card': '=',
         },
         queryModel: {
-          'name': '',   // 患者姓名
-          'phone': '',   // 联系方式
-          'card': '',   // 身份证号
-          'department': '',   // 科室
-          'medic': '',   // 医生
-          'diagnosisTime': [this.addCreateDate(), this.$moment(new Date()).endOf("day")],//时间范围
-          'createDate': [this.addCreateDate(), this.$moment(new Date()).endOf("day")],//时间范围
+          'name': '',   // Tên bệnh nhân
+          'phone': '',   // Thông tin liên hệ
+          'card': '',   // Số CMND/CCCD
+          'department': '',   // Khoa
+          'medic': '',   // Bác sĩ
+          'diagnosisTime': [this.addCreateDate(), this.$moment(new Date()).endOf("day")],//Khoảng thời gian
+          'createDate': [this.addCreateDate(), this.$moment(new Date()).endOf("day")],//Khoảng thời gian
 
         },
         search: {
           params: [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}],
           offset: 0,
           limit: 20,
-          columnName: '',      // 排序字段名
-          order: ''            // 排序
+          columnName: '',      // Tên trường sắp xếp
+          order: ''            // Sắp xếp
         },
         currentPage: 1,
         patientTotal: 0,
@@ -264,7 +264,7 @@
         adetailsList: {},
 
 
-        oprColumnWidth: 140,  // 操作列宽
+        oprColumnWidth: 140,  // Độ rộng cột thao tác
         tableId: '1008489176147648530',
         schemeId: '1008489176147648553'
       }
@@ -276,24 +276,24 @@
       },
       getPatientList() {
         this.setLoad()
-        /* 查询参数 和数据权限 */
+        /* Tham số truy vấn và quyền dữ liệu */
         this.search.params = [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}]
         if (this.moreCodition) {
           this.search.params = this.search.params.concat(this.compositeCondition())
         } else {
-          // 查询参数: 患者姓名
+          // Tham số truy vấn: Tên bệnh nhân
           this.search.params.push({
             columnName: 'name',
             queryType: 'like',
             value: this.queryModel.name
           })
-          // 查询参数: 状态
+          // Tham số truy vấn: Trạng thái
           this.search.params.push({
             columnName: 'status',
             queryType: 'like',
             value: this.queryModel.status
           })
-          // 查询参数: 身份证号
+          // Tham số truy vấn: Số CMND/CCCD
           this.search.params.push({
             columnName: 'card',
             queryType: '=',
@@ -346,7 +346,7 @@
               : "",
           });
         }
-        // 数据权限: 患者表patient
+        // Quyền dữ liệu: Bảng bệnh nhânpatient
         this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
         listDiagnosisPage(this.search).then(responseData => {
           if (responseData.code === 100) {
@@ -366,7 +366,7 @@
       addCreateDate() {
 
         let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //最后一个数字30可改，30天的意思
+        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
         let lastY = lw.getFullYear();
         let lastM = lw.getMonth() + 1;
         let lastD = lw.getDate();
@@ -379,7 +379,7 @@
           (lastM < 10 ? "0" + lastM : lastM) +
           "-" +
           (lastD < 10 ? "0" + lastD : lastD) +
-          " " + housrs + ":" + minutes + ":" + seconds //三十天之前日期
+          " " + housrs + ":" + minutes + ":" + seconds //Ngày của 30 ngày trước
         return startData;
 
       },
@@ -416,7 +416,7 @@
         try {
           this.initOptions(this.queryModel)
           this.search.params = [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}]
-          // 数据权限: 患者表patient
+          // Quyền dữ liệu: Bảng bệnh nhânpatient
           this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
           let [listPatientRespData, listPermissionRespData] = await Promise.all([
             listDiagnosisPage(this.search),
@@ -481,7 +481,7 @@
           this.outputError(error)
         })
       },
-      // 获取远程诊所token
+      // Lấy phòng khám từ xatoken
       async getToken() {
         await this.$axios.post('/token/Auth/GetAppFrienAuthToken', loginForm, config)
           .then((response) => {
@@ -511,7 +511,7 @@
         })
           .then((response) => {
             if (response.data.BusData.code === 20000) {
-              this.$message.warning("诊疗申请信息异常，请重新发送申请！")
+              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，请重新发送申请！")
             }else if (response.data.BusData.code === 10000){
 
             }
@@ -520,7 +520,7 @@
           });
       },
 
-      // 加入会议
+      // Tham gia cuộc họp
       async conference(index, row) {
         await this.getToken();
         await this.$axios.post('apis/RemoteTreated/UserJoinMeetingApply', {
@@ -574,9 +574,9 @@
 
       // 撤销申请
       cancel(index, row){
-        this.$confirm('确定撤销申请吗？', '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('确定撤销申请吗？', 'Xác nhận', {
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
           type: 'warning'
         }).then(() => {
           row.status = "0"
@@ -584,12 +584,12 @@
         }).catch(() => {})
       },
 
-      // 状态修改
+      // Sửa trạng thái
       async statusEdit(index, row){
         await this.getToken();
         await this.$axios.post('apis/RemoteTreated/TreatedApplyInfo', {
           Data: {
-            sqlsh: row.id // 申请流水号
+            sqlsh: row.id // Số thứ tự đề nghị
           },
           OrganizeId: row.hospitalId,
           AppId: "Oh_Newtouch_Clinic",
@@ -630,7 +630,7 @@
               this.outputError(error)
             })
           } else {
-            this.$message.warning("诊疗申请信息异常，请联系管理员后重新发送申请!")
+            this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，Vui lòng liên hệ quản trị viên rồi gửi lại đề nghị!")
           }
         })
           .catch((error) => {
@@ -666,9 +666,9 @@
         })
       },
       onDeleteDiagnosis(index, row) {
-        this.$confirm('确定删除吗？', '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
           type: 'warning'
         }).then(() => {
           this.setLoad()
@@ -676,7 +676,7 @@
           deleteDiagnosis(row).then(responseData => {
             if (responseData.code === 100) {
               this.getPatientList()
-              this.showMessage({type: 'success', msg: '删除成功'})
+              this.showMessage({type: 'success', msg: 'Xóa thành công'})
             } else {
               this.showMessage(responseData)
             }
@@ -703,13 +703,13 @@
       }
     },
     watch: {
-      // tableData是el-table绑定的数据
+      // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
-        // 解决表格显示错位问题
+        // Khắc phục lỗi hiển thị lệch bảng
         handler() {
           this.$nextTick(() => {
-            // tableRef是el-table绑定的ref属性值
-            this.$refs.patientTableRef.doLayout()// 对 Table 进行重新布局
+            // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+            this.$refs.patientTableRef.doLayout()// Đối với Table Thực hiện bố cục lại
           })
         },
         deep: true
@@ -718,8 +718,8 @@
     updated() {
       //  if(this.$refs.patientTableRef){
       this.$nextTick(() => {
-        // tableRef是el-table绑定的ref属性值
-        this.$refs.patientTableRef.doLayout()// 对 Table 进行重新布局
+        // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+        this.$refs.patientTableRef.doLayout()// Đối với Table Thực hiện bố cục lại
       })
       //}
     },
@@ -762,7 +762,7 @@
   ;
 
   .drag_table {
-    // 设置表格header的高度
+    // Cài đặt bảngheaderChiều cao của
     ::v-deep th {
       height: 44px;
     }
@@ -771,11 +771,11 @@
       height: 0 !important;
     }
 
-    // 设置表格body的高度
+    // Cài đặt bảngbodyChiều cao của
     ::v-deep .el-table__body-wrapper {
-      //解决数据展示超出body高度不滚动bug
+      //Khắc phục hiển thị dữ liệu vượt quábodychiều cao không cuộn đượcbug
       overflow-y: auto;
-      // 减去的是表格header的高度
+      // Phần trừ đi là bảngheaderChiều cao của
       height: calc(100% - 44px) !important;
     }
 

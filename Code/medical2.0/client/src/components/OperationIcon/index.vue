@@ -25,7 +25,7 @@ export default {
       type: String,
       default: () => {return 'el-icon-picture'}
     },
-    // 类型: primary、success、info、warning、danger
+    // Loại: primary、success、info、warning、danger
     type: {
       type: String,
       default: () => {return 'primary'}
@@ -40,7 +40,7 @@ export default {
       type: String,
       default: () => {return 'top-start'}
     },
-    // 文本
+    // Văn bản
     text: {
       type: String,
       default: () => {''}

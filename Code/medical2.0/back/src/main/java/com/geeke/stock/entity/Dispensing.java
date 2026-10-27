@@ -10,18 +10,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 发药明细Entity
+ * Chi tiết phát thuốcEntity
  * @author txl
  * @version 2022-08-11
  */
 public class Dispensing extends DataEntity<Dispensing> {
 
 	private static final long serialVersionUID = 1025152944882663511L;
-	private Company company;      // 诊所id 
-	private Registration registration;      // 挂号id 
-	private SupplierStock supplierStock;      // 库存id 
-	private RecipelInfo recipelInfo;      // 处方信息id 
-	private Integer number;		// 数量
+	private Company company;      // Phòng khámid 
+	private Registration registration;      // Đăng ký khámid 
+	private SupplierStock supplierStock;      // Tồn khoid 
+	private RecipelInfo recipelInfo;      // Thông tin đơn thuốcid 
+	private Integer number;		// Số lượng
 
 	
 	public Dispensing() {
@@ -41,7 +41,7 @@ public class Dispensing extends DataEntity<Dispensing> {
         this.company = company;
     }
     
-	@NotNull(message="挂号id不能为空")
+	@NotNull(message="Đăng ký khámidKhông được để trống")
     public Registration getRegistration() {
         return registration;
     }
@@ -50,7 +50,7 @@ public class Dispensing extends DataEntity<Dispensing> {
         this.registration = registration;
     }
     
-	@NotNull(message="库存id不能为空")
+	@NotNull(message="Tồn khoidKhông được để trống")
     public SupplierStock getSupplierStock() {
         return supplierStock;
     }
@@ -79,7 +79,7 @@ public class Dispensing extends DataEntity<Dispensing> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -88,7 +88,7 @@ public class Dispensing extends DataEntity<Dispensing> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -98,7 +98,7 @@ public class Dispensing extends DataEntity<Dispensing> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

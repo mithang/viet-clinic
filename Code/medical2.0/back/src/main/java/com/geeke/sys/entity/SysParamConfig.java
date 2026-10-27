@@ -9,17 +9,17 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 
 /**
- * 系统主题Entity
+ * Chủ đề hệ thốngEntity
  * @author lys
  * @version 2021-09-19
  */
 public class SysParamConfig extends DataEntity<SysParamConfig> {
 
 	private static final long serialVersionUID = 532290982345658937L;
-	private String category;        // 类别
-	private String configName;		// 配置名称
-	private String configValue;		// 配置值
-	private String companyId;		// 机构Id
+	private String category;        // Lớploại
+	private String configName;		// cấu hìnhTên
+	private String configValue;		// cấu hìnhGiá trị
+	private String companyId;		// Cơ sởId
 
 
 
@@ -40,7 +40,7 @@ public class SysParamConfig extends DataEntity<SysParamConfig> {
 		this.category = category;
 	}
 
-	@NotNull(message="配置项名称不能为空")
+	@NotNull(message="cấu hìnhhạng mụcTênKhông thể là trống")
 	public String getConfigName() {
 		return configName;
 	}
@@ -48,7 +48,7 @@ public class SysParamConfig extends DataEntity<SysParamConfig> {
 	public void setConfigName(String configName) {
 		this.configName = configName;
 	}
-	@Length(min=1, max=2000, message="主题长度必须介于 1 和 64 之间")
+	@Length(min=1, max=2000, message="Độ dài chủ đề phải nằm trong khoảng 1 đến 64 ")
 	public String getConfigValue() {
 		return configValue;
 	}
@@ -65,7 +65,7 @@ public class SysParamConfig extends DataEntity<SysParamConfig> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -74,7 +74,7 @@ public class SysParamConfig extends DataEntity<SysParamConfig> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -84,7 +84,7 @@ public class SysParamConfig extends DataEntity<SysParamConfig> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

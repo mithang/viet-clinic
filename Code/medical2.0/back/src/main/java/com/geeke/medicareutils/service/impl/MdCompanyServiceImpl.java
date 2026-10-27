@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 科室实现类
+ * KhoaTriển khaiLớp
  */
 @Service
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class MdCompanyServiceImpl implements MdCompanyService {
     @Override
     public String getOrgCompanyInfo_1201(String infoNo, String name, String fixmedinsCode) {
         JSONObject data = new JSONObject();
-        //定点医疗机构
+        //y tế được chỉ địnhCơ sở
         data.put("fixmdins_type", "1");
         data.put("fixmdins_name", name);
         data.put("fixmedins_code", fixmedinsCode);
@@ -96,42 +96,42 @@ public class MdCompanyServiceImpl implements MdCompanyService {
     @Override
     public String getCompanyInfo_5101() {
         RequestData requestData = new RequestData();
-        //获取定点医疗机构代码与名称
+        //Lấy mã và tên cơ sở y tế được chỉ định
         String FixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
         String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
         requestData.setInfno("5101");
-        //发送方id
+        //Bên gửiid
         String MsgId = FixmedinsCode + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "1234";
         requestData.setMsgid(MsgId);
-        //就医医保区划
+        //Vùng BHYT khám bệnh
         requestData.setMdtrtarea_admvs("value4");
-        //参保地医保区划
+        //Vùng BHYT nơi tham gia bảo hiểm
         requestData.setInsuplc_admdvs("value3");
-        //接收方系统代码
+        //Mã hệ thống bên nhận
         requestData.setRecer_sys_code("value5");
-        //设备编号
+        //Mã thiết bị
         requestData.setDev_no("value6");
-        //设备安全信息
+        //Thông tin an toàn thiết bị
         requestData.setDev_safe_info("value7");
-        //医保接入安全码数字签名信息
+        //Thông tin chữ ký số của mã an toàn kết nối BHYT
         requestData.setCainfo("value8");
-        //签名类型  建议SM2、SM3
+        //Loại chữ ký  Khuyến nghịSM2, SM3
         requestData.setSigntype("value9");
-        //接口版本号
+        //Số phiên bản giao diện
         requestData.setInfver("value9");
-        //1-经办人；2-自助终端；3-移动终端
+        //1-Người thực hiện; 2-Thiết bị đầu cuối tự phục vụ; 3-Thiết bị đầu cuối di động
         requestData.setOpter_type("value10");
-        //传入经办人/终端编号
+        //Người thực hiện được truyền vào/Mã thiết bị đầu cuối
         requestData.setOpter("value11");
-        //经办人姓名
+        //Tên người thực hiện
         requestData.setOpter_name("value12");
-        //接口交易时间
+        //Thời gian giao dịch giao diện
         requestData.setInf_time("value13");
-        //设置定点医疗机构代码与名称
+        //Đặt mã và tên cơ sở y tế được chỉ định
         requestData.setFixmedins_code(FixmedinsCode);
         requestData.setFixmedins_name(FixmedinsName);
-        //签到接口
-        //从本地缓存获取签到流水号（医保未启用时为空）
+        //Giao diện check-in
+        //Lấy số thứ tự check-in từ bộ nhớ đệm cục bộ(BHYTChưaBật giờ là trống)
         requestData.setSign_no("");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", JSON.toJSON(requestData));
@@ -141,15 +141,15 @@ public class MdCompanyServiceImpl implements MdCompanyService {
     @Override
     public String getStaffInfo_5102(User user) {
         JSONObject data = new JSONObject();
-        //执业人员分类
+        //nhân viên hành nghề phútLớp
         data.put("prac_psn_type", user.getUserExt());
-        //证件类型
+        //Loại giấy tờ
         data.put("psn_cert_type", user.getUserExt());
-        //证件号码
+        //Số giấy tờ
         data.put("certno", user.getUserExt());
-        //人员名称
+        //nhân viênTên
         data.put("prac_psn_name", user.getUserExt());
-        //执业人员代码
+        //Mã nhân viên hành nghề
         data.put("prac_psn_code", user.getUserExt());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", data);

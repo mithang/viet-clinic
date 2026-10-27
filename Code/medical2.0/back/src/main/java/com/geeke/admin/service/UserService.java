@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 用户管理Service
+ * Quản lý người dùngService
  * @author lys
  * @version 2021-08-25
  */
@@ -64,7 +64,7 @@ public class UserService extends CrudService<UserDao, User>{
     public User get(String id) {
         User user = super.get(id);
 
-        /*获取子表列表   用户角色*/
+        /*Lấy danh sách bảng con   Vai trò người dùng*/
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(
                 "user_id", user.getId(),
                 "company_id", SessionUtils.getLoginTenantId()
@@ -77,7 +77,7 @@ public class UserService extends CrudService<UserDao, User>{
 
     public User CheckNewUserByPhone(String phone) {
         User user = userDao.getByPhone(phone);
-        //已经在系统中存在
+        //ĐãtạiHệ thống trong Tồn tại
         if(null != user)
         {
             List<Company> clinicsByLoginName = companyService.getClinicsByLoginName(phone);
@@ -85,11 +85,11 @@ public class UserService extends CrudService<UserDao, User>{
             String newCompanyId = SessionUtils.getLoginTenantId();
           if(oldCompanyId.contains(newCompanyId))
           {
-              //同诊所的相同用户报错
-              throw new ServiceException("该用户已在本诊所注册。");
+              //cùngPhòng khám của giống hệtNgười dùngbáo lỗi
+              throw new ServiceException("đóNgười dùngĐãtạinàyPhòng khámđăng ký. ");
           }
         }
-        //不存在则返回null
+        //Không tồn tạiThì trả vềnull
         return user;
     }
 
@@ -127,7 +127,7 @@ public class UserService extends CrudService<UserDao, User>{
     @Transactional(readOnly = false)
     public User save(User user,MultipartFile[] fileIdUploads,
                      String[] deleteIds) throws java.io.IOException {
-        // 用户登录名唯一检查
+        // Người dùngĐăng nhậptênduy nhấtKiểm tra
         User existUser = getUserByLoginName(user);
         String loginTenant = SessionUtils.getLoginTenantId();
         if(null != existUser)
@@ -135,32 +135,32 @@ public class UserService extends CrudService<UserDao, User>{
             List<String> oldCompanyId = existUser.getClinics();
             if(oldCompanyId.contains(loginTenant))
             {
-                //同诊所的相同用户
-                throw new ServiceException("已经存在一个相同的登录名。");
+                //cùngPhòng khám của giống hệtNgười dùng
+                throw new ServiceException("Đã tồn tại một tên đăng nhập giống hệt. ");
             }
             else
             {
-                //不同诊所的相同用户
+                //khác nhauPhòng khám của giống hệtNgười dùng
 
-                //存入此人的诊所信息
+                //lưu vào người này của Phòng khámThông tin
                 userDao.insertUserTenant(IdGen.uuid(),existUser.getId(),loginTenant,user.getLoginName());
-                //存入此人的扩展信息
+                //lưu vào người này của mở rộngThông tin
                 UserExt userExt = user.getUserExt();
                 userExt.setCompanyId(SessionUtils.getLoginTenantId());
                 userExt.setId(IdGen.uuid());
-                //此人如果存在，不在新增时修改照片
+                //nàyngườiNếuTồn tại, không ởKhi thêm mớiSửaảnh
                 userExtService.insert(userExt);
-                //存入当前用户在诊所的角色信息
+                //lưu vàoHiện tạiNgười dùngtạiPhòng khám của Vai tròThông tin
                 saveUserRoleInfo(user);
             }
         }
         else
         {
-            //非相同用户  存入人
+            //không phảigiống hệtNgười dùng  lưu vàongười
             String id = super.save(user).getId();
-            //存入此人的角色
+            //lưu vào người này của Vai trò
             if (StringUtils.isNoneBlank(id)) {
-                // 设置加密字段   密码
+                // ĐặtMã hóaTrường   Mật khẩu
                 if(user.getLoginPasswordUpdate()) {
                     Md5Hash md5 = new Md5Hash(user.getLoginPassword(), user.getId(), 10000);
                     String md5Password = md5.toHex();
@@ -170,22 +170,22 @@ public class UserService extends CrudService<UserDao, User>{
                 saveUserRoleInfo(user);
             }
 
-            //存入此人的诊所信息
+            //lưu vào người này của Phòng khámThông tin
             userDao.insertUserTenant(IdGen.uuid(),id,loginTenant,user.getLoginName());
-            //存入此人的扩展数据
+            //lưu vào người này của mở rộngDữ liệu
             UserExt userExt = user.getUserExt();
             userExt.setUserId(id);
             userExt.setCompanyId(loginTenant);
-            //存入此人的照片
+            //lưu vào người này của ảnh
             List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, id);
             if(0 == sysFiles.size())
             {
-                logger.debug("用户未上传图片");
+                logger.debug("Người dùngChưaTải lênảnh");
             }else
             {
                 userExt.setPhotoId(sysFiles.get(0).getId());
             }
-            // 根据附件ID删除附件信息
+            // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
             if (null != deleteIds && deleteIds.length > 0) {
                 sysFileService.delete(deleteIds);
             }
@@ -195,22 +195,22 @@ public class UserService extends CrudService<UserDao, User>{
 //        colMaps.put("login_name", "loginName");
 //        colMaps.put("company_id", "companyId");
 //        if(exists(dao, user, colMaps)) {
-//            throw new ServiceException("已经存在一个相同的登录名。");
+//            throw new ServiceException("Đã tồn tại một tên đăng nhập giống hệt. ");
 //        }
 
         return user;
     }
 
     private void saveUserRoleInfo(User user) {
-        /* 处理子表     用户角色 */
+        /* Xử lý bảng con     Vai trò người dùng */
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(
                 "user_id", user.getId(),
                 "company_id", SessionUtils.getLoginTenantId()
         ));
         List<UserRole> list_UserRole = userRoleDao.listAll(pageRequest);
-        List<UserRole> deleteUserRoles = Lists.newArrayList(); // 删除列表
-        List<UserRole> insertUserRoles = Lists.newArrayList(); // 添加列表
-        List<UserRole> updateUserRoles = Lists.newArrayList(); // 更新列表
+        List<UserRole> deleteUserRoles = Lists.newArrayList(); // Danh sách xóa
+        List<UserRole> insertUserRoles = Lists.newArrayList(); // Danh sách thêm
+        List<UserRole> updateUserRoles = Lists.newArrayList(); // Danh sách cập nhật
         for(UserRole userRoleSaved: list_UserRole) {
             boolean found = false;
             for (UserRole userRole : user.getUserRoleList()){
@@ -262,20 +262,20 @@ public class UserService extends CrudService<UserDao, User>{
                        String[] deleteIds) throws java.io.IOException {
         String id = super.save(user).getId();
         if (StringUtils.isNoneBlank(id)) {
-            // 设置加密字段   密码
+            // ĐặtMã hóaTrường   Mật khẩu
             if(user.getLoginPasswordUpdate()) {
                 if(medicareConfigProperties.getIsDemo().equals("true")){
-                    throw new ServiceException("演示系统请勿修改密码！");
+                    throw new ServiceException("demoHệ thốngVui lòngđừngSửaMật khẩu!");
                 }
                 Md5Hash md5 = new Md5Hash(user.getLoginPassword(), user.getId(), 10000);
                 String md5Password = md5.toHex();
                 dao.updateLoginPassword(user.getId(), md5Password);
             }
-            // 复用 saveUserRoleInfo 处理子表用户角色
+            // lạidùng saveUserRoleInfo Xử lý bảng conVai trò người dùng
             saveUserRoleInfo(user);
 
             UserExt userExt = user.getUserExt();
-            //存入此人的照片
+            //lưu vào người này của ảnh
             List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, id);
             if(0 != sysFiles.size())
             {
@@ -293,13 +293,13 @@ public class UserService extends CrudService<UserDao, User>{
         return user;
     }
     /**
-     * 删除
+     * Xóa
      * @param user
      */
     @Override
     @Transactional(readOnly = false)
     public int delete(User user) {
-        /* 处理子表     用户角色、拓展信息、租户信息 */
+        /* Xử lý bảng con     Vai trò người dùng, mở rộngThông tin, tenantThông tin */
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(
                 "user_id", user.getId(),
                 "company_id", SessionUtils.getLoginTenantId()
@@ -320,7 +320,7 @@ public class UserService extends CrudService<UserDao, User>{
 
     @Transactional(readOnly = false)
     public void delete(User user,int number) {
-        /* 处理子表     用户角色、拓展信息、租户信息 */
+        /* Xử lý bảng con     Vai trò người dùng, mở rộngThông tin, tenantThông tin */
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(
                 "user_id", user.getId(),
                 "company_id", SessionUtils.getLoginTenantId()
@@ -343,11 +343,11 @@ public class UserService extends CrudService<UserDao, User>{
 
 
     /**
-     * 修改 密码
+     * Sửa Mật khẩu
      */
     @Transactional(readOnly = false)
     public int changeLoginPassword(String id, String pass) {
-        // Md5密码 — 使用与 UserRealm 一致的迭代次数
+        // Md5Mật khẩu — sử dụng và  UserRealm Nhất quán của lặp lầnsố
         Md5Hash md5 = new Md5Hash(pass, id, 10000);
         String md5Password = md5.toHex();
 
@@ -356,9 +356,9 @@ public class UserService extends CrudService<UserDao, User>{
     }
 
     /**
-     * 直接更新密码哈希值（用于密码迁移场景，传入已哈希的密码）
-     * @param id 用户ID
-     * @param hashedPassword 已哈希的密码（调用方负责哈希处理）
+     * trực tiếpCập nhậtMật khẩubămGiá trị(dùng đểMật khẩuchuyển đổitrường hợp, truyền vàoĐãbăm của Mật khẩu)
+     * @param id Người dùngID
+     * @param hashedPassword Đãbăm của Mật khẩu(Bên gọi chịu trách nhiệm bămXử lý)
      */
     @Transactional(readOnly = false)
     public void updatePassword(String id, String hashedPassword) {
@@ -366,9 +366,9 @@ public class UserService extends CrudService<UserDao, User>{
     }
 
     /**
-     * 生成操作日志
-     * @param actionTypeId  操作类型Id
-     * @param entity        操作的实体对象
+     * Tạo nhật ký thao tác
+     * @param actionTypeId  Loại thao tácId
+     * @param entity        Đối tượng thực thể được thao tác
      * @return
      */
     @Override
@@ -377,7 +377,7 @@ public class UserService extends CrudService<UserDao, User>{
         if(action == null) {
             return null;
         }
-        // 删除时记录把保存的数据保存到回收站
+        // Khi xóa, ghi lại và lưu dữ liệu đã lưu vào thùng rác
         if(ActionConstants.ACTION_DELETED.equals(actionTypeId)) {   
             for(UserRole child: entity.getUserRoleList()) {
                 ActionRecycle recycle = new ActionRecycle();
@@ -425,7 +425,7 @@ public class UserService extends CrudService<UserDao, User>{
     }
 
     /**
-     * 根据诊所和职位选人下拉框
+     * TheoPhòng khám và Hộp thả xuống chọn người theo chức vụ
      * @param companyId
      * @param jobType
      * @return

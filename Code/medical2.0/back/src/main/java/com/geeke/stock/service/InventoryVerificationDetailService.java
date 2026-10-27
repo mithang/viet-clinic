@@ -30,8 +30,8 @@ import org.springframework.util.CollectionUtils;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 库存盘点详情Service
- * @author 超级管理员
+ * Chi tiết kiểm kê tồn khoService
+ * @author Quản trị viên cấp cao
  * @version 2022-11-02
  */
  
@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 @Transactional(readOnly = true)
 public class InventoryVerificationDetailService extends CrudService<InventoryVerificationDetailDao, InventoryVerificationDetail>{
 
-    /** 盘点明细为机构共享数据：允许同机构下诊所访问机构诊所的数据（与列表 #{institution} SQL 一致） */
+    /** kiểm kêChi tiết là Cơ sởTổng hưởngDữ liệu: Cho phép phòng khám thuộc cùng cơ sở truy cập dữ liệu phòng khám của cơ sở(Với danh sách #{institution} SQL Nhất quán) */
     @Override
     protected boolean isInstitutionShared() {
         return true;
@@ -92,7 +92,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
     @Transactional(readOnly = false)
     public void save(InventoryVerification inventoryVerification, String variety, List<MedicinalStorageControl> medicinalStorageControls) {
         if(ObjectUtils.equals("0",variety)){
-            //保存药品
+            //LưuThuốc
             for (MedicinalStorageControl medicinalStorageControl : medicinalStorageControls) {
                 medicinalStorageControl.setInventoryVerification(inventoryVerification);
                 medicinalStorageControl.setInventoryVerificationDetailId(IdGen.uuid());
@@ -117,20 +117,20 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
 
                 }
             }
-            //循环执行成功后将总金额保存到主表中
+            //Sau khi thực thi vòng lặp thành công, lưu tổng số tiền vào bảng chính
             if(i>0){
                 inventoryVerificationService.updateAllPrice(inventoryVerificationDetailDTOS.get(0).get(0).getInventoryVerification().getId(),allPrice);
             }
-            return "执行成功";
+            return "hành nghề dòngThành công";
         }else {
-            return "数据为空";
+            return "Dữ liệu là trống";
         }
     }
 
     @Transactional
     public void saveStuff(InventoryVerification inventoryVerification, String variety, List<MedicinalStorageControl> medicinalStorageControls) {
         if(ObjectUtils.equals("1",variety)){
-            //保存材料
+            //LưuVật tư
             for (MedicinalStorageControl medicinalStorageControl : medicinalStorageControls) {
                 medicinalStorageControl.setInventoryVerification(inventoryVerification);
                 medicinalStorageControl.setInventoryVerificationDetailId(IdGen.uuid());
@@ -140,10 +140,10 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         }
     }
 
-    /*导出库存盘点*/
+    /*XuấtKiểm kê tồn kho*/
     @Transactional
     public void exportExcel(InventoryVerification inventoryVerification, HttpServletResponse response) throws IOException {
-        // 获取数据库数据
+        // LấyDữ liệukhoDữ liệu
         List<Parameter> parameters = SearchParamsBuilder.create()
                 .eq("inventory_verification_id", inventoryVerification.getId())
                 .eq("company_id", inventoryVerification.getCompany().getId())
@@ -165,7 +165,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
             }
         }
 
-        // 预计算各行数据（drug/stuff分支逻辑、规格拼接、库存计算等）
+        // trướcTính各 dòngDữ liệu(drug/stuff phút支logic, Quy cáchnối, Tồn khoTính v.v. )
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         List<Map<String, Object>> exportData = new ArrayList<>();
         for (InventoryVerificationDetail detail : rows) {
@@ -199,27 +199,27 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
             exportData.add(row);
         }
 
-        new ExcelExportBuilder("库存盘点表")
+        new ExcelExportBuilder("Kiểm kê tồn khobảng")
                 .addColumns(
-                        new ExcelExportBuilder.Column("药品编码", "code"),
-                        new ExcelExportBuilder.Column("药品名称", "name"),
-                        new ExcelExportBuilder.Column("类型", "type"),
-                        new ExcelExportBuilder.Column("规格", "specification"),
-                        new ExcelExportBuilder.Column("生产厂家", "factory"),
-                        new ExcelExportBuilder.Column("供应商", "supplier"),
-                        new ExcelExportBuilder.Column("批号", "norms"),
-                        new ExcelExportBuilder.Column("有效期", "endDate"),
-                        new ExcelExportBuilder.Column("当前库存数量", "currentInventory"),
-                        new ExcelExportBuilder.Column("盘点库存", "checkInventory"),
-                        new ExcelExportBuilder.Column("盘盈盘亏", "profitAndLoss"),
-                        new ExcelExportBuilder.Column("备注", "remarks"),
-                        new ExcelExportBuilder.Column("盈亏金额(元)", "profitAndLossPrice")
+                        new ExcelExportBuilder.Column("Mã thuốc", "code"),
+                        new ExcelExportBuilder.Column("Tên thuốc", "name"),
+                        new ExcelExportBuilder.Column("Loại", "type"),
+                        new ExcelExportBuilder.Column("Quy cách", "specification"),
+                        new ExcelExportBuilder.Column("Nhà sản xuất", "factory"),
+                        new ExcelExportBuilder.Column("Nhà cung cấp", "supplier"),
+                        new ExcelExportBuilder.Column("Số lô", "norms"),
+                        new ExcelExportBuilder.Column("Thời hạn hiệu lực", "endDate"),
+                        new ExcelExportBuilder.Column("Hiện tạiSố lượng tồn kho", "currentInventory"),
+                        new ExcelExportBuilder.Column("Tồn kho kiểm kê", "checkInventory"),
+                        new ExcelExportBuilder.Column("bàn盈bàn亏", "profitAndLoss"),
+                        new ExcelExportBuilder.Column("Ghi chú", "remarks"),
+                        new ExcelExportBuilder.Column("lãi lỗSố tiền( đồng)", "profitAndLossPrice")
                 )
                 .data(exportData)
-                .write(response, "库存盘点.xlsx");
+                .write(response, "Kiểm kê tồn kho.xlsx");
     }
 
-    //计算当前库存
+    //TínhTồn kho hiện tại
     public String getCurrentInventory(InventoryVerificationDetail inventoryVerificationDetail){
         String inventory = "";
         BigDecimal currentInventory = new BigDecimal(inventoryVerificationDetail.getCurrentInventory().toString());
@@ -252,7 +252,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         }
     }
 
-    //盘点库存
+    //Tồn kho kiểm kê
     public String getCheckInventory(InventoryVerificationDetail inventoryVerificationDetail){
         String inventory = "";
         BigDecimal currentInventory = new BigDecimal(inventoryVerificationDetail.getCheckInventory().toString());
@@ -286,7 +286,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         }
     }
 
-    //盘盈盘亏
+    //bàn盈bàn亏
     public String getProfitAndLoss(InventoryVerificationDetail inventoryVerificationDetail){
         String checkInventory="";
         if(inventoryVerificationDetail.getCheckInventory()>0){
@@ -321,7 +321,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                 return checkInventory;
             }
         }else if(inventoryVerificationDetail.getCheckInventory()<0){
-            //先转换为正数
+            //trướcChuyển đổi thànhđúngsố
             Integer i=~(inventoryVerificationDetail.getProfitAndLoss()-1);
             BigDecimal bigDecimal = new BigDecimal(i.toString());
            // BigDecimal bigDecimal1 = new BigDecimal(inventoryVerificationDetail.getDrug().getPreparation().toString());

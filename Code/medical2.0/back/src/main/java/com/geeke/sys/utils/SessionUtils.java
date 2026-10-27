@@ -11,7 +11,7 @@ import java.util.List;
 
 
 /**
- * 用户工具类
+ * Người dùngLớp công cụ
  * @author lys
  * @version 2018-12-05
  * @deprecated Use {@link com.geeke.utils.SessionUtils} instead, which extends this class and provides
@@ -23,7 +23,7 @@ public class SessionUtils {
     private static final Logger logger = LoggerFactory.getLogger(SessionUtils.class);
 
     /**
-     * session中存放用户信息的key值
+     * session trong lưuđặtNgười dùngThông tin của keyGiá trị
      */
     private static final String SESSION_USER_INFO = "userInfo";
     private static final String SESSION_USER_PERMISSION = "userPermission";
@@ -31,8 +31,8 @@ public class SessionUtils {
 
 	
 	/**
-	 * 获取当前用户
-	 * @return 取不到返回 new User()
+	 * Lấy người dùng hiện tại
+	 * @return Không lấy được thì trả về new User()
 	 */
 	public static JSONObject getUserJson(){
 		try {
@@ -44,9 +44,9 @@ public class SessionUtils {
 
 
     /**
-     * 获取当前用户
+     * Lấy người dùng hiện tại
      *
-     * @return 取不到返回 new User()
+     * @return Không lấy được thì trả về new User()
      */
     public static SessionUserDto getUserDto() {
         try {
@@ -58,7 +58,7 @@ public class SessionUtils {
     }
 
 	/**
-	 * 从指定Session获取用户信息
+	 * Từ chỉchỉ địnhSessionLấyNgười dùngThông tin
 	 * @param session
 	 * @return
 	 */
@@ -71,14 +71,14 @@ public class SessionUtils {
 	
 	
     /**
-	 * 设置当前用户
-	 * @return 取不到返回 new User()
+	 * ĐặtHiện tạiNgười dùng
+	 * @return Không lấy được thì trả về new User()
 	 */
 	public static void setUserJson(JSONObject userObj ){
 		try {
 			SecurityUtils.getSubject().getSession().setAttribute(SESSION_USER_INFO, userObj);
 		} catch (Exception e) {
-			logger.debug("Session 已过期或不存在", e);
+			logger.debug("Session Đã hết hạn hoặc không tồn tại", e);
 		}
 	}
 
@@ -95,14 +95,14 @@ public class SessionUtils {
 		try {
 			SecurityUtils.getSubject().getSession().setAttribute(SESSION_USER_PERMISSION, permissionList);
 		} catch (Exception e) {
-			logger.debug("Session 已过期或不存在", e);
+			logger.debug("Session Đã hết hạn hoặc không tồn tại", e);
 		}
 	}
 
 
 	/**
-	 * 获取企业微信当前用户
-	 * @return 取不到返回 JSONObject
+	 * LấyWeChat doanh nghiệpHiện tạiNgười dùng
+	 * @return Không lấy được thì trả về JSONObject
 	 */
 	public static JSONObject getWeChatUser(){
 		try {
@@ -114,14 +114,14 @@ public class SessionUtils {
 
 
 	/**
-	 * 设置企业微信当前用户
+	 * ĐặtWeChat doanh nghiệpHiện tạiNgười dùng
 	 * @return
 	 */
 	public static void setWeChatUser(JSONObject jsonObject){
 		try {
 			SecurityUtils.getSubject().getSession().setAttribute(SESSION_YEWECHAT_OPENID, jsonObject);
 		} catch (Exception e) {
-			logger.debug("Session 已过期或不存在", e);
+			logger.debug("Session Đã hết hạn hoặc không tồn tại", e);
 		}
 	}
 }

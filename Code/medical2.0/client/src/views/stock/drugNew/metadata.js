@@ -2,7 +2,7 @@ const metadata = [
 	{
         id: '1004078055755374623',
         schemeId: '1004078055755374645',
-        name: '药品信息',
+        name: 'Thông tin thuốc',
         dataRules:[]
     }
 ]
@@ -14,7 +14,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "goodsName",
-      "label": "药品名称",
+      "label": "Tên thuốc",
       "align": "left",
       "miniWidth": 160,
       "width": null,
@@ -29,7 +29,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "type.name",
-      "label": "药品类型",
+      "label": "Loại thuốc",
       "align": "center",
       "miniWidth": 100,
       "width": null,
@@ -44,7 +44,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "code",
-      "label": "药品编码",
+      "label": "Mã thuốc",
       "align": "left",
       "miniWidth": 120,
       "width": null,
@@ -59,7 +59,7 @@ const tenantList = [
 //       "routerId": "2077468568630584869",
 //       "tableId": "1004078055755374623",
 //       "prop": "source",
-//       "label": "药品来源",
+//       "label": "Nguồn gốc thuốc",
 //       "align": "center",
 //       "miniWidth": 180,
 //       "width": null,
@@ -74,7 +74,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "nature.name",
-      "label": "性质",
+      "label": "Tính chất",
       "align": "center",
       "miniWidth": 100,
       "width": null,
@@ -89,7 +89,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "factory.name",
-      "label": "生产厂家",
+      "label": "Nhà sản xuất",
       "align": "center",
       "miniWidth": 180,
       "width": null,
@@ -104,7 +104,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "standardCode",
-      "label": "国药准字",
+      "label": "Số đăng ký thuốc quốc gia",
       "align": "center",
       "miniWidth": 120,
       "width": null,
@@ -119,7 +119,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "barCode",
-      "label": "条形码",
+      "label": "Mã vạch",
       "align": "center",
       "miniWidth": 100,
       "width": null,
@@ -134,7 +134,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "createDate",
-      "label": "创建时间",
+      "label": "Thời gian tạo",
       "align": "center",
       "miniWidth": 140,
       "width": null,
@@ -160,7 +160,7 @@ const tenantList = [
   },
   {
       "prop": "syncNum",
-      "label": "是否已同步",
+      "label": "Đã đồng bộ chưa",
       "align": "center",
       "miniWidth": 100,
       "width": null,
@@ -174,7 +174,7 @@ const tenantList = [
 const versionList = [
   {
   "prop": "goodsName",
-  "label": "药品名称",
+  "label": "Tên thuốc",
   "align": "center",
   "miniWidth": 200,
   "width": null,
@@ -182,7 +182,7 @@ const versionList = [
   },
 //   {
 //   "prop": "companyId",
-//   "label": "诊所id",
+//   "label": "Phòng khámid",
 //   "align": "center",
 //   "miniWidth": 160,
 //   "width": null,
@@ -198,7 +198,7 @@ const versionList = [
   },
   {
   "prop": "type",
-  "label": "药品类型",
+  "label": "Loại thuốc",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -206,7 +206,7 @@ const versionList = [
   },
   {
   "prop": "code",
-  "label": "药品编码",
+  "label": "Mã thuốc",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -214,7 +214,7 @@ const versionList = [
   },
 //   {
 //   "prop": "source",
-//   "label": "药品来源",
+//   "label": "Nguồn gốc thuốc",
 //   "align": "center",
 //   "miniWidth": 160,
 //   "width": null,
@@ -230,7 +230,7 @@ const versionList = [
   },
   {
   "prop": "pinyinCode",
-  "label": "拼音",
+  "label": "Pinyin",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -246,7 +246,7 @@ const versionList = [
   },
   {
   "prop": "dosis",
-  "label": "剂量",
+  "label": "Liều lượng",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -254,7 +254,7 @@ const versionList = [
   },
 //   {
 //   "prop": "dosisUnit",
-//   "label": "剂量单位",
+//   "label": "Đơn vị liều lượng",
 //   "align": "center",
 //   "miniWidth": 160,
 //   "width": null,
@@ -262,7 +262,7 @@ const versionList = [
 //   },
   {
   "prop": "preparation",
-  "label": "制剂",
+  "label": "Chế phẩm",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -270,7 +270,7 @@ const versionList = [
   },
 //   {
 //   "prop": "preparationUnit",
-//   "label": "制剂单位",
+//   "label": "Đơn vị bào chế",
 //   "align": "center",
 //   "miniWidth": 160,
 //   "width": null,
@@ -278,7 +278,7 @@ const versionList = [
 //   },
   {
   "prop": "pack",
-  "label": "包装单位",
+  "label": "Đơn vị đóng gói",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -286,7 +286,7 @@ const versionList = [
   },
   {
 "prop": "insuranceCode",
-  "label": "医保编码",
+  "label": "Mã bảo hiểm y tế",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -294,7 +294,7 @@ const versionList = [
   },
 {
 "prop": "standardCode",
-  "label": "国药准字",
+  "label": "Số đăng ký thuốc quốc gia",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -302,7 +302,7 @@ const versionList = [
   },
   {
   "prop": "status",
-  "label": "状态",
+  "label": "Trạng thái",
   "align": "center",
   "miniWidth": 160,
   "width": null,

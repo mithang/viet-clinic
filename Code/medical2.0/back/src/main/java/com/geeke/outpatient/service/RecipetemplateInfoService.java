@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 
 /**
- * 模板处方Service
+ * Đơn thuốc mẫuService
  * @author rys
  * @version 2022-10-08
  */

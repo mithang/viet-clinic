@@ -8,48 +8,48 @@ public class ExcelCellProcessor {
     private Map<String, ValueConverter> converterMap = new HashMap<>();
 
     public ExcelCellProcessor() {
-        // 注册值转换器
-        /** 性别 */
+        // đăng kýGiá trịchuyển đổithiết bị
+        /** Giới tính */
         converterMap.put("OutpatientLog-gender", value -> {
             String strValue = (String) value;
             if (BizConstants.GENDER_MALE.equals(strValue)) {
-                return "男";
+                return "Nam";
             } else if (BizConstants.GENDER_FEMALE.equals(strValue)) {
-                return "女";
+                return "Nữ";
             }
-            return "未知";
+            return "Chưabiết";
         });
-        /** 初/复诊 */
+        /** ban đầu/Tái khám */
         converterMap.put("OutpatientLog-initialVisit", value -> {
             String strValue = (String) value;
             if (BizConstants.REG_SOURCE_NORMAL.equals(strValue)) {
-                return "初诊";
+                return "Khám lần đầu";
             } else {
-                return "复诊";
+                return "Tái khám";
             }
         });
-        /** 传染病 */
+        /** Bệnh truyền nhiễm */
         converterMap.put("OutpatientLog-infect", value -> {
             String strValue = (String) value;
             if (BizConstants.INFECT_TYPE_NONE.equals(strValue)) {
                 return "是";
             } else {
-                return "否";
+                return " không ";
             }
         });
     }
 
     public String convert(String propertyName, Object propertyValue) {
-        // 获取值转换器
+        // LấyGiá trịchuyển đổithiết bị
         ValueConverter converter = converterMap.get(propertyName);
         if (converter != null) {
             return converter.convert(propertyValue);
         }
-        // 默认情况下返回属性值的字符串形式
+        // Mặc định trả về dạng chuỗi của giá trị thuộc tính
         return String.valueOf(propertyValue);
     }
 
-    // 值转换器接口
+    // Giá trịchuyển đổithiết bịgiao diện
     interface ValueConverter {
         String convert(Object obj);
     }

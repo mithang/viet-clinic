@@ -216,7 +216,7 @@
             #{entity.id}
         </foreach>
     </update>
-<!--查询行业大类，二级分类-->
+<!--Truy vấn ngành lớn, Phân loại cấp hai-->
     <select id="getTrade" resultType="com.geeke.org.entity.OrgDictItem">
         SELECT
         <include refid="dictItemColumns"/>

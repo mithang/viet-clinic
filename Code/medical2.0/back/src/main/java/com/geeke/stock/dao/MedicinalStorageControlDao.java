@@ -11,7 +11,7 @@ import com.geeke.stock.entity.MedicinalStorageControl;
 import com.geeke.stock.entity.SupplierStock;
 
 /**
- * 药品/材料入库明细控制DAO接口
+ * Thuốc/Kiểm soát chi tiết nhập kho vật tưDAOGiao diện
  * @author hl
  * @version 2022-09-26
  */

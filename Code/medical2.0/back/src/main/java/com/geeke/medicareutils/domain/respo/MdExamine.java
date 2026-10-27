@@ -5,27 +5,27 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * @Description 电子处方审核信息
+ * @Description điện tửĐơn thuốcxét duyệtThông tin
  * @Author
  * @Date 2025/3/25
  */
 @Data
 public class MdExamine {
-    // 医保处方编号
+    // BHYTĐơn thuốcmã số
     private String hiRxno;
 
-    // 医保药师姓名
+    // BHYTTên dược sĩ
     private String pharName;
 
-    // 医保药师代码
+    // BHYTDược sĩmã
     private String pharCode;
 
-    // 处方审核状态代码
+    // Đơn thuốcTrạng thái xét duyệtmã
     private String rxChkStasCodg;
 
-    // 处方审核意见
+    // Đơn thuốcxét duyệtý kiến
     private String rxChkOpnn;
 
-    // 处方审核时间
+    // Đơn thuốcThời gian xét duyệt
     private Date rxChkTime;
 }

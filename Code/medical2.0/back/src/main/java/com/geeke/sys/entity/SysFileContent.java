@@ -6,15 +6,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 系统附件Entity
+ * Tệp đính kèm hệ thốngEntity
  * @author szy
  * @version 2021-09-22
  */
 public class SysFileContent extends DataEntity<SysFileContent> {
 
 	private static final long serialVersionUID = 592905357446275244L;
-	private byte[] fileByte;		// 图片字节
-	private String fileType;		// 文件类型
+	private byte[] fileByte;		// ảnhbyte
+	private String fileType;		// Loại tệp
 	private String base64Str;
 	private String name;
 	
@@ -35,7 +35,7 @@ public class SysFileContent extends DataEntity<SysFileContent> {
 	}
 	
 	
-	@Length(min=0, max=64, message="文件类型长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="Độ dài loại tệp phải nằm trong khoảng 0 đến 64 ")
 	public String getFileType() {
 		return fileType;
 	}
@@ -62,7 +62,7 @@ public class SysFileContent extends DataEntity<SysFileContent> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -71,7 +71,7 @@ public class SysFileContent extends DataEntity<SysFileContent> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -81,7 +81,7 @@ public class SysFileContent extends DataEntity<SysFileContent> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

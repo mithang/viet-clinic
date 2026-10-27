@@ -1,13 +1,13 @@
 <template>
   <el-row v-loading="loading">
     <el-card class="page-container">
-        <!-- 药品材料切换 -->
+        <!-- Chuyển đổi thuốc/vật tư -->
         <div style="margin-top:-20px;margin-left:-20px">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="药品库存" name="0">
+                <el-tab-pane label="Tồn kho thuốc" name="0">
 
                 </el-tab-pane>
-                <el-tab-pane label="材料库存" name="1">
+                <el-tab-pane label="Tồn kho vật tư" name="1">
 
                 </el-tab-pane>
             </el-tabs>
@@ -15,37 +15,37 @@
 
         <div style="padding-top:10px">
              <el-radio-group v-model="tabPosition" @change="changStatus" style="margin-bottom: 10px;">
-                <el-radio-button label="0">按批号</el-radio-button>
-                <el-radio-button label="1">按商品</el-radio-button>
+                <el-radio-button label="0">Theo số lô</el-radio-button>
+                <el-radio-button label="1">Theo hàng hóa</el-radio-button>
             </el-radio-group>
             <div style="float:right;">
-              <el-button type="primary" icon='el-icon-upload2' @click="exportTable">导出</el-button>
+              <el-button type="primary" icon='el-icon-upload2' @click="exportTable">Xuất</el-button>
             </div>
         </div>
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
      <div v-if="activeName==='0'" style="padding-top:10px">
-         <!-- 按批号和商品进行显示 -->
+         <!-- Hiển thị theo số lô và hàng hóa -->
         <div v-if="tabPosition==='0' && dispensingList!=null">
              <div class='query-form-container'>
           <el-row class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='药品名称' prop='name'>
+                <el-form-item label='Tên thuốc' prop='name'>
                   <el-input
                     style="width:320px;"
                     v-model="queryModel.name"
-                    placeholder="请输入药品名称或者拼音码"
+                    placeholder="Vui lòng nhập tên thuốc hoặc mã pinyin"
                   ></el-input>
                 </el-form-item>
               </el-col>
                 <el-col :span="6">
-              <el-form-item label='供应商' prop='type'>
+              <el-form-item label='Nhà cung cấp' prop='type'>
                 <el-select
                   v-model="queryModel.supplier"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择供应商"
+                  placeholder="Vui lòng chọn nhà cung cấp"
                   class="typeClass"
                 >
                   <el-option
@@ -58,13 +58,13 @@
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='药品类型' prop='type'>
+              <el-form-item label='Loại thuốc' prop='type'>
                 <el-select
                   v-model="queryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择药品类型"
+                  placeholder="Vui lòng chọn loại thuốc"
                   class="typeClass"
                 >
                   <el-option
@@ -77,13 +77,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='是否启用' prop='status'>
+              <el-form-item label='Có kích hoạt không' prop='status'>
                 <el-select
                   v-model="queryModel.status"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择是否启用"
+                  placeholder="Vui lòng chọn có kích hoạt không"
                   class="typeClass"
                 >
                   <el-option
@@ -96,13 +96,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-                <el-form-item label='剩余数量' prop='inventory'>
+                <el-form-item label='Số lượng còn lại' prop='inventory'>
                 <el-select
                   v-model="queryModel.inventory"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择剩余数量"
+                  placeholder="Vui lòng chọn số lượng còn lại"
                   class="typeClass"
                 >
                   <el-option
@@ -119,14 +119,14 @@
           <el-row id="conditionOperation">
             <el-col :span="24" style="text-align:right;padding-right:5px">
 
-                <el-button type="primary" icon="el-icon-search" @click='drugBatchNumber(1)' :plain='true'>搜索</el-button>
-                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
+                <el-button type="primary" icon="el-icon-search" @click='drugBatchNumber(1)' :plain='true'>Tìm kiếm</el-button>
+                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
             </el-col>
           </el-row>
         </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -147,33 +147,33 @@
             >
 
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
-             <el-table-column prop="drug.goodsName" label="药品名称" > </el-table-column>
-              <el-table-column prop="drug.type.name" label="药品分类">
+             <el-table-column prop="drug.goodsName" label="Tên thuốc" > </el-table-column>
+              <el-table-column prop="drug.type.name" label="Phân loại thuốc">
               </el-table-column>
 
-              <el-table-column prop="supplierStock.norms" label="规格">
+              <el-table-column prop="supplierStock.norms" label="Quy cách">
                  </el-table-column>
-                <el-table-column prop="drug.factory.name" label="生产厂商" > </el-table-column>
-                <el-table-column prop="supplierStock.supplierId.name" label="供应商" > </el-table-column>
-                <el-table-column prop="supplierStock.batchNo" label="批号" > </el-table-column>
-                <el-table-column prop="drug.price" label="售价(元)" > </el-table-column>
-                <el-table-column prop="" label="售价合计(元)" >
+                <el-table-column prop="drug.factory.name" label="Nhà sản xuất" > </el-table-column>
+                <el-table-column prop="supplierStock.supplierId.name" label="Nhà cung cấp" > </el-table-column>
+                <el-table-column prop="supplierStock.batchNo" label="Số lô" > </el-table-column>
+                <el-table-column prop="drug.price" label="Giá bán(VNĐ)" > </el-table-column>
+                <el-table-column prop="" label="Tổng giá bán(VNĐ)" >
                     <template slot-scope="scope">
                         {{getPriceTotal(scope.row)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="supplierStock.bid" label="成本价(元)" > </el-table-column>
-                <el-table-column prop="" label="成本合计(元)" >
+                <el-table-column prop="supplierStock.bid" label="Giá vốn(VNĐ)" > </el-table-column>
+                <el-table-column prop="" label="Tổng chi phí(VNĐ)" >
                     <template slot-scope="scope">
                         {{(scope.row.supplierStock.leastBid*(scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)).toFixed(2)}}
                     </template>
                 </el-table-column>
-              <el-table-column prop="number" label="剩余数量" >
+              <el-table-column prop="number" label="Số lượng còn lại" >
                   <template slot-scope="scope">
                   {{Math.floor((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)/scope.row.drug.preparation) >= 0 ? Math.floor((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)/scope.row.drug.preparation)+(scope.row.drug.pack.name)+(((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)%scope.row.drug.preparation > 0) ? ((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)%scope.row.drug.preparation) + scope.row.drug.preparationUnit.name:""):(scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)+scope.row.drug.preparationUnit.name}}
                 </template>
@@ -182,7 +182,7 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
+      <!-- Thanh bảng  Kết thúc -->
         </div>
 
 
@@ -192,23 +192,23 @@
           <el-row class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='药品名称' prop='name'>
+                <el-form-item label='Tên thuốc' prop='name'>
                   <el-input
                     style="width:320px;"
                     v-model="queryModel.name"
-                    placeholder="请输入药品名称或者拼音码"
+                    placeholder="Vui lòng nhập tên thuốc hoặc mã pinyin"
                   ></el-input>
                 </el-form-item>
               </el-col>
 
               <el-col :span="6">
-              <el-form-item label='药品类型' prop='type'>
+              <el-form-item label='Loại thuốc' prop='type'>
                 <el-select
                   v-model="queryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择药品类型"
+                  placeholder="Vui lòng chọn loại thuốc"
                   class="typeClass"
                 >
                   <el-option
@@ -221,13 +221,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='是否启用' prop='status'>
+              <el-form-item label='Có kích hoạt không' prop='status'>
                 <el-select
                   v-model="queryModel.status"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择是否启用"
+                  placeholder="Vui lòng chọn có kích hoạt không"
                   class="typeClass"
                 >
                   <el-option
@@ -240,13 +240,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-                <el-form-item label='剩余数量' prop='inventory'>
+                <el-form-item label='Số lượng còn lại' prop='inventory'>
                 <el-select
                   v-model="queryModel.inventory"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择剩余数量"
+                  placeholder="Vui lòng chọn số lượng còn lại"
                   class="typeClass"
                 >
                   <el-option
@@ -263,14 +263,14 @@
           <el-row id="conditionOperation">
             <el-col :span="24" style="text-align:right;padding-right:5px">
 
-                <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>搜索</el-button>
-                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
+                <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>Tìm kiếm</el-button>
+                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
             </el-col>
           </el-row>
         </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -291,35 +291,35 @@
             >
 
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
-             <el-table-column prop="goodsName" label="药品名称" > </el-table-column>
-              <el-table-column prop="type.name" label="药品分类">
+             <el-table-column prop="goodsName" label="Tên thuốc" > </el-table-column>
+              <el-table-column prop="type.name" label="Phân loại thuốc">
               </el-table-column>
 
-              <el-table-column prop="dosis" label="规格">
+              <el-table-column prop="dosis" label="Quy cách">
                 <template slot-scope="scope">
                   <template>
                     {{scope.row.dosis}}{{scope.row.dosisUnit.name}}*{{scope.row.preparation}}{{scope.row.preparationUnit.name}}/{{scope.row.pack.name}}
                   </template>
                 </template>
                  </el-table-column>
-                <el-table-column prop="factory.name" label="生产厂商" > </el-table-column>
-                <el-table-column prop="price" label="售价(元)" > </el-table-column>
-                <el-table-column prop="" label="售价合计(元)" >
+                <el-table-column prop="factory.name" label="Nhà sản xuất" > </el-table-column>
+                <el-table-column prop="price" label="Giá bán(VNĐ)" > </el-table-column>
+                <el-table-column prop="" label="Tổng giá bán(VNĐ)" >
                     <template slot-scope="scope">
                         {{getPriceTotal(scope.row)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="bid" label="成本合计(元)" >
+                <el-table-column prop="bid" label="Tổng chi phí(VNĐ)" >
                     <template slot-scope="scope">
                         {{scope.row.bid===undefined?0:scope.row.bid}}
                     </template>
                 </el-table-column>
-              <el-table-column prop="inventory" label="剩余数量" >
+              <el-table-column prop="inventory" label="Số lượng còn lại" >
                 <template slot-scope="scope">
                   {{Math.floor(scope.row.inventory/scope.row.preparation) >= 0 ? Math.floor(scope.row.inventory/scope.row.preparation)+(scope.row.pack.name)+((scope.row.inventory%scope.row.preparation > 0) ? (scope.row.inventory%scope.row.preparation) + scope.row.preparationUnit.name:""):scope.row.inventory+scope.row.preparationUnit.name}}
                 </template>
@@ -328,35 +328,35 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
+      <!-- Thanh bảng  Kết thúc -->
           </div>
      </div>
 
 <!-- 材料栏 -->
 
     <div v-else>
-         <!-- 按批号和商品进行显示 -->
+         <!-- Hiển thị theo số lô và hàng hóa -->
         <div v-if="tabPosition==='0' && stuffList!=null">
              <div class='query-form-container'>
           <el-row class='search-row'>
             <el-form :model='stuffQueryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='材料名称' prop='name'>
+                <el-form-item label='Tên vật tư' prop='name'>
                   <el-input
                     style="width:320px;"
                     v-model="stuffQueryModel.name"
-                    placeholder="请输入材料名称或者拼音码"
+                    placeholder="Vui lòng nhập tên vật tư hoặc mã pinyin"
                   ></el-input>
                 </el-form-item>
               </el-col>
                <el-col :span="6">
-              <el-form-item label='供应商' prop='type'>
+              <el-form-item label='Nhà cung cấp' prop='type'>
                 <el-select
                   v-model="stuffQueryModel.supplier"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择供应商"
+                  placeholder="Vui lòng chọn nhà cung cấp"
                   class="typeClass"
                 >
                   <el-option
@@ -369,13 +369,13 @@
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='材料类型' prop='type'>
+              <el-form-item label='Loại vật tư' prop='type'>
                 <el-select
                   v-model="stuffQueryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择材料类型"
+                  placeholder="Vui lòng chọn loại vật tư"
                   class="typeClass"
                 >
                   <el-option
@@ -388,13 +388,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='是否启用' prop='status'>
+              <el-form-item label='Có kích hoạt không' prop='status'>
                 <el-select
                   v-model="stuffQueryModel.status"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择是否启用"
+                  placeholder="Vui lòng chọn có kích hoạt không"
                   class="typeClass"
                 >
                   <el-option
@@ -407,13 +407,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-                <el-form-item label='剩余数量' prop='inventory'>
+                <el-form-item label='Số lượng còn lại' prop='inventory'>
                 <el-select
                   v-model="stuffQueryModel.inventory"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择剩余数量"
+                  placeholder="Vui lòng chọn số lượng còn lại"
                   class="typeClass"
                 >
                   <el-option
@@ -430,14 +430,14 @@
           <el-row id="conditionOperation">
             <el-col :span="24" style="text-align:right;padding-right:5px">
 
-                <el-button type="primary" icon="el-icon-search" @click='stuffBatchNumber(1)' :plain='true'>搜索</el-button>
-                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
+                <el-button type="primary" icon="el-icon-search" @click='stuffBatchNumber(1)' :plain='true'>Tìm kiếm</el-button>
+                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
             </el-col>
           </el-row>
         </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -458,34 +458,34 @@
             >
 
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
-             <el-table-column prop="stuff.name" label="材料名称" >
+             <el-table-column prop="stuff.name" label="Tên vật tư" >
                 </el-table-column>
-               <el-table-column prop="stuff.type.name" label="材料分类">
+               <el-table-column prop="stuff.type.name" label="Phân loại vật tư">
               </el-table-column>
 
-              <el-table-column prop="supplierStock.norms" label="规格">
+              <el-table-column prop="supplierStock.norms" label="Quy cách">
                  </el-table-column>
-                <el-table-column prop="stuff.factory.name" label="生产厂商" > </el-table-column>
-                <el-table-column prop="supplierStock.supplierId.name" label="供应商" > </el-table-column>
-                <el-table-column prop="supplierStock.batchNo" label="批号" > </el-table-column>
-                <el-table-column prop="stuff.priceOutSell" label="售价(元)" > </el-table-column>
-                <el-table-column prop="" label="售价合计(元)" >
+                <el-table-column prop="stuff.factory.name" label="Nhà sản xuất" > </el-table-column>
+                <el-table-column prop="supplierStock.supplierId.name" label="Nhà cung cấp" > </el-table-column>
+                <el-table-column prop="supplierStock.batchNo" label="Số lô" > </el-table-column>
+                <el-table-column prop="stuff.priceOutSell" label="Giá bán(VNĐ)" > </el-table-column>
+                <el-table-column prop="" label="Tổng giá bán(VNĐ)" >
                     <template slot-scope="scope">
                         {{getStuffPriceTotal(scope.row)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="supplierStock.bid" label="成本价(元)" > </el-table-column>
-                <el-table-column prop="" label="成本合计(元)" >
+                <el-table-column prop="supplierStock.bid" label="Giá vốn(VNĐ)" > </el-table-column>
+                <el-table-column prop="" label="Tổng chi phí(VNĐ)" >
                     <template slot-scope="scope">
                         {{(scope.row.supplierStock.leastBid*(scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)).toFixed(2)}}
                     </template>
                 </el-table-column>
-              <el-table-column prop="number" label="剩余数量" >
+              <el-table-column prop="number" label="Số lượng còn lại" >
                   <template slot-scope="scope">
                   {{Math.floor((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)/scope.row.stuff.packNumber) >= 0 ? Math.floor((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)/scope.row.stuff.packNumber)+(scope.row.stuff.packUnit.name)+(((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)%scope.row.stuff.packNumber > 0) ? ((scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)%scope.row.stuff.packNumber) + scope.row.stuff.minUnit.name:""):(scope.row.storageStock-scope.row.usedStock-scope.row.reimburseStock)+scope.row.stuff.minUnit.name}}
                 </template>
@@ -494,7 +494,7 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
+      <!-- Thanh bảng  Kết thúc -->
         </div>
 
 <!-- 按材料商品 -->
@@ -504,22 +504,22 @@
           <el-row class='search-row'>
             <el-form :model='stuffQueryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='材料名称' prop='name'>
+                <el-form-item label='Tên vật tư' prop='name'>
                   <el-input
                     style="width:320px;"
                     v-model="stuffQueryModel.name"
-                    placeholder="请输入材料名称或者拼音码"
+                    placeholder="Vui lòng nhập tên vật tư hoặc mã pinyin"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-              <el-form-item label='材料类型' prop='type'>
+              <el-form-item label='Loại vật tư' prop='type'>
                 <el-select
                   v-model="stuffQueryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择材料类型"
+                  placeholder="Vui lòng chọn loại vật tư"
                   class="typeClass"
                 >
                   <el-option
@@ -532,13 +532,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='是否启用' prop='status'>
+              <el-form-item label='Có kích hoạt không' prop='status'>
                 <el-select
                   v-model="stuffQueryModel.status"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择是否启用"
+                  placeholder="Vui lòng chọn có kích hoạt không"
                   class="typeClass"
                 >
                   <el-option
@@ -551,13 +551,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-                <el-form-item label='剩余数量' prop='inventory'>
+                <el-form-item label='Số lượng còn lại' prop='inventory'>
                 <el-select
                   v-model="stuffQueryModel.inventory"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择剩余数量"
+                  placeholder="Vui lòng chọn số lượng còn lại"
                   class="typeClass"
                 >
                   <el-option
@@ -574,14 +574,14 @@
           <el-row id="conditionOperation">
             <el-col :span="24" style="text-align:right;padding-right:5px">
 
-                <el-button type="primary" icon="el-icon-search" @click='stuffOnSearch' :plain='true'>搜索</el-button>
-                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
+                <el-button type="primary" icon="el-icon-search" @click='stuffOnSearch' :plain='true'>Tìm kiếm</el-button>
+                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
             </el-col>
           </el-row>
         </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -602,35 +602,35 @@
             >
 
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
-             <el-table-column prop="name" label="材料名称" > </el-table-column>
-              <el-table-column prop="type.name" label="材料分类">
+             <el-table-column prop="name" label="Tên vật tư" > </el-table-column>
+              <el-table-column prop="type.name" label="Phân loại vật tư">
               </el-table-column>
 
-              <el-table-column prop="specifications" label="规格">
+              <el-table-column prop="specifications" label="Quy cách">
                 <template slot-scope="scope">
                   <template>
                     {{scope.row.packNumber}}{{scope.row.minUnit.name}}/{{scope.row.packUnit.name}}
                   </template>
                 </template>
                  </el-table-column>
-                <el-table-column prop="factory.name" label="生产厂商" > </el-table-column>
-                <el-table-column prop="priceOutSell" label="售价(元)" > </el-table-column>
-                <el-table-column prop="" label="售价合计(元)" >
+                <el-table-column prop="factory.name" label="Nhà sản xuất" > </el-table-column>
+                <el-table-column prop="priceOutSell" label="Giá bán(VNĐ)" > </el-table-column>
+                <el-table-column prop="" label="Tổng giá bán(VNĐ)" >
                     <template slot-scope="scope">
                         {{getStuffPriceTotal(scope.row)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="bid" label="成本合计(元)" >
+                <el-table-column prop="bid" label="Tổng chi phí(VNĐ)" >
                     <template slot-scope="scope">
                         {{scope.row.bid===undefined?0:scope.row.bid}}
                     </template>
                 </el-table-column>
-              <el-table-column prop="inventory" label="剩余数量" >
+              <el-table-column prop="inventory" label="Số lượng còn lại" >
                 <template slot-scope="scope">
                   {{Math.floor(scope.row.inventory/scope.row.packNumber) >= 0 ? Math.floor(scope.row.inventory/scope.row.packNumber)+(scope.row.packUnit.name)+((scope.row.inventory%scope.row.packNumber > 0) ? (scope.row.inventory%scope.row.packNumber) + scope.row.minUnit.name:""):scope.row.inventory+scope.row.minUnit.name}}
                 </template>
@@ -639,11 +639,11 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
+      <!-- Thanh bảng  Kết thúc -->
           </div>
     </div>
 
-      <!-- 分页栏     开始 -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <el-pagination
@@ -659,7 +659,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </el-card>
   </el-row>
 </template>
@@ -693,7 +693,7 @@ export default {
         inventory:"1",
         supplier:"",
       },
-      activeName:'0',  //药品材料切换
+      activeName:'0',  //Chuyển đổi thuốc/vật tư
       search: {
         offset: 0,
         limit: 20,
@@ -711,7 +711,7 @@ export default {
       pageSize: 20,
       dispensingTotal: 0,
       dispensingList: [],
-      oprColumnWidth: 140, // 操作列宽
+      oprColumnWidth: 140, // Độ rộng cột thao tác
       filerData: {
         pickerOptions: {
           disabledDate(time) {
@@ -719,8 +719,8 @@ export default {
           },
         },
       },
-      allTotal:{}, //总计
-      type_List: [], // 药品类型
+      allTotal:{}, //Tổng cộng
+      type_List: [], // Loại thuốc
       queryTypes: {
         goods_name: "like",
         type: "=",
@@ -729,24 +729,24 @@ export default {
       isEnable:[
           {
               value:"0",
-              name:"否"
+              name:"Không"
           },
           {
               value:"1",
-              name:"是"
+              name:"Có"
           }
       ],
       inventorys:[
           {
               value:"0",
-              name:"等于0"
+              name:"Bằng0"
           },
           {
               value:"1",
-              name:"大于0"
+              name:"Lớn hơn0"
           }
       ],
-      stuffList:[],  //材料集合
+      stuffList:[],  //Tập vật tư
       stuffSearch:{
         offset: 0,
         limit: 20,
@@ -765,9 +765,9 @@ export default {
           }
         ],
       },
-      stuffTypeList:[],   //材料类型
-      supplierList:[],   //药品供应商
-      stuffSupplierList:[], // 材料供应商
+      stuffTypeList:[],   //Loại vật tư
+      supplierList:[],   //Nhà cung cấp thuốc
+      stuffSupplierList:[], // Nhà cung cấp vật tư
     };
   },
   methods: {
@@ -785,15 +785,15 @@ export default {
       exportTable() {
         if (this.activeName === '0') {
           if (this.tabPosition === '0') {
-            this.doExport({ ...this.search, columnName: '2' }, '药品当前库存-按批号.xlsx')
+            this.doExport({ ...this.search, columnName: '2' }, 'Tồn kho thuốc hiện tại-Theo số lô.xlsx')
           } else {
-            this.doExport({ ...this.search, columnName: '1' }, '药品当前库存-按商品.xlsx')
+            this.doExport({ ...this.search, columnName: '1' }, 'Tồn kho thuốc hiện tại-Theo hàng hóa.xlsx')
           }
         } else {
           if (this.tabPosition === '0') {
-            this.doExport({ ...this.stuffSearch, columnName: '4' }, '材料当前库存-按批号.xlsx')
+            this.doExport({ ...this.stuffSearch, columnName: '4' }, 'Tồn kho vật tư hiện tại-Theo số lô.xlsx')
           } else {
-            this.doExport({ ...this.stuffSearch, columnName: '3' }, '材料当前库存-按商品.xlsx')
+            this.doExport({ ...this.stuffSearch, columnName: '3' }, 'Tồn kho vật tư hiện tại-Theo hàng hóa.xlsx')
           }
         }
       },
@@ -929,7 +929,7 @@ export default {
             });
       },
 
-      //材料搜索
+      //Tìm vật tư
       stuffOnSearch(){
 
         this.currentPage = 1;
@@ -1062,7 +1062,7 @@ export default {
                 }
             });
 
-             //获取供应商
+             //Lấy nhà cung cấp
             let supplierSearch = {
                 order:"",
                 params: [
@@ -1113,7 +1113,7 @@ export default {
     },
     addCreateDate(){
        let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //最后一个数字30可改，30天的意思
+        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
         let lastY = lw.getFullYear();
         let lastM = lw.getMonth() + 1;
         let lastD = lw.getDate();
@@ -1126,7 +1126,7 @@ export default {
           (lastM < 10 ? "0" + lastM : lastM) +
           "-" +
           (lastD < 10 ? "0" + lastD : lastD)+
-          " "+housrs+":"+minutes+":"+seconds //三十天之前日期
+          " "+housrs+":"+minutes+":"+seconds //Ngày của 30 ngày trước
           let returnDate=new Date(startData)
         return returnDate;
 
@@ -1139,7 +1139,7 @@ export default {
       let arr = []
       columns.forEach((column, index) => {
           if (index === 0) {
-            arr[index] = '合计';
+            arr[index] = 'Tổng cộng';
           }else{
             arr[index] = ''
           }
@@ -1148,10 +1148,10 @@ export default {
          arr[8] = new BigNumber(Number(this.allTotal.totalSellingPrice)).toFormat(2)
          arr[10] = new BigNumber(Number(this.allTotal.totalPrice)).toFormat(2)
      }else{
-          //售价合计
+          //Tổng giá bán
       arr[6] = new BigNumber(Number(this.allTotal.totalSellingPrice)).toFormat(2)
 
-      //进价合计
+      //Tổng giá nhập
       arr[7] = new BigNumber(Number(this.allTotal.totalPrice)).toFormat(2)
      }
       // // arr[4] = this.allTotal.numberAmount
@@ -1491,7 +1491,7 @@ export default {
         this.type_List = data;
       });
 
-      //获取供应商
+      //Lấy nhà cung cấp
       let supplierSearch = {
         order:"",
         params: [
@@ -1528,15 +1528,15 @@ export default {
     if(this.activeName==='0'){
       if(this.$refs.mutipleTable1){
         this.$nextTick(() => {
-                  // tableRef是el-table绑定的ref属性值
-                  this.$refs.mutipleTable1.doLayout()// 对 Table 进行重新布局
+                  // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+                  this.$refs.mutipleTable1.doLayout()// Đối với Table Thực hiện bố cục lại
               })
       }
     }else{
       if(this.$refs.mutipleTable2){
         this.$nextTick(() => {
-                  // tableRef是el-table绑定的ref属性值
-                  this.$refs.mutipleTable2.doLayout()// 对 Table 进行重新布局
+                  // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+                  this.$refs.mutipleTable2.doLayout()// Đối với Table Thực hiện bố cục lại
               })
       }
     }
@@ -1566,13 +1566,13 @@ export default {
           }
         },
      },
-     // tableData是el-table绑定的数据
+     // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
-          // 解决表格显示错位问题
+          // Khắc phục lỗi hiển thị lệch bảng
           handler () {
               this.$nextTick(() => {
-                  // tableRef是el-table绑定的ref属性值
-                  this.$refs.mutipleTable1.doLayout()// 对 Table 进行重新布局
+                  // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+                  this.$refs.mutipleTable1.doLayout()// Đối với Table Thực hiện bố cục lại
               })
           },
           deep: true
@@ -1693,11 +1693,11 @@ export default {
 ::v-deep .el-table__body{
   width:100% !important
 }
-// 设置表格body的高度
+// Cài đặt bảngbodyChiều cao của
  ::v-deep.el-table__body-wrapper {
-  //解决数据展示超出body高度不滚动bug
+  //Khắc phục hiển thị dữ liệu vượt quábodychiều cao không cuộn đượcbug
   overflow-y: auto;
-   // 减去的是表格header的高度
+   // Phần trừ đi là bảngheaderChiều cao của
    height: calc(100% - 44px) !important;
  }
 </style>

@@ -6,15 +6,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 系统编码规则Entity
+ * Quy tắc mã hệ thốngEntity
  * @author lys
  * @version 2021-05-17
  */
 public class CodeRule extends DataEntity<CodeRule> {
 
 	private static final long serialVersionUID = 1L;
-	private String code;		// 编码
-	private String ruleDef;		// 规则
+	private String code;		// Mã
+	private String ruleDef;		// quy tắc
 
 	
 	public CodeRule() {
@@ -26,7 +26,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 	}
 	
 
-	@Length(min=1, max=20, message="编码长度必须介于 1 和 20 之间")
+	@Length(min=1, max=20, message="Độ dài mã phải nằm trong khoảng 1 đến 20 ")
 	public String getCode() {
 		return code;
 	}
@@ -35,7 +35,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 	}
 	
 	
-	@Length(min=1, max=512, message="规则长度必须介于 1 和 512 之间")
+	@Length(min=1, max=512, message="quy tắcĐộ dài phải nằm trong khoảng 1 đến 512 ")
 	public String getRuleDef() {
 		return ruleDef;
 	}
@@ -48,7 +48,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -57,7 +57,7 @@ public class CodeRule extends DataEntity<CodeRule> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -67,7 +67,7 @@ public class CodeRule extends DataEntity<CodeRule> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

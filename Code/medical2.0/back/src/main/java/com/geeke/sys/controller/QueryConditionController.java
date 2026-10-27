@@ -8,7 +8,7 @@ import com.geeke.sys.entity.QueryCondition;
 import com.geeke.sys.service.QueryConditionService;
 
 /**
- * 查询条件Controller
+ * Điều kiện truy vấnController
  * @author lys
  * @version 2021-07-05
  */

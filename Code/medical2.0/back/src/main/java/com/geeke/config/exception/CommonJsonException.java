@@ -3,7 +3,7 @@ package com.geeke.config.exception;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 通用json异常类
+ * Chungjsonngoại lệLớp
  * 
  * @author hxy
  * @date 2017/11/15

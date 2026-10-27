@@ -3,22 +3,22 @@
     <el-card class="page-container">
       <el-row>
         <el-col style="text-align:right;margin-bottom:10px">
-          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>导出</el-button>
+          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>Xuất</el-button>
         </el-col>
       </el-row>
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
         <el-row class='search-row'>
           <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm'
                    :inline-message='true'>
             <el-col :span="8">
-              <el-form-item label='发药日期' prop='time'>
+              <el-form-item label='Ngày phát thuốc' prop='time'>
                 <el-date-picker
                   v-model="queryModel.dateRange"
                   type="datetimerange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
+                  range-separator="đến"
+                  start-placeholder="Ngày bắt đầu"
+                  end-placeholder="Ngày kết thúc"
                   :default-time="['00:00:00', '23:59:59']"
                   format="yyyy-MM-dd HH:mm:ss"
                 >
@@ -26,23 +26,23 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='药品名称' prop='name'>
-                <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入药品名称'></el-input>
+              <el-form-item label='Tên thuốc' prop='name'>
+                <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên thuốc'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='处方单号' prop='recipelCode'>
-                <el-input v-model='queryModel.recipelCode' :clearable='true' placeholder='请输入处方单号'></el-input>
+              <el-form-item label='Số đơn thuốc' prop='recipelCode'>
+                <el-input v-model='queryModel.recipelCode' :clearable='true' placeholder='Vui lòng nhập số đơn thuốc'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='药品类型' prop='type'>
+              <el-form-item label='Loại thuốc' prop='type'>
                 <el-select
                   v-model="queryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择药品类型"
+                  placeholder="Vui lòng chọn loại thuốc"
                   class="typeClass"
                 >
                   <el-option
@@ -60,18 +60,18 @@
           <el-col :span="24" style="text-align:right;padding-right:5px">
             <!-- <div class="bg_btn">
               <el-button type="primary" @click="onSearch"
-                >查询</el-button
+                >Truy vấn</el-button
               >
-              <el-button @click="resetCondition()">重置</el-button>
+              <el-button @click="resetCondition()">Đặt lại</el-button>
             </div> -->
-            <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>搜索</el-button>
-            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
+            <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>Tìm kiếm</el-button>
+            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
           </el-col>
         </el-row>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -91,17 +91,17 @@
               id="exportTable"
             >
               <el-table-column
-                label="序号"
+                label="Số thứ tự"
                 type="index"
                 :index="indexMethod"
                 align="center">
               </el-table-column>
-              <el-table-column prop="recipelCode" label="处方单号">
+              <el-table-column prop="recipelCode" label="Số đơn thuốc">
               </el-table-column>
-              <el-table-column prop="type" label="药品类型" width="70"></el-table-column>
-              <el-table-column prop="name" label="药品名称"></el-table-column>
-              <el-table-column prop="norms" label="规格" width="80"></el-table-column>
-              <el-table-column prop="number" label="数量" width="50">
+              <el-table-column prop="type" label="Loại thuốc" width="70"></el-table-column>
+              <el-table-column prop="name" label="Tên thuốc"></el-table-column>
+              <el-table-column prop="norms" label="Quy cách" width="80"></el-table-column>
+              <el-table-column prop="number" label="Số lượng" width="50">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right" v-if="scope.row.isUnpackSell === 0">
                     {{ scope.row.number / scope.row.preparation }}
@@ -111,7 +111,7 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="unit" label="单位" width="50">
+              <el-table-column prop="unit" label="Đơn vị" width="50">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right" v-if="scope.row.isUnpackSell === 0">
                     {{ scope.row.pack }}
@@ -121,7 +121,7 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="bid" label="进价单价(元)" width="90">
+              <el-table-column prop="bid" label="Đơn giá nhập(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right" v-if="scope.row.isUnpackSell === 0">
                     {{ (scope.row.packageBid).toFixed(4) }}
@@ -131,7 +131,7 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="bidTotal" label="进价总价(元)" width="90">
+              <el-table-column prop="bidTotal" label="Tổng giá nhập(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right" v-if="scope.row.isUnpackSell === 0">
                     {{ bigNum(scope.row.packageBid * (scope.row.number / scope.row.preparation)) }}
@@ -141,7 +141,7 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="price" label="销售单价(元)" width="90">
+              <el-table-column prop="price" label="Đơn giá bán(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right" v-if="scope.row.isUnpackSell === 0">
                     {{ (scope.row.packagePrice).toFixed(4) }}
@@ -151,7 +151,7 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="priceTotal" label="销售总价(元)" width="90">
+              <el-table-column prop="priceTotal" label="Tổng giá bán(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right" v-if="scope.row.isUnpackSell === 0">
                     {{ bigNum(scope.row.packagePrice * (scope.row.number / scope.row.preparation)) }}
@@ -161,7 +161,7 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="profit" label="利润(元)" width="90">
+              <el-table-column prop="profit" label="Lợi nhuận(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right" v-if="scope.row.isUnpackSell === 0">
                     {{ bigNum(scope.row.packagePrice * (scope.row.number / scope.row.preparation)) - bigNum(scope.row.packageBid * (scope.row.number / scope.row.preparation)) }}
@@ -171,18 +171,18 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="factory" label="生产厂家">
+              <el-table-column prop="factory" label="Nhà sản xuất">
               </el-table-column>
-              <el-table-column prop="batchNo" label="生产批号">
+              <el-table-column prop="batchNo" label="Số lô sản xuất">
               </el-table-column>
-              <el-table-column prop="dispensingDate" label="发药日期">
+              <el-table-column prop="dispensingDate" label="Ngày phát thuốc">
               </el-table-column>
             </el-table>
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <el-pagination
@@ -198,7 +198,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </el-card>
   </el-row>
 </template>
@@ -259,7 +259,7 @@
         pageSize: 20,
         dispensingTotal: 0,
         dispensingList: [],
-        oprColumnWidth: 140, // 操作列宽
+        oprColumnWidth: 140, // Độ rộng cột thao tác
         filerData: {
           pickerOptions: {
             disabledDate(time) {
@@ -267,8 +267,8 @@
             },
           },
         },
-        allTotal: {}, //总计
-        type_List: [], // 药品类型
+        allTotal: {}, //Tổng cộng
+        type_List: [], // Loại thuốc
         queryTypes: {
           goods_name: "like",
           type: "=",
@@ -284,7 +284,7 @@
     methods: {
       addCreateDate() {
         let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //最后一个数字30可改，30天的意思
+        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
         let lastY = lw.getFullYear();
         let lastM = lw.getMonth() + 1;
         let lastD = lw.getDate();
@@ -297,7 +297,7 @@
           (lastM < 10 ? "0" + lastM : lastM) +
           "-" +
           (lastD < 10 ? "0" + lastD : lastD) +
-          " " + housrs + ":" + minutes + ":" + seconds //三十天之前日期
+          " " + housrs + ":" + minutes + ":" + seconds //Ngày của 30 ngày trước
         let returnDate = new Date(startData)
         return returnDate;
 
@@ -310,15 +310,15 @@
         let arr = []
         columns.forEach((column, index) => {
           if (index === 0) {
-            arr[index] = '合计';
+            arr[index] = 'Tổng cộng';
           } else {
             arr[index] = ''
           }
         })
-        arr[8] = new BigNumber(Number(this.allTotal.bidTotalAmount)).toFormat(2) + "元"
+        arr[8] = new BigNumber(Number(this.allTotal.bidTotalAmount)).toFormat(2) + "VNĐ"
         // arr[4] = this.allTotal.numberAmount
-        arr[10] = new BigNumber(Number(this.allTotal.priceTotalAmount)).toFormat(2) + "元"
-        arr[11] = new BigNumber(Number(this.allTotal.profitAmount)).toFormat(2) + "元"
+        arr[10] = new BigNumber(Number(this.allTotal.priceTotalAmount)).toFormat(2) + "VNĐ"
+        arr[11] = new BigNumber(Number(this.allTotal.profitAmount)).toFormat(2) + "VNĐ"
         return arr
       },
       init() {
@@ -458,22 +458,22 @@
       exportExcel() {
         let biaoge = []
         biaoge[0] = {
-          recipelCode: "处方单号",
-          type: "药品类型",
-          name: "药品名称",
-          norms: "规格",
-          number: "数量",
-          unit: "单位",
-          bid: "进价单价(元)",
-          packageBid: "进价包装价(元)",
-          bidTotal: "进价总价(元)",
-          price: "销售单价(元)",
-          packagePrice: "销售包装价(元)",
-          priceTotal: "销售总价(元)",
-          profit: "利润(元)",
-          factory: "生产厂家",
-          batchNo: "生产批号",
-          dispensingDate: "发药日期",
+          recipelCode: "Số đơn thuốc",
+          type: "Loại thuốc",
+          name: "Tên thuốc",
+          norms: "Quy cách",
+          number: "Số lượng",
+          unit: "Đơn vị",
+          bid: "Đơn giá nhập(VNĐ)",
+          packageBid: "进价包装价(VNĐ)",
+          bidTotal: "Tổng giá nhập(VNĐ)",
+          price: "Đơn giá bán(VNĐ)",
+          packagePrice: "销售包装价(VNĐ)",
+          priceTotal: "Tổng giá bán(VNĐ)",
+          profit: "Lợi nhuận(VNĐ)",
+          factory: "Nhà sản xuất",
+          batchNo: "Số lô sản xuất",
+          dispensingDate: "Ngày phát thuốc",
         }
         for (let i = 0; i < this.dispensingList.length; i++) {
           let arr = {
@@ -510,7 +510,7 @@
         }
         let num = biaoge.length
         biaoge[num] = {
-          recipelCode: "合计",
+          recipelCode: "Tổng cộng",
           type: "",
           name: "",
           norms: "",
@@ -529,7 +529,7 @@
         let contentWs = XLSX.utils.json_to_sheet(biaoge);
         contentWs["A1"] = {
           t: "s",
-          v: this.Company.name + ' 药品销售明细表',
+          v: this.Company.name + ' Bảng chi tiết bán thuốc',
           s: {
             alignment: {
               horizontal: "center",
@@ -803,11 +803,11 @@
           },
 
         ]
-        //冻结第一行和第一列：
+        //Cố định dòng đầu tiên và cột đầu tiên：
         contentWs['!freeze'] = {
-          xSplit: "11",  //冻结列
-          ySplit: "1",  //冻结行
-          topLeftCell: "A2",  //在未冻结区域的左上角显示的单元格，默认为第一个未冻结的单元格
+          xSplit: "11",  //Cố định cột
+          ySplit: "1",  //Cố định dòng
+          topLeftCell: "A2",  //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
           state: "frozen"
         }
         contentWs["!merges"] = mergeTitle
@@ -816,8 +816,8 @@
         contentWs["!rows"] = {}
 
         contentWs["!margins"] = {left: 1.0, right: 1.0, top: 1.0, bottom: 1.0, header: 0.5, footer: 0.5}
-        XLSX.utils.book_append_sheet(web, contentWs, "药品销售明细表");
-        // //使用xlsx-style写入文件方式，使得自定义样式生效
+        XLSX.utils.book_append_sheet(web, contentWs, "Bảng chi tiết bán thuốc");
+        // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
         const tmpDown = new Blob([
           this.s2ab(
             XLSXD.write(web, {
@@ -828,7 +828,7 @@
             })
           )
         ])
-        this.downExcel(tmpDown, '药品销售明细表.xlsx')
+        this.downExcel(tmpDown, 'Bảng chi tiết bán thuốc.xlsx')
       },
       downExcel(obj, fileName) {
         const a_node = document.createElement("a");

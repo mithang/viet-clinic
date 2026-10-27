@@ -8,20 +8,20 @@
           style="width:250px;margin-right:8px;"
           placeholder="请输入收费人姓名"
         ></el-input>
-        <div>收费日期：</div>
+        <div>Ngày thu phí：</div>
         <el-date-picker
           v-model="condition.chargeDateRange"
           type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          range-separator="đến"
+          start-placeholder="Ngày bắt đầu"
+          end-placeholder="Ngày kết thúc"
         ></el-date-picker>
-        <el-radio style="margin-left:8px;margin-top:8px;" v-model="condition.mainOrDetail" label="1">汇总</el-radio>
-        <el-radio style="margin-top:8px;" v-model="condition.mainOrDetail" label="2">明细</el-radio>
+        <el-radio style="margin-left:8px;margin-top:8px;" v-model="condition.mainOrDetail" label="1">Tổng hợp</el-radio>
+        <el-radio style="margin-top:8px;" v-model="condition.mainOrDetail" label="2">Chi tiết</el-radio>
       </div>
       <div>
-          <el-button type="primary">查询</el-button>
-          <el-button>导出</el-button>
+          <el-button type="primary">Truy vấn</el-button>
+          <el-button>Xuất</el-button>
       </div>
     </div>
     <div>
@@ -30,32 +30,32 @@
             style="width: 100%">
             <el-table-column
                 prop="prop"
-                label="序号"
+                label="Số thứ tự"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="收费人"
+                label="Người thu phí"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="收费日期"
+                label="Ngày thu phí"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="应收/退(元)"
+                label="Phải thu/Trả lại(VNĐ)"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="实收金额"
+                label="Số tiền thực thu"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="优惠(元)"
+                label="优惠(VNĐ)"
                 width="width">
             </el-table-column>
             <el-table-column
@@ -70,17 +70,17 @@
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="支付宝支付"
+                label="Thanh toán Alipay"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="银行卡支付"
+                label="Thanh toán bằng thẻ ngân hàng"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="现金退款"
+                label="Hoàn tiền mặt"
                 width="width">
             </el-table-column>
         </el-table>

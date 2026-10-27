@@ -479,8 +479,8 @@
         IFNULL(recipelDetail.drug_stuff_id,'') AS "recipelDetail.drugStuffId.drugStuffId",
         IFNULL(recipelDetail.all_fee,'') AS "recipelDetail.allFee",
         IF(stuff.id != '', stuff.name,IF(drug.id != '', concat(drug.goods_name, '(',drug.dosis,dosisUnit.name,'*', drug.preparation, preparationUnit.name,'/',pack.name,')'),IF(costItem.item_name != '', costItem.item_name,''))) AS "recipelDetail.drugStuffId.name",
-        IF(stuff.id != '', '材料', IF(drug.id != '', IF(drug.type = 'medicalType_0', '西药', IF(drug.type = 'medicalType_1', '中草药', '中成药')), IF(a.toll_type = 'tollType_4', '挂号',
-        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', '检验', IF(costItem.item_type = 'treatmentItemType_1', '检查', IF(costItem.item_type = 'treatmentItemType_2', '理疗', IF(costItem.item_type = 'treatmentItemType_3', '治疗', IF(costItem.item_type = 'treatmentItemType_4', '其他', ''))))), ''))))
+        IF(stuff.id != '', 'Vật tư', IF(drug.id != '', IF(drug.type = 'medicalType_0', 'Thuốc tây', IF(drug.type = 'medicalType_1', 'Dược liệu đông y', 'Thuốc thành phẩm đông y')), IF(a.toll_type = 'tollType_4', 'Đăng ký khám',
+        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', 'Xét nghiệm', IF(costItem.item_type = 'treatmentItemType_1', 'Kiểm tra', IF(costItem.item_type = 'treatmentItemType_2', 'Vật lý trị liệu', IF(costItem.item_type = 'treatmentItemType_3', 'Điều trị', IF(costItem.item_type = 'treatmentItemType_4', 'Khác', ''))))), ''))))
         AS "recipelDetail.drugStuffId.isUnpackSell"
         FROM toll_info a
         <include refid="tollInfoJoins"/>
@@ -721,11 +721,11 @@
 <!--        select-->
 <!--        su.name,-->
 <!--        sum(rd.all_fee) as temporaryCost,-->
-<!--        IF(stuff.id != '', '材料', IF(drug.id != '', IF(drug.type = 'medicalType_0', '西药', IF(drug.type = 'medicalType_1', '中草药', '中成药')),-->
-<!--        IF(ti.toll_type = 'tollType_4', '挂号',-->
-<!--        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', '检验',-->
-<!--        IF(costItem.item_type = 'treatmentItemType_1', '检查', IF(costItem.item_type = 'treatmentItemType_2', '理疗',-->
-<!--        IF(costItem.item_type = 'treatmentItemType_3', '治疗', IF(costItem.item_type = 'treatmentItemType_4', '其他', ''))))), '')))) as types-->
+<!--        IF(stuff.id != '', 'Vật tư', IF(drug.id != '', IF(drug.type = 'medicalType_0', 'Thuốc tây', IF(drug.type = 'medicalType_1', 'Dược liệu đông y', 'Thuốc thành phẩm đông y')),-->
+<!--        IF(ti.toll_type = 'tollType_4', 'Đăng ký khám',-->
+<!--        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', 'Xét nghiệm',-->
+<!--        IF(costItem.item_type = 'treatmentItemType_1', 'Kiểm tra', IF(costItem.item_type = 'treatmentItemType_2', 'Vật lý trị liệu',-->
+<!--        IF(costItem.item_type = 'treatmentItemType_3', 'Điều trị', IF(costItem.item_type = 'treatmentItemType_4', 'Khác', ''))))), '')))) as types-->
 <!--        from toll_info ti-->
 <!--        left join recipel_info ri on ri.id =ti.recipel_id-->
 <!--        left join recipel_detail rd on rd.recipel_info_id = ri.id-->
@@ -745,11 +745,11 @@
         select oc.id jgid,oc.name jgmc,
         su.name,
         sum(rd.actual_payment) as temporaryCost,
-        IF(stuff.id != '', '材料', IF(drug.id != '', IF(drug.type = 'medicalType_0', '西药', IF(drug.type = 'medicalType_1', '中草药', '中成药')),
-        IF(a.toll_type = 'tollType_4', '挂号',
-        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', '检验',
-        IF(costItem.item_type = 'treatmentItemType_1', '检查', IF(costItem.item_type = 'treatmentItemType_2', '理疗',
-        IF(costItem.item_type = 'treatmentItemType_3', '治疗', IF(costItem.item_type = 'treatmentItemType_4', '其他', ''))))), '')))) as types
+        IF(stuff.id != '', 'Vật tư', IF(drug.id != '', IF(drug.type = 'medicalType_0', 'Thuốc tây', IF(drug.type = 'medicalType_1', 'Dược liệu đông y', 'Thuốc thành phẩm đông y')),
+        IF(a.toll_type = 'tollType_4', 'Đăng ký khám',
+        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', 'Xét nghiệm',
+        IF(costItem.item_type = 'treatmentItemType_1', 'Kiểm tra', IF(costItem.item_type = 'treatmentItemType_2', 'Vật lý trị liệu',
+        IF(costItem.item_type = 'treatmentItemType_3', 'Điều trị', IF(costItem.item_type = 'treatmentItemType_4', 'Khác', ''))))), '')))) as types
         from toll_info a
         left join recipel_info ri on ri.id =a.recipel_id
         left join recipel_detail rd on rd.recipel_info_id = ri.id
@@ -860,11 +860,11 @@
     <select id="getTemporaryCostStat" resultType="com.geeke.toll.entity.WorkLoadStat">
         select oc.id jgid,oc.name jgmc,
         sum(rd.actual_payment) as temporaryCost,
-        IF(stuff.id != '', '材料', IF(drug.id != '', IF(drug.type = 'medicalType_0', '西药', IF(drug.type = 'medicalType_1', '中草药', '中成药')),
-        IF(a.toll_type = 'tollType_4', '挂号',
-        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', '检验',
-        IF(costItem.item_type = 'treatmentItemType_1', '检查', IF(costItem.item_type = 'treatmentItemType_2', '理疗',
-        IF(costItem.item_type = 'treatmentItemType_3', '治疗', IF(costItem.item_type = 'treatmentItemType_4', '其他', ''))))), '')))) as types
+        IF(stuff.id != '', 'Vật tư', IF(drug.id != '', IF(drug.type = 'medicalType_0', 'Thuốc tây', IF(drug.type = 'medicalType_1', 'Dược liệu đông y', 'Thuốc thành phẩm đông y')),
+        IF(a.toll_type = 'tollType_4', 'Đăng ký khám',
+        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', 'Xét nghiệm',
+        IF(costItem.item_type = 'treatmentItemType_1', 'Kiểm tra', IF(costItem.item_type = 'treatmentItemType_2', 'Vật lý trị liệu',
+        IF(costItem.item_type = 'treatmentItemType_3', 'Điều trị', IF(costItem.item_type = 'treatmentItemType_4', 'Khác', ''))))), '')))) as types
         from toll_info a
         left join recipel_info ri on ri.id =a.recipel_id
         left join recipel_detail rd on rd.recipel_info_id = ri.id
@@ -1797,7 +1797,7 @@
         </where>
     </select>
 
-    <!-- ========== 恢复被第16轮优化误删的 count 查询 ========== -->
+    <!-- ========== khôi phụcbịDòng 16轮Tối ưu hóasai删 của  count Truy vấn ========== -->
 
     <sql id="siblingCompanyFilter">
         oc.parent_id = (SELECT parent_id FROM org_company WHERE id = #{companyId})
@@ -1953,11 +1953,11 @@
         select oc.id jgid,oc.name jgmc,
         su.name,
         sum(rd.actual_payment) as temporaryCost,
-        IF(stuff.id != '', '材料', IF(drug.id != '', IF(drug.type = 'medicalType_0', '西药', IF(drug.type = 'medicalType_1', '中草药', '中成药')),
-        IF(a.toll_type = 'tollType_4', '挂号',
-        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', '检验',
-        IF(costItem.item_type = 'treatmentItemType_1', '检查', IF(costItem.item_type = 'treatmentItemType_2', '理疗',
-        IF(costItem.item_type = 'treatmentItemType_3', '治疗', IF(costItem.item_type = 'treatmentItemType_4', '其他', ''))))), '')))) as types
+        IF(stuff.id != '', 'Vật tư', IF(drug.id != '', IF(drug.type = 'medicalType_0', 'Thuốc tây', IF(drug.type = 'medicalType_1', 'Dược liệu đông y', 'Thuốc thành phẩm đông y')),
+        IF(a.toll_type = 'tollType_4', 'Đăng ký khám',
+        IF(costItem.id != '', IF(costItem.item_type = 'treatmentItemType_0', 'Xét nghiệm',
+        IF(costItem.item_type = 'treatmentItemType_1', 'Kiểm tra', IF(costItem.item_type = 'treatmentItemType_2', 'Vật lý trị liệu',
+        IF(costItem.item_type = 'treatmentItemType_3', 'Điều trị', IF(costItem.item_type = 'treatmentItemType_4', 'Khác', ''))))), '')))) as types
         from toll_info a
         left join recipel_info ri on ri.id =a.recipel_id
         left join recipel_detail rd on rd.recipel_info_id = ri.id
@@ -1971,7 +1971,7 @@
         left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
         <where>
         su.name!=''
-        <!-- 数据迁移截止时间，过滤迁移前的历史数据，勿删 -->
+        <!-- Dữ liệuchuyển đổicắtdừngThời gian, qualọcchuyển đổitrước của lịch sửDữ liệu, đừng删 -->
         and a.update_date > '2022-08-05 17:20:07'
         and a.amount_status = 'amountStatus_1' and a.return_type=0 and ri.charge_status=1 and r.status = 'registrationStatus_1'
         AND su.name IN

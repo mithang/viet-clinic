@@ -1,38 +1,38 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <lessee-form ref='lesseeForm' :permission='permission' @save-finished='loadData'></lessee-form>
     <div class="page-container">
-        <!--  搜索栏  开始 -->
+        <!--  Thanh tìm kiếm  Bắt đầu -->
         <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
                       <el-col :span="6">
-              <el-form-item label='租户名' prop='userName'>
-                <el-input v-model='queryModel.userName' :clearable='true' placeholder='请输入租户名'></el-input>
+              <el-form-item label='Tên đơn vị thuê' prop='userName'>
+                <el-input v-model='queryModel.userName' :clearable='true' placeholder='Vui lòng nhập tên đơn vị thuê'></el-input>
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='电话号码' prop='phoneNumber'>
-                <el-input v-model='queryModel.phoneNumber' :clearable='true' placeholder='请输入电话号码'></el-input>
+              <el-form-item label='Số điện thoại' prop='phoneNumber'>
+                <el-input v-model='queryModel.phoneNumber' :clearable='true' placeholder='Vui lòng nhập số điện thoại'></el-input>
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='状态' prop='isUse'>
+              <el-form-item label='Trạng thái' prop='isUse'>
                 <el-switch v-model='queryModel.isUse' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
               </el-form-item>
             </el-col>
               <el-col :span="6">
                 <el-button-group>
-                  <el-tooltip  effect="light" content="搜索" placement="top-start">
+                  <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                     <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                   </el-tooltip>
-                   <el-tooltip  effect="light" content="重置" placement="top-start">
+                   <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                     <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                   </el-tooltip>
-                  <el-tooltip  effect="light" content="更多" placement="top-start">
+                  <el-tooltip  effect="light" content="Thêm" placement="top-start">
                     <el-button type="primary" icon="el-icon-d-arrow-right" @click='onMoreCodition()' :plain='true'></el-button>
                   </el-tooltip>
                 </el-button-group>
@@ -41,17 +41,17 @@
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </div>
-        <!--  搜索栏  结束 -->
+        <!--  Thanh tìm kiếm  Kết thúc -->
 
-        <!-- 工具栏 开始 -->
+        <!-- Thanh công cụ Bắt đầu -->
         <div class="page-container-header-end">
           <div>
-            <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateEntity("lesseeForm")'>添加</el-button>
+            <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateEntity("lesseeForm")'>Thêm</el-button>
           </div>
         </div>
-        <!-- 工具栏 结束 -->
+        <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>        
@@ -64,23 +64,23 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='oprColumnWidth + "px"'>        
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"'>        
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='lesseeList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view' 
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
                     @click='onViewEntity(scope.$index, scope.row, "lesseeForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                     @click='onEditEntity(scope.$index, scope.row, "lesseeForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document'
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyEntity(scope.$index, scope.row, "lesseeForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete'
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
                     @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info' 
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -88,8 +88,8 @@
     	  </div>	          
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -104,7 +104,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->     </div>
+      <!-- Thanh phân trang     Kết thúc -->     </div>
   </el-row>
 </template>
 
@@ -142,13 +142,13 @@ export default {
         'is_use': '=',
       },
       queryModel: {
-        'userName': '',   // 租户名
-        'phoneNumber': '',   // 电话号码
-        'isUse': '',   // 状态
+        'userName': '',   // Tên đơn vị thuê
+        'phoneNumber': '',   // Số điện thoại
+        'isUse': '',   // Trạng thái
       },
       lesseeTotal: 0,
       lesseeList: [],
-      oprColumnWidth: 140,  // 操作列宽
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '985180319911059468',
       schemeId: '985210453401632768'
     }
@@ -158,19 +158,19 @@ export default {
       if (this.moreCodition) {
         this.search.params = this.search.params.concat(this.compositeCondition())
       } else {
-        // 查询参数: 租户名
+        // Tham số truy vấn: Tên đơn vị thuê
         this.search.params.push({
           columnName: 'user_name',
           queryType: 'like',
           value: this.queryModel.userName
         })
-        // 查询参数: 电话号码
+        // Tham số truy vấn: Số điện thoại
         this.search.params.push({
           columnName: 'phone_number',
           queryType: 'like',
           value: this.queryModel.phoneNumber
         })
-        // 查询参数: 状态
+        // Tham số truy vấn: Trạng thái
         this.search.params.push({
           columnName: 'is_use',
           queryType: '=',

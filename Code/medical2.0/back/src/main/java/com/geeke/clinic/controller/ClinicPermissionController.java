@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 资源控制器
+ * tài nguyênkiểm soátthiết bị
  *
  * @author Lining
  * @date 2018/2/11

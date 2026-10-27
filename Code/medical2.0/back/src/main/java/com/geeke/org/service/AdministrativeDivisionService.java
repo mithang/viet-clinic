@@ -11,7 +11,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 行政区域划分Service
+ * Phân chia khu vực hành chínhService
  * @author txl
  * @version 2022-06-21
  */

@@ -9,14 +9,14 @@ import java.io.StringWriter;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 关于异常的工具类.
+ * đóngtạingoại lệ của Lớp công cụ.
  * @author calvin
  * @version 2013-01-15
  */
 public class Exceptions {
 
 	/**
-	 * 将CheckedException转换为UncheckedException.
+	 * Sẽ CheckedExceptionChuyển đổi thànhUncheckedException.
 	 */
 	public static RuntimeException unchecked(Exception e) {
 		if (e instanceof RuntimeException) {
@@ -27,7 +27,7 @@ public class Exceptions {
 	}
 
 	/**
-	 * 将ErrorStack转化为String.
+	 * Sẽ ErrorStackchuyển hóa là String.
 	 */
 	public static String getStackTraceAsString(Throwable e) {
 		if (e == null){
@@ -39,7 +39,7 @@ public class Exceptions {
 	}
 
 	/**
-	 * 判断异常是否由某些底层的异常引起.
+	 * Kiểm tra ngoại lệ có do một số ngoại lệ tầng dưới gây ra không.
 	 */
 	@SafeVarargs
 	public static boolean isCausedBy(Exception ex, Class<? extends Exception>... causeExceptionClasses) {
@@ -56,7 +56,7 @@ public class Exceptions {
 	}
 
 	/**
-	 * 在request中获取异常类
+	 * tạirequest trong Lấyngoại lệLớp
 	 * @param request
 	 * @return 
 	 */

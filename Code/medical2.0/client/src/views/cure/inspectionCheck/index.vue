@@ -1,35 +1,35 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <inspectionCheck-form ref='inspectionCheckForm' :permission='permission' @save-finished='loadData'></inspectionCheck-form>
     <div class="page-container">
-        <!--  搜索栏  开始 -->
+        <!--  Thanh tìm kiếm  Bắt đầu -->
         <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
                       <el-col :span="6">
-                      <el-form-item label='开单时间' prop='completeDate'>
+                      <el-form-item label='Thời gian lập phiếu' prop='completeDate'>
                        <el-date-picker
                         v-model="queryModel.completeDate"
                         type="datetimerange"
                         align="right"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
+                        start-placeholder="Ngày bắt đầu"
+                        end-placeholder="Ngày kết thúc"
                         format="yyyy-MM-dd HH:mm:ss"
                         :default-time="['00:00:00', '23:59:59']">
                       </el-date-picker>
                       </el-form-item>
                     </el-col>
                       <el-col :span="6">
-              <el-form-item label='患者姓名' prop='patientName'>
-                <el-input v-model='queryModel.patientName' :clearable='true' placeholder='请输入患者姓名'></el-input>
+              <el-form-item label='Tên bệnh nhân' prop='patientName'>
+                <el-input v-model='queryModel.patientName' :clearable='true' placeholder='Vui lòng nhập tên bệnh nhân'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='开单医生' prop='completeBy'>
-                 <el-select  v-model="queryModel.completeBy" placeholder="请选择">
+              <el-form-item label='Bác sĩ kê đơn' prop='completeBy'>
+                 <el-select  v-model="queryModel.completeBy" placeholder="Vui lòng chọn">
                         <el-option
                           v-for="item in doctorList"
                           :key="item.name"
@@ -40,8 +40,8 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='状态' prop='status'>
-                 <el-select  v-model="queryModel.status" placeholder="请选择">
+              <el-form-item label='Trạng thái' prop='status'>
+                 <el-select  v-model="queryModel.status" placeholder="Vui lòng chọn">
                         <el-option
                           v-for="item in statusList"
                           :key="item.value"
@@ -57,35 +57,35 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
             </el-col>
             </el-form>
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </div>
-        <!--  搜索栏  结束 -->
+        <!--  Thanh tìm kiếm  Kết thúc -->
 
-        <!-- 工具栏 开始 -->
+        <!-- Thanh công cụ Bắt đầu -->
         <!-- <div class="page-container-header-end">
           <div>
-            <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateInspectionCheck()'>添加</el-button>
+            <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateInspectionCheck()'>Thêm</el-button>
           </div>
         </div> -->
-        <!-- 工具栏 结束 -->
+        <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>        
             <el-table class='drag_table' ref="tableRef" height="calc(100vh - 200px)" :data='inspectionCheckList' border @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>                
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -96,12 +96,12 @@
                     <li v-if='getAttrValue(row, columnViews[index].prop) === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
                   </span>
                   <span v-else-if="columnViews[index].prop==='type'">
-                    <span v-if="getAttrValue(row, columnViews[index].prop)==='0'">检验</span>
-                    <span v-else>检查</span>
+                    <span v-if="getAttrValue(row, columnViews[index].prop)==='0'">Xét nghiệm</span>
+                    <span v-else>Kiểm tra</span>
                   </span>
                   <span v-else-if="columnViews[index].prop==='status'">
-                    <span v-if="getAttrValue(row, columnViews[index].prop)==='0'" style="color:#FF9966">待填写</span>
-                    <span v-else style="color:#99CC66">已填写</span>
+                    <span v-if="getAttrValue(row, columnViews[index].prop)==='0'" style="color:#FF9966">Chờ điền</span>
+                    <span v-else style="color:#99CC66">Đã điền</span>
                   </span>
                   <span  v-else-if="columnViews[index].prop==='sex'">
                     <span v-if="getAttrValue(row, columnViews[index].prop)==='gender_1'">女</span>
@@ -111,25 +111,25 @@
 
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :key="'operate'" :width='120 + "px"'>        
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :key="'operate'" :width='120 + "px"'>        
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='inspectionCheckList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
                   <el-button type="text" v-if="scope.row.status==='0'"  @click="fill(scope.row,scope.$index,0)">填写报告</el-button>
-                  <el-button type="text" v-if="scope.row.status==='1'"  @click="fill(scope.row,scope.$index,1)">查看详情</el-button>
-                  <!-- <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view' 
+                  <el-button type="text" v-if="scope.row.status==='1'"  @click="fill(scope.row,scope.$index,1)">Xem chi tiết</el-button>
+                  <!-- <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
                     @click='onViewInspectionCheck(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit' 
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit' 
                     @click='onEditInspectionCheck(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document' 
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document' 
                     @click='onCopyInspectionCheck(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete' 
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete' 
                     @click='onDeleteInspectionCheck(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info' 
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon> -->
                 </template>
               </el-table-column>
@@ -137,8 +137,8 @@
     	  </div>	          
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -153,9 +153,9 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->     </div>
+      <!-- Thanh phân trang     Kết thúc -->     </div>
 
-      <!-- 填写报告弹出框 -->
+      <!-- Hộp thoại điền báo cáo -->
       <el-dialog
         :title="typeName"
         :visible.sync="dialogVisible"
@@ -167,7 +167,7 @@
           <OperationIcon
           v-show="flags"
             type="primary"
-            text="编辑"
+            text="Sửa"
             placement="top-start"
             icon-name="el-icon-edit"
             @click="switchEdits"
@@ -181,56 +181,56 @@
               <div style="margin-left:-60px">  
                       <el-row >
                 <el-col :span='24/4'>
-                  <el-form-item label='姓名' prop='name' >
+                  <el-form-item label='Họ tên' prop='name' >
                     <el-input :disabled='true' v-model='bizFormModel.inspectionCheckInfo.name' :maxlength='120'  >
                     </el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span='24/4'>
-                  <el-form-item label='采样时间' prop='samplingDate' >
+                  <el-form-item label='Thời gian lấy mẫu' prop='samplingDate' >
                     <!-- <el-input :disabled='true' v-model='bizFormModel.samplingDate'></el-input> -->
                     <el-date-picker
                       :disabled="flags"
                       v-model="bizFormModel.inspectionCheckInfo.samplingDate"
                       type="datetime"
-                      placeholder="选择日期时间"
+                      placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
                       format="yyyy-MM-dd HH:mm:ss">
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
                  <el-col :span='24/4'>
-                  <el-form-item label='样本号' prop='samplingNum' >
-                    <el-input placeholder="请输入内容" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.samplingNum' :maxlength='100'></el-input>     
+                  <el-form-item label='Số mẫu' prop='samplingNum' >
+                    <el-input placeholder="Vui lòng nhập nội dung" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.samplingNum' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                  <el-col :span='24/4'>
-                  <el-form-item label='检验仪器' prop='instrument' >
-                    <el-input placeholder="请输入内容" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.instrument' :maxlength='100'></el-input>     
+                  <el-form-item label='Thiết bị xét nghiệm' prop='instrument' >
+                    <el-input placeholder="Vui lòng nhập nội dung" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.instrument' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                 </el-row>
                 <el-row>
                  <el-col :span='24/4'>
-                  <el-form-item label='检验号' prop='checkoutNum' >
-                    <el-input placeholder="请输入内容" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.checkoutNum' :maxlength='100'></el-input>     
+                  <el-form-item label='Số xét nghiệm' prop='checkoutNum' >
+                    <el-input placeholder="Vui lòng nhập nội dung" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.checkoutNum' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                 <el-col :span='24/4'>
-                  <el-form-item label='检验时间' prop='checkoutDate' >
+                  <el-form-item label='Thời gian xét nghiệm' prop='checkoutDate' >
                     <el-date-picker
                       :disabled="flags"
                       v-model="bizFormModel.inspectionCheckInfo.checkoutDate"
                       type="datetime"
-                      placeholder="选择日期时间"
+                      placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
                       format="yyyy-MM-dd HH:mm:ss">
                     </el-date-picker>    
                   </el-form-item>
                 </el-col>
                  <el-col :span='24/4'>
-                  <el-form-item label='检验科室' prop='checkoutOffice' >
-                    <el-input placeholder="请输入内容" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.checkoutOffice' :maxlength='100'></el-input>     
+                  <el-form-item label='Khoa xét nghiệm' prop='checkoutOffice' >
+                    <el-input placeholder="Vui lòng nhập nội dung" :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.checkoutOffice' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -244,28 +244,28 @@
                <el-table-column
                 type="index"
                 width="50"
-                label="序号">
+                label="Số thứ tự">
               </el-table-column>
               <el-table-column
                 prop="costItem.itemName"
-                label="项目名称"
+                label="Tên hạng mục"
                 width="width">
               </el-table-column>
               <el-table-column
                 prop="conclusion"
-                label="结果"
+                label="Kết quả"
                 width="width">
                 <template slot-scope="scope">
-                  <el-input placeholder="请输入内容" :disabled="flags" v-model='scope.row.conclusion' :maxlength='100'  >
+                  <el-input placeholder="Vui lòng nhập nội dung" :disabled="flags" v-model='scope.row.conclusion' :maxlength='100'  >
                     </el-input>
                 </template>
               </el-table-column>
                <el-table-column
                 prop="sign"
-                label="高低标记"
+                label="Dấu cao/thấp"
                 width="width">
                 <template slot-scope="scope">
-                     <el-select :disabled="flags" v-model="scope.row.sign" placeholder="请选择">
+                     <el-select :disabled="flags" v-model="scope.row.sign" placeholder="Vui lòng chọn">
                         <el-option
                           v-for="item in signList"
                           :key="item.value"
@@ -277,7 +277,7 @@
               </el-table-column>
               <el-table-column
                 prop="costItem.costItemPackages[0].referenceValue"
-                label="参考标记"
+                label="Dấu tham khảo"
                 width="width">
                 <template slot-scope="scope">
                   <!-- {{scope.row.costItemPackages[0].referenceValue.split("\n")}} -->
@@ -292,13 +292,13 @@
               </el-table-column>
               <el-table-column
                 prop="costItem.costItemPackages[0].referenceUnit"
-                label="单位"
+                label="Đơn vị"
                 width="width">
               </el-table-column>
              
                <el-table-column
                 prop="describes"
-                label="描述"
+                label="Mô tả"
                 width="width">
                 <template slot-scope="scope">
                   <el-input :disabled="flags" v-model='scope.row.describes' :maxlength='100'  >
@@ -308,12 +308,12 @@
             </el-table>
             <br>
             <div style="margin-left:-50px">
-              <el-form-item label='报告结论' prop='reportConclusion' >
+              <el-form-item label='Kết luận báo cáo' prop='reportConclusion' >
                 <el-input
                 :disabled="flags"
                   type="textarea"
                    :autosize="{ minRows: 2, maxRows: 100}"
-                  placeholder="请输入内容"
+                  placeholder="Vui lòng nhập nội dung"
                   v-model="bizFormModel.inspectionCheckInfo.reportConclusion">
                 </el-input>
             </el-form-item>
@@ -336,11 +336,11 @@
 
               >          
              
-                <el-button v-if="photoId==null||photoId==='' || switchEdit===0" slot="trigger" size="mini" type="primary">上传文件</el-button>           
+                <el-button v-if="photoId==null||photoId==='' || switchEdit===0" slot="trigger" size="mini" type="primary">Tải tệp lên</el-button>           
               </el-upload>
                <img v-if="bizFormModel.uploadFile" :src="bizFormModel.uploadFile" class="avatar">
                <i v-else class="el-icon-plus avatar-uploader-icon"></i> 
-                  <el-button  size="mini" type="primary" v-if="bizFormModel.uploadFile && switchEdit===1"  @click="look(bizFormModel.uploadFile)">预览文件</el-button>
+                  <el-button  size="mini" type="primary" v-if="bizFormModel.uploadFile && switchEdit===1"  @click="look(bizFormModel.uploadFile)">Xem trước tệp</el-button>
             </el-form-item> -->
             <el-form-item label='' prop='' >
               <div style="margin-left:-50px">
@@ -358,59 +358,59 @@
               <div style="margin-left:-60px">  
                       <el-row >
                 <el-col :span='24/4'>
-                  <el-form-item label='姓名' prop='name' >
+                  <el-form-item label='Họ tên' prop='name' >
                     <el-input :disabled='true' v-model='bizFormModel.inspectionCheckInfo.name' :maxlength='120'  >
                     </el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span='24/4'>
-                  <el-form-item label='登记时间' prop='samplingDate' >
+                  <el-form-item label='Thời gian đăng ký' prop='samplingDate' >
                     <!-- <el-input :disabled='true' v-model='bizFormModel.samplingDate'></el-input> -->
                     <el-date-picker
                       :disabled="flags"
                       v-model="bizFormModel.inspectionCheckInfo.samplingDate"
                       type="datetime"
-                      placeholder="选择日期时间"
+                      placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
                       format="yyyy-MM-dd HH:mm:ss">
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
                  <el-col :span='24/4'>
-                  <el-form-item label='检验设备' prop='instrument' >
-                    <el-input :disabled="flags" placeholder="请输入内容" v-model='bizFormModel.inspectionCheckInfo.instrument' :maxlength='100'></el-input>     
+                  <el-form-item label='Thiết bị xét nghiệm' prop='instrument' >
+                    <el-input :disabled="flags" placeholder="Vui lòng nhập nội dung" v-model='bizFormModel.inspectionCheckInfo.instrument' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                 <el-col :span='24/4'>
-                  <el-form-item label='检查类型' prop='checkType' >
-                    <el-input :disabled="flags" placeholder="请输入内容" v-model='bizFormModel.inspectionCheckInfo.checkType' :maxlength='100'></el-input>     
+                  <el-form-item label='Loại kiểm tra' prop='checkType' >
+                    <el-input :disabled="flags" placeholder="Vui lòng nhập nội dung" v-model='bizFormModel.inspectionCheckInfo.checkType' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                 
                 </el-row>
                 <el-row>
                    <el-col :span='24/4'>
-                  <el-form-item label='检查部位' prop='checkPart' >
-                    <el-input :disabled="flags" placeholder="请输入内容" v-model='bizFormModel.inspectionCheckInfo.checkPart' :maxlength='100'></el-input>     
+                  <el-form-item label='Vị trí kiểm tra' prop='checkPart' >
+                    <el-input :disabled="flags" placeholder="Vui lòng nhập nội dung" v-model='bizFormModel.inspectionCheckInfo.checkPart' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                    <el-col :span='24/4'>
-                  <el-form-item label='报告医师' prop='doctor' >
-                    <el-input :disabled="flags" placeholder="请输入内容" v-model='bizFormModel.inspectionCheckInfo.doctor' :maxlength='100'></el-input>     
+                  <el-form-item label='Bác sĩ báo cáo' prop='doctor' >
+                    <el-input :disabled="flags" placeholder="Vui lòng nhập nội dung" v-model='bizFormModel.inspectionCheckInfo.doctor' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                  <el-col :span='24/4'>
-                  <el-form-item label='检查项目' prop='checkProject' >
-                    <el-input :disabled="flags" placeholder="请输入内容" v-model='bizFormModel.inspectionCheckInfo.checkProject' :maxlength='100'></el-input>     
+                  <el-form-item label='Hạng mục kiểm tra' prop='checkProject' >
+                    <el-input :disabled="flags" placeholder="Vui lòng nhập nội dung" v-model='bizFormModel.inspectionCheckInfo.checkProject' :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
                 <el-col :span='24/4'>
-                  <el-form-item label='报告时间' prop='checkoutDate' >
+                  <el-form-item label='Thời gian báo cáo' prop='checkoutDate' >
                     <el-date-picker
                       :disabled="flags"
                       v-model="bizFormModel.inspectionCheckInfo.checkoutDate"
                       type="datetime"
-                      placeholder="选择日期时间"
+                      placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
                       format="yyyy-MM-dd HH:mm:ss">
                     </el-date-picker>    
@@ -419,14 +419,14 @@
               </el-row>
               <el-row>
                 <el-col :span="24/1">
-                  <el-form-item label='检查所见' prop='checkAdvise' >
+                  <el-form-item label='Kết quả kiểm tra thấy' prop='checkAdvise' >
                     <el-input type="textarea" width='100%' :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.checkAdvise'  :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
                 <el-col :span="24/1">
-                  <el-form-item label='意见' prop='opinion' >
+                  <el-form-item label='Ý kiến' prop='opinion' >
                     <el-input type="textarea" width='100%' :disabled="flags" v-model='bizFormModel.inspectionCheckInfo.opinion'  :maxlength='100'></el-input>     
                   </el-form-item>
                 </el-col>
@@ -448,11 +448,11 @@
 
               >   
                    
-                <el-button v-if="photoId==null||photoId==='' || switchEdit===0" slot="trigger" size="mini" type="primary">上传文件</el-button>           
+                <el-button v-if="photoId==null||photoId==='' || switchEdit===0" slot="trigger" size="mini" type="primary">Tải tệp lên</el-button>           
               </el-upload>
               <img v-if="bizFormModel.uploadFile" :src="bizFormModel.uploadFile" class="avatar">
                <i v-else class="el-icon-plus avatar-uploader-icon"></i>  
-                  <el-button  size="mini" type="primary" v-if="bizFormModel.uploadFile && switchEdit===1"  @click="look(bizFormModel.uploadFile)">预览文件</el-button>
+                  <el-button  size="mini" type="primary" v-if="bizFormModel.uploadFile && switchEdit===1"  @click="look(bizFormModel.uploadFile)">Xem trước tệp</el-button>
             </el-form-item> -->
              <el-form-item label='' prop='' >
               <div >
@@ -463,8 +463,8 @@
             </el-form>
             </div>
         <span slot="footer" class="dialog-footer">
-          <el-button v-if="!flags" @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" v-if="!flags" @click="save">保 存</el-button>
+          <el-button v-if="!flags" @click="dialogVisible = false">Hủy</el-button>
+          <el-button type="primary" v-if="!flags" @click="save">Lưu</el-button>
         </span>
       </el-dialog>
 
@@ -502,7 +502,7 @@ export default {
   },
   data() {
     return {
-      // listViewMixin 配置
+      // listViewMixin Cấu hình
       listApi: listInspectionCheckPage,
       getApi: getInspectionCheckById,
       deleteApi: deleteInspectionCheck,
@@ -513,32 +513,32 @@ export default {
         'name': 'like',
       },
       queryModel: {
-        'patientName': '',   // 项目名称
-        'completeDate':'',  //开单时间
-        'status':'',    //状态
-        'completeBy':'',  //开单医生
+        'patientName': '',   // Tên hạng mục
+        'completeDate':'',  //Thời gian lập phiếu
+        'status':'',    //Trạng thái
+        'completeBy':'',  //Bác sĩ kê đơn
       },
       switchEdit:0,  //编辑上传文件按钮
       inspectionCheckTotal: 0,
       inspectionCheckList: [],
-      fileName:'',  //文件名称
+      fileName:'',  //Tên tệp
       photoId:null,
-      oprColumnWidth: 140,  // 操作列宽
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1212102786706588488',
       schemeId: '1212102786706588513',
       type:"",//报告类型
       typeName:"",  //报告名称
       dialogVisible:false,
       bizFormModel:{
-        fileIdFile:[],   //文件
-        uploadFile:[],  //文件
+        fileIdFile:[],   //Tệp
+        uploadFile:[],  //Tệp
         inspectionCheckInfo:{}
-      },     //填写报告封装
-      inspectionIndex:0,    //主表点击索引
-      checkIndex:0,    //主表点击索引
+      },     //Điền đóng gói báo cáo
+      inspectionIndex:0,    //Chỉ số nhấn bảng chính
+      checkIndex:0,    //Chỉ số nhấn bảng chính
       inspectionCheckTableData:[],   //诊疗项目报告封装
-      conclusion:[],  //结果
-      describe:[],    //描述
+      conclusion:[],  //Kết quả
+      describe:[],    //Mô tả
       sign:[],       //标记
       flags:false,
       doctorList:[],  //医生数组
@@ -547,7 +547,7 @@ export default {
           name:'高',
           value:1,
         },{
-          name:'正常',
+          name:'Bình thường',
           value:0
         },{
           name:'低',
@@ -556,27 +556,27 @@ export default {
       ],
       statusList:[
         {
-          name:'待填写',
+          name:'Chờ điền',
           value:'0'
         },
         {
-          name:'已填写',
+          name:'Đã điền',
           value:"1"
         }
       ],
       uploadFiles:'',
       fileIds:[],
-      flags:false,  //防止重复提交
+      flags:false,  //Ngăn gửi trùng lặp
     }
   },
   methods: {
-    //重置
+    //Đặt lại
     reset(){
        this.queryModel={
-        'patientName': '',   // 项目名称
-        'completeDate':'',  //开单时间
-        'status':'',    //状态
-        'completeBy':'',  //开单医生
+        'patientName': '',   // Tên hạng mục
+        'completeDate':'',  //Thời gian lập phiếu
+        'status':'',    //Trạng thái
+        'completeBy':'',  //Bác sĩ kê đơn
       }
       this.loadData()
     },
@@ -591,18 +591,18 @@ export default {
     deleteFile(fileIds){
       this.fileIds.push(fileIds)
     },
-    //编辑
+    //Sửa
     switchEdits(){
       this.flags=false
       this.switchEdit=0
     },
     
-    //预览
+    //Xem trước
     look(row){
      
       //  var blob = this.dataURLtoBlob(row)
       //   const elink = document.createElement('a')
-      //   // 设置下载文件名
+      //   // Đặt tên tệp tải xuống
       //   const timedate = Date.parse(new Date())
       //   elink.download = this.fileName
       //   elink.style.display = 'none'
@@ -612,7 +612,7 @@ export default {
       //   document.body.removeChild(elink)
      window.open(process.env.KK_FILE_URL + encodeURIComponent(Base64.encode(row)));
     },
-    // 将base64转换为blob
+    // Sẽbase64Chuyển đổi thànhblob
     dataURLtoBlob: function (dataurl) {
       const arr = dataurl.split(',')
       const mime = arr[0].match(/:(.*?);/)[1]
@@ -661,16 +661,16 @@ export default {
      
       saveInspectionCheckInfo(userHeaderFile).then((res)=>{
           if(res.code===100){
-            this.$message.success("操作成功!")
+            this.$message.success("Thao tác thành công!")
             this.loadData()
           }else{
-            this.$message.error("保存失败!")
+            this.$message.error("Lưu thất bại!")
           }
           this.dialogVisible=false
           this.resetLoad()
           this.flags=false
       }).catch((error)=>{
-        this.$message.error("执行失败，请联系管理处理!")
+        this.$message.error("Thực hiện thất bại，Vui lòng liên hệ quản trị viên xử lý!")
         this.flags=false
       })
       })
@@ -685,12 +685,12 @@ export default {
      
       saveInspectionCheckInfo(userHeaderFile).then((res)=>{
           if(res.code===100){
-            this.$message.success("操作成功!")
+            this.$message.success("Thao tác thành công!")
             this.dialogVisible=false
             this.loadData()
           }
       }).catch((error)=>{
-        this.$message.error("执行失败，请联系管理处理!")
+        this.$message.error("Thực hiện thất bại，Vui lòng liên hệ quản trị viên xử lý!")
       })
      }
     },
@@ -699,22 +699,22 @@ export default {
       this.bizFormModel.fileIdFile=""
     },
     handleExceed(file, fileList){
-      // this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${file.length} 个文件，共选择了 ${file.length + fileList.length} 个文件`);
+      // this.$message.warning(`Giới hạn chọn hiện tại 3 tệp，Lần này đã chọn ${file.length} tệp，Đã chọn tổng cộng ${file.length + fileList.length} tệp`);
       this.$message.warning(`当前只支持上传单个文件`);
     },
     hanldeError(err, file, fileList){
     },
     handlePreview(file){
-      // 创建a标签
+      // Tạoa标签
       const link = document.createElement('a');
-      // download属性
+      // downloadThuộc tính
       link.setAttribute('download', file.name);
-      // href链接
+      // hrefLiên kết
       link.setAttribute('href', file.operationManual);
       // 自执行点击事件
       link.click();
     },
-    // 上传文件
+    // Tải tệp lên
     handleLicensePreview(file,fileList) {
       const isLt2M = file.size / 1024 / 1024 < 20;
       if (!isLt2M) {
@@ -724,7 +724,7 @@ export default {
         return false;
       }
        else {
-        // 存储文件，点击确认按钮时统一上传
+        // 存储文件，Tải lên thống nhất khi nhấn nút xác nhận
 
         this.bizFormModel.uploadFile = URL.createObjectURL(file.raw);
         this.bizFormModel.fileIdFile = file.raw;
@@ -751,12 +751,12 @@ export default {
       this.fileIds=[]
       this.inspectionCheckTableData=[]
       this.bizFormModel={
-        fileIdFile:[],   //文件
-        uploadFile:[],  //文件
+        fileIdFile:[],   //Tệp
+        uploadFile:[],  //Tệp
         inspectionCheckInfo:{}
       }
       if(row.type==="0"){
-        // 通过项目是否为打包项目
+        // Qua hạng mục có phải hạng mục đóng gói không
         getInspectionCheckInfoByInspecId(row.id).then((res)=>{
           if(res.code===100){
             this.bizFormModel.inspectionCheckInfo=res.data
@@ -772,20 +772,20 @@ export default {
             }
             
             let sex=row.sex==="gender_0"?"男":"女"
-            this.bizFormModel.inspectionCheckInfo.name=row.patientName+"/"+sex+"/"+row.patient.age+"岁"
+            this.bizFormModel.inspectionCheckInfo.name=row.patientName+"/"+sex+"/"+row.patient.age+"tuổi"
             this.getPhoto(this.bizFormModel.inspectionCheckInfo.fileId)
 
             this.photoId=this.bizFormModel.inspectionCheckInfo.fileId
             this.uploadFiles=this.bizFormModel.inspectionCheckInfo.id
             this.dialogVisible=true
           }else{
-            this.$message.error("后台数据异常，请重试或联系管理员!")
+            this.$message.error("Dữ liệu hệ thống bất thường，Vui lòng thử lại hoặc liên hệ quản trị viên!")
           }
         }).catch((error)=>{
-          this.$message.error("获取检查信息失败，请重试")
+          this.$message.error("Lấy thông tin kiểm tra thất bại，Vui lòng thử lại")
         })
       }else{
-         // 通过项目是否为打包项目
+         // Qua hạng mục có phải hạng mục đóng gói không
         getInspectionCheckInfoByInspecId(row.id).then((res)=>{
           if(res.code===100){
             this.bizFormModel.inspectionCheckInfo=res.data
@@ -801,16 +801,16 @@ export default {
             }
             
             let sex=row.patient.gender==="gender_0"?"男":"女"
-            this.bizFormModel.inspectionCheckInfo.name=row.patientName+"/"+sex+"/"+row.patient.age+"岁"
+            this.bizFormModel.inspectionCheckInfo.name=row.patientName+"/"+sex+"/"+row.patient.age+"tuổi"
             this.getPhoto(this.bizFormModel.inspectionCheckInfo.fileId)
             this.photoId=this.bizFormModel.inspectionCheckInfo.fileId
             this.uploadFiles=this.bizFormModel.inspectionCheckInfo.id
             this.dialogVisible=true
           }else{
-            this.$message.error("后台数据异常，请重试或联系管理员!")
+            this.$message.error("Dữ liệu hệ thống bất thường，Vui lòng thử lại hoặc liên hệ quản trị viên!")
           }
         }).catch((error)=>{
-          this.$message.error("获取检查信息失败，请重试")
+          this.$message.error("Lấy thông tin kiểm tra thất bại，Vui lòng thử lại")
         })
       }
       //this.dialogVisible=true
@@ -894,13 +894,13 @@ export default {
     }
   },
   watch: {
-     // tableData是el-table绑定的数据
+     // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
-          // 解决表格显示错位问题
+          // Khắc phục lỗi hiển thị lệch bảng
           handler () {
               this.$nextTick(() => {
-                  // tableRef是el-table绑定的ref属性值
-                  this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+                  // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+                  this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
               })
           },
           deep: true
@@ -909,8 +909,8 @@ export default {
   updated(){
     if(this.$refs.tableRef){
        this.$nextTick(() => {
-            // tableRef是el-table绑定的ref属性值
-            this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+            // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+            this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
         })
     }
   },

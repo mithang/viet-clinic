@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="selectedSupplierID" filterable placeholder="请选择供应商" clearable>
+  <el-select v-model="selectedSupplierID" filterable placeholder="Vui lòng chọn nhà cung cấp" clearable>
     <el-option v-for="supplierxz in supplierLists" :label="supplierxz.name" :value="supplierxz.id" :key="supplierxz.id">
     </el-option>
   </el-select>
@@ -27,14 +27,14 @@
 
     data() {
       return {
-        supplierLists: [], //不同的供应商
+        supplierLists: [], //Nhà cung cấp khác nhau
         selectedSupplierID: null,
         supplierSearch: {
           params: [{ columnName: "company_id", queryType: "=", value: "" }],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
       };
     },

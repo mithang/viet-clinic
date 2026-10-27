@@ -18,7 +18,7 @@ import java.util.Map;
 
 
 /**
- * 资源服务实现类
+ * tài nguyêndịch vụTriển khaiLớp
  * 
  * @author lys
  * @date 2019/07/26
@@ -30,7 +30,7 @@ public class PermissionService {
     private PermissionDAO permissionDAO;
    
     /**
-     * 得到资源权限，不含禁用的
+     * Lấy quyền tài nguyên, Không bao gồm mục bị vô hiệu hóa
      * @param userId
      * @param routerId
      * @return
@@ -40,7 +40,7 @@ public class PermissionService {
     }
     
 	/**
-	 * 获取用户有权限的路由，不含禁用的
+	 * Lấy tuyến đường mà người dùng có quyền, Không bao gồm mục bị vô hiệu hóa
 	 * @param userId
 	 * @return
 	 */
@@ -49,7 +49,7 @@ public class PermissionService {
     }
 
     /**
-	 * 获取用户有权限的路由，不含禁用的
+	 * Lấy tuyến đường mà người dùng có quyền, Không bao gồm mục bị vô hiệu hóa
 	 * @param roleId
 	 * @return
 	 */
@@ -59,7 +59,7 @@ public class PermissionService {
 
     
 	/**
-	 * 获取用户有权限的资源，不含禁用的
+	 * LấyNgười dùngcóQuyền của tài nguyên, Không bao gồm mục bị vô hiệu hóa
 	 * @param userId
 	 * @return
 	 */
@@ -69,7 +69,7 @@ public class PermissionService {
     
     
     /**
-     * 得到资源权限列表
+     * Lấy quyền tài nguyênDanh sách
      * @param roleId
      * @return
      */
@@ -79,7 +79,7 @@ public class PermissionService {
     
     
     /**
-     * 保存角色权限
+     * LưuVai tròQuyền
      * @param roleId
      * @return
      */
@@ -88,7 +88,7 @@ public class PermissionService {
     	String[] routerIds = permission.getRouterIds();
     	String[] resourceIds = permission.getResourceIds();
     	List<DataPermission> dataPermissions = permission.getDataPermissions();
-        // 先删除后添加
+        // trướcXóasauThêm
         this.permissionDAO.removeRouterByRoleId(roleId);
         this.permissionDAO.removeResourceByRoleId(roleId);
         this.permissionDAO.removeDataPermssionByRoleId(roleId);
@@ -126,7 +126,7 @@ public class PermissionService {
 
     
     /**
-     * 根据角色Id得到数据权限列表
+     * Theo vai tròIdđượcĐếnDữ liệuQuyềnDanh sách
      * @param roleId
      * @return
      */
@@ -137,7 +137,7 @@ public class PermissionService {
     
 	
 	/**
-	 * 根据用户id得到数据权限列表
+	 * Theo người dùngidđượcĐếnDữ liệuQuyềnDanh sách
 	 * @param userId
 	 * @return
 	 */

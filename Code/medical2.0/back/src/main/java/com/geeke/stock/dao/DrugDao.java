@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 药品信息DAO接口
+ * Thông tin thuốcDAOGiao diện
  * @author txl
  * @version 2022-06-07
  */

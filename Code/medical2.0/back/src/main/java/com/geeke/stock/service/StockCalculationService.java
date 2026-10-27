@@ -8,17 +8,17 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
- * 库存计算工具服务
- * 提供通用的库存计算逻辑，消除DrugService和StuffService中的重复代码
+ * Tồn khoTínhcông việccụ thểdịch vụ
+ * cung cấpChung của Tồn khoTínhlogic, Xóa bỏDrugService và StuffServiceTrongtrùng lặpmã
  */
 @Service
 public class StockCalculationService {
 
     /**
-     * 计算并设置实体的库存数量
-     * 库存 = 入库总量 - 已使用库存 - 报损库存
+     * TínhvàĐặtthực thể của Số lượng tồn kho
+     * Tồn kho = Tổng lượng nhập kho - Đãsử dụngTồn kho - báo损Tồn kho
      *
-     * @param entity 药品或材料实体
+     * @param entity Thuốc hoặc Vật tưthực thể
      */
     public void calculateAndSetInventory(StockEntity entity) {
         if (entity == null || entity.getStock() == null || entity.getStock().getStorageStock() == null) {
@@ -35,8 +35,8 @@ public class StockCalculationService {
     }
 
     /**
-     * 库存实体接口
-     * Drug和Stuff都需要实现此接口
+     * Tồn khothực thểgiao diện
+     * Drug và StuffđềuCầnTriển khainàygiao diện
      */
     public interface StockEntity {
         StockInfo getStock();
@@ -44,7 +44,7 @@ public class StockCalculationService {
     }
 
     /**
-     * 库存信息接口
+     * Tồn khoThông tingiao diện
      */
     public interface StockInfo {
         BigDecimal getStorageStock();

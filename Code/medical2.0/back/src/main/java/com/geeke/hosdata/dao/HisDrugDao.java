@@ -14,7 +14,7 @@ public interface HisDrugDao extends CrudDao<HisDrugs> {
 
    List<DistDto> getDist(String distTypeId);
 
-   //已同步的唯一药品编码
+   //Đãđồng bộ của duy nhấtMã thuốc
    List<String> getDrugCode(String companyId);
 
 

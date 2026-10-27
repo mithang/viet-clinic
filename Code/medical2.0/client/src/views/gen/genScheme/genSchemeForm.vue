@@ -3,20 +3,20 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
     <el-form :model='bizFormModel' :rules='formRules'
       ref='genSchemeForm' label-width='120px' label-position='right' class='edit-form'>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='名称' prop='name'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='200' :placeholder='dialogProps.action === "view"? "" : "请输入名称"' autofocus></el-input>
+          <el-form-item label='Tên' prop='name'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='200' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên"' autofocus></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='模板分类' prop='category.value'>
+          <el-form-item label='Phân loại mẫu' prop='category.value'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.category.name'></el-input>
-            <el-select v-else v-model='bizFormModel.category' value-key='value' filterable clearable placeholder='请选择模板分类'
+            <el-select v-else v-model='bizFormModel.category' value-key='value' filterable clearable placeholder='Vui lòng chọn phân loại mẫu'
               @clear='bizFormModel.category={
                 "value": null,
                                 "name": null,
@@ -28,48 +28,48 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='包路径' prop='packageName'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.packageName' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "请输入包路径"' ></el-input>
+          <el-form-item label='Đường dẫn gói' prop='packageName'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.packageName' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập đường dẫn gói"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='模块名' prop='moduleName'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.moduleName' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "请输入模块名"' ></el-input>
+          <el-form-item label='Tên mô-đun' prop='moduleName'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.moduleName' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên mô-đun"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='子模块名' prop='subModuleName'>
+          <el-form-item label='Tên mô-đun con' prop='subModuleName'>
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.subModuleName' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "请输入子模块名"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='功能名' prop='functionName'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.functionName' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "请输入功能名"' ></el-input>
+          <el-form-item label='Tên chức năng' prop='functionName'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.functionName' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên chức năng"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='功能名简写' prop='functionNameSimple'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.functionNameSimple' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入功能名简写"' ></el-input>
+          <el-form-item label='Tên viết tắt chức năng' prop='functionNameSimple'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.functionNameSimple' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên viết tắt chức năng"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='作者' prop='functionAuthor'>
+          <el-form-item label='Tác giả' prop='functionAuthor'>
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.functionAuthor' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入作者"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='编辑宽度' prop='dialogWidth'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.dialogWidth' :maxlength='20' :placeholder='dialogProps.action === "view"? "" : "请输入编辑宽度"' ></el-input>
+          <el-form-item label='Độ rộng chỉnh sửa' prop='dialogWidth'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.dialogWidth' :maxlength='20' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập độ rộng chỉnh sửa"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='编辑列数' prop='colCounts'>
+          <el-form-item label='Số cột chỉnh sửa' prop='colCounts'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.colCounts'></el-input>
             <el-input-number v-else v-model='bizFormModel.colCounts' controls-position='right'></el-input-number>
           </el-form-item>
@@ -77,9 +77,9 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='业务表' prop='genTable.id'>
+          <el-form-item label='Bảng nghiệp vụ' prop='genTable.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.genTable.name'></el-input>
-            <el-select v-else v-model='bizFormModel.genTable' value-key='id' filterable clearable placeholder='请选择业务表'
+            <el-select v-else v-model='bizFormModel.genTable' value-key='id' filterable clearable placeholder='Vui lòng chọn bảng nghiệp vụ'
               @clear='bizFormModel.genTable={
                 "id": null,
                                 "name": null,
@@ -91,23 +91,23 @@
               </el-row>
       <el-row>
         <el-col>
-          <el-form-item label='备注信息' prop='remarks'>
+          <el-form-item label='Thông tin ghi chú' prop='remarks'>
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea' 
-             :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入备注信息"' ></el-input>
+             :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <span slot='footer' class='dialog-footer'>
       <el-dropdown v-if='dialogProps.action !== "view"' split-button type='warning' @click='generate("genSchemeForm", false)'>
-        生成代码
+        Tạo mã
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item><el-button  type='text' :plain='true' @click='generate("genSchemeForm", true)'>覆盖文件</el-button></el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("genSchemeForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("genSchemeForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -129,8 +129,8 @@ export default {
   data() {
     return {
       bizFormModel: this.initFormModel(),
-          category_List: [],  // 模板分类
-          genTable_List: [],  // 业务表
+          category_List: [],  // Phân loại mẫu
+          genTable_List: [],  // Bảng nghiệp vụ
           flag:false,
        dialogProps: {
         visible: false,
@@ -140,37 +140,37 @@ export default {
       },
       formRules: {
         'name': [
-            { required: true, message: '请输入名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên', trigger: 'blur' }
         ],
         'category.value': [
-            { required: true, message: '请选择模板分类', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn phân loại mẫu', trigger: 'change' }
         ],
         'packageName': [
-            { required: true, message: '请输入包路径', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập đường dẫn gói', trigger: 'blur' }
         ],
         'moduleName': [
-            { required: true, message: '请输入模块名', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên mô-đun', trigger: 'blur' }
         ],
         'functionName': [
-            { required: true, message: '请输入功能名', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên chức năng', trigger: 'blur' }
         ],
         'functionNameSimple': [
-            { required: true, message: '请输入功能名简写', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên viết tắt chức năng', trigger: 'blur' }
         ],
         'dialogWidth': [
-            { required: true, message: '请输入编辑宽度', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập độ rộng chỉnh sửa', trigger: 'blur' }
         ],
         'colCounts': [
             { required: true, message: '请选择编辑列数', trigger: 'blur' }
         ],
         'genTable.id': [
-            { required: true, message: '请选择业务表', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn bảng nghiệp vụ', trigger: 'change' }
         ],
       }
     }
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -205,7 +205,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改代码方案'
+      this.dialogProps.title = 'Sửa phương án mã'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -218,24 +218,24 @@ export default {
     },
     initFormModel(This) {
       return {
-        'name': '',   // 名称
-        'category': {     // 模板分类
+        'name': '',   // Tên
+        'category': {     // Phân loại mẫu
           'value': null,
           'name': null,
         },
-        'packageName': '',   // 包路径
-        'moduleName': '',   // 模块名
-        'subModuleName': '',   // 子模块名
-        'functionName': '',   // 功能名
-        'functionNameSimple': '',   // 功能名简写
-        'functionAuthor': '',   // 作者
-        'dialogWidth': '',   // 编辑宽度
-        'colCounts': 0,    // 编辑列数
-        'genTable': {     // 业务表
+        'packageName': '',   // Đường dẫn gói
+        'moduleName': '',   // Tên mô-đun
+        'subModuleName': '',   // Tên mô-đun con
+        'functionName': '',   // Tên chức năng
+        'functionNameSimple': '',   // Tên viết tắt chức năng
+        'functionAuthor': '',   // Tác giả
+        'dialogWidth': '',   // Độ rộng chỉnh sửa
+        'colCounts': 0,    // Số cột chỉnh sửa
+        'genTable': {     // Bảng nghiệp vụ
           'id': null,
           'name': null,
         },
-        'remarks': '',   // 备注信息
+        'remarks': '',   // Thông tin ghi chú
 
       }
     },
@@ -246,9 +246,9 @@ export default {
       let genTable_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         genTable_search.params.push.apply(genTable_search.params, [])
-      // 数据权限: 业务表gen_table
+      // Quyền dữ liệu: Bảng nghiệp vụgen_table
       this.pushDataPermissions(genTable_search.params, this.$route.meta.routerId, '4001')
       this.genTable_List.splice(0, this.genTable_List.length)
       listGenTableAll(genTable_search).then(responseData => {
@@ -289,21 +289,21 @@ export default {
     },
     openEditGenSchemeDialog(genScheme) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改代码方案'
+      this.dialogProps.title = 'Sửa phương án mã'
       this.bizFormModel = genScheme
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
     },
     openAddGenSchemeDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加代码方案'
+      this.dialogProps.title = 'Thêm phương án mã'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
     },
     openCopyGenSchemeDialog(genScheme) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加代码方案'
+      this.dialogProps.title = 'Thêm phương án mã'
       this.bizFormModel = genScheme
       this.initOptions(this.bizFormModel)
       this.bizFormModel.id = null

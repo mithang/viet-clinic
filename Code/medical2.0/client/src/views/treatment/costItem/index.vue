@@ -1,15 +1,15 @@
 <template>
   <el-row v-loading="loading">
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject="curentRow"></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <costItem-form
       ref="costItemForm"
       :permission="permission"
       v-on:save-finished="loadData"
     ></costItem-form>
     <el-card class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class="query-form-container">
         <el-row v-if="!moreCodition" class="search-row">
           <el-form
@@ -21,22 +21,22 @@
             :inline-message="true"
           >
             <el-col :span="6">
-              <el-form-item label="项目名称" prop="itemName">
+              <el-form-item label="Tên hạng mục" prop="itemName">
                 <el-input
                   v-model="queryModel.itemName"
                   :clearable="true"
-                  placeholder="请输入项目名称"
+                  placeholder="Vui lòng nhập tên hạng mục"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="项目类别" prop="itemType">
+              <el-form-item label="Loại hạng mục" prop="itemType">
                 <el-select
                   v-model="queryModel.itemType"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择项目类别"
+                  placeholder="Vui lòng chọn loại hạng mục"
                 >
                   <el-option
                     v-for="itemType in itemType_List"
@@ -49,7 +49,7 @@
             </el-col>
             <!-- <el-col :span="6">
               {{ queryModel.isUse1 }}
-              <el-form-item label="启用状态" prop="isUse">
+              <el-form-item label="Trạng thái kích hoạt" prop="isUse">
                 <el-switch
                   v-model="queryModel.isUse"
                   active-color="#13ce66"
@@ -60,8 +60,8 @@
               </el-form-item>
             </el-col> -->
             <el-col :span="5">
-              <el-form-item label='启用状态' prop='isUse'>
-                  <el-select v-model="queryModel.isUse" placeholder="请选择是否启用">
+              <el-form-item label='Trạng thái kích hoạt' prop='isUse'>
+                  <el-select v-model="queryModel.isUse" placeholder="Vui lòng chọn có kích hoạt không">
                     <el-option
                       v-for="item in isUse"
                       :key="item.value"
@@ -77,13 +77,13 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
             </el-col>
             <el-col :span="4" style="text-align:right;padding-right:5px">
               <el-button-group>
@@ -92,7 +92,7 @@
                     type="primary"
                     icon="el-icon-plus"                   
                     @click="onCreateCostItem()"
-                    >添加</el-button
+                    >Thêm</el-button
                   >
               </el-button-group>
             </el-col>
@@ -108,13 +108,13 @@
           @moreCodition="onMoreCodition()"
         ></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 工具栏 开始 -->
+      <!-- Thanh công cụ Bắt đầu -->
       
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -131,7 +131,7 @@
               ref="tableRef" 
             >
             <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -173,15 +173,15 @@
                   }}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
+              <!--Nút thao tác theo dòng-->
               <el-table-column
-                label="操作"
+                label="Thao tác"
                 header-align="center"
                 :width="130 + 'px'"
                 :key="'operate'"
               >
                 <template slot="header" slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select
                     v-model="columnViews"
                     v-on:save-column-view="saveColumn"
@@ -200,7 +200,7 @@
                   <OperationIcon
                     v-show="permission.view"
                     type="info"
-                    content="查看"
+                    content="Xem"
                     placement="top-start"
                     icon-name="el-icon-view"
                     @click="onViewEntity(scope.$index, scope.row, 'costItemForm')"
@@ -208,7 +208,7 @@
                   <OperationIcon
                     v-show="permission.edit"
                     type="primary"
-                    content="编辑"
+                    content="Sửa"
                     placement="top-start"
                     icon-name="el-icon-edit"
                     @click="onEditCostItem(scope.$index, scope.row)"
@@ -216,7 +216,7 @@
                   <OperationIcon
                     v-show="permission.add"
                     type="primary"
-                    content="复制"
+                    content="Sao chép"
                     placement="top-start"
                     icon-name="el-icon-document"
                     @click="onCopyCostItem(scope.$index, scope.row)"
@@ -224,7 +224,7 @@
                   <!-- <OperationIcon
                     v-show="permission.remove"
                     type="danger"
-                    content="删除"
+                    content="Xóa"
                     placement="top-start"
                     icon-name="el-icon-delete"
                     @click="onDeleteEntity(scope.$index, scope.row, deleteApi)"
@@ -232,7 +232,7 @@
                   <OperationIcon
                     v-show="permission.view"
                     type="info"
-                    content="历史记录"
+                    content="Lịch sử"
                     placement="top-start"
                     icon-name="el-icon-info"
                     @click="onShowHistory(scope.$index, scope.row)"
@@ -243,8 +243,8 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <el-pagination
@@ -260,7 +260,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </el-card>
   </el-row>
 </template>
@@ -307,55 +307,55 @@ export default {
       costItemDTO:{
         response:{},
         res:{}
-      },//修改操作对象封装
+      },//Sửa đóng gói đối tượng thao tác
       queryTypes: {
         item_name: "like",
         item_type: "=",
         is_use: "=",
       },
       queryModel: {
-        itemName: "", // 项目名称
+        itemName: "", // Tên hạng mục
         itemType: {
-          // 项目类别
+          // Loại hạng mục
           value: "",
           name: "",
         },
-        isUse: "", // 状态
+        isUse: "", // Trạng thái
       },
-      tableHeight: "",//表格高度
+      tableHeight: "",//Chiều cao bảng
        isUse:[
             {
               value: '0',
-              label: '否'
+              label: 'Không'
             }, 
             {
               value: '1',
-              label: '是'
+              label: 'Có'
             },
-          ],//是否启用
-      subproject:[],//子项目封装
+          ],//Có kích hoạt không
+      subproject:[],//Đóng gói hạng mục con
       costltemSearch: {
         params: [{ columnName: "company_id", queryType: "=", value: "" }],
         offset: 0,
         limit: 100,
-        columnName: "", // 排序字段名
-        order: "", // 排序
+        columnName: "", // Tên trường sắp xếp
+        order: "", // Sắp xếp
       },
       costItemTotal: 0,
       costItemList: [],
 
-      itemType_List: [], // 项目类别
+      itemType_List: [], // Loại hạng mục
 
-      oprColumnWidth: 140, // 操作列宽
+      oprColumnWidth: 140, // Độ rộng cột thao tác
       tableId: "998465736089977637",
       schemeId: "998465736089977654",
     };
   },
   methods: {
 
-     //计算table高度(动态设置table高度)
+     //Tính toántablechiều cao(Đặt độngtablechiều cao)
     getTableHeight() {
-      let tableH = 240; //距离页面下方的高度
+      let tableH = 240; //Chiều cao cách phía dưới trang
       let tableHeightDetil = window.innerHeight - tableH;
       if (tableHeightDetil <= 300) {
         this.tableHeight = 300;
@@ -515,13 +515,13 @@ export default {
     },
   },
   watch: {
-    // tableData是el-table绑定的数据
+    // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
-          // 解决表格显示错位问题
+          // Khắc phục lỗi hiển thị lệch bảng
           handler () {
               this.$nextTick(() => {
-                  // tableRef是el-table绑定的ref属性值
-                  this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+                  // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+                  this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
               })
           },
           deep: true
@@ -530,14 +530,14 @@ export default {
   updated(){
     if(this.$refs.tableRef){
       this.$nextTick(() => {
-          // tableRef是el-table绑定的ref属性值
-          this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+          // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+          this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
       })
     }
   },
   mounted() {
     this.pageInit();
-     //挂载window.onresize事件(动态设置table高度)
+     //Gắn kếtwindow.onresizesự kiện(Đặt độngtablechiều cao)
     this._resizeHandler = () => {
       if (this.resizeFlag) {
         clearTimeout(this.resizeFlag);
@@ -566,18 +566,18 @@ export default {
  }
   
   .drag_table {
- // 设置表格header的高度
+ // Cài đặt bảngheaderChiều cao của
  ::v-deep th {
    height: 44px;
  }
 ::v-deep th.gutter:last-of-type {
   height: 0 !important;
 }
- // 设置表格body的高度
+ // Cài đặt bảngbodyChiều cao của
  ::v-deep.el-table__body-wrapper {
-  //解决数据展示超出body高度不滚动bug
+  //Khắc phục hiển thị dữ liệu vượt quábodychiều cao không cuộn đượcbug
   overflow-y: auto;
-   // 减去的是表格header的高度
+   // Phần trừ đi là bảngheaderChiều cao của
    height: calc(100% - 44px) !important;
  }
 

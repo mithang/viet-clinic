@@ -3,35 +3,35 @@ package com.geeke.outpatient.vo;
 import java.io.Serializable;
 
 /**
- * 处方审查统计表-处方统计
+ * Đơn thuốcxem xétthống kêbảng-Đơn thuốcthống kê
  */
 public class PrescriptionStatisticsVO implements Serializable {
     /**
-     * 处方总数
+     * Đơn thuốctổng số
      */
     private String total;
     /**
-     * 已发药数
+     * Đãphát thuốcsố
      */
     private String dispensedMedicine;
     /**
-     * 未发药数
+     * Chưaphát thuốcsố
      */
     private String undispensedMedicine;
     /**
-     * 已点评数
+     * Đãđánh giásố
      */
     private String alreadyReviewed;
     /**
-     * 合格数
+     * đạt chuẩnsố
      */
     private String good;
     /**
-     * 不合格数
+     * khôngđạt chuẩnsố
      */
     private String bad;
     /**
-     * 合格率
+     * đạt chuẩntỷ lệ
      */
     private String rate;
 

@@ -12,7 +12,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -31,7 +31,7 @@
       <div class="tab-item" v-show="tabIndex === '1'">
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="诊所" prop="company.id">
+            <el-form-item label="Phòng khám" prop="company.id">
              <el-input
                 v-if="isCompanyShow"
                 :disabled="true"
@@ -48,7 +48,7 @@
                 value-key="id"
                 filterable
                 clearable
-                placeholder="请选择所属诊所"
+                placeholder="Vui lòng chọn phòng khám trực thuộc"
 
               >
                 <el-option
@@ -63,13 +63,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室编号" prop="code">
+            <el-form-item label="Mã khoa/phòng" prop="code">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.code"
                 :maxlength="64"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入科室编号'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã khoa/phòng'
                 "
               ></el-input>
             </el-form-item>
@@ -77,13 +77,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室名称" prop="name">
+            <el-form-item label="Tên khoa/phòng" prop="name">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.name"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入科室名称'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên khoa/phòng'
                 "
               ></el-input>
             </el-form-item>
@@ -91,7 +91,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室大类" prop="category">
+            <el-form-item label="Nhóm lớn khoa/phòng" prop="category">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.category"
@@ -105,19 +105,19 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="地址" prop="address">
+            <el-form-item label="Địa chỉ" prop="address">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.address"
                 :maxlength="255"
-                :placeholder="dialogProps.action === 'view' ? '' : '请输入地址'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập địa chỉ'"
               ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="是否为登记科室" prop="isRegister">
+            <el-form-item label="Có phải khoa/phòng đăng ký không" prop="isRegister">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isRegister"
@@ -131,7 +131,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="默认登记科室" prop="isDefault">
+            <el-form-item label="Khoa/phòng đăng ký mặc định" prop="isDefault">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isDefault"
@@ -145,7 +145,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="是否启用" prop="isLocked">
+            <el-form-item label="Có kích hoạt không" prop="isLocked">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isLocked"
@@ -166,19 +166,19 @@
         :disabled="flag"
         :plain="true"
         @click="onSubmit('clinicOfficeForm')"
-        >保 存</el-button
+        >Lưu</el-button
       >
       <el-button
         v-if="dialogProps.action !== 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >取 消</el-button
+        >Hủy</el-button
       >
       <el-button
         v-if="dialogProps.action === 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >关 闭</el-button
+        >Đóng</el-button
       >
     </span>
   </el-dialog>
@@ -202,7 +202,7 @@ export default {
       isCompanyShow: false,
       bizFormModel: this.initFormModel(),
       tabIndex: "1",
-      company_List: [], // 所属诊所
+      company_List: [], // Phòng khám trực thuộc
        flag:false,
       dialogProps: {
         visible: false,
@@ -212,15 +212,15 @@ export default {
       },
       formRules: {
         "company.id": [
-          // { required: true, message: "请选择所属诊所", trigger: "change" },
+          // { required: true, message: "Vui lòng chọn phòng khám trực thuộc", trigger: "change" },
         ],
-        code: [{ required: true, message: "请输入科室编号", trigger: "blur" }],
-        name: [{ required: true, message: "请输入科室名称", trigger: "blur" }],
+        code: [{ required: true, message: "Vui lòng nhập mã khoa/phòng", trigger: "blur" }],
+        name: [{ required: true, message: "Vui lòng nhập tên khoa/phòng", trigger: "blur" }],
       },
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object,
     },
@@ -267,7 +267,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改科室";
+      this.dialogProps.title = "Sửa khoa/phòng";
       this.initOptions(this.bizFormModel);
     },
     onDialogClose() {
@@ -281,28 +281,28 @@ export default {
     initFormModel(This) {
       return {
         company: {
-          // 上级节点 所属诊所
+          // Nút cấp trên Phòng khám trực thuộc
           id: validatenull(This) || validatenull(This.id) ? null : This.id,
           name:
             validatenull(This) || validatenull(This.name) ? null : This.name,
         },
-        code: "", // 科室编号
-        isLocked: "0", // 禁用（0：未禁用；1：禁用）
-        name: "", // 科室名称
-        sort: "0", // 排序
-        category: "", // 科室大类
-        address: "", // 地址
+        code: "", // Mã khoa/phòng
+        isLocked: "0", // Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        name: "", // Tên khoa/phòng
+        sort: "0", // Sắp xếp
+        category: "", // Nhóm lớn khoa/phòng
+        address: "", // Địa chỉ
       };
     },
     initOptions(This) {
       let company_search = {
         params: [],
       };
-      // 表有禁用字段
+      // Bảng có trường bị vô hiệu hóa
       company_search.params.push.apply(company_search.params, [
         { columnName: "is_locked", queryType: "=", value: "0" },
       ]);
-      // 数据权限: 科室clinic_office
+      // Quyền dữ liệu: Khoaclinic_office
       this.pushDataPermissions(
         company_search.params,
         this.$route.meta.routerId,
@@ -315,7 +315,7 @@ export default {
     },
     openViewClinicOfficeDialog(clinicOffice) {
       this.dialogProps.action = "view";
-      this.dialogProps.title = "查看科室";
+      this.dialogProps.title = "Xem khoa/phòng";
       this.bizFormModel = { ...this.initFormModel(), ...clinicOffice };
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
@@ -323,7 +323,7 @@ export default {
     },
     openEditClinicOfficeDialog(clinicOffice) {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改科室";
+      this.dialogProps.title = "Sửa khoa/phòng";
       this.bizFormModel = { ...this.initFormModel(), ...clinicOffice };
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
@@ -331,7 +331,7 @@ export default {
     },
     openAddClinicOfficeDialog() {
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加科室";
+      this.dialogProps.title = "Thêm khoa/phòng";
       this.bizFormModel = this.initFormModel();
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
@@ -339,7 +339,7 @@ export default {
     },
     openCopyClinicOfficeDialog(clinicOffice) {
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加科室";
+      this.dialogProps.title = "Thêm khoa/phòng";
       this.bizFormModel = { ...this.initFormModel(), ...clinicOffice };
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";

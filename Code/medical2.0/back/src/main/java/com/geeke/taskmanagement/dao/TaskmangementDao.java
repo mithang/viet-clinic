@@ -8,15 +8,15 @@ import java.util.List;
 @Mapper
 public interface TaskmangementDao {
     /*
-    新增任务
+    Thêm tác vụ mới
      */
     int insertask(taskmanagement taskmanagement);
     /*
-    获取任务条数
+    Lấytác vụsố dòng
      */
     List<taskmanagement> selecttasktotal(gettaskrcvo rcvo);
     /*
-    根据分页获取数据
+    Theo phúttrangLấyDữ liệu
      */
     List<taskmanagement> selecttasklist(gettaskrcvo rcvo);
 

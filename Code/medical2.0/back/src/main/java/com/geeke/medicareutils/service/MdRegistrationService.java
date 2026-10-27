@@ -7,17 +7,17 @@ import com.geeke.outpatient.entity.Registration;
 import java.time.LocalDateTime;
 
 /**
- * 医保挂号、就诊、诊断、结算
+ * Đăng ký khám BHYT, Khám bệnh, Chẩn đoán, Quyết toán
  */
 public interface MdRegistrationService {
     /**
-     * 门诊医保挂号
+     * ngoại trúĐăng ký khám BHYT
      * @return
      */
     String  getRegistrationInfo_2201(Registration registration);
 
     /**
-     * 门诊挂号取消
+     * ngoại trúĐăng ký khámlấyhủy
      * @param registration
      * @return
      */
@@ -25,7 +25,7 @@ public interface MdRegistrationService {
 
 
     /**
-     * 门诊就诊信息上传
+     * Tải lên thông tin khám ngoại trú
      * @param registration
      * @return
      */
@@ -33,7 +33,7 @@ public interface MdRegistrationService {
 
 
     /**
-     * 门诊就诊信息上传 2203A
+     * Tải lên thông tin khám ngoại trú 2203A
      *
      * @param registration
      * @return
@@ -42,7 +42,7 @@ public interface MdRegistrationService {
 
 
     /**
-     * 门诊费用明细信息上传 2204
+     * ngoại trúChi phíChi tiếtThông tinTải lên 2204
      *
      * @param
      * @return
@@ -50,7 +50,7 @@ public interface MdRegistrationService {
     String upRegistrationMoneyInfo_2204(JSONArray jsonArray);
 
     /**
-     * 门诊费用明细撤销明细 2205
+     * ngoại trúChi phíChi tiếthủyChi tiết 2205
      *
      * @param
      * @return
@@ -60,28 +60,28 @@ public interface MdRegistrationService {
 
 
     /**
-     * 门诊预结算 2206
+     * ngoại trútrướcQuyết toán 2206
      *
-     * @param registration 挂号信息
-     * @param mdFeeDetail  收费信息
+     * @param registration Thông tin đăng ký khám
+     * @param mdFeeDetail  Thu phíThông tin
      * @return
      */
     String processOutpatientPreSettlement_2206(Registration registration, MdFeeDetail mdFeeDetail, String chrgBchno, String acctUsedFlag);
 
 
     /**
-     * 门诊结算 2207
+     * Quyết toán ngoại trú 2207
      *
-     * @param registration 挂号信息
-     * @param mdFeeDetail  费用明细输出
-     * @param chrgBchno    收费批次号
-     * @param acctUsedFlag 是否自费
+     * @param registration Thông tin đăng ký khám
+     * @param mdFeeDetail  Chi phíChi tiếtXuất
+     * @param chrgBchno    Thu phíSố lô
+     * @param acctUsedFlag Có hay khôngtựphí
      * @return
      */
     String executeOutpatientPreSettlement_2207(Registration registration, MdFeeDetail mdFeeDetail, String chrgBchno, String acctUsedFlag);
 
     /**
-     * 门诊结算撤销  2208
+     * Hủy quyết toán ngoại trú  2208
      *
      * @param setlId
      * @param psnNo
@@ -92,7 +92,7 @@ public interface MdRegistrationService {
 
 
     /**
-     * 就诊信息查询
+     * khám bệnhThông tinTruy vấn
      *
      * @param registration
      * @param begntime
@@ -102,7 +102,7 @@ public interface MdRegistrationService {
     String getPsnVisitData_5201(Registration registration, LocalDateTime begntime, LocalDateTime endtime);
 
     /**
-     * 诊断信息查询
+     * Thông tin chẩn đoánTruy vấn
      *
      * @param registration
      * @return
@@ -110,14 +110,14 @@ public interface MdRegistrationService {
     String getPsnDiseData_5202(Registration registration);
 
     /**
-     * 结算信息查询
+     * Quyết toánThông tinTruy vấn
      *
      * @return
      */
     String getSettlementInfo_5203(String psnNo, String setlId, String mdtrtId);
 
     /**
-     * 费用明细查询
+     * Chi phíChi tiếtTruy vấn
      *
      * @param psnNo
      * @param setlId
@@ -127,15 +127,15 @@ public interface MdRegistrationService {
     String getExpenseDetails_5204(String psnNo, String setlId, String mdtrtId);
 
     /**
-     * 门急诊诊疗记录
+     * Khám chữa bệnh ngoại trú và cấp cứuBản ghi
      *
-     * @param registration 挂号信息
+     * @param registration Thông tin đăng ký khám
      * @return
      */
     String getEmergencyOutpatientRecords_4301(Registration registration);
 
     /**
-     * 明细审核事前分析服务
+     * Chi tiếtxét duyệtviệctrước phútdịch vụ phân tích
      *
      * @param registration
      * @return
@@ -143,7 +143,7 @@ public interface MdRegistrationService {
     String analyzeDetailReviewPreCheck_3301(Registration registration);
 
     /**
-     * 明细审核事中分析服务
+     * Chi tiếtxét duyệtviệc trong  phútdịch vụ phân tích
      *
      * @param registration 3102
      * @return
@@ -152,14 +152,14 @@ public interface MdRegistrationService {
 
 
     /**
-     * 医药机构费用结算对总账
+     * y dượcCơ sởChi phíQuyết toánđối vớitổngsổ sách
      *
      * @return
      */
     String matchPharmacyCostsWithGeneralLedger_3201();
 
     /**
-     * 医药机构费用结算对明细账
+     * Bảng chi tiết đối soát quyết toán chi phí của cơ sở y tế
      *
      * @return
      */

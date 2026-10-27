@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 /**
- * 资源服务实现类
+ * tài nguyêndịch vụTriển khaiLớp
  *
  * @author lys
  * @date 2019/07/26
@@ -30,7 +30,7 @@ public class ClinicPermissionService {
     private PermissionDAO permissionDAO;
 
     /**
-     * 保存版本的角色权限
+     * Lưuphiên bản của Vai tròQuyền
      * @param roleId
      * @return
      */
@@ -38,7 +38,7 @@ public class ClinicPermissionService {
     public int savePermission(String roleId, Permission permission) {
         int rows = saveAllPermission(roleId, permission);
 
-        //查询子类角色并更新权限
+        //Truy vấnconLớpVai tròvàCập nhậtQuyền
         List<String> ids = clinicPermissionDAO.queryChildNodesByPid(roleId);
         ids.stream().forEach(id -> saveAllPermission(id,permission));
         return rows;
@@ -48,7 +48,7 @@ public class ClinicPermissionService {
         String[] routerIds = permission.getRouterIds();
         String[] resourceIds = permission.getResourceIds();
         List<DataPermission> dataPermissions = permission.getDataPermissions();
-        // 先删除后添加
+        // trướcXóasauThêm
         this.permissionDAO.removeRouterByRoleId(roleId);
         this.permissionDAO.removeResourceByRoleId(roleId);
         this.permissionDAO.removeDataPermssionByRoleId(roleId);

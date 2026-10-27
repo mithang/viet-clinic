@@ -7,93 +7,93 @@ import java.util.Date;
 
 @Data
 public class Blmb  {
-    /** 模板编码 */
+    /** Mã mẫu */
     private String mbbm ;
-    /** 租户号 */
+    /** Mã tenant */
     private String companyId ;
-    /** 删除标记;（0：正常；1：删除） */
+    /** Cờ xóa;(0: Bình thường; 1: Xóa) */
     private String delFlag ;
-    /** 创建人 */
+    /** Người tạo */
     private String createdBy ;
-    /** 创建时间 */
+    /** Thời gian tạo */
     private Date createdTime ;
-    /** 更新人 */
+    /** Người cập nhật */
     private String updatedBy ;
-    /** 更新时间 */
+    /** Thời gian cập nhật */
     private Date updatedTime ;
-    /** 模板名称 */
+    /** Tên mẫu */
     private String mbmc ;
-    /** 模板类型;(0：通用，1：个人) */
+    /** Loại mẫu;(0: Chung, 1: Cá nhân) */
     private String mblx ;
-    /** 病历类型;(0：西医病历，1：中医病历) */
+    /** Loại bệnh án;(0: Bệnh án Tây y, 1: Bệnh án Đông y) */
     private String bllx ;
-    /** 主诉 */
+    /** Lý do khám chính */
     private String zs ;
-    /** 个人史 */
+    /** Tiền sử cá nhân */
     private String grs ;
-    /** 过敏史 */
+    /** Tiền sử dị ứng */
     private String gms ;
-    /** 疾病史 */
+    /** Tiền sử bệnh */
     private String jbs ;
-    /** 传染病史 */
+    /** Tiền sử bệnh truyền nhiễm */
     private String crbs ;
-    /** 手术史 */
+    /** Tiền sử phẫu thuật */
     private String sss ;
-    /** 输血史 */
+    /** Tiền sử truyền máu */
     private String sxs ;
-    /** 体格检查 */
+    /** Khám thực thể */
     private String tgjc ;
-    /** 急诊诊断 */
+    /** Chẩn đoán cấp cứu */
     private String jzzd ;
-    /** 急诊效果 */
+    /** Hiệu quả cấp cứu */
     private String jzxg ;
-    /** 家族史 */
+    /** Tiền sử gia đình */
     private String jzs ;
-    /** 月经史 */
+    /** Tiền sử kinh nguyệt */
     private String yjz ;
-    /** 婚育史 */
+    /** Tiền sử hôn nhân và sinh đẻ */
     private String hys ;
-    /** 辅助检查 */
+    /** Kiểm tra hỗ trợ */
     private String fzjc ;
-    /** 现病史 */
+    /** Bệnh sử hiện tại */
     private String xbs ;
-    /** 既往史 */
+    /** Tiền sử */
     private String jws ;
-    /** 其他检查 */
+    /** Kiểm tra khác */
     private String qtjc ;
-    /** 处理情况 */
+    /** Tình hình xử lý */
     private String clqk ;
-    /** 流行病学史 */
+    /** Tiền sử dịch tễ */
     private String lxbxs ;
-    /** 个体化健康教育 */
+    /** Giáo dục sức khỏe cá thể hóa */
     private String gthjkjy ;
     /**
-     * 创建人ID
+     * Người tạoID
      */
     private  String createdID;
     private  String cjr;
     /**
-     * 体温
+     * Nhiệt độ cơ thể
      */
     private String temperature;
     /**
-     * 脉搏
+     * mạch
      */
     private String pulse;
     /**
-     * 呼吸
+     * hô hấp
      */
     private String breathe;
     /**
-     * 血压
+     * Huyết áp
      */
     private String bloodPressure;
     /**
-     * 西医诊断
+     * Chẩn đoán tây y
      */
     private String westernDiagnose;
     /**
-     * 中医诊断
+     * Chẩn đoán đông y
      */
     private String chinaDiagnose;
 
@@ -153,251 +153,251 @@ public class Blmb  {
         this.chinaDiagnose = chinaDiagnose;
     }
 
-    /** 模板编码 */
+    /** Mã mẫu */
     public String getMbbm(){
         return this.mbbm;
     }
-    /** 模板编码 */
+    /** Mã mẫu */
     public void setMbbm(String mbbm){
         this.mbbm=mbbm;
     }
-    /** 租户号 */
+    /** Mã tenant */
     public String getCompanyId(){
         return this.companyId;
     }
-    /** 租户号 */
+    /** Mã tenant */
     public void setCompanyId(String companyId){
         this.companyId=companyId;
     }
-    /** 删除标记;（0：正常；1：删除） */
+    /** Cờ xóa;(0: Bình thường; 1: Xóa) */
     public String getDelFlag(){
         return this.delFlag;
     }
-    /** 删除标记;（0：正常；1：删除） */
+    /** Cờ xóa;(0: Bình thường; 1: Xóa) */
     public void setDelFlag(String delFlag){
         this.delFlag=delFlag;
     }
-    /** 创建人 */
+    /** Người tạo */
     public String getCreatedBy(){
         return this.createdBy;
     }
-    /** 创建人 */
+    /** Người tạo */
     public void setCreatedBy(String createdBy){
         this.createdBy=createdBy;
     }
-    /** 创建时间 */
+    /** Thời gian tạo */
     public Date getCreatedTime(){
         return this.createdTime;
     }
-    /** 创建时间 */
+    /** Thời gian tạo */
     public void setCreatedTime(Date createdTime){
         this.createdTime=createdTime;
     }
-    /** 更新人 */
+    /** Người cập nhật */
     public String getUpdatedBy(){
         return this.updatedBy;
     }
-    /** 更新人 */
+    /** Người cập nhật */
     public void setUpdatedBy(String updatedBy){
         this.updatedBy=updatedBy;
     }
-    /** 更新时间 */
+    /** Thời gian cập nhật */
     public Date getUpdatedTime(){
         return this.updatedTime;
     }
-  /** 更新时间 */
+  /** Thời gian cập nhật */
     public void setUpdatedTime(Date updatedTime){
         this.updatedTime=updatedTime;
     }
-    /** 模板名称 */
+    /** Tên mẫu */
     public String getMbmc(){
         return this.mbmc;
     }
-    /** 模板名称 */
+    /** Tên mẫu */
     public void setMbmc(String mbmc){
         this.mbmc=mbmc;
     }
-    /** 模板类型;(0：通用，1：个人) */
+    /** Loại mẫu;(0: Chung, 1: Cá nhân) */
     public String getMblx(){
         return this.mblx;
     }
-    /** 模板类型;(0：通用，1：个人) */
+    /** Loại mẫu;(0: Chung, 1: Cá nhân) */
     public void setMblx(String mblx){
         this.mblx=mblx;
     }
-    /** 病历类型;(0：西医病历，1：中医病历) */
+    /** Loại bệnh án;(0: Bệnh án Tây y, 1: Bệnh án Đông y) */
     public String getBllx(){
         return this.bllx;
     }
-    /** 病历类型;(0：西医病历，1：中医病历) */
+    /** Loại bệnh án;(0: Bệnh án Tây y, 1: Bệnh án Đông y) */
     public void setBllx(String bllx){
         this.bllx=bllx;
     }
-    /** 主诉 */
+    /** Lý do khám chính */
     public String getZs(){
         return this.zs;
     }
-    /** 主诉 */
+    /** Lý do khám chính */
     public void setZs(String zs){
         this.zs=zs;
     }
-    /** 个人史 */
+    /** Tiền sử cá nhân */
     public String getGrs(){
         return this.grs;
     }
-    /** 个人史 */
+    /** Tiền sử cá nhân */
     public void setGrs(String grs){
         this.grs=grs;
     }
-    /** 过敏史 */
+    /** Tiền sử dị ứng */
     public String getGms(){
         return this.gms;
     }
-    /** 过敏史 */
+    /** Tiền sử dị ứng */
     public void setGms(String gms){
         this.gms=gms;
     }
-    /** 疾病史 */
+    /** Tiền sử bệnh */
     public String getJbs(){
         return this.jbs;
     }
-    /** 疾病史 */
+    /** Tiền sử bệnh */
     public void setJbs(String jbs){
         this.jbs=jbs;
     }
-    /** 传染病史 */
+    /** Tiền sử bệnh truyền nhiễm */
     public String getCrbs(){
         return this.crbs;
     }
-    /** 传染病史 */
+    /** Tiền sử bệnh truyền nhiễm */
     public void setCrbs(String crbs){
         this.crbs=crbs;
     }
-    /** 手术史 */
+    /** Tiền sử phẫu thuật */
     public String getSss(){
         return this.sss;
     }
-    /** 手术史 */
+    /** Tiền sử phẫu thuật */
     public void setSss(String sss){
         this.sss=sss;
     }
-    /** 输血史 */
+    /** Tiền sử truyền máu */
     public String getSxs(){
         return this.sxs;
     }
-    /** 输血史 */
+    /** Tiền sử truyền máu */
     public void setSxs(String sxs){
         this.sxs=sxs;
     }
-    /** 体格检查 */
+    /** Khám thực thể */
     public String getTgjc(){
         return this.tgjc;
     }
-    /** 体格检查 */
+    /** Khám thực thể */
     public void setTgjc(String tgjc){
         this.tgjc=tgjc;
     }
-    /** 急诊诊断 */
+    /** Chẩn đoán cấp cứu */
     public String getJzzd(){
         return this.jzzd;
     }
-    /** 急诊诊断 */
+    /** Chẩn đoán cấp cứu */
     public void setJzzd(String jzzd){
         this.jzzd=jzzd;
     }
-    /** 急诊效果 */
+    /** Hiệu quả cấp cứu */
     public String getJzxg(){
         return this.jzxg;
     }
-    /** 急诊效果 */
+    /** Hiệu quả cấp cứu */
     public void setJzxg(String jzxg){
         this.jzxg=jzxg;
     }
-    /** 家族史 */
+    /** Tiền sử gia đình */
     public String getJzs(){
         return this.jzs;
     }
-    /** 家族史 */
+    /** Tiền sử gia đình */
     public void setJzs(String jzs){
         this.jzs=jzs;
     }
-    /** 月经史 */
+    /** Tiền sử kinh nguyệt */
     public String getYjz(){
         return this.yjz;
     }
-    /** 月经史 */
+    /** Tiền sử kinh nguyệt */
     public void setYjz(String yjz){
         this.yjz=yjz;
     }
-    /** 婚育史 */
+    /** Tiền sử hôn nhân và sinh đẻ */
     public String getHys(){
         return this.hys;
     }
-    /** 婚育史 */
+    /** Tiền sử hôn nhân và sinh đẻ */
     public void setHys(String hys){
         this.hys=hys;
     }
-    /** 辅助检查 */
+    /** Kiểm tra hỗ trợ */
     public String getFzjc(){
         return this.fzjc;
     }
-    /** 辅助检查 */
+    /** Kiểm tra hỗ trợ */
     public void setFzjc(String fzjc){
         this.fzjc=fzjc;
     }
-    /** 现病史 */
+    /** Bệnh sử hiện tại */
     public String getXbs(){
         return this.xbs;
     }
-    /** 现病史 */
+    /** Bệnh sử hiện tại */
     public void setXbs(String xbs){
         this.xbs=xbs;
     }
-    /** 既往史 */
+    /** Tiền sử */
     public String getJws(){
         return this.jws;
     }
-    /** 既往史 */
+    /** Tiền sử */
     public void setJws(String jws){
         this.jws=jws;
     }
-    /** 其他检查 */
+    /** Kiểm tra khác */
     public String getQtjc(){
         return this.qtjc;
     }
-    /** 其他检查 */
+    /** Kiểm tra khác */
     public void setQtjc(String qtjc){
         this.qtjc=qtjc;
     }
-    /** 其他检查 */
+    /** Kiểm tra khác */
     public String getClqk(){
         return this.clqk;
     }
-    /** 其他检查 */
+    /** Kiểm tra khác */
     public void setClqk(String clqk){
         this.clqk=clqk;
     }
-    /** 其他检查 */
+    /** Kiểm tra khác */
     public String getGthjkjy(){
         return this.gthjkjy;
     }
-    /** 其他检查 */
+    /** Kiểm tra khác */
     public void setGthjkjy(String gthjkjy){
         this.gthjkjy=gthjkjy;
     }
-    /** 流行病学史 */
+    /** Tiền sử dịch tễ */
     public String getLxbxs(){
         return this.lxbxs;
     }
-    /** 流行病学史 */
+    /** Tiền sử dịch tễ */
     public void setLxbxs(String lxbxs){
         this.lxbxs=lxbxs;
     }
-    /** 创建人ID */
+    /** Người tạoID */
     public String getCreatedID(){
         return this.createdID;
     }
-    /** 创建人ID */
+    /** Người tạoID */
     public void setCreatedID(String createdID){
         this.createdID=createdID;
     }

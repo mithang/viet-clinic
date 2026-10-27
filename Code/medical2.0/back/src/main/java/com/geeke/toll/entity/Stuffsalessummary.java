@@ -4,23 +4,23 @@ import lombok.Data;
 
 @Data
 public class Stuffsalessummary {
-    /** 机构id */
+    /** Cơ sởid */
     private String jgid;
-    /** 机构名称 */
+    /** Cơ sởTên */
     private String jgmc;
-    /** 材料别名 */
+    /** Vật tưTên khác */
     private String clbm;
-    /** 材料名称 */
+    /** Tên vật tư */
     private String clmc;
     private String gg;
-    /** 数量 */
+    /** Số lượng */
     private Integer sl;
-    /** 制剂 */
+    /** Chế phẩm */
     private Integer zj;
     private String bzsl;
     private String bzdw;
     private String zxdw;
     private String dw;
-    /** 材料类型 */
+    /** Loại vật tư */
     private String cllx;
 }

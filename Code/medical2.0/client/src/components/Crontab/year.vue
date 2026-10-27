@@ -2,7 +2,7 @@
 	<el-form size="small">
 		<el-form-item>
 			<el-radio :label="1" v-model='radioValue'>
-				不填，允许的通配符[, - * /]
+				不填，Ký tự đại diện được phép[, - * /]
 			</el-radio>
 		</el-form-item>
 
@@ -14,7 +14,7 @@
 
 		<el-form-item>
 			<el-radio :label="3" v-model='radioValue'>
-				周期从
+				Chu kỳ từ
 				<el-input-number v-model='cycle01' :min='fullYear' /> -
 				<el-input-number v-model='cycle02' :min='fullYear' />
 			</el-radio>
@@ -22,8 +22,8 @@
 
 		<el-form-item>
 			<el-radio :label="4" v-model='radioValue'>
-				从
-				<el-input-number v-model='average01' :min='fullYear' /> 年开始，每
+				Từ
+				<el-input-number v-model='average01' :min='fullYear' /> 年开始，mỗi
 				<el-input-number v-model='average02' :min='fullYear' /> 年执行一次
 			</el-radio>
 
@@ -31,8 +31,8 @@
 
 		<el-form-item>
 			<el-radio :label="5" v-model='radioValue'>
-				指定
-				<el-select clearable v-model="checkboxList" placeholder="可多选" multiple>
+				Chỉ định
+				<el-select clearable v-model="checkboxList" placeholder="Có thể chọn nhiều" multiple>
 					<el-option v-for="item in 9" :key="item" :value="item - 1 + fullYear" :label="item -1 + fullYear" />
 				</el-select>
 			</el-radio>
@@ -57,7 +57,7 @@ export default {
 	name: 'crontab-year',
 	props: ['check', 'month', 'cron'],
 	methods: {
-		// 单选按钮值变化时
+		// Khi giá trị nút radio thay đổi
 		radioChange() {
 			if (this.cron.month === '*') {
 				this.$emit('update', 'month', '0', 'year');
@@ -92,19 +92,19 @@ export default {
 					break;
 			}
 		},
-		// 周期两个值变化时
+		// Khi hai giá trị chu kỳ thay đổi
 		cycleChange() {
 			if (this.radioValue === '3') {
 				this.$emit('update', 'year', this.cycleTotal);
 			}
 		},
-		// 平均两个值变化时
+		// Khi hai giá trị trung bình thay đổi
 		averageChange() {
 			if (this.radioValue === '4') {
 				this.$emit('update', 'year', this.averageTotal);
 			}
 		},
-		// checkbox值变化时
+		// checkboxKhi giá trị thay đổi
 		checkboxChange() {
 			if (this.radioValue === '5') {
 				this.$emit('update', 'year', this.checkboxString);
@@ -118,19 +118,19 @@ export default {
 		'checkboxString': 'checkboxChange'
 	},
 	computed: {
-		// 计算两个周期值
+		// Tính hai giá trị chu kỳ
 		cycleTotal: function () {
 			this.cycle01 = this.checkNum(this.cycle01, this.fullYear, this.fullYear + 100)
 			this.cycle02 = this.checkNum(this.cycle02, this.fullYear + 1, this.fullYear + 101)
 			return this.cycle01 + '-' + this.cycle02;
 		},
-		// 计算平均用到的值
+		// Giá trị dùng để tính trung bình
 		averageTotal: function () {
 			this.average01 = this.checkNum(this.average01, this.fullYear, this.fullYear + 100)
 			this.average02 = this.checkNum(this.average02, 1, 10)
 			return this.average01 + '/' + this.average02;
 		},
-		// 计算勾选的checkbox值合集
+		// Tính các giá trị đã chọncheckboxtập hợp giá trị
 		checkboxString: function () {
 			let str = this.checkboxList.join();
 			return str;

@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/toll/tollInfo')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getTollInfoById = baseApi.getById
 export const listTollInfoPage = baseApi.listPage
 export const listTollInfoAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertTollInfo = baseApi.bulkInsert
 export const bulkUpdateTollInfo = baseApi.bulkUpdate
 export const bulkDeleteTollInfo = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const getTollInfoByRegistrationId = (registrationId) =>
     request({
         url: '/toll/tollInfo/getTollInfoByRegistrationId/' + registrationId,

@@ -3,17 +3,17 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>    
     
     <el-form :model='actionModel' :rules='formRules' 
       ref='actionForm' label-width='120px' label-position='right' class='edit-form'>    
-    <!-- 主表单  开始-->
+    <!-- Biểu mẫu chính  Bắt đầu-->
       <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='操作' prop='actionType.value'>
+          <el-form-item label='Thao tác' prop='actionType.value'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='actionModel.actionType.name'></el-input>
-            <el-select v-else v-model='actionModel.actionType' value-key='value' filterable clearable placeholder='请选择操作'>
+            <el-select v-else v-model='actionModel.actionType' value-key='value' filterable clearable placeholder='Vui lòng chọn thao tác'>
              <el-option v-for='actionType in actionType_List' :key='actionType.value' :label='actionType.name' :value='actionType'></el-option>
             </el-select>
           </el-form-item>
@@ -21,7 +21,7 @@
       </el-row>
       <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='对象类型' prop='objectType.id'>
+          <el-form-item label='Loại đối tượng' prop='objectType.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='actionModel.objectType.comments'></el-input>
             <el-select v-else v-model='actionModel.objectType' value-key='id' filterable clearable placeholder='请选择对象类型'>
              <el-option v-for='objectType in objectType_List' :key='objectType.id' :label='objectType.comments' :value='objectType'></el-option>
@@ -31,63 +31,63 @@
       </el-row>
       <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='业务对象' prop='objectId'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectId'  :maxlength='40':placeholder='dialogProps.action === "view"? "" : "请输入业务对象"' ></el-input>
+          <el-form-item label='Đối tượng nghiệp vụ' prop='objectId'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectId'  :maxlength='40':placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập đối tượng nghiệp vụ"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='对象名称' prop='objectName'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectName'  :maxlength='512':placeholder='dialogProps.action === "view"? "" : "请输入对象名称"' ></el-input>
+          <el-form-item label='Tên đối tượng' prop='objectName'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectName'  :maxlength='512':placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên đối tượng"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item label='备注信息' prop='remarks'>        
+          <el-form-item label='Thông tin ghi chú' prop='remarks'>        
             <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.remarks' type='textarea'  
-              :maxlength='255':placeholder='dialogProps.action === "view"? "" : "请输入备注信息"' ></el-input>
+              :maxlength='255':placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
-    <!-- 主表单  结束-->
+    <!-- Biểu mẫu chính  Kết thúc-->
     
-    <!--子表：   回收站 开始-->
-      <el-divider content-position="left"> 回收站</el-divider>
+    <!--Bảng con：   Thùng rác Bắt đầu-->
+      <el-divider content-position="left"> Thùng rác</el-divider>
       <el-row>
         <el-col>
     <el-table ref='action' :data='actionModel.actionRecycleList' border @current-change='(currentRow, oldCurrentRow) => {actionRecycleCurrentRow = currentRow}'>
-      <el-table-column prop='tableName' label='表名' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>表名</template>
+      <el-table-column prop='tableName' label='Tên bảng' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên bảng</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.tableName`" :rules='formRules.actionRecycle_tableName' label-width=0>
-            <el-input v-model='row.tableName'  :maxlength='200'clearable placeholder='请输入表名'></el-input>
+            <el-input v-model='row.tableName'  :maxlength='200'clearable placeholder='Vui lòng nhập tên bảng'></el-input>
           </el-form-item>
           <span v-else>{{row.tableName}}</span>
         </template>
       </el-table-column>
-      <el-table-column prop='objectId' label='业务对象' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>业务对象</template>
+      <el-table-column prop='objectId' label='Đối tượng nghiệp vụ' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Đối tượng nghiệp vụ</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.objectId`" :rules='formRules.actionRecycle_objectId' label-width=0>
-            <el-input v-model='row.objectId'  :maxlength='40'clearable placeholder='请输入业务对象'></el-input>
+            <el-input v-model='row.objectId'  :maxlength='40'clearable placeholder='Vui lòng nhập đối tượng nghiệp vụ'></el-input>
           </el-form-item>
           <span v-else>{{row.objectId}}</span>
         </template>
       </el-table-column>
-      <el-table-column prop='objectName' label='对象名称' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>对象名称</template>
+      <el-table-column prop='objectName' label='Tên đối tượng' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Tên đối tượng</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.objectName`" :rules='formRules.actionRecycle_objectName' label-width=0>
-            <el-input v-model='row.objectName'  :maxlength='200'clearable placeholder='请输入对象名称'></el-input>
+            <el-input v-model='row.objectName'  :maxlength='200'clearable placeholder='Vui lòng nhập tên đối tượng'></el-input>
           </el-form-item>
           <span v-else>{{row.objectName}}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if='dialogProps.action !== "view"' label='操作' header-align='center' align='center' width='60px'>
+      <el-table-column v-if='dialogProps.action !== "view"' label='Thao tác' header-align='center' align='center' width='60px'>
         <template slot-scope='scope'>
-          <el-tooltip class='item' effect='light' content='删除' placement='top-start'>
+          <el-tooltip class='item' effect='light' content='Xóa' placement='top-start'>
             <i class='el-icon-delete' style='color:#F56C6C;cursor:pointer;'
               @click='onDeleteRow(scope.$index, actionModel.actionRecycleList)'></i>
           </el-tooltip>         
@@ -95,19 +95,19 @@
       </el-table-column>          
     </el-table>
     <el-button v-if='dialogProps.action !== "view"' type='primary' 
-      @click='onAddActionRecycleRow(actionModel.actionRecycleList)'>添加</el-button>
+      @click='onAddActionRecycleRow(actionModel.actionRecycleList)'>Thêm</el-button>
         </el-col>
       </el-row>
-      <!--子表：   回收站 结束-->
+      <!--Bảng con：   Thùng rác Kết thúc-->
     </el-form>
         
-    <!-- 按钮  开始-->
+    <!-- Nút  Bắt đầu-->
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("actionForm")'>保 存</el-button>    
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("actionForm")'>Lưu</el-button>    
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span> 
-    <!-- 按钮 结束-->
+    <!-- Nút Kết thúc-->
   </el-dialog>
 </template>
 
@@ -130,8 +130,8 @@ export default {
   data() {
     return {
       actionModel: this.initFormModel(),
-          actionType_List: [],  // 操作
-          objectType_List: [],  // 对象类型
+          actionType_List: [],  // Thao tác
+          objectType_List: [],  // Loại đối tượng
           flag:false,
        dialogProps: {
         visible: false,
@@ -140,20 +140,20 @@ export default {
         
       },
       formRules: {
-        // 主表验证
-        // 子表验证 回收站
+        // Xác thực bảng chính
+        // Xác thực bảng con Thùng rác
         'actionRecycle_tableName': [
-            { required: true, message: '请输入表名', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên bảng', trigger: 'blur' }
         ],
         'actionRecycle_objectId': [
-            { required: true, message: '请输入业务对象', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập đối tượng nghiệp vụ', trigger: 'blur' }
         ],
       },
-    actionRecycleCurrentRow: {},     // 子表 回收站 当前选择行
+    actionRecycleCurrentRow: {},     // Bảng con Thùng rác Dòng đang chọn
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -188,13 +188,13 @@ export default {
     },
     onAddActionRecycleRow(tableData) {
         tableData.push({
-            'action': {     // 父表 日志
+            'action': {     // Bảng cha Nhật ký
               'id': validatenull(parent) || validatenull(parent.action) ? null : parent.action.id,
             },
-            'tableName': '',   // 表名
-            'objectId': '',   // 业务对象
-            'objectName': '',   // 对象名称
-            'remarks': '',   // 备注信息
+            'tableName': '',   // Tên bảng
+            'objectId': '',   // Đối tượng nghiệp vụ
+            'objectName': '',   // Tên đối tượng
+            'remarks': '',   // Thông tin ghi chú
         })
     },
     onDeleteRow(index, tableData) {
@@ -210,29 +210,29 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改操作日志'
+      this.dialogProps.title = 'Sửa nhật ký thao tác'
       this.initOptions(this.actionModel)
     },
     initFormModel(parent) {
       return {
-        'actionType': {     // 操作
+        'actionType': {     // Thao tác
           'value': '',
           'name': '',
         },
-        'objectType': {     // 对象类型
+        'objectType': {     // Loại đối tượng
           'id': 0,
           'comments': '',
         },
-        'objectId': '',   // 业务对象
-        'objectName': '',   // 对象名称
+        'objectId': '',   // Đối tượng nghiệp vụ
+        'objectName': '',   // Tên đối tượng
         'status': 0,
-        'remarks': '',   // 备注信息
+        'remarks': '',   // Thông tin ghi chú
 
-        actionRecycleList: [],       // 子表列表
+        actionRecycleList: [],       // Danh sách bảng con
       }
     },
     initOptions() {
-      // 主表
+      // Bảng chính
       let This = this.actionModel
       getDictItemsByCode(DICT_CODE.ACTION_TYPE).then((data) => {
         this.actionType_List = data
@@ -240,16 +240,16 @@ export default {
       let objectType_search = {
         params: []
       }
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
         objectType_search.params.push.apply(objectType_search.params, [])
-      // 数据权限: 业务表gen_table
+      // Quyền dữ liệu: Bảng nghiệp vụgen_table
       this.pushDataPermissions(objectType_search.params, this.$route.meta.routerId, '4001')
       this.objectType_List = []
       listGenTableAll(objectType_search).then(responseData => {
         this.objectType_List = responseData.data
       })
 
-      // 子表  回收站
+      // Bảng con  Thùng rác
       This = this.actionRecycleCurrentRow
     },
     openViewActionDialog(action) {
@@ -260,21 +260,21 @@ export default {
     },
     openEditActionDialog(action) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改操作日志'
+      this.dialogProps.title = 'Sửa nhật ký thao tác'
       this.actionModel = action
       this.initOptions()
       this.dialogProps.visible = true
     },
     openAddActionDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加操作日志'
+      this.dialogProps.title = 'Thêm nhật ký thao tác'
       this.actionModel = this.initFormModel()
       this.initOptions()
       this.dialogProps.visible = true
     },
     openCopyActionDialog(action) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '添加操作日志'
+      this.dialogProps.title = 'Thêm nhật ký thao tác'
       this.actionModel = action
       this.initOptions()
       this.actionModel.id = null

@@ -7,14 +7,14 @@ import java.util.List;
 
 /**
  * LC
- * 保存收费信息
+ * LưuThu phíThông tin
  */
 
 public class TollEvt {
     private TollInfo tollInfo;
-    private List<RecipelInfoEvt> recipelInfos; //处方信息
-    private String chargeStatus; //收费状态  0- 待收费   1-部分收费   2- 已收费   3-  部分退费    4- 已退费
-    private MemberManagement memberManagement;   //保存的会员卡信息
+    private List<RecipelInfoEvt> recipelInfos; //Thông tin đơn thuốc
+    private String chargeStatus; //Trạng thái thu phí  0- Chờ thu phí   1-Một phầnThu phí   2- Đã thu phí   3-  Một phầnhoàn phí    4- Đã hoàn phí
+    private MemberManagement memberManagement;   //Lưu của Hội viênthẻThông tin
 
     public String getChargeStatus() {
         return chargeStatus;

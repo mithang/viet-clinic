@@ -11,7 +11,7 @@ import java.util.List;
 public interface BlmbDao {
 
     /**
-     * 添加病历模板数据
+     * Thêmbệnh ánmẫuDữ liệu
      * @param blmb
      * @return
      */

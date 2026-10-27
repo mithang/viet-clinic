@@ -3,7 +3,7 @@
       <i style="float: right; padding: 3px 0; position: relative; z-index: 1" class="el-icon-close" @click="closeTab"></i>
 
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="未读" name="unread">
+        <el-tab-pane label="Chưa đọc" name="unread">
           <el-table :data="noticeRecordSiteList" :row-key="getRowKeys" @expand-change="expandSelect" :expand-row-keys="expands"  border v-loading="loading" highlight-current-row>
           <el-table-column type="expand">
             <template slot-scope="props">
@@ -12,16 +12,16 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="title" label="标题">
+          <el-table-column align="center" prop="title" label="Tiêu đề">
           </el-table-column>
-            <el-table-column align="center" prop="createDate" label="接收时间"/>
+            <el-table-column align="center" prop="createDate" label="Thời gian nhận"/>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="已读" name="read">
+      <el-tab-pane label="Đã đọc" name="read">
         <el-table :data="noticeRecordSiteList"	:row-key="getRowKeys" @expand-change="expandSelect" :expand-row-keys="expands" border v-loading="loading" highlight-current-row>
-    <!--      <el-table-column align="center" prop="readStatus" label="状态">
+    <!--      <el-table-column align="center" prop="readStatus" label="Trạng thái">
             <template slot-scope="scope">
-              {{scope.row.readStatus === "0"? "未读":"已读"}}
+              {{scope.row.readStatus === "0"? "Chưa đọc":"Đã đọc"}}
             </template>
           </el-table-column>-->
           <el-table-column type="expand">
@@ -31,15 +31,15 @@
                 </span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="title" label="标题">
+          <el-table-column align="center" prop="title" label="Tiêu đề">
         <!--    <template slot-scope="scope">
               <el-link type="primary" underline >{{scope.row.noticeRecord.title}}</el-link>
             </template>-->
           </el-table-column>
   <!--
-          <el-table-column align="center" :show-overflow-tooltip="true"   prop="noticeRecord.siteContent" label="内容"/>
+          <el-table-column align="center" :show-overflow-tooltip="true"   prop="noticeRecord.siteContent" label="Nội dung"/>
   -->
-          <el-table-column align="center" prop="createDate" label="接收时间"/>
+          <el-table-column align="center" prop="createDate" label="Thời gian nhận"/>
         </el-table>
       </el-tab-pane>
 <!--      <el-tab-pane label="全部标记已读" name="all">
@@ -75,7 +75,7 @@
     name: "tabSite",
     data() {
       return {
-        expands: [], // 通过该属性设置Table目前的展开行，需要设置row-key属性才能使用，该属性为展开行的keys数组
+        expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại，Cần đặtrow-keythuộc tính mới sử dụng được，Thuộc tính này là của dòng mở rộngkeysMảng
         contentVisible:false, //消息显示
         loading:false,
         activeName: 'unread',
@@ -99,13 +99,13 @@
       // this.onSearch();
     },
     methods: {
-      closeTab(){       //关闭显示框
+      closeTab(){       //Đóng hộp hiển thị
         this.$parent.doToggle();
       },
-      getRowKeys(row) { // 行数据的Key
+      getRowKeys(row) { // của dữ liệu dòngKey
         return row.id
       },
-      // table每次只能展开一行
+      // tableMỗi lần chỉ mở rộng được một dòng
       expandSelect(row, expandedRows) {
         this.expands = [];
         if (expandedRows.length > 0) {
@@ -118,7 +118,7 @@
       },
       onOpen(row,index){    //点击链接跳转
         this.$nextTick(()=> {
-          let msg = document.getElementById(this.activeName);         //内容主体
+          let msg = document.getElementById(this.activeName);         //Nội dung chính
           msg.innerHTML = row.siteContent;
           if(row.readStatus === "0"){
              saveNoticeReceiveSite({id:row.id,readStatus:'1'}).then(result =>{ //查询赋值并修改 状态为已读
@@ -131,7 +131,7 @@
  /*       const obj = row.noticeRecord;
         this.content = obj.siteContent;
         this.$nextTick(()=>{
-          let msg = document.getElementById(this.activeName);         //内容主体
+          let msg = document.getElementById(this.activeName);         //Nội dung chính
           //  (.*?)  (\S*) 两种拿到中间值 str.match(/<a>(.*?)<\/a>/i)
           if(this.content.match(/<a>(\S*)<\/a>/)){          //判断有无a标签跳转
             const txt = this.content.match(/<a>(\S*)<\/a>/)[1];
@@ -144,9 +144,9 @@
       },
 /*      beforeName(newName,oldName){
           if(newName === "all"){
-            this.$confirm('全部消息已读, 是否继续?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
+            this.$confirm('全部消息已读, 是否继续?', 'Nhắc nhở', {
+              confirmButtonText: 'Xác nhận',
+              cancelButtonText: 'Hủy',
               type: 'warning'
             }).then(() => {
               if(this.unreadList){

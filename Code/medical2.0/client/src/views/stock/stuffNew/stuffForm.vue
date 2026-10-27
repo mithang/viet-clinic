@@ -12,7 +12,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -29,30 +29,30 @@
       class="edit-form"
     >
       <div class="tab-item" v-show="tabIndex === '1'">
-         <div class="specifications">材料信息</div>
+         <div class="specifications">Thông tin vật tư</div>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="材料名称" prop="name">
+            <el-form-item label="Tên vật tư" prop="name">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.name"
                 :maxlength="64"
                 @input="pinyinInput"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入材料名称'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên vật tư'
                 "
                 autofocus
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="常用名" prop="commonName">
+            <el-form-item label="Tên thường dùng" prop="commonName">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.commonName"
                 :maxlength="45"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入常用名'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên thường dùng'
                 "
               ></el-input>
             </el-form-item>
@@ -60,17 +60,17 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="拼音码" prop="pinyinCode">
+            <el-form-item label="Mã pinyin" prop="pinyinCode">
               <el-input
                 disabled
                 v-model="bizFormModel.pinyinCode"
                 :maxlength="45"
-                placeholder="请输入拼音码"
+                placeholder="Vui lòng nhập mã pinyin"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="材料类型" prop="type.value">
+            <el-form-item label="Loại vật tư" prop="type.value">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -82,7 +82,7 @@
                 value-key="value"
                 filterable
                 clearable
-                placeholder="请选择材料类型"
+                placeholder="Vui lòng chọn loại vật tư"
                 @clear="
                   bizFormModel.type = {
                     value: null,
@@ -102,7 +102,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="生产厂家" prop="factory.id">
+            <el-form-item label="Nhà sản xuất" prop="factory.id">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -114,7 +114,7 @@
                 value-key="id"
                 filterable
                 clearable
-                placeholder="请选择生产厂家"
+                placeholder="Vui lòng chọn nhà sản xuất"
                 @clear="
                   bizFormModel.factory = {
                     id: null,
@@ -132,7 +132,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="性质" prop="nature.value">
+            <el-form-item label="Tính chất" prop="nature.value">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -144,7 +144,7 @@
                 value-key="value"
                 filterable
                 clearable
-                placeholder="请选择性质"
+                placeholder="Vui lòng chọn tính chất"
                 @clear="
                   bizFormModel.nature = {
                     value: null,
@@ -164,25 +164,25 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="条形码" prop="barCode">
+            <el-form-item label="Mã vạch" prop="barCode">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.barCode"
                 :maxlength="64"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入条形码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã vạch'
                 "
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="注册证名称" prop="registrationName">
+            <el-form-item label="Tên giấy chứng nhận đăng ký" prop="registrationName">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.registrationName"
                 :maxlength="64"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入注册证名称'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên giấy chứng nhận đăng ký'
                 "
               ></el-input>
             </el-form-item>
@@ -190,31 +190,31 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="注册证号" prop="registrationCode">
+            <el-form-item label="Số giấy chứng nhận đăng ký" prop="registrationCode">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.registrationCode"
                 :maxlength="64"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入注册证号'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số giấy chứng nhận đăng ký'
                 "
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="规格" prop="specifications">
+            <el-form-item label="Quy cách" prop="specifications">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.specifications"
                 :maxlength="45"
-                :placeholder="dialogProps.action === 'view' ? '' : '请输入规格'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập quy cách'"
               ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="包装数量" prop="packNumber">
+            <el-form-item label="Số lượng đóng gói" prop="packNumber">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -228,7 +228,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="最小单位" prop="minUnit.value">
+            <el-form-item label="Đơn vị nhỏ nhất" prop="minUnit.value">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -240,7 +240,7 @@
                 value-key="value"
                 filterable
                 clearable
-                placeholder="请选择最小单位"
+                placeholder="Vui lòng chọn đơn vị nhỏ nhất"
                 @clear="
                   bizFormModel.minUnit = {
                     value: null,
@@ -260,7 +260,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="包装单位" prop="packUnit.value">
+            <el-form-item label="Đơn vị đóng gói" prop="packUnit.value">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -272,7 +272,7 @@
                 value-key="value"
                 filterable
                 clearable
-                placeholder="请选择包装单位"
+                placeholder="Vui lòng chọn đơn vị đóng gói"
                 @clear="
                   bizFormModel.packUnit = {
                     value: null,
@@ -290,7 +290,7 @@
             </el-form-item>
           </el-col>
            <el-col :span="24 / 2">
-            <el-form-item label="允许对外销售" prop="isOutSell">
+            <el-form-item label="Cho phép bán ra ngoài" prop="isOutSell">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isOutSell"
@@ -304,7 +304,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="对外销售价格" prop="priceOutSell">
+            <el-form-item label="Giá bán ra ngoài" prop="priceOutSell">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -320,7 +320,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="允许拆零销售" prop="isUnpackSell">
+            <el-form-item label="Cho phép bán lẻ tách hộp" prop="isUnpackSell">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isUnpackSell"
@@ -334,7 +334,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="拆开后零售价" prop="retailPrice">
+            <el-form-item label="Giá bán lẻ sau khi tách hộp" prop="retailPrice">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -350,47 +350,47 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label='是否启用' prop='status' >
+            <el-form-item label='Có kích hoạt không' prop='status' >
             <el-switch :disabled='dialogProps.action === "view"' v-model='value' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
             </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="材料编码" prop="code">
+            <el-form-item label="Mã vật tư" prop="code">
               <el-input
                 disabled
                 v-model="bizFormModel.code"
                 :maxlength="45"
-                placeholder="保存后自动生成"
+                placeholder="Tự động tạo sau khi lưu"
               ></el-input>
             </el-form-item>
           </el-col>
 
         </el-row>
          <el-divider class="line" ></el-divider>
-        <div class="specifications">其他信息</div>
+        <div class="specifications">Thông tin khác</div>
         <div>
           <el-row>
              <el-col :span="24 / 3">
-            <el-form-item label="有效期" prop="indate">
+            <el-form-item label="Hạn sử dụng" prop="indate">
               <el-input
                 :disabled="dialogProps.action === 'view'&&updateType==='0'"
                 v-model="bizFormModel.indate"
                 :maxlength="64"
-                placeholder="请输入有效期"
+                placeholder="Vui lòng nhập hạn sử dụng"
               >
-               <template slot="append">天</template>
+               <template slot="append">ngày</template>
               </el-input>
             </el-form-item>
           </el-col>
              <el-col :span="24 / 3">
-            <el-form-item label="库存下限" prop="inventoryFloor">
+            <el-form-item label="Ngưỡng tồn kho tối thiểu" prop="inventoryFloor">
               <el-input
                 :disabled="dialogProps.action === 'view'&&updateType==='0'"
                 v-model="bizFormModel.inventoryFloor"
                 :maxlength="64"
-                placeholder="请输入库存下限"
+                placeholder="Vui lòng nhập ngưỡng tồn kho tối thiểu"
               >
               <template slot="append">
                 {{bizFormModel.packUnit.name}}
@@ -399,12 +399,12 @@
             </el-form-item>
           </el-col>
            <el-col :span="24 / 3">
-            <el-form-item label="库存上限" prop="inventoryLimit">
+            <el-form-item label="Ngưỡng tồn kho tối đa" prop="inventoryLimit">
               <el-input
                 :disabled="dialogProps.action === 'view'&&updateType==='0'"
                 v-model="bizFormModel.inventoryLimit"
                 :maxlength="64"
-                placeholder="请输入库存上限"
+                placeholder="Vui lòng nhập ngưỡng tồn kho tối đa"
               >
                <template slot="append">
                 {{bizFormModel.packUnit.name}}
@@ -415,12 +415,12 @@
         </el-row>
         <el-row>
             <el-col :span="24 / 3">
-            <el-form-item label="货位号" prop="locationNumber">
+            <el-form-item label="Số vị trí kho" prop="locationNumber">
               <el-input
                 :disabled="dialogProps.action === 'view'&&updateType==='0'"
                 v-model="bizFormModel.locationNumber"
                 :maxlength="64"
-                placeholder="请输入货位号"
+                placeholder="Vui lòng nhập số vị trí kho"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -429,10 +429,10 @@
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='updateType==="1"||dialogProps.action === "add"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("stuffForm")'>保 存</el-button>
-       <el-button v-if='dialogProps.action === "add"' :disabled="flag" type='primary' :plain='true' @click='onGoSubmit("stuffForm")'>保 存 继 续</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='updateType==="1"||dialogProps.action === "add"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("stuffForm")'>Lưu</el-button>
+       <el-button v-if='dialogProps.action === "add"' :disabled="flag" type='primary' :plain='true' @click='onGoSubmit("stuffForm")'>Lưu và tiếp tục</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -456,11 +456,11 @@ export default {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: "1",
-      type_List: [], // 材料类型
-      factory_List: [], // 生产厂家
-      nature_List: [], // 性质
-      minUnit_List: [], // 最小单位
-      packUnit_List: [], // 包装单位
+      type_List: [], // Loại vật tư
+      factory_List: [], // Nhà sản xuất
+      nature_List: [], // Tính chất
+      minUnit_List: [], // Đơn vị nhỏ nhất
+      packUnit_List: [], // Đơn vị đóng gói
       value:'1',
       flag:false,
       dialogProps: {
@@ -470,22 +470,22 @@ export default {
 
       },
       formRules: {
-        name: [{ required: true, message: "请输入材料名称", trigger: "blur" }],
+        name: [{ required: true, message: "Vui lòng nhập tên vật tư", trigger: "blur" }],
         packNumber: [
-          { required: true, message: "请选择包装数量", trigger: "blur" },
+          { required: true, message: "Vui lòng chọn số lượng đóng gói", trigger: "blur" },
         ],
         "minUnit.value": [
-          { required: true, message: "请选择最小单位", trigger: "change" },
+          { required: true, message: "Vui lòng chọn đơn vị nhỏ nhất", trigger: "change" },
         ],
         "packUnit.value": [
-          { required: true, message: "请选择包装单位", trigger: "change" },
+          { required: true, message: "Vui lòng chọn đơn vị đóng gói", trigger: "change" },
         ],
       },
-      updateType:"0"  //修改标记
+      updateType:"0"  //Sửa dấu
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object,
     },
@@ -494,7 +494,7 @@ export default {
   methods: {
     onSubmit(formName) {
       /*if (this.bizFormModel.company.id !== this.currentUser.company.id) {
-        this.$message.error('无法修改机构药品信息，请联系机构修改药品基础信息')
+        this.$message.error('Không thể sửa thông tin thuốc của cơ sở，Vui lòng liên hệ cơ sở để sửa thông tin thuốc cơ bản')
         return
       }*/
       this.flag=true
@@ -507,7 +507,7 @@ export default {
         }
       });
     },
-    //保存继续
+    //Lưu và tiếp tục
      onGoSubmit(formName) {
       this.flag=true
       this.$refs[formName].validate(valid => {
@@ -573,7 +573,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改材料信息";
+      this.dialogProps.title = "Sửa thông tin vật tư";
       this.initOptions(this.bizFormModel);
     },
     onDialogClose() {
@@ -587,48 +587,48 @@ export default {
     initFormModel(This) {
       return {
         company: {
-          // 诊所id
+          // Phòng khámid
           id: currentUser.company.id,
           name: null,
         },
-        name: "", // 材料名称
-        commonName: "", // 常用名
-        code: "", // 材料编码
+        name: "", // Tên vật tư
+        commonName: "", // Tên thường dùng
+        code: "", // Mã vật tư
         type: {
-          // 材料类型
+          // Loại vật tư
           value: null,
           name: null,
         },
         factory: {
-          // 生产厂家
+          // Nhà sản xuất
           id: null,
           name: null,
         },
         nature: {
-          // 性质
+          // Tính chất
           value: null,
           name: null,
         },
-        barCode: "", // 条形码
-        registrationName: "", // 注册证名称
-        registrationCode: "", // 注册证号
-        specifications: "", // 规格
-        packNumber: 0, // 包装数量
+        barCode: "", // Mã vạch
+        registrationName: "", // Tên giấy chứng nhận đăng ký
+        registrationCode: "", // Số giấy chứng nhận đăng ký
+        specifications: "", // Quy cách
+        packNumber: 0, // Số lượng đóng gói
         minUnit: {
-          // 最小单位
+          // Đơn vị nhỏ nhất
           value: null,
           name: null,
         },
         packUnit: {
-          // 包装单位
+          // Đơn vị đóng gói
           value: null,
           name: null,
         },
-        isOutSell: "0", // 允许对外销售
-        priceOutSell: 0, // 对外销售价格
-        isUnpackSell: "0", // 允许拆零销售
-        retailPrice: 0, // 拆开后零售价
-        remarks: "", // 备注信息
+        isOutSell: "0", // Cho phép bán ra ngoài
+        priceOutSell: 0, // Giá bán ra ngoài
+        isUnpackSell: "0", // Cho phép bán lẻ tách hộp
+        retailPrice: 0, // Giá bán lẻ sau khi tách hộp
+        remarks: "", // Thông tin ghi chú
       };
     },
     initOptions(This) {
@@ -638,7 +638,7 @@ export default {
       let factory_search = {
         params: [],
       };
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       factory_search.params.push.apply(factory_search.params, [
         {
           columnName: "company_id",
@@ -651,7 +651,7 @@ export default {
           value: "2",
         },
       ]);
-      // 数据权限: 生产厂家manufacture_factory
+      // Quyền dữ liệu: Nhà sản xuấtmanufacture_factory
       this.pushDataPermissions(
         factory_search.params,
         this.$route.meta.routerId,
@@ -671,7 +671,7 @@ export default {
         this.packUnit_List = data;
       });
     },
-    //输入框拼音码
+    //Mã pinyin của ô nhập
      pinyinInput(value){
        this.bizFormModel.pinyinCode=pinyin.getCamelChars(value)
 
@@ -679,7 +679,7 @@ export default {
     openViewStuffDialog(stuff) {
       this.dialogProps.action = "view";
       this.updateType = "0"
-      this.dialogProps.title = "查看材料信息";
+      this.dialogProps.title = "Xem thông tin vật tư";
       this.bizFormModel = { ...this.initFormModel(), ...stuff };
       this.initOptions(this.bizFormModel);
       this.value = this.bizFormModel.status
@@ -693,7 +693,7 @@ export default {
         this.dialogProps.action = "edit";
       }
       this.updateType = "1"
-      this.dialogProps.title = "修改材料信息";
+      this.dialogProps.title = "Sửa thông tin vật tư";
       this.bizFormModel = { ...this.initFormModel(), ...stuff };
       this.initOptions(this.bizFormModel);
       this.value = this.bizFormModel.status
@@ -702,7 +702,7 @@ export default {
     },
     openAddStuffDialog() {
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加材料信息";
+      this.dialogProps.title = "Thêm thông tin vật tư";
       this.bizFormModel = this.initFormModel();
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
@@ -710,7 +710,7 @@ export default {
     },
     openCopyStuffDialog(stuff) {
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加材料信息";
+      this.dialogProps.title = "Thêm thông tin vật tư";
       this.bizFormModel = { ...this.initFormModel(), ...stuff };
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";

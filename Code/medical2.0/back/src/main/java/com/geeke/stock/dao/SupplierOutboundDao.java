@@ -6,7 +6,7 @@ import com.geeke.stock.entity.SupplierStorage;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 出库单DAO接口
+ * Phiếu xuất khoDAOGiao diện
  * @author txl
  * @version 2022-06-02/
  */

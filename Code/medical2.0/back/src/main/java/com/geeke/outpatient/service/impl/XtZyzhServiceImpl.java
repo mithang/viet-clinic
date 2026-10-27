@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 /**
 * @author 47826
-* @description 针对表【xt_zyzh】的数据库操作Service实现
+* @description Đối với bảng[xt_zyzh] của Dữ liệukhothao tácServiceTriển khai
 * @createDate 2024-11-22 14:28:53
 */
 @Service

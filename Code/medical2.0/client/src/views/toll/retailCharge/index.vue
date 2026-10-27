@@ -1,19 +1,19 @@
 <template>
     <el-row v-loading="loading">
     <el-card class="retailCharge">
-        <!-- 药品材料切换 -->
+        <!-- Chuyển đổi thuốc/vật tư -->
         <div style="margin-top:-20px;margin-left:-20px">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="零售药品" name="0">
+                <el-tab-pane label="Thuốc bán lẻ" name="0">
 
                 </el-tab-pane>
-                <el-tab-pane label="零售材料" name="1">
+                <el-tab-pane label="Vật tư bán lẻ" name="1">
 
                 </el-tab-pane>
             </el-tabs>
         </div>
 
-        <!-- 零售药品 -->
+        <!-- Thuốc bán lẻ -->
         <div v-if="activeName==='0'">
         <el-form
         :model="bizFormModel"
@@ -24,18 +24,18 @@
         style="marginTop: 10px"
         class="edit-form"
         >
-            <h4>患者信息</h4>
+            <h4>Thông tin bệnh nhân</h4>
             <div class="patientMessage">
                 <el-row>
                     <el-col :span='24/4'>
-                         <el-form-item label="患者姓名" prop="name">
+                         <el-form-item label="Tên bệnh nhân" prop="name">
                             <el-select
                             v-model="bizFormModel.name"
                             value-key="id"
                             filterable
                             allow-create
                             @change="GetPatientInfo()"
-                            placeholder="请选择患者"
+                            placeholder="Vui lòng chọn bệnh nhân"
                             >
                             <el-option
                                 v-for="patientId in patientId_List"
@@ -53,7 +53,7 @@
                         </el-form-item>
                     </el-col>
                      <el-col :span="24 / 4">
-                        <el-form-item label="出生日期" prop="birthday">
+                        <el-form-item label="Ngày sinh" prop="birthday">
                             <el-date-picker
                             v-model="bizFormModel.birthday"
                             type="date"
@@ -61,7 +61,7 @@
                             :picker-options="setDisabled"
                             value-format="yyyy-MM-dd"
                             :placeholder="
-                                '请输入出生日期'
+                                'Vui lòng nhập ngày sinh'
                             "
 
                             ></el-date-picker>
@@ -69,18 +69,18 @@
                         </el-form-item>
                     </el-col>
                      <el-col :span="24 / 4">
-                    <el-form-item label="年龄" prop="age">
+                    <el-form-item label="Tuổi" prop="age">
                         <el-col :span="24 / 2">
                         <el-input
 
                             v-model="bizFormModel.age"
                             :maxlength="20"
                             :placeholder="
-                            '年龄'
+                            'Tuổi'
                             "
                         >
                         <template slot="append">
-                            岁
+                            tuổi
                         </template>
                         </el-input>
                         </el-col>
@@ -89,22 +89,22 @@
 
                             v-model="bizFormModel.month"
                             :maxlength="20"
-                            :placeholder="'月'"
+                            :placeholder="'tháng'"
                         >
                         <template slot="append">
-                            月
+                            tháng
                         </template>
                         </el-input>
                         </el-col>
                     </el-form-item>
                     </el-col>
                     <el-col :span="24 / 4">
-                    <el-form-item label="性别" prop="gender.name">
+                    <el-form-item label="Giới tính" prop="gender.name">
                         <el-select
                         v-model="bizFormModel.gender"
                         value-key="value"
                         filterable
-                        placeholder="请选择性别"
+                        placeholder="Vui lòng chọn giới tính"
                         @clear="
                             bizFormModel.gender = {
                             value: null,
@@ -124,12 +124,12 @@
                 </el-row>
                 <el-row>
                      <el-col :span="24 / 4">
-                        <el-form-item label="联系方式" prop="phone">
+                        <el-form-item label="Thông tin liên hệ" prop="phone">
                             <el-input
                             v-model="bizFormModel.phone"
                             :maxlength="45"
                             :placeholder="
-                               '请输入联系方式'
+                               'Vui lòng nhập thông tin liên hệ'
                             "
                             ></el-input>
                         </el-form-item>
@@ -137,7 +137,7 @@
                 </el-row>
             </div>
 
-        <h4>药品信息</h4>
+        <h4>Thông tin thuốc</h4>
         <!-- 关于药品 -->
          <el-popover
             placement="top-start"
@@ -153,13 +153,13 @@
             >
                 <el-table-column
                 prop="drug.type.name"
-                label="药品类型"
+                label="Loại thuốc"
                 ></el-table-column>
                 <el-table-column
                 prop="drug.goodsName"
-                label="药品名称"
+                label="Tên thuốc"
                 ></el-table-column>
-                <el-table-column prop="gg" label="规格" width="120">
+                <el-table-column prop="gg" label="Quy cách" width="120">
                 <template slot-scope="scope">
                     {{ scope.row.drug.dosis
                     }}{{ scope.row.drug.dosisUnit.name }} *
@@ -171,15 +171,15 @@
                 </el-table-column>
                 <el-table-column
                 prop="drug.factory.name"
-                label="厂家"
+                label="Nhà sản xuất"
                 width="100"
                 ></el-table-column>
-                <el-table-column label="包装价" width="80">
+                <el-table-column label="Giá đóng gói" width="80">
                 <template slot-scope="scope">
                     {{ scope.row.drug.price + "/" + scope.row.drug.pack.name }}
                 </template>
                 </el-table-column>
-                <el-table-column label="零售价" width="80">
+                <el-table-column label="Giá bán lẻ" width="80">
                 <template slot-scope="scope">
                     {{
                     scope.row.drug.isUnpackSell === 1
@@ -192,7 +192,7 @@
                 </el-table-column>
                 <el-table-column
                 prop="surplusStock"
-                label="可用库存"
+                label="Tồn kho khả dụng"
                 width="100"
                 >
                 <template slot-scope="scope">
@@ -227,7 +227,7 @@
                 v-model="SearchDrugInput"
                 @input="GetWesternTable"
                 @focus="GetWesternTable"
-                placeholder="输入药品名称或拼音码"
+                placeholder="Nhập tên thuốc hoặc mã pinyin"
             ></el-input>
             </el-popover>
             <!-- 药品点击回显表格 -->
@@ -240,11 +240,11 @@
             >
                <el-table-column
                 prop="drug.goodsName"
-                label="药品名称"
+                label="Tên thuốc"
                 ></el-table-column>
                 <el-table-column
                 prop=""
-                label="药品规格"
+                label="Quy cách thuốc"
                 >
                 <template slot-scope="scope">
                     {{scope.row.drug.dosis+scope.row.drug.dosisUnit.name+'*'+scope.row.drug.preparation+scope.row.drug.preparationUnit.name+'/'+scope.row.drug.pack.name}}
@@ -252,17 +252,17 @@
                 </el-table-column>
                 <el-table-column
                 prop="drug.type.name"
-                label="药品类型"
+                label="Loại thuốc"
                 ></el-table-column>
                  <el-table-column
                 prop="drug.factory.name"
-                label="生产厂商"
+                label="Nhà sản xuất"
                 ></el-table-column>
                 <!-- <el-table-column
                 prop="drug.goodsName"
-                label="药品名称"
+                label="Tên thuốc"
                 ></el-table-column>
-                <el-table-column prop="gg" label="规格" width="120">
+                <el-table-column prop="gg" label="Quy cách" width="120">
                 <template slot-scope="scope">
                     {{ scope.row.drug.dosis
                     }}{{ scope.row.drug.dosisUnit.name }} *
@@ -272,12 +272,12 @@
                     }}
                 </template>
                 </el-table-column> -->
-                <el-table-column label="包装价" >
+                <el-table-column label="Giá đóng gói" >
                 <template slot-scope="scope">
                     {{ scope.row.drug.price + "/" + scope.row.drug.pack.name }}
                 </template>
                 </el-table-column>
-                <el-table-column label="零售价" >
+                <el-table-column label="Giá bán lẻ" >
                 <template slot-scope="scope">
                     {{
                     scope.row.drug.isUnpackSell === 1
@@ -290,7 +290,7 @@
                 </el-table-column>
                 <el-table-column
                 prop="surplusStock"
-                label="可用库存"
+                label="Tồn kho khả dụng"
                 >
                 <template slot-scope="scope">
                     {{
@@ -316,13 +316,13 @@
                 </el-table-column>
                     <el-table-column
                       prop="drugTracCodg"
-                      label="药品追溯码"
+                      label="Mã truy xuất thuốc"
                     > <template slot-scope="scope">
-                      <el-button :type="scope.row.completed ? 'success' : 'warning'" @click="openDrugDialog(scope)">输入追溯码</el-button>
+                      <el-button :type="scope.row.completed ? 'success' : 'warning'" @click="openDrugDialog(scope)">Nhập mã truy xuất</el-button>
                     </template></el-table-column>
                 <el-table-column
                 prop=""
-                label="数量">
+                label="Số lượng">
                 <template slot-scope="scope">
                     <el-input
                     v-model="scope.row.number"
@@ -336,7 +336,7 @@
 
                  <el-table-column
                 prop="type"
-                label="单位">
+                label="Đơn vị">
                 <template slot-scope="scope">
                     <el-input
                     disabled
@@ -368,28 +368,28 @@
                 </el-table-column>
                  <el-table-column
                     prop="allFee"
-                    label="合计金额(元)"
+                    label="Tổng số tiền(VNĐ)"
                     width="120"
                     align="center"
                     ></el-table-column>
-                <el-table-column label="操作" >
+                <el-table-column label="Thao tác" >
                 <template slot-scope="scope">
-                   <el-button type="text" @click="deleteDrugList(scope.row,scope.$index)">删除</el-button>
+                   <el-button type="text" @click="deleteDrugList(scope.row,scope.$index)">Xóa</el-button>
                 </template>
                 </el-table-column>
             </el-table>
             </div>
 
-            <!-- 总框 -->
+            <!-- Khung tổng -->
 
             <div class="statistical_box">
                 <div style="padding-top:0px;margin-top:20px;">
                     <div style="float:left;">
-                    <span>总金额:{{totalAllFee}}元</span>
+                    <span>Tổng số tiền:{{totalAllFee}}VNĐ</span>
                 </div>
                   <el-form-item>
                 <el-button type="primary" @click="notarize('bizFormModel')">
-                    确认收费
+                    Xác nhận thu phí
                 </el-button>
                   </el-form-item>
                 </div>
@@ -398,7 +398,7 @@
         </el-form>
         </div>
 
-        <!-- 零售材料 -->
+        <!-- Vật tư bán lẻ -->
         <div v-else>
              <el-form
         :model="stuffBizFormModel"
@@ -409,18 +409,18 @@
         style="marginTop: 10px"
         class="edit-form"
         >
-            <h4>患者信息</h4>
+            <h4>Thông tin bệnh nhân</h4>
             <div class="patientMessage">
                 <el-row>
                     <el-col :span='24/4'>
-                         <el-form-item label="患者姓名" prop="name">
+                         <el-form-item label="Tên bệnh nhân" prop="name">
                             <el-select
                             v-model="stuffBizFormModel.name"
                             value-key="id"
                             filterable
                             allow-create
                             @change="GetPatientInfo()"
-                            placeholder="请选择患者"
+                            placeholder="Vui lòng chọn bệnh nhân"
                             >
                             <el-option
                                 v-for="patientId in patientId_List"
@@ -438,7 +438,7 @@
                         </el-form-item>
                     </el-col>
                      <el-col :span="24 / 4">
-                        <el-form-item label="出生日期" prop="birthday">
+                        <el-form-item label="Ngày sinh" prop="birthday">
                             <el-date-picker
                             v-model="stuffBizFormModel.birthday"
                             type="date"
@@ -446,7 +446,7 @@
                             :picker-options="setDisabled"
                             value-format="yyyy-MM-dd"
                             :placeholder="
-                                '请输入出生日期'
+                                'Vui lòng nhập ngày sinh'
                             "
 
                             ></el-date-picker>
@@ -454,18 +454,18 @@
                         </el-form-item>
                     </el-col>
                      <el-col :span="24 / 4">
-                    <el-form-item label="年龄" prop="age">
+                    <el-form-item label="Tuổi" prop="age">
                         <el-col :span="24 / 2">
                         <el-input
 
                             v-model="stuffBizFormModel.age"
                             :maxlength="20"
                             :placeholder="
-                            '年龄'
+                            'Tuổi'
                             "
                         >
                         <template slot="append">
-                            岁
+                            tuổi
                         </template>
                         </el-input>
                         </el-col>
@@ -474,22 +474,22 @@
 
                             v-model="stuffBizFormModel.month"
                             :maxlength="20"
-                            :placeholder="'月'"
+                            :placeholder="'tháng'"
                         >
                         <template slot="append">
-                            月
+                            tháng
                         </template>
                         </el-input>
                         </el-col>
                     </el-form-item>
                     </el-col>
                     <el-col :span="24 / 4">
-                    <el-form-item label="性别" prop="gender.name">
+                    <el-form-item label="Giới tính" prop="gender.name">
                         <el-select
                         v-model="stuffBizFormModel.gender"
                         value-key="value"
                         filterable
-                        placeholder="请选择性别"
+                        placeholder="Vui lòng chọn giới tính"
                         @clear="
                             stuffBizFormModel.gender = {
                             value: null,
@@ -509,12 +509,12 @@
                 </el-row>
                 <el-row>
                      <el-col :span="24 / 4">
-                        <el-form-item label="联系方式" prop="phone">
+                        <el-form-item label="Thông tin liên hệ" prop="phone">
                             <el-input
                             v-model="stuffBizFormModel.phone"
                             :maxlength="45"
                             :placeholder="
-                               '请输入联系方式'
+                               'Vui lòng nhập thông tin liên hệ'
                             "
                             ></el-input>
                         </el-form-item>
@@ -522,7 +522,7 @@
                 </el-row>
             </div>
 
-        <h4>材料信息</h4>
+        <h4>Thông tin vật tư</h4>
         <!-- 关于材料 -->
          <el-popover
             placement="top-start"
@@ -538,13 +538,13 @@
             >
                 <el-table-column
                 prop="stuff.type.name"
-                label="材料类型"
+                label="Loại vật tư"
                 ></el-table-column>
                 <el-table-column
                 prop="stuff.name"
-                label="材料名称"
+                label="Tên vật tư"
                 ></el-table-column>
-                <el-table-column prop="gg" label="规格" width="120">
+                <el-table-column prop="gg" label="Quy cách" width="120">
                 <template slot-scope="scope">
                     {{ scope.row.stuff.packNumber
                     }}*{{ scope.row.stuff.minUnit.name }} /
@@ -554,15 +554,15 @@
                 </el-table-column>
                 <el-table-column
                 prop="stuff.factory.name"
-                label="厂家"
+                label="Nhà sản xuất"
                 width="100"
                 ></el-table-column>
-                <el-table-column label="包装价" width="80">
+                <el-table-column label="Giá đóng gói" width="80">
                 <template slot-scope="scope">
                     {{ scope.row.stuff.priceOutSell +"/" +scope.row.stuff.packUnit.name }}
                 </template>
                 </el-table-column>
-                <el-table-column label="零售价" width="80">
+                <el-table-column label="Giá bán lẻ" width="80">
                 <template slot-scope="scope">
                     {{
                     scope.row.stuff.isUnpackSell === "1"
@@ -575,7 +575,7 @@
                 </el-table-column>
                 <el-table-column
                 prop="surplusStock"
-                label="可用库存"
+                label="Tồn kho khả dụng"
                 width="100"
                 >
                 <template slot-scope="scope">
@@ -623,7 +623,7 @@
             >
                <el-table-column
                 prop="stuff.name"
-                label="材料名称"
+                label="Tên vật tư"
                 ></el-table-column>
                 <el-table-column
                 prop=""
@@ -635,19 +635,19 @@
                 </el-table-column>
                 <el-table-column
                 prop="stuff.type.name"
-                label="材料类型"
+                label="Loại vật tư"
                 ></el-table-column>
                  <el-table-column
                 prop="stuff.factory.name"
-                label="生产厂商"
+                label="Nhà sản xuất"
                 ></el-table-column>
 
-                <el-table-column label="包装价" >
+                <el-table-column label="Giá đóng gói" >
                 <template slot-scope="scope">
                     {{ scope.row.stuff.priceOutSell +"/" +scope.row.stuff.packUnit.name }}
                 </template>
                 </el-table-column>
-                <el-table-column label="零售价" >
+                <el-table-column label="Giá bán lẻ" >
                 <template slot-scope="scope">
                     {{
                     scope.row.stuff.isUnpackSell === "1"
@@ -660,7 +660,7 @@
                 </el-table-column>
                 <el-table-column
                 prop="surplusStock"
-                label="可用库存"
+                label="Tồn kho khả dụng"
                 >
                 <template slot-scope="scope">
                     {{
@@ -686,7 +686,7 @@
                 </el-table-column>
                 <el-table-column
                 prop=""
-                label="数量">
+                label="Số lượng">
                 <template slot-scope="scope">
                     <el-input
                     v-model="scope.row.number"
@@ -699,7 +699,7 @@
                 </el-table-column>
                  <el-table-column
                 prop="type"
-                label="单位">
+                label="Đơn vị">
                 <template slot-scope="scope">
                     <el-input
                     disabled
@@ -731,28 +731,28 @@
                 </el-table-column>
                  <el-table-column
                     prop="allFee"
-                    label="合计金额(元)"
+                    label="Tổng số tiền(VNĐ)"
                     width="120"
                     align="center"
                     ></el-table-column>
-                <el-table-column label="操作" >
+                <el-table-column label="Thao tác" >
                 <template slot-scope="scope">
-                   <el-button type="text" @click="deleteDrugList(scope.row,scope.$index)">删除</el-button>
+                   <el-button type="text" @click="deleteDrugList(scope.row,scope.$index)">Xóa</el-button>
                 </template>
                 </el-table-column>
             </el-table>
             </div>
 
-            <!-- 总框 -->
+            <!-- Khung tổng -->
 
             <div class="statistical_box">
                 <div style="padding-top:0px;margin-top:20px;">
                     <div style="float:left;">
-                    <span>总金额:{{totalAllFee}}元</span>
+                    <span>Tổng số tiền:{{totalAllFee}}VNĐ</span>
                 </div>
                   <el-form-item>
                 <el-button type="primary" @click="notarize('stuffBizFormModel')">
-                    确认收费
+                    Xác nhận thu phí
                 </el-button>
                   </el-form-item>
                 </div>
@@ -760,22 +760,22 @@
 
         </el-form>
         </div>
-      <el-dialog @keydown.native="handleKeydown" :modal="false"  :visible.sync="drugDialogVisible" title="输入药品追溯码" @open="focusInput" @close="resetInput">
+      <el-dialog @keydown.native="handleKeydown" :modal="false"  :visible.sync="drugDialogVisible" title="Nhập mã truy xuất thuốc" @open="focusInput" @close="resetInput">
         <el-input
           v-model="currentInput"
-          placeholder="请输入药品追溯码"
+          placeholder="Vui lòng nhập mã truy xuất thuốc"
           ref="inputFocus"
         ></el-input>
         <span slot="footer" class="dialog-footer">
-        <el-button @click="submitInput" type="primary">确定</el-button>
-        <el-button @click="drugDialogVisible = false">取消</el-button>
+        <el-button @click="submitInput" type="primary">Xác nhận</el-button>
+        <el-button @click="drugDialogVisible = false">Hủy</el-button>
       </span>
       </el-dialog>
 
 
         <!-- 确认收费弹出框 -->
         <el-dialog
-      title="收费"
+      title="Thu phí"
       :visible.sync="chargeDialogVisible"
       width="50%"
       :close-on-click-modal="false"
@@ -784,81 +784,81 @@
       <div style="margin-top:-50px">
         <el-divider></el-divider>
         <div id="chargeTotalFee_Container">
-          <div id="chargeTotalFee_Title">实收金额（元）：</div>
+          <div id="chargeTotalFee_Title">Số tiền thực thu（VNĐ）：</div>
           <div id="chargeTotalFee_Fee" v-if="this.practicalTotalAllFee">
-            {{  this.practicalTotalAllFee}}元
+            {{  this.practicalTotalAllFee}}VNĐ
           </div>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-           <div id="chargeTotalFee_Title">应收金额（元）：</div>
+           <div id="chargeTotalFee_Title">Số tiền phải thu（VNĐ）：</div>
             <div id="chargeTotalFee_Fee" v-if="this.totalAllFee">
-            {{  this.totalAllFee}}元
+            {{  this.totalAllFee}}VNĐ
           </div>
         </div>
         <el-form ref="chargeForm" :model="totalAllFee" label-width="80px">
           <el-row>
 
             <el-col :span="8">
-              <el-form-item label="折扣">
+              <el-form-item label="Chiết khấu">
                 <el-input
                   v-model="discount"
                   @input="GetAmountReceived"
-                  placeholder="折扣"
+                  placeholder="Chiết khấu"
                 >
                   <template slot="append">折</template>
                 </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8" :offset="1">
-              <el-form-item label="减免金额">
+              <el-form-item label="Số tiền miễn giảm">
                 <el-input
                   v-model="amountOfRemission"
-                  placeholder="减免金额"
+                  placeholder="Số tiền miễn giảm"
                   disabled
                   @input="GetAmountReceived"
                 >
-                  <template slot="append">元</template>
+                  <template slot="append">VNĐ</template>
                 </el-input>
               </el-form-item>
             </el-col>
             <!-- <el-col :span="10" :offset="1">
-              <el-form-item label="减免金额">
+              <el-form-item label="Số tiền miễn giảm">
                 <el-input v-model="chargeForm.amountReceivable">
-                  <template slot="append">元</template>
+                  <template slot="append">VNĐ</template>
                 </el-input>
               </el-form-item>
             </el-col> -->
           </el-row>
           <el-row v-if="paymentType==='payType_0'">
              <el-col :span="8">
-              <el-form-item label="实付金额">
+              <el-form-item label="Số tiền thực trả">
                 <el-input
                   v-model="amountPaid"
                   @input=" inputAmountPaid"
-                  placeholder="实付金额"
+                  placeholder="Số tiền thực trả"
                 >
-                <template slot="append">元</template>
+                <template slot="append">VNĐ</template>
                 </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8" :offset="1">
-              <el-form-item label="找补金额">
+              <el-form-item label="Số tiền trả lại">
                 <el-input
                   v-model="amountOfChange"
-                  placeholder="找补金额"
+                  placeholder="Số tiền trả lại"
                   disabled
                 >
-                  <template slot="append">元</template>
+                  <template slot="append">VNĐ</template>
                 </el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="20">
-              <el-form-item label="支付方式">
+              <el-form-item label="Phương thức thanh toán">
                 <el-radio-group v-model="paymentType">
-                  <el-radio label="payType_0">现金</el-radio>
+                  <el-radio label="payType_0">Tiền mặt</el-radio>
                   <el-radio label="payType_1">支付宝</el-radio>
-                  <el-radio label="payType_2">微信</el-radio>
+                  <el-radio label="payType_2">WeChat</el-radio>
                   <el-radio label="payType_3">银行卡</el-radio>
                 </el-radio-group>
               </el-form-item>
@@ -866,7 +866,7 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="备注">
+              <el-form-item label="Ghi chú">
                 <el-input type="textarea" :rows="3" v-model="meno"></el-input>
               </el-form-item>
             </el-col>
@@ -875,8 +875,8 @@
         <el-divider></el-divider>
       </div>
       <div slot="footer">
-        <el-button @click="chargeFormCancel">取 消</el-button>
-        <el-button type="primary" @click="chargeBtn">确认收费</el-button>
+        <el-button @click="chargeFormCancel">Hủy</el-button>
+        <el-button type="primary" @click="chargeBtn">Xác nhận thu phí</el-button>
       </div>
     </el-dialog>
     </el-card>
@@ -908,100 +908,100 @@ export default {
             stuffBizFormModel:this.initPatientModel(),
             StuffPatientForModel:this.initPatientModel(),
             formRules:{
-                name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-                birthday:[{required: true, message: "请选择出生日期", trigger: "blur"}],
-                age: [{ required: true, message: "请输入年龄", trigger: "blur" }],
-                'gender.name': [{ required: true, message: "请选择性别", trigger: 'change' }],
+                name: [{ required: true, message: "Vui lòng nhập họ tên", trigger: "blur" }],
+                birthday:[{required: true, message: "Vui lòng chọn ngày sinh", trigger: "blur"}],
+                age: [{ required: true, message: "Vui lòng nhập tuổi", trigger: "blur" }],
+                'gender.name': [{ required: true, message: "Vui lòng chọn giới tính", trigger: 'change' }],
             },
             stuffFormRules:{
-                name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-                birthday:[{required: true, message: "请选择出生日期", trigger: "blur"}],
-                age: [{ required: true, message: "请输入年龄", trigger: "blur" }],
-                'gender.name': [{ required: true, message: "请选择性别", trigger: 'change' }],
+                name: [{ required: true, message: "Vui lòng nhập họ tên", trigger: "blur" }],
+                birthday:[{required: true, message: "Vui lòng chọn ngày sinh", trigger: "blur"}],
+                age: [{ required: true, message: "Vui lòng nhập tuổi", trigger: "blur" }],
+                'gender.name': [{ required: true, message: "Vui lòng chọn giới tính", trigger: 'change' }],
             },
-            patientId_List:[],  //获取患者信息
+            patientId_List:[],  //Lấy thông tin bệnh nhân
             gender_List:[],   //获取性别
             SearchDrugInput:"", //药品搜索
-            SearchStuffInput:"", //材料搜索
+            SearchStuffInput:"", //Tìm vật tư
             DrugMedicineTable:[], //药品表格
             StuffMedicineTable:[], //材料表格
             DrugList:[],//药品集合
-            StuffList:[], //材料集合
+            StuffList:[], //Tập vật tư
             number:0,
             totalAllFee:0,  //应收总金额
             practicalTotalAllFee:0, //实收总金额
-            discount:0,   //折扣
-            amountOfRemission:"0", //优惠金额
+            discount:0,   //Chiết khấu
+            amountOfRemission:"0", //Số tiền ưu đãi
             chargeDialogVisible:false,
-            paymentType:"payType_0",    //支付方式
-            meno:"",            //备注
-            amountPaid:0, //实付金额
-            amountOfChange:0,//找补金额
-           //追溯码弹窗控制
+            paymentType:"payType_0",    //Phương thức thanh toán
+            meno:"",            //Ghi chú
+            amountPaid:0, //Số tiền thực trả
+            amountOfChange:0,//Số tiền trả lại
+           //Điều khiển hộp thoại mã truy xuất
            drugDialogVisible: false,
            currentInput: '',
-           inputCount: 0, // 当前输入次数
-           maxInputCount: 0, // 最大输入次数
-           currentRow: null, // 当前操作的行
-           allInputs: [], // 所有输入的追溯码
+           inputCount: 0, // Số lần nhập hiện tại
+           maxInputCount: 0, // Số lần nhập tối đa
+           currentRow: null, // Dòng đang thao tác
+           allInputs: [], // Tất cả mã truy xuất đã nhập
         }
     },
     methods:{
       handleKeydown(event) {
         if (event.key === 'Enter') {
-          // 调用确定操作
+          // Gọi thao tác xác nhận
           this.submitInput();
         }
       },
       focusInput() {
-        // 使用 ref 来访问输入框并调用 focus() 方法
+        // Sử dụng ref để truy cập ô nhập và gọi focus() Phương pháp
         this.$nextTick(() => {
-          this.$refs.inputFocus.focus(); // 自动聚焦输入框
+          this.$refs.inputFocus.focus(); // Tự động focus vào ô nhập
         });
       },
       openDrugDialog(scope) {
         if ( scope.row.number <= 0 || ! scope.row.number) {
-          this.$message.error('请先输入有效的数量与是否拆零！');
-          return; // 如果数量无效，停止执行
+          this.$message.error('Vui lòng nhập trước số lượng hợp lệ và có tách hộp không！');
+          return; // Nếu số lượng không hợp lệ，Dừng thực hiện
         }
-        this.currentRow = scope.row; // 记录当前行
-        this.inputCount = 0; // 重置输入计数
-        this.allInputs = []; // 清空之前的输入
+        this.currentRow = scope.row; // Ghi lại dòng hiện tại
+        this.inputCount = 0; // Đặt lại bộ đếm nhập liệu
+        this.allInputs = []; // Xóa dữ liệu nhập trước đó
         this.drugDialogVisible = true;
-        // 根据当前行的数量设置基础输入次数和最大输入次数
+        // Đặt số lần nhập cơ bản và tối đa theo số lượng của dòng hiện tại
         const quantity = this.currentRow.number;
         this.maxInputCount = this.currentRow.isSplit ? this.currentRow.preparation * quantity: quantity;
       },
 
       submitInput() {
         if (this.currentInput) {
-          this.allInputs.push(this.currentInput); // 添加当前输入
-          this.currentRow.drugTracCodg = this.allInputs.join(','); // 更新当前行的药品追溯码
-          this.currentInput = ''; // 清空输入框
-          this.inputCount++; // 增加输入计数
+          this.allInputs.push(this.currentInput); // Thêm dữ liệu nhập hiện tại
+          this.currentRow.drugTracCodg = this.allInputs.join(','); // Cập nhật mã truy xuất thuốc của dòng hiện tại
+          this.currentInput = ''; // Xóa ô nhập
+          this.inputCount++; // Tăng bộ đếm nhập
 
-          // 检查是否达到最大输入次数
+          // Kiểm tra đã đạt số lần nhập tối đa chưa
           if (this.inputCount >= this.maxInputCount) {
-            this.$set(this.currentRow, 'completed', true); // 设置为完成状态
-            this.drugDialogVisible = false; // 关闭对话框
+            this.$set(this.currentRow, 'completed', true); // Đặt thành trạng thái hoàn thành
+            this.drugDialogVisible = false; // Đóng hộp thoại
           }
           this.$nextTick(() => {
-            this.$refs.inputFocus.focus(); // 自动聚焦输入框
+            this.$refs.inputFocus.focus(); // Tự động focus vào ô nhập
           });
         }
       },
       resetInput() {
-        this.currentInput = ''; // 清空输入框
-        this.inputCount = 0; // 重置输入计数
-        this.currentRow = null; // 清空当前行记录
+        this.currentInput = ''; // Xóa ô nhập
+        this.inputCount = 0; // Đặt lại bộ đếm nhập liệu
+        this.currentRow = null; // Xóa bản ghi dòng hiện tại
       },
       updateMaxInputCount(row) {
-        this.$set(this.currentRow, 'isSplit', true); // 设置为完成状态
-        // 每次开关状态改变时更新最大输入次数
+        this.$set(this.currentRow, 'isSplit', true); // Đặt thành trạng thái hoàn thành
+        // Mỗi khi trạng thái công tắc thay đổi thì cập nhật số lần nhập tối đa
         const quantity = row.packAmount;
         this.maxInputCount = row.isSplit ? quantity * row.preparationAmount: quantity;
       },
-        //整体收费取消
+        //Hủy thu phí toàn bộ
         chargeFormCancel(){
         this.chargeDialogVisible = false
         this.discount = 0
@@ -1009,7 +1009,7 @@ export default {
         this.amountOfRemission = 0
         this.amountOfChange = 0
         },
-        //关于现金支付的找补金额计算
+        //Tính số tiền trả lại khi thanh toán tiền mặt
         inputAmountPaid(){
         this.amountOfChange = 0
         let amount = this.amountPaid?this.amountPaid:0
@@ -1018,7 +1018,7 @@ export default {
         }
         },
 
-        //确认收费
+        //Xác nhận thu phí
         chargeBtn(){
             //进行数据封装
             let tollInfo = this.tollEncapsulation()
@@ -1041,7 +1041,7 @@ export default {
                         drugTracCodg:item.drugTracCodg
                     },
                     total:item.total,
-                    drugTracCodg:item.drugTracCodg,//医保追溯码
+                    drugTracCodg:item.drugTracCodg,//Mã truy xuất bảo hiểm y tế
                     allFee:item.allFee,
                     isExtra:0,
                     seq:count+=1,
@@ -1089,7 +1089,7 @@ export default {
             saveTollTollInfo(model,null).then((res)=>{
                 if (res.code === 100) {
 
-                    this.$message.success("操作成功！");
+                    this.$message.success("Thao tác thành công！");
                     this.chargeDialogVisible = false;
                     this.bizFormModel = this.initPatientModel()
                     this.stuffBizFormModel = this.initPatientModel()
@@ -1123,18 +1123,18 @@ export default {
             return [
                 {
                     recipelInfo:{
-                        company:currentUser.company,  //诊所id
-                        fee:this.totalAllFee,         //处方总价
+                        company:currentUser.company,  //Phòng khámid
+                        fee:this.totalAllFee,         //Tổng giá đơn thuốc
                         isPay:'0',                    //是否支付
-                        name:'零售处方',
-                        remarks:'零售处方',
-                        seq:1,                    //排序
+                        name:'Đơn thuốc bán lẻ',
+                        remarks:'Đơn thuốc bán lẻ',
+                        seq:1,                    //Sắp xếp
                         smallType:{
                             value:"recipelSmallType_1",  //处方小类
                         },
-                        status:1,                 //处方状态
-                        chargeStatus:1,          //收费状态
-                        dispensionStatus:0,      //发药状态
+                        status:1,                 //Trạng thái đơn thuốc
+                        chargeStatus:1,          //Trạng thái thu phí
+                        dispensionStatus:0,      //Trạng thái phát thuốc
 
                     },
                     recipelDetailEvtList:[
@@ -1146,15 +1146,15 @@ export default {
 
         tollEncapsulation(){
             return{
-                company:currentUser.company,  //诊所id
-                patient:this.activeName==='0'?this.bizFormModel:this.stuffBizFormModel,    //患者
-                amountReceivable:this.totalAllFee,  //应收金额
-                amountReceived:this.practicalTotalAllFee,  //实收金额
-                amountDiscounted:this.amountOfRemission,  //优惠金额
-                discount:this.discount,    //折扣额度
-                paymentType:{value:this.paymentType},  //支付类型
+                company:currentUser.company,  //Phòng khámid
+                patient:this.activeName==='0'?this.bizFormModel:this.stuffBizFormModel,    //Bệnh nhân
+                amountReceivable:this.totalAllFee,  //Số tiền phải thu
+                amountReceived:this.practicalTotalAllFee,  //Số tiền thực thu
+                amountDiscounted:this.amountOfRemission,  //Số tiền ưu đãi
+                discount:this.discount,    //Mức chiết khấu
+                paymentType:{value:this.paymentType},  //Loại thanh toán
                 amountStatus:{value:'amountStatus_1'}, //单据类型
-                tollType:{value:'tollType_5'},      //收费类型
+                tollType:{value:'tollType_5'},      //Loại thu phí
             }
         },
 
@@ -1181,7 +1181,7 @@ export default {
            }
         },
 
-        //计算实际收费
+        //Tính phí thực tế
         GetAmountReceived() {
             this.practicalTotalAllFee = this.totalAllFee
             let discount = this.discount;
@@ -1208,11 +1208,11 @@ export default {
                         this.$message.error("请选择药品")
                         return
                     }
-                    //进行表格中的数量校验
+                    //Thực hiện kiểm tra số lượng trong bảng
                     this.DrugList.forEach((item)=>{
 
                         if(item.number==null||item.number===0){
-                            this.$message.error("请填写"+item.drug.goodsName+"的数量")
+                            this.$message.error("Vui lòng điền"+item.drug.goodsName+"số lượng")
                             flag = true
                         }
                     })
@@ -1221,14 +1221,14 @@ export default {
                         return
                     }
                     //  if(!this.StuffList.length>0){
-                    //     this.$message.error("请选择材料")
+                    //     this.$message.error("Vui lòng chọn vật tư")
                     //     return
                     // }
-                    // //进行表格中的数量校验
+                    // //Thực hiện kiểm tra số lượng trong bảng
                     // this.StuffList.forEach((item)=>{
 
                     //     if(item.number==null||item.number==0){
-                    //         this.$message.error("请填写"+item.stuff.name+"的数量")
+                    //         this.$message.error("Vui lòng điền"+item.stuff.name+"số lượng")
                     //         flag = true
                     //     }
                     // })
@@ -1250,14 +1250,14 @@ export default {
                 if (valid) {
                     let flag = false
                     if(!this.StuffList.length>0){
-                        this.$message.error("请选择材料")
+                        this.$message.error("Vui lòng chọn vật tư")
                         return
                     }
-                    //进行表格中的数量校验
+                    //Thực hiện kiểm tra số lượng trong bảng
                     this.StuffList.forEach((item)=>{
 
                         if(item.number==null||item.number===0){
-                            this.$message.error("请填写"+item.stuff.name+"的数量")
+                            this.$message.error("Vui lòng điền"+item.stuff.name+"số lượng")
                             flag = true
                         }
                     })
@@ -1325,11 +1325,11 @@ export default {
         },
         //获取病人
         getPatient(){
-             //查询病人列表
+             //Truy vấn danh sách bệnh nhân
                 let patientId_search = {
                     params: [],
                 };
-                // 字段对应表上filter条件
+                // Trên bảng tương ứng của trườngfilterĐiều kiện
                 patientId_search.params.push.apply(patientId_search.params, [
                     {
                     columnName: "company_id",
@@ -1337,7 +1337,7 @@ export default {
                     value: currentUser.company.id,
                     },
                 ]);
-                // 数据权限: 患者表patient
+                // Quyền dữ liệu: Bảng bệnh nhânpatient
                 this.pushDataPermissions(
                     patientId_search.params,
                     this.$route.meta.routerId,
@@ -1352,32 +1352,32 @@ export default {
         initPatientModel() {
             return {
                 company: {
-                // 诊所id
+                // Phòng khámid
                 id: currentUser.company.id,
                 name: null,
                 },
-                name: "", // 患者姓名
+                name: "", // Tên bệnh nhân
                 gender: {
-                // 性别null
+                // Giới tínhnull
                 value: null,
                 name: null,
                 },
-                age: "", // 年龄
-                month: "", // 月
-                birthday: "", // 出生日期
-                phone: "", // 联系方式
-                card: "", // 身份证号
+                age: "", // Tuổi
+                month: "", // tháng
+                birthday: "", // Ngày sinh
+                phone: "", // Thông tin liên hệ
+                card: "", // Số CMND/CCCD
                 withPatientNexus: {
-                // 与患者关系
+                // Quan hệ với bệnh nhân
                 value: null,
                 name: null,
                 },
-                healthCardNo: "", // 健康卡号
-                province: "", // 省
-                city: "", // 市
-                area: "", // 区
-                address: "", // 详细地址
-                remarks: "", // 备注信息
+                healthCardNo: "", // Số thẻ sức khỏe
+                province: "", // Tỉnh/Thành phố
+                city: "", // Thành phố
+                area: "", // Quận/Huyện
+                address: "", // Địa chỉ chi tiết
+                remarks: "", // Thông tin ghi chú
                 id:'',
                 openId:'',
                 updateDate:'',
@@ -1411,7 +1411,7 @@ export default {
 
         //初始化获取字典数据
         initOptions(){
-             //查询患者性别
+             //Truy vấn giới tính bệnh nhân
                 getDictItemsByCode(DICT_CODE.GENDER).then((data) => {
                     this.gender_List = data;
                 });
@@ -1434,7 +1434,7 @@ export default {
 
                 ]
             }
-              //判断是否输入的是英文
+              //Kiểm tra có phải nhập tiếng Anh không
                 const pattern2 = new RegExp("[A-Za-z]+");
                 if (pattern2.test(this.SearchDrugInput)) {
                     search.params[1].value =
@@ -1534,7 +1534,7 @@ export default {
                 }
             })
             if(flag){
-                this.$message.warning("该药品已添加，请勿重复添加！")
+                this.$message.warning("该药品已添加，Vui lòng không thêm trùng lặp！")
                 return;
             }
             row.number = null
@@ -1554,7 +1554,7 @@ export default {
                 }
             })
             if(flag){
-                this.$message.warning("该材料已添加，请勿重复添加！")
+                this.$message.warning("该材料已添加，Vui lòng không thêm trùng lặp！")
                 return;
             }
             row.number = null

@@ -29,37 +29,37 @@ public class MdPsnDataServiceImpl  implements MdPsnDataService {
 
     @Override
     public Boolean getAndSetPsnData(Registration registration) {
-        //构建请求参数
+        //xây dựngVui lòngyêu cầuTham số
         JSONObject data = new JSONObject();
-        //获取患者信息
+        //LấyThông tin bệnh nhân
         Patient patientTemp = patientDao.getPatientByregistrationId(registration.getId()) ;
-        //就诊凭证类型 待定 TODO 读卡获取
+        //Loại giấy tờ khám bệnh chờchỉ định TODO đọcthẻLấy
         data.put("mdtrt_cert_type",registration.getCardType().getValue());
-        //“01”时填写电子凭证 令牌，为“02”时填写身份证号，为“03”时填写社会保障卡卡号
+        //“01” thì điền chứng từ điện tử Token,  là “02” thì điền số CMND/CCCD,  là “03” thì điền số thẻ an sinh xã hội
         data.put("mdtrt_cert_no",registration.getMdtrtCertNo());
-        //卡识别码 03时必填
+        //thẻ识loạimã 03 giờbắt buộc
         data.put("card_sn","");
         if("03".equals(registration.getCardType().getValue())){
             data.put("card_sn",patientTemp.getCard());
         }
-        //开始时间，获取历史参保信息时传入
+        //Thời gian bắt đầu, Lấylịch sửtham gia bảo hiểmThông tin giờtruyền vào
         data.put("begntime","");
-        //人员证件类型 默认身份证 TODO 待对接传值
+        //Loại giấy tờ nhân viên Mặc địnhCMND/CCCD TODO chờđối vớitiếptruyềnGiá trị
         data.put("psn_cert_type","01");
-        //人员证件号码
+        //nhân viêngiấy tờsố
         data.put("certno",patientTemp.getCard());
-        //人员姓名
+        //Tên nhân viên
         data.put("psn_name",patientTemp.getName());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data",data);
         Output_1101 output1101 = JSONObject.parseObject(webApiUtil.getMedicareData("1101", jsonObject.toJSONString()), Output_1101.class);
-        //构建医保患者基本信息
+        //xây dựngBHYTBệnh nhâncơ bảnThông tin
         PatientMdData patientMdData = new PatientMdData();
-        //基本信息
+        //cơ bảnThông tin
         patientMdData.setPatientId(Long.valueOf(patientTemp.getId()));
         //patientMdData.setOrganizeId(Long.valueOf(SessionUtils.getLoginTenantId()));
 
-        // 获取 BaseInfo 类中的信息
+        // Lấy BaseInfo LớpTrongThông tin
         Output_1101.BaseInfo baseInfo = output1101.getBaseinfo();
         patientMdData.setPsnNo(baseInfo.getPsn_no());
         patientMdData.setPsnCertType(baseInfo.getPsn_cert_type());
@@ -70,9 +70,9 @@ public class MdPsnDataServiceImpl  implements MdPsnDataService {
         patientMdData.setBrdy(baseInfo.getBrdy());
         patientMdData.setAge(baseInfo.getAge());
         patientMdData.setExpcontent("");
-        // 获取 InsuInfo 类中的信息
+        // Lấy InsuInfo LớpTrongThông tin
         if (output1101.getInsuinfo() != null && !output1101.getInsuinfo().isEmpty()) {
-            Output_1101.InsuInfo insuInfo = output1101.getInsuinfo().get(0); // 假设只取第一个参保信息
+            Output_1101.InsuInfo insuInfo = output1101.getInsuinfo().get(0); // 假đặtchỉlấyDòng mộtCáitham gia bảo hiểmThông tin
             patientMdData.setBalc(insuInfo.getBalc());
             patientMdData.setInsutype(insuInfo.getInsutype());
             patientMdData.setPsnType(insuInfo.getPsn_type());
@@ -85,7 +85,7 @@ public class MdPsnDataServiceImpl  implements MdPsnDataService {
         }
 
 
-        //根据患者id插入或更新
+        //TheoBệnh nhânidChèn hoặc cập nhật
         return   patientMdDataService.saveOrUpdate(patientMdData, new LambdaQueryWrapper<PatientMdData>()
                 .eq(PatientMdData::getPatientId, patientMdData.getPatientId()));
     }

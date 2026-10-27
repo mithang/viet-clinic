@@ -18,7 +18,7 @@ import java.util.Objects;
 
 
 /**
- * 出库单Service
+ * Phiếu xuất khoService
  *
  * @author txl
  * @version 2022-06-02/
@@ -55,7 +55,7 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
     @Autowired
     private SupplierOutboundService supplierOutboundService;
     /**
-     * 保存出库单
+     * LưuXuất khođơn
      *
      * @param supplierOutbound
      * @return
@@ -66,18 +66,18 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         if(ObjectUtils.isEmpty(outboundEvt.getSupplierOutbound())==false && ObjectUtils.isEmpty(outboundEvt.getSupplierOutbound().getId())==false) {
             SupplierOutbound old = this.get(outboundEvt.getSupplierOutbound().getId());
             if (old == null)
-                throw new ServiceException("出库单不存在");
+                throw new ServiceException("Phiếu xuất kho không tồn tại");
             if (old.getStatus() == 2)
-                throw new ServiceException("出库单已审核，不能修改");
+                throw new ServiceException("Xuất khođơnĐãxét duyệt, Không thểSửa");
             if (old.getStatus() == 3)
-                throw new ServiceException("出库单已撤销，不能修改");
+                throw new ServiceException("Xuất khođơnĐãhủy, Không thểSửa");
         }
 
-        // 新增时, 处理自动编号字段
+        // Khi thêm mới, Xử lý trường tự động đánh số
         SupplierOutbound supplierOutbound = outboundEvt.getSupplierOutbound();
         supplierOutbound.setCreateDate(new Date());
         supplierOutbound.setExamineBy(null);
-        supplierOutbound.setStatus(1);//待审核
+        supplierOutbound.setStatus(1);//Chờ xét duyệt
 
         if (StringUtils.isBlank(supplierOutbound.getId())) {
             String oldOutbound = supplierOutboundDao.getCode(supplierOutbound.getCompany().getId());
@@ -85,76 +85,76 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         }
         SupplierOutbound supplierOutboundTemp = super.save(supplierOutbound);
 
-        //保存明细
+        //LưuChi tiết
         supplierOutboundDetailService.save(supplierOutboundTemp.getId(), outboundEvt.getSupplierOutboundDetailList());
 
         return supplierOutboundTemp;
     }
 
     /**
-     * 撤消出库单
+     * hủy bỏXuất khođơn
      *
      * @param id
      */
     @Transactional(readOnly = false)
     public void cancel(String id) {
-        //作废之前先去判断该药品或者材料是否被使用
+        //Trước khi hủy, kiểm tra trước thuốc hoặc vật tư đó có đang được sử dụng không
         SupplierOutbound supplierOutbound = this.get(id);
         if (supplierOutbound == null)
-            throw new ServiceException("出库单不存在");
+            throw new ServiceException("Phiếu xuất kho không tồn tại");
         if (supplierOutbound.getStatus() == 3)
-            throw new ServiceException("出库单已撤销，不能重复操作");
+            throw new ServiceException("Xuất khođơnĐãhủy, Không thểtrùng lặpthao tác");
         if (supplierOutbound.getStatus() == 2)
-            throw new ServiceException("出库单已审核，不能撤销");
+            throw new ServiceException("Xuất khođơnĐãxét duyệt, Không thểhủy");
         supplierOutbound.setStatus(3);
         //super.save(supplierOutbound);
         supplierOutbound.setCancelDate(new Date());
         supplierOutboundDao.cancel(supplierOutbound);
 
-        //释放库存
+        //giải phóngTồn kho
         supplierOutboundDetailService.cancelSupplierOutboundDetail(id);
     }
 
     /**
-     * 审核出库单
+     * xét duyệtXuất khođơn
      *
      * @param id
      */
     @Transactional(readOnly = false)
     public void examine(String id) {
-        //作废之前先去判断该药品或者材料是否被使用
+        //Trước khi hủy, kiểm tra trước thuốc hoặc vật tư đó có đang được sử dụng không
         SupplierOutbound supplierOutbound = this.get(id);
         if (supplierOutbound == null)
-            throw new ServiceException("出库单不存在");
+            throw new ServiceException("Phiếu xuất kho không tồn tại");
         if (supplierOutbound.getStatus() == 3)
-            throw new ServiceException("出库单已撤消，不能审核");
+            throw new ServiceException("Xuất khođơnĐãhủy bỏ, Không thểxét duyệt");
         if (supplierOutbound.getStatus() == 2)
-            throw new ServiceException("出库单不能重复审核");
+            throw new ServiceException("Xuất khođơnKhông thểtrùng lặpxét duyệt");
 
-        //根据明细循环减去库存
+        //TheoChi tiếtvòng lặptrừđiTồn kho
         List<SupplierOutboundDetail> details = supplierOutboundDetailService.getByOutboundId(id);
         for (SupplierOutboundDetail detail : details) {
-            //更新动态库存
+            //Cập nhậtđộngTồn kho
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
             medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(detail.getNumber()));
             medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().add(detail.getNumber()));
             medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().subtract(detail.getNumber()));
             medicinalStorageControlService.save(medicinalStorageControl);
 
-            //更新总库存控制
+            //Cập nhậttổngTồn khokiểm soát
             String drugOrStuffId = (detail.getDrug() != null && !StringUtils.isNullOrEmpty(detail.getDrug().getId()))? detail.getDrug().getId() : detail.getStuff().getId();
             String companyId = supplierOutboundService.get(id).getCompany().getId();
             List<MedicinalStockControl> stockControls = medicinalStockControlService.getByDrugOrStuffId(drugOrStuffId,companyId);
             if (stockControls.size() == 0)
-                throw new ServiceException("未找到药品材料库存记录");
+                throw new ServiceException("ChưatìmĐếnThuốcVật tưTồn khoBản ghi");
             if (stockControls.size() > 1)
-                throw new ServiceException("找到多条药品材料库存记录");
+                throw new ServiceException("tìmĐếnnhiềumụcThuốcVật tưTồn khoBản ghi");
             MedicinalStockControl medicinalStockControl = stockControls.get(0);
             medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().add(detail.getNumber()));
             medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(detail.getNumber()));
             medicinalStockControlService.save(medicinalStockControl);
 
-            //保存库存控制记录
+            //LưuTồn khokiểm soátBản ghi
             MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
             medicinalStockRecord.setOperationType(6);
             medicinalStockRecord.setOperationStock(detail.getNumber());

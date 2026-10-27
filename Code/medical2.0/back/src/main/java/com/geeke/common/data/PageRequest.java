@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * 分页请求类
+ *  phúttrangVui lòngyêu cầuLớp
  * 
  * @author Lining
  * @date 2017/11/7
@@ -18,7 +18,7 @@ public final class PageRequest implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/** ORDER BY 白名单正则（预编译） */
+	/** ORDER BY danh sách trắngregex(biên dịch trước) */
 	private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
 			"^[a-z_`][a-z0-9_`.]*\\s+(asc|desc)(,\\s*[a-z_`][a-z0-9_`.]*\\s+(asc|desc))*$");
 
@@ -61,7 +61,7 @@ public final class PageRequest implements java.io.Serializable {
 	}
 
 	/**
-	 * 全参数构造器 — 所有其他构造器最终委托到此
+	 * toàn bộTham sốxây dựngthiết bị — Tất cả các constructor khác cuối cùng đều ủy quyềnĐếnnày
 	 */
 	public PageRequest(int offset, int limit, List<Parameter> parameters, String order, String id, String institution) {
 		if (offset < 0) {
@@ -123,14 +123,14 @@ public final class PageRequest implements java.io.Serializable {
 	}
 
 	/**
-	 * 获取数据库名称
+	 * LấyDữ liệukhoTên
 	 */
 	public String getDbName(){
 		return GenConfigure.dbName;
 	}
 
 	
-	/* 数据库存储状态 */
+	/* Dữ liệuTồn kho储Trạng thái */
 	public String getDEL_FLAG_NORMAL() {
 		return BaseEntity.DEL_FLAG_NORMAL;
 	}
@@ -144,16 +144,16 @@ public final class PageRequest implements java.io.Serializable {
 	}
 
 	/**
-	 * SQL注入防护：白名单校验ORDER BY子句
-	 * 只允许字母、数字、下划线、点、反引号，以及ASC/DESC关键字（不区分大小写）
+	 * SQLinjectphòng chống: danh sách trắngKiểm traORDER BYmệnh đề
+	 * chỉcho phépchữ cái, Số, Gạch dưới, điểm, dấu backtick, bằngvàASC/DESCđóngkhóachữ(khôngQuận phútkích thướcviết)
 	 */
 	private static String sanitizeOrderBy(String orderby) {
 		if (StringUtils.isBlank(orderby)) {
 			return "";
 		}
-		// 转换为小写进行校验，允许反引号包围的列名
+		// Chuyển đổi thànhnhỏviếttiến hành dòngKiểm tra, Cho phép bao quanh bằng dấu backtick của Cộttên
 		String orderbyLower = orderby.toLowerCase().trim();
-		// 校验ORDER BY格式：column_name ASC/DESC, column_name2 ASC/DESC
+		// Kiểm traORDER BYĐịnh dạng: column_name ASC/DESC, column_name2 ASC/DESC
 		if (!ORDER_BY_PATTERN.matcher(orderbyLower).matches()) {
 			throw new IllegalArgumentException("Invalid order by clause: " + orderby);
 		}

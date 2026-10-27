@@ -8,7 +8,7 @@ import com.geeke.sys.entity.SysFile;
 import com.geeke.sys.service.SysFileService;
 
 /**
- * 系统附件Controller
+ * Tệp đính kèm hệ thốngController
  * @author szy
  * @version 2021-09-22
  */

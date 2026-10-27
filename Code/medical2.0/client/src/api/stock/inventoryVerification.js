@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/inventoryVerification')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getInventoryVerificationById = baseApi.getById
 export const listInventoryVerificationPage = baseApi.listPage
 export const listInventoryVerificationAll = baseApi.listAll
@@ -12,7 +12,7 @@ export const bulkInsertInventoryVerification = baseApi.bulkInsert
 export const bulkUpdateInventoryVerification = baseApi.bulkUpdate
 export const bulkDeleteInventoryVerification = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const saveInventoryVerification = (type, variety) =>
     request({
         url: '/stock/inventoryVerification/save',

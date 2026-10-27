@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.stock.entity.Supplier;
 
 /**
- * 供应商管理DAO接口
+ * Quản lý nhà cung cấpDAOGiao diện
  * @author txl
  * @version 2022-06-22
  */

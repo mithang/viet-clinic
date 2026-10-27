@@ -12,24 +12,24 @@ import com.geeke.common.persistence.DataEntity;
 import java.util.List;
 
 /**
- * 模板处方Entity
+ * Đơn thuốc mẫuEntity
  * @author rys
  * @version 2022-10-08
  */
 public class Recipetemplate extends DataEntity<Recipetemplate> {
 
 	private static final long serialVersionUID = 1186832625065336477L;
-	private Company company;      // 诊所id 
-	private String recipetemplateName;		// 模板名称
-	private String code;        //模板编号
-	private DictItem type;      // 模板类型 
-	private String category;		// 模板类别
-	private String diagnosis;		// 诊断
-	private String singleDosage;		// 单次用量
-	private String remarks;        //模板说明
-	private String createId;       //创建人id
-	private String patientId;       //患者id
-	private String registerId;       //挂号id
+	private Company company;      // Phòng khámid 
+	private String recipetemplateName;		// Tên mẫu
+	private String code;        //mẫumã số
+	private DictItem type;      // Loại mẫu 
+	private String category;		// mẫuLớploại
+	private String diagnosis;		// Chẩn đoán
+	private String singleDosage;		// Liều dùng mỗi lần
+	private String remarks;        //mẫuGiải thích
+	private String createId;       //Người tạoid
+	private String patientId;       //Bệnh nhânid
+	private String registerId;       //Đăng ký khámid
 	private RecipeTemplateInfo recipeTemplateInfo;
 	private List<RecipeTemplateDetail> recipeTemplateDetail;
 	
@@ -57,7 +57,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 		this.registerId = registerId;
 	}
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -66,7 +66,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
         this.company = company;
     }
     
-	@Length(min=1, max=100, message="模板名称长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="Tên mẫuĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getRecipetemplateName() {
 		return recipetemplateName;
 	}
@@ -75,7 +75,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 	}
 	
 	
-	@NotNull(message="模板类型不能为空")
+	@NotNull(message="Loại mẫuKhông thể là trống")
     public DictItem getType() {
         return type;
     }
@@ -84,7 +84,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
         this.type = type;
     }
     
-	@Length(min=1, max=1, message="模板类别长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message="mẫuLớploạiĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getCategory() {
 		return category;
 	}
@@ -93,7 +93,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 	}
 	
 	
-	@Length(min=0, max=100, message="诊断长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Độ dài chẩn đoán phải nằm trong khoảng 0 đến 100 ")
 	public String getDiagnosis() {
 		return diagnosis;
 	}
@@ -102,7 +102,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 	}
 	
 	
-	@Length(min=0, max=100, message="单次用量长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Liều dùng mỗi lầnĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getSingleDosage() {
 		return singleDosage;
 	}
@@ -151,7 +151,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -160,7 +160,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -170,7 +170,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

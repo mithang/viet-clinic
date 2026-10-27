@@ -11,28 +11,28 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 出库单Entity
+ * Phiếu xuất khoEntity
  * @author txl
  * @version 2022-06-02/
  */
 public class SupplierOutbound extends DataEntity<SupplierOutbound> {
 
 	private static final long serialVersionUID = -2281869736391969855L;
-	private Company company;      // 诊所id 
-	private Supplier supplier;      // 供应商id 
-	private String code;		// 出库单
-	private Integer breed;		// 品种
-	private Integer number;		// 数量
-	private BigDecimal allBid;		// 总进价
-	private BigDecimal allRetailPrice;		// 总零售价
-	private Date cancelDate;		// 作废日期
-	private String examineBy;      // 审批人
-	private Date examineDate;		// 审批时间
-	//private Integer initial;     //初始库存
-	private String type;    //出库类型 1-药品 2-材料
-	private String method;    //出库方式 1-药品报损 2-退还供方 3-调拔出库
-	private String reason;    //出库原因
-	private  Integer status;//状态 1-未审核  2-已审核 3-已撤销
+	private Company company;      // Phòng khámid 
+	private Supplier supplier;      // Nhà cung cấpid 
+	private String code;		// Phiếu xuất kho
+	private Integer breed;		// Chủng loại
+	private Integer number;		// Số lượng
+	private BigDecimal allBid;		// Tổng giá nhập
+	private BigDecimal allRetailPrice;		// Tổng giá bán lẻ
+	private Date cancelDate;		// hủyNgày
+	private String examineBy;      // phê duyệtngười
+	private Date examineDate;		// phê duyệtThời gian
+	//private Integer initial;     //Tồn kho ban đầu
+	private String type;    //Xuất khoLoại 1-Thuốc 2-Vật tư
+	private String method;    //Xuất khocách 1-Thuốcbáo损 2-trảcòn供方 3-điều拔Xuất kho
+	private String reason;    //Xuất khogốcdo
+	private  Integer status;//Trạng thái 1-Chưaxét duyệt  2-Đãxét duyệt 3-Đãhủy
 
 	public SupplierOutbound() {
 		super();
@@ -51,7 +51,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
         this.company = company;
     }
     
-	@NotNull(message="供应商id不能为空")
+	@NotNull(message="Nhà cung cấpidKhông được để trống")
     public Supplier getSupplier() {
         return supplier;
     }
@@ -60,7 +60,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
         this.supplier = supplier;
     }
     
-	@Length(min=0, max=64, message="出库单长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="Xuất khođơnĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getCode() {
 		return code;
 	}
@@ -161,7 +161,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -170,7 +170,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -180,7 +180,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

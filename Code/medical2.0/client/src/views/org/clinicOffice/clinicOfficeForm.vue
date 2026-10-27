@@ -12,7 +12,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -31,7 +31,7 @@
       <div class="tab-item" v-show="tabIndex === '1'">
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="诊所" prop="company.id">
+            <el-form-item label="Phòng khám" prop="company.id">
              <el-input
                 v-if="isCompanyShow"
                 :disabled="true"
@@ -48,7 +48,7 @@
                 value-key="id"
                 filterable
                 clearable
-                placeholder="请选择所属诊所"
+                placeholder="Vui lòng chọn phòng khám trực thuộc"
 
               >
                 <el-option
@@ -63,13 +63,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室编号" prop="code">
+            <el-form-item label="Mã khoa/phòng" prop="code">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.code"
                 :maxlength="64"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入科室编号'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã khoa/phòng'
                 "
               ></el-input>
             </el-form-item>
@@ -77,13 +77,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室类别" prop="category">
+            <el-form-item label="Loại khoa/phòng" prop="category">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.category"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入医保科室类别代码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã loại khoa/phòng bảo hiểm y tế'
                 "
               ></el-input>
             </el-form-item>
@@ -91,13 +91,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室名称" prop="name">
+            <el-form-item label="Tên khoa/phòng" prop="name">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.name"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入科室名称'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên khoa/phòng'
                 "
               ></el-input>
             </el-form-item>
@@ -105,13 +105,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="简介" prop="itro">
+            <el-form-item label="Giới thiệu" prop="itro">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.itro"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入简介'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập giới thiệu'
                 "
               ></el-input>
             </el-form-item>
@@ -125,7 +125,7 @@
                 v-model="bizFormModel.dept_resper_name"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入负责人姓名'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập họ tên người phụ trách'
                 "
               ></el-input>
             </el-form-item>
@@ -139,7 +139,7 @@
                 v-model="bizFormModel.dept_resper_tel"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入负责人电话'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số điện thoại người phụ trách'
                 "
               ></el-input>
             </el-form-item>
@@ -170,13 +170,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="统筹区编号" prop="poolarea_no">
+            <el-form-item label="Mã khu vực điều phối" prop="poolarea_no">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.poolarea_no"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入统筹区编号'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã khu vực điều phối'
                 "
               ></el-input>
             </el-form-item>
@@ -212,13 +212,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="护士人数" prop="nurs_psncnt">
+            <el-form-item label="Số lượng điều dưỡng" prop="nurs_psncnt">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.nurs_psncnt"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入护士人数'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số lượng điều dưỡng'
                 "
               ></el-input>
             </el-form-item>
@@ -226,13 +226,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="技师人数" prop="tecn_psncnt">
+            <el-form-item label="Số lượng kỹ thuật viên" prop="tecn_psncnt">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.tecn_psncnt"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入技师人数'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số lượng kỹ thuật viên'
                 "
               ></el-input>
             </el-form-item>
@@ -241,19 +241,19 @@
 
 <!--        <el-row>-->
 <!--          <el-col :span="24 / 1">-->
-<!--            <el-form-item label="地址" prop="address">-->
+<!--            <el-form-item label="Địa chỉ" prop="address">-->
 <!--              <el-input-->
 <!--                :disabled="dialogProps.action === 'view'"-->
 <!--                v-model="bizFormModel.address"-->
 <!--                :maxlength="255"-->
-<!--                :placeholder="dialogProps.action === 'view' ? '' : '请输入地址'"-->
+<!--                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập địa chỉ'"-->
 <!--              ></el-input>-->
 <!--            </el-form-item>-->
 <!--          </el-col>-->
 <!--        </el-row>-->
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="是否为登记科室" prop="isRegister">
+            <el-form-item label="Có phải khoa/phòng đăng ký không" prop="isRegister">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isRegister"
@@ -267,7 +267,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="默认登记科室" prop="isDefault">
+            <el-form-item label="Khoa/phòng đăng ký mặc định" prop="isDefault">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isDefault"
@@ -281,7 +281,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="是否启用" prop="isLocked">
+            <el-form-item label="Có kích hoạt không" prop="isLocked">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isLocked"
@@ -302,19 +302,19 @@
         :disabled="flag"
         :plain="true"
         @click="onSubmit('clinicOfficeForm')"
-        >保 存</el-button
+        >Lưu</el-button
       >
       <el-button
         v-if="dialogProps.action !== 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >取 消</el-button
+        >Hủy</el-button
       >
       <el-button
         v-if="dialogProps.action === 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >关 闭</el-button
+        >Đóng</el-button
       >
     </span>
   </el-dialog>
@@ -338,7 +338,7 @@ export default {
       isCompanyShow: false,
       bizFormModel: this.initFormModel(),
       tabIndex: "1",
-      company_List: [], // 所属诊所
+      company_List: [], // Phòng khám trực thuộc
        flag:false,
       dialogProps: {
         visible: false,
@@ -348,26 +348,26 @@ export default {
       },
       formRules: {
         "company.id": [
-          // { required: true, message: "请选择所属诊所", trigger: "change" },
+          // { required: true, message: "Vui lòng chọn phòng khám trực thuộc", trigger: "change" },
         ],
-        code: [{ required: true, message: "请输入科室编号", trigger: "blur" }],
-        name: [{ required: true, message: "请输入科室名称", trigger: "blur" }],
-        // category: [{ required: true, message: "请输入医保科室类别代码", trigger: "blur" }], // 科室类别
-        // itro: [{ required: true, message: "请输入简介", trigger: "blur" }], // 简介
-        // dept_resper_name: [{ required: true, message: "请输入负责人姓名", trigger: "blur" }], // 负责人
-        // dept_resper_tel: [{ required: true, message: "请输入负责人电话", trigger: "blur" }], // 负责人电话
-        // dept_estbdat: [{ required: true, message: "请输入成立时间", trigger: "blur" }], // 成立时间
-        // aprv_bed_cnt: [{ required: true, message: "请输入批准床位数", trigger: "blur"}], // 批准床位数
-        // poolarea_no: [{ required: true, message: "请输入统筹区编号", trigger: "blur" }], // 统筹区编号
-        // dr_psncnt: [{ required: true, message: "请输入医生人数", trigger: "blur", type: 'number' }], // 医生人数
-        // phar_psncnt: [{ required: true, message: "请输入药房人数", trigger: "blur", type: 'number' }], // 药房人数
-        // nurs_psncnt: [{ required: true, message: "请输入护士人数", trigger: "blur", type: 'number' }], // 护士人数
-        // tecn_psncnt: [{ required: true, message: "请输入技师人数", trigger: "blur", type: 'number' }] // 技师人数
+        code: [{ required: true, message: "Vui lòng nhập mã khoa/phòng", trigger: "blur" }],
+        name: [{ required: true, message: "Vui lòng nhập tên khoa/phòng", trigger: "blur" }],
+        // category: [{ required: true, message: "Vui lòng nhập mã loại khoa/phòng bảo hiểm y tế", trigger: "blur" }], // Loại khoa/phòng
+        // itro: [{ required: true, message: "Vui lòng nhập giới thiệu", trigger: "blur" }], // Giới thiệu
+        // dept_resper_name: [{ required: true, message: "Vui lòng nhập họ tên người phụ trách", trigger: "blur" }], // Người phụ trách
+        // dept_resper_tel: [{ required: true, message: "Vui lòng nhập số điện thoại người phụ trách", trigger: "blur" }], // Số điện thoại người phụ trách
+        // dept_estbdat: [{ required: true, message: "请输入成立时间", trigger: "blur" }], // Thời gian thành lập
+        // aprv_bed_cnt: [{ required: true, message: "请输入批准床位数", trigger: "blur"}], // Số giường được phê duyệt
+        // poolarea_no: [{ required: true, message: "Vui lòng nhập mã khu vực điều phối", trigger: "blur" }], // Mã khu vực điều phối
+        // dr_psncnt: [{ required: true, message: "请输入医生人数", trigger: "blur", type: 'number' }], // Số lượng bác sĩ
+        // phar_psncnt: [{ required: true, message: "请输入药房人数", trigger: "blur", type: 'number' }], // Số lượng nhân viên nhà thuốc
+        // nurs_psncnt: [{ required: true, message: "Vui lòng nhập số lượng điều dưỡng", trigger: "blur", type: 'number' }], // Số lượng điều dưỡng
+        // tecn_psncnt: [{ required: true, message: "Vui lòng nhập số lượng kỹ thuật viên", trigger: "blur", type: 'number' }] // Số lượng kỹ thuật viên
       },
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object,
     },
@@ -414,7 +414,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改科室";
+      this.dialogProps.title = "Sửa khoa/phòng";
       this.initOptions(this.bizFormModel);
     },
     onDialogClose() {
@@ -428,38 +428,38 @@ export default {
     initFormModel(This) {
       return {
         company: {
-          // 上级节点 所属诊所
+          // Nút cấp trên Phòng khám trực thuộc
           id: validatenull(This) || validatenull(This.id) ? null : This.id,
           name:
             validatenull(This) || validatenull(This.name) ? null : This.name,
         },
-        code: "", // 科室编号
-        isLocked: "0", // 禁用（0：未禁用；1：禁用）
-        name: "", // 科室名称
-        sort: "0", // 排序
-        category: "", // 科室类别
-        itro:"",//简介
-        dept_resper_name: "",//负责人
-        dept_resper_tel:"",//负责人电话
-        dept_estbdat:"",//成立时间
-        aprv_bed_cnt:"",//批准床位数
-        poolarea_no:"",//统筹区编号
-        dr_psncnt:0,//医生人数
-        phar_psncnt:0,//药房人数
-        nurs_psncnt:0,//护士人数
-        tecn_psncnt:0//技师人数
-        // address: "", // 地址
+        code: "", // Mã khoa/phòng
+        isLocked: "0", // Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        name: "", // Tên khoa/phòng
+        sort: "0", // Sắp xếp
+        category: "", // Loại khoa/phòng
+        itro:"",//Giới thiệu
+        dept_resper_name: "",//Người phụ trách
+        dept_resper_tel:"",//Số điện thoại người phụ trách
+        dept_estbdat:"",//Thời gian thành lập
+        aprv_bed_cnt:"",//Số giường được phê duyệt
+        poolarea_no:"",//Mã khu vực điều phối
+        dr_psncnt:0,//Số lượng bác sĩ
+        phar_psncnt:0,//Số lượng nhân viên nhà thuốc
+        nurs_psncnt:0,//Số lượng điều dưỡng
+        tecn_psncnt:0//Số lượng kỹ thuật viên
+        // address: "", // Địa chỉ
       };
     },
     initOptions(This) {
       let company_search = {
         params: [],
       };
-      // 表有禁用字段
+      // Bảng có trường bị vô hiệu hóa
       company_search.params.push.apply(company_search.params, [
         { columnName: "is_locked", queryType: "=", value: "0" },
       ]);
-      // 数据权限: 科室clinic_office
+      // Quyền dữ liệu: Khoaclinic_office
       this.pushDataPermissions(
         company_search.params,
         this.$route.meta.routerId,
@@ -472,7 +472,7 @@ export default {
     },
     openViewClinicOfficeDialog(clinicOffice) {
       this.dialogProps.action = "view";
-      this.dialogProps.title = "查看科室";
+      this.dialogProps.title = "Xem khoa/phòng";
       this.bizFormModel = { ...this.initFormModel(), ...clinicOffice };
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
@@ -480,7 +480,7 @@ export default {
     },
     openEditClinicOfficeDialog(clinicOffice) {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改科室";
+      this.dialogProps.title = "Sửa khoa/phòng";
       this.bizFormModel = { ...this.initFormModel(), ...clinicOffice };
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
@@ -488,7 +488,7 @@ export default {
     },
     openAddClinicOfficeDialog() {
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加科室";
+      this.dialogProps.title = "Thêm khoa/phòng";
       this.bizFormModel = this.initFormModel();
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
@@ -496,7 +496,7 @@ export default {
     },
     openCopyClinicOfficeDialog(clinicOffice) {
       this.dialogProps.action = "add";
-      this.dialogProps.title = "添加科室";
+      this.dialogProps.title = "Thêm khoa/phòng";
       this.bizFormModel = { ...this.initFormModel(), ...clinicOffice };
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";

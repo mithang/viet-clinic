@@ -3,7 +3,7 @@ package com.geeke.common.data;
 import java.util.List;
 
 /**
- * 分页查询结果类
+ * Truy vấn phân trangKết quảLớp
  * 
  * @author Lining
  * @date 2017/11/7

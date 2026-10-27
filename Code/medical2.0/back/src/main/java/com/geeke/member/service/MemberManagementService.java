@@ -19,7 +19,7 @@ import com.google.common.collect.Maps;
 import org.springframework.util.CollectionUtils;
 
 /**
- * 会员卡管理Service
+ * Quản lý thẻ hội viênService
  * @author rys
  * @version 2022-10-26
  */
@@ -43,13 +43,13 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             String card = new Date().getTime() + "";
             card = card.substring(card.length()-8);
             memberManagement.setCard(card);
-            //绑卡时进行用户校验是否已经办卡了
+            //Khi liên kết thẻ, kiểm tra người dùng đã làm thẻ chưa
             List<MemberManagement> memberManagements = this.dao.getByPatientAndMember(memberManagement.getPatient().getId(),memberManagement.getMemberSet().getId());
             if(!CollectionUtils.isEmpty(memberManagements)){
-                throw new ServiceException("该用户已经绑定了该会员卡，不能重复绑定");
+                throw new ServiceException("đóNgười dùngĐãliên kếtchỉ địnhrồiđóHội viênthẻ, Không thểtrùng lặpliên kếtchỉ định");
             }
             int insert = this.dao.insert(memberManagement);
-            //保存好后将数据保存到详情表中
+            //LưutốtsauSẽ Dữ liệuLưuĐếnChi tiếtbảng trong 
 
             List<MemberItem> memberItem = memberManagement.getMemberSet().getMemberItem();
             for (MemberItem item : memberItem) {
@@ -61,7 +61,7 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                 memberManagementDetail.setCompany(memberManagement.getCompany());
                 memberManagementDetailService.save(memberManagementDetail);
             }
-            //绑卡成功需要去扣减会员卡数量
+            //liên kếtthẻThành côngCầnđikhấu trừHội viênthẻSố lượng
             if(insert>0){
                 int i = memberSetService.updateNumber(memberManagement.getMemberSet().getId());
             }
@@ -75,14 +75,14 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
     
     @Transactional(readOnly = false)
     public List<MemberManagement> getMember(RecipelInfoEvt recipelInfoEvt) {
-            //获取诊疗项目id
+            //Lấyhạng mục khám chữa bệnhid
         List<RecipelDetail> recipelDetailEvtList = recipelInfoEvt.getRecipelDetailEvtList();
 
-        //根据患者id获取其是否绑定了体验卡
+        //TheoBệnh nhânidLấycủa nóCó hay khôngliên kếtchỉ địnhrồitrải nghiệmthẻ
         List<MemberManagement> memberManagements = this.dao.getByPatientId(recipelInfoEvt.getRecipelInfo().getRegistration().getPatientId().getId());
         List<MemberManagement> memberManagementList = new ArrayList<>();
 
-        //根据用户绑定卡，去获取其绑定的项目
+        //Theo người dùngliên kếtchỉ địnhthẻ, điLấycủa nóliên kếtchỉ định của hạng mục
         if(!CollectionUtils.isEmpty(memberManagements)){
             for (MemberManagement memberManagement : memberManagements) {
                 List<MemberManagementDetail> memberManagementDetails = memberManagementDetailService.getByManagementId(memberManagement.getId());
@@ -93,20 +93,20 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                         count++;
                     }
                 }
-                //如果该会员卡使用次数都使用完毕，结束本次循环
+                //NếuđóHội viênthẻsử dụng lầnsốđềusử dụngxong, Kết thúcnày lầnvòng lặp
                 if(count==memberManagementDetails.size()){
                     continue;
                 }
 
-                //存在未使用完的会员卡时，进行判断
+                //Tồn tạiChưasử dụngxong của Hội viênthẻ giờ, tiến hành dòngKiểm tra
                 boolean flage = false;
                 MemberSet memberSet = memberSetService.get(memberManagement.getMemberSet().getId());
-                //获取体验卡详情
+                //Lấytrải nghiệmthẻChi tiết
                 List<MemberItem> memberItems = memberItemService.getByMemberSetId(memberSet.getId());
                 for (MemberItem memberItem : memberItems) {
                     for (RecipelDetail recipelDetail : recipelDetailEvtList) {
                             if(Objects.equals(recipelDetail.getDrugStuffId().getCostItem().getId(),memberItem.getCostItem().getId())){
-                                //如果相等再去获取该用户是否使用完
+                                //Nếu bằng nhau thì lấy tiếp người dùng đó đã dùng hết chưa
                                 MemberManagementDetail memberManagementDetail = memberManagementDetailService.getByManagementIdAndMemberItemId(memberManagement.getId(),memberItem.getId());
                                 if(memberManagementDetail.getNumber()>memberManagementDetail.getUseNumber()) {
                                     flage = true;

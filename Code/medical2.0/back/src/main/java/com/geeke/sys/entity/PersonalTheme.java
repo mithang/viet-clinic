@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 系统主题Entity
+ * Chủ đề hệ thốngEntity
  * @author lys
  * @version 2021-09-19
  */
@@ -17,8 +17,8 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
 
 	private static final long serialVersionUID = 532290982221258937L;
     @JsonSerialize(using= ToStringSerializer.class)
-	private Long userId;		// 用户
-	private String theme;		// 主题
+	private Long userId;		// Người dùng
+	private String theme;		// Chủ đề
 
 	
 	public PersonalTheme() {
@@ -30,7 +30,7 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
 	}
 	
 
-	@NotNull(message="用户不能为空")
+	@NotNull(message="Người dùngKhông thể là trống")
 	public Long getUserId() {
 		return userId;
 	}
@@ -39,7 +39,7 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
 	}
 	
 	
-	@Length(min=1, max=2000, message="主题长度必须介于 1 和 2000 之间")
+	@Length(min=1, max=2000, message="Độ dài chủ đề phải nằm trong khoảng 1 đến 2000 ")
 	public String getTheme() {
 		return theme;
 	}
@@ -52,7 +52,7 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -61,7 +61,7 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -71,7 +71,7 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

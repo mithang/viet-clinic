@@ -9,12 +9,12 @@ import java.io.Serializable;
 public class HisInstitutions  extends DataEntity<HisInstitutions> implements Serializable {
 
     private  String companyId;
-    private  String sfxmmc; //费用名称
-    private  String py; //拼音
-    private  String dw; // 单位
-    private  String sfxmCode;//唯一项目编码
-    private  String dj;//销售单价
-    private  String dllx;//收费项目类型
+    private  String sfxmmc; //Chi phíTên
+    private  String py; //Pinyin
+    private  String dw; // Đơn vị
+    private  String sfxmCode;//duy nhấthạng mụcMã
+    private  String dj;//bán hàngđơn giá
+    private  String dllx;//Hạng mục thu phíLoại
 
 
 }

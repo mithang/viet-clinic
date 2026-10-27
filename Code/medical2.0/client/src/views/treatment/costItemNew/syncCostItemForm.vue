@@ -9,18 +9,18 @@
             <el-form :model="queryModel" @submit.native.prevent label-position="left" label-width="70px" ref="queryForm"
               :inline-message="true">
               <el-col :span="6">
-                <el-form-item label="项目名称" prop="itemName">
-                  <el-input v-model="queryModel.itemName" :clearable="true" placeholder="请输入项目名称"></el-input>
+                <el-form-item label="Tên hạng mục" prop="itemName">
+                  <el-input v-model="queryModel.itemName" :clearable="true" placeholder="Vui lòng nhập tên hạng mục"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="3" style="display:flex;justivy-content:space-around">
-                <el-button type="primary" icon="el-icon-search" @click="onSearch()" :plain="true">搜索</el-button>
-                <el-button type="info" icon="el-icon-refresh-left" @click="reset" :plain="true">重置</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="onSearch()" :plain="true">Tìm kiếm</el-button>
+                <el-button type="info" icon="el-icon-refresh-left" @click="reset" :plain="true">Đặt lại</el-button>
               </el-col>
               <el-col :span="4" style="text-align:right;padding-right:5px">
                 <!-- <el-button-group>
                   <el-button v-show="permission.add" type="primary" icon="el-icon-plus"
-                    @click="onCreateCostItem()">添加</el-button>
+                    @click="onCreateCostItem()">Thêm</el-button>
                 </el-button-group> -->
               </el-col>
             </el-form>
@@ -32,12 +32,12 @@
         <el-row>
           <el-col :span="24">
             <div style="display: flex;align-items: center;">
-              <span style="width: 100%;">已选择{{ multipleSelection.length }}条</span>
+              <span style="width: 100%;">Đã chọn{{ multipleSelection.length }}dòng</span>
             <div style="display: flex;margin-bottom: 10px;width: 100%;justify-content: flex-end;align-items: center;">
-              <div style="width: 80px;">数据来源</div>
+              <div style="width: 80px;">Nguồn dữ liệu</div>
               <el-select @change="handleSource" v-model="source">
-                <el-option label="租户" value="1"></el-option>
-                <el-option label="院版His" value="2"></el-option>
+                <el-option label="Đơn vị thuê" value="1"></el-option>
+                <el-option label="Bản phòng khámHis" value="2"></el-option>
               </el-select>
             </div>
             </div>
@@ -48,13 +48,13 @@
                 @selection-change="handleSelectionChange">
                 <el-table-column type='selection' :reserve-selection="true" width='50' align='center' :selectable="selectable">
                 </el-table-column>
-                <el-table-column label="序号" type="index" :index="indexMethod" align="center">
+                <el-table-column label="Số thứ tự" type="index" :index="indexMethod" align="center">
                 </el-table-column>
                 <el-table-column v-for="item in columnList"  :key="item.label"  :label="item.label" :prop="item.prop"></el-table-column>
-                <!-- <el-table-column label="操作" header-align="center" :width="130 + 'px'"
+                <!-- <el-table-column label="Thao tác" header-align="center" :width="130 + 'px'"
                   :key="Math.random()">
                   <template slot="header" slot-scope="scope">
-                    <span>操作</span>
+                    <span>Thao tác</span>
                     <view-columns-select v-model="columnViews" v-on:save-column-view="saveColumn"
                       v-on:show-all-column="showAllColumn"
                       v-on:show-default-column="showDefaultColumn"></view-columns-select>
@@ -62,13 +62,13 @@
                       :filterVal="getFilterVal()" :plain="true"></export-excel-button>
                   </template>
                   <template slot-scope="scope">
-                    <OperationIcon v-show="permission.view" type="info" content="查看" placement="top-start"
+                    <OperationIcon v-show="permission.view" type="info" content="Xem" placement="top-start"
                       icon-name="el-icon-view" @click="onViewCostItem(scope.$index, scope.row)"></OperationIcon>
-                    <OperationIcon v-show="permission.edit" type="primary" content="编辑" placement="top-start"
+                    <OperationIcon v-show="permission.edit" type="primary" content="Sửa" placement="top-start"
                       icon-name="el-icon-edit" @click="onEditCostItem(scope.$index, scope.row)"></OperationIcon>
-                    <OperationIcon v-show="permission.add" type="primary" content="复制" placement="top-start"
+                    <OperationIcon v-show="permission.add" type="primary" content="Sao chép" placement="top-start"
                       icon-name="el-icon-document" @click="onCopyCostItem(scope.$index, scope.row)"></OperationIcon>
-                    <OperationIcon v-show="permission.view" type="info" content="历史记录" placement="top-start"
+                    <OperationIcon v-show="permission.view" type="info" content="Lịch sử" placement="top-start"
                       icon-name="el-icon-info" @click="onShowHistory(scope.$index, scope.row)"></OperationIcon>
                   </template>
                 </el-table-column> -->
@@ -87,8 +87,8 @@
       </el-card>
     </el-row>
     <span slot='footer' class='dialog-footer'>
-      <el-button :disabled="flag" type='primary' :plain='true' @click='onSubmit()'>同 步</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
+      <el-button :disabled="flag" type='primary' :plain='true' @click='onSubmit()'>Đồng bộ</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
     </span>
   </el-dialog>
 </template>
@@ -143,32 +143,32 @@ export default {
       costItemDTO: {
         response: {},
         res: {}
-      },//修改操作对象封装
+      },//Sửa đóng gói đối tượng thao tác
       queryTypes: {
         item_name: "like",
         item_type: "=",
         is_use: "=",
       },
       queryModel: {
-        itemName: "", // 项目名称
+        itemName: "", // Tên hạng mục
         itemType: {
-          // 项目类别
+          // Loại hạng mục
           value: "",
           name: "",
         },
-        isUse: "", // 状态
+        isUse: "", // Trạng thái
       },
-      tableHeight: "",//表格高度
+      tableHeight: "",//Chiều cao bảng
       isUse: [
         {
           value: '0',
-          label: '否'
+          label: 'Không'
         },
         {
           value: '1',
-          label: '是'
+          label: 'Có'
         },
-      ],//是否启用
+      ],//Có kích hoạt không
       search: {
         params: [
           {
@@ -182,24 +182,24 @@ export default {
         ],
         offset: 0,
         limit: 20,
-        columnName: "", // 排序字段名
-        order: "", // 排序
+        columnName: "", // Tên trường sắp xếp
+        order: "", // Sắp xếp
       },
-      subproject: [],//子项目封装
+      subproject: [],//Đóng gói hạng mục con
       costltemSearch: {
         params: [{ columnName: "company_id", queryType: "=", value: "" }],
         offset: 0,
         limit: 100,
-        columnName: "", // 排序字段名
-        order: "", // 排序
+        columnName: "", // Tên trường sắp xếp
+        order: "", // Sắp xếp
       },
       currentPage: 1,
       costItemTotal: 0,
       costItemList: [],
 
-      itemType_List: [], // 项目类别
+      itemType_List: [], // Loại hạng mục
 
-      oprColumnWidth: 140, // 操作列宽
+      oprColumnWidth: 140, // Độ rộng cột thao tác
       tableId: "998465736089977637",
       schemeId: "998465736089977654",
       multipleSelection: [],
@@ -207,57 +207,57 @@ export default {
       columnList: [],
       columnListOne: [
         {
-          label: "项目编码",
+          label: "Mã hạng mục",
           prop: "itemCode",
         },
         {
-          label: "项目名称",
+          label: "Tên hạng mục",
           prop: "itemName",
         },
         {
-          label: "项目类别",
+          label: "Loại hạng mục",
           prop: "itemTypeName",
         },
         {
-          label: "成本价",
+          label: "Giá vốn",
           prop: "costPrice",
         },
         {
-          label: "销售价",
+          label: "Giá bán",
           prop: "salePrice",
         },
         {
-          label: "启用状态",
+          label: "Trạng thái kích hoạt",
           prop: "isUseName",
         },
         {
           prop: 'syncNumName',
-          label: '是否已同步',
+          label: 'Đã đồng bộ chưa',
         },
         {
-          label: "备注信息",
+          label: "Thông tin ghi chú",
           prop: "remarks",
         },
       ],
       columnListTwo: [
         {
-          label: "项目名称",
+          label: "Tên hạng mục",
           prop: "sfxmmc",
         },
         {
-          label: "拼音",
+          label: "Pinyin",
           prop: "py",
         },
         {
-          label: "单位",
+          label: "Đơn vị",
           prop: "dw",
         },
         {
-          label: "项目编码",
+          label: "Mã hạng mục",
           prop: "sfxmCode",
         },
         {
-          label: "销售单价",
+          label: "Đơn giá bán",
           prop: "dj",
         },
         {
@@ -266,7 +266,7 @@ export default {
         },
         {
           prop: 'syncNumName',
-          label: '是否已同步',
+          label: 'Đã đồng bộ chưa',
         },
       ]
     };
@@ -306,7 +306,7 @@ export default {
       const result = await functionSync(this.multipleSelection)
       if (result.code === 100) {
         this.$message({
-          message: "同步成功",
+          message: "Đồng bộ thành công",
           type: "success",
         });
         this.onDialogClose()
@@ -324,9 +324,9 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    //计算table高度(动态设置table高度)
+    //Tính toántablechiều cao(Đặt độngtablechiều cao)
     getTableHeight() {
-      let tableH = 240; //距离页面下方的高度
+      let tableH = 240; //Chiều cao cách phía dưới trang
       let tableHeightDetil = window.innerHeight - tableH;
       if (tableHeightDetil <= 300) {
         this.tableHeight = 300;
@@ -345,7 +345,7 @@ export default {
     },
     getCostItemList() {
       this.setLoad();
-      /* 查询参数 和数据权限 */
+      /* Tham số truy vấn và quyền dữ liệu */
       this.search.params = [
         {
           columnName: "company_id",
@@ -361,14 +361,14 @@ export default {
           this.compositeCondition()
         );
       } else {
-        // 查询参数: 项目名称
+        // Tham số truy vấn: Tên hạng mục
         this.search.params.push({
           columnName: this.source === 1 ? "item_name" : 'keyword',
           queryType: "like",
           value: this.queryModel.itemName,
         });
         if (this.queryModel.itemType.value !== "") {
-          // 查询参数: 项目类别
+          // Tham số truy vấn: Loại hạng mục
           this.search.params.push({
             columnName: "item_type",
             queryType: "=",
@@ -378,14 +378,14 @@ export default {
           });
         }
 
-        // 查询参数: 状态
+        // Tham số truy vấn: Trạng thái
         this.search.params.push({
           columnName: "is_use",
           queryType: "=",
           value: this.queryModel.isUse,
         });
       }
-      // 数据权限: 费用项目cost_item
+      // Quyền dữ liệu: Hạng mục chi phícost_item
       this.pushDataPermissions(
         this.search.params,
         this.$route.meta.routerId,
@@ -398,13 +398,13 @@ export default {
             if (this.source === 1) {
             this.costItemList = responseData.data.rows && responseData.data.rows.map(item => {
               item.itemTypeName = item.itemType.name
-              item.syncNumName = item.syncNum === 1 ? '是' : '否'
-              item.isUseName = isUse === 1 ? '是' : '否'
+              item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
+              item.isUseName = isUse === 1 ? 'Có' : 'Không'
               return item
             })
           } else {
             this.costItemList = responseData.data.rows && responseData.data.rows.map(item => {
-              item.syncNumName = item.syncNum === 1 ? '是' : '否'
+              item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
               return item
             })
           }
@@ -461,7 +461,7 @@ export default {
             })(),
           },
         ];
-        // 数据权限: 费用项目cost_item
+        // Quyền dữ liệu: Hạng mục chi phícost_item
         this.pushDataPermissions(
           this.search.params,
           this.$route.meta.routerId,
@@ -480,13 +480,13 @@ export default {
           if (this.source === 1) {
             this.costItemList = listCostItemRespData.data.rows && listCostItemRespData.data.rows.map(item => {
               item.itemTypeName = item.itemType.name
-              item.syncNumName = item.syncNum === 1 ? '是' : '否'
-              item.isUseName = isUse === 1 ? '是' : '否'
+              item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
+              item.isUseName = isUse === 1 ? 'Có' : 'Không'
               return item
             })
           } else {
             this.costItemList = listCostItemRespData.data.rows && listCostItemRespData.data.rows.map(item => {
-              item.syncNumName = item.syncNum === 1 ? '是' : '否'
+              item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
               return item
             })
           }
@@ -654,9 +654,9 @@ export default {
         });
     },
     onDeleteCostItem(index, row) {
-      this.$confirm("确定删除吗？", "确认", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
+      this.$confirm("Bạn có chắc muốn xóa không？", "Xác nhận", {
+        confirmButtonText: "Xác nhận",
+        cancelButtonText: "Hủy",
         type: "warning",
       })
         .then(() => {
@@ -665,7 +665,7 @@ export default {
             .then((responseData) => {
               if (responseData.code === 100) {
                 this.getCostItemList();
-                this.showMessage({ type: "success", msg: "删除成功" });
+                this.showMessage({ type: "success", msg: "Xóa thành công" });
               } else {
                 this.showMessage(responseData);
               }
@@ -695,13 +695,13 @@ export default {
     },
   },
   watch: {
-    // tableData是el-table绑定的数据
+    // tableDataCóel-tableDữ liệu đã liên kết
     tableData: {
-      // 解决表格显示错位问题
+      // Khắc phục lỗi hiển thị lệch bảng
       handler() {
         this.$nextTick(() => {
-          // tableRef是el-table绑定的ref属性值
-          this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+          // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+          this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
         })
       },
       deep: true
@@ -710,7 +710,7 @@ export default {
   updated() {
     if (this.$refs.tableRef) {
       this.$nextTick(() => {
-        this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+        this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
       })
     }
   },
@@ -769,7 +769,7 @@ export default {
 
 .drag_table {
 
-  // 设置表格header的高度
+  // Cài đặt bảngheaderChiều cao của
   ::v-deep th {
     height: 44px;
   }
@@ -778,11 +778,11 @@ export default {
     height: 0 !important;
   }
 
-  // 设置表格body的高度
+  // Cài đặt bảngbodyChiều cao của
   ::v-deep .el-table__body-wrapper {
-    //解决数据展示超出body高度不滚动bug
+    //Khắc phục hiển thị dữ liệu vượt quábodychiều cao không cuộn đượcbug
     overflow-y: auto;
-    // 减去的是表格header的高度
+    // Phần trừ đi là bảngheaderChiều cao của
     height: calc(100% - 44px) !important;
   }
 

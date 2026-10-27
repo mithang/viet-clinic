@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/outpatient/remoteDiagnosisTreatment')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getDiagnosisById = baseApi.getById
 export const listDiagnosisPage = baseApi.listPage
 export const listDiagnosisAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertDiagnosis = baseApi.bulkInsert
 export const bulkUpdateDiagnosis = baseApi.bulkUpdate
 export const bulkDeleteDiagnosis = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const getRegistrationId = (registrationId) =>
     request({
         url: '/outpatient/remoteDiagnosisTreatment/registrationId/' + registrationId,

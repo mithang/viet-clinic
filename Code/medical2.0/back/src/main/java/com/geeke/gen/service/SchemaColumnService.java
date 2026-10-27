@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 系统表字段控件Service
+ * Hệ thốngbảngTrườngđiều khiểnService
  * @author lys
  * @version 2019-08-31
  */

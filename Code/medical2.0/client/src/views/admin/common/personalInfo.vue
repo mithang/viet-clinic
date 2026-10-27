@@ -1,36 +1,36 @@
 <template>
-  <el-dialog title='个人信息' :visible.sync='dialogVisible' width='560px'
+  <el-dialog title='Thông tin cá nhân' :visible.sync='dialogVisible' width='560px'
     @open='handleDialogOpen()' :lock-scroll='true' v-loading='loading'>
-    <div slot='title' class='dialog-header'>个人信息</div>
+    <div slot='title' class='dialog-header'>Thông tin cá nhân</div>
     <el-form :model='userModel' :rules='rules'
       ref='personalInfoForm' label-width='80px' label-position='right'>
-      <el-form-item label='姓名' prop='name'>
+      <el-form-item label='Họ tên' prop='name'>
         <el-col :span='16'><el-input ref='username' :maxlength='32' v-model='userModel.name' autofocus></el-input></el-col>
       </el-form-item>
-      <el-form-item label='登录名' prop='loginName'>
+      <el-form-item label='Tên đăng nhập' prop='loginName'>
         <el-col :span='16'><el-input disabled :maxlength='32' v-model='userModel.loginName'></el-input></el-col>
       </el-form-item>
-      <el-form-item label='手机号' prop='phone'>
+      <el-form-item label='Số điện thoại di động' prop='phone'>
         <el-col :span='16'><el-input :maxlength='11' v-model='userModel.phone'></el-input></el-col>
       </el-form-item>
-      <!-- <el-form-item label='邮箱' prop='email'>
+      <!-- <el-form-item label='Email' prop='email'>
         <el-col :span='16'><el-input :maxlength='32' v-model='userModel.email'></el-input></el-col>
       </el-form-item> -->
-      <el-form-item><el-checkbox v-model='userModel.loginPasswordUpdate' @change='handleChangePasswordChanged'>修改密码</el-checkbox></el-form-item>
-      <el-form-item label='密码' prop='loginPassword'>
+      <el-form-item><el-checkbox v-model='userModel.loginPasswordUpdate' @change='handleChangePasswordChanged'>Đổi mật khẩu</el-checkbox></el-form-item>
+      <el-form-item label='Mật khẩu' prop='loginPassword'>
         <el-col :span='16'>
           <el-input type='password' ref='password' :disabled='!userModel.loginPasswordUpdate' v-model='userModel.loginPassword' auto-complete='off'></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label='确认密码' prop='loginPasswordConfirm'>
+      <el-form-item label='Xác nhận mật khẩu' prop='loginPasswordConfirm'>
         <el-col :span='16'>
           <el-input type='password' v-model='userModel.loginPasswordConfirm' :disabled='!userModel.loginPasswordUpdate' auto-complete='off'></el-input>
         </el-col>
       </el-form-item>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button type='primary' :plain='true' @click="submitForm('personalInfoForm')">确 定</el-button>
-      <el-button :plain='true' @click="handleDialogClose()">取 消</el-button>
+      <el-button type='primary' :plain='true' @click="submitForm('personalInfoForm')">Xác nhận</el-button>
+      <el-button :plain='true' @click="handleDialogClose()">Hủy</el-button>
     </span>
   </el-dialog>
 </template>
@@ -45,7 +45,7 @@ export default {
   data() {
     const validatePassword = (rule, value, callback) => {
       if (this.userModel.loginPasswordUpdate && (value === '' || value === undefined)) {
-        callback(new Error('请输入密码'));
+        callback(new Error('Vui lòng nhập mật khẩu'));
       } else {
         if (this.userModel.loginPasswordConfirm !== '') {
           this.$refs.personalInfoForm.validateField('loginPasswordConfirm');
@@ -57,7 +57,7 @@ export default {
       if (this.userModel.loginPasswordUpdate && (value === '' || value === undefined)) {
         callback(new Error('请再次输入密码'))
       } else if (this.userModel.loginPasswordUpdate && (value !== this.userModel.loginPassword)) {
-        callback(new Error('两次输入密码不一致!'))
+        callback(new Error('Hai lần nhập mật khẩu không khớp!'))
       } else {
         callback()
       }
@@ -77,18 +77,18 @@ export default {
       rules: {
         name: [
           { required: true, message: '请输入用户名称', trigger: 'blur' },
-          { min: 3, max: 32, message: '长度在 3 到 32 个字符', trigger: 'blur' }
+          { min: 3, max: 32, message: 'Độ dài trong khoảng 3 đến 32 ký tự', trigger: 'blur' }
         ],
         loginName: [
-          { required: true, message: '请输入登录名', trigger: 'blur' },
-          { min: 3, max: 32, message: '长度在 3 到 32 个字符', trigger: 'blur' }
+          { required: true, message: 'Vui lòng nhập tên đăng nhập', trigger: 'blur' },
+          { min: 3, max: 32, message: 'Độ dài trong khoảng 3 đến 32 ký tự', trigger: 'blur' }
         ],
         phone: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { required: true, message: 'Vui lòng nhập số điện thoại di động', trigger: 'blur' },
           { validator: this.isMobileNumber, trigger: "blur" }
         ],
         email: [
-          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { required: true, message: 'Vui lòng nhập email', trigger: 'blur' },
           { validator: this.isEmail, trigger: "blur" }
         ],
         loginPassword: [
@@ -107,16 +107,16 @@ export default {
       } else {
         const reg = /^1[3|4|5|6|7|8|9][0-9]\d{8}$/;
         const isPhone = reg.test(value);
-        value = Number(value); //转换为数字
-        if (typeof value === "number" && !isNaN(value)) {//判断是否为数字
-          value = value.toString(); //转换成字符串
-          if (value.length !== 11 || !isPhone) { //判断是否为11位手机号
-            callback(new Error("手机号码格式如:138xxxx8888"));
+        value = Number(value); //Chuyển thành số
+        if (typeof value === "number" && !isNaN(value)) {//Kiểm tra có phải là số không
+          value = value.toString(); //Chuyển thành chuỗi
+          if (value.length !== 11 || !isPhone) { //Kiểm tra có phải là11chữ số của số điện thoại di động
+            callback(new Error("Định dạng số điện thoại ví dụ như:138xxxx8888"));
           } else {
             callback();
           }
         } else {
-          callback(new Error("请输入电话号码"));
+          callback(new Error("Vui lòng nhập số điện thoại"));
         }
       }
     },

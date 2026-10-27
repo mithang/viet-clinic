@@ -8,11 +8,11 @@ import com.geeke.outpatient.entity.Registration;
 import java.time.LocalDateTime;
 
 /**
- * 患者医保信息
+ * Thông tin BHYT của bệnh nhân
  */
 public interface MdPsnDataService {
     /**
-     * 获取人员基本信息
+     * Lấynhân viêncơ bảnThông tin
      * @param
      * @return
      */

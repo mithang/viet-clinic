@@ -6,29 +6,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 系统设置Entity
+ * Cài đặt hệ thốngEntity
  * @author szy
  * @version 2021-08-26
  */
 public class SysSeting extends DataEntity<SysSeting> {
 
 	private static final long serialVersionUID = 1L;
-	private String sysName;		// 系统名称
-	private String sysAbbrname;		// 系统简介
-	private String loginBgcolor;		// 登录背景色
-	private String loginLayout;		// 登陆布局
-	private SysFile projectLogo;      // 项目标志 
-	private SysFile loginLogo;      // 登录标志 
-	private SysFile sysLogo;      // 系统标志 
-	private SysFile favicon;      // 系统图标 
-	private SysFile loginBg;      // 登录背景图 
-	private SysFile loginGraph;      // 登录配图 
-    private Integer projectLogoIndex;      // 项目标志
-    private Integer loginLogoIndex;      // 登录标志
-    private Integer sysLogoIndex;      // 系统标志
-    private Integer faviconIndex;      // 系统图标
-    private Integer loginBgIndex;      // 登录背景图
-    private Integer loginGraphIndex;      // 登录配图
+	private String sysName;		// Hệ thốngTên
+	private String sysAbbrname;		// Hệ thốnggiới thiệu
+	private String loginBgcolor;		// Đăng nhập背景色
+	private String loginLayout;		// đăng nhậpphát hànhcục
+	private SysFile projectLogo;      // Cờ hạng mục 
+	private SysFile loginLogo;      // Cờ đăng nhập 
+	private SysFile sysLogo;      // Cờ hệ thống 
+	private SysFile favicon;      // Biểu tượng hệ thống 
+	private SysFile loginBg;      // Ảnh nền đăng nhập 
+	private SysFile loginGraph;      // Đăng nhậpphối图 
+    private Integer projectLogoIndex;      // Cờ hạng mục
+    private Integer loginLogoIndex;      // Cờ đăng nhập
+    private Integer sysLogoIndex;      // Cờ hệ thống
+    private Integer faviconIndex;      // Biểu tượng hệ thống
+    private Integer loginBgIndex;      // Ảnh nền đăng nhập
+    private Integer loginGraphIndex;      // Đăng nhậpphối图
 
     public Integer getProjectLogoIndex() {
         return projectLogoIndex;
@@ -87,7 +87,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 
-	@Length(min=0, max=255, message="系统名称长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="Hệ thốngTênĐộ dài phải nằm trong khoảng 0 đến 255 ")
 	public String getSysName() {
 		return sysName;
 	}
@@ -96,7 +96,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 	
-	@Length(min=0, max=128, message="系统简介长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Hệ thốnggiới thiệuĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getSysAbbrname() {
 		return sysAbbrname;
 	}
@@ -105,7 +105,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 	
-	@Length(min=0, max=20, message="登录背景色长度必须介于 0 和 20 之间")
+	@Length(min=0, max=20, message="Đăng nhập背景色Độ dài phải nằm trong khoảng 0 đến 20 ")
 	public String getLoginBgcolor() {
 		return loginBgcolor;
 	}
@@ -114,7 +114,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 	
-	@Length(min=0, max=20, message="登陆布局长度必须介于 0 和 20 之间")
+	@Length(min=0, max=20, message="đăng nhậpphát hànhcụcĐộ dài phải nằm trong khoảng 0 đến 20 ")
 	public String getLoginLayout() {
 		return loginLayout;
 	}
@@ -175,7 +175,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -184,7 +184,7 @@ public class SysSeting extends DataEntity<SysSeting> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -194,7 +194,7 @@ public class SysSeting extends DataEntity<SysSeting> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

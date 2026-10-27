@@ -24,7 +24,7 @@ export default {
     }
   },
   props: {
-    //接受外部v-model传入的值
+    //Nhận từ bên ngoàiv-modelgiá trị truyền vào
     value: {
       type: Array
     }

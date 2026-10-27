@@ -89,7 +89,7 @@
     </div>
 
     <ul v-show="visible" :style="{left: left + 'px', top: top + 'px'}" class="contextmenu">
-      <li @click="deleteCollect(currentId)">删除</li>
+      <li @click="deleteCollect(currentId)">Xóa</li>
     </ul>
   </div>
 </template>

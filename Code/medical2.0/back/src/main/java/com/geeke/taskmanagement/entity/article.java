@@ -8,7 +8,7 @@ import com.geeke.org.entity.Company;
 
 import java.util.Date;
 /**
- * 文章管理Entity
+ * bài viếtQuản lýEntity
  * @author txl
  * @version 2023-02-09
  */
@@ -16,33 +16,33 @@ import java.util.Date;
 
 public class article extends DataEntity<article>{
     private static final long serialVersionUID = 1014474470772900019L;
-    /** 诊所标识 */
+    /** Định danh phòng khám */
     private String companyid;
-    /** 用户标识 */
+    /** Định danh người dùng */
     private String userid ;
-    /** 发布时间 */
+    /** Thời gian đăng */
     private Date aricledate ;
-    /** 标题 */
+    /** Tiêu đề */
     private String title ;
-    /** 摘要 */
+    /** Tóm tắt */
     private String abstracts;
-    /** 正文内容 */
+    /** Nội dung chính */
     private String content ;
-    /** 来源作者 */
+    /** Tác giả nguồn */
     private String sources ;
-    /** 原文链接 */
+    /** Liên kết gốc */
     private String originallink ;
 
-    /** 审核人 */
+    /** Người duyệt */
     private String auditor ;
 
-    /** 审核时间 */
+    /** Thời gian xét duyệt */
     private Date auditordate ;
-    /** 发布人名称 */
+    /** Tên người phát hành */
     private String username ;
-    /** 审核状态（0：待审核;1：通过 2：不通过） */
+    /** Trạng thái xét duyệt(0: Chờ xét duyệt;1: Qua 2: Không đạt) */
     private String auditstatus ;
-    /** 是否启用（0：是；1：否） */
+    /** Có bật không(0:  có ; 1:  không ) */
     private String isLocked ;
 
     private Company company;
@@ -57,109 +57,109 @@ public class article extends DataEntity<article>{
         super(id);
     }
 
-    /** 诊所标识 */
+    /** Định danh phòng khám */
     public String getCompanyid() {
         return companyid;
     }
-    /** 诊所标识 */
+    /** Định danh phòng khám */
     public void setCompanyid(String companyid) {
         this.companyid = companyid;
     }
-    /** 发布人标识 */
+    /** Định danh người đăng */
     public String getUserid(){
         return this.userid;
     }
-    /** 发布人标识 */
+    /** Định danh người đăng */
     public void setUserid(String userid){
         this.userid=userid;
     }
-    /** 发布时间 */
+    /** Thời gian đăng */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date getAricledate(){
         return this.aricledate;
     }
-    /** 发布时间 */
+    /** Thời gian đăng */
     public void setAricledate(Date aricledate){
         this.aricledate=aricledate;
     }
-    /** 标题 */
+    /** Tiêu đề */
     public String getTitle(){
         return this.title;
     }
-    /** 标题 */
+    /** Tiêu đề */
     public void setTitle(String title){
         this.title=title;
     }
-    /** 摘要 */
+    /** Tóm tắt */
     public String getAbstracts(){
         return this.abstracts;
     }
-    /** 摘要 */
+    /** Tóm tắt */
     public void setAbstracts(String abstracts){
         this.abstracts=abstracts;
     }
-    /** 正文内容 */
+    /** Nội dung chính */
     public String getContent(){
         return this.content;
     }
-    /** 正文内容 */
+    /** Nội dung chính */
     public void setContent(String content){
         this.content=content;
     }
-    /** 来源作者 */
+    /** Tác giả nguồn */
     public String getSources(){
         return this.sources;
     }
-    /** 来源作者 */
+    /** Tác giả nguồn */
     public void setSources(String sources){
         this.sources=sources;
     }
-    /** 原文链接 */
+    /** Liên kết gốc */
     public String getOriginallink(){
         return this.originallink;
     }
-    /** 原文链接 */
+    /** Liên kết gốc */
     public void setOriginallink(String originallink){
         this.originallink=originallink;
     }
-    /** 审核人 */
+    /** Người duyệt */
     public String getAuditor(){
         return this.auditor;
     }
-    /** 审核人 */
+    /** Người duyệt */
     public void setAuditor(String auditor){
         this.auditor=auditor;
     }
-    /** 审核时间 */
+    /** Thời gian xét duyệt */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date getAuditordate(){
         return this.auditordate;
     }
-    /** 审核时间 */
+    /** Thời gian xét duyệt */
     public void setAuditordate(Date auditordate){
         this.auditordate=auditordate;
     }
-    /** 发布人名称 */
+    /** Tên người phát hành */
     public String getUsername(){
         return this.username;
     }
-    /** 发布人名称 */
+    /** Tên người phát hành */
     public void setUsername(String username){
         this.username=username;
     }
-    /** 审核状态（0：待审核;1：通过 2：不通过） */
+    /** Trạng thái xét duyệt(0: Chờ xét duyệt;1: Qua 2: Không đạt) */
     public String getAuditstatus(){
         return this.auditstatus;
     }
-    /** 审核状态（0：待审核;1：通过 2：不通过） */
+    /** Trạng thái xét duyệt(0: Chờ xét duyệt;1: Qua 2: Không đạt) */
     public void setAuditstatus(String auditstatus){
         this.auditstatus=auditstatus;
     }
-    /** 是否启用（0：是；1：否） */
+    /** Có bật không(0:  có ; 1:  không ) */
     public String getIsLocked(){
         return this.isLocked;
     }
-    /** 是否启用（0：是；1：否） */
+    /** Có bật không(0:  có ; 1:  không ) */
     public void setIsLocked(String isLocked){
         this.isLocked=isLocked;
     }

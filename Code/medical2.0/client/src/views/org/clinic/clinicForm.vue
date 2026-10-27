@@ -3,7 +3,7 @@
              @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑'
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa'
                      placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
@@ -12,18 +12,18 @@
       <div class="tab-item" v-show='tabIndex==="1"'>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='诊所名称' prop='name'>
+            <el-form-item label='Tên phòng khám' prop='name'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='100'
-                        :placeholder='dialogProps.action === "view"? "" : "请输入诊所名称"' autofocus></el-input>
+                        :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên phòng khám"' autofocus></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='租户' prop='lesseeId.id'>
+            <el-form-item label='Đơn vị thuê' prop='lesseeId.id'>
               <el-input v-if='dialogProps.action === "view"' :disabled='true'
                         v-model='bizFormModel.lesseeId.userName'></el-input>
-              <el-select v-else v-model='bizFormModel.lesseeId' value-key='id' filterable clearable placeholder='请选择租户'
+              <el-select v-else v-model='bizFormModel.lesseeId' value-key='id' filterable clearable placeholder='Vui lòng chọn đơn vị thuê'
                          @clear='bizFormModel.lesseeId={
                 "id": null,
                                 "name": null,
@@ -36,49 +36,49 @@
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='地址(省)' prop='addressProvince'>
+            <el-form-item label='Địa chỉ(Tỉnh/Thành phố)' prop='addressProvince'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressProvince' :maxlength='10'
-                        :placeholder='dialogProps.action === "view"? "" : "请输入地址(省)"'></el-input>
+                        :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ(Tỉnh/Thành phố)"'></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='地址(市)' prop='addressCity'>
+            <el-form-item label='Địa chỉ(Thành phố)' prop='addressCity'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressCity' :maxlength='10'
-                        :placeholder='dialogProps.action === "view"? "" : "请输入地址(市)"'></el-input>
+                        :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ(Thành phố)"'></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='地址(区)' prop='addressRegion'>
+            <el-form-item label='Địa chỉ(Quận/Huyện)' prop='addressRegion'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressRegion' :maxlength='10'
-                        :placeholder='dialogProps.action === "view"? "" : "请输入地址(区)"'></el-input>
+                        :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ(Quận/Huyện)"'></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='地址' prop='address'>
+            <el-form-item label='Địa chỉ' prop='address'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.address' :maxlength='100'
-                        :placeholder='dialogProps.action === "view"? "" : "请输入地址"'></el-input>
+                        :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ"'></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='手机号' prop='phoneNumber'>
+            <el-form-item label='Số điện thoại di động' prop='phoneNumber'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.phoneNumber' :maxlength='20'
-                        :placeholder='dialogProps.action === "view"? "" : "请输入手机号"'></el-input>
+                        :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập số điện thoại di động"'></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='执业许可科目' prop='licenseSubject'>
+            <el-form-item label='Môn được cấp phép hành nghề' prop='licenseSubject'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.licenseSubject' :maxlength='100'
-                        :placeholder='dialogProps.action === "view"? "" : "请输入执业许可科目"'></el-input>
+                        :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập môn được cấp phép hành nghề"'></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -87,7 +87,7 @@
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='医疗机构编码' prop='fixmedinsCode'>
+            <el-form-item label='Mã cơ sở y tế' prop='fixmedinsCode'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.fixmedinsCode' :maxlength='100'
                         autofocus></el-input>
             </el-form-item>
@@ -96,16 +96,16 @@
         <el-row>
           <!-- 定点医疗机构名称 -->
           <el-col :span='24/1'>
-            <el-form-item label='医疗机构名称' prop='fixmedinsName'>
+            <el-form-item label='Tên cơ sở y tế' prop='fixmedinsName'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.fixmedinsName' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row>
-          <!-- 就医地区编码 -->
+          <!-- Mã khu vực khám bệnh -->
           <el-col :span='24/1'>
-            <el-form-item label='就医地区编码' prop='mdtrtareaAdmvs'>
+            <el-form-item label='Mã khu vực khám bệnh' prop='mdtrtareaAdmvs'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.mdtrtareaAdmvs' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>
@@ -114,7 +114,7 @@
         <el-row>
           <!-- appId -->
           <el-col :span='24/1'>
-            <el-form-item label='密钥Id' prop='appId'>
+            <el-form-item label='Khóa bí mậtId' prop='appId'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.appId' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>
@@ -123,7 +123,7 @@
         <el-row>
           <!-- appSecret -->
           <el-col :span='24/1'>
-            <el-form-item label='密钥Key' prop='appSecret'>
+            <el-form-item label='Khóa bí mậtKey' prop='appSecret'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.appSecret' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>
@@ -147,16 +147,16 @@
           </el-col>
         </el-row>
         <el-row>
-          <!-- 多文件上传： 诊所许可证图片 -->
-          <upload-file v-if='dialogProps.visible' v-model='bizFormModel.fileIdFile' titile='诊所许可证图片'
+          <!-- Tải lên nhiều tệp： Ảnh giấy phép phòng khám -->
+          <upload-file v-if='dialogProps.visible' v-model='bizFormModel.fileIdFile' titile='Ảnh giấy phép phòng khám'
                        :action='dialogProps.action' :objectId='bizFormModel.fileId'></upload-file>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='产品版本' prop='version.id'>
+            <el-form-item label='Phiên bản sản phẩm' prop='version.id'>
               <el-input v-if='dialogProps.action === "view"' :disabled='true'
                         v-model='bizFormModel.version.name'></el-input>
-              <el-select v-else v-model='bizFormModel.version' value-key='id' filterable clearable placeholder='请选择产品版本'
+              <el-select v-else v-model='bizFormModel.version' value-key='id' filterable clearable placeholder='Vui lòng chọn phiên bản sản phẩm'
                          @clear='bizFormModel.version={
                 "id": null,
                                 "name": null,
@@ -170,7 +170,7 @@
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='状态' prop='status'>
+            <el-form-item label='Trạng thái' prop='status'>
               <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.status' active-color='#13ce66'
                          inactive-color='#dbdfe6' :active-value='1' :inactive-value='0'></el-switch>
             </el-form-item>
@@ -178,7 +178,7 @@
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='是否为机构' prop='isInstitution'>
+            <el-form-item label='Có phải cơ sở không' prop='isInstitution'>
               <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isInstitution' active-color='#13ce66'
                          inactive-color='#dbdfe6' :active-value='1' :inactive-value='0'></el-switch>
             </el-form-item>
@@ -186,7 +186,7 @@
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='诊所开始时间' prop='startUseDate'>
+            <el-form-item label='Thời gian bắt đầu phòng khám' prop='startUseDate'>
               <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.startUseDate'
                               type='datetime' value-format='yyyy-MM-dd HH:mm:ss'
                               :placeholder='dialogProps.action === "view"? "" : "请输入诊所开始时间"'></el-date-picker>
@@ -195,18 +195,18 @@
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='诊所到期时间' prop='expireDate'>
+            <el-form-item label='Thời gian hết hạn phòng khám' prop='expireDate'>
               <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.expireDate' type='datetime'
                               value-format='yyyy-MM-dd HH:mm:ss'
-                              :placeholder='dialogProps.action === "view"? "" : "请输入诊所到期时间"'></el-date-picker>
+                              :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian hết hạn phòng khám"'></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col>
-            <el-form-item label='备注信息' prop='remarks'>
+            <el-form-item label='Thông tin ghi chú' prop='remarks'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea'
-                        :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入备注信息"'
+                        :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"'
                         clearable></el-input>
             </el-form-item>
           </el-col>
@@ -215,9 +215,9 @@
     </el-form>
     <span slot='footer' class='dialog-footer'>
       <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true'
-                 @click='onSubmit("clinicForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+                 @click='onSubmit("clinicForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -241,8 +241,8 @@
       return {
         bizFormModel: this.initFormModel(),
         tabIndex: '1',
-        lesseeId_List: [],  // 租户
-        version_List: [],  // 产品版本
+        lesseeId_List: [],  // Đơn vị thuê
+        version_List: [],  // Phiên bản sản phẩm
         flag: false,
         dialogProps: {
           visible: false,
@@ -252,25 +252,25 @@
         },
         formRules: {
           'name': [
-            {required: true, message: '请输入诊所名称', trigger: 'blur'}
+            {required: true, message: 'Vui lòng nhập tên phòng khám', trigger: 'blur'}
           ],
           'fixmedinsCode': [
             {required: true, message: '请输入医疗机构代码', trigger: 'blur'}
           ],
           'lesseeId.id': [
-            {required: true, message: '请选择租户', trigger: 'change'}
+            {required: true, message: 'Vui lòng chọn đơn vị thuê', trigger: 'change'}
           ],
           'phoneNumber': [
-            {required: true, message: '请输入手机号', trigger: 'blur'}
+            {required: true, message: 'Vui lòng nhập số điện thoại di động', trigger: 'blur'}
           ],
           'version.id': [
-            {required: true, message: '请选择产品版本', trigger: 'change'}
+            {required: true, message: 'Vui lòng chọn phiên bản sản phẩm', trigger: 'change'}
           ],
         }
       }
     },
     props: {
-      // 权限
+      // Quyền
       permission: {
         type: Object
       }
@@ -318,7 +318,7 @@
       },
       switchEdit() {
         this.dialogProps.action = 'edit'
-        this.dialogProps.title = '修改诊所'
+        this.dialogProps.title = 'Sửa phòng khám'
         this.initOptions(this.bizFormModel)
       },
       onDialogClose() {
@@ -331,48 +331,48 @@
       },
       initFormModel(This) {
         return {
-          'name': '',   // 诊所名称
-          'lesseeId': {     // 父表 租户
+          'name': '',   // Tên phòng khám
+          'lesseeId': {     // Bảng cha Đơn vị thuê
             'id': validatenull(This) || validatenull(This.lesseeId) ? null : This.lesseeId.id,
             'name': validatenull(This) || validatenull(This.lesseeId) ? null : This.lesseeId.name,
           },
-          'addressProvince': '',   // 地址(省)
-          'addressCity': '',   // 地址(市)
-          'addressRegion': '',   // 地址(区)
-          'address': '',   // 地址
-          'phoneNumber': '',   // 手机号
-          'licenseSubject': '',   // 执业许可科目
+          'addressProvince': '',   // Địa chỉ(Tỉnh/Thành phố)
+          'addressCity': '',   // Địa chỉ(Thành phố)
+          'addressRegion': '',   // Địa chỉ(Quận/Huyện)
+          'address': '',   // Địa chỉ
+          'phoneNumber': '',   // Số điện thoại di động
+          'licenseSubject': '',   // Môn được cấp phép hành nghề
           'parentId': '', //zuhu
           'fileId': '',
           'fileIdFile': {
-            deletes: [],  // 待删除（已上传）的文件列表
-            uploads: []   // 待上传的文件列表
+            deletes: [],  // Chờ xóa（Đã tải lên）danh sách tệp
+            uploads: []   // Danh sách tệp chờ tải lên
           },
-          'version': {     // 产品版本
+          'version': {     // Phiên bản sản phẩm
             'id': null,
             'name': null,
             'roleId': null
           },
-          'status': 1,    // 状态
-          'isInstitution': 0,    // 是否为机构
-          'startUseDate': '',   // 诊所开始时间
-          'expireDate': '',   // 诊所到期时间
-          'remarks': '',   // 备注信息
+          'status': 1,    // Trạng thái
+          'isInstitution': 0,    // Có phải cơ sở không
+          'startUseDate': '',   // Thời gian bắt đầu phòng khám
+          'expireDate': '',   // Thời gian hết hạn phòng khám
+          'remarks': '',   // Thông tin ghi chú
           //医保配置信息
-          'fixmedinsCode':'' ,//医疗机构编码
-          'fixmedinsName': '',   // 医疗机构名称
-          'mdtrtareaAdmvs': '',  // 就医地区编码
-          'appId': '',           // 电子处方 AppId
-          'appSecret': '',       // 电子处方 AppSecret
-          'privateKey': '',      // 电子处方 私钥
-          'publicKey': '',       // 电子处方 公钥
+          'fixmedinsCode':'' ,//Mã cơ sở y tế
+          'fixmedinsName': '',   // Tên cơ sở y tế
+          'mdtrtareaAdmvs': '',  // Mã khu vực khám bệnh
+          'appId': '',           // Đơn thuốc điện tử AppId
+          'appSecret': '',       // Đơn thuốc điện tử AppSecret
+          'privateKey': '',      // Đơn thuốc điện tử 私钥
+          'publicKey': '',       // Đơn thuốc điện tử 公钥
         }
       },
       initOptions(This) {
         let lesseeId_search = {
           params: []
         }
-        // 数据权限: 租户lessee
+        // Quyền dữ liệu: Đơn vị thuêlessee
         this.pushDataPermissions(lesseeId_search.params, this.$route.meta.routerId, '985180319911059468')
         this.lesseeId_List.splice(0, this.lesseeId_List.length)
         listTenantAll(lesseeId_search).then(responseData => {
@@ -381,7 +381,7 @@
         let version_search = {
           params: []
         }
-        // 数据权限: 诊所版本clinic_version
+        // Quyền dữ liệu: Phiên bản phòng khámclinic_version
         this.pushDataPermissions(version_search.params, this.$route.meta.routerId, '987744398207139863')
         this.version_List.splice(0, this.version_List.length)
         listClinicVersionAll(version_search).then(responseData => {
@@ -398,7 +398,7 @@
       },
       openEditClinicDialog(clinic) {
         this.dialogProps.action = 'edit'
-        this.dialogProps.title = '修改诊所'
+        this.dialogProps.title = 'Sửa phòng khám'
         this.bizFormModel = {...this.initFormModel(), ...clinic}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
@@ -406,7 +406,7 @@
       },
       openAddClinicDialog() {
         this.dialogProps.action = 'add'
-        this.dialogProps.title = '添加诊所'
+        this.dialogProps.title = 'Thêm phòng khám'
         this.bizFormModel = this.initFormModel()
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
@@ -414,7 +414,7 @@
       },
       openCopyClinicDialog(clinic) {
         this.dialogProps.action = 'add'
-        this.dialogProps.title = '添加诊所'
+        this.dialogProps.title = 'Thêm phòng khám'
         this.bizFormModel = {...this.initFormModel(), ...clinic}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'

@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 处方信息Controller
+ * Thông tin đơn thuốcController
  * @author txl
  * @version 2022-06-20
  */

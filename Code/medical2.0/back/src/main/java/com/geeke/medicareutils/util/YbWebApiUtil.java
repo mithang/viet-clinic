@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 /**
- * @Description 医保中间件访问接口
+ * @Description BHYT trong giữatruy cập tệpgiao diện
  * @Author
  * @Date 2025/3/26
  */

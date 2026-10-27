@@ -10,20 +10,20 @@
   >
 <div>
   <el-form ref="addtaskForm" :model="ruleForm" :rules="rules"  label-width="20%" class="demo-ruleForm">
-      <el-form-item label="任务类型" prop="tasktype">
+      <el-form-item label="Loại nhiệm vụ" prop="tasktype">
     <el-radio-group v-model="ruleForm.tasktype">
-      <el-radio :label="'0'">常规任务</el-radio>
-      <el-radio :label="'1'">宣传活动</el-radio>
+      <el-radio :label="'0'">Nhiệm vụ thường xuyên</el-radio>
+      <el-radio :label="'1'">Hoạt động tuyên truyền</el-radio>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="任务名称" prop="taskname">
+  <el-form-item label="Tên nhiệm vụ" prop="taskname">
     <el-input v-model="ruleForm.taskname"></el-input>
   </el-form-item>
-  <el-form-item label="任务描述" prop="taskdescribe">
+  <el-form-item label="Mô tả nhiệm vụ" prop="taskdescribe">
     <el-input
   type="textarea"
   :rows="3"
-  placeholder="请填写任务描述"
+  placeholder="Vui lòng điền mô tả nhiệm vụ"
   v-model="ruleForm.taskdescribe">
 </el-input>
 <!-- <el-upload
@@ -36,48 +36,48 @@
   :limit="10"
   :on-exceed="handleExceed"
   :file-list="fileList">
-  <el-button size="small" type="primary">点击上传</el-button>
-  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件,且不超过500kb</div>
+  <el-button size="small" type="primary">Nhấn để tải lên</el-button>
+  <div slot="tip" class="el-upload__tip">只能上传jpg/pngTệp,且不超过500kb</div>
 </el-upload> -->
               <div style="margin-left:-50px">
               <upload-file  :objectId="uploadFiles" :value="uploads" @getFileList="getFileList" :action="flags" @deleteFile="deleteFile"></upload-file>
               </div>
   </el-form-item>
-  <el-form-item label="任务发起人">
+  <el-form-item label="Người khởi tạo nhiệm vụ">
       {{this.ruleForm.taskinitiator}}
     <!-- <el-descriptions>
     <el-descriptions-item label="">{{this.form.initiator}}</el-descriptions-item>
 </el-descriptions> -->
   </el-form-item>
-  <el-form-item label="任务截止时间"  prop="taskdeadline">
+  <el-form-item label="Thời hạn nhiệm vụ"  prop="taskdeadline">
     <el-col :span="11">
-      <!-- <el-date-picker type="datetime" placeholder="选择日期时间" v-model="ruleForm.taskdeadline" style="width: 100%;"></el-date-picker> -->
+      <!-- <el-date-picker type="datetime" placeholder="Chọn ngày giờ" v-model="ruleForm.taskdeadline" style="width: 100%;"></el-date-picker> -->
       <el-date-picker
       v-model="ruleForm.taskdeadline"
       type="datetime"
       value-format="yyyy-MM-dd HH:mm:ss"
-      placeholder="选择日期时间">
+      placeholder="Chọn ngày giờ">
     </el-date-picker>
     </el-col>
     <!-- <el-col class="line" :span="2">-</el-col>
     <el-col :span="11">
-      <el-time-picker placeholder="选择时间" v-model="ruleForm.taskdeadline2" style="width: 100%;"></el-time-picker>
+      <el-time-picker placeholder="Chọn thời gian" v-model="ruleForm.taskdeadline2" style="width: 100%;"></el-time-picker>
     </el-col> -->
   </el-form-item>
 
   <el-form-item label="任务执行人" width="80%">
-    <!-- <el-select v-model="ruleForm.taskregion" placeholder="请选择任务执行人">
-      <el-option label="诊所管理员" value="1247793999298339926"></el-option>
+    <!-- <el-select v-model="ruleForm.taskregion" placeholder="Vui lòng chọn người thực hiện nhiệm vụ">
+      <el-option label="Quản trị viên phòng khám" value="1247793999298339926"></el-option>
       <el-option label="执行人二" value="beijing"></el-option>
     </el-select> -->
     <!-- <el-cascader
     :options="ruleForm.taskregion"
     :props="{ multiple: true, checkStrictly: true }"
     clearable></el-cascader> -->
-    <el-select v-model="jgiddatalist" multiple placeholder="请选择" @change="hideOther()">
+    <el-select v-model="jgiddatalist" multiple placeholder="Vui lòng chọn" @change="hideOther()">
       <el-option
       key="-1"
-          label="全部"
+          label="Tất cả"
           value="qb"
           ></el-option>
     <el-option
@@ -93,11 +93,11 @@
   
 </div>
 <span slot='footer' class='dialog-footer'>
-      <el-button :disabled="flag" type='primary' :plain='true' @click="save('addtaskForm')">保 存</el-button>
+      <el-button :disabled="flag" type='primary' :plain='true' @click="save('addtaskForm')">Lưu</el-button>
   
       <el-button :disabled="flag" type='primary' :plain='true' @click="submitForm('addtaskForm')">发 布</el-button>
       
-      <el-button :plain='true' type="primary" @click='onDialogClose()'>取 消</el-button>
+      <el-button :plain='true' type="primary" @click='onDialogClose()'>Hủy</el-button>
     </span> 
 </el-dialog>
 </template>
@@ -162,17 +162,17 @@ import { getjglist} from "@/api/toll/tollInfo";
           ],
           taskname: [
             { required: true, message: '请填写任务名称', trigger: 'blur' },
-            // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+            // { min: 3, max: 5, message: 'Độ dài trong khoảng 3 đến 5 ký tự', trigger: 'blur' }
           ],
           taskdescribe: [
-            { required: true, message: '请填写任务描述', trigger: 'change' }
+            { required: true, message: 'Vui lòng điền mô tả nhiệm vụ', trigger: 'change' }
           ],
           
           taskdeadline: [
             {  required: true, message: '请选择日期时间', trigger: 'change' }
           ],
           taskregion: [
-            { type: 'array', required: true, message: '请选择任务执行人', trigger: 'change' }
+            { type: 'array', required: true, message: 'Vui lòng chọn người thực hiện nhiệm vụ', trigger: 'change' }
           ],
         //   resource: [
         //     { required: true, message: '请选择活动资源', trigger: 'change' }
@@ -182,12 +182,12 @@ import { getjglist} from "@/api/toll/tollInfo";
         //   ]
         },
         bizFormModel:{
-        fileIdFile:[],   //文件
-        uploadFile:[],  //文件
+        fileIdFile:[],   //Tệp
+        uploadFile:[],  //Tệp
         inspectionCheckInfo:{}
-      },     //填写报告封装
+      },     //Điền đóng gói báo cáo
       flags:false,
-      flags:false,  //防止重复提交
+      flags:false,  //Ngăn gửi trùng lặp
       gettaskrcvo: {
           limit: 20,
         offset: 0,
@@ -254,14 +254,14 @@ import { getjglist} from "@/api/toll/tollInfo";
                if(responseData.code === 100){
                  countId = responseData.data.id
                }else {
-                 this.$message.error("执行失败！")
+                 this.$message.error("Thực hiện thất bại！")
                   
                  this.flags=false
                  return;
                }
              })
           //  }else{
-          //    console.log("失败");
+          //    console.log("Thất bại");
           //    this.flags=false
           //  }
          //})
@@ -275,7 +275,7 @@ import { getjglist} from "@/api/toll/tollInfo";
                 taskdeadline:'',
                 taskregion:[],
              };
-            this.$message.success("执行成功！")
+            this.$message.success("Thực hiện thành công！")
             this.flags=false
             this.onDialogClose();
         //})
@@ -318,7 +318,7 @@ import { getjglist} from "@/api/toll/tollInfo";
                }
              })
           //  }else{
-          //    console.log("失败");
+          //    console.log("Thất bại");
           //    this.flags=false
           //  }
         // })
@@ -348,16 +348,16 @@ import { getjglist} from "@/api/toll/tollInfo";
         this.$refs["addtaskForm"].clearValidate();
       });
     },
-    //附件上传
+    //Tải tệp đính kèm lên
     handleRemove(file, fileList) {
       },
       handlePreview(file) {
       },
       handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        this.$message.warning(`Giới hạn chọn hiện tại 3 tệp，Lần này đã chọn ${files.length} tệp，Đã chọn tổng cộng ${files.length + fileList.length} tệp`);
       },
       beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
+        return this.$confirm(`Xác nhận xóa ${ file.name }？`);
       },
       submitForm(formName){
        
@@ -399,13 +399,13 @@ import { getjglist} from "@/api/toll/tollInfo";
                  countId = responseData.data.id
                }else{
                 this.flags=false
-                this.$message.error("执行失败！")
+                this.$message.error("Thực hiện thất bại！")
                 return;
                }
              })
 
           //  }else{
-          //    console.log("失败");
+          //    console.log("Thất bại");
           //    this.flags=false
           //  }
        //  })
@@ -420,7 +420,7 @@ import { getjglist} from "@/api/toll/tollInfo";
                 taskdeadline:'',
                 taskregion:[],
             };
-            this.$message.success("执行成功！")
+            this.$message.success("Thực hiện thành công！")
             this.flags=false
             this.onDialogClose();
 
@@ -463,7 +463,7 @@ import { getjglist} from "@/api/toll/tollInfo";
                }
              })
           //  }else{
-          //    console.log("失败");
+          //    console.log("Thất bại");
           //    this.flags=false
           //  }
          //})
@@ -525,7 +525,7 @@ import { getjglist} from "@/api/toll/tollInfo";
           })
       },
       hideOther() {
-      // 数组的indexOf方法，会返回当前值在数组中的下标，没有则为-1
+      // 数组的indexOfPhương pháp，会返回当前值在数组中的下标，没有则为-1
       if (this.jgiddatalist.indexOf('qb') === -1 ) {
         this.jglist.map((item) => {
           item.disabled = true
@@ -575,7 +575,7 @@ this.ruleForm.taskregion=[];
         this.init()
         this.flags = false
         this.flags = false
-        if (types === "") { titles = "新增" } else if (types !== "") { titles = "修改" } else { titles = "" };
+        if (types === "") { titles = "Thêm mới" } else if (types !== "") { titles = "Sửa" } else { titles = "" };
         if (types !== "" && types != null) {
           this.Getselectmbbm(types);
         } else {
@@ -605,7 +605,7 @@ this.ruleForm.taskregion=[];
         this.uploads = []
         this.flags = false
         this.flags = false
-        if (row === "") { titles = "新增" } else if (row !== "") { titles = "修改" } else { titles = "" };
+        if (row === "") { titles = "Thêm mới" } else if (row !== "") { titles = "Sửa" } else { titles = "" };
         if (row !== "" && row != null) {
         } else {
           this.mblx = "0",

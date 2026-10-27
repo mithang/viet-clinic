@@ -29,7 +29,7 @@ public class TaskmanageController extends BaseController {
     private TaskmanageService taskmanageService;
 
     /*
-    新增任务
+    Thêm tác vụ mới
      */
     @PostMapping(value = "inserttask")
     public ResponseEntity<JSONObject> inserttask(@RequestBody taskmanagement task)  {
@@ -37,7 +37,7 @@ public class TaskmanageController extends BaseController {
     }
 
     /*
-    查询任务
+    Truy vấntác vụ
      */
     @PostMapping(value = "selecttasklist")
     public ResponseEntity<JSONObject> selecttasklist(@RequestBody gettaskrcvo rcvo){
@@ -48,7 +48,7 @@ public class TaskmanageController extends BaseController {
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestParam("entity") String strInspection,
-                                           @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // 文件: 用户图片
+                                           @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                            @RequestParam(value = "deleteIds",required = false)String strDeleteIds,
                                            @RequestParam("countId") String countId) throws IOException {
         taskmanagement task = JSONObject.parseObject(strInspection, taskmanagement.class);
@@ -58,16 +58,16 @@ public class TaskmanageController extends BaseController {
     }
 
     /**
-     * 任务保存
-     * @param strInspection   任务详情
-     * @param fileIdUploads   上传图片
-     * @param strDeleteIds    图片删除id
+     * tác vụLưu
+     * @param strInspection   Chi tiết tác vụ
+     * @param fileIdUploads   Tải lênảnh
+     * @param strDeleteIds    ảnhXóaid
      * @return
      * @throws IOException
      */
     @PostMapping(value = "storage")
     public ResponseEntity<JSONObject> storage(@RequestParam("entity") String strInspection,
-                                           @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // 文件: 用户图片
+                                           @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                            @RequestParam(value = "deleteIds",required = false)String strDeleteIds , @RequestParam("countId") String countId) throws IOException {
         taskmanagement task = JSONObject.parseObject(strInspection, taskmanagement.class);
         String[] strings = JSONObject.parseObject(strDeleteIds, String[].class);
@@ -76,7 +76,7 @@ public class TaskmanageController extends BaseController {
     }
 
     /**
-     * 任务修改后发布
+     * tác vụSửasauphátphát hành
      * @param taskmanagement
      * @return
      */
@@ -87,7 +87,7 @@ public class TaskmanageController extends BaseController {
     }
 
     /**
-     * 任务删除
+     * tác vụXóa
      * @param taskmanagement
      * @return
      */
@@ -98,7 +98,7 @@ public class TaskmanageController extends BaseController {
     }
 
     /*
-    查询执行人数据
+    Truy vấnhành nghề dòngngườiDữ liệu
     */
     @PostMapping(value = "getusertree")
     public ResponseEntity<JSONObject> getusertree(@RequestBody gettaskrcvo rcvo){
@@ -107,7 +107,7 @@ public class TaskmanageController extends BaseController {
 
 
     /*
-       获取反馈情况
+       Lấyphản hồitình hình
        */
     @PostMapping(value = "getfeedbacktable")
     public ResponseEntity<JSONObject> getfeedbacktable(@RequestBody gettaskrcvo rcvo){
@@ -115,7 +115,7 @@ public class TaskmanageController extends BaseController {
     }
 
     /*
-    任务审核
+    tác vụxét duyệt
      */
     @PostMapping(value = "updateaudit")
     public ResponseEntity<JSONObject> updateaudit(@RequestBody taskmanagement task){

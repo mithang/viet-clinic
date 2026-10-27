@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @Description 电子处方取药结果返回
+ * @Description điện tửĐơn thuốclấy thuốcKết quảTrả về
  * @Author Hzx
  * @Date 2024/11/13
  */
@@ -17,26 +17,26 @@ public class MdPreDrugData {
 
     @Data
     public static class MdMedicineInfo {
-        // 医药机构药品编号
-        private String medinsListCodg; // 字符型 20
-        // 通用名
-        private String drugGenname; // 字符型 50
-        // 药品商品名
-        private String drugProdname; // 字符型 50
-        // 药品剂型
-        private String drugDosform; // 字符型 20
-        // 药品规格
-        private String drugSpec; // 字符型 20
-        // 数量
-        private Integer ent; // 数值型 16,3
-        // 批准文号
-        private String aprvno; // 字符型 20
-        // 批次号
-        private String bchno; // 字符型 20
-        // 生产批号
-        private String manuLotnum; // 字符型 20
-        // 生产厂家
-        private String prdrName; // 字符型 50
+        // y dượcCơ sởThuốcmã số
+        private String medinsListCodg; // Kiểu ký tự 20
+        // Tên chung
+        private String drugGenname; // Kiểu ký tự 50
+        // Tên thương mại của thuốc
+        private String drugProdname; // Kiểu ký tự 50
+        // Dạng bào chế của thuốc
+        private String drugDosform; // Kiểu ký tự 20
+        // Quy cách thuốc
+        private String drugSpec; // Kiểu ký tự 20
+        // Số lượng
+        private Integer ent; // Kiểu số 16,3
+        // Số phê duyệt
+        private String aprvno; // Kiểu ký tự 20
+        // Số lô
+        private String bchno; // Kiểu ký tự 20
+        // Số lô sản xuất
+        private String manuLotnum; // Kiểu ký tự 20
+        // Nhà sản xuất
+        private String prdrName; // Kiểu ký tự 50
 
     }
 

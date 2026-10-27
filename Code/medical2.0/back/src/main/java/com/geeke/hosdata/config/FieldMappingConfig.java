@@ -12,7 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.InputStream;
 
-// 读取 XML 配置文件，解析字段映射，并将其应用到代码中
+// Đọc XML cấu hìnhTệp, phân tíchTrườngánh xạ, vàSẽ của nónêndùngĐếnmã trong 
 public class FieldMappingConfig {
     private static final Logger logger = LoggerFactory.getLogger(FieldMappingConfig.class);
     public static JSONObject readFieldMappingFromXML() {
@@ -33,7 +33,7 @@ public class FieldMappingConfig {
                 }
             }
         } catch (Exception e) {
-            logger.error("读取字段映射配置失败", e);
+            logger.error("đọcTrườngánh xạcấu hìnhThất bại", e);
         }
         return fieldMapping;
     }

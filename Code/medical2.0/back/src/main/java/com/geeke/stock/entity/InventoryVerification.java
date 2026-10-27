@@ -10,18 +10,18 @@ import com.geeke.common.persistence.DataEntity;
 import java.math.BigDecimal;
 
 /**
- * 库存盘点Entity
+ * Kiểm kê tồn khoEntity
  * @author rys
  * @version 2022-11-02
  */
 public class InventoryVerification extends DataEntity<InventoryVerification> {
 
 	private static final long serialVersionUID = 1235640942656921602L;
-	private Company company;      // 诊所id 
-	private String code;		// 盘点单号
-	private String status;		// 盘点状态
-	private String type;		//盘点类型（0：药品，1：材料）
-	private BigDecimal allPrice;   //盈亏总金额
+	private Company company;      // Phòng khámid 
+	private String code;		// kiểm kêđơnsố
+	private String status;		// kiểm kêTrạng thái
+	private String type;		//kiểm kêLoại(0: Thuốc, 1: Vật tư)
+	private BigDecimal allPrice;   //lãi lỗtổngSố tiền
 
 	
 	public InventoryVerification() {
@@ -41,7 +41,7 @@ public class InventoryVerification extends DataEntity<InventoryVerification> {
         this.company = company;
     }
     
-	@Length(min=1, max=255, message="盘点单号长度必须介于 1 和 255 之间")
+	@Length(min=1, max=255, message="kiểm kêđơnsốĐộ dài phải nằm trong khoảng 1 đến 255 ")
 	public String getCode() {
 		return code;
 	}
@@ -50,7 +50,7 @@ public class InventoryVerification extends DataEntity<InventoryVerification> {
 	}
 	
 	
-	@Length(min=0, max=1, message="盘点状态长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="kiểm kêĐộ dài trạng thái phải nằm trong khoảng 0 đến 1 ")
 	public String getStatus() {
 		return status;
 	}
@@ -75,7 +75,7 @@ public class InventoryVerification extends DataEntity<InventoryVerification> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -84,7 +84,7 @@ public class InventoryVerification extends DataEntity<InventoryVerification> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -94,7 +94,7 @@ public class InventoryVerification extends DataEntity<InventoryVerification> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

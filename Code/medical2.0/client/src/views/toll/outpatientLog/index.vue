@@ -3,32 +3,32 @@
     <el-row>
       <el-col :span="24">
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
-          <el-form-item label="就诊时间" :span="8" style="margin-right: 3px;">
+          <el-form-item label="Thời gian khám" :span="8" style="margin-right: 3px;">
             <div class="block" style="width:50%">
               <el-date-picker
                 v-model="TimeInterval"
                 type="datetimerange"
                 :picker-options="pickerOptions"
                 :default-time="['00:00:00','23:59:59']"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
+                range-separator="đến"
+                start-placeholder="Ngày bắt đầu"
+                end-placeholder="Ngày kết thúc"
                 align="right"
                 :clearable="false">
               </el-date-picker>
             </div>
           </el-form-item>
-          <el-form-item label="名称" style="margin-right: 3px;">
+          <el-form-item label="Tên" style="margin-right: 3px;">
             <el-input v-model="formInline.patientName" placeholder="请输入患者名称"></el-input>
           </el-form-item>
-          <el-form-item label="身份证号" style="margin-right: 3px;">
+          <el-form-item label="Số CMND/CCCD" style="margin-right: 3px;">
             <el-input v-model="formInline.certificate" placeholder="请输入患者身份证号"></el-input>
           </el-form-item>
           <el-form-item style="margin-right: 3px;">
-            <el-button type="primary" @click="onSubmit">查询</el-button>
-            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
-            <!-- <el-button @click="show3 = !show3">{{show3==true?"收起":"展开"}}</el-button> -->
-            <el-button type="primary" icon="el-icon-download" @click='onExport' :plain='true' >导出</el-button>
+            <el-button type="primary" @click="onSubmit">Truy vấn</el-button>
+            <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
+            <!-- <el-button @click="show3 = !show3">{{show3==true?"Thu gọn":"Mở rộng"}}</el-button> -->
+            <el-button type="primary" icon="el-icon-download" @click='onExport' :plain='true' >Xuất</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -40,58 +40,58 @@
           height="calc(100vh - 280px)"
         >
           <el-table-column
-            label="序号"
+            label="Số thứ tự"
             type="index"
             :index="indexMethod"
             align="center">
           </el-table-column>
 
-          <el-table-column align="center" prop="patientName" label="患者姓名"></el-table-column>
-          <el-table-column align="center" prop="patriarchName" label="家长姓名"></el-table-column>
-          <el-table-column align="center" prop="sex" label="性别" :formatter="stateFormat"></el-table-column>
-          <el-table-column align="center" prop="age" label="患者年龄"></el-table-column>
-          <el-table-column align="center" prop="nation" label="民族"></el-table-column>
-          <el-table-column align="center" prop="occupation" label="职业"></el-table-column>
-          <el-table-column align="center" prop="address" label="详细地址"></el-table-column>
-          <el-table-column align="center" prop="visitDate" label="就诊日期"></el-table-column>
-          <el-table-column align="center" prop="initialVisit" label="初/复诊">
+          <el-table-column align="center" prop="patientName" label="Tên bệnh nhân"></el-table-column>
+          <el-table-column align="center" prop="patriarchName" label="Họ tên phụ huynh"></el-table-column>
+          <el-table-column align="center" prop="sex" label="Giới tính" :formatter="stateFormat"></el-table-column>
+          <el-table-column align="center" prop="age" label="Tuổi bệnh nhân"></el-table-column>
+          <el-table-column align="center" prop="nation" label="Dân tộc"></el-table-column>
+          <el-table-column align="center" prop="occupation" label="Nghề nghiệp"></el-table-column>
+          <el-table-column align="center" prop="address" label="Địa chỉ chi tiết"></el-table-column>
+          <el-table-column align="center" prop="visitDate" label="Ngày khám"></el-table-column>
+          <el-table-column align="center" prop="initialVisit" label="初/Tái khám">
             <template slot-scope="scope">
-              <span>{{ scope.row.initialVisit === "registrationSource_0" ? '初诊' : '复诊' }}</span>
+              <span>{{ scope.row.initialVisit === "registrationSource_0" ? '初诊' : 'Tái khám' }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="bloodPressure" label="血压"></el-table-column>
-          <el-table-column align="center" prop="symptom" label="临床症状"></el-table-column>
-          <el-table-column align="center" prop="fever" label="体温发热"></el-table-column>
-          <el-table-column align="center" prop="epidemicDisease" label="流行病学史"></el-table-column>
-          <!--<el-table-column align="center" prop="diagnosis" label="诊断"></el-table-column>-->
-          <el-table-column align="center" prop="westernDiagnose,chinaDiagnose" label="诊断">
+          <el-table-column align="center" prop="bloodPressure" label="Huyết áp"></el-table-column>
+          <el-table-column align="center" prop="symptom" label="Triệu chứng lâm sàng"></el-table-column>
+          <el-table-column align="center" prop="fever" label="Sốt (nhiệt độ tăng)"></el-table-column>
+          <el-table-column align="center" prop="epidemicDisease" label="Tiền sử dịch tễ"></el-table-column>
+          <!--<el-table-column align="center" prop="diagnosis" label="Chẩn đoán"></el-table-column>-->
+          <el-table-column align="center" prop="westernDiagnose,chinaDiagnose" label="Chẩn đoán">
             <template slot-scope="scope">
-              <span v-show="scope.row.westernDiagnose!=null">西医诊断:</span>
+              <span v-show="scope.row.westernDiagnose!=null">Chẩn đoán tây y:</span>
               {{ scope.row.westernDiagnose }}
               <span v-show="scope.row.westernDiagnose!=null&&scope.row.chinaDiagnose !=null">/</span>
-              <span v-show="scope.row.chinaDiagnose!=null">中医诊断:</span>
+              <span v-show="scope.row.chinaDiagnose!=null">Chẩn đoán đông y:</span>
               {{ scope.row.chinaDiagnose }}
             </template>
           </el-table-column>
 
-          <el-table-column align="center" prop="infect" label="传染病">
+          <el-table-column align="center" prop="infect" label="Bệnh truyền nhiễm">
             <template slot-scope="scope">
-              <span>{{ scope.row.infect === "infectType_0" ? '否' : '是' }}</span>
+              <span>{{ scope.row.infect === "infectType_0" ? 'Không' : 'Có' }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="handle" label="处理情况"></el-table-column>
-          <el-table-column align="center" prop="certificate" label="有效证件号"></el-table-column>
-          <el-table-column align="center" prop="unit" label="工作单位"></el-table-column>
-          <el-table-column align="center" prop="signature" label="医生签名"></el-table-column>
-          <el-table-column align="center" prop="poverty" label="贫困标志">
+          <el-table-column align="center" prop="handle" label="Tình hình xử lý"></el-table-column>
+          <el-table-column align="center" prop="certificate" label="Số giấy tờ hợp lệ"></el-table-column>
+          <el-table-column align="center" prop="unit" label="Đơn vị công tác"></el-table-column>
+          <el-table-column align="center" prop="signature" label="Chữ ký bác sĩ"></el-table-column>
+          <el-table-column align="center" prop="poverty" label="Dấu hiệu hộ nghèo">
             <template slot-scope="scope">
               <span v-show="scope.row.poverty!=null">贫</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="telephone" label="联系电话"></el-table-column>
-          <el-table-column align="center" prop="morbidityDate" label="发病日期"></el-table-column>
-          <el-table-column align="center" prop="positiveResult" label="实验室阳性结果"></el-table-column>
-          <el-table-column align="center" prop="healthEducation" label="个体化健康教育">
+          <el-table-column align="center" prop="telephone" label="Số điện thoại liên hệ"></el-table-column>
+          <el-table-column align="center" prop="morbidityDate" label="Ngày phát bệnh"></el-table-column>
+          <el-table-column align="center" prop="positiveResult" label="Kết quả dương tính phòng xét nghiệm"></el-table-column>
+          <el-table-column align="center" prop="healthEducation" label="Giáo dục sức khỏe cá nhân hóa">
             <template slot-scope="scope">
               <span v-if="(scope.row.healthEducation) && scope.row.healthEducation.length<=10">{{scope.row.healthEducation}}</span>
               <el-tooltip v-else  effect="dark" :content="scope.row.healthEducation" placement="left">
@@ -99,14 +99,14 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100px">
+          <el-table-column label="Thao tác" width="100px">
             <template slot-scope="scope">
               <!-- 放置修改、删除和分配角色按钮 -->
               <el-button
                 size="mini"
                 type="success" plain
                 @click.native.stop="showEditDialog(scope.row.id)"
-              >修改
+              >Sửa
               </el-button>
             </template>
           </el-table-column>
@@ -134,12 +134,12 @@
       <el-form :model="editUserForm" ref="editUserFormRef" label-width="120px">
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="患者姓名:" prop="patientName">
+            <el-form-item label="Tên bệnh nhân:" prop="patientName">
               <el-input v-model="editUserForm.patientName"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="家长姓名:" prop="patriarchName">
+            <el-form-item label="Họ tên phụ huynh:" prop="patriarchName">
               <el-input v-model="editUserForm.patriarchName"/>
             </el-form-item>
           </el-col>
@@ -148,8 +148,8 @@
           <el-col :span="24 / 2"><template slot-scope="scope">
             <span v-show="scope.row.poverty!=null">贫</span>
           </template>
-            <el-form-item label="性别:" prop="sex">
-                <el-select v-model="editUserForm.sex" placeholder="请选择性别">
+            <el-form-item label="Giới tính:" prop="sex">
+                <el-select v-model="editUserForm.sex" placeholder="Vui lòng chọn giới tính">
                   <el-option
                     v-for="item in gender"
                     :key="item.value"
@@ -160,36 +160,36 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="患者年龄:" prop="age">
+            <el-form-item label="Tuổi bệnh nhân:" prop="age">
               <el-input v-model="editUserForm.age"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="民族:" prop="nation">
+            <el-form-item label="Dân tộc:" prop="nation">
               <el-input v-model="editUserForm.nation"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="职业:" prop="occupation">
+            <el-form-item label="Nghề nghiệp:" prop="occupation">
               <el-input v-model="editUserForm.occupation"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="详细地址:" prop="address">
+            <el-form-item label="Địa chỉ chi tiết:" prop="address">
               <el-input v-model="editUserForm.address"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="就诊日期:" prop="visitDate">
+            <el-form-item label="Ngày khám:" prop="visitDate">
               <div class="block">
                 <el-date-picker
                   v-model="editUserForm.visitDate"
                   type="datetime"
-                  placeholder="选择日期时间"
+                  placeholder="Chọn ngày giờ"
                   align="right"
                   :picker-options="pickerOptions">
                 </el-date-picker>
@@ -199,8 +199,8 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="初/复诊:" prop="initialVisit">
-              <el-select v-model="editUserForm.initialVisit" placeholder="请选择">
+            <el-form-item label="初/Tái khám:" prop="initialVisit">
+              <el-select v-model="editUserForm.initialVisit" placeholder="Vui lòng chọn">
                 <el-option
                   v-for="item in initialVisit"
                   :key="item.value"
@@ -211,77 +211,77 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="血压:" prop="bloodPressure">
+            <el-form-item label="Huyết áp:" prop="bloodPressure">
               <el-input v-model="editUserForm.bloodPressure"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="临床症状:" prop="symptom">
+            <el-form-item label="Triệu chứng lâm sàng:" prop="symptom">
               <el-input v-model="editUserForm.symptom"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="体温发热:" prop="fever">
+            <el-form-item label="Sốt (nhiệt độ tăng):" prop="fever">
               <el-input v-model="editUserForm.fever"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="流行病学史:" prop="epidemicDisease">
+            <el-form-item label="Tiền sử dịch tễ:" prop="epidemicDisease">
               <el-input v-model="editUserForm.epidemicDisease"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="西医诊断:" prop="symptom">
+            <el-form-item label="Chẩn đoán tây y:" prop="symptom">
               <el-input v-model="editUserForm.westernDiagnose"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="中医诊断:" prop="symptom">
+            <el-form-item label="Chẩn đoán đông y:" prop="symptom">
               <el-input v-model="editUserForm.chinaDiagnose"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="处理情况:" prop="handle">
+            <el-form-item label="Tình hình xử lý:" prop="handle">
               <el-input v-model="editUserForm.handle"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="有效证件号:" prop="certificate">
+            <el-form-item label="Số giấy tờ hợp lệ:" prop="certificate">
               <el-input v-model="editUserForm.certificate"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="工作单位:" prop="unit">
+            <el-form-item label="Đơn vị công tác:" prop="unit">
               <el-input v-model="editUserForm.unit"/>
             </el-form-item>
           </el-col>
         </el-row>
           <!--<el-col :span="24 / 2">
-            <el-form-item label="贫困标志:" prop="poverty">
+            <el-form-item label="Dấu hiệu hộ nghèo:" prop="poverty">
               <el-input v-model="editUserForm.signature" disabled/>
             </el-form-item>
           </el-col>-->
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="联系电话:" prop="telephone">
+            <el-form-item label="Số điện thoại liên hệ:" prop="telephone">
               <el-input v-model="editUserForm.telephone"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="发病日期:" prop="morbidityDate">
+            <el-form-item label="Ngày phát bệnh:" prop="morbidityDate">
               <div class="block">
                 <el-date-picker
                   v-model="editUserForm.morbidityDate"
                   type="datetime"
-                  placeholder="选择日期时间"
+                  placeholder="Chọn ngày giờ"
                   align="right"
                   :picker-options="pickerOptions">
                 </el-date-picker>
@@ -291,19 +291,19 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="实验室阳性结果:" prop="positiveResult">
+            <el-form-item label="Kết quả dương tính phòng xét nghiệm:" prop="positiveResult">
               <el-input v-model="editUserForm.positiveResult"/>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="医生签名:" prop="signature">
+            <el-form-item label="Chữ ký bác sĩ:" prop="signature">
               <el-input v-model="editUserForm.signature"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="个体化健康教育:" prop="healthEducation">
+            <el-form-item label="Giáo dục sức khỏe cá nhân hóa:" prop="healthEducation">
               <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="editUserForm.healthEducation"/>
             </el-form-item>
           </el-col>
@@ -311,8 +311,8 @@
       </el-form>
       <!-- 底部区 -->
       <span slot="footer" class="dialog-footer">
-     <el-button @click="editDialogVisible = false">取 消</el-button>
-     <el-button type="primary" @click="editUser()">确 定</el-button>
+     <el-button @click="editDialogVisible = false">Hủy</el-button>
+     <el-button type="primary" @click="editUser()">Xác nhận</el-button>
      </span>
     </el-dialog>
     、
@@ -330,19 +330,19 @@
       return {
         pickerOption: {
           shortcuts: [{
-            text: '今天',
+            text: 'Hôm nay',
             onClick(picker) {
               picker.$emit('pick', new Date());
             }
           }, {
-            text: '昨天',
+            text: 'Hôm qua',
             onClick(picker) {
               const date = new Date();
               date.setTime(date.getTime() - 3600 * 1000 * 24);
               picker.$emit('pick', date);
             }
           }, {
-            text: '一周前',
+            text: 'Một tuần trước',
             onClick(picker) {
               const date = new Date();
               date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
@@ -350,7 +350,7 @@
             }
           }]
         },
-        gender: [{ // 性别
+        gender: [{ // Giới tính
           value: 'gender_0',
           label: '男'
         }, {
@@ -358,12 +358,12 @@
           label: '女'
         }, {
         }],
-        initialVisit: [{ // 性别
+        initialVisit: [{ // Giới tính
           value: 'registrationSource_0',
           label: '初诊'
         }, {
           value: 'registrationSource_1',
-          label: '复诊'
+          label: 'Tái khám'
         }, {
         }],
         queryInfo: {
@@ -380,7 +380,7 @@
         //修改用户的表单数据
         editUserForm: {},
         show3: false,
-        //时间选择
+        //Chọn thời gian
         TimeInterval: this.getInitializeDate(),
         formInline: {
           patientName: "",
@@ -389,7 +389,7 @@
 
         pickerOptions: {
           shortcuts: [{
-            text: '最近一周',
+            text: 'Tuần gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -397,7 +397,7 @@
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近一个月',
+            text: 'Tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -405,7 +405,7 @@
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近三个月',
+            text: '3 tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -467,26 +467,26 @@
         if (row.initialVisit === "registrationSource_0") {
           return '初诊'
         } else {
-          return '复诊'
+          return 'Tái khám'
         }
       },
-      //设置默认日期
+      //Đặt ngày mặc định
       getInitializeDate() {
-        let date = new Date()//获取新的时间
-        //获取当前年份,并且转为字符串
+        let date = new Date()//Lấy thời gian mới
+        //Lấy năm hiện tại,và chuyển thành chuỗi
         let year = date.getFullYear().toString()
-        //获取当前月份，因为月份是要从0开始，此处要加1，
-        //使用三元表达式，判断是否小于10，如果是的话，就在字符串前面拼接'0'
+        //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
+        //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
         let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-        //获取天，判断是否小于10，如果是的话，就在在字符串前面拼接'0'
+        //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
         let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-        //字符串拼接，将开始时间和结束时间进行拼接
-        let start = year + '-' + month + '-01' + ' 00:00:00'    //当月第一天
+        //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+        let start = year + '-' + month + '-01' + ' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
         //let end=new Date(year, month, 0).getDate();
-        let end = year + '-' + month + '-' + day + ' 23:59:59'  //当天
-        return [start, end] //将值设置给组件DatePicker 绑定的数据
+        let end = year + '-' + month + '-' + day + ' 23:59:59'  //Trong ngày
+        return [start, end] //Gán giá trị cho thành phầnDatePicker Dữ liệu đã liên kết
       },
-      //excel导出
+      //excelXuất
       onExport(){
         // if (this.TimeInterval) {
         //   this.StuffsalessummaryRc.kssj = this.TimeInterval[0];
@@ -566,33 +566,33 @@
             if (responseData.data.total > 0) {
               responseData.data.rows.forEach((item) => {
                 this.tableData.push({
-                  id: item.id,  //患者id
-                  patientName: item.patientName,  //患者姓名
-                  patriarchName: item.patriarchName,  //家长姓名
-                  sex: item.sex,  //性别
-                  age: item.age,  //患者年龄
-                  nation: item.nation,  //民族
-                  occupation: item.occupation,  //职业
-                  address: item.address,  //详细地址
-                  visitDate: item.visitDate,  //就诊日期
-                  initialVisit: item.initialVisit,  //初/复诊
-                  bloodPressure: item.bloodPressure,  //血压
-                  symptom: item.symptom,  //临床症状
-                  fever: item.fever,  //体温发热
-                  epidemicDisease: item.epidemicDisease,  //流行病学史
-                  westernDiagnose: item.westernDiagnose,  //西医诊断
-                  chinaDiagnose: item.chinaDiagnose,  //中医诊断
-                  diagnosis: item.diagnosis,  //诊断
-                  infect: item.infect,  //传染病
-                  handle: item.handle,  //处理情况
-                  certificate: item.certificate,  //有效证件号
-                  unit: item.unit,  //工作单位
-                  signature: item.signature,  //医生签名
-                  poverty: item.poverty,  //贫困标志
-                  telephone: item.telephone,  //联系电话
-                  morbidityDate: item.morbidityDate,  //发病日期
-                  positiveResult: item.positiveResult,  //实验室阳性结果
-                  healthEducation: item.healthEducation  //个体化健康教育
+                  id: item.id,  //Bệnh nhânid
+                  patientName: item.patientName,  //Tên bệnh nhân
+                  patriarchName: item.patriarchName,  //Họ tên phụ huynh
+                  sex: item.sex,  //Giới tính
+                  age: item.age,  //Tuổi bệnh nhân
+                  nation: item.nation,  //Dân tộc
+                  occupation: item.occupation,  //Nghề nghiệp
+                  address: item.address,  //Địa chỉ chi tiết
+                  visitDate: item.visitDate,  //Ngày khám
+                  initialVisit: item.initialVisit,  //初/Tái khám
+                  bloodPressure: item.bloodPressure,  //Huyết áp
+                  symptom: item.symptom,  //Triệu chứng lâm sàng
+                  fever: item.fever,  //Sốt (nhiệt độ tăng)
+                  epidemicDisease: item.epidemicDisease,  //Tiền sử dịch tễ
+                  westernDiagnose: item.westernDiagnose,  //Chẩn đoán tây y
+                  chinaDiagnose: item.chinaDiagnose,  //Chẩn đoán đông y
+                  diagnosis: item.diagnosis,  //Chẩn đoán
+                  infect: item.infect,  //Bệnh truyền nhiễm
+                  handle: item.handle,  //Tình hình xử lý
+                  certificate: item.certificate,  //Số giấy tờ hợp lệ
+                  unit: item.unit,  //Đơn vị công tác
+                  signature: item.signature,  //Chữ ký bác sĩ
+                  poverty: item.poverty,  //Dấu hiệu hộ nghèo
+                  telephone: item.telephone,  //Số điện thoại liên hệ
+                  morbidityDate: item.morbidityDate,  //Ngày phát bệnh
+                  positiveResult: item.positiveResult,  //Kết quả dương tính phòng xét nghiệm
+                  healthEducation: item.healthEducation  //Giáo dục sức khỏe cá nhân hóa
                 })
               })
 
@@ -609,7 +609,7 @@
       //点击按钮，修改用户信息
       editUser(){
         this.$refs.editUserFormRef.validate(async valid =>{
-          if(!valid) return;//校验没通过，返回
+          if(!valid) return;//校验没通过，Quay lại
           //可以发起修改用户的网络请求
           await update(this.editUserForm).then(response => {
             this.$message.success('修改用户成功！');

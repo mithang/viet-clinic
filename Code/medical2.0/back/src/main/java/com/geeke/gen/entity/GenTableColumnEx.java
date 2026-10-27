@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 /**
- * 业务表管理Entity
+ * Quản lý bảng nghiệp vụEntity
  * @author lys
  * @version 2019-12-06
  */
@@ -16,7 +16,7 @@ public class GenTableColumnEx extends GenTableColumn {
 
 	
 	/**
-	 * 获取字符串长度
+	 * Lấychuỗiđộ dài
 	 * @return
 	 */
 	@JsonIgnore
@@ -29,27 +29,27 @@ public class GenTableColumnEx extends GenTableColumn {
 	}
 
 	/**
-	 * 获数值型小数点长度
+	 * đượcKiểu sốnhỏsốđiểmđộ dài
 	 * @return
 	 */
 	public Integer getDecimalLenth(){
-		if ("java.math.BigDecimal".equals(getJavaType().getValue())){ // 金额类型
+		if ("java.math.BigDecimal".equals(getJavaType().getValue())){ // Số tiềnLoại
 			return 2;
-		} else if ("Long".equals(getJavaType().getValue()) || "Integer".equals(getJavaType().getValue())){ // 整数类型
+		} else if ("Long".equals(getJavaType().getValue()) || "Integer".equals(getJavaType().getValue())){ // nguyênsốLoại
 			return 0;
-		} else if ("Double".equals(getJavaType().getValue()) || "Float".equals(getJavaType().getValue())){ // 小数
+		} else if ("Double".equals(getJavaType().getValue()) || "Float".equals(getJavaType().getValue())){ // nhỏsố
 			String[] ss = StringUtils.split(StringUtils.substringBetween(getJdbcType(), "(", ")"), ",");
 			if (ss != null && ss.length >= 2){
 				return Integer.parseInt(ss[1]);
 			} else {
-				return 2; // 默认返回两位小数
+				return 2; // Mặc địnhTrả vềhaivịnhỏsố
 			}
 		}
 		return 0;
 	}
 
 	/**
-	 * 获取简写Java类型
+	 * Lấyviết tắtJavaLoại
 	 * @return
 	 */
 	@JsonIgnore
@@ -63,7 +63,7 @@ public class GenTableColumnEx extends GenTableColumn {
 	}
 	
 	/**
-	 * 获取Java字段名
+	 * LấyJavaTên trường
 	 * @return
 	 */
 	// @JsonIgnore
@@ -72,7 +72,7 @@ public class GenTableColumnEx extends GenTableColumn {
 	}
 
 	/**
-	 * 获取Java字段名
+	 * LấyJavaTên trường
 	 * @return
 	 */
 	public String getFieldName(){
@@ -80,7 +80,7 @@ public class GenTableColumnEx extends GenTableColumn {
 	}	
 	
 	/**
-	 * 获取简写Java字段
+	 * Lấyviết tắtJavaTrường
 	 * @return
 	 */
 	public String getSimpleJavaField(){
@@ -88,7 +88,7 @@ public class GenTableColumnEx extends GenTableColumn {
 	}
 	
 	/**
-	 * 获取Java字段，如果是对象，则获取对象.附加属性1
+	 * LấyJavaTrường, Nếu có Đối tượng, thìLấyĐối tượng.phụ thêmthuộc tính1
 	 * @return
 	 */
 	public String getJavaFieldId(){
@@ -96,7 +96,7 @@ public class GenTableColumnEx extends GenTableColumn {
 	}
 	
 	/**
-	 * 获取Java字段，如果是对象，则获取对象.附加属性2
+	 * LấyJavaTrường, Nếu có Đối tượng, thìLấyĐối tượng.phụ thêmthuộc tính2
 	 * @return
 	 */
 	@JsonIgnore
@@ -106,8 +106,8 @@ public class GenTableColumnEx extends GenTableColumn {
 	}
 	
 	/**
-	 * 获取Java字段，所有属性名
-	 *   parent.id|name|updateDate 返回： name,name; updateDate,update_date
+	 * LấyJavaTrường, tất cảthuộc tínhtên
+	 *   parent.id|name|updateDate Quay lại:  name,name; updateDate,update_date
 	 * @return
 	 */
 	@JsonIgnore
@@ -117,15 +117,15 @@ public class GenTableColumnEx extends GenTableColumn {
 		if (ss!=null){
 			for (int i=0; i<ss.length; i++){
 				sss[i][0] = ss[i];
-				sss[i][1] = StringUtils.toUnderScoreCase(ss[i]).replace(".", "_");  // customer，This对象类型的groupCust.id|name|code|channel.id 属性处理，在生成数据库语句中，把.替换成_
+				sss[i][1] = StringUtils.toUnderScoreCase(ss[i]).replace(".", "_");  // customer, ThisĐối tượngLoại của groupCust.id|name|code|channel.id thuộc tínhXử lý, tạiTạoDữ liệukhocâu lệnh trong , Đưa.thay thếthành_
 			}
 		}
 		return sss;
 	}
 	
 	/**
-	 * 获取Java字段，id及所有属性名
-	 *   parent.id|name|updateDate 返回： id,id; name,name; updateDate,update_date
+	 * LấyJavaTrường, idvàtất cảthuộc tínhtên
+	 *   parent.id|name|updateDate Quay lại:  id,id; name,name; updateDate,update_date
 	 * @return
 	 */
 	@JsonIgnore
@@ -142,7 +142,7 @@ public class GenTableColumnEx extends GenTableColumn {
 	}	
 	
 	/**
-	 * 获取列注解列表
+	 * LấyCộtannotationDanh sách
 	 * @return
 	 */
 	@JsonIgnore
@@ -157,23 +157,23 @@ public class GenTableColumnEx extends GenTableColumn {
 				list.add("com.fasterxml.jackson.annotation.JsonFormat(pattern = \"yyyy-MM-dd HH:mm:ss\")");
 			}
 		}
-		// 导入JSR303验证依赖包
+		// NhậpJSR303Xác thựcpackage phụ thuộc
 		if (!"1".equals(getIsNull()) && !"String".equals(getJavaType().getValue())){
-			list.add("javax.validation.constraints.NotNull(message=\""+getComments()+"不能为空\")");
+			list.add("javax.validation.constraints.NotNull(message=\""+getComments()+"Không được để trống\")");
 		}
 		else if (!"1".equals(getIsNull()) && "String".equals(getJavaType().getValue()) && !"0".equals(getDataLength())){
 			list.add("org.hibernate.validator.constraints.Length(min=1, max="+getDataLength()
-					+", message=\""+getComments()+"长度必须介于 1 和 "+getDataLength()+" 之间\")");
+					+", message=\""+getComments()+"Độ dài phải từ 1  và  "+getDataLength()+" Giữa\")");
 		}
 		else if ("String".equals(getJavaType().getValue()) && !"0".equals(getDataLength())){
 			list.add("org.hibernate.validator.constraints.Length(min=0, max="+getDataLength()
-					+", message=\""+getComments()+"长度必须介于 0 和 "+getDataLength()+" 之间\")");
+					+", message=\""+getComments()+"Độ dài phải từ 0  và  "+getDataLength()+" Giữa\")");
 		}
 		return list;
 	}
 	
 	/**
-	 * 获取简写列注解列表
+	 * Lấyviết tắtCộtannotationDanh sách
 	 * @return
 	 */
 	@JsonIgnore
@@ -186,7 +186,7 @@ public class GenTableColumnEx extends GenTableColumn {
 	}
 	
 	/**
-	 * 是否是基类字段
+	 * Có hay không có Lớp cơ sởTrường
 	 * @return
 	 */
 	@JsonIgnore
@@ -208,7 +208,7 @@ public class GenTableColumnEx extends GenTableColumn {
 
 	
 	/**
-	 * 是否可编辑字段
+	 * Có hay khôngcó thểchỉnh sửaTrường
 	 * @return
 	 */
 	@JsonIgnore

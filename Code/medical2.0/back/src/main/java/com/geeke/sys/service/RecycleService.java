@@ -11,8 +11,8 @@ import com.geeke.sys.entity.ActionRecycle;
 import com.geeke.sys.entity.DictItem;
 
 /**
- * 操作日志Service
- * @author lys	人工编写
+ * Nhật ký thao tácService
+ * @author lys	Viết thủ công
  * @version 2019-12-12
  */
  
@@ -38,9 +38,9 @@ public class RecycleService extends ActionService {
 	}
 	
 	/**
-	 * 生成操作日志
-	 * @param actionTypeId  操作类型Id
-	 * @param entity		操作的实体对象
+	 * Tạo nhật ký thao tác
+	 * @param actionTypeId  Loại thao tácId
+	 * @param entity		Đối tượng thực thể được thao tác
 	 * @return
 	 */
     @Override

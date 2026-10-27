@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface HisInstitutionDao  extends CrudDao<HisInstitutions> {
 
-    //已同步的唯一编码
+    //Đãđồng bộ của duy nhấtMã
     List<String> getInstitutionCode(String companyId);
 
 }

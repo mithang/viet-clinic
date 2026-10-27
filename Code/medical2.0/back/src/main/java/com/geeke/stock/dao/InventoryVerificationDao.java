@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 库存盘点DAO接口
+ * Kiểm kê tồn khoDAOGiao diện
  * @author rys
  * @version 2022-11-02
  */

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 供应商库存Controller
+ * Tồn kho nhà cung cấpController
  * @author txl
  * @version 2022-06-09
  */
@@ -65,7 +65,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
     @PostMapping(value = "inStorage")
     public ResponseEntity<JSONObject> inStorage(@RequestBody StorageEvt storageEvt) {
-        //批量入库时无药品信息添加药品信息
+        //Khi nhập kho hàng loạt mà không có thông tin thuốc thì thêm thông tin thuốc
         storageEvt.getSupplierStockList().forEach(item -> {
             Drug drug = drugService.getByNameAndPrice(item.getDrug().getGoodsName(),item.getRetailPrice());
             if(drug != null){
@@ -76,7 +76,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
         supplierStockService.saves(storageEvt);
         supplierStockService.savesTo(storageEvt);
         if("true".equals(medicareConfigProperties.getCheck())){
-            //开启医保调用 药品 暂且默认 调拨入库
+            //mởBHYTgọi Thuốc tạmvàMặc định điều拨nhập kho
             if(storageEvt.getSupplierStorage().getBreed().equals(1)){
                 mdInventoryService.updateInventoryList_3502A(storageEvt,"101");
             }
@@ -92,12 +92,12 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
     @PostMapping(value = "updateStock")
     public ResponseEntity<JSONObject> updateStock(@RequestBody DispensingEvt dispensingEvt) {
-        //发药、退药
+        //Phát thuốc, Trả thuốc
         if (null != dispensingEvt.getDispensingDetailEvtList() && !dispensingEvt.getDispensingDetailEvtList().isEmpty()) {
             supplierStockService.updateStock(dispensingEvt);
         }
         if("true".equals(medicareConfigProperties.getCheck())){
-            //开启医保调用 发药退药修改库存
+            //mởBHYTgọi phát thuốcTrả thuốcSửaTồn kho
             mdInventoryService.updateInventoryList_3502A(dispensingEvt);
 
         }
@@ -106,7 +106,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
 
     /**
-     * 给指定的诊所进行发药
+     * chochỉchỉ định của Phòng khámtiến hành dòngphát thuốc
      *
      * @param storageEvt
      * @return
@@ -120,7 +120,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
 
     /**
-     * 诊所审核入库
+     * Phòng khámxét duyệtnhập kho
      *
      * @return
      */

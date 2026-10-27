@@ -10,13 +10,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
 /**
- * 利用线程池实现任务调度
- * Task任务调度器可以实现任务的调度和删除
- * 原理:
- * 实现一个类：ThreadPoolTaskScheduler线程池任务调度器，能够开启线程池进行任务调度
- * ThreadPoolTaskScheduler.schedule（）方法会创建一个定时计划ScheduleFuture,
- * 在这个方法中添加两个参数一个是Runable:线程接口类，和CronTrigger(定时任务触发器)
- * 在ScheduleFuture中有一个cancel可以停止定时任务
+ * 利dùngluồng池Triển khaitác vụđiềuđộ
+ * TaskBộ lập lịch tác vụ có thể thực hiện lập lịch và xóa tác vụ
+ * gốclý:
+ * Triển khaimộtCáiLớp: ThreadPoolTaskSchedulerBộ lập lịch tác vụ của pool luồng, Có thể mở pool luồng để tiến hành dòngtác vụđiềuđộ
+ * ThreadPoolTaskScheduler.schedule()Phương thứcsẽtạomộtCáichỉ định giờkế hoạchScheduleFuture,
+ * tạinàyCáiPhương thức trong ThêmhaiCáiTham sốmộtCái có Runable:luồnggiao diệnLớp,  và CronTrigger(chỉ định giờtác vụkích hoạtthiết bị)
+ * tạiScheduleFuture trong cómộtCáicancelCó thểdừngdừngchỉ định giờtác vụ
  * @Author: shenzy
  * @DateTime: 2021/10/28 10:51
  * @Description: TODO
@@ -31,23 +31,23 @@ public class ScheduleUtil {
 
     static {
         threadPoolTaskScheduler.initialize();
-        log.info("定时任务启动");
+        log.info("chỉ định giờtác vụkhởi động");
     }
 
     /**
-     * 定时任务的启动
-     * @param runnable  执行的任务
-     * @param trigger   表达式
-     * @param code      编码
+     * chỉ định giờtác vụ của khởi động
+     * @param runnable  hành nghề dòng của tác vụ
+     * @param trigger   Biểu thức
+     * @param code      Mã
      */
     public static void start(Runnable runnable, Trigger trigger, String code) {
         ScheduledFuture<?> scheduledFuture = threadPoolTaskScheduler.schedule(runnable, trigger);
         scheduledFutureMap.put(code, scheduledFuture);
-        log.info("启动定时任务" + code);
+        log.info("khởi độngchỉ định giờtác vụ" + code);
     }
 
     /**
-     * 定时任务关闭
+     * chỉ định giờtác vụđóng
      * @param code
      */
     public static void cancel(String code) {
@@ -56,11 +56,11 @@ public class ScheduleUtil {
             scheduledFuture.cancel(true);
             scheduledFutureMap.remove(code);
         }
-        log.info("取消定时任务" + code);
+        log.info("lấyhủychỉ định giờtác vụ" + code);
     }
 
     /**
-     * 定时任务重启
+     * chỉ định giờtác vụkhởi động lại
      * @param runnable
      * @param trigger
      * @param code
@@ -74,7 +74,7 @@ public class ScheduleUtil {
 
         scheduledFuture = threadPoolTaskScheduler.schedule(runnable, trigger);
         scheduledFutureMap.put(code, scheduledFuture);
-        log.info("修改定时任务" + code);
+        log.info("Sửachỉ định giờtác vụ" + code);
     }
 }
 

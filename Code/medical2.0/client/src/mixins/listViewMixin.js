@@ -1,15 +1,15 @@
 /**
  * 列表视图混入
- * 封装通用的分页、排序、CRUD调度和权限加载逻辑
+ * 封装通用的分页、Sắp xếp、CRUD调度和权限加载逻辑
  *
- * 使用方式：
+ * Cách sử dụng：
  * 1. 在组件中 mixins: [listViewMixin]
- * 2. 在 data 中定义 listApi, getApi, deleteApi, entityName, permissionPrefix
+ * 2. tại data 中定义 listApi, getApi, deleteApi, entityName, permissionPrefix
  * 3. 实现 loadData() 方法加载列表数据（不包含权限）
  * 4. 实现 handleListResponse() 方法处理列表响应
  *
- * 注意：pageInit() 仅在页面初始化时调用一次（加载数据+权限），
- *       loadData() 在搜索/分页/排序时调用（仅加载列表数据）。
+ * 注意：pageInit() 仅在页面初始化时调用一次（Tải dữ liệu+Quyền），
+ *       loadData() 在搜索/Phân trang/排序时调用（仅加载列表数据）。
  */
 import { listResourcePermission } from '@/api/resourcePermission'
 import { mapPermissions } from '@/utils/searchParamsBuilder'
@@ -34,11 +34,11 @@ export default {
         skip: false
       },
       // 子组件需要定义以下属性
-      // listApi: Function,       // 列表查询API
+      // listApi: Function,       // Truy vấn danh sáchAPI
       // getApi: Function,        // 获取单条API
-      // deleteApi: Function,     // 删除API
-      // entityName: String,      // 实体名称（用于权限映射，如 'Drug'）
-      // permissionPrefix: String // 权限前缀（如 'drug'）
+      // deleteApi: Function,     // XóaAPI
+      // entityName: String,      // 实体名称（用于权限映射，như 'Drug'）
+      // permissionPrefix: String // 权限前缀（như 'drug'）
     }
   },
   methods: {
@@ -50,7 +50,7 @@ export default {
     },
 
     /**
-     * 搜索
+     * Tìm kiếm
      */
     onSearch() {
       if (this.moreCodition) {
@@ -90,7 +90,7 @@ export default {
     },
 
     /**
-     * 排序变化 — 接收 el-table sort-change 的 orderby 对象
+     * 排序变化 — Nhận el-table sort-change của orderby Đối tượng
      * @param {Object} orderby - { prop: string, order: string }
      */
     onSortChange(orderby) {
@@ -115,8 +115,8 @@ export default {
     },
 
     /**
-     * 页面初始化 — 仅在 mounted 时调用一次
-     * 加载列表数据 + 权限信息
+     * Khởi tạo trang — 仅在 mounted 时调用一次
+     * Tải dữ liệu danh sách + 权限信息
      * 子组件可覆盖此方法以添加自定义逻辑
      */
     async pageInit() {
@@ -158,7 +158,7 @@ export default {
      */
     handleListResponse(responseData) {
       // 子组件实现：设置列表数据和总数
-      // 例如：this.supplierTotal = responseData.data.total
+      // Ví dụ：this.supplierTotal = responseData.data.total
       //       this.supplierList = responseData.data.rows
     },
 
@@ -180,9 +180,9 @@ export default {
     },
 
     /**
-     * 加载列表数据 — 搜索/分页/排序时调用
+     * Tải dữ liệu danh sách — Tìm kiếm/Phân trang/排序时调用
      * 子组件可覆盖此方法以添加自定义逻辑
-     * 默认实现：调用 listApi 并触发 handleListResponse
+     * 默认实现：Gọi listApi 并触发 handleListResponse
      */
     loadData() {
       this.setLoad()
@@ -255,18 +255,18 @@ export default {
     },
 
     /**
-     * 删除实体
+     * Xóa thực thể
      */
     onDeleteEntity(index, row, deleteApi) {
-      this.$confirm('确认删除?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('确认删除?', 'Nhắc nhở', {
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
         type: 'warning'
       }).then(() => {
         this.setLoad()
         deleteApi(row).then(responseData => {
           if (responseData.code === 100) {
-            this.$message({ type: 'success', message: '删除成功' })
+            this.$message({ type: 'success', message: 'Xóa thành công' })
             this.loadData()
           } else {
             this.showMessage(responseData)
@@ -279,7 +279,7 @@ export default {
     },
 
     /**
-     * 创建实体 — 子组件可覆盖
+     * 创建实体 — Thành phần con có thể ghi đè
      */
     onCreateEntity(formRef) {
       this.$refs[formRef][`openAdd${this.entityName}Dialog`]()

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 资源控制器
+ * tài nguyênkiểm soátthiết bị
  * 
  * @author Lining
  * @date 2018/2/11
@@ -111,15 +111,15 @@ public class PermissionController extends BaseController {
     
     
     /**
-     * 两层循环实现建树
-     * @param list 传入的树节点列表
-     * 把list数据通过 id，和parentId够造成一个树
+     * haivòng lặp theo tầngTriển khaixây dựngcây
+     * @param list truyền vào của câyNútDanh sách
+     * ĐưalistDữ liệuQua id,  và parentIdđủgây ramộtCáicây
      * @return
      */
     private List<Permission> bulid(List<Permission> list) {
         List<Permission> trees = Lists.newArrayList();
         for (Permission entity : list) {
-        	//增加了调试代码
+        	//Đã thêm code gỡ lỗi
         	if(Permission.ROUTER_TYPE.equals(entity.getType()) && (StringUtils.isBlank(entity.getParentId()) ||
         			"0".equals(entity.getParentId()))) {
                 trees.add(entity);
@@ -138,11 +138,11 @@ public class PermissionController extends BaseController {
     }
     
     /**
-     * 获取未禁用的路由
+     * LấyChưaVô hiệu hóa của tuyến đường
      * @return
      */
     private List<Router> listUnlockedRouter() {
-        // 系统级功能路由不能被分配： 3006  代码管理;	3007  路由管理;   3003   资源管理 ;  3011  字典数据;  3009    操作日志; 3024  系统编号规则; 3026 系统主题;
+        // Hệ thốngcấptuyến đường chức năngKhông thểbị phútphối:  3006  mãQuản lý;	3007  Quản lý tuyến đường;   3003   Quản lý tài nguyên ;  3011  Dữ liệu từ điển;  3009    Nhật ký thao tác; 3024  Hệ thốngmã sốquy tắc; 3026 Chủ đề hệ thống;
         List<Parameter> parms = SearchParamsBuilder.create()
                 .eq("is_locked", "0")
                 .eq("can_permission", "1")
@@ -150,8 +150,8 @@ public class PermissionController extends BaseController {
 
         Company company = companyService.get(SessionUtils.getLoginTenantId());
         String parentId = Opt.ofNullable(company).map(Company::getParent).map(Company::getId).get();
-        if (ObjUtil.isNotNull(company) && ObjUtil.notEqual(parentId, 0) && ObjUtil.notEqual("供应商", company.getName())) {
-            //对诊所限定
+        if (ObjUtil.isNotNull(company) && ObjUtil.notEqual(parentId, 0) && ObjUtil.notEqual("Nhà cung cấp", company.getName())) {
+            //đối vớiPhòng khámgiới hạnchỉ định
             ClinicVersion version = company.getVersion();
             String roleId = version.getRoleId();
             return routerService.getAllRoutersByVersion(roleId);
@@ -161,22 +161,22 @@ public class PermissionController extends BaseController {
     
     
     /**
-     * 获取未禁用的资源
+     * LấyChưaVô hiệu hóa của tài nguyên
      * @return
      */
     private List<Resource> listUnlockedResource() {
-        /* 不参与分配的资源
-         * 公司管理：41105517082353672 添加公司 、54172422505193473 删除公司
+        /* khôngtham và  phútphối của tài nguyên
+         * Quản lý công ty: 41105517082353672 Thêmcông ty , 54172422505193473 Xóacông ty
          */
         List<Parameter> parms = SearchParamsBuilder.create()
                 .eq("is_locked", "0")
-                .eq("is_default", "0")  // 默认的不用分配
+                .eq("is_default", "0")  // Mặc định của khôngdùng phútphối
                 .eq("can_permission", "1")
                 .build();
 
         Company company = companyService.get(SessionUtils.getLoginTenantId());
-        if (ObjUtil.isNotNull(company) && !"0".equals(company.getParent().getId()) && !"供应商".equals(company.getName())) {
-            //对诊所限定
+        if (ObjUtil.isNotNull(company) && !"0".equals(company.getParent().getId()) && !"Nhà cung cấp".equals(company.getName())) {
+            //đối vớiPhòng khámgiới hạnchỉ định
             ClinicVersion version = company.getVersion();
             String roleId = version.getRoleId();
             return resourceService.listAllByVersion(roleId);

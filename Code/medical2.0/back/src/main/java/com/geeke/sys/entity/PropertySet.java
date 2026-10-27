@@ -5,14 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 属性集管理Entity
+ * Quản lý tập thuộc tínhEntity
  * @author lys
  * @version 2021-12-26
  */
 public class PropertySet extends DataEntity<PropertySet> {
 
 	private static final long serialVersionUID = 773152267153252816L;
-	private String propertiesDef;		// 属性定义
+	private String propertiesDef;		// thuộc tínhđịnh nghĩa
 
 	
 	public PropertySet() {
@@ -36,7 +36,7 @@ public class PropertySet extends DataEntity<PropertySet> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -45,7 +45,7 @@ public class PropertySet extends DataEntity<PropertySet> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -55,7 +55,7 @@ public class PropertySet extends DataEntity<PropertySet> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

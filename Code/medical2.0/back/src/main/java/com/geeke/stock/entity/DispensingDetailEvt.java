@@ -3,7 +3,7 @@ package com.geeke.stock.entity;
 import lombok.Data;
 
 /**
- * 入库Evt
+ * Nhập khoEvt
  * @author txl
  * @version 2022-06-07
  */
@@ -11,15 +11,15 @@ import lombok.Data;
 public class DispensingDetailEvt {
 
     private static final long serialVersionUID = 1005591224273698910L;
-    //  处方信息id
+    //  Thông tin đơn thuốcid
     private String recipelInfoId;
-    //  药品/材料id
+    //  Thuốc/Vật tưid
     private String id;
-    //  0|1 药品|材料
+    //  0|1 Thuốc|Vật tư
     private String type;
     private Integer number;
-    //医保字段
-    private String drugTracCodg;   //药品追溯码
+    //Trường BHYT
+    private String drugTracCodg;   //Mã truy xuất thuốc
 
 
     public String getRecipelInfoId() {

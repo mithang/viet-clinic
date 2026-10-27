@@ -15,7 +15,7 @@ import com.geeke.sys.entity.CodeRule;
 import com.google.common.collect.Maps;
 
 /**
- * 系统编码规则Service
+ * Quy tắc mã hệ thốngService
  * @author lys
  * @version 2021-05-17
  */
@@ -33,7 +33,7 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
         colMaps.put("code", "code");
         
         if(exists(dao, codeRule, colMaps)) {
-            throw new ServiceException("已存在相同编码");
+            throw new ServiceException("Đã tồn tạigiống hệtMã");
         }
 
         CodeRule codeRuleTemp = super.save(codeRule);

@@ -18,7 +18,7 @@ export function tabOptionBtnTop(size) {
 }
 
 /**
- * 处理校验定位
+ * Xử lý định vị kiểm tra
  */
 export function handleValidateForm(_this, object) {
   let arr = []

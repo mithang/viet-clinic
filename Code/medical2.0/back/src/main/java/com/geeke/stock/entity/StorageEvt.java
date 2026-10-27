@@ -3,7 +3,7 @@ package com.geeke.stock.entity;
 import java.util.List;
 
 /**
- * 入库Evt
+ * Nhập khoEvt
  * @author txl
  * @version 2022-06-07
  */

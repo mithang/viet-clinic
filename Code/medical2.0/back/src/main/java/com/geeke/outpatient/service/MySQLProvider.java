@@ -19,17 +19,17 @@ import java.util.List;
 public class MySQLProvider implements ReportProvider {
 
     /**
-     * 存储器名称
+     * lưu trữthiết bịTên
      */
     private static final String NAME = "Newtouch-provider";
 
     /**
-     * 报表文件名前缀
+     * báo cáoTên tệptiền tố
      */
     private String prefix = "Newtouch:";
 
     /**
-     * 是否禁用
+     * Có hay khôngVô hiệu hóa
      */
     private boolean disabled = false;
 
@@ -40,10 +40,10 @@ public class MySQLProvider implements ReportProvider {
     private PatientService patientService;
 
     /**
-     * 根据报表名加载报表文件
+     * TheoTên báo cáo tải báo cáoTệp
      *
-     * @param file 报表名称
-     * @return 返回的InputStream
+     * @param file Tên báo cáo
+     * @return Trả về của InputStream
      */
     @Override
     public InputStream loadReport(String file) {
@@ -60,9 +60,9 @@ public class MySQLProvider implements ReportProvider {
     }
 
     /**
-     * 根据报表名，删除指定的报表文件
+     * Theobáo cáotên, Xóachỉchỉ định của báo cáoTệp
      *
-     * @param file 报表名称
+     * @param file Tên báo cáo
      */
     @Override
     public void deleteReport(String file) {
@@ -73,9 +73,9 @@ public class MySQLProvider implements ReportProvider {
     }
 
     /**
-     * 获取所有的报表文件
+     * Lấytất cả của báo cáoTệp
      *
-     * @return 返回报表文件列表
+     * @return Trả vềbáo cáoTệpDanh sách
      */
     @Override
     public List<ReportFile> getReportFiles() {
@@ -88,10 +88,10 @@ public class MySQLProvider implements ReportProvider {
     }
 
     /**
-     * 保存报表文件
+     * Lưubáo cáoTệp
      *
-     * @param file 报表名称
-     * @param content 报表的XML内容
+     * @param file Tên báo cáo
+     * @param content báo cáo của XMLnội dung
      */
     @Override
     public void saveReport(String file, String content) {
@@ -101,9 +101,9 @@ public class MySQLProvider implements ReportProvider {
             reportFile = new UReportFile();
             reportFile.setName(file);
             reportFile.setContent(content);
-            reportFile.setCreateBy("测试");
-            reportFile.setUpdateBy("测试");
-            // 设置租户
+            reportFile.setCreateBy("Kiểm thử");
+            reportFile.setUpdateBy("Kiểm thử");
+            // Đặttenant
             Company company = new Company();
             company.setId(SessionUtils.getLoginTenantId());
             reportFile.setCompany(company);
@@ -115,7 +115,7 @@ public class MySQLProvider implements ReportProvider {
     }
 
     /**
-     * @return 返回存储器名称
+     * @return Trả vềlưu trữthiết bịTên
      */
     @Override
     public String getName() {
@@ -123,7 +123,7 @@ public class MySQLProvider implements ReportProvider {
     }
 
     /**
-     * @return 返回是否禁用
+     * @return Trả vềCó hay khôngVô hiệu hóa
      */
     @Override
     public boolean disabled() {
@@ -131,7 +131,7 @@ public class MySQLProvider implements ReportProvider {
     }
 
     /**
-     * @return 返回报表文件名前缀
+     * @return Trả vềbáo cáoTên tệptiền tố
      */
     @Override
     public String getPrefix() {
@@ -139,9 +139,9 @@ public class MySQLProvider implements ReportProvider {
     }
 
     /**
-     * 获取没有前缀的文件名
+     * LấyKhông cótiền tố của Tên tệp
      *
-     * @param name 报表名称
+     * @param name Tên báo cáo
      */
     private String getCorrectName(String name){
         if(name.startsWith(prefix)){

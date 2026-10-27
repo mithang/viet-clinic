@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 行政区域划分Entity
+ * Phân chia khu vực hành chínhEntity
  * @author txl
  * @version 2022-06-21
  */
 public class AdministrativeDivision extends DataEntity<AdministrativeDivision> {
 
 	private static final long serialVersionUID = 986666876811870222L;
-    private AdministrativeDivision parten;      // 上级区划代码 	        
-	private Integer level;		// 区划级别
+    private AdministrativeDivision parten;      // Mã khu vực cấp trên 	        
+	private Integer level;		// Cấp khu vực
 
 	
 	public AdministrativeDivision() {
@@ -44,7 +44,7 @@ public class AdministrativeDivision extends DataEntity<AdministrativeDivision> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -53,7 +53,7 @@ public class AdministrativeDivision extends DataEntity<AdministrativeDivision> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -63,7 +63,7 @@ public class AdministrativeDivision extends DataEntity<AdministrativeDivision> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
@@ -11,21 +11,21 @@
       <div class="tab-item" v-show='tabIndex==="1"'>  
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='版本名称' prop='name' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "请输入版本名称"' autofocus></el-input>
+          <el-form-item label='Tên phiên bản' prop='name' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên phiên bản"' autofocus></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='版本编号' prop='code' >
+          <el-form-item label='Mã phiên bản' prop='code' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.code' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "请输入版本编码"' autofocus></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='版本价格' prop='price' >
+          <el-form-item label='Giá phiên bản' prop='price' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.price'></el-input>
             <number-input v-else v-model="bizFormModel.price" currency='CNY' :precision="2"></number-input>
           </el-form-item>
@@ -33,25 +33,25 @@
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='版本描述' prop='description' >
+          <el-form-item label='Mô tả phiên bản' prop='description' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.description' :maxlength='200' :placeholder='dialogProps.action === "view"? "" : "请输入版本描述"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col>
-          <el-form-item label='备注信息' prop='remarks' >
+          <el-form-item label='Thông tin ghi chú' prop='remarks' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea'
-                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入备注信息"'  clearable></el-input>
+                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"'  clearable></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("clinicVersionForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("clinicVersionForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -79,7 +79,7 @@ export default {
       },
       formRules: {
         'name': [
-            { required: true, message: '请输入版本名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên phiên bản', trigger: 'blur' }
         ],
         'price': [
             { required: true, message: '请选择版本价格', trigger: 'blur' }
@@ -91,7 +91,7 @@ export default {
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -129,7 +129,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改诊所版本'
+      this.dialogProps.title = 'Sửa phiên bản phòng khám'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -142,11 +142,11 @@ export default {
     },
     initFormModel(This) {
       return {
-        'name': '',   // 版本名称
-        'code': '',   // 版本编号
-        'price': 0,    // 版本价格
-        'description': '',   // 版本描述
-        'remarks': '',   // 备注信息
+        'name': '',   // Tên phiên bản
+        'code': '',   // Mã phiên bản
+        'price': 0,    // Giá phiên bản
+        'description': '',   // Mô tả phiên bản
+        'remarks': '',   // Thông tin ghi chú
 
       }
     },
@@ -162,7 +162,7 @@ export default {
     },
     openEditClinicVersionDialog(clinicVersion) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改诊所版本'
+      this.dialogProps.title = 'Sửa phiên bản phòng khám'
       this.bizFormModel = {...this.initFormModel(), ...clinicVersion}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -170,7 +170,7 @@ export default {
     },
     openAddClinicVersionDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加诊所版本'
+      this.dialogProps.title = 'Thêm phiên bản phòng khám'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -178,7 +178,7 @@ export default {
     },
     openCopyClinicVersionDialog(clinicVersion) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加诊所版本'
+      this.dialogProps.title = 'Thêm phiên bản phòng khám'
       this.bizFormModel = {...this.initFormModel(), ...clinicVersion}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

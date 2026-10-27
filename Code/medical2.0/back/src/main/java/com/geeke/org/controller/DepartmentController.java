@@ -17,7 +17,7 @@ import com.geeke.org.service.DepartmentService;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 部门管理Controller
+ * Quản lý phòng banController
  * @author lys
  * @version 2021-07-13
  */

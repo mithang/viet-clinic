@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <!-- <OperationIcon v-show='dialogProps.action == "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon> -->
+      <!-- <OperationIcon v-show='dialogProps.action == "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon> -->
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
@@ -11,8 +11,8 @@
       <div class="tab-item" v-show='tabIndex==="1"'>  
               <el-row>
                 <el-col :span='24/2'>
-          <el-form-item label='会员卡名称' prop='name' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入会员卡名称"' ></el-input>
+          <el-form-item label='Tên thẻ thành viên' prop='name' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên thẻ thành viên"' ></el-input>
           </el-form-item>
         </el-col>
          <el-col :span='24/2'>
@@ -23,12 +23,12 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='会员卡类型' prop='type' >
-            <!-- <el-input :disabled='dialogProps.action == "view"' v-model='bizFormModel.type' :maxlength='100' :placeholder='dialogProps.action == "view"? "" : "请输入会员卡类型"' ></el-input> -->
+          <el-form-item label='Loại thẻ thành viên' prop='type' >
+            <!-- <el-input :disabled='dialogProps.action == "view"' v-model='bizFormModel.type' :maxlength='100' :placeholder='dialogProps.action == "view"? "" : "Vui lòng nhập loại thẻ thành viên"' ></el-input> -->
                             <el-select
                               v-model='bizFormModel.type'
                              :disabled='dialogProps.action === "view"'
-                             :placeholder='dialogProps.action === "view"? "" : "请选择会员卡类型"'
+                             :placeholder='dialogProps.action === "view"? "" : "Vui lòng chọn loại thẻ thành viên"'
                             >
                               <el-option
                                 v-for="item in memberType"
@@ -51,28 +51,28 @@
             :disabled='dialogProps.action === "view"' 
             value-format='yyyy-MM-dd HH:mm:ss' 
             :placeholder='dialogProps.action === "view"? "" : "请输入有效时间"'
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            start-placeholder="Ngày bắt đầu"
+            end-placeholder="Ngày kết thúc"
             :default-time="['00:00:00', '23:59:59']">
           </el-date-picker>
           </el-form-item>
           
         <!-- </el-col>
                 <el-col :span='24/3'>
-          <el-form-item label='结束时间' prop='endDate' >
+          <el-form-item label='Thời gian kết thúc' prop='endDate' >
             <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.endDate' type='date' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入结束时间"' ></el-date-picker>             
           </el-form-item>  -->
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='是否启用' prop='status' >
+          <el-form-item label='Có kích hoạt không' prop='status' >
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.status' active-color='#13ce66' inactive-color='#dbdfe6' active-value='0' inactive-value='1'></el-switch>
           </el-form-item>
         </el-col>
              
       </el-row>
-          <!-- 添加项目 -->
+          <!-- Thêm hạng mục -->
         <div>
             <el-row>
         <el-col :span='24'>
@@ -88,13 +88,13 @@
               :data="memberData"
               style="width: 90%;margin-left:65px">
                 <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               align="center">
             </el-table-column>     
               <el-table-column
                 prop="name"
-                label="项目名称"
+                label="Tên hạng mục"
                 width="180">
                  <template slot-scope="scope">
                   <el-select
@@ -116,16 +116,16 @@
              
               <el-table-column
                 prop="itemType"
-                label="项目类型"
+                label="Loại hạng mục"
                 width="100">
               </el-table-column>
               <el-table-column
                align="center"
                 prop="salePrice"
-                label="项目金额">
+                label="Số tiền hạng mục">
                 <template slot-scope="scope">
                   <span v-if='scope.row.salePrice>0'>
-                    {{scope.row.salePrice}}元
+                    {{scope.row.salePrice}}VNĐ
                   </span>
                 </template>
               </el-table-column>
@@ -139,15 +139,15 @@
               </el-table-column>
               <el-table-column
                 prop="unit"
-                label="单位">
+                label="Đơn vị">
               </el-table-column>
              
                 <el-table-column
                 v-if="dialogProps.action !== 'view'"
-                  label="操作"
+                  label="Thao tác"
                   width="100">
                   <template slot-scope="scope">
-                    <el-button v-if="dialogProps.action !== 'view'" @click="removeClick(scope.row)" type="text" size="small">删除</el-button>
+                    <el-button v-if="dialogProps.action !== 'view'" @click="removeClick(scope.row)" type="text" size="small">Xóa</el-button>
                   </template>
                 </el-table-column>
             </el-table>
@@ -157,9 +157,9 @@
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("memberSetForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("memberSetForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -182,7 +182,7 @@ export default {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: '1',
-          company_List: [],  // 诊所id
+          company_List: [],  // Phòng khámid
        dialogProps: {
         visible: false,
         action: '',
@@ -191,10 +191,10 @@ export default {
       TreatmentTable:[],   //诊疗项目集合
       formRules: {
         'name': [
-            { required: true, message: '请输入会员卡名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên thẻ thành viên', trigger: 'blur' }
         ],
         'type': [
-            { required: true, message: '请输入会员卡类型', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập loại thẻ thành viên', trigger: 'blur' }
         ],
         amount:[
           {required: true, message: '请输入会员卡张数', trigger: 'blur'}
@@ -202,19 +202,19 @@ export default {
       }
     }    
   },
-  memberType:[],   //会员卡类型
+  memberType:[],   //Loại thẻ thành viên
   memberData:[
     {
-      name:'',//项目名称
-      itemType:'',  //项目类型
-      salePrice:10,   //项目金额
-      unit:"" ,  //单位
-      number:0  //赠送数量
+      name:'',//Tên hạng mục
+      itemType:'',  //Loại hạng mục
+      salePrice:10,   //Số tiền hạng mục
+      unit:"" ,  //Đơn vị
+      number:0  //Số lượng tặng
       
     }
   ],
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -225,14 +225,14 @@ export default {
     removeClick(row,index){
       this.memberData.splice(index,1)
     },
-    //添加项目
+    //Thêm hạng mục
     addItem(){
       let objectItem={
-        name:'',//项目名称
-        itemType:'',  //项目类型
-        salePrice:0,   //项目金额
-        unit:"" ,  //单位
-        number:""  //赠送数量
+        name:'',//Tên hạng mục
+        itemType:'',  //Loại hạng mục
+        salePrice:0,   //Số tiền hạng mục
+        unit:"" ,  //Đơn vị
+        number:""  //Số lượng tặng
       }
       this.memberData.push(objectItem)
     },
@@ -248,7 +248,7 @@ export default {
         }
       })
     },
-    //获取诊疗项目
+    //Lấy hạng mục khám chữa bệnh
     getCostItem(){
       let SearchModel = {
         columnName: "",
@@ -279,7 +279,7 @@ export default {
         }
       });
     },
-    //获取会员卡类型
+    //Lấy loại thẻ thành viên
     getType(){
       getDictItemsByCode(DICT_CODE.MEMBER_TYPE).then((data) => {
         this.memberType = data;
@@ -326,7 +326,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改会员卡'
+      this.dialogProps.title = 'Sửa thẻ thành viên'
       this.initOptions(this.bizFormModel)
        this.memberData=this.bizFormModel.memberItem
         this.memberData.forEach(item=>{
@@ -345,20 +345,20 @@ export default {
     },
     initFormModel(This) {
       return {
-        'company': {     // 诊所id
+        'company': {     // Phòng khámid
           'id': currentUser.company.id,
           'name': null,
         },
-        'name': '',   // 会员卡名称
+        'name': '',   // Tên thẻ thành viên
         'type': {name:'体验卡',
-                value:'memberType_0'},   // 会员卡类型
+                value:'memberType_0'},   // Loại thẻ thành viên
         'money': 0,    // 会员卡金额
         'amount': 0,    // 会员卡总数
-        'number': 0,    // 剩余数量
-        'status': '0',   // 是否启用（0：启用，1:禁用）
-        'failure': '0',   // 是否失效（0：否，1：是）
-        'startDate': '',   // 开始时间
-        'endDate': '',   // 结束时间
+        'number': 0,    // Số lượng còn lại
+        'status': '0',   // Có kích hoạt không（0：Kích hoạt，1:Vô hiệu hóa）
+        'failure': '0',   // 是否失效（0：Không，1：Có）
+        'startDate': '',   // Thời gian bắt đầu
+        'endDate': '',   // Thời gian kết thúc
 
       }
     },
@@ -367,24 +367,24 @@ export default {
       this.getCostItem()
       this.memberData=[
     {
-      name:'',//项目名称
-      itemType:'',  //项目类型
-      salePrice:0,   //项目金额
-      unit:"" ,  //单位
-      number:""  //赠送数量
+      name:'',//Tên hạng mục
+      itemType:'',  //Loại hạng mục
+      salePrice:0,   //Số tiền hạng mục
+      unit:"" ,  //Đơn vị
+      number:""  //Số lượng tặng
       
     }]
       let company_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         company_search.params.push.apply(company_search.params, [])
-      // 数据权限: 诊所org_company
+      // Quyền dữ liệu: Phòng khámorg_company
       this.pushDataPermissions(company_search.params, this.$route.meta.routerId, '41040096140492800')
       this.company_List.splice(0, this.company_List.length)
       listCompanyAll(company_search).then(responseData => {
         this.company_List = responseData.data
-        // 获取初始项的值
+        // Lấy giá trị ban đầu
         this.company_List.forEach( item => {
           if(item.id === this.bizFormModel.company.id) {
             this.bizFormModel.company = item
@@ -393,7 +393,7 @@ export default {
         })
       })
 
-      //获取会员卡类型
+      //Lấy loại thẻ thành viên
     },
 
     openViewMemberSetDialog(memberSet) {
@@ -413,7 +413,7 @@ export default {
     },
     openEditMemberSetDialog(memberSet) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改会员卡'
+      this.dialogProps.title = 'Sửa thẻ thành viên'
       this.bizFormModel = {...this.initFormModel(), ...memberSet}
       this.initOptions(this.bizFormModel)
       this.bizFormModel.startDate = [this.bizFormModel.startDate, this.bizFormModel.endDate]
@@ -428,7 +428,7 @@ export default {
     },
     openAddMemberSetDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加会员卡'
+      this.dialogProps.title = 'Thêm thẻ thành viên'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -436,7 +436,7 @@ export default {
     },
     openCopyMemberSetDialog(memberSet) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加会员卡'
+      this.dialogProps.title = 'Thêm thẻ thành viên'
       this.bizFormModel = {...this.initFormModel(), ...memberSet}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

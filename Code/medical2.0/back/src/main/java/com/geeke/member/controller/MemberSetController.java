@@ -18,7 +18,7 @@ import com.geeke.common.data.Page;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 会员卡设置Controller
+ * Cài đặt thẻ hội viênController
  * @author rys
  * @version 2022-10-25
  */
@@ -41,7 +41,7 @@ public class MemberSetController extends CrudController<MemberSetService, Member
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
         MemberSet entity = memberSetService.get(id);
-        //根据会员卡获取对应的项目详情
+        //TheoHội viênthẻLấytương ứng của hạng mụcChi tiết
         List<MemberItem> memberItemList=memberItemService.getByMemberSetId(id);
         entity.setMemberItem(memberItemList);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
@@ -54,7 +54,7 @@ public class MemberSetController extends CrudController<MemberSetService, Member
        if(!CollectionUtils.isEmpty(result.getRows())){
            List<MemberSet> memberSets = result.getRows();
            for (MemberSet memberSet : memberSets) {
-               //获取对应的详情
+               //Lấytương ứng của Chi tiết
                List<MemberItem> byMemberSetId = memberItemService.getByMemberSetId(memberSet.getId());
                memberSet.setMemberItem(byMemberSetId);
            }
@@ -69,7 +69,7 @@ public class MemberSetController extends CrudController<MemberSetService, Member
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
         List<MemberSet> result = memberSetService.listAll(searchParams.getParams(), searchParams.getOrderby());
         for (MemberSet memberSet : result) {
-            //获取对应的详情
+            //Lấytương ứng của Chi tiết
             List<MemberItem> byMemberSetId = memberItemService.getByMemberSetId(memberSet.getId());
             memberSet.setMemberItem(byMemberSetId);
         }

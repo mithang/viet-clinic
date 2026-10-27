@@ -12,7 +12,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 供应商管理Service
+ * Quản lý nhà cung cấpService
  * @author txl
  * @version 2022-06-22
  */
@@ -26,18 +26,18 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
     @Transactional(readOnly = false)
     public Supplier save(Supplier supplier) {
         Map<String, String> colMaps = Maps.newHashMap();
-        // 供应商已存在
+        // Nhà cung cấp đã tồn tại
         colMaps.clear();
         colMaps.put("name", "name");
 
         /*if(exists(dao, supplier, colMaps)) {
-            throw new ServiceException("供应商已存在");
+            throw new ServiceException("Nhà cung cấp đã tồn tại");
         }*/
-        //校验供应商是否存在
+        //Kiểm traNhà cung cấpCó tồn tại không
        if(supplier.getId()==null){
            String by = supplierDao.findBy(supplier.getName(), supplier.getCompany().getId());
            if(by!=null){
-               throw new ServiceException("供应商已存在");
+               throw new ServiceException("Nhà cung cấp đã tồn tại");
 
            }
        }

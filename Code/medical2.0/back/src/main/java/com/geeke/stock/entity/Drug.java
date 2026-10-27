@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 /**
- * 药品信息Entity
+ * Thông tin thuốcEntity
  * @author txl
  * @version 2022-06-07
  */
@@ -23,76 +23,76 @@ import java.math.BigDecimal;
 public class Drug extends DataEntity<Drug> {
 
 	private static final long serialVersionUID = 1004078055755374623L;
-	@ExcelImportField(columnIndex = 0, required = true, maxLength = 128, label = "药品名称")
-	private String goodsName;		// 药品名称
+	@ExcelImportField(columnIndex = 0, required = true, maxLength = 128, label = "Tên thuốc")
+	private String goodsName;		// Tên thuốc
 
-    private String syncId;     //同步过来的ID
+    private String syncId;     //đồng bộquađến của ID
 
-    private int syncNum;    //药品是否已同步
+    private int syncNum;    //ThuốcCó hay khôngĐãđồng bộ
 
 
-	private Company company;      // 诊所id 
-	@ExcelImportField(columnIndex = 1, maxLength = 128, label = "商品名称")
-	private String brandName;		// 商品名称
-	@ExcelImportField(columnIndex = 3, required = true, dictTypeId = BizConstants.DICT_TYPE_DRUG_TYPE, label = "药品类型")
-	private DictItem type;      // 药品类型
-	private String code;		// 药品编码
-	@ExcelImportField(columnIndex = 4, maxLength = 128, label = "药品来源")
-	private String source;		// 药品来源
-	@ExcelImportField(columnIndex = 5, dictTypeId = BizConstants.DICT_TYPE_DRUG_NATURE, label = "药品性质")
-	private DictItem nature;      // 性质
-	private ManufactureFactory factory;      // 生产厂家 
-	@ExcelImportField(columnIndex = 7, maxLength = 64, label = "国药准字")
-	private String standardCode;		// 国药准字
-	@ExcelImportField(columnIndex = 8, maxLength = 64, label = "本位码")
-	private String bitCode;		// 本位码
-	@ExcelImportField(columnIndex = 9, maxLength = 64, label = "条形码")
-	private String barCode;		// 条形码
-	@ExcelImportField(columnIndex = 10, maxLength = 64, label = "医保编码")
-	private String insuranceCode;		// 医保编码
-	@ExcelImportField(columnIndex = 11, maxLength = 45, label = "剂量")
-	private String dosis;		// 剂量
-	@ExcelImportField(columnIndex = 12, dictTypeId = BizConstants.DICT_TYPE_DOSAGE_UNIT, label = "剂量单位")
-	private DictItem dosisUnit;      // 剂量单位
-	@ExcelImportField(columnIndex = 13, maxLength = 45, label = "制剂")
-	private String preparation;		// 制剂
-	@ExcelImportField(columnIndex = 14, dictTypeId = BizConstants.DICT_TYPE_PREPARATION_UNIT, label = "制剂单位")
-	private DictItem preparationUnit;      // 制剂单位
-	@ExcelImportField(columnIndex = 15, dictTypeId = BizConstants.DICT_TYPE_PACK_SPEC, label = "包装规格")
-	private DictItem pack;      // 包装
-	@ExcelImportField(columnIndex = 16, label = "售价")
-	private BigDecimal price;		// 售价
-	@ExcelImportField(columnIndex = 17, maxLength = 1, label = "是否拆零销售")
-	private String isUnpackSell;		// 允许拆零销售
-	@ExcelImportField(columnIndex = 18, label = "零售价")
-	private BigDecimal retailPrice;		// 拆开后零售价
-	private String stockNumber;	//库存数量
-	private String stockUnit; //库存单位
-	@ExcelImportField(columnIndex = 19, maxLength = 1, label = "状态")
-	private String status;   //启用标志
-	@ExcelImportField(columnIndex = 2, maxLength = 64, label = "拼音码")
-	private String pinyinCode;  //拼音码
-	private int inventory;  //库存
-	private DictItem westernMedicineUse;      // 西药用法
-	private DictItem chineseMedicineUse;      // 中药用法
-	private Integer singleDosage;		// 单次用量
-	@ExcelImportField(columnIndex = 21, label = "总量")
-	private Integer total;		// 总量
-	private DictItem frequency;      // 频次用量
-	private DictItem days;      // 天数
-	private String locationNumber;   //货位号
-	private String inventoryLimit;   //库存上限
-	private String inventoryFloor;   //库存下限
-	private BigDecimal bid;    //进价合计
+	private Company company;      // Phòng khámid 
+	@ExcelImportField(columnIndex = 1, maxLength = 128, label = "Tên hàng hóa")
+	private String brandName;		// Tên hàng hóa
+	@ExcelImportField(columnIndex = 3, required = true, dictTypeId = BizConstants.DICT_TYPE_DRUG_TYPE, label = "Loại thuốc")
+	private DictItem type;      // Loại thuốc
+	private String code;		// Mã thuốc
+	@ExcelImportField(columnIndex = 4, maxLength = 128, label = "Nguồn thuốc")
+	private String source;		// Nguồn thuốc
+	@ExcelImportField(columnIndex = 5, dictTypeId = BizConstants.DICT_TYPE_DRUG_NATURE, label = "Thuốctính chất")
+	private DictItem nature;      // Tính chất
+	private ManufactureFactory factory;      // Nhà sản xuất 
+	@ExcelImportField(columnIndex = 7, maxLength = 64, label = "Số đăng ký thuốc quốc gia")
+	private String standardCode;		// Số đăng ký thuốc quốc gia
+	@ExcelImportField(columnIndex = 8, maxLength = 64, label = "nàyvịmã")
+	private String bitCode;		// nàyvịmã
+	@ExcelImportField(columnIndex = 9, maxLength = 64, label = "Mã vạch")
+	private String barCode;		// Mã vạch
+	@ExcelImportField(columnIndex = 10, maxLength = 64, label = "Mã BHYT")
+	private String insuranceCode;		// Mã BHYT
+	@ExcelImportField(columnIndex = 11, maxLength = 45, label = "Liều lượng")
+	private String dosis;		// Liều lượng
+	@ExcelImportField(columnIndex = 12, dictTypeId = BizConstants.DICT_TYPE_DOSAGE_UNIT, label = "Đơn vị liều lượng")
+	private DictItem dosisUnit;      // Đơn vị liều lượng
+	@ExcelImportField(columnIndex = 13, maxLength = 45, label = "Chế phẩm")
+	private String preparation;		// Chế phẩm
+	@ExcelImportField(columnIndex = 14, dictTypeId = BizConstants.DICT_TYPE_PREPARATION_UNIT, label = "Đơn vị bào chế")
+	private DictItem preparationUnit;      // Đơn vị bào chế
+	@ExcelImportField(columnIndex = 15, dictTypeId = BizConstants.DICT_TYPE_PACK_SPEC, label = "Quy cách đóng gói")
+	private DictItem pack;      // Đóng gói
+	@ExcelImportField(columnIndex = 16, label = "Giá bán")
+	private BigDecimal price;		// Giá bán
+	@ExcelImportField(columnIndex = 17, maxLength = 1, label = "Có bán lẻ không")
+	private String isUnpackSell;		// Cho phép bán lẻ
+	@ExcelImportField(columnIndex = 18, label = "Giá bán lẻ")
+	private BigDecimal retailPrice;		// Giá bán lẻ sau khi tách
+	private String stockNumber;	//Số lượng tồn kho
+	private String stockUnit; //Tồn khoĐơn vị
+	@ExcelImportField(columnIndex = 19, maxLength = 1, label = "Trạng thái")
+	private String status;   //Cờ bật
+	@ExcelImportField(columnIndex = 2, maxLength = 64, label = "Mã pinyin")
+	private String pinyinCode;  //Mã pinyin
+	private int inventory;  //Tồn kho
+	private DictItem westernMedicineUse;      // Cách dùng thuốc Tây
+	private DictItem chineseMedicineUse;      // Cách dùng thuốc Đông y
+	private Integer singleDosage;		// Liều dùng mỗi lần
+	@ExcelImportField(columnIndex = 21, label = "Tổng số lượng")
+	private Integer total;		// Tổng số lượng
+	private DictItem frequency;      // Tần suất và liều dùng
+	private DictItem days;      // Số ngày
+	private String locationNumber;   //hàngvịsố
+	private String inventoryLimit;   //Tồn khotrêngiới hạn
+	private String inventoryFloor;   //Tồn khodướigiới hạn
+	private BigDecimal bid;    //giá nhậpTổng cộng
 
-	private InventoryVerification inventoryVerification;  //库存盘点
-	private String inventoryVerificationDetailId;       //库存盘点详情id
+	private InventoryVerification inventoryVerification;  //Kiểm kê tồn kho
+	private String inventoryVerificationDetailId;       //Chi tiết kiểm kê tồn khoid
 
-	private String indate;          //有效期
+	private String indate;          //Thời hạn hiệu lực
 	private MedicinalStockControl stock;
     private  String ypgg ;
-	/*医保字段*/
-	private  String rxFlag;//是否处方 0  1
+	/*Trường BHYT*/
+	private  String rxFlag;//Có hay khôngĐơn thuốc 0  1
 
     public String getSyncId() {
         return syncId;
@@ -128,7 +128,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 
-	@Length(min=1, max=128, message="药品名称长度必须介于 1 和 128 之间")
+	@Length(min=1, max=128, message="ThuốcTênĐộ dài phải nằm trong khoảng 1 đến 128 ")
 	public String getGoodsName() {
 		return goodsName;
 	}
@@ -145,7 +145,7 @@ public class Drug extends DataEntity<Drug> {
         this.company = company;
     }
     
-	@Length(min=0, max=128, message="商品名称长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Tên hàng hóaĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getBrandName() {
 		return brandName;
 	}
@@ -154,7 +154,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@NotNull(message="药品类型不能为空")
+	@NotNull(message="Loại thuốcKhông thể là trống")
     public DictItem getType() {
         return type;
     }
@@ -163,7 +163,7 @@ public class Drug extends DataEntity<Drug> {
         this.type = type;
     }
     
-	@Length(min=0, max=64, message="药品编码长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="ThuốcĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
 	public String getCode() {
 		return code;
 	}
@@ -172,7 +172,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=128, message="药品来源长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Nguồn thuốcĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getSource() {
 		return source;
 	}
@@ -197,7 +197,7 @@ public class Drug extends DataEntity<Drug> {
         this.factory = factory;
     }
     
-	@Length(min=0, max=64, message="国药准字长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="国thuốcchuẩnchữĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getStandardCode() {
 		return standardCode;
 	}
@@ -206,7 +206,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=64, message="本位码长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="nàyvịmãĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getBitCode() {
 		return bitCode;
 	}
@@ -215,7 +215,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=64, message="条形码长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="mã vạchĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getBarCode() {
 		return barCode;
 	}
@@ -224,7 +224,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=64, message="医保编码长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="BHYTĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
 	public String getInsuranceCode() {
 		return insuranceCode;
 	}
@@ -233,7 +233,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=45, message="剂量长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="liềulượngĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getDosis() {
 		return dosis;
 	}
@@ -250,7 +250,7 @@ public class Drug extends DataEntity<Drug> {
         this.dosisUnit = dosisUnit;
     }
     
-	@Length(min=0, max=45, message="制剂长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="bào chếĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getPreparation() {
 		return preparation;
 	}
@@ -283,7 +283,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=45, message="允许拆零销售长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài cho phép bán lẻ phải nằm trong khoảng 0 đến 45 ")
 	public String getIsUnpackSell() {
 		return isUnpackSell;
 	}
@@ -299,7 +299,7 @@ public class Drug extends DataEntity<Drug> {
 		this.retailPrice = retailPrice;
 	}
 
-	@Length(min=0, max=1, message="启用标志长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="Cờ bậtĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getStatus() {
 		return status;
 	}
@@ -444,7 +444,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -453,7 +453,7 @@ public class Drug extends DataEntity<Drug> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -463,7 +463,7 @@ public class Drug extends DataEntity<Drug> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

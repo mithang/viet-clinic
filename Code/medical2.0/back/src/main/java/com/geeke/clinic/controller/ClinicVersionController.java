@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 诊所版本Controller
+ * Phiên bản phòng khámController
  * @author txl
  * @version 2022-05-23
  */

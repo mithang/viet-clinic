@@ -15,23 +15,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 会员卡设置Entity
+ * Cài đặt thẻ hội viênEntity
  * @author rys
  * @version 2022-10-25
  */
 public class MemberSet extends DataEntity<MemberSet> {
 
 	private static final long serialVersionUID = 1222698883343517159L;
-	private Company company;      // 诊所id 
-	private DictItem type;		// 会员卡类型
-	private BigDecimal money;		// 会员卡金额
-	private Integer amount;		// 会员卡总数
-	private Integer number;		// 剩余数量
-	private String status;		// 是否启用（0：启用，1:禁用）
-	private String failure;		// 是否失效（0：否，1：是）
-	private Date startDate;		// 开始时间
-	private Date endDate;		// 结束时间
-	private List<MemberItem> memberItem; //封装详情
+	private Company company;      // Phòng khámid 
+	private DictItem type;		// Hội viênthẻLoại
+	private BigDecimal money;		// Hội viênthẻSố tiền
+	private Integer amount;		// Hội viênthẻtổng số
+	private Integer number;		// Số lượng còn lại
+	private String status;		// Có bật không(0: Kích hoạt, 1:Vô hiệu hóa)
+	private String failure;		// Có hay khônghết hiệu lực(0:  không , 1:  có )
+	private Date startDate;		// Thời gian bắt đầu
+	private Date endDate;		// Thời gian kết thúc
+	private List<MemberItem> memberItem; //đóng góiChi tiết
 
 	
 	public MemberSet() {
@@ -43,7 +43,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -52,7 +52,7 @@ public class MemberSet extends DataEntity<MemberSet> {
         this.company = company;
     }
     
-	@Length(min=1, max=100, message="会员卡类型长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="Hội viênthẻLoạiĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public DictItem getType() {
 		return type;
 	}
@@ -61,7 +61,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 	
-	@NotNull(message="会员卡金额不能为空")
+	@NotNull(message="Hội viênthẻSố tiềnKhông thể là trống")
 	public BigDecimal getMoney() {
 		return money;
 	}
@@ -86,7 +86,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 	
-	@Length(min=1, max=1, message="是否启用（0：启用，1:禁用）长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message="Có bật không(0: Kích hoạt, 1:Vô hiệu hóa)Độ dài phải từ 1  và  1 Giữa")
 	public String getStatus() {
 		return status;
 	}
@@ -95,7 +95,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 	
-	@Length(min=1, max=1, message="是否失效（0：否，1：是）长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message="Có hay khônghết hiệu lực(0:  không , 1:  có )Độ dài phải từ 1  và  1 Giữa")
 	public String getFailure() {
 		return failure;
 	}
@@ -130,7 +130,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -139,7 +139,7 @@ public class MemberSet extends DataEntity<MemberSet> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -149,7 +149,7 @@ public class MemberSet extends DataEntity<MemberSet> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

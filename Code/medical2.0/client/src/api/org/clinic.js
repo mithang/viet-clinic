@@ -2,7 +2,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/org/clinic')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getClinicById = baseApi.getById
 export const listClinicPage = baseApi.listPage
 export const listClinicAll = baseApi.listAll

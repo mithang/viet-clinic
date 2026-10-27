@@ -24,66 +24,66 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class MdRequestUtil {
-    //医保配置参数
+    //Cấu hình BHYTTham số
     private final MedicareConfigProperties medicareConfigProperties;
-    //请求封装
+    //Vui lòngyêu cầuđóng gói
     private  final RestTemplate restTemplate;
-    //签到流水号缓存（本地内存替代Redis）
+    //kýĐếnsố thứ tựBộ nhớ đệm(nàyThay thế bộ nhớ cục bộRedis)
     private String signNoCache;
     private LocalDateTime signNoExpireTime;
-    //电子处方需加密集合
+    //điện tửĐơn thuốccầnMã hóatập hợp
     private final static List<String> INFO_LIST = Arrays.asList("Ld7801","Ld7802","Ld7101","Ld7104","Ld7202","Ld7102","Ld7805","Ld7804","Ld7806");
-    //日志表
+    //Ngàynhật kýbảng
     private  final YbjkLogcontentService ybjkLogcontentService;
 
 
     /**
-     * 获取医保信息
+     * LấyBHYTThông tin
      * @param infoNo
      * @return
      */
     public JSONObject getMedicareData(String infoNo,JSONObject jsonObject) {
-        // 设置请求头
+        // Đặt tiêu đề yêu cầu
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String requestData = createRequestData(infoNo,jsonObject);
         HttpEntity<String> request = new HttpEntity<>(JSON.toJSONString(requestData) ,headers);
-        //日志信息
+        //Ngàynhật kýThông tin
         YbjkLogcontent ybjkLogcontent = new YbjkLogcontent();
         ybjkLogcontent.setTradinumber(infoNo);
         ybjkLogcontent.setHisid(jsonObject.getString(jsonObject.getString("ipt_otp_no")) != null ? jsonObject.getString("ipt_otp_no") : "0");
         ybjkLogcontent.setInhead(requestData);
         ybjkLogcontent.setBegindate(LocalDateTime.now());
-        //发送医保请求
+        //phátgửiBHYTVui lòngyêu cầu
         String response = restTemplate.postForObject(medicareConfigProperties.getUrl(), request,String.class);
         ybjkLogcontent.setEnddate(LocalDateTime.now());
         ybjkLogcontent.setOuthead(response);
         ybjkLogcontent.setOutcontent(JSONObject.parseObject(response).getString("output"));
         ybjkLogcontent.setErrormsg(JSONObject.parseObject(response).getString("err_msg"));
-        //医保信息日志存储
+        //BHYTThông tinNgàynhật kýlưu trữ
         ybjkLogcontentService.save(ybjkLogcontent);
         return JSONObject.parseObject(response).getJSONObject("output");
     }
 
 
     /**
-     * 电子处方上传
+     * Tải lên đơn thuốc điện tử
      * @param infoNo
      * @param jsonObject
      * @return
      */
     public JSONObject dzcfUpload(String infoNo,JSONObject jsonObject) {
-        // 设置请求头
+        // Đặt tiêu đề yêu cầu
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String requestData = createRequestData(infoNo,jsonObject);
         HttpEntity<String> request = new HttpEntity<>(JSON.toJSONString(requestData) ,headers);
-        //发送医保请求
+        //phátgửiBHYTVui lòngyêu cầu
         String response = restTemplate.postForObject(medicareConfigProperties.getUrl(), request,String.class);
-        //加密密文返回解密
+        //Mã hóa密văn bảnTrả vềGiải mã
         String encData=SMUtil.decrypt (JSONObject.parseObject(response).getJSONObject("output").getString("encData"),medicareConfigProperties.getAppId(),medicareConfigProperties.getAppSecret());
         JSONObject.parseObject(response).getJSONObject("output").put("data",encData);
-        //医保信息日志存储
+        //BHYTThông tinNgàynhật kýlưu trữ
         return JSONObject.parseObject(response).getJSONObject("output");
     }
 
@@ -91,12 +91,12 @@ public class MdRequestUtil {
 
 
     /**
-     * 获取医保文件信息
+     * LấyBHYTTệpThông tin
      * @param infoNo
      * @return
      */
     public File getMedicareFile(String infoNo, JSONObject object,String fileName) {
-        // 设置请求头
+        // Đặt tiêu đề yêu cầu
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
         String requestData = createRequestData(infoNo,object);
@@ -131,81 +131,81 @@ public class MdRequestUtil {
 
 
     /**
-     * 构建主体请求参数
+     * xây dựngchínhthểVui lòngyêu cầuTham số
      * @param infoNo
      * @param
      * @return
      */
     private String createRequestData(String infoNo,JSONObject jsonObject) {
         RequestData requestData = new RequestData();
-        //获取定点医疗机构代码与名称
+        //Lấy mã và tên cơ sở y tế được chỉ định
         String FixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
         String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
         requestData.setInfno(infoNo);
-        //顺序号(4)
+        //顺số thứ tự(4)
         String orderNum =  "1234";
-        //发送方id
+        //Bên gửiid
         String MsgId =  FixmedinsCode + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))+ orderNum;
         requestData.setMsgid(MsgId);
-        //就医医保区划
+        //Vùng BHYT khám bệnh
         requestData.setMdtrtarea_admvs("value4");
-        //参保地医保区划
+        //Vùng BHYT nơi tham gia bảo hiểm
         requestData.setInsuplc_admdvs("value3");
-        //接收方系统代码
+        //Mã hệ thống bên nhận
         requestData.setRecer_sys_code("value5");
-        //设备编号
+        //Mã thiết bị
         requestData.setDev_no("value6");
-        //设备安全信息
+        //Thông tin an toàn thiết bị
         requestData.setDev_safe_info("value7");
-        //医保接入安全码数字签名信息
+        //Thông tin chữ ký số của mã an toàn kết nối BHYT
         requestData.setCainfo("value8");
-        //签名类型  建议SM2、SM3
+        //Loại chữ ký  Khuyến nghịSM2, SM3
         requestData.setSigntype("value9");
-        //接口版本号
+        //Số phiên bản giao diện
         requestData.setInfver("V1.0");
-        //1-经办人；2-自助终端；3-移动终端
+        //1-Người thực hiện; 2-Thiết bị đầu cuối tự phục vụ; 3-Thiết bị đầu cuối di động
         requestData.setOpter_type("value10");
-        //传入经办人/终端编号
+        //Người thực hiện được truyền vào/Mã thiết bị đầu cuối
         requestData.setOpter("000000");
-        //经办人姓名
-        requestData.setOpter_name("管理员");
-        //接口交易时间
+        //Tên người thực hiện
+        requestData.setOpter_name("Quản trị viên");
+        //Thời gian giao dịch giao diện
         requestData.setInf_time(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        //设置定点医疗机构代码
+        //Đặty tế được chỉ địnhCơ sởmã
         requestData.setFixmedins_code(FixmedinsCode);
-        //设置定点医疗机构名称
+        //ĐặtTên cơ sở y tế được chỉ định
         requestData.setFixmedins_name(FixmedinsName);
-        //签到接口
-        //从本地缓存中获取签到流水号
+        //Giao diện check-in
+        //Từ nàyđịa phươngBộ nhớ đệm trong LấykýĐếnsố thứ tự
         if(infoNo.equals("9001")){
             requestData.setSign_no("");
         }else{
             String signNo = getSignNoFromCache();
             if (signNo == null) {
                 JSONObject signNoData = new JSONObject();
-                //TODO 签到参数待定
-                getMedicareSignNo("9001",signNoData);  // 调用方法生成签到流水号
+                //TODO kýĐếnTham sốchờchỉ định
+                getMedicareSignNo("9001",signNoData);  // gọiPhương thứcTạokýĐếnsố thứ tự
                 signNo = getSignNoFromCache();
             }
             requestData.setSign_no(signNo);
         }
-        //主请求参数
+        //chínhVui lòngyêu cầuTham số
         JSONObject json = (JSONObject) JSONObject.toJSON(requestData);
-        // 设置 input数据
+        // Cài đặt inputDữ liệu
         if(INFO_LIST.contains(infoNo)){
-            //电子处方需加密数据
+            //điện tửĐơn thuốccầnMã hóaDữ liệu
             jsonObject.put("appid", medicareConfigProperties.getAppId());
             jsonObject.put("encType","SM4");
             jsonObject.put("signType","SM2");
-            //当前时间戳
+            //Hiện tạiThời giandấu
             json.put("timestamp",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-            //原始请求参数
+            //gốc始Vui lòngyêu cầuTham số
             JSONObject data = jsonObject.getJSONObject("data");
             String encData = SMUtil.encrypt(data.toJSONString(), medicareConfigProperties.getAppId(), medicareConfigProperties.getAppSecret());
             String signData = SMUtil.sign(jsonObject, medicareConfigProperties.getAppSecret(), medicareConfigProperties.getPrivateKey());
             jsonObject.put("encData",encData);
             jsonObject.put("signData",signData);
-            //删除原始请求参数
+            //Xóagốc始Vui lòngyêu cầuTham số
             jsonObject.remove("data");
         }
         json.put("input",jsonObject);
@@ -214,28 +214,28 @@ public class MdRequestUtil {
 
 
 
-    //签到或签退
+    //kýĐến hoặc kýtrả
     public JSONObject getMedicareSignNo(String infoNo,JSONObject jsonObject) {
-        // 设置请求头
+        // Đặt tiêu đề yêu cầu
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String requestData = createRequestData(infoNo,jsonObject);
         HttpEntity<String> request = new HttpEntity<>(requestData ,headers);
         String response = restTemplate.postForObject(medicareConfigProperties.getUrl(), request,String.class);
         if(infoNo.equals("9001")){
-            //保存当天24点之前签到码
+            //Lưukhi ngày24điểmcủatrướckýĐếnmã
             signNoCache = JSONObject.parseObject(response).getString("sign_no");
             signNoExpireTime = LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1);
         }
         if(infoNo.equals("9002")){
-            //删除签到码
+            //XóakýĐếnmã
             signNoCache = null;
             signNoExpireTime = null;
         }
         return JSONObject.parseObject(response);
     }
 
-    /** 从本地缓存获取签到流水号，过期返回null */
+    /** Lấy số thứ tự check-in từ bộ nhớ đệm cục bộ, hết hạnTrả vềnull */
     private String getSignNoFromCache() {
         if (signNoCache != null && LocalDateTime.now().isBefore(signNoExpireTime)) {
             return signNoCache;
@@ -245,42 +245,42 @@ public class MdRequestUtil {
 
     public static void main(String[] args) {
 RequestData requestData = new RequestData();
-    //获取定点医疗机构代码与名称
+    //Lấy mã và tên cơ sở y tế được chỉ định
     //String FixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
     //String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
         requestData.setInfno("5101");
-    //发送方id
+    //Bên gửiid
    // String MsgId =  FixmedinsCode + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))+ "1234";
      //   requestData.setMsgid(MsgId);
-    //就医医保区划
+    //Vùng BHYT khám bệnh
         requestData.setMdtrtarea_admvs("value4");
-    //参保地医保区划
+    //Vùng BHYT nơi tham gia bảo hiểm
         requestData.setInsuplc_admdvs("value3");
-    //接收方系统代码
+    //Mã hệ thống bên nhận
         requestData.setRecer_sys_code("value5");
-    //设备编号
+    //Mã thiết bị
         requestData.setDev_no("value6");
-    //设备安全信息
+    //Thông tin an toàn thiết bị
         requestData.setDev_safe_info("value7");
-    //医保接入安全码数字签名信息
+    //Thông tin chữ ký số của mã an toàn kết nối BHYT
         requestData.setCainfo("value8");
-    //签名类型  建议SM2、SM3
+    //Loại chữ ký  Khuyến nghịSM2, SM3
         requestData.setSigntype("value9");
-    //接口版本号
+    //Số phiên bản giao diện
         requestData.setInfver("value9");
-    //1-经办人；2-自助终端；3-移动终端
+    //1-Người thực hiện; 2-Thiết bị đầu cuối tự phục vụ; 3-Thiết bị đầu cuối di động
         requestData.setOpter_type("value10");
-    //传入经办人/终端编号
+    //Người thực hiện được truyền vào/Mã thiết bị đầu cuối
         requestData.setOpter("value11");
-    //经办人姓名
+    //Tên người thực hiện
         requestData.setOpter_name("value12");
-    //接口交易时间
+    //Thời gian giao dịch giao diện
         requestData.setInf_time("value13");
-    //设置定点医疗机构代码与名称
+    //Đặt mã và tên cơ sở y tế được chỉ định
 //        requestData.setFixmedins_code(FixmedinsCode);
 //        requestData.setFixmedins_name(FixmedinsName);
-    //签到接口
-    //从redis中获取签到流水号
+    //Giao diện check-in
+    //Từ redis trong LấykýĐếnsố thứ tự
        // requestData.setSign_no(stringRedisTemplate.opsForValue().get("sign_no"));
 //     Map<String, Object> data = BeanUtil.beanToMap(requestData);
 //        InputData inputData = new InputData();
@@ -288,17 +288,17 @@ RequestData requestData = new RequestData();
 //
 //        requestData.setInputData(inputData);
 
-        // 解析现有的 JSON 字符串为 JSONObject
+        // phân tíchhiệncó của  JSON chuỗi là  JSONObject
         JSONObject jsonObject =  (JSONObject) JSON.toJSON(requestData);
 
-        // 解析额外的 JSON 字符串
+        // phân tíchsố tiềnngoài của  JSON Chuỗi ký tự
         JSONObject additionalData = new JSONObject();
         additionalData.put("data",JSON.toJSON(requestData));
 
-        // 将 additionalData 添加到 jsonObject 中作为 "input" 节点
+        // Sẽ  additionalData ThêmĐến jsonObject  trong làm là  "input" Nút
         jsonObject.put("input", additionalData);
 
-        // 转换为最终的 JSON 字符串
+        // Chuyển đổi thànhnhất终 của  JSON Chuỗi ký tự
         String finalJsonString = jsonObject.toJSONString();
 
         System.err.println(finalJsonString);
@@ -312,17 +312,17 @@ RequestData requestData = new RequestData();
         jsonObject1.put("data", jsonArray);
         System.err.println(jsonObject1.toJSONString());
 
-        //单行就诊信息
+        //đơn dòngkhám bệnhThông tin
         JSONObject data1 = new JSONObject();
-        //诊断多行数据
+        //Chẩn đoánnhiều dòngDữ liệu
         JSONArray jsonArray1 = new JSONArray();
         
 
-        //主要病情描述 TODO
+        //Mô tả chính về tình trạng bệnh TODO
         data1.put("main_cond_dscr", "");
-        //病种编码    TODO
+        //Mã loại bệnh    TODO
         data1.put("dise_code", "");
-        //病种名称 TODO
+        //Tên loại bệnh TODO
         data1.put("dise_name", "");
         data1.put("birctrl_type", "");
         data1.put("bitctrl_matn_date", "");
@@ -330,11 +330,11 @@ RequestData requestData = new RequestData();
         data1.put("geso_val", "");
         data1.put("expContent", "");
 
-        //诊断参数
+        //Chẩn đoánTham số
         JSONObject array = new JSONObject();
-        //诊断类别 1西医诊断 2中医主病诊断 3中医主证诊断 4手术操作 5.安病种付费病种 TODO 只允许一个诊断
+        //Loại chẩn đoán 1Chẩn đoán tây y 2 trong ychínhbệnhChẩn đoán 3 trong ychínhchứngChẩn đoán 4Phẫu thuậtthao tác 5.Loại bệnh thanh toán theo loại bệnh TODO chỉcho phépmộtCáiChẩn đoán
 
-        //TODO 默认有效 1, 0无效
+        //TODO Mặc địnhHiệu lực 1, 0không hợp lệ
         array.put("vali_flag", "1");
         jsonArray1.add(array);
         JSONObject jsonObject2 = new JSONObject();
@@ -343,20 +343,20 @@ RequestData requestData = new RequestData();
 
         JSONArray array2 = new  JSONArray();
         JSONObject invinfo = new JSONObject();
-        invinfo.put("med_list_codg", ""); // 医疗目录编码
-        invinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        invinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        invinfo.put("rx_flag", ""); // 处方药标志
-        invinfo.put("invdate", ""); // 盘存日期
-        invinfo.put("inv_cnt", ""); // 库存数量
-        invinfo.put("manu_lotnum", ""); // 生产批号
-        invinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        invinfo.put("manu_date", ""); // 生产日期
-        invinfo.put("expy_end", ""); // 有效期止
-        invinfo.put("memo", ""); // 备注
-        invinfo.put("drugtracinfo", ""); // 溯源码节点信息
+        invinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        invinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        invinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        invinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        invinfo.put("invdate", ""); // Ngày kiểm kê
+        invinfo.put("inv_cnt", ""); // Số lượng tồn kho
+        invinfo.put("manu_lotnum", ""); // Số lô sản xuất
+        invinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        invinfo.put("manu_date", ""); // Ngày sản xuất
+        invinfo.put("expy_end", ""); // Hết hạn đến
+        invinfo.put("memo", ""); // Ghi chú
+        invinfo.put("drugtracinfo", ""); // Thông tin nút mã truy xuất
         JSONObject drugtracinfo = new JSONObject();
-        drugtracinfo.put("drug_trac_codg","");//药品追溯码
+        drugtracinfo.put("drug_trac_codg","");//Mã truy xuất thuốc
         array2.add(invinfo);
         JSONArray array1 = new JSONArray();
         array1.add(drugtracinfo);

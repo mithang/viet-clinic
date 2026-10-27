@@ -7,38 +7,38 @@ package com.geeke.utils.constants;
 public enum ErrorEnum {
 	
 	/*
-	 * 警告类信息
+	 * cảnh báoLớpThông tin
 	 */
-	E_50001("50001", "保存数据重复"),
+	E_50001("50001", "LưuDữ liệutrùng lặp"),
 
     //by glh 20230722
-    E_50002("60001", "违反业务规则"),
+    E_50002("60001", "违反nghiệp vụquy tắc"),
 	
     /*
-     * 错误信息
+     * Thông tin lỗi
      * */
-    E_400("400", "请求处理异常，请稍后再试"),
-    E_500("500", "请求方式有误,请检查 GET/POST"),
-    E_501("501", "请求路径不存在"),
-    E_502("502", "权限不足"),
-    E_10008("10008", "角色删除失败,尚有用户属于此角色"),
-    E_10009("10009", "账户已存在"),
-    E_10010("10010", "登录账号或密码错误"),
-    E_10011("10011", "账号已经禁用"),
-    E_10012("10012", "账户验证失败"),
+    E_400("400", "Vui lòngyêu cầuXử lýngoại lệ, Vui lòng稍saulại试"),
+    E_500("500", "Vui lòngyêu cầucáchcósai,Vui lòng kiểm tra GET/POST"),
+    E_501("501", "Vui lòngyêu cầuđường dẫnKhông tồn tại"),
+    E_502("502", "Quyềnkhông đủ"),
+    E_10008("10008", "Vai tròXóaThất bại,尚cóNgười dùngthuộctạinàyVai trò"),
+    E_10009("10009", "tài khoảnĐã tồn tại"),
+    E_10010("10010", "Đăng nhậpTài khoản hoặc Mật khẩuLỗi"),
+    E_10011("10011", "Tài khoảnĐãVô hiệu hóa"),
+    E_10012("10012", "tài khoảnXác thựcThất bại"),
     
-    E_20011("20011", "登陆已过期或未登录,请重新登陆"),
+    E_20011("20011", "đăng nhậpĐãhết hạn hoặc ChưaĐăng nhập,Vui lòngLạiđăng nhập"),
     
-    E_30001("30001", "流程引擎异常"),
-    E_30002("30002", "流程引擎警告"),
+    E_30001("30001", "luồngquy trìnhenginengoại lệ"),
+    E_30002("30002", "Cảnh báo của engine quy trình"),
 
-    E_60001("60001", "包含非法字符，请求错误"),
+    E_60001("60001", "Chứa ký tự không hợp lệ, Vui lòngyêu cầuLỗi"),
 
-    // Dataease 接口错误
-    E_80001("80001", "Dataease 接口错误"),
-    E_80002("80002", "Dataease 数据加密失败"),
+    // Dataease giao diệnLỗi
+    E_80001("80001", "Dataease giao diệnLỗi"),
+    E_80002("80002", "Dataease Dữ liệuMã hóaThất bại"),
 
-    E_90003("90003", "缺少必填参数");
+    E_90003("90003", "thiếubắt buộcTham số");
 	
     private String errorCode;
 

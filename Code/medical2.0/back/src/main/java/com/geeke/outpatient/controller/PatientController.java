@@ -16,7 +16,7 @@ import com.geeke.common.controller.CrudController;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 患者信息Controller
+ * Thông tin bệnh nhânController
  * @author txl
  * @version 2022-06-23
  */
@@ -35,7 +35,7 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return patientService;
     }
 
-    //微信保存
+    //WeChatLưu
     @PostMapping(value = "wxSave")
     public ResponseEntity<JSONObject> wxSave(@RequestBody Patient entity) {
         String id = patientService.wxSave(entity).getId();
@@ -54,15 +54,15 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return ResponseEntity.ok(ResultUtil.successJson(patients));
     }
 
-    /* 根据患者姓名身份证查询患者信息并挂号 */
+    /* Tra cứu thông tin bệnh nhân theo họ tên và CMND/CCCD rồi đăng ký khám */
     @PostMapping(value = "inquire")
     public ResponseEntity<JSONObject> inquire(@RequestBody Patient patient) {
-        // 查询患者信息
+        // Truy vấnThông tin bệnh nhân
         Patient result = patientService.inquire(patient);
         if (result==null){
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50001, "查询失败，无该患者信息"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50001, "Truy vấnThất bại, khôngđóThông tin bệnh nhân"));
         }
-        // 挂号
+        // Đăng ký khám
         Registration registration = new Registration();
         registration.setPatientId(result);
         registration.setCompany(result.getCompany());
@@ -70,12 +70,12 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
-    /* 添加患者档案信息并挂号 */
+    /* ThêmBệnh nhân档案Thông tinvàĐăng ký khám */
     @PostMapping(value = "add")
     public ResponseEntity<JSONObject> add(@RequestBody Patient patient) {
-        // 添加患者信息
+        // ThêmThông tin bệnh nhân
         Patient result = patientService.save(patient);
-        // 挂号
+        // Đăng ký khám
         Registration registration = new Registration();
         registration.setPatientId(result);
         registration.setCompany(result.getCompany());

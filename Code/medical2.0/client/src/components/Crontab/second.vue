@@ -2,30 +2,30 @@
 	<el-form size="small">
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="1">
-				秒，允许的通配符[, - * /]
+				giây，Ký tự đại diện được phép[, - * /]
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="2">
-				周期从
+				Chu kỳ từ
 				<el-input-number v-model='cycle01' :min="0" :max="60" /> -
-				<el-input-number v-model='cycle02' :min="0" :max="60" /> 秒
+				<el-input-number v-model='cycle02' :min="0" :max="60" /> giây
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio  v-model='radioValue' :label="3">
-				从
-				<el-input-number  v-model='average01' :min="0" :max="60" /> 秒开始，每
+				Từ
+				<el-input-number  v-model='average01' :min="0" :max="60" /> 秒开始，mỗi
 				<el-input-number v-model='average02' :min="0" :max="60" /> 秒执行一次
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="4">
-				指定
-				<el-select clearable v-model="checkboxList" placeholder="可多选" multiple style="width:100%">
+				Chỉ định
+				<el-select clearable v-model="checkboxList" placeholder="Có thể chọn nhiều" multiple style="width:100%">
 					<el-option v-for="item in 60" :key="item" :value="item-1">{{item-1}}</el-option>
 				</el-select>
 			</el-radio>
@@ -49,7 +49,7 @@ export default {
 	name: 'crontab-second',
 	props: ['check', 'radioParent'],
 	methods: {
-		// 单选按钮值变化时
+		// Khi giá trị nút radio thay đổi
 		radioChange() {
 			switch (this.radioValue) {
 				case 1:
@@ -67,28 +67,28 @@ export default {
 					break;
 			}
 		},
-		// 周期两个值变化时
+		// Khi hai giá trị chu kỳ thay đổi
 		cycleChange() {
 			if (this.radioValue === '2') {
 				this.$emit('update', 'second', this.cycleTotal);
 			}
 		},
-		// 平均两个值变化时
+		// Khi hai giá trị trung bình thay đổi
 		averageChange() {
 			if (this.radioValue === '3') {
 				this.$emit('update', 'second', this.averageTotal);
 			}
 		},
-		// checkbox值变化时
+		// checkboxKhi giá trị thay đổi
 		checkboxChange() {
 			if (this.radioValue === '4') {
 				this.$emit('update', 'second', this.checkboxString);
 			}
 		},
 		othChange() {
-			// 反解析
+			// Phân tích ngược
 			let ins = this.cron.second
-			('反解析 second', ins);
+			('Phân tích ngược second', ins);
 			if (ins === '*') {
 				this.radioValue = 1;
 			} else if (ins.indexOf('-') > -1) {
@@ -111,19 +111,19 @@ export default {
 		}
 	},
 	computed: {
-		// 计算两个周期值
+		// Tính hai giá trị chu kỳ
 		cycleTotal: function () {
 			this.cycle01 = this.checkNum(this.cycle01, 0, 59)
 			this.cycle02 = this.checkNum(this.cycle02, 0, 59)
 			return this.cycle01 + '-' + this.cycle02;
 		},
-		// 计算平均用到的值
+		// Giá trị dùng để tính trung bình
 		averageTotal: function () {
 			this.average01 = this.checkNum(this.average01, 0, 59)
 			this.average02 = this.checkNum(this.average02, 1, 59)
 			return this.average01 + '/' + this.average02;
 		},
-		// 计算勾选的checkbox值合集
+		// Tính các giá trị đã chọncheckboxtập hợp giá trị
 		checkboxString: function () {
 			let str = this.checkboxList.join();
 			return str === '' ? '*' : str;

@@ -199,7 +199,7 @@
             #{entity.id}
         </foreach>
     </update>
-<!--查询行业大类，二级分类-->
+<!--Truy vấn ngành lớn, Phân loại cấp hai-->
     <select id="getTrade" resultType="com.geeke.sys.entity.DictItem">
         SELECT
         <include refid="dictItemColumns"/>
@@ -208,7 +208,7 @@
         WHERE a.value = #{substring}
     </select>
 
-    <!-- 根据字典name获取字典value -->
+    <!-- Theo từ điểnnameLấy từ điểnvalue -->
     <select id="getValue" resultType="com.geeke.sys.entity.DictItem">
         SELECT a.value
         FROM sys_dict_item a
@@ -216,7 +216,7 @@
         and a.dict_type_id = #{id}
     </select>
 
-    <!-- 根据字典类型code获取所有字典项 -->
+    <!-- Theo loại từ điểncodeLấy tất cả mục từ điển -->
     <select id="listByDictTypeCode" resultType="com.geeke.sys.entity.DictItem">
         SELECT
             <include refid="dictItemColumns"/>

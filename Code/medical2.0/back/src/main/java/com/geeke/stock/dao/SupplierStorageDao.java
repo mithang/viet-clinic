@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 入库单DAO接口
+ * Phiếu nhập khoDAOGiao diện
  * @author txl
  * @version 2022-06-02
  */

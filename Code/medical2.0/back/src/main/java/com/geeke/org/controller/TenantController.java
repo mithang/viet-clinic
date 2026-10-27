@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 公司管理Controller
+ * Quản lý công tyController
  * @author lys
  * @version 2022-05-25
  */

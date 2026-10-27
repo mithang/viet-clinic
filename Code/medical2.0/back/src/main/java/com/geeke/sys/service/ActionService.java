@@ -20,7 +20,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Lists;
 
 /**
- * 操作日志Service
+ * Nhật ký thao tácService
  * @author lys
  * @version 2020-06-29
  */
@@ -39,7 +39,7 @@ public class ActionService extends CrudService<ActionDao, Action> {
 	public Action get(String id) {
 		Action action = super.get(id);
 
-    	/*获取子表列表   回收站*/
+    	/*Lấy danh sách bảng con   Thùng rác*/
 		List<Parameter> params = SearchParamsBuilder.create()
 				.eq("action_id", action.getId())
 				.build();
@@ -55,7 +55,7 @@ public class ActionService extends CrudService<ActionDao, Action> {
 		String id = super.save(action).getId();
 		if (StringUtils.isNoneBlank(id)) {
 
-            /* 处理子表     回收站 */
+            /* Xử lý bảng con     Thùng rác */
             List<Parameter> params = SearchParamsBuilder.create()
                     .eq("action_id", action.getId())
                     .build();
@@ -92,13 +92,13 @@ public class ActionService extends CrudService<ActionDao, Action> {
 
 
     /**
-     * 删除
+     * Xóa
      * @param entity
      */
     @Override
     @Transactional(readOnly = false)
     public int delete(Action action) {
-        /* 处理子表     回收站 */
+        /* Xử lý bảng con     Thùng rác */
         List<Parameter> params = SearchParamsBuilder.create()
                 .eq("action_id", action.getId())
                 .build();
@@ -116,9 +116,9 @@ public class ActionService extends CrudService<ActionDao, Action> {
 
 
     /**
-     * 生成操作日志
-     * @param actionTypeId  操作类型Id
-     * @param entity        操作的实体对象
+     * Tạo nhật ký thao tác
+     * @param actionTypeId  Loại thao tácId
+     * @param entity        Đối tượng thực thể được thao tác
      * @return
      */
     @Override
@@ -127,7 +127,7 @@ public class ActionService extends CrudService<ActionDao, Action> {
         if(action == null) {
             return null;
         }
-        // 删除时记录把保存的数据保存到回收站
+        // Khi xóa, ghi lại và lưu dữ liệu đã lưu vào thùng rác
         if(ActionConstants.ACTION_DELETED.equals(actionTypeId)) {
             for(ActionRecycle child: entity.getActionRecycleList()) {
                 ActionRecycle recycle = new ActionRecycle();

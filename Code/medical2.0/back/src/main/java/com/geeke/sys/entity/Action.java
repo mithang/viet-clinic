@@ -11,20 +11,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 操作日志Entity
+ * Nhật ký thao tácEntity
  * @author lys
  * @version 2019-12-11
  */
 public class Action extends DataEntity<Action> {
 
 	private static final long serialVersionUID = 1L;
-	private DictItem actionType;      // 操作 
-	private GenTable objectType;      // 对象类型 
-	private String objectId;		// 业务对象
-	private String objectName;		// 对象名称
-	private String status;		// 还原
+	private DictItem actionType;      // Thao tác 
+	private GenTable objectType;      // Đối tượngLoại 
+	private String objectId;		// Đối tượng nghiệp vụ
+	private String objectName;		// Tên đối tượnggọi là
+	private String status;		// khôi phục
 
-	private List<ActionRecycle> actionRecycleList = Lists.newArrayList();		// 子表列表
+	private List<ActionRecycle> actionRecycleList = Lists.newArrayList();		// Danh sách bảng con
 	
 	public Action() {
 		super();
@@ -51,7 +51,7 @@ public class Action extends DataEntity<Action> {
         this.objectType = objectType;
     }
     
-	@Length(min=0, max=40, message="业务对象长度必须介于 0 和 40 之间")
+	@Length(min=0, max=40, message="Đối tượng nghiệp vụĐộ dài phải nằm trong khoảng 0 đến 40 ")
 	public String getObjectId() {
 		return objectId;
 	}
@@ -60,7 +60,7 @@ public class Action extends DataEntity<Action> {
 	}
 	
 	
-	@Length(min=0, max=512, message="对象名称长度必须介于 0 和 512 之间")
+	@Length(min=0, max=512, message="Tên đối tượnggọi làĐộ dài phải nằm trong khoảng 0 đến 512 ")
 	public String getObjectName() {
 		return objectName;
 	}
@@ -69,7 +69,7 @@ public class Action extends DataEntity<Action> {
 	}
 	
 	
-	@Length(min=1, max=1, message="还原长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message="khôi phụcĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getStatus() {
 		return status;
 	}
@@ -89,7 +89,7 @@ public class Action extends DataEntity<Action> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -98,7 +98,7 @@ public class Action extends DataEntity<Action> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -108,7 +108,7 @@ public class Action extends DataEntity<Action> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

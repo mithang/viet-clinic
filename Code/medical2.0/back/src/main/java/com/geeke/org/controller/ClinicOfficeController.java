@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 科室信息Controller
+ * Thông tin khoaController
  * @author ch
  * @version 2022-06-14
  */
@@ -47,13 +47,13 @@ public class ClinicOfficeController extends CrudController<ClinicOfficeService, 
         if("1".equals(entity.getIsDefault())){
             clinicOfficeService.updateDefault(entity.getCompany().getId());
         }
-        //同步至开启医保接口
+        //đồng bộđếnmởBHYTgiao diện
         if (properties.getCheck().equals("true")) {
-            //添加
+            //Thêm
             if (StringUtils.isBlank(entity.getId())) {
               mdcompanyService.upCompanyData_3401_3402(entity,"3401");
             } else {
-                //修改
+                //Sửa
                 mdcompanyService.upCompanyData_3401_3402(entity,"3402");
             }
         }

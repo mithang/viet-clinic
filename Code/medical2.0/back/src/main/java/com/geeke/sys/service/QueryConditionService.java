@@ -10,7 +10,7 @@ import com.geeke.sys.entity.QueryCondition;
 import com.google.common.collect.Maps;
 
 /**
- * 查询条件Service
+ * Điều kiện truy vấnService
  * @author lys
  * @version 2021-07-05
  */

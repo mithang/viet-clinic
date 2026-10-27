@@ -3,7 +3,7 @@ package com.geeke.common.persistence;
 import java.util.List;
 
 /**
- * DAO支持类实现
+ * DAOLớp hỗ trợ triển khai
  * @author lys
  * @version 2014-05-16
  * @param <T>

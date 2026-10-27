@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="selectedValue" filterable placeholder="请选择" clearable>
+  <el-select v-model="selectedValue" filterable placeholder="Vui lòng chọn" clearable>
     <el-option v-for="t in selectedList" :label="t.name" :value="t.value" :key="t.value">
     </el-option>
   </el-select>
@@ -67,8 +67,8 @@
           params: [],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         };
 
         listDictItemAll(search).then(res => {

@@ -7,35 +7,35 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 /**
- * 业务表管理Entity
+ * Quản lý bảng nghiệp vụEntity
  * @author lys
  * @version 2021-08-26
  */
 public class GenTableColumn extends DataEntity<GenTableColumn> {
 
 	private static final long serialVersionUID = 1L;
-	private GenTable genTable;      // 表编号 
-	private String comments;		// 说明
-	private String jdbcType;		// 物理类型
-	private DictItem javaType;      // JAVA类型 
-	private GenScheme customType;      // 自定义类型 
-	private String javaField;		// 属性名
-	private String defVal;		// 默认值
-	private String isPk;		// 主键
-	private String isNull;		// 可空
-	private String isInsert;		// 可插
-	private String isEdit;		// 可编
-	private String isList;		// 列显
-	private Integer width;		// 列宽
-	private String isQuery;		// 查询
-	private DictItem queryType;      // 查询方式 
-	private String queryVal;		// 查询条件
-	private DictItem showType;      // 控件 
-	private String interaction;		// 联动变量
-	private String interactionVal;		// 联动值
-	private String parameters;		// 联动参数
-	private String settings;		// 其它设置（扩展字段JSON）
-	private Integer sort;		// 排序
+	private GenTable genTable;      // bảngmã số 
+	private String comments;		// Giải thích
+	private String jdbcType;		// vật lýLoại
+	private DictItem javaType;      // JAVALoại 
+	private GenScheme customType;      // tùy chỉnhLoại 
+	private String javaField;		// thuộc tínhtên
+	private String defVal;		// Mặc địnhGiá trị
+	private String isPk;		// chínhkhóa
+	private String isNull;		// có thểtrống
+	private String isInsert;		// có thểchèn
+	private String isEdit;		// có thểbiên
+	private String isList;		// Cộthiển thị
+	private Integer width;		// Độ rộng cột
+	private String isQuery;		// Truy vấn
+	private DictItem queryType;      // Truy vấncách 
+	private String queryVal;		// Điều kiện truy vấn
+	private DictItem showType;      // điều khiển 
+	private String interaction;		// liên độngthay đổilượng
+	private String interactionVal;		// liên độngGiá trị
+	private String parameters;		// liên độngTham số
+	private String settings;		// của nónóĐặt(mở rộngTrườngJSON)
+	private Integer sort;		// Sắp xếp
 
 	
 	public GenTableColumn() {
@@ -51,7 +51,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 		this.genTable = genTable;
 	}
 
-	@NotNull(message="表编号不能为空")
+	@NotNull(message="bảngmã sốKhông thể là trống")
     public GenTable getGenTable() {
         return genTable;
     }
@@ -60,7 +60,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.genTable = genTable;
     }
     
-	@Length(min=0, max=500, message="说明长度必须介于 0 和 500 之间")
+	@Length(min=0, max=500, message="Giải thíchĐộ dài phải nằm trong khoảng 0 đến 500 ")
 	public String getComments() {
 		return comments;
 	}
@@ -69,7 +69,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=1, max=100, message="物理类型长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="vật lýLoạiĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getJdbcType() {
 		return jdbcType;
 	}
@@ -78,7 +78,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@NotNull(message="JAVA类型不能为空")
+	@NotNull(message="JAVALoạiKhông thể là trống")
     public DictItem getJavaType() {
         return javaType;
     }
@@ -95,7 +95,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.customType = customType;
     }
     
-	@Length(min=1, max=200, message="属性名长度必须介于 1 和 200 之间")
+	@Length(min=1, max=200, message="thuộc tínhtênĐộ dài phải nằm trong khoảng 1 đến 200 ")
 	public String getJavaField() {
 		return javaField;
 	}
@@ -104,7 +104,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="默认值长度必须介于 0 和 2000 之间")
+	@Length(min=0, max=2000, message="Mặc địnhGiá trịĐộ dài phải nằm trong khoảng 0 đến 2000 ")
 	public String getDefVal() {
 		return defVal;
 	}
@@ -113,7 +113,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="主键长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="chínhkhóaĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsPk() {
 		return isPk;
 	}
@@ -122,7 +122,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="可空长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="có thểtrốngĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsNull() {
 		return isNull;
 	}
@@ -131,7 +131,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="可插长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="có thểchènĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsInsert() {
 		return isInsert;
 	}
@@ -140,7 +140,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="可编长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="có thểbiênĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsEdit() {
 		return isEdit;
 	}
@@ -149,7 +149,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="列显长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="Cộthiển thịĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsList() {
 		return isList;
 	}
@@ -158,7 +158,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@NotNull(message="列宽不能为空")
+	@NotNull(message="CộtrộngKhông thể là trống")
 	public Integer getWidth() {
 		return width;
 	}
@@ -167,7 +167,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="查询长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="Truy vấnĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsQuery() {
 		return isQuery;
 	}
@@ -184,7 +184,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.queryType = queryType;
     }
     
-	@Length(min=0, max=2000, message="查询条件长度必须介于 0 和 2000 之间")
+	@Length(min=0, max=2000, message="Điều kiện truy vấnĐộ dài phải nằm trong khoảng 0 đến 2000 ")
 	public String getQueryVal() {
 		return queryVal;
 	}
@@ -201,7 +201,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.showType = showType;
     }
     
-	@Length(min=0, max=255, message="联动变量长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="liên độngthay đổilượngĐộ dài phải nằm trong khoảng 0 đến 255 ")
 	public String getInteraction() {
 		return interaction;
 	}
@@ -210,7 +210,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2048, message="联动值长度必须介于 0 和 2048 之间")
+	@Length(min=0, max=2048, message="liên độngGiá trịĐộ dài phải nằm trong khoảng 0 đến 2048 ")
 	public String getInteractionVal() {
 		return interactionVal;
 	}
@@ -219,7 +219,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="联动参数长度必须介于 0 和 2000 之间")
+	@Length(min=0, max=2000, message="liên độngTham sốĐộ dài phải nằm trong khoảng 0 đến 2000 ")
 	public String getParameters() {
 		return parameters;
 	}
@@ -228,7 +228,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="其它设置（扩展字段JSON）长度必须介于 0 和 2000 之间")
+	@Length(min=0, max=2000, message="của nónóĐặt(mở rộngTrườngJSON)Độ dài phải từ 0  và  2000 Giữa")
 	public String getSettings() {
 		return settings;
 	}
@@ -249,7 +249,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -258,7 +258,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -268,7 +268,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 远程诊疗管理Service
+ * khám chữa bệnh từ xaQuản lýService
  * @author zh
  * @version 2023-12-06
  */
@@ -29,18 +29,18 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
     @Autowired
     private RemoteDiagnosisTreatmentDao remoteDiagnosisTreatmentDao;
 
-    /** id查询 */
+    /** idTruy vấn */
     public RemoteDiagnosisTreatment diagnosisById(String id) {
         return remoteDiagnosisTreatmentDao.diagnosisById(id);
     }
 
-    /** 挂号id查询 */
+    /** Đăng ký khámidTruy vấn */
     public RemoteDiagnosisTreatment getRegistrationId(String registrationId) {
         return remoteDiagnosisTreatmentDao.getRegistrationId(registrationId);
     }
 
     /**
-     * 查询分页数据
+     * Truy vấn phúttrangDữ liệu
      * @return
      */
     public Page<RemoteDiagnosisTreatment> diagnosisPage(List<Parameter> parameters, int offset, int limit, String orderby) {
@@ -53,7 +53,7 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
         return new Page<RemoteDiagnosisTreatment>(total, list);
     }
 
-    /** 修改保存 */
+    /** SửaLưu */
     @Transactional(readOnly = false)
     public RemoteDiagnosisTreatment diagnosisSave(RemoteDiagnosisTreatment entity) {
         if (StringUtils.isBlank(entity.getId())) {
@@ -66,14 +66,14 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
         return entity;
     }
 
-    /** 修改状态
+    /** Sửa trạng thái
      * @return*/
     @Transactional(readOnly = false)
     public int modifiedState(RemoteDiagnosisTreatment entity) {
         return remoteDiagnosisTreatmentDao.modifiedState(entity);
     }
 
-    /** 远程诊疗收费
+    /** khám chữa bệnh từ xaThu phí
      * @return*/
     @Transactional(readOnly = false)
     public int chargeState(TollEvt tollEvt) {
@@ -93,7 +93,7 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
         return 1;
     }
 
-    /** 删除记录 */
+    /** XóaBản ghi */
     @Transactional(readOnly = false)
     public int diagnosisDelete(String id) {
         return remoteDiagnosisTreatmentDao.diagnosisDelete(id);

@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="selectedType" filterable placeholder="请选择类型" clearable>
+  <el-select v-model="selectedType" filterable placeholder="Vui lòng chọn loại" clearable>
     <el-option v-for="t in typeList" :label="t.name" :value="t.id" :key="t.id">
     </el-option>
   </el-select>
@@ -16,7 +16,7 @@
 
     data() {
       return {
-        typeList: [{name:'药品',id:'1'},{name:'材料',id:'2'}],
+        typeList: [{name:'Thuốc',id:'1'},{name:'Vật tư',id:'2'}],
         selectedType: null
       };
     },

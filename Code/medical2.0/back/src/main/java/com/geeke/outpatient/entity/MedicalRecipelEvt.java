@@ -3,7 +3,7 @@ package com.geeke.outpatient.entity;
 import java.util.List;
 
 /**
- * 病历Evt
+ * bệnh ánEvt
  * @author txl
  * @version 2022-06-08
  */
@@ -14,7 +14,7 @@ public class MedicalRecipelEvt {
 	private MedicalRecord medicalRecord;
 	private Patient patient;
 	private List<RecipelInfoEvt> recipelInfoEvtList;
-	private int isInstant;//0-非快速接诊 1-是快速接诊
+	private int isInstant;//0-không phảiTiếp nhận nhanh 1- có Tiếp nhận nhanh
 
 	public MedicalRecord getMedicalRecord() {
 		return medicalRecord;

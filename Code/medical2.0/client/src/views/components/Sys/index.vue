@@ -3,42 +3,42 @@
     <div>
       <h3 class="drawer-title">系统设置</h3>
       <div class="drawer-item">
-        <span>系统名称</span>
-        <el-input v-if="sysData" v-model="sysData.sysName" style="width: 170px" placeholder="系统名称"></el-input>
+        <span>Tên hệ thống</span>
+        <el-input v-if="sysData" v-model="sysData.sysName" style="width: 170px" placeholder="Tên hệ thống"></el-input>
         <el-popover
           class="img-tip-text"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg8"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
       </div>
       <div class="drawer-item">
-        <span>系统简称</span>
-        <el-input  v-if="sysData" v-model="sysData.sysAbbrname" style="width: 170px" placeholder="系统简称"></el-input>
+        <span>Tên viết tắt hệ thống</span>
+        <el-input  v-if="sysData" v-model="sysData.sysAbbrname" style="width: 170px" placeholder="Tên viết tắt hệ thống"></el-input>
         <el-popover
           class="img-tip-text"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg7"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
       </div>
       <div class="drawer-item img-item" :class="fileList1.length > 0? 'hasImage' : ''" style="padding-top: 12px">
-        <i class="tip">建议：174*32，等比，png，用于登录页</i>
-        <span>项目logo（<512K）</span>
+        <i class="tip">Khuyến nghị：174*32，cấp số nhân，png，用于登录页</i>
+        <span>Hạng mụclogo（<512K）</span>
         <el-popover
           class="img-tip"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg1"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
         <image-upload
           ref="imageUpload"
@@ -48,16 +48,16 @@
         </image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList2.length > 0? 'hasImage' : ''">
-        <i class="tip">建议：152*28，等比，png，用于登录框</i>
-        <span>登录框logo（<512K）</span>
+        <i class="tip">Khuyến nghị：152*28，cấp số nhân，png，Dùng cho hộp đăng nhập</i>
+        <span>Hộp đăng nhậplogo（<512K）</span>
         <el-popover
           class="img-tip"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg2"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
         <image-upload
           ref="imageUpload"
@@ -66,16 +66,16 @@
           :file-list="fileList2"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList3.length > 0? 'hasImage' : ''">
-        <i class="tip">建议：170*30，等比，png，用于系统主页</i>
-        <span>系统主页logo（<512K）</span>
+        <i class="tip">Khuyến nghị：170*30，cấp số nhân，png，用于系统主页</i>
+        <span>Trang chủ hệ thốnglogo（<512K）</span>
         <el-popover
           class="img-tip"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg3"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
         <image-upload
           ref="imageUpload"
@@ -84,16 +84,16 @@
           :file-list="fileList3"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList4.length > 0? 'hasImage' : ''">
-        <i class="tip">建议：16*16，等比，ico，用于网页顶部</i>
+        <i class="tip">Khuyến nghị：16*16，cấp số nhân，ico，用于网页顶部</i>
         <span>网站图标ICO</span>
         <el-popover
           class="img-tip"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg4"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
         <image-upload
           ref="imageUpload"
@@ -117,7 +117,7 @@
         </el-row>
       </div>
       <div class="drawer-item">
-        <span>背景色</span>
+        <span>Màu nền</span>
         <el-color-picker
           v-if="sysData"
           v-model="sysData.loginBgcolor"
@@ -132,11 +132,11 @@
         <el-popover
           class="img-tip"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg5"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
         <image-upload
           ref="imageUpload"
@@ -145,16 +145,16 @@
           :file-list="fileList5"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList6.length > 0? 'hasImage' : ''">
-        <i class="tip">建议：690*500，等比，jpg/png，用于登录框</i>
+        <i class="tip">Khuyến nghị：690*500，cấp số nhân，jpg/png，Dùng cho hộp đăng nhập</i>
         <span>登录框配图（<512K）</span>
         <el-popover
           class="img-tip"
           placement="left"
-          title="显示位置"
+          title="Vị trí hiển thị"
           width="450"
           trigger="hover">
           <el-image fit="fill" :src="tipImg6"></el-image>
-          <el-button type="text" slot="reference">图例说明</el-button>
+          <el-button type="text" slot="reference">Chú giải biểu đồ</el-button>
         </el-popover>
         <image-upload
           ref="imageUpload"
@@ -163,7 +163,7 @@
           :file-list="fileList6"></image-upload>
       </div>
       <div class="drawer-footer" style="text-align: center; padding: 10px 0">
-        <el-button size="mini" type="primary" plain icon="el-icon-document-checked" @click="handleSysSave">保存设置</el-button>
+        <el-button size="mini" type="primary" plain icon="el-icon-document-checked" @click="handleSysSave">Lưu cài đặt</el-button>
       </div>
     </div>
   </div>
@@ -183,7 +183,7 @@
     data() {
       return {
         baseApi: process.env.BASE_API,
-        isFirstOpen: true,  // 首次文件标识
+        isFirstOpen: true,  // Mã tệp lần đầu
         drawerLoading: false,
         predefine: ['#018cb7', '#409EFF', '#1890ff', '#2f4050', '#212121', '#11a983', '#13c2c2', '#6959CD'],
         fileList1: [],
@@ -201,31 +201,31 @@
         loginGraphIndex: -1,
         sysData: {
           id:"",
-          sysName: '',      // 系统名称
-          sysAbbrname: '',  // 系统简称
-          loginBgcolor: "", // 登录页背景色
+          sysName: '',      // Tên hệ thống
+          sysAbbrname: '',  // Tên viết tắt hệ thống
+          loginBgcolor: "", // Màu nền trang đăng nhập
           loginLayout: 'left-graph',
-          loginLogo: {      // 登录框logo
+          loginLogo: {      // Hộp đăng nhậplogo
             id: null,
             name: ""
           },
-          projectLogo: {    // 项目logo
+          projectLogo: {    // Hạng mụclogo
             id: null,
             name: ""
           },
-          sysLogo: {        // 系统主页logo
+          sysLogo: {        // Trang chủ hệ thốnglogo
             id: null,
             name: ""
           },
-          favicon: {        // 网页顶部 favicon 图标
+          favicon: {        // Đầu trang web favicon Biểu tượng
             id: null,
             name: ""
           },
-          loginBg: {        // 登录页背景图
+          loginBg: {        // Ảnh nền trang đăng nhập
             id: null,
             name: ""
           },
-          loginGraph: {     // 登录页配图
+          loginGraph: {     // Ảnh minh họa trang đăng nhập
             id: null,
             name: ""
           },
@@ -341,13 +341,13 @@
           if (response.code === 100) {
             this.$message({
               type: 'success',
-              message: '保存成功'
+              message: 'Lưu thành công'
             })
             this.drawerLoading = false
           } else {
             this.$message({
               type: 'error',
-              message: '出错'
+              message: 'Xảy ra lỗi'
             })
             this.drawerLoading = false
           }

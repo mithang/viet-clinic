@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 系统表控件Controller
+ * Điều khiển bảng hệ thốngController
  * @author lys
  * @version 2019-09-13
  */

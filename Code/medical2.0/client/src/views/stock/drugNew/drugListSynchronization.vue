@@ -18,7 +18,7 @@
             {{ dialogProps.title }}
           </span>
           <div style="margin-right: 20px;">
-            <span style="font-size: 14px;font-weight: 300;">来源：</span>
+            <span style="font-size: 14px;font-weight: 300;">Nguồn：</span>
             <el-select
             v-model="drugSource"
             placeholder="请选择药品来源"
@@ -26,12 +26,12 @@
             >
               <el-option
                 :key="1"
-                label="租户"
+                label="Đơn vị thuê"
                 :value="1">
               </el-option>
               <el-option
                 :key="2"
-                label="院版HIS"
+                label="Bản phòng khámHIS"
                 :value="2">
               </el-option>
             </el-select>
@@ -52,11 +52,11 @@
       >
         <el-row  class="search-row">
           <el-col :span="8">
-            <el-form-item label="药品名称" prop="goodsName">
+            <el-form-item label="Tên thuốc" prop="goodsName">
               <el-input
                 v-model="queryModel.goodsName"
                 :clearable="true"
-                placeholder="请输入药品名称"
+                placeholder="Vui lòng nhập tên thuốc"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -66,14 +66,14 @@
                 icon="el-icon-search"
                 @click="onSearch()"
                 :plain="true"
-              >搜索
+              >Tìm kiếm
               </el-button>
               <el-button
                 type="info"
                 icon="el-icon-refresh-left"
                 @click="reset"
                 :plain="true"
-              >重置
+              >Đặt lại
               </el-button>
             </el-col>
         </el-row>
@@ -111,7 +111,7 @@
                 :selectable="selectable">
               </el-table-column>
               <el-table-column
-                label="序号"
+                label="Số thứ tự"
                 type="index"
                 :index="indexMethod"
                 align="center">
@@ -155,7 +155,7 @@
               <el-table-column
                 prop="stockNumber"
                 sortable="custom"
-                label="可用库存"
+                label="Tồn kho khả dụng"
                 width="80px"
               >
                 <template slot-scope="scope">
@@ -173,7 +173,7 @@
               <el-table-column
                 prop="stockNumber"
                 sortable="custom"
-                label="规格"
+                label="Quy cách"
                 width="80px"
               >
                 <template slot-scope="scope">
@@ -203,7 +203,7 @@
                 :selectable="selectable">
               </el-table-column>
               <el-table-column
-                label="序号"
+                label="Số thứ tự"
                 type="index"
                 :index="indexMethod"
                 align="center">
@@ -229,7 +229,7 @@
                     <span>{{ row.preparation }} {{ row.preparationUnit }}</span>
                   </template>
                   <template  v-else-if="cv.prop === 'price'">
-                    <span>{{ row.price }} 元</span>
+                    <span>{{ row.price }} VNĐ</span>
                   </template>
                   <template  v-else-if="cv.prop === 'type'">
                     <span>{{ getTypeName(row.type) }}</span>
@@ -249,7 +249,7 @@
               </el-table-column>
             </el-table>
           </template>
-            <!-- 分页栏     开始 -->
+            <!-- Thanh phân trang     Bắt đầu -->
             <el-row>
               <el-col :span="24">
                 <el-pagination
@@ -268,14 +268,14 @@
         </el-col>
       </el-row>
 
-        <!-- 分页栏     结束 -->
+        <!-- Thanh phân trang     Kết thúc -->
 
         </div>
       </el-form>
       <span slot='footer' class='dialog-footer'>
         <el-button type='primary' :plain='true'
-                   @click='onSubmit("drugForm")'>确 认</el-button>
-        <el-button :plain='true' @click='onDialogClose()'>取 消</el-button>
+                   @click='onSubmit("drugForm")'>Xác nhận</el-button>
+        <el-button :plain='true' @click='onDialogClose()'>Hủy</el-button>
       </span>
     </el-dialog>
   </div>
@@ -302,18 +302,18 @@
           action: '',
           title: '',
         },
-        drugSource: 1, // '药品来源'
+        drugSource: 1, // 'Nguồn gốc thuốc'
         drugList: [],  // 租户药品列表
         currentPage: 1,
         drugTotal: 0,
         queryModel: {
-          goodsName: "", // 药品名称
+          goodsName: "", // Tên thuốc
           type: {
-            // 药品类型
+            // Loại thuốc
             value: "",
             name: "",
           },
-          barCode: "", // 条形码
+          barCode: "", // Mã vạch
           status: "1",
         },
         search: {
@@ -326,8 +326,8 @@
           ],
           offset: 0,
           limit: 20,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         selectDrugList: [],
         tableId: "",
@@ -336,7 +336,7 @@
       };
     },
     props: {
-      // 权限
+      // Quyền
       permission: {
         type: Object,
       },
@@ -345,13 +345,13 @@
     getTypeName(type) {
       let name
       if (type === '01') {
-        name = '西药'
+        name = 'Thuốc tây'
       }
       if (type === '03') {
-        name = '中药'
+        name = 'Thuốc đông y'
       }
       if (type === '0002000066') {
-        name = '中成药'
+        name = 'Thuốc thành phẩm đông y'
       }
       return name
     },
@@ -382,7 +382,7 @@
           return true;
       }
     },
-    // 排序
+    // Sắp xếp
     onSortChange(orderby) {
       if (validatenull(orderby.prop)) {
         this.search.columnName = "";
@@ -477,9 +477,9 @@
     },
     getlistByHospitalDrug() {
       this.setLoad();
-      /* 查询参数 和数据权限 */
+      /* Tham số truy vấn và quyền dữ liệu */
       this.search.params = [];
-      // 查询参数: 药品名称
+      // Tham số truy vấn: Tên thuốc
       this.search.params.push({
         columnName: "keyword",
         queryType: "like",
@@ -502,7 +502,7 @@
     },
     getListByInstitution(val) {
       this.setLoad();
-      /* 查询参数 和数据权限 */
+      /* Tham số truy vấn và quyền dữ liệu */
       this.search.params = [
         {
           columnName: "company_id",
@@ -510,7 +510,7 @@
           value: currentUser.company.id,
         },
       ];
-      // 查询参数: 药品名称
+      // Tham số truy vấn: Tên thuốc
       this.search.params.push({
         columnName: "goods_name",
         queryType: "like",
@@ -617,7 +617,7 @@
     openMigratingDrugDialog() {
       this.drugSource = 1
       this.dialogProps.action = "add";
-      this.dialogProps.title = "同步药品信息";
+      this.dialogProps.title = "Đồng bộ thông tin thuốc";
       this.search.offset = 0;
       this.currentPage = 1;
       this.drugList = []
@@ -639,11 +639,11 @@
       }
     },
     tableData: {
-        // 解决表格显示错位问题
+        // Khắc phục lỗi hiển thị lệch bảng
         handler() {
           this.$nextTick(() => {
-            // mutipleTable是el-table绑定的ref属性值
-            this.$refs.mutipleTable.doLayout()// 对 Table 进行重新布局
+            // mutipleTableCóel-tableĐã liên kếtrefGiá trị thuộc tính
+            this.$refs.mutipleTable.doLayout()// Đối với Table Thực hiện bố cục lại
           })
         },
         deep: true
@@ -695,7 +695,7 @@
 </style>
 <style lang="scss" scoped>
   .drag_table {
-    // 设置表格header的高度
+    // Cài đặt bảngheaderChiều cao của
     ::v-deep th {
       height: 44px;
     }
@@ -704,11 +704,11 @@
       height: 0 !important;
     }
 
-    // 设置表格body的高度
+    // Cài đặt bảngbodyChiều cao của
     ::v-deep .el-table__body-wrapper {
-      //解决数据展示超出body高度不滚动bug
+      //Khắc phục hiển thị dữ liệu vượt quábodychiều cao không cuộn đượcbug
       overflow-y: auto;
-      // 减去的是表格header的高度
+      // Phần trừ đi là bảngheaderChiều cao của
       height: calc(100% - 44px) !important;
     }
 

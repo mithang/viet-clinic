@@ -4,39 +4,39 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.outpatient.entity.RecipelInfoReview;
 
 /**
- * @Description 电子处方
+ * @Description Đơn thuốc điện tử
  * @Author Hzx
  * @Date 2024/10/30 11:45
  */
 public interface MdMedicationOrderService {
 
-    // 【Ld7801】电子处方上传预核验
+    // [Ld7801]Tải lên đơn thuốc điện tửkiểm tra trước
     JSONObject validateElectronicPrescriptionUpload_Ld7801(RecipelInfoReview recipelInfoReview);
 
-    // 【Ld7802】电子处方医保电子签名
+    // [Ld7802]điện tửĐơn thuốcBHYTđiện tửchữ ký
     JSONObject signElectronicPrescriptionWithInsurance_Ld7802(RecipelInfoReview recipelInfoReview, String ysId);
 
-    // 【Ld7101】电子处方上传
+    // [Ld7101]Tải lên đơn thuốc điện tử
     JSONObject uploadElectronicPrescription_Ld7101(RecipelInfoReview recipelInfoReview,String ysId);
 
 
     JSONObject queryElectronicPrescriptionReviewResult_Ld7805(RecipelInfoReview recipelInfoReview);
 
-    // 【Ld7804】电子处方取药结果查询
+    // [Ld7804]điện tửĐơn thuốclấy thuốcKết quảTruy vấn
     JSONObject queryPrescriptionDispensingResult_Ld7804(RecipelInfoReview recipelInfoReview);
 
-    //电子处方撤销
+    //Hủy đơn thuốc điện tử
     JSONObject cancelElectronicPrescription_Ld7104(RecipelInfoReview recipelInfoReview,String undoRea);
 
-    // 【Ld7202】电子处方信息查询
+    // [Ld7202]điện tửĐơn thuốcThông tinTruy vấn
     JSONObject queryElectronicPrescriptionInfo_Ld7202();
 
 
-    // 【Ld7102】电子处方审核结果反馈
+    // [Ld7102]điện tửĐơn thuốcxét duyệtKết quảphản hồi
     JSONObject feedbackPrescriptionReviewResult_Ld7102();
 
 
-    // 【Ld7806】电子处方药品目录查询
+    // [Ld7806]Thuốc trong đơn thuốc điện tửdanh mụcTruy vấn
     Boolean queryPrescriptionDrugDirectory_Ld7806();
 
 

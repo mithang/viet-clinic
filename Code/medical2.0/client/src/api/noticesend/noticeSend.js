@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/noticesend/noticeSend')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getNoticeSendById = baseApi.getById
 export const listNoticeSendPage = baseApi.listPage
 export const listNoticeSendAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertNoticeSend = baseApi.bulkInsert
 export const bulkUpdateNoticeSend = baseApi.bulkUpdate
 export const bulkDeleteNoticeSend = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const getCompanyTree = (code) =>
     request({
         url: '/noticesend/noticeSend/tree/' + code,

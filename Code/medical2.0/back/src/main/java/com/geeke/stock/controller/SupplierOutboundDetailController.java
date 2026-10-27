@@ -13,7 +13,7 @@ import java.util.List;
 
 
 /**
- * 出库单Controller
+ * Phiếu xuất khoController
  *
  * @author txl
  * @version 2023-07-14/

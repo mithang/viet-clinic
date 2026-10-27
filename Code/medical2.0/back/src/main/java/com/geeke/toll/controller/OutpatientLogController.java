@@ -16,7 +16,7 @@ import java.util.List;
 
 
 /**
- * 门诊日志Controller
+ * Nhật ký khám ngoại trúController
  *
  * @author zh
  * @version 2022-08-18
@@ -29,7 +29,7 @@ public class OutpatientLogController extends BaseController {
     private OutpatientLogService outpatientLogService;
 
     /**
-     * id查询日志
+     * idTruy vấnNgàynhật ký
      */
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getLogs(@PathVariable("id") String id) {
@@ -38,7 +38,7 @@ public class OutpatientLogController extends BaseController {
     }
 
     /**
-     * 查询所有日志
+     * Truy vấntất cảNgàynhật ký
      */
     @PostMapping(value = "list")
     public ResponseEntity<JSONObject> listLog(@RequestBody OutpatientLogRc outpatientLogRc) {
@@ -47,7 +47,7 @@ public class OutpatientLogController extends BaseController {
     }
 
     /**
-     * 修改日志信息
+     * SửaNgàynhật kýThông tin
      */
     @PutMapping(value = "update")
     public int updateLog(@RequestBody OutpatientLog outpatientLogRc) {
@@ -56,7 +56,7 @@ public class OutpatientLogController extends BaseController {
     }
 
     /**
-     * 查询贫困户
+     * Truy vấn贫困户
      */
     @PostMapping(value = "getPoverty/{patientId}")
     public ResponseEntity<JSONObject> getPoverty(@PathVariable("patientId") String patientId) {
@@ -65,14 +65,14 @@ public class OutpatientLogController extends BaseController {
     }
 
     /**
-     * 查询所有日志
+     * Truy vấntất cảNgàynhật ký
      */
     @PostMapping(value = "exportExcel")
     public void exportExcel(@RequestBody OutpatientLogRc outpatientLogRc, HttpServletResponse response) {
         try {
             outpatientLogService.exportExcel(outpatientLogRc,response);
         } catch (Exception e) {
-            logger.error("导出门诊日志失败", e);
+            logger.error("XuấtNhật ký khám ngoại trúThất bại", e);
             throw new RuntimeException(e);
         }
     }

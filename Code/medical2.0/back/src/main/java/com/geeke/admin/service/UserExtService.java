@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 用户管理Service
+ * Quản lý người dùngService
  * @author lys
  * @version 2021-08-25
  */

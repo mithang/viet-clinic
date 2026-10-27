@@ -5,30 +5,30 @@
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane label="材料有效期" name="stuffIndate">
           <el-table :data="stuffIndateList" :row-key="getRowKeys" @expand-change="expandSelect" :expand-row-keys="expands"  border v-loading="loading" highlight-current-row>
-          <el-table-column align="center" prop="stuff.name" label="材料名称">
+          <el-table-column align="center" prop="stuff.name" label="Tên vật tư">
           </el-table-column>
-            <el-table-column align="center" prop="endDate" label="有效期">
+            <el-table-column align="center" prop="endDate" label="Hạn sử dụng">
                 <template slot-scope="scope">
                     {{getTime(scope.row.endDate)}}
                 </template>
             </el-table-column>
             <el-table-column
-                label="操作"
+                label="Thao tác"
                 align="center"
                 width="100">
                 <template slot-scope="scope">
-                    <el-button @click="checkStuff(scope.row)" type="text" size="small">查看</el-button>
-                    <!-- <el-button type="text" size="small">编辑</el-button> -->
+                    <el-button @click="checkStuff(scope.row)" type="text" size="small">Xem</el-button>
+                    <!-- <el-button type="text" size="small">Sửa</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="材料库存" name="stuffInventory">
+      <el-tab-pane label="Tồn kho vật tư" name="stuffInventory">
         <el-table :data="inventoryList"	:row-key="getRowKeys" @expand-change="expandSelect" :expand-row-keys="expands" border v-loading="loading" highlight-current-row>
 
-        <el-table-column align="center" prop="name" label="材料名称">
+        <el-table-column align="center" prop="name" label="Tên vật tư">
           </el-table-column>
-            <el-table-column align="center" prop="inventory" label="库存">
+            <el-table-column align="center" prop="inventory" label="Tồn kho">
               <template slot-scope="scope">
                   <span style="color:orange">
                   {{Math.floor(scope.row.stock.surplusStock/scope.row.packNumber) >= 0 ? Math.floor(scope.row.stock.surplusStock/scope.row.packNumber)+(scope.row.packUnit.name)+((scope.row.stock.surplusStock%scope.row.packNumber > 0) ? (scope.row.stock.surplusStock%scope.row.packNumber) + scope.row.minUnit.name:""):scope.row.stock.surplusStock+scope.row.minUnit.name}}
@@ -36,12 +36,12 @@
               </template>
             </el-table-column>
             <el-table-column
-                label="操作"
+                label="Thao tác"
                 align="center"
                 width="100">
                 <template slot-scope="scope">
-                    <el-button @click="checkStuffInventory(scope.row)" type="text" size="small">查看</el-button>
-                    <!-- <el-button type="text" size="small">编辑</el-button> -->
+                    <el-button @click="checkStuffInventory(scope.row)" type="text" size="small">Xem</el-button>
+                    <!-- <el-button type="text" size="small">Sửa</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -72,7 +72,7 @@ export default {
     extends: MainUI,
     data(){
         return{
-            expands: [], // 通过该属性设置Table目前的展开行，需要设置row-key属性才能使用，该属性为展开行的keys数组
+            expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại，Cần đặtrow-keythuộc tính mới sử dụng được，Thuộc tính này là của dòng mở rộngkeysMảng
            stuffIndateList:[],
            inventoryList:[],
            activeName: 'stuffIndate',
@@ -184,21 +184,21 @@ export default {
             })
         },
 
-        closeTab(){       //关闭显示框
+        closeTab(){       //Đóng hộp hiển thị
             this.$parent.doToggle();
         },
 
-        getRowKeys(row) { // 行数据的Key
+        getRowKeys(row) { // của dữ liệu dòngKey
             return row.id
         },
-        // table每次只能展开一行
+        // tableMỗi lần chỉ mở rộng được một dòng
         expandSelect(row, expandedRows) {
             this.expands = [];
             if (expandedRows.length > 0) {
             row ? this.expands.push(row.id) : ''
             }
         },
-        handleClick(tab, event){  //tab页切换
+        handleClick(tab, event){  //tabChuyển trang
             if(tab.name!=='all'){
                 if(tab.name === 'stuffIndate'){
                     this.currentPage =1

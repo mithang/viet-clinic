@@ -26,18 +26,18 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
     private final HisInstitutionDao hisInstitutionDao;
     @Override
     public List<String> bulkInsert(List<HisInstitutions> entitys) {
-        //院版诊所对应关系/
+        //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> typeMap= getTypeMap(BizConstants.DICT_TYPE_INSTITUTION_TYPE);
         Map<String, String> unitMap = getTypeMap(BizConstants.DICT_TYPE_INSTITUTION_UNIT);
         List<String> ids = Lists.newArrayList();
         JSONObject userObj = SessionUtils.getUserJson();
         for(HisInstitutions entity : entitys) {
             entity.setCompanyId(userObj.getString("companyId"));
-            if("挂号项目".equals(entity.getDllx()) || "诊疗项目".equals(entity.getDllx())){
-                           entity.setDllx("其他");
+            if("挂号项目".equals(entity.getDllx()) || "Hạng mục khám chữa bệnh".equals(entity.getDllx())){
+                           entity.setDllx("Khác");
             }
             entity.setDllx(typeMap.getOrDefault(entity.getDllx(), entity.getDllx()));
-            entity.setDw(unitMap.getOrDefault(entity.getDw(),unitMap.get("次")));
+            entity.setDw(unitMap.getOrDefault(entity.getDw(),unitMap.get(" lần")));
             entity.preInsert();
             ids.add(entity.getId());
         }

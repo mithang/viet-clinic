@@ -15,20 +15,20 @@ public @interface ExcelCell {
 	String name() default "";
 
 	/**
-	 * 日期格式化
+	 * Định dạng ngày
 	 * @return
 	 */
 	String dateFormat() default "yyyy-MM-dd HH:mm:ss";
 
 	/**
-	 * 链接字段
+	 * liên kếtTrường
 	 * @return
 	 */
 	boolean hyperLink() default false;
 
 	/**
-	 * 转换的key，如果需要，要在ExcelCellProcessor中注册
-	 * 为什么不用 name，万一重复了有很多问题，现在也没时间想那么多，项目快上线了
+	 * chuyển đổi của key, NếuCần, cầntạiExcelCellProcessor trong đăng ký
+	 *  là gìkhôngdùng name, Nếu chẳng may trùng lặp sẽ có nhiều vấn đề, hiệntạicũng没Thời gian想那么nhiều, Dự án sắp đưa lên productionrồi
 	 * @return
 	 */
 	String convertKey() default "";

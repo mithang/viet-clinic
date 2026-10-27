@@ -8,17 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 操作日志Entity
+ * Nhật ký thao tácEntity
  * @author lys
  * @version 2019-12-12
  */
 public class ActionRecycle extends DataEntity<ActionRecycle> {
 
 	private static final long serialVersionUID = 1L;
-	private Action action;      // 日志 
-	private String tableName;		// 表名
-	private String objectId;		// 业务对象
-	private String objectName;		// 对象名称
+	private Action action;      // Nhật ký 
+	private String tableName;		// Tên bảng
+	private String objectId;		// Đối tượng nghiệp vụ
+	private String objectName;		// Tên đối tượnggọi là
 
 	
 	public ActionRecycle() {
@@ -34,7 +34,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
 		this.action = action;
 	}
 
-	@NotNull(message="日志不能为空")
+	@NotNull(message="Ngàynhật kýKhông thể là trống")
     public Action getAction() {
         return action;
     }
@@ -43,7 +43,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
         this.action = action;
     }
     
-	@Length(min=1, max=200, message="表名长度必须介于 1 和 200 之间")
+	@Length(min=1, max=200, message="bảngtênĐộ dài phải nằm trong khoảng 1 đến 200 ")
 	public String getTableName() {
 		return tableName;
 	}
@@ -52,7 +52,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
 	}
 	
 	
-	@Length(min=1, max=40, message="业务对象长度必须介于 1 和 40 之间")
+	@Length(min=1, max=40, message="Đối tượng nghiệp vụĐộ dài phải nằm trong khoảng 1 đến 40 ")
 	public String getObjectId() {
 		return objectId;
 	}
@@ -61,7 +61,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
 	}
 	
 	
-	@Length(min=0, max=200, message="对象名称长度必须介于 0 和 200 之间")
+	@Length(min=0, max=200, message="Tên đối tượnggọi làĐộ dài phải nằm trong khoảng 0 đến 200 ")
 	public String getObjectName() {
 		return objectName;
 	}
@@ -74,7 +74,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -83,7 +83,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -93,7 +93,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 /**
- * 挂号信息Controller
+ * Thông tin đăng ký khámController
  * @author txl
  * @version 2022-06-15
  */
@@ -62,24 +62,24 @@ public class RegistrationController extends CrudController<RegistrationService, 
     }
 
     /**
-     * 查询诊所的医生
+     * Truy vấnPhòng khám của Bác sĩ
      * @return
      */
     @GetMapping("/doctor")
     public ResponseEntity<JSONObject> getDocByCompanyId() {
-        List<User> doctors = userService.getUserByCompanyIdAndJob(SessionUtils.getLoginTenantId(), "医生");
+        List<User> doctors = userService.getUserByCompanyIdAndJob(SessionUtils.getLoginTenantId(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
 
     @GetMapping("/doctornew")
     public ResponseEntity<JSONObject> doctornew() {
-        List<User> doctors = userService.getUserByCompanyIdAndJobV2(SessionUtils.getLoginTenantId(), "医生");
+        List<User> doctors = userService.getUserByCompanyIdAndJobV2(SessionUtils.getLoginTenantId(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
 
     @PostMapping("/wxDoctor")
     public ResponseEntity<JSONObject> getWxDocByCompanyId(@RequestBody User user) {
-        List<User> doctors = userService.getUserByWxCompanyIdAndJob(user.getCompany().getId(), user.getOffice(), "医生");
+        List<User> doctors = userService.getUserByWxCompanyIdAndJob(user.getCompany().getId(), user.getOffice(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
 
@@ -99,19 +99,19 @@ public class RegistrationController extends CrudController<RegistrationService, 
         if (BizConstants.REG_STATUS_REFUNDED.equals(refundRegistrationRemarks)) {
             Registration registration = registrationService.get(id);
             if (BizConstants.REG_STATUS_PENDING.equals(registration.getStatus().getValue())) {
-                String message = "你已完成签到，如要退号请到医院进行！";
+                String message = "bạnĐãhoàn thànhkýĐến, Như cầnhủy số khámVui lòngĐếnBệnh việntiến hành dòng!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             if (BizConstants.REG_STATUS_VISITED.equals(registration.getStatus().getValue())) {
-                String message = "你已完成就诊，如有疑问请到医院了解详情！";
+                String message = "bạnĐãhoàn thànhkhám bệnh, Nếu có thắc mắc, vui lòng đến bệnh viện để tìm hiểu chi tiết!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             if (BizConstants.REG_STATUS_REFUNDED.equals(registration.getStatus().getValue())) {
-                String message = "你已取消预约，不可再次取消！";
+                String message = "bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             if (BizConstants.REG_STATUS_FEE_REFUNDED.equals(registration.getStatus().getValue())) {
-                String message = "该预约已失效！";
+                String message = "đóđặt lịchĐãhết hiệu lực!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             String remarks = "";
@@ -120,7 +120,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
             res = registrationService.refundRegistrationPay(id, status, refundRegistrationPayType, refundRegistrationRemarks, exitNumberDate);
         }
         if ("true".equals(medicareConfigProperties.getCheck())){
-            //开启医保退号
+            //mởBHYThủy số khám
             Registration registration = registrationService.get(id);
             mdRegistrationService.revokeRegistrationInfo_2202(registration);
         }
@@ -133,19 +133,19 @@ public class RegistrationController extends CrudController<RegistrationService, 
         Date exitNumberDate = new Date();
         Registration registrations = registrationService.get(registration.getId());
         if (BizConstants.REG_STATUS_PENDING.equals(registrations.getStatus().getValue())) {
-            String message = "你已完成签到，如要退号请到医院进行！";
+            String message = "bạnĐãhoàn thànhkýĐến, Như cầnhủy số khámVui lòngĐếnBệnh việntiến hành dòng!";
             throw new ServiceException(message);
         }
         if (BizConstants.REG_STATUS_VISITED.equals(registrations.getStatus().getValue())) {
-            String message = "你已完成就诊，如有疑问请到医院了解详情！";
+            String message = "bạnĐãhoàn thànhkhám bệnh, Nếu có thắc mắc, vui lòng đến bệnh viện để tìm hiểu chi tiết!";
             throw new ServiceException(message);
         }
         if (BizConstants.REG_STATUS_REFUNDED.equals(registrations.getStatus().getValue())) {
-            String message = "你已取消预约，不可再次取消！";
+            String message = "bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!";
             throw new ServiceException(message);
         }
         if (BizConstants.REG_STATUS_FEE_REFUNDED.equals(registrations.getStatus().getValue())) {
-            String message = "该预约已失效！";
+            String message = "đóđặt lịchĐãhết hiệu lực!";
             throw new ServiceException(message);
         }
         registrations.setExitNumberDate(exitNumberDate);
@@ -169,14 +169,14 @@ public class RegistrationController extends CrudController<RegistrationService, 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody Registration entity) {
         String id ="";
-        if(Objects.equals(entity.getCreateBy(),"微信")){
+        if(Objects.equals(entity.getCreateBy(),"WeChat")){
             id = registrationService.wxSave(entity).getId();
         }else {
-            //开启医保接口
+            //mởBHYTgiao diện
             if("true".equals(medicareConfigProperties.getCheck())){
-                //保存用户医保信息
+                //LưuNgười dùngBHYTThông tin
                 if (mdPsnDataService.getAndSetPsnData(entity)) {
-                    //医保挂号
+                    //Đăng ký khám BHYT
                     String registrationInfo = mdRegistrationService.getRegistrationInfo_2201(entity);
                     Output_2201 output_2201 = JSONObject.parseObject(registrationInfo, Output_2201.class);
                     entity.setMdtrtId(output_2201.getData().getMdtrt_id());
@@ -214,7 +214,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    //打印处方
+    //in ấnĐơn thuốc
     @PostMapping("/print")
     public ResponseEntity<JSONObject> print(@RequestBody JSONObject inJson) {
         String id = inJson.getString("id");
@@ -228,7 +228,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson());
     }
 
-    //获取患者登记信息
+    //LấyBệnh nhânđăng kýThông tin
     @PostMapping("/v2/list")
     public ResponseEntity<JSONObject> listPages(@RequestBody PageRegistration pageRegistration) {
         Page<Registration> result = registrationService.listPages(pageRegistration);
@@ -236,7 +236,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    //获取费用信息
+    //LấyChi phíThông tin
     @PostMapping("/wx/list")
     public ResponseEntity<JSONObject> wxListPages(@RequestBody PageRegistration pageRegistration) {
         Page<ReceptionEvt> result = registrationService.wxListPages(pageRegistration);
@@ -244,7 +244,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    //获取发药记录
+    //Lấyphát thuốcBản ghi
     @PostMapping("/wx/dispensingList")
     public ResponseEntity<JSONObject> wxDispensingListPages(@RequestBody PageRegistration pageRegistration) {
         Page<ReceptionEvt> result = registrationService.wxDispensingListPages(pageRegistration);
@@ -252,7 +252,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    //微信端通过openid获取就诊信息
+    //WeChatđầuQuaopenidLấykhám bệnhThông tin
     @PostMapping("getRegistrationByOpenId")
     public ResponseEntity<JSONObject> getRegistrationByOpenId(@RequestBody SearchParams searchParams) {
         Page<Registration> registrationByOpenId = registrationService.getRegistrationByOpenId(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());

@@ -1,28 +1,28 @@
 <template>
   <el-row v-loading='loading'>
     <div class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
         <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
           <el-row class='search-row'>
             <el-col :span="12">
-              <el-form-item label='开单时间' prop='createDate'>
+              <el-form-item label='Thời gian lập phiếu' prop='createDate'>
                 <data-range-picker v-model='queryModel.createDate' ></data-range-picker>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='统计方法' prop='statistical'>
-                <el-select v-model='queryModel.statistical' value-key='value' filterable clearable placeholder='请选择操作'>
+              <el-form-item label='Phương pháp thống kê' prop='statistical'>
+                <el-select v-model='queryModel.statistical' value-key='value' filterable clearable placeholder='Vui lòng chọn thao tác'>
                   <el-option v-for='statistical in statistical_List' :key='statistical.value' :label='statistical.name' :value='statistical'></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-button-group>
-                <el-tooltip  effect="light" content="搜索" placement="top-start">
+                <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                   <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                 </el-tooltip>
-                <el-tooltip  effect="light" content="重置" placement="top-start">
+                <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                   <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                 </el-tooltip>
               </el-button-group>
@@ -72,40 +72,40 @@
           </el-row>
           </el-card>
         </el-form>
-        <!-- 工具栏 开始 -->
+        <!-- Thanh công cụ Bắt đầu -->
         <div class="page-container-header-end">
           <div class="toolbar" >
-<!--            <el-button v-show='permission.export' type='primary' icon='el-icon-upload2'  @click='onExport()'>添加</el-button>-->
-            <el-button type='primary' icon='el-icon-upload2'  @click='onExport()'>导出</el-button>
+<!--            <el-button v-show='permission.export' type='primary' icon='el-icon-upload2'  @click='onExport()'>Thêm</el-button>-->
+            <el-button type='primary' icon='el-icon-upload2'  @click='onExport()'>Xuất</el-button>
           </div>
         </div>
-        <!-- 工具栏 结束 -->
-        <!--  搜索栏  结束 -->
-        <!-- 表格栏  开始 -->
+        <!-- Thanh công cụ Kết thúc -->
+        <!--  Thanh tìm kiếm  Kết thúc -->
+        <!-- Thanh bảng  Bắt đầu -->
         <el-row>
           <el-col :span='24'>
             <div @mouseleave='moveTableOutside'>
               <el-table ref="statementTable" class='drag_table' :data='statementList' border @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>
                 <el-table-column
-                  label="序号"
+                  label="Số thứ tự"
                   type="index"
                   :index="indexMethod"
                   align="center">
                 </el-table-column>
                 <el-table-column
-                  label='开单诊所'
+                  label='Phòng khám kê đơn'
                   prop='company'
                   align="center">
                 </el-table-column>
                 <el-table-column
                   v-if="clinicOfficeShow"
-                  label='开单科室'
+                  label='Khoa lập phiếu'
                   prop='clinicOffice'
                   align="center">
                 </el-table-column>
                 <el-table-column
                   v-if="doctorShow"
-                  label='开单医生'
+                  label='Bác sĩ kê đơn'
                   prop='doctor'
                   align="center">
                 </el-table-column>
@@ -139,7 +139,7 @@
             </div>
           </el-col>
         </el-row>
-        <!-- 表格栏  结束 -->
+        <!-- Thanh bảng  Kết thúc -->
       </div>
     </div>
   </el-row>
@@ -175,16 +175,16 @@ export default {
       statementList: [],
 
       queryModel: {
-        // 开单时间
+        // Thời gian lập phiếu
         'createDate': this.latestMarch(),
-        // 统计方法
-        'statistical': {name: "按医生汇总", value: "doctor"},
+        // Phương pháp thống kê
+        'statistical': {name: "Tổng hợp theo bác sĩ", value: "doctor"},
       },
 
       statistical_List: [
         {name: "按诊所汇总", value: "company"},
         {name: "按科室汇总", value: "clinicOffice"},
-        {name: "按医生汇总", value: "doctor"},
+        {name: "Tổng hợp theo bác sĩ", value: "doctor"},
       ],
       loginCompany:{}, // 当前登录公司
       prescriptionStatistics:{}, //处方统计

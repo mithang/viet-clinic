@@ -6,13 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 public interface MdDirService {
 
     /**
-     * 目录对照上传
+     * danh mụcđối với照Tải lên
      * @return
      */
     JSONObject upDirData_3301();
 
     /**
-     * 目录对照撤销
+     * Hủy đối chiếu danh mục
      * @return
      */
     JSONObject delDirData_3302();

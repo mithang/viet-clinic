@@ -1,26 +1,26 @@
 /**
  * 字典缓存工具
- * 通过字典类型 code（而非雪花 ID）获取字典项，消除前端硬编码 ID
+ * 通过字典类型 code（而非雪花 ID）Lấy mục từ điển，消除前端硬编码 ID
  */
 import { listDictItemByCode } from '@/api/sys/dictItem'
 
 // 所有字典类型 code 常量
 export const DICT_CODE = {
-  // 基础信息
+  // Thông tin cơ bản
   GENDER: 'gender',
   WITH_PATIENT_NEXUS: 'withPatientNexus',
   CARD_TYPE: 'cardType',
   INFECT_TYPE: 'infectType',
-  // 挂号
+  // Đăng ký khám
   REGISTRATION_STATUS: 'registrationStatus',
   REGISTRATION_SOURCE: 'registrationSource',
   TREAT_TYPE: 'treatType',
   MED_TYPE: 'medType',
-  // 收费
+  // Thu phí
   PAY_TYPE: 'payType',
   TOLL_TYPE: 'tollType',
   AMOUNT_STATUS: 'amountStatus',
-  // 处方
+  // Đơn thuốc
   RECIPEL_TYPE: 'recipelType',
   RECIPEL_SMALL_TYPE: 'recipelSmallType',
   CHINESE_MEDICINE_RECIPEL_USE: 'chineseMedicineRecipelUse',
@@ -32,23 +32,23 @@ export const DICT_CODE = {
   RECIPEL_DETAIL_DAYS: 'recipelDetailDays',
   INFUSE_USE: 'infuseUse',
   SKIN_TEST: 'skinTest',
-  // 药品/材料
+  // Thuốc/Vật tư
   MEDICAL_TYPE: 'medicalType',
   MEDICAL_NATURE: 'medicalNature',
   MEDICAL_DOSIS_UNIT: 'medicalDosisUnit',
   MEDICAL_PREPARATION_UNIT: 'medicalPreparationUnit',
   MEDICAL_PACK_UNIT: 'medicalPackUnit',
   STUFF_TYPE: 'stuffType',
-  // 诊疗项目
+  // Hạng mục khám chữa bệnh
   TREATMENT_ITEM_TYPE: 'treatmentItemType',
   TREATMENT_ITEM_UNIT: 'treatmentItemUnit',
-  // 库存
+  // Tồn kho
   SUPPLIER_STORAGE_EXAMINE_STATUS: 'supplierStorageExamineStatus',
   SUPPLIER_OUTBOUND_STATUS: 'supplierOutboundStatus',
   OUTBOUND_METHOD: 'outboundMethod',
   // 会员
   MEMBER_TYPE: 'memberType',
-  // 系统
+  // Hệ thống
   ACTION_TYPE: 'actionType',
 }
 
@@ -56,8 +56,8 @@ export const DICT_CODE = {
 const cache = new Map()
 
 /**
- * 按字典类型 code 获取字典项列表（带内存缓存）
- * @param {string} code 字典类型 code，如 DICT_CODE.GENDER
+ * Theo loại từ điển code 获取字典项列表（带内存缓存）
+ * @param {string} code Loại từ điển code，như DICT_CODE.GENDER
  * @returns {Promise<Array>} 字典项列表
  */
 export async function getDictItemsByCode(code) {
@@ -75,7 +75,7 @@ export async function getDictItemsByCode(code) {
 
 /**
  * 批量预加载字典（用于页面初始化）
- * @param {string[]} codes 字典类型 code 数组
+ * @param {string[]} codes Loại từ điển code Mảng
  */
 export async function preloadDicts(codes) {
   await Promise.all(codes.map(code => getDictItemsByCode(code)))

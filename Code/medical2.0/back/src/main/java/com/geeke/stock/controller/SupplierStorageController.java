@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 入库单Controller
+ * Phiếu nhập khoController
  * @author txl
  * @version 2022-06-02
  */
@@ -34,7 +34,7 @@ public class SupplierStorageController extends CrudController<SupplierStorageSer
     }
 
     /**
-     * 可根据拼音码查询
+     * có thểTheoPinyinmãTruy vấn
      *
      * @return
      */

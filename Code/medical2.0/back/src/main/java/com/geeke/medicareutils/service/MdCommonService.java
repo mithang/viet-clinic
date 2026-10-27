@@ -5,17 +5,17 @@ import com.geeke.outpatient.entity.Registration;
 
 public interface MdCommonService {
     /**
-     * 冲正数据交易
+     * 冲đúngDữ liệugiao dịch
      * Description
-     * 可用交易码：【2101】医生结算、【2102】药店结算、【2103】药店结算撤销、【2207】门诊结算、
-     * 【2208】门诊结算撤销、【2304】住院结算、【2305】住院结算撤销、【2401】入院办理、
-     * 【2304A】住院结算；
+     * khả dụnggiao dịchmã: [2101]Bác sĩQuyết toán, [2102]nhà thuốcQuyết toán, [2103]nhà thuốcQuyết toánhủy, [2207]Quyết toán ngoại trú, 
+     * [2208]Hủy quyết toán ngoại trú, [2304]Quyết toán nhập viện, [2305]Quyết toán nhập việnhủy, [2401]nhập việnlàm thủ tục, 
+     * [2304A]Quyết toán nhập viện; 
      */
     String reversalData_2601(String psnNo, String omsgid, String oinfno);
 
 
     /**
-     * 电子病历上传 4701
+     * điện tửbệnh ánTải lên 4701
      * @return
      */
     String upMedicalRecord_4701(Registration registration);

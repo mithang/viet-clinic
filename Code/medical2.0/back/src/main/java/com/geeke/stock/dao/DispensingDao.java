@@ -12,7 +12,7 @@ import com.geeke.stock.entity.Dispensing;
 import java.util.List;
 
 /**
- * 发药明细DAO接口
+ * Chi tiết phát thuốcDAOGiao diện
  * @author txl
  * @version 2022-08-11
  */

@@ -8,17 +8,17 @@ import java.util.Date;
 @Data
 public class taskexecutor {
     private String ID;
-    /** 租户号 */
+    /** Mã tenant */
     private String companyId ;
-    /** 删除标记;（0：正常；1：删除） */
+    /** Cờ xóa;(0: Bình thường; 1: Xóa) */
     private String delFlag ;
-    /** 创建人 */
+    /** Người tạo */
     private String createdBy ;
-    /** 创建时间 */
+    /** Thời gian tạo */
     private Date createdTime ;
-    /** 更新人 */
+    /** Người cập nhật */
     private String updatedBy ;
-    /** 更新时间 */
+    /** Thời gian cập nhật */
     private Date updatedTime ;
     private String taskmanagementid;
     private String clinic_id;

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 诊疗项目Controller
+ * Hạng mục khám chữa bệnhController
  * @author txl
  * @version 2022-05-30
  */
@@ -44,12 +44,12 @@ public class CostItemController extends CrudController<CostItemService, CostItem
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
-        //根据诊疗项目的id获取到对应的诊疗项目信息
+        //Theohạng mục khám chữa bệnh của idLấyĐếntương ứng của hạng mục khám chữa bệnhThông tin
         CostItem entity = costItemService.get(id);
-        //通过诊疗项目的id获取到对应的子项目的信息
+        //Quahạng mục khám chữa bệnh của idLấyĐếntương ứng của hạng mục con của Thông tin
         List<CostItemPackage> costItemPackages = costItemPackageService.getAll(id);
         entity.setCostItemPackages(costItemPackages);
-        //根据子项目的项目id获取其对应的项目信息
+        //Theohạng mục con của hạng mụcidLấycủa nótương ứng của hạng mụcThông tin
         List<CostItem> costItems = new ArrayList<>();
         for (CostItemPackage costItemPackage : costItemPackages) {
             CostItem costItem = costItemService.get(costItemPackage.getCostItemId());
@@ -76,7 +76,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
 
     @PostMapping(value = "saveDto")
     public ResponseEntity<JSONObject> saveDto(@RequestBody CostItemDTO costItemDTO) {
-        logger.debug("保存诊疗项目: {}", costItemDTO);
+        logger.debug("Lưuhạng mục khám chữa bệnh: {}", costItemDTO);
         if(costItemDTO.getCostItemPackage().size()!=0&&costItemDTO.getCostItemPackage().get(0).getReferenceUnit()==null){
             costItemDTO.getCostItem().setIsPackage("1");
         }else {
@@ -84,7 +84,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
         }
        String id = costItemService.save(costItemDTO.getCostItem()).getId();
 
-        //先将子项目去数据库查看是否存在
+        //trướcSẽ hạng mục conđiDữ liệukhotra看Có tồn tại không
         List<CostItemPackage> costItemPackages = costItemPackageService.findById(costItemDTO.getCostItemPackage());
         if(costItemPackages.size()!=0&&costItemDTO.getCostItemPackage().get(0).getReferenceUnit()==null){
             for (int i = 0; i < costItemDTO.getCostItemPackage().size(); i++) {
@@ -92,7 +92,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
                     if(costItemDTO.getCostItemPackage().get(i).getCostItemId()!=null ){
                         if(costItemDTO.getCostItemPackage().get(i).getCostItemId().equals(costItemPackages.get(j).getCostItemId())){
                             costItemDTO.getCostItemPackage().get(i).setId(costItemPackages.get(j).getCostItemId());
-                            logger.debug("匹配到子项目ID: {}", costItemDTO.getCostItemPackage().get(i).getId());
+                            logger.debug("khớpĐếnhạng mục conID: {}", costItemDTO.getCostItemPackage().get(i).getId());
                         }
                     }
                 }
@@ -108,7 +108,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
     }
 
     /**
-     * 查询租户的诊疗项目
+     * Truy vấntenant của hạng mục khám chữa bệnh
      *
      * @param searchParams
      * @return
@@ -120,7 +120,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
     }
 
     /**
-     * 租户治疗同步至诊所
+     * Điều trị của tenant đồng bộ tớiPhòng khám
      *
      * @param entitys
      * @return

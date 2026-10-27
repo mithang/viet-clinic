@@ -4,7 +4,7 @@
   ><el-form :model="formData" ref="auditForm" label-width="120px">
     <el-row gutter={20}>
       <el-col :span="8">
-        <el-form-item label="医保处方编号">
+        <el-form-item label="Mã đơn thuốc bảo hiểm y tế">
           <el-input v-model="formData.hiRxno" readonly></el-input>
         </el-form-item>
       </el-col>
@@ -39,7 +39,7 @@
     </el-row>
   </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="closeDialog">关闭</el-button>
+      <el-button @click="closeDialog">Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.$emit('update:dialogVisible', false); // 关闭模态框
+      this.$emit('update:dialogVisible', false); // Đóng hộp thoại
     }
   }
 };

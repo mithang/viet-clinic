@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 公司管理Service
+ * Quản lý công tyService
  * @author lys
  * @version 2022-05-25
  */
@@ -55,9 +55,9 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         if(StringUtils.isBlank(company.getFileId())) {
             company.setFileId(IdGen.uuid());
         }
-        // 保存附件
+        // Lưutệp đính kèm
         sysFileService.changeAndSaveSysFileList(fileIdUploads, company.getFileId());
-        // 根据附件ID删除附件信息
+        // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
         if (null != deleteIds && deleteIds.length > 0) {
             sysFileService.delete(deleteIds);
         }
@@ -72,11 +72,11 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             company.setFileId(IdGen.uuid());
         }
         company.setSort(0);
-        //保存更新诊所
+        //LưuCập nhậtPhòng khám
         company.setParent(company.getLesseeId());
         Company c = save(company);
         doUpdate(c);
-        //保存角色
+        //LưuVai trò
         Role role = new Role();
         role.setName(BizConstants.ROLE_ADMIN);
         role.setCode(BizConstants.ROLE_ADMIN);
@@ -87,7 +87,7 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         role.setParentId(roleId);
         roleService.deleteRoleByCode(BizConstants.ROLE_ADMIN,company.getId());
         Role save = roleService.save(role);
-        //保存权限关系
+        //LưuQuyềnquan hệ
         savePermisson(company, save);
         return save;
     }
@@ -133,7 +133,7 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         return this.dao.listAllClinic(pageRequest);
     }
 
-    /**根据登录名查询诊所*/
+    /**TheoĐăng nhậptênTruy vấnPhòng khám*/
     public List<Company> getClinicsByLoginName(String loginName)
     {
         return this.dao.selectClinicsByLoginName(loginName);

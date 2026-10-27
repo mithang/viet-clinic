@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.geeke.common.entity.ColumnView;
 
 /**
- * 表列头管理dao接口
+ * bảngCộttiêu đềQuản lýdaoGiao diện
  * 
  * @author lys
  * @date 2019/2/2
@@ -17,7 +17,7 @@ import com.geeke.common.entity.ColumnView;
 public interface ColumnViewDao {
 
 	/**
-	 * 根据视图、表、用户 查询表列头实现状态
+	 * Theoxem图, bảng, Người dùng Truy vấnbảngCộttiêu đềTriển khaiTrạng thái
 	 * @param userId
 	 * @param routerId
 	 * @param tableId
@@ -30,7 +30,7 @@ public interface ColumnViewDao {
 	int update(ColumnView cv);
 	
 	/**
-	 * 保存全部显示列
+	 * LưuTất cảhiển thịCột
 	 * @param userId
 	 * @param routerId
 	 * @param tableId
@@ -39,7 +39,7 @@ public interface ColumnViewDao {
 	List<ColumnView> saveAll(@Param("userId")String userId, @Param("routerId")String routerId, @Param("tableId")String tableId);
 	
 	/**
-	 * 删除设置的显示列
+	 * XóaĐặt của hiển thịCột
 	 * @param userId
 	 * @param routerId
 	 * @param tableId
@@ -47,7 +47,7 @@ public interface ColumnViewDao {
 	void deleteAll(@Param("userId")String userId, @Param("routerId")String routerId, @Param("tableId")String tableId);
 	
 	/**
-	 * 删除设置的显示列
+	 * XóaĐặt của hiển thịCột
 	 * @param id
 	 */
 	void delete(@Param("id")String id);

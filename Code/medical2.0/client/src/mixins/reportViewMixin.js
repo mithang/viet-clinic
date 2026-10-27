@@ -2,13 +2,13 @@
  * 报表视图 Mixin
  * 提供医生工作量报表、药品销售报表等通用报表的公共逻辑
  *
- * 使用方式：
+ * Cách sử dụng：
  * 1. 在组件中 mixins: [reportViewMixin]
- * 2. 在 data 中覆盖以下属性：
- *    - listApi: 列表查询 API 函数
- *    - statApi: 统计 API 函数（可选）
- *    - exportApi: 导出 API 函数
- *    - dictTypeId: 字典类型 ID（用于加载下拉选项）
+ * 2. tại data 中覆盖以下属性：
+ *    - listApi: Truy vấn danh sách API Hàm
+ *    - statApi: Thống kê API Hàm（Có thể chọn）
+ *    - exportApi: Xuất API Hàm
+ *    - dictTypeId: Loại từ điển ID（用于加载下拉选项）
  *    - searchParams: 额外的查询参数
  * 3. 如果需要自定义 appendSearchParams，覆盖该方法
  */
@@ -28,7 +28,7 @@ export default {
       listApi: null,
       statApi: null,
       exportApi: null,
-      // 字典类型 ID，子组件可覆盖
+      // Loại từ điển ID，Thành phần con có thể ghi đè
       dictTypeId: '1004078055755374603',
       // 子组件可覆盖初始查询条件
       queryModel: {
@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     /**
-     * 导出 Excel（子组件可覆盖 columnName）
+     * Xuất Excel（Thành phần con có thể ghi đè columnName）
      */
     exportExcel() {
       if (!this.exportApi) return
@@ -96,7 +96,7 @@ export default {
     },
 
     /**
-     * 获取 30 天前的日期时间字符串
+     * Lấy 30 天前的日期时间字符串
      * @returns {string} 30天前的日期时间字符串
      */
     addCreateDate() {
@@ -119,7 +119,7 @@ export default {
     },
 
     /**
-     * 加载数据（列表 + 统计）
+     * Tải dữ liệu（Danh sách + Thống kê）
      */
     loadData() {
       this.setLoad()
@@ -190,7 +190,7 @@ export default {
     },
 
     /**
-     * BigNumber 格式化（千分位，2位小数）
+     * BigNumber 格式化（Phân tách hàng nghìn，2chữ số thập phân）
      */
     bigNum(num) {
       if (num || num === '0') {

@@ -7,7 +7,7 @@ import com.geeke.common.persistence.TreeDao;
 import com.geeke.org.entity.Department;
 
 /**
- * 部门管理DAO接口
+ * Quản lý phòng banDAOGiao diện
  * @author lys
  * @version 2021-07-13
  */

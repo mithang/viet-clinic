@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 业务表管理Service
+ * Quản lý bảng nghiệp vụService
  * @author lys
  * @version 2021-08-26
  */
@@ -42,12 +42,12 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
 
         List<Parameter> params = null;
         PageRequest pageRequest;
-        /*获取子表列表   约束字段*/
+        /*Lấy danh sách bảng con   Trường ràng buộc*/
         params = Lists.newArrayList();
         params.add(new Parameter("gen_table_id", "=", genTable.getId()));
         pageRequest = new PageRequest(params);
         genTable.setConstraintList(constraintDao.listAll(pageRequest));        
-        /*获取子表列表   业务表字段*/
+        /*Lấy danh sách bảng con   Trường bảng nghiệp vụ*/
         params = Lists.newArrayList();
         params.add(new Parameter("gen_table_id", "=", genTable.getId()));
         pageRequest = new PageRequest(params);
@@ -64,14 +64,14 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
 
             List<Parameter> params = null;
             PageRequest pageRequest;
-            /* 处理子表     约束字段 */
+            /* Xử lý bảng con     Trường ràng buộc */
             params = Lists.newArrayList();
             params.add(new Parameter("gen_table_id", "=", genTable.getId()));
             pageRequest = new PageRequest(params);
             List<Constraint> list_Constraint = constraintDao.listAll(pageRequest);            
-            List<Constraint> deleteConstraints = Lists.newArrayList(); // 删除列表
-            List<Constraint> insertConstraints = Lists.newArrayList(); // 添加列表
-            List<Constraint> updateConstraints = Lists.newArrayList(); // 更新列表
+            List<Constraint> deleteConstraints = Lists.newArrayList(); // Danh sách xóa
+            List<Constraint> insertConstraints = Lists.newArrayList(); // Danh sách thêm
+            List<Constraint> updateConstraints = Lists.newArrayList(); // Danh sách cập nhật
             for(Constraint constraintSaved: list_Constraint) {
                 boolean found = false;   
                 for (Constraint constraint : genTable.getConstraintList()){
@@ -105,14 +105,14 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
             if(insertConstraints.size() > 0) {
             	constraintDao.bulkInsert(insertConstraints);
             }
-            /* 处理子表     业务表字段 */
+            /* Xử lý bảng con     Trường bảng nghiệp vụ */
             params = Lists.newArrayList();
             params.add(new Parameter("gen_table_id", "=", genTable.getId()));
             pageRequest = new PageRequest(params);
             List<GenTableColumn> list_GenTableColumn = genTableColumnDao.listAll(pageRequest);            
-            List<GenTableColumn> deleteGenTableColumns = Lists.newArrayList(); // 删除列表
-            List<GenTableColumn> insertGenTableColumns = Lists.newArrayList(); // 添加列表
-            List<GenTableColumn> updateGenTableColumns = Lists.newArrayList(); // 更新列表
+            List<GenTableColumn> deleteGenTableColumns = Lists.newArrayList(); // Danh sách xóa
+            List<GenTableColumn> insertGenTableColumns = Lists.newArrayList(); // Danh sách thêm
+            List<GenTableColumn> updateGenTableColumns = Lists.newArrayList(); // Danh sách cập nhật
             for(GenTableColumn genTableColumnSaved: list_GenTableColumn) {
                 boolean found = false;   
                 for (GenTableColumn genTableColumn : genTable.getGenTableColumnList()){
@@ -152,7 +152,7 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
 
 
     /**
-     * 删除
+     * Xóa
      * @param genTable
      */
     @Override
@@ -160,12 +160,12 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
     public int delete(GenTable genTable) {
         List<Parameter> params = null;
         PageRequest pageRequest;
-        /* 处理子表     约束字段 */
+        /* Xử lý bảng con     Trường ràng buộc */
         params = Lists.newArrayList();
         params.add(new Parameter("gen_table_id", "=", genTable.getId()));
         pageRequest = new PageRequest(params);
         genTable.setConstraintList(constraintDao.listAll(pageRequest));        
-        /* 处理子表     业务表字段 */
+        /* Xử lý bảng con     Trường bảng nghiệp vụ */
         params = Lists.newArrayList();
         params.add(new Parameter("gen_table_id", "=", genTable.getId()));
         pageRequest = new PageRequest(params);
@@ -183,22 +183,22 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
 
     @Transactional(readOnly = false)
     public GenTable importJson(GenTable genTable) {
-        // 没有记录的情况下，先添加，然后再通过更新
+        // Không cóBản ghi của tình hìnhdưới, trướcThêm, nhưngsaulạiQuaCập nhật
         if(get(genTable.getId()) == null ){
-        	// 添加
+        	// Thêm
         	genTable.preInsert();
         	doInsert(genTable);
         	this.saveAction(this.createAction(ActionConstants.ACTION_CREATED, genTable));
         }
-        // 更新
+        // Cập nhật
         GenTable genTableTemp = this.save(genTable);
         return genTableTemp;
     }
 
     /**
-     * 生成操作日志
-     * @param actionTypeId  操作类型Id
-     * @param entity        操作的实体对象
+     * Tạo nhật ký thao tác
+     * @param actionTypeId  Loại thao tácId
+     * @param entity        Đối tượng thực thể được thao tác
      * @return
      */
     @Override
@@ -207,7 +207,7 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         if(action == null) {
             return null;
         }
-        // 删除时记录把保存的数据保存到回收站
+        // Khi xóa, ghi lại và lưu dữ liệu đã lưu vào thùng rác
         if(ActionConstants.ACTION_DELETED.equals(actionTypeId)) {   
             for(Constraint child: entity.getConstraintList()) {
                 ActionRecycle recycle = new ActionRecycle();

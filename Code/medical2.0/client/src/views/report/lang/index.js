@@ -9,9 +9,9 @@ import enLocale from './en'
 import zhLocale from './zh'
 import twLocale from './tw'
 
-import fuZh from 'fit2cloud-ui/src/locale/lang/zh-CN' // 加载fit2cloud的内容
+import fuZh from 'fit2cloud-ui/src/locale/lang/zh-CN' // Đang tảifit2cloudnội dung
 
-import fuEn from 'fit2cloud-ui/src/locale/lang/en_US' // 加载fit2cloud的内容
+import fuEn from 'fit2cloud-ui/src/locale/lang/en_US' // Đang tảifit2cloudnội dung
 
 const Vue = window.Vue
 const VueI18n = window.VueI18n

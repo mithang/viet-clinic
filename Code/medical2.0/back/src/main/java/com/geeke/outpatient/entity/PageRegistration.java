@@ -30,8 +30,8 @@ public class PageRegistration {
     private String openId;
 
     /**
-     * 验证列名是否安全（防止SQL注入）
-     * 允许的格式: 字母、数字、下划线、点号（用于嵌套属性如 "a.update_date"）
+     * Xác thựcCộttênCó hay khôngan toàn(phòngdừngSQLinject)
+     * cho phép của định dạng: chữ cái, Số, Gạch dưới, dấu chấm(dùng đểlồng nhauthuộc tínhNhư  "a.update_date")
      */
     public boolean isValidColumnName() {
         if (columnName == null || columnName.isEmpty()) {

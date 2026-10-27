@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 角色管理Service
+ * Quản lý vai tròService
  * @author lys
  * @version 2022-05-24
  */
@@ -25,7 +25,7 @@ public class RoleService extends CrudService<RoleDao, Role>{
     }
 
     /**
-     * 查询当前诊所所拥有的角色
+     * Truy vấnHiện tạiPhòng khámnơi拥có của Vai trò
      * @param tenantId
      * @return
      */

@@ -10,7 +10,7 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 患者医保信息表
+ * Bảng thông tin BHYT của bệnh nhân
  * @TableName patient_md_data
  */
 @TableName(value ="patient_md_data")
@@ -24,137 +24,137 @@ public class PatientMdData implements Serializable {
 
 
     /**
-     * 组织id
+     * nhóm织id
      */
     private Long OrganizeId;
 
     /**
-     * 患者id
+     * Bệnh nhânid
      */
     private Long patientId;
 
     /**
-     * 人员编号
+     * Mã nhân viên
      */
     private String psnNo;
 
     /**
-     * 证件类型
+     * Loại giấy tờ
      */
     private String psnCertType;
 
     /**
-     * 证件号码
+     * Số giấy tờ
      */
     private String certno;
 
     /**
-     * 人员姓名
+     * Tên nhân viên
      */
     private String psnName;
 
     /**
-     * 性别
+     * Giới tính
      */
     private String gend;
 
     /**
-     * 民族
+     * Dân tộc
      */
     private String naty;
 
     /**
-     * 出生日期
+     * Ngày sinh
      */
     private String brdy;
 
     /**
-     * 年龄
+     * Tuổi
      */
     private Integer age;
 
     /**
-     * 字段拓展
+     * Trườngmở rộng
      */
     private String expcontent;
 
     /**
-     * 余额
+     * Số dư
      */
     private BigDecimal balc;
 
     /**
-     * 险种类型
+     * Loại hình bảo hiểm
      */
     private String insutype;
 
     /**
-     * 人员类别
+     * Loại nhân viên
      */
     private String psnType;
 
     /**
-     * 人员参保状态
+     * nhân viêntham gia bảo hiểmTrạng thái
      */
     private String psnInsuStas;
 
     /**
-     * 个人参保日期
+     * Cá nhântham gia bảo hiểmNgày
      */
     private String psnInsuDate;
 
     /**
-     * 暂停参保日期
+     * tạmdừngtham gia bảo hiểmNgày
      */
     private String pausInsuDate;
 
     /**
-     * 公务员标志
+     * Cờ công chức
      */
     private String cvlservFlag;
 
     /**
-     * 参保地医保区划
+     * Vùng BHYT nơi tham gia bảo hiểm
      */
     private String insuplcAdmdvs;
 
     /**
-     * 单位名称
+     * Tên đơn vị
      */
     private String empName;
 
     /**
-     * 待遇检查类型
+     * chế độKiểm traLoại
      */
     private String trtChkType;
 
     /**
-     * 基金支付类型
+     * thanh toán từ quỹLoại
      */
     private String fundPayType;
 
     /**
-     * 基金款项待遇享受标志
+     * Cờ hưởng chế độ khoản quỹ
      */
     private String trtEnjymntFlag;
 
     /**
-     * 人员待遇开始日期
+     * nhân viênchế độNgày bắt đầu
      */
     private Date trtBegndate;
 
     /**
-     * 人原待遇结束日期
+     * ngườigốcchế độNgày kết thúc
      */
     private Date trtEnddate;
 
     /**
-     * 待遇检查结果
+     * chế độKiểm traKết quả
      */
     private String trtChkRslt;
 
     /**
-     * 字段拓展
+     * Trườngmở rộng
      */
     private String trtExpcontent;
 

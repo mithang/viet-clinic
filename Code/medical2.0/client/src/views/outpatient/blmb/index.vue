@@ -3,34 +3,34 @@
   <el-row>
     <el-col :span="24" style="height:40px;">
       <blmb-form ref='blmbForm' @typeclick="typeclickload"></blmb-form>
-      <el-button type="primary" style="float:right;margin-right:4.5%;" icon='el-icon-plus'  @click.native="onCreatePatient('')">新增</el-button>
+      <el-button type="primary" style="float:right;margin-right:4.5%;" icon='el-icon-plus'  @click.native="onCreatePatient('')">Thêm mới</el-button>
     </el-col>
     <el-col :span="24">
       <el-form :inline="true" :model="blmbcxrc" class="demo-form-inline">
-      <el-form-item label="模板名称" style="margin-right: 3px;">
-    <el-input v-model="blmbcxrc.mbmc" placeholder="请输入模板名称"></el-input>
+      <el-form-item label="Tên mẫu" style="margin-right: 3px;">
+    <el-input v-model="blmbcxrc.mbmc" placeholder="Vui lòng nhập tên mẫu"></el-input>
   </el-form-item>
-   <el-form-item label="创建人" style="margin-right: 3px;">
+   <el-form-item label="Người tạo" style="margin-right: 3px;">
     <el-input v-model="blmbcxrc.cjr" placeholder="请输入创建人姓名"></el-input>
   </el-form-item>
-  <el-form-item label="模板类型"  style="margin-right: 3px;">
-  <el-select v-model="blmbcxrc.mblx" placeholder="模板类型">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="通用" value="0"></el-option>
-      <el-option label="个人" value="1"></el-option>
+  <el-form-item label="Loại mẫu"  style="margin-right: 3px;">
+  <el-select v-model="blmbcxrc.mblx" placeholder="Loại mẫu">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Dùng chung" value="0"></el-option>
+      <el-option label="Cá nhân" value="1"></el-option>
     </el-select>
   </el-form-item>
-  <el-form-item label="病历类型"  style="margin-right: 3px;">
-    <el-select v-model="blmbcxrc.bllx" placeholder="病历类型">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="西医病历" value="0"></el-option>
-      <el-option label="中医病历" value="1"></el-option>
+  <el-form-item label="Loại bệnh án"  style="margin-right: 3px;">
+    <el-select v-model="blmbcxrc.bllx" placeholder="Loại bệnh án">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Bệnh án Tây y" value="0"></el-option>
+      <el-option label="Bệnh án Đông y" value="1"></el-option>
     </el-select>
   </el-form-item>
     <el-form-item style="margin-right: 3px;">
-    <el-button type="primary" @click="onSubmit">查询</el-button>
-    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
-    <!-- <el-button @click="show3 = !show3">{{show3==true?"收起":"展开"}}</el-button> -->
+    <el-button type="primary" @click="onSubmit">Truy vấn</el-button>
+    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
+    <!-- <el-button @click="show3 = !show3">{{show3==true?"Thu gọn":"Mở rộng"}}</el-button> -->
   </el-form-item>
       </el-form>
     </el-col>
@@ -43,7 +43,7 @@
     border
     height="calc(100vh - 250px)">
     <el-table-column
-             label="序号"
+             label="Số thứ tự"
               type="index"
               :index="blmbindexMethod"
               align="center">
@@ -51,34 +51,34 @@
     <el-table-column
       prop="mbbm"
       v-if="show"
-      label="模板编码">
+      label="Mã mẫu">
     </el-table-column>
     <el-table-column
       prop="mbmc"
-      label="模板名称">
+      label="Tên mẫu">
     </el-table-column>
     <el-table-column
       prop="mblx"
-      label="模板类型">
+      label="Loại mẫu">
     </el-table-column>
     <el-table-column
       prop="bllx"
-      label="病历类型">
+      label="Loại bệnh án">
     </el-table-column>
     <el-table-column
       prop="cjrq"
-      label="创建日期">
+      label="Ngày tạo">
     </el-table-column>
     <el-table-column
       prop="cjr"
-      label="创建人">
+      label="Người tạo">
     </el-table-column>
     <el-table-column
-      label="操作"
+      label="Thao tác"
       width="100">
       <template slot-scope="scope">
-        <el-button @click.native="onCreatePatient(scope.row)" type="text" size="small">编辑</el-button>
-        <el-button type="text" size="small" @click="onDeleteRecipetemplate(scope.$index, scope.row)" >删除</el-button>
+        <el-button @click.native="onCreatePatient(scope.row)" type="text" size="small">Sửa</el-button>
+        <el-button type="text" size="small" @click="onDeleteRecipetemplate(scope.$index, scope.row)" >Xóa</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -193,8 +193,8 @@ import {getblmblist,deletembbm} from '@/api/outpatient/blmb'
            this.patientTotal=responseData.data.total;
            if(responseData.data.total>0){
              responseData.data.rows.forEach(item => {
-               if(item.mblx==="0"){item.mblx="通用"}else if(item.mblx==="1"){item.mblx="个人"}else{{item.mblx=""}}
-               if(item.bllx==="0"){item.bllx="西医病历"}else if(item.bllx==="1"){item.bllx="中医病历"}else{{item.bllx=""}}
+               if(item.mblx==="0"){item.mblx="Dùng chung"}else if(item.mblx==="1"){item.mblx="Cá nhân"}else{{item.mblx=""}}
+               if(item.bllx==="0"){item.bllx="Bệnh án Tây y"}else if(item.bllx==="1"){item.bllx="Bệnh án Đông y"}else{{item.bllx=""}}
                this.tableData.push({
                     mbbm:item.mbbm,
                     mbmc: item.mbmc,
@@ -218,14 +218,14 @@ import {getblmblist,deletembbm} from '@/api/outpatient/blmb'
     onDeleteRecipetemplate(index, row) {
       this.blmbcxrc.updatedBy=currentUser.name+"("+currentUser.loginname+")";
       this.blmbcxrc.mbbm=row.mbbm;
-      this.$confirm('确定删除吗？', '确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
         type: 'warning'
       }).then(() => {
         deletembbm(this.blmbcxrc).then(responseData => {
           if(responseData.code === 100) {
-            this.showMessage({type: 'success', msg: '删除成功'})
+            this.showMessage({type: 'success', msg: 'Xóa thành công'})
           } else {
             this.showMessage(responseData)
           }

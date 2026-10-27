@@ -13,7 +13,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 /**
- * 科室信息Service
+ * Thông tin khoaService
  * @author ch
  * @version 2022-06-14
  */
@@ -32,16 +32,16 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
     @Transactional(readOnly = false)
     public ClinicOffice save(ClinicOffice clinicOffice){
        if(StringUtils.isBlank(clinicOffice.getId())){
-           //进行编号校验
+           //tiến hành dòngmã sốKiểm tra
            List<ClinicOffice> clinicOffices = this.dao.getByCode(clinicOffice);
            if(!CollectionUtils.isEmpty(clinicOffices)){
-               throw new ServiceException("已存在相同编号科室,请重新输入");
+               throw new ServiceException("Đã tồn tạigiống hệtmã sốKhoa,Vui lòng nhập lại");
            }
 
-           //进行科室名称校验
+           //tiến hành dòngTên khoaKiểm tra
            List<ClinicOffice> clinicOfficeList = this.dao.getByName(clinicOffice);
            if(!CollectionUtils.isEmpty(clinicOfficeList)){
-               throw new ServiceException("已存在相同名称科室,请重新输入");
+               throw new ServiceException("Đã tồn tạigiống hệtTênKhoa,Vui lòng nhập lại");
            }
        }
         ClinicOffice save = super.save(clinicOffice);

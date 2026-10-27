@@ -122,7 +122,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * IN查询
+   * INTruy vấn
    */
   in(columnName, values) {
     if (values && values.length > 0) {
@@ -132,7 +132,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * NOT IN查询
+   * NOT INTruy vấn
    */
   notIn(columnName, values) {
     if (values && values.length > 0) {
@@ -142,7 +142,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * BETWEEN查询
+   * BETWEENTruy vấn
    */
   between(columnName, start, end) {
     if (start !== null && start !== undefined && end !== null && end !== undefined) {
@@ -152,7 +152,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * IS NULL查询
+   * IS NULLTruy vấn
    */
   isNull(columnName) {
     this.params.push({ columnName, queryType: 'is null', value: null })
@@ -160,7 +160,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * IS NOT NULL查询
+   * IS NOT NULLTruy vấn
    */
   isNotNull(columnName) {
     this.params.push({ columnName, queryType: 'is not null', value: null })
@@ -178,7 +178,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 添加OR逻辑参数
+   * ThêmOR逻辑参数
    */
   or(columnName, queryType, value) {
     if (value !== null && value !== undefined) {

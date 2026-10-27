@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 系统表约束Service
+ * Hệ thốngbảngràng buộcService
  * @author lys
  * @version 2019-08-31
  */
@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class SchemaConstraintService extends BaseService {
 	/**
-	 * 持久层对象
+	 * tầng persistenceĐối tượng
 	 */
 	@Autowired
 	protected SchemaConstraintDao dao;

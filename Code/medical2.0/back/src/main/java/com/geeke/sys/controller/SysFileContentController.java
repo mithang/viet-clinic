@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * 系统附件字节Controller
+ * Tệp đính kèm hệ thốngbyteController
  * @author szy
  * @version 2021-08-26
  */
@@ -42,7 +42,7 @@ public class SysFileContentController extends BaseController {
 
             os.close();
         } catch (IOException e) {
-            logger.error("文件输出失败", e);
+            logger.error("Xuất tệp thất bại", e);
         }
     }
 

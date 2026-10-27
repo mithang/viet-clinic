@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.DictType;
 
 /**
- * 字典类型DAO接口
+ * Loại từ điểnDAOGiao diện
  * @author lys
  * @version 2021-08-05
  */

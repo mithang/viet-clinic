@@ -12,11 +12,11 @@ public class StuffsalessummaryRc {
     private String clmc;
     private String lx;
     /*
-  机构状态（1：租户登录）
+  Trạng thái cơ sở(1: Đăng nhập tenant)
    */
     private String jgzt;
     /*
-    机构id（租户id）
+    Cơ sởid(Đơn vị thuêid)
      */
     private String jgid;
 }

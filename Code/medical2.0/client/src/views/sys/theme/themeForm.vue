@@ -3,38 +3,38 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
     <el-form :model='bizFormModel' :rules='formRules' 
       ref='themeForm' label-width='120px' label-position='right' class='edit-form'>    
 
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='名称' prop='name'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入名称"' autofocus></el-input>
+          <el-form-item label='Tên' prop='name'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên"' autofocus></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col>
-          <el-form-item label='主题' prop='theme'>        
+          <el-form-item label='Chủ đề' prop='theme'>        
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.theme' type='textarea'  
-             :maxlength='2000' :placeholder='dialogProps.action === "view"? "" : "请输入主题"' ></el-input>
+             :maxlength='2000' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập chủ đề"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='默认' prop='isDefault'>
+          <el-form-item label='Mặc định' prop='isDefault'>
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isDefault' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("themeForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("themeForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -61,16 +61,16 @@ export default {
       },
       formRules: {
         'name': [
-            { required: true, message: '请输入名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên', trigger: 'blur' }
         ],
         'theme': [
-            { required: true, message: '请输入主题', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập chủ đề', trigger: 'blur' }
         ],
       }
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -105,7 +105,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改系统主题'
+      this.dialogProps.title = 'Sửa chủ đề hệ thống'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -118,10 +118,10 @@ export default {
     },
     initFormModel(This) {
       return {
-        'name': '',   // 名称
-        'theme': '',   // 主题
-        'isDefault': 1,   // 默认
-        'remarks': '',   // 备注信息
+        'name': '',   // Tên
+        'theme': '',   // Chủ đề
+        'isDefault': 1,   // Mặc định
+        'remarks': '',   // Thông tin ghi chú
 
       }
     },
@@ -136,21 +136,21 @@ export default {
     },
     openEditThemeDialog(theme) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改系统主题'
+      this.dialogProps.title = 'Sửa chủ đề hệ thống'
       this.bizFormModel = theme
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
     },
     openAddThemeDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加系统主题'
+      this.dialogProps.title = 'Thêm chủ đề hệ thống'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
     },
     openCopyThemeDialog(theme) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加系统主题'
+      this.dialogProps.title = 'Thêm chủ đề hệ thống'
       this.bizFormModel = theme
       this.initOptions(this.bizFormModel)
       this.bizFormModel.id = null

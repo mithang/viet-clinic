@@ -3,7 +3,7 @@ package com.geeke.stock.entity;
 import java.util.List;
 
 /**
- * 入库Evt
+ * Nhập khoEvt
  * @author txl
  * @version 2022-06-07
  */
@@ -11,11 +11,11 @@ public class DispensingEvt {
 
     private static final long serialVersionUID = 1005591224273698941L;
     private String registrationId;
-    //  退药时的处方id
+    //  Trả thuốc giờ của Đơn thuốcid
     private List<String> recipelInfoIdList;
-    //  0|1|2|3|4 未发|部分已发|已发|已退|部分已退
+    //  0|1|2|3|4 Chưaphát|Một phầnĐãphát|Đãphát|Đãtrả|Một phầnĐãtrả
     private String dispensingStatus;
-    //  0|1 发药|退药
+    //  0|1 Phát thuốc|Trả thuốc
     private String dispensingType;
     private List<DispensingDetailEvt> dispensingDetailEvtList;
 

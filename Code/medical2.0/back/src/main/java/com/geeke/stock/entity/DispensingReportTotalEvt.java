@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 发药明细Entity
+ * Chi tiết phát thuốcEntity
  * @author txl
  * @version 2022-08-11
  */
@@ -17,12 +17,12 @@ public class DispensingReportTotalEvt {
 
 	private static final long serialVersionUID = 1025152944882663512L;
 
-	//数量合计
+	//Số lượngTổng cộng
 	private String numberAmount;
-    //进价总价合计
+    //giá nhậptổng giáTổng cộng
     private String bidTotalAmount;
-	//销售总价合计
+	//bán hàngtổng giáTổng cộng
     private String priceTotalAmount;
-    //利润合计
+    //利润Tổng cộng
     private String profitAmount;
 }

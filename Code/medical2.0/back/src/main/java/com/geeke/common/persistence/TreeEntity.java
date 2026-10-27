@@ -10,7 +10,7 @@ import com.geeke.utils.StringUtils;
 
 
 /**
- * 数据Entity类
+ * Dữ liệuEntityLớp
  * @author lys
  * @version 2018-05-16
  */
@@ -18,10 +18,10 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 
 	private static final long serialVersionUID = 1L;
 
-	protected T parent;	// 父级
-	protected String ids; // 全编号
-	protected Integer sort;		// 排序
-	protected List<T> children;		//子节点
+	protected T parent;	// chacấp
+	protected String ids; // toàn bộmã số
+	protected Integer sort;		// Sắp xếp
+	protected List<T> children;		//conNút
 	
 	public TreeEntity() {
 		super();
@@ -33,7 +33,7 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 	
 	
 	/**
-	 * 插入之前执行方法，需要手动调用
+	 * Phương thức thực thi trước khi chèn, Cần gọi thủ công
 	 */
 	@Override
 	public void preInsert(){
@@ -48,7 +48,7 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 	}
 
 	/**
-	 * 更新之前执行方法，需要手动调用
+	 * Phương thức thực thi trước khi cập nhật, Cần gọi thủ công
 	 */
 	@Override
 	public void preUpdate(){
@@ -63,7 +63,7 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 	}	
 	
 	//@JsonBackReference
-	@NotNull(message="父级标识不能为空")
+	@NotNull(message="chacấpđịnh danhKhông thể là trống")
 	public T getParent() {
 		return parent;
 	}
@@ -99,7 +99,7 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 	}
 	
 	/*
-	 * 客户端selecttree组件  需要的lable字段
+	 * Khách hàngđầuselecttreenhómtệp  Cần của lableTrường
 	 */
 	public String getLabel() {
 		return this.getName();

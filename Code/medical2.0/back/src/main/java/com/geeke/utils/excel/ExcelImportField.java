@@ -3,10 +3,10 @@ package com.geeke.utils.excel;
 import java.lang.annotation.*;
 
 /**
- * Excel导入字段映射注解
- * 标注实体字段与 Excel 列的映射关系
+ * ExcelNhậpTrườngánh xạannotation
+ * 标注thực thểTrường và  Excel Cột của ánh xạquan hệ
  *
- * <p>使用示例:</p>
+ * <p>Ví dụ sử dụng:</p>
  * <pre>{@code
  * public class Drug {
  *     @ExcelImportField(columnIndex = 0, required = true, maxLength = 128)
@@ -22,21 +22,21 @@ import java.lang.annotation.*;
 @Documented
 public @interface ExcelImportField {
 
-    /** Excel列号（从0开始） */
+    /** ExcelCộtsố(Từ 0Bắt đầu) */
     int columnIndex();
 
-    /** 是否必填，默认false */
+    /** Có hay khôngbắt buộc, Mặc địnhfalse */
     boolean required() default false;
 
-    /** 字符串最大长度，默认不限制 */
+    /** chuỗiĐộ dài tối đa, Mặc địnhkhônggiới hạn */
     int maxLength() default -1;
 
-    /** 字典类型ID（用于自动解析字典项名称到DictItem） */
+    /** Loại từ điểnID(Dùng để tự động phân tích mục từ điểnTênĐếnDictItem) */
     String dictTypeId() default "";
 
-    /** 默认值（当单元格为空时使用） */
+    /** Mặc địnhGiá trị(khiđơn đồngô là trống giờsử dụng) */
     String defaultValue() default "";
 
-    /** 字段中文名（用于错误提示） */
+    /** Trường trong văn bảntên(dùng đểLỗiđề xuấthiển thị) */
     String label() default "";
 }

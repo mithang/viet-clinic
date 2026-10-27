@@ -9,11 +9,11 @@ public class WorkLoadStat {
     private String jgid;
     private String jgmc;
     private String companyId;
-    private String count;   //接诊次数
-    private BigDecimal grossAmount;  //应收金额
-    private BigDecimal actual;  //实收金额
-    private BigDecimal favorable;  //优惠金额
-    private BigDecimal registrationCost;    //挂号费
+    private String count;   //Số lần tiếp nhận
+    private BigDecimal grossAmount;  //phải thuSố tiền
+    private BigDecimal actual;  //Số tiền thực thu
+    private BigDecimal favorable;  //Số tiền ưu đãi
+    private BigDecimal registrationCost;    //Phí đăng ký khám
     private BigDecimal westCost;
     private BigDecimal chineseCost;
     private BigDecimal chinesePatentCost;

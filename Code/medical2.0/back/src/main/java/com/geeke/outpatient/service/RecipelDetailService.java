@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 处方详情 Service
+ * Chi tiết đơn thuốc Service
  * @author txl
  * @version 2022-06-07
  */
@@ -54,28 +54,28 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
 
     }
 
-    // 处方id获取处方详情
+    // Đơn thuốcidLấy chi tiết đơn thuốc
     @Transactional(readOnly = true)
     public List<RecipelDetail> getRecipelDetail(String id) {
         List<RecipelDetail> recipelDetail = recipelDetailDao.getRecipelDetail(id);
         return recipelDetail;
     }
 
-    // 处方id获取项目执行进度
+    // Đơn thuốcidLấyhạng mụcTiến độ thực hiện
     @Transactional
     public int schedule(String id) {
-        // 如果返回值为负数则未完成，如果为0则已完成
+        // NếuTrả vềGiá trị là âmsốthìChưahoàn thành, Nếu là 0thìĐãhoàn thành
         int recipelDetail = recipelDetailDao.schedule(id);
         return recipelDetail;
     }
 
-    //统计未过期的已经被占用的药品
+    //thống kêChưahết hạn của Đãbịchiếm dụng của Thuốc
     public List<RecipelStastics> getDetailStasticsForOccupy(int days)
     {
         return this.dao.getDetailStasticsForOccupy(SessionUtils.getLoginTenantId(),days);
     }
 
-    //统计当前需要的药品
+    //thống kêHiện tạiCần của Thuốc
     public List<RecipelStastics> getDetailStasticsForNowByRecordId(String medicalRecordId)
     {
         return this.dao.getDetailStasticsForNowByRecordId(medicalRecordId,SessionUtils.getLoginTenantId());
@@ -88,9 +88,9 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
     }
 
     /**
-     * 批量查询多个处方的明细
-     * @param recipelInfoIds 处方ID列表
-     * @return 按处方ID分组的明细Map
+     * hàng loạtTruy vấnnhiềuCáiĐơn thuốc của Chi tiết
+     * @param recipelInfoIds Đơn thuốcIDDanh sách
+     * @return theoĐơn thuốcID phútnhóm của Chi tiếtMap
      */
     public Map<String, List<RecipelDetail>> getByRecipelInfoIds(List<String> recipelInfoIds) {
         if (CollectionUtils.isEmpty(recipelInfoIds)) {
@@ -122,7 +122,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                             count++;
                         }
                     }
-                    //如果所有项目都完成的话，就修改处方的标志
+                    //NếuTất cả các hạng mục đều hoàn thành của nói, thìSửaĐơn thuốc của cờ
                     if(count==recipelDetails.size()){
                         int i1 = recipelInfoDao.updateById(1,0, recipelDetail.getRecipelInfo().getId());
                         if(i1>0){
@@ -131,7 +131,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                             registration.setTreatmentDate(new Date());
                             registrationService.save(registration);
                             
-                            // 更新该处方下所有检验检查状态为已填写
+                            // Cập nhật trạng thái xét nghiệm - kiểm tra của đơn thuốc này thành đã điền
                             List<InspectionCheck> inspectionChecks = inspectionCheckService.getByRecipelInfoId(recipelInfo.getId());
                             if (!CollectionUtils.isEmpty(inspectionChecks)) {
                                 for (InspectionCheck inspectionCheck : inspectionChecks) {
@@ -168,7 +168,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                         count++;
                     }
                 }
-                //如果所有项目都完成的话，就修改处方的标志
+                //NếuTất cả các hạng mục đều hoàn thành của nói, thìSửaĐơn thuốc của cờ
                 if(count==recipelDetails2.size()){
                     int i1 = recipelInfoDao.updateById(1,1, recipelDetail.getRecipelInfo().getId());
                     if(i1>0){
@@ -177,7 +177,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                         registration.setTreatmentDate(new Date());
                         registrationService.save(registration);
                         
-                        // 更新该处方下所有检验检查状态为已填写
+                        // Cập nhật trạng thái xét nghiệm - kiểm tra của đơn thuốc này thành đã điền
                         List<InspectionCheck> inspectionChecks = inspectionCheckService.getByRecipelInfoId(recipelInfo.getId());
                         if (!CollectionUtils.isEmpty(inspectionChecks)) {
                             for (InspectionCheck inspectionCheck : inspectionChecks) {

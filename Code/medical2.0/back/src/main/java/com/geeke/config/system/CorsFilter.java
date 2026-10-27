@@ -17,14 +17,14 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
-@Component  // 跨域filter处理
+@Component  // vượtvùngfilterXử lý
 public class CorsFilter implements Filter {
 
     final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CorsFilter.class);
 
     /**
-     * 允许的跨域来源，多个用逗号分隔。默认允许本地开发。
-     * 生产环境应通过环境变量 CORS_ALLOWED_ORIGINS 配置具体域名。
+     * cho phép của vượtvùngđếnnguồn, nhiềuCáidùngPhân tách bằng dấu phẩy. Mặc địnhcho phépnàyđịa phươngmởphát. 
+     * Môi trường production nênQuamôi trườngthay đổilượng CORS_ALLOWED_ORIGINS cấu hìnhcụ thểvùngtên. 
      */
     @Value("${cors.allowed-origins:http://localhost:7020,http://127.0.0.1:7020}")
     private String allowedOrigins;
@@ -35,14 +35,14 @@ public class CorsFilter implements Filter {
 
         String origin = request.getHeader("Origin");
 
-        // 允许的来源列表
+        // cho phép của đếnnguồnDanh sách
         List<String> allowedOriginList = Arrays.asList(allowedOrigins.split(","));
 
-        // 如果配置为 * 则允许所有来源（不推荐与 Allow-Credentials 一起使用）
+        // Nếucấu hình là  * Thì cho phép mọi nguồn(không推荐 và  Allow-Credentials mộtbắt đầusử dụng)
         if ("*".equals(allowedOrigins.trim())) {
             response.setHeader("Access-Control-Allow-Origin", "*");
         } else if (origin != null && allowedOriginList.contains(origin.trim())) {
-            // 反射请求的 Origin，支持带凭证的跨域请求
+            // reflectionVui lòngyêu cầu của  Origin, hỗ trợkèmchứng từ của vượtvùngVui lòngyêu cầu
             response.setHeader("Access-Control-Allow-Origin", origin);
             response.setHeader("Access-Control-Allow-Credentials", "true");
         }
@@ -51,7 +51,7 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Token, Authorization");
 
-        // 预检请求直接返回
+        // trước检Vui lòngyêu cầutrực tiếpTrả về
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;

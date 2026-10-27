@@ -32,7 +32,7 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
 
     @Override
     public List<String> bulkInsert(List<HisDrugs> entitys) {
-        //院版诊所对应关系/
+        //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> typeMap = getTypeMap(BizConstants.DICT_TYPE_DRUG_TYPE);
         Map<String, String> dosMap = getTypeMap(BizConstants.DICT_TYPE_DOSAGE_UNIT);
         Map<String, String> preMap = getTypeMap(BizConstants.DICT_TYPE_PREPARATION_UNIT);

@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.PropertySet;
 
 /**
- * 属性集管理DAO接口
+ * Quản lý tập thuộc tínhDAOGiao diện
  * @author lys
  * @version 2021-12-26
  */

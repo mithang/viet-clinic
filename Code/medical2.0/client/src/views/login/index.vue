@@ -43,7 +43,7 @@
               v-model="loginForm.username"
               autoComplete="on"
               autofocus="autofocus"
-              placeholder="用户名"
+              placeholder="Tên đăng nhập"
               @input="isError = false"
               size="large"
             >
@@ -55,7 +55,7 @@
               name="password"
               type="password"
               v-model.trim="loginForm.password"
-              placeholder="口令"
+              placeholder="Mật khẩu"
               @input="isError = false"
               size="large"
             >
@@ -70,7 +70,7 @@
             @click.native.prevent="doLogin"
             native-type="submit"
             size="large"
-            >登录</el-button
+            >Đăng nhập</el-button
           >
         </div>
       </el-form>
@@ -113,8 +113,8 @@
         </li>
       </ul>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmLogin()">确 定</el-button>
+        <el-button @click="dialogVisible = false">Hủy</el-button>
+        <el-button type="primary" @click="confirmLogin()">Xác nhận</el-button>
       </div>
     </el-dialog>
   </div>
@@ -160,23 +160,23 @@ export default {
       },
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập tên đăng nhập", trigger: "blur" },
         ],
         password: [{ required: true, message: "请输入口令", trigger: "blur" }],
       },
       loginBg: require("../../assets/images/Logbk.png"),
       loginSubBg: require("../../assets/images/logsubbg.jpg"),
       sysData: {
-        sysName: "", // 系统名称
-        sysAbbrname: "", // 系统简称
-        loginBgcolor: "", // 登录页背景色
+        sysName: "", // Tên hệ thống
+        sysAbbrname: "", // Tên viết tắt hệ thống
+        loginBgcolor: "", // Màu nền trang đăng nhập
         loginLayout: "simple-center",
-        projectLogo: "", // 项目logo
-        loginLogo: "", // 登录框logo
-        sysLogo: "", // 系统主页logo
-        favicon: "", // 网页顶部 favicon 图标
-        loginBg: "", // 登录页背景图
-        loginGraph: "", // 登录页配图
+        projectLogo: "", // Hạng mụclogo
+        loginLogo: "", // Hộp đăng nhậplogo
+        sysLogo: "", // Trang chủ hệ thốnglogo
+        favicon: "", // Đầu trang web favicon Biểu tượng
+        loginBg: "", // Ảnh nền trang đăng nhập
+        loginGraph: "", // Ảnh minh họa trang đăng nhập
       },
       isError: false,
       loginError: "",
@@ -267,7 +267,7 @@ export default {
             // 检查是否返回了错误响应
             if (res && res.code && res.code !== 100) {
               this.isError = true;
-              this.loginError = res.msg || "登录失败";
+              this.loginError = res.msg || "Đăng nhập thất bại";
               return;
             }
             if (!res || !Array.isArray(res) || res.length === 0) {
@@ -294,7 +294,7 @@ export default {
             }
           } catch (error) {
             this.isError = true;
-            this.loginError = error.msg || "登录失败，请检查网络连接";
+            this.loginError = error.msg || "Đăng nhập thất bại，请检查网络连接";
           }
         }
       });

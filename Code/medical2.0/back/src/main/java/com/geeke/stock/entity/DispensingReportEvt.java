@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 发药明细Entity
+ * Chi tiết phát thuốcEntity
  * @author txl
  * @version 2022-08-11
  */
@@ -21,45 +21,45 @@ public class DispensingReportEvt {
 
 	private static final long serialVersionUID = 1025152944882663511L;
 
-	//处方单号
+	//Đơn thuốcđơnsố
 	private String recipelCode;
-	//类型
+	//Loại
     private String type;
-	//是否拆零
+	//Có hay khôngbán lẻ
     private String isUnpackSell;
-    //名称
+    //Tên
     private String name;
-    //规格
+    //Quy cách
     private String norms;
-    //数量
+    //Số lượng
     private String number;
-    //制剂
+    //Chế phẩm
     private String preparation;
-    //单位
+    //Đơn vị
     private String unit;
-    //包装单位
+    //Đơn vị đóng gói
     private String pack;
-    //进价单价
+    //giá nhậpđơn giá
     private BigDecimal bid;
-    //进价包装价格
+    //giá nhậpđóng góiGiá
     private BigDecimal packageBid;
-    //进价总价
+    //giá nhậptổng giá
     private BigDecimal bidTotal;
-    //销售单价
+    //bán hàngđơn giá
     private BigDecimal price;
-    //销售包装价
+    //bán hàngđóng góigiá
     private BigDecimal packagePrice;
-    //销售总价
+    //bán hàngtổng giá
     private BigDecimal priceTotal;
     //利润
     private BigDecimal profit;
-    //生产厂家
+    //Nhà sản xuất
     private String factory;
-    //生产批号
+    //Số lô sản xuất
     private String batchNo;
-    //失效日期
+    //hết hiệu lựcNgày
     private Date endDate;
-    //发药日期
+    //Ngày phát thuốc
     private Date dispensingDate;
 
     private Company company;

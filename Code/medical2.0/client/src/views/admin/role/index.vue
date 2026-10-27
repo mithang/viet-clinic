@@ -1,27 +1,27 @@
 <template>
   <el-row v-loading='loading'>
     <el-container>
-      <!-- 历史记录  -->
+      <!-- Lịch sử  -->
       <History :bussObject='curentRow' ></History>
-      <!-- 编辑窗口  -->
+      <!-- Cửa sổ chỉnh sửa  -->
       <role-form ref='roleForm' :permission='permission' @save-finished='loadData'></role-form>
       <role-permission ref="rolePermission"></role-permission>
-      <!-- 非系统管理员不可见  -->
+      <!-- Người không phải quản trị hệ thống không thấy được  -->
       <div class="page-left-container" v-show='currentUser.id === 1001'>
         <el-aside>
           <el-table ref='treeTable' :data='companys' row-key='id' :tree-props="{children: 'children', hasChildren: 'hasChildren'}" highlight-current-row :cell-style="function() {return {borderBottom: 'none'} }" @current-change='onLeftCurrentChange'>
-            <el-table-column label='公司' prop='name'></el-table-column>
+            <el-table-column label='Công ty' prop='name'></el-table-column>
           </el-table>
         </el-aside>
       </div>
       <el-card class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='名称' prop='name'>
-                  <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入名称'></el-input>
+                <el-form-item label='Tên' prop='name'>
+                  <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên'></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="3" style="display:flex;justivy-content:space-around">
@@ -30,13 +30,13 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
             </el-col>
             <el-col :span="15" style="text-align:right;padding-right:5px">
               <el-button-group>
@@ -45,7 +45,7 @@
                     type="primary"
                     icon="el-icon-plus"                   
                     @click="onCreateRole()"
-                    >添加</el-button
+                    >Thêm</el-button
                   >
               </el-button-group>
             </el-col>
@@ -53,19 +53,19 @@
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :curNode='currentCompany' exclude='company_id' :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
       
-      <!-- 工具栏 开始 -->
+      <!-- Thanh công cụ Bắt đầu -->
       
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Kết thúc -->
       
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
             <el-table ref="mutipleTable" height="calc(100vh - 254px)" class='drag_table' :data='roleList' border @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -78,25 +78,25 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType)}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='155 + "px"'  :key="'operate'">
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='155 + "px"'  :key="'operate'">
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='roleList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view'
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
                     @click='onViewEntity(scope.$index, scope.row, "roleForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                     @click='onEditEntity(scope.$index, scope.row, "roleForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document'
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyEntity(scope.$index, scope.row, "roleForm")'></OperationIcon>
-                    <OperationIcon v-show='permission.edit' type='primary' content='权限设置' placement='top-start' icon-name='el-icon-menu'
+                    <OperationIcon v-show='permission.edit' type='primary' content='Cài đặt quyền' placement='top-start' icon-name='el-icon-menu'
                       @click='handleSetPermission(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete'
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
                     @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info'
+                  <OperationIcon v-show='permission.remove' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -104,8 +104,8 @@
     	  </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -120,7 +120,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 --> 
+      <!-- Thanh phân trang     Kết thúc --> 
       </el-card>
     </el-container>
   </el-row>
@@ -165,18 +165,18 @@ export default {
         'name': 'like',
       },
       queryModel:  {
-        'company': {     // 父表 公司
+        'company': {     // Bảng cha Công ty
           'id': null,
           'name': '',
         },
-        'name': '',   // 名称
+        'name': '',   // Tên
       },
-      currentCompany: {},     //树形结构中选择的公司
+      currentCompany: {},     //Công ty được chọn trong cấu trúc cây
       roleTotal: 0,
-      roleList: [],     // 数表数据
-      companys: [],           // 公司树表
+      roleList: [],     // Dữ liệu bảng số
+      companys: [],           // Bảng cây công ty
 
-      oprColumnWidth: 165,  // 操作列宽
+      oprColumnWidth: 165,  // Độ rộng cột thao tác
       tableId: '4012',
       schemeId: '6011'
     }
@@ -216,8 +216,8 @@ export default {
     },
     appendSearchParams() {
       if(validatenull(this.currentCompany)) {
-        this.$alert('请选择公司', '提示', {
-          confirmButtonText: '确定',
+        this.$alert('Vui lòng chọn công ty', 'Nhắc nhở', {
+          confirmButtonText: 'Xác nhận',
           type: 'info'
         })
         return
@@ -244,8 +244,8 @@ export default {
     },
     onCreateRole() {
       if(validatenull(this.currentCompany)) {
-        this.$alert('请选择公司', '提示', {
-          confirmButtonText: '确定',
+        this.$alert('Vui lòng chọn công ty', 'Nhắc nhở', {
+          confirmButtonText: 'Xác nhận',
           type: 'info'
         })
         return
@@ -309,18 +309,18 @@ export default {
     width:100% !important
   }
   .drag_table {
- // 设置表格header的高度
+ // Cài đặt bảngheaderChiều cao của
  ::v-deep th {
    height: 44px;
  }
 ::v-deep th.gutter:last-of-type {
   height: 0 !important;
 }
- // 设置表格body的高度
+ // Cài đặt bảngbodyChiều cao của
  ::v-deep.el-table__body-wrapper {
-  //解决数据展示超出body高度不滚动bug
+  //Khắc phục hiển thị dữ liệu vượt quábodychiều cao không cuộn đượcbug
   overflow-y: auto;
-   // 减去的是表格header的高度
+   // Phần trừ đi là bảngheaderChiều cao của
    height: calc(100% - 44px) !important;
  }
   .el-table__fixed-right {

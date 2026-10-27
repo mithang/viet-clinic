@@ -4,16 +4,16 @@
       <el-row id="conditionRow">
         <el-col :span="8" style="text-align:center">
           <el-date-picker :picker-options="filerData.pickerOptions" v-model="condition.dateRange" type="datetimerange"
-            range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+            range-separator="đến" start-placeholder="Ngày bắt đầu" end-placeholder="Ngày kết thúc"
             :default-time="['00:00:00', '23:59:59']">
           </el-date-picker>
         </el-col>
         <el-col :span="4">
-          <SearchItem label="类型">
+          <SearchItem label="Loại">
             <DrugStuffTypeSelect v-model="condition.type"></DrugStuffTypeSelect>
           </SearchItem>
-          <!-- <el-select v-model="condition.type" placeholder="类型">
-            <el-option label="全部" value="">全部</el-option>
+          <!-- <el-select v-model="condition.type" placeholder="Loại">
+            <el-option label="Tất cả" value="">Tất cả</el-option>
             <el-option
               v-for="typexz in typeList"
               :label="typexz.name"
@@ -23,11 +23,11 @@
           </el-select>-->
         </el-col>
         <el-col :span="4">
-          <SearchItem label="状态">
+          <SearchItem label="Trạng thái">
             <SupplierOutboundStatusSelect v-model="condition.status"></SupplierOutboundStatusSelect>
           </SearchItem>
           <!--   <el-select v-model="condition.status" placeholder="出库单状态">
-            <el-option label="全部" value="">全部</el-option>
+            <el-option label="Tất cả" value="">Tất cả</el-option>
             <el-option
               v-for="statusxz in statusList"
               :label="statusxz.name"
@@ -38,13 +38,13 @@
         </el-col>
         <el-col :span="4">
 
-          <SearchItem label="出库方式">
+          <SearchItem label="Phương thức xuất kho">
             <!--   <SupplierOutboundMethodSelect v-model="condition.method"></SupplierOutboundMethodSelect> -->
             <DictItemSelect type="outboundMethod" v-model="condition.method" :showHeader="true"></DictItemSelect>
           </SearchItem>
           <!--
-          <el-select v-model="condition.method" placeholder="出库方式">
-            <el-option label="全部" value="">全部</el-option>
+          <el-select v-model="condition.method" placeholder="Phương thức xuất kho">
+            <el-option label="Tất cả" value="">Tất cả</el-option>
             <el-option
               v-for="methodxz in methodList"
               :key="methodxz.name"
@@ -55,16 +55,16 @@
           </el-select>-->
         </el-col>
         <el-col :span="3" style="display:flex;justivy-content:space-around">
-          <el-button type="primary" icon="el-icon-search" @click="querySupplierStorageList()" :plain="true">搜索
+          <el-button type="primary" icon="el-icon-search" @click="querySupplierStorageList()" :plain="true">Tìm kiếm
           </el-button>
-          <el-button type="info" icon="el-icon-refresh-left" @click="resetCondition()" :plain="true">重置</el-button>
+          <el-button type="info" icon="el-icon-refresh-left" @click="resetCondition()" :plain="true">Đặt lại</el-button>
         </el-col>
       </el-row>
       <el-row style="margin-top:10px;margin-bottom:10px">
         <el-col :span="24" style="text-align:right">
           <div class="bg_btn">
-            <el-button type="primary" @click="editAndAddOutbound(1)">新增药品</el-button>
-            <el-button type="primary" @click="editAndAddOutbound(2)">新增材料</el-button>
+            <el-button type="primary" @click="editAndAddOutbound(1)">Thêm mới thuốc</el-button>
+            <el-button type="primary" @click="editAndAddOutbound(2)">Thêm mới vật tư</el-button>
           </div>
         </el-col>
       </el-row>
@@ -72,9 +72,9 @@
         <el-col :span="2" :offset="22">
           <div class="bg_btn">
             <el-button type="primary" @click="querySupplierStorageList()"
-              >查询</el-button
+              >Truy vấn</el-button
             >
-            <el-button @click="resetCondition()">重置</el-button>
+            <el-button @click="resetCondition()">Đặt lại</el-button>
           </div>
         </el-col>
       </el-row> -->
@@ -84,41 +84,41 @@
             @selection-change="selectionChange">
             <el-table-column type="selection" width="55">
             </el-table-column>
-            <el-table-column type="index" :index="indexMethod" width="50px" label="序号" align="center">
+            <el-table-column type="index" :index="indexMethod" width="50px" label="Số thứ tự" align="center">
             </el-table-column>
-            <el-table-column prop="code" label="出库单号">
+            <el-table-column prop="code" label="Số đơn xuất kho">
             </el-table-column>
-            <el-table-column prop="method" label="出库方式" width="80px">
+            <el-table-column prop="method" label="Phương thức xuất kho" width="80px">
               <template slot-scope="scope">
                 <DictItemView type="outboundMethod" :dictValue="scope.row.method"></DictItemView>
               </template>
             </el-table-column>
-            <el-table-column prop="type" label="物品类型" width="80px">
+            <el-table-column prop="type" label="Loại vật phẩm" width="80px">
               <template slot-scope="scope">
                 <span v-if="scope.row.type==='1'">
-                  药品
+                  Thuốc
                 </span>
                 <span v-if="scope.row.type==='2'">
-                  材料
+                  Vật tư
                 </span>
               </template>
             </el-table-column>
             <el-table-column prop="createBy" label="出库人"></el-table-column>
             <el-table-column prop="createDate" label="出库日期"></el-table-column>
             <el-table-column prop="examineBy" label="审批人"></el-table-column>
-            <el-table-column prop="examineDate" label="审批日期"></el-table-column>
+            <el-table-column prop="examineDate" label="Ngày phê duyệt"></el-table-column>
             <!--  <el-table-column prop="purchasing" label="进价总额"></el-table-column>
          <el-table-column prop="retail" label="零售总额"></el-table-column>-->
-            <el-table-column prop="examine.name" label="状态" width="80px">
+            <el-table-column prop="examine.name" label="Trạng thái" width="80px">
               <template slot-scope="scope">
                 <SupplierOutboundStatusView v-model="scope.row.status"></SupplierOutboundStatusView>
               </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" width="120">
+            <el-table-column label="Thao tác" align="center" width="120">
               <template slot-scope="scope">
-               <OperationIcon  content='查看'  type="info"  icon-name="el-icon-view"  @click="onView(scope.$index,scope.row)"></OperationIcon>
-               <OperationIcon v-if="scope.row.status===1"  content='审核'  type="primary"  icon-name="el-icon-document"  @click="onAudit(scope.$index,scope.row)"></OperationIcon>
-                <OperationIcon v-if="scope.row.status===1"  content='编辑'  type="primary"  icon-name="el-icon-edit"  @click="onUpdate(scope.$index,scope.row)"></OperationIcon>
+               <OperationIcon  content='Xem'  type="info"  icon-name="el-icon-view"  @click="onView(scope.$index,scope.row)"></OperationIcon>
+               <OperationIcon v-if="scope.row.status===1"  content='Duyệt'  type="primary"  icon-name="el-icon-document"  @click="onAudit(scope.$index,scope.row)"></OperationIcon>
+                <OperationIcon v-if="scope.row.status===1"  content='Sửa'  type="primary"  icon-name="el-icon-edit"  @click="onUpdate(scope.$index,scope.row)"></OperationIcon>
                 <OperationIcon v-if="scope.row.status===1"  content='撤消'  type="primary"  icon-name="el-icon-delete"  @click="onCancel(scope.$index,scope.row)"></OperationIcon>
               </template>
             </el-table-column>
@@ -201,24 +201,24 @@ import OperationIcon from '@/components/OperationIcon'
             // },
           },
         },
-        company_id: "" /*诊所ID - 由currentUser.company.id动态获取*/ ,
+        company_id: "" /*Phòng khámID - bởicurrentUser.company.idLấy động*/ ,
         examine_destroy_id: "1005787933775863932",
-        examine_destroy_value: "supplierStorageExamineStatus_2" /*作废状态value*/ ,
+        examine_destroy_value: "supplierStorageExamineStatus_2" /*Trạng thái hủy bỏvalue*/ ,
         storageTableCurrentPage: 1,
-        storageTablePagesize: 100 /*主表最大显示行数*/ ,
-        storageTableTotal: 0 /*主表共多少条数据*/ ,
+        storageTablePagesize: 100 /*Số dòng hiển thị tối đa của bảng chính*/ ,
+        storageTableTotal: 0 /*Tổng số bản ghi của bảng chính*/ ,
         storageDetailTableCurrentPage: 1,
-        storageDetailTablePagesize: 5 /*主表最大显示行数*/ ,
-        storageDetailTableTotal: 0 /*主表共多少条数据*/ ,
+        storageDetailTablePagesize: 5 /*Số dòng hiển thị tối đa của bảng chính*/ ,
+        storageDetailTableTotal: 0 /*Tổng số bản ghi của bảng chính*/ ,
         supplierList: null,
         breedList: null,
         typeList: null,
         statusList: null,
         methodList: null,
-        storageCode: '', //出库单号
-        supplierName: '', //供应商名称
-        initialNum: [], //明细表赋值
-        invalid: [], //作废明细
+        storageCode: '', //Số đơn xuất kho
+        supplierName: '', //Tên nhà cung cấp
+        initialNum: [], //Gán giá trị cho bảng chi tiết
+        invalid: [], //Chi tiết hủy bỏ
         condition: {
           supplier: {
             id: null,
@@ -226,19 +226,19 @@ import OperationIcon from '@/components/OperationIcon'
           method: null,
           type: null,
           status: null,
-          dateRange: [] /*时间范围*/ ,
+          dateRange: [] /*Khoảng thời gian*/ ,
           batchNo: "",
         },
         storageTable: null,
         otherInfo: {
-          withGoodsNo: "" /*供货单号*/ ,
-          invoiceNumber: "" /*发票号*/ ,
+          withGoodsNo: "" /*Số đơn cung ứng*/ ,
+          invoiceNumber: "" /*Số hóa đơn*/ ,
         },
         storageDetailTable: null,
         dialogVisible: false,
         dialogTitle: "",
-        isAdd: 0 /*0修改 1新增*/ ,
-        addtype: 1, //新增出库单类型 1为药品 2为材料
+        isAdd: 0 /*0Sửa 1Thêm mới*/ ,
+        addtype: 1, //新增出库单类型 1là thuốc 2là vật tư
         selectStorage: [],
         supplierSearch: {
           params: [{
@@ -248,8 +248,8 @@ import OperationIcon from '@/components/OperationIcon'
           }],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         statusSearch: {
           params: [{
@@ -259,8 +259,8 @@ import OperationIcon from '@/components/OperationIcon'
           }],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         methodSearch: {
           params: [{
@@ -270,8 +270,8 @@ import OperationIcon from '@/components/OperationIcon'
           }],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         typeSearch: {
           params: [{
@@ -281,8 +281,8 @@ import OperationIcon from '@/components/OperationIcon'
           }],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         supplierStorageSearch: {
           params: [{
@@ -292,8 +292,8 @@ import OperationIcon from '@/components/OperationIcon'
           }],
           offset: 0,
           limit: 10000,
-          columnName: "code", // 排序字段名
-          order: "desc", // 排序
+          columnName: "code", // Tên trường sắp xếp
+          order: "desc", // Sắp xếp
         },
         supplierStockSearch: {
           params: [{
@@ -303,8 +303,8 @@ import OperationIcon from '@/components/OperationIcon'
           }],
           offset: 0,
           limit: 10000,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         }
       };
     },
@@ -319,31 +319,31 @@ import OperationIcon from '@/components/OperationIcon'
         this.$refs.uOutboundView.openDialog(outboundId);
       },
       onAudit(type, row) {
-        this.$confirm('确定审核通过吗？', '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('确定审核通过吗？', 'Xác nhận', {
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
           type: 'warning'
         }).then(() => {
           examineSupplierOutbound(row.id).then(res => {
             if (res.code === 100) {
               this.$message({
                 type: 'success',
-                message: '审核成功'
+                message: 'Xét duyệt thành công'
               })
             } else {
               this.$message(res.msg)
             }
             this.querySupplierStorageList()
           }).catch(error => {
-            console.error('操作失败',error);
+            console.error('Thao tác thất bại',error);
           })
         }).catch(() => {})
       },
       onCancel(index, row) {
         let that=this;
-        this.$confirm('确定撤销出库单吗？', '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('确定撤销出库单吗？', 'Xác nhận', {
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
           type: 'warning'
         }).then(() => {
           cancelSupplierOutbound(row.id).then(res => {
@@ -518,12 +518,12 @@ import OperationIcon from '@/components/OperationIcon'
 
                 //   getSupplierStockBySid(arr[i].id).then((res)=>{
                 //        if(res.data[0].stuff.name==''){
-                //        arr[i].types='药品'
+                //        arr[i].types='Thuốc'
 
                 //        //arr[i].number=Math.floor(res.data.number/res.data.drug.preparation) > 0 ? Math.floor(res.data.number/res.data.drug.preparation)+(res.data.norms.split("/")[1])+((res.data.number%res.data.drug.preparation > 0) ? (res.data.number%res.data.drug.preparation) + res.data.norms.split("*")[1].split("/")[0].split("")[res.data.norms.split("*")[1].split("/")[0].split("").length-1]:""):res.data.number+res.data.norms.split("*")[1].split("/")[0].split("")[res.data.norms.split("*")[1].split("/")[0].split("").length-1]
 
                 //      }else if(res.data[0].stuff.name!=''){
-                //        arr[i].types='材料'
+                //        arr[i].types='Vật tư'
 
                 //       // arr[i].number=Math.floor(res.data.number/res.data.stuff.packNumber) > 0 ? Math.floor(res.data.number/res.data.stuff.packNumber)+(res.data.norms.split("*")[1])+((res.data.number%res.data.stuff.packNumber > 0) ? (res.data.number%res.data.stuff.packNumber)+res.data.norms.split("*")[0].split("")[res.data.norms.split("*")[0].split("").length-1]:""):res.data.number+res.data.norms.split("*")[0].split("")[res.data.norms.split("*")[0].split("").length-1]
 
@@ -648,7 +648,7 @@ import OperationIcon from '@/components/OperationIcon'
             //   59,
             //   59
             // ),
-          ] /*时间范围*/ ,
+          ] /*Khoảng thời gian*/ ,
           drugName: "",
         };
         this.clearData();
@@ -664,25 +664,25 @@ import OperationIcon from '@/components/OperationIcon'
         this.otherInfo.invoiceNumber = null;
         this.selectStorage = [];
       },
-      //导出表格
+      //Xuất bảng
       exportExcel() {
         let biaoge = []
         biaoge[0] = {
-          code: "单据号",
-          name: "药品/材料名称",
-          norms: "规格",
-          number: "数量",
-          bid: "进价",
-          allBid: "总进价",
-          retailPrice: "零售价",
-          allRetailPrice: "总零售价",
-          batchNo: "生产批号",
-          produceDate: "生产日期",
-          endDate: "有效期",
+          code: "Số chứng từ",
+          name: "Thuốc/Tên vật tư",
+          norms: "Quy cách",
+          number: "Số lượng",
+          bid: "Giá nhập",
+          allBid: "Tổng giá nhập",
+          retailPrice: "Giá bán lẻ",
+          allRetailPrice: "Tổng giá bán lẻ",
+          batchNo: "Số lô sản xuất",
+          produceDate: "Ngày sản xuất",
+          endDate: "Hạn sử dụng",
           createDate: "出库时间",
-          supplier: "供货单位",
-          factory: "厂家名称",
-          beizhu: "备注"
+          supplier: "Đơn vị cung ứng",
+          factory: "Tên nhà sản xuất",
+          beizhu: "Ghi chú"
         }
 
         let numbers = 0;
@@ -732,7 +732,7 @@ import OperationIcon from '@/components/OperationIcon'
         }
         let num = biaoge.length
         biaoge[num] = {
-          code: '合计',
+          code: 'Tổng cộng',
           name: "",
           norms: "",
           number: "",
@@ -751,7 +751,7 @@ import OperationIcon from '@/components/OperationIcon'
           beizhu: ""
         }
         // biaoge[num+1]={
-        //      code:'制单人：',
+        //      code:'Người lập đơn：',
         //      name:"",
         //      norms:"",
         //      number:"",
@@ -759,30 +759,30 @@ import OperationIcon from '@/components/OperationIcon'
         //     //  leastBid:"",
         //      allBid:"",
         //      retailPrice:"",
-        //      allRetailPrice:"库管：",
+        //      allRetailPrice:"Thủ kho：",
         //      batchNo:"",
         //      produceDate:"",
         //      endDate:"",
-        //      createDate:'收货人：',
+        //      createDate:'Người nhận hàng：',
         //      supplier:'',
         //      factory:"",
-        //      beizhu:"收货日期："
+        //      beizhu:"Ngày nhận hàng："
         // }
 
         let web = XLSX.utils.book_new();
         let headers = {
-          name: "药品/材料名称",
-          norms: "规格",
-          factory: "厂家名称",
-          batchNo: "生产批号",
-          produceDate: "生产日期",
-          endDate: "有效期",
-          number: "数量",
-          bid: "进价",
-          leastBid: "最小单位进价",
-          allBid: "总进价",
-          retailPrice: "零售价",
-          allRetailPrice: "总零售价"
+          name: "Thuốc/Tên vật tư",
+          norms: "Quy cách",
+          factory: "Tên nhà sản xuất",
+          batchNo: "Số lô sản xuất",
+          produceDate: "Ngày sản xuất",
+          endDate: "Hạn sử dụng",
+          number: "Số lượng",
+          bid: "Giá nhập",
+          leastBid: "Giá nhập theo đơn vị nhỏ nhất",
+          allBid: "Tổng giá nhập",
+          retailPrice: "Giá bán lẻ",
+          allRetailPrice: "Tổng giá bán lẻ"
         }
         //biaoge.unshift(headers)
         // let contentWs = XLSX.utils.json_to_sheet(biaoge,{
@@ -794,7 +794,7 @@ import OperationIcon from '@/components/OperationIcon'
 
         contentWs["A1"] = {
           t: "s",
-          v: this.storageDetailTable[0].company.name + ' 出库明细表',
+          v: this.storageDetailTable[0].company.name + ' Bảng chi tiết xuất kho',
           s: {
             alignment: {
               horizontal: "center",
@@ -1572,11 +1572,11 @@ import OperationIcon from '@/components/OperationIcon'
 
         ]
 
-        //冻结第一行和第一列：
+        //Cố định dòng đầu tiên và cột đầu tiên：
         contentWs['!freeze'] = {
-          xSplit: "11", //冻结列
-          ySplit: "1", //冻结行
-          topLeftCell: "A2", //在未冻结区域的左上角显示的单元格，默认为第一个未冻结的单元格
+          xSplit: "11", //Cố định cột
+          ySplit: "1", //Cố định dòng
+          topLeftCell: "A2", //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
           state: "frozen"
         }
 
@@ -1624,9 +1624,9 @@ import OperationIcon from '@/components/OperationIcon'
           footer: 0.5
         }
 
-        XLSX.utils.book_append_sheet(web, contentWs, "出库明细表");
+        XLSX.utils.book_append_sheet(web, contentWs, "Bảng chi tiết xuất kho");
 
-        // //使用xlsx-style写入文件方式，使得自定义样式生效
+        // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
         const tmpDown = new Blob([
           this.s2ab(
             XLSXD.write(web, {
@@ -1637,8 +1637,8 @@ import OperationIcon from '@/components/OperationIcon'
             })
           )
         ])
-        //  XLSX.writeFile(web,'出库明细表.xlsx');
-        this.downExcel(tmpDown, '出库明细表.xlsx')
+        //  XLSX.writeFile(web,'Bảng chi tiết xuất kho.xlsx');
+        this.downExcel(tmpDown, 'Bảng chi tiết xuất kho.xlsx')
       },
       downExcel(obj, fileName) {
         const a_node = document.createElement("a");

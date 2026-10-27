@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.PersonalTheme;
 
 /**
- * 系统主题DAO接口
+ * Chủ đề hệ thốngDAOGiao diện
  * @author lys
  * @version 2021-07-16
  */

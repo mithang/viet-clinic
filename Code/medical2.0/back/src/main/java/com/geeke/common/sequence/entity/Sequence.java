@@ -4,7 +4,7 @@ import com.geeke.common.persistence.DataEntity;
 
 
 /**
- * 表列头
+ * bảngCộttiêu đề
  * 
  * @author lys
  * @date 2021/4/30
@@ -12,10 +12,10 @@ import com.geeke.common.persistence.DataEntity;
 public class Sequence extends DataEntity<Sequence> {
 
 	private static final long serialVersionUID = -5698892194611228984L;
-	private String companyId;   //  公司Id
-	private String code;		// 规则编号code
-	private String prefix;		// 前缀
-	private int val = 1;	// 序列值
+	private String companyId;   //  Công tyId
+	private String code;		// quy tắcmã sốcode
+	private String prefix;		// tiền tố
+	private int val = 1;	// thứ tựCộtGiá trị
 	
 	public String getCompanyId() {
 		return companyId;

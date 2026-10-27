@@ -1,27 +1,27 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <patient-form ref='patientForm' @save-finished='getPatientList()'></patient-form>
     <el-card class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
         <el-row v-if='!moreCodition' class='search-row'>
           <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
             <el-col :span="6">
-              <el-form-item label='患者姓名' prop='name'>
-                <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入患者姓名'></el-input>
+              <el-form-item label='Tên bệnh nhân' prop='name'>
+                <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên bệnh nhân'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='联系方式' prop='phone'>
-                <el-input v-model='queryModel.phone' :clearable='true' placeholder='请输入联系方式'></el-input>
+              <el-form-item label='Thông tin liên hệ' prop='phone'>
+                <el-input v-model='queryModel.phone' :clearable='true' placeholder='Vui lòng nhập thông tin liên hệ'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='身份证号' prop='card'>
-                <el-input v-model='queryModel.card' :clearable='true' placeholder='请输入身份证号'></el-input>
+              <el-form-item label='Số CMND/CCCD' prop='card'>
+                <el-input v-model='queryModel.card' :clearable='true' placeholder='Vui lòng nhập số CMND/CCCD'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="3" style="display:flex;justivy-content:space-around">
@@ -30,13 +30,13 @@
                 icon="el-icon-search"
                 @click="onSearch()"
                 :plain="true"
-              >搜索</el-button>
+              >Tìm kiếm</el-button>
               <el-button
                 type="info"
                 icon="el-icon-refresh-left"
                 @click="reset"
                 :plain="true"
-              >重置</el-button>
+              >Đặt lại</el-button>
             </el-col>
             <el-col :span="3" style="text-align:right;padding-right:5px">
               <el-button-group>
@@ -44,25 +44,25 @@
                   type="primary"
                   icon="el-icon-plus"
                   @click="onCreatePatient()"
-                >添加</el-button>
+                >Thêm</el-button>
               </el-button-group>
             </el-col>
           </el-form>
         </el-row>
         <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 工具栏 开始 -->
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Bắt đầu -->
+      <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
             <el-table ref="patientTableRef" class="patient-table" :data='patientList' border height="calc(100vh - 350px)" @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>
               <el-table-column
-                label="序号"
+                label="Số thứ tự"
                 width="70px"
                 type="index"
                 :index="indexMethod"
@@ -73,15 +73,15 @@
                   <span>{{ getAttrValue(row, cv.prop, cv.javaType )}}</span>
                 </template>
               </el-table-column>
-              <el-table-column  label='操作'  header-align='center' key="operationColumn" width='160' >
+              <el-table-column  label='Thao tác'  header-align='center' key="operationColumn" width='160' >
                 <template slot-scope='scope'>
-                  <OperationIcon type='info' content='查看' placement='top-start' icon-name='el-icon-view'
+                  <OperationIcon type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
                                  @click='onViewPatient(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                  <OperationIcon type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                                  @click='onEditPatient(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon type='primary' content='复制' placement='top-start' icon-name='el-icon-document'
+                  <OperationIcon type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                                  @click='onCopyPatient(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon type='info' content='历史记录' placement='top-start' icon-name='el-icon-info'
+                  <OperationIcon type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                                  @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -89,8 +89,8 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -105,7 +105,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </el-card>
   </el-row>
 </template>
@@ -293,16 +293,16 @@ export default {
       })
     },
     onDeletePatient(index, row) {
-      this.$confirm('确定删除吗？', '确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
         type: 'warning'
       }).then(() => {
         this.setLoad()
         deletePatient(row).then(responseData => {
           if(responseData.code === 100) {
             this.getPatientList()
-            this.showMessage({type: 'success', msg: '删除成功'})
+            this.showMessage({type: 'success', msg: 'Xóa thành công'})
           } else {
             this.showMessage(responseData)
           }
@@ -377,7 +377,7 @@ export default {
   height: 100% !important;
 }
 
-/* 修复固定列表头对齐 */
+/* Khắc phục căn chỉnh tiêu đề danh sách cố định */
 ::v-deep(.el-table__fixed-right .el-table__header-wrapper th) {
   height: 48px !important;
   line-height: 48px !important;

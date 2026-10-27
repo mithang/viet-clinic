@@ -60,11 +60,11 @@ public class WarningService {
         return stuffInventoryWarning;
     }
 
-    //预警导出
+    //trướccảnh báoXuất
     @Transactional
     public void exportTable(SearchParams searchParams, HttpServletResponse response) throws IOException {
         if(Objects.equals(searchParams.getColumnName(),"0")){
-            //药品有效期导出
+            //ThuốcThời hạn hiệu lựcXuất
             exportDrugIndate(searchParams,response);
         }else if(Objects.equals("1",searchParams.getColumnName())){
             exportDrugInventory(searchParams,response);
@@ -75,7 +75,7 @@ public class WarningService {
         }
     }
 
-    //材料库存预警导出
+    //Xuất cảnh báo tồn kho vật tư
     private void exportStuffInventory(SearchParams searchParams, HttpServletResponse response) throws IOException {
         Page<Stuff> stuffInventoryWarning = stuffService.getStuffInventoryWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -84,11 +84,11 @@ public class WarningService {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("name", stuff.getName());
                 row.put("typeName", stuff.getType().getName());
-                // 规格
+                // Quy cách
                 String specification = stuff.getPackNumber() + stuff.getMinUnit().getName() + "/" + stuff.getPackUnit().getName();
                 row.put("specification", specification);
                 row.put("factoryName", stuff.getFactory().getName());
-                // 剩余数量
+                // Số lượng còn lại
                 String inventory = stuff.getStock().getStorageStock().subtract(stuff.getStock().getUsedStock().add(stuff.getStock().getReimburseStock())).stripTrailingZeros().toPlainString();
                 stuff.setInventory(Integer.parseInt(inventory));
                 String number = formatStuffNumber(stuff);
@@ -96,19 +96,19 @@ public class WarningService {
                 rows.add(row);
             }
         }
-        new ExcelExportBuilder("材料库存预警导出")
+        new ExcelExportBuilder("Xuất cảnh báo tồn kho vật tư")
                 .addColumns(
-                        new ExcelExportBuilder.Column("材料名称", "name"),
-                        new ExcelExportBuilder.Column("材料分类", "typeName"),
-                        new ExcelExportBuilder.Column("规格", "specification"),
-                        new ExcelExportBuilder.Column("生产厂商", "factoryName"),
-                        new ExcelExportBuilder.Column("剩余数量", "number")
+                        new ExcelExportBuilder.Column("Tên vật tư", "name"),
+                        new ExcelExportBuilder.Column("Phân loại vật tư", "typeName"),
+                        new ExcelExportBuilder.Column("Quy cách", "specification"),
+                        new ExcelExportBuilder.Column("Nhà sản xuất", "factoryName"),
+                        new ExcelExportBuilder.Column("Số lượng còn lại", "number")
                 )
                 .data(rows)
-                .write(response, "材料库存预警导出.xlsx");
+                .write(response, "Xuất cảnh báo tồn kho vật tư.xlsx");
     }
 
-    //材料有效期预警导出
+    //Xuất cảnh báo hết hạn vật tư
     private void exportStuffIndate(SearchParams searchParams, HttpServletResponse response) throws IOException {
         Page<SupplierStock> stuffIndateWarning = supplierStockService.getStuffIndateWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -122,7 +122,7 @@ public class WarningService {
                 row.put("factoryName", supplierStock.getFactory().getName());
                 row.put("supplierName", supplierStock.getSupplierId().getName());
                 row.put("batchNo", supplierStock.getBatchNo());
-                // 剩余数量
+                // Số lượng còn lại
                 if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
                     String inventory = supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
                     supplierStock.getStuff().setInventory(Integer.parseInt(inventory));
@@ -130,30 +130,30 @@ public class WarningService {
                     supplierStock.getStuff().setInventory(0);
                 }
                 row.put("number", formatStuffNumber(supplierStock.getStuff()));
-                // 有效期
+                // Thời hạn hiệu lực
                 row.put("endDate", sdf.format(supplierStock.getEndDate()));
-                // 状态
-                row.put("status", Objects.equals("0", supplierStock.getCancellation()) ? "即将过期" : "已过期");
+                // Trạng thái
+                row.put("status", Objects.equals("0", supplierStock.getCancellation()) ? "tức làSẽ hết hạn" : "Đãhết hạn");
                 rows.add(row);
             }
         }
-        new ExcelExportBuilder("材料有效期预警导出")
+        new ExcelExportBuilder("Xuất cảnh báo hết hạn vật tư")
                 .addColumns(
-                        new ExcelExportBuilder.Column("材料名称", "stuffName"),
-                        new ExcelExportBuilder.Column("材料分类", "typeName"),
-                        new ExcelExportBuilder.Column("规格", "norms"),
-                        new ExcelExportBuilder.Column("生产厂商", "factoryName"),
-                        new ExcelExportBuilder.Column("供应商", "supplierName"),
-                        new ExcelExportBuilder.Column("批号", "batchNo"),
-                        new ExcelExportBuilder.Column("剩余数量", "number"),
-                        new ExcelExportBuilder.Column("有效期", "endDate"),
-                        new ExcelExportBuilder.Column("状态", "status")
+                        new ExcelExportBuilder.Column("Tên vật tư", "stuffName"),
+                        new ExcelExportBuilder.Column("Phân loại vật tư", "typeName"),
+                        new ExcelExportBuilder.Column("Quy cách", "norms"),
+                        new ExcelExportBuilder.Column("Nhà sản xuất", "factoryName"),
+                        new ExcelExportBuilder.Column("Nhà cung cấp", "supplierName"),
+                        new ExcelExportBuilder.Column("Số lô", "batchNo"),
+                        new ExcelExportBuilder.Column("Số lượng còn lại", "number"),
+                        new ExcelExportBuilder.Column("Thời hạn hiệu lực", "endDate"),
+                        new ExcelExportBuilder.Column("Trạng thái", "status")
                 )
                 .data(rows)
-                .write(response, "材料有效期预警导出.xlsx");
+                .write(response, "Xuất cảnh báo hết hạn vật tư.xlsx");
     }
 
-    //药品库存预警导出
+    //Xuất cảnh báo tồn kho thuốc
     private void exportDrugInventory(SearchParams searchParams, HttpServletResponse response) throws IOException {
         Page<Drug> drugInventoryWarning = drugService.getDrugInventoryWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -162,30 +162,30 @@ public class WarningService {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("goodsName", drug.getGoodsName());
                 row.put("typeName", drug.getType().getName());
-                // 规格
+                // Quy cách
                 String specification = drug.getDosis() + drug.getDosisUnit().getName() + "*" + drug.getPreparation() + drug.getPreparationUnit().getName() + "/" + drug.getPack().getName();
                 row.put("specification", specification);
                 row.put("factoryName", drug.getFactory().getName());
-                // 剩余数量
+                // Số lượng còn lại
                 String inventory = drug.getStock().getStorageStock().subtract(drug.getStock().getUsedStock().add(drug.getStock().getReimburseStock())).stripTrailingZeros().toPlainString();
                 drug.setInventory(Integer.parseInt(inventory));
                 row.put("number", formatDrugNumber(drug));
                 rows.add(row);
             }
         }
-        new ExcelExportBuilder("药品库存预警导出")
+        new ExcelExportBuilder("Xuất cảnh báo tồn kho thuốc")
                 .addColumns(
-                        new ExcelExportBuilder.Column("药品名称", "goodsName"),
-                        new ExcelExportBuilder.Column("药品分类", "typeName"),
-                        new ExcelExportBuilder.Column("规格", "specification"),
-                        new ExcelExportBuilder.Column("生产厂商", "factoryName"),
-                        new ExcelExportBuilder.Column("剩余数量", "number")
+                        new ExcelExportBuilder.Column("Tên thuốc", "goodsName"),
+                        new ExcelExportBuilder.Column("Phân loại thuốc", "typeName"),
+                        new ExcelExportBuilder.Column("Quy cách", "specification"),
+                        new ExcelExportBuilder.Column("Nhà sản xuất", "factoryName"),
+                        new ExcelExportBuilder.Column("Số lượng còn lại", "number")
                 )
                 .data(rows)
-                .write(response, "药品库存预警导出.xlsx");
+                .write(response, "Xuất cảnh báo tồn kho thuốc.xlsx");
     }
 
-    //药品有效期预警导出
+    //Xuất cảnh báo hết hạn thuốc
     private void exportDrugIndate(SearchParams searchParams, HttpServletResponse response) throws IOException {
         Page<SupplierStock> drugIndateWarning = supplierStockService.getDrugIndateWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -199,7 +199,7 @@ public class WarningService {
                 row.put("factoryName", supplierStock.getFactory().getName());
                 row.put("supplierName", supplierStock.getSupplierId().getName());
                 row.put("batchNo", supplierStock.getBatchNo());
-                // 剩余数量
+                // Số lượng còn lại
                 if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
                     String inventory = supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
                     supplierStock.getDrug().setInventory(Integer.parseInt(inventory));
@@ -207,31 +207,31 @@ public class WarningService {
                     supplierStock.getDrug().setInventory(0);
                 }
                 row.put("number", formatDrugNumber(supplierStock.getDrug()));
-                // 有效期
+                // Thời hạn hiệu lực
                 row.put("endDate", sdf.format(supplierStock.getEndDate()));
-                // 状态
-                row.put("status", Objects.equals("0", supplierStock.getCancellation()) ? "即将过期" : "已过期");
+                // Trạng thái
+                row.put("status", Objects.equals("0", supplierStock.getCancellation()) ? "tức làSẽ hết hạn" : "Đãhết hạn");
                 rows.add(row);
             }
         }
-        new ExcelExportBuilder("药品有效期预警导出")
+        new ExcelExportBuilder("Xuất cảnh báo hết hạn thuốc")
                 .addColumns(
-                        new ExcelExportBuilder.Column("药品名称", "drugName"),
-                        new ExcelExportBuilder.Column("药品分类", "typeName"),
-                        new ExcelExportBuilder.Column("规格", "norms"),
-                        new ExcelExportBuilder.Column("生产厂商", "factoryName"),
-                        new ExcelExportBuilder.Column("供应商", "supplierName"),
-                        new ExcelExportBuilder.Column("批号", "batchNo"),
-                        new ExcelExportBuilder.Column("剩余数量", "number"),
-                        new ExcelExportBuilder.Column("有效期", "endDate"),
-                        new ExcelExportBuilder.Column("状态", "status")
+                        new ExcelExportBuilder.Column("Tên thuốc", "drugName"),
+                        new ExcelExportBuilder.Column("Phân loại thuốc", "typeName"),
+                        new ExcelExportBuilder.Column("Quy cách", "norms"),
+                        new ExcelExportBuilder.Column("Nhà sản xuất", "factoryName"),
+                        new ExcelExportBuilder.Column("Nhà cung cấp", "supplierName"),
+                        new ExcelExportBuilder.Column("Số lô", "batchNo"),
+                        new ExcelExportBuilder.Column("Số lượng còn lại", "number"),
+                        new ExcelExportBuilder.Column("Thời hạn hiệu lực", "endDate"),
+                        new ExcelExportBuilder.Column("Trạng thái", "status")
                 )
                 .data(rows)
-                .write(response, "药品有效期预警导出.xlsx");
+                .write(response, "Xuất cảnh báo hết hạn thuốc.xlsx");
     }
 
     /**
-     * 格式化药品剩余数量，按包装单位换算显示（如"2盒3片"）
+     * định dạnghóaThuốcSố lượng còn lại, theoĐơn vị đóng góiquy đổihiển thị(Như "2盒3片")
      */
     private String formatDrugNumber(Drug drug) {
         int inventory = drug.getInventory();
@@ -247,7 +247,7 @@ public class WarningService {
     }
 
     /**
-     * 格式化材料剩余数量，按包装单位换算显示（如"2包3个"）
+     * định dạnghóaVật tưSố lượng còn lại, theoĐơn vị đóng góiquy đổihiển thị(Như "2gói3Cái")
      */
     private String formatStuffNumber(Stuff stuff) {
         int inventory = stuff.getInventory();

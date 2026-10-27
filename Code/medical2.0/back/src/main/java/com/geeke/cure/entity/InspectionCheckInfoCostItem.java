@@ -11,23 +11,23 @@ import java.util.List;
 @Data
 public class InspectionCheckInfoCostItem {
     private String id;
-    private Company company;      // 诊所id
-    private InspectionCheck inspectionCheck;      // 主表id
-    private String fileId;		// 文件id
-    private Patient patient;      // 患者id
-    private Date samplingDate;		// 采样时间
-    private String samplingNum;		// 样本号
-    private String instrument;		// 检验仪器
-    private String checkoutNum;		// 检验号
-    private Date checkoutDate;		// 检验时间
-    private String checkoutOffice;		// 检验科室
-    private String reportConclusion;		// 报告结论
-    private String checkType;          //检查类型
-    private String checkPart;         //检查部位
-    private String checkAdvise;      //检查所见
-    private String opinion;      //意见
-    private String doctor;      //医师
-    private String checkProject;   //检查项目
-    private List<CostItems> costItemsList;  //诊疗项目
+    private Company company;      // Phòng khámid
+    private InspectionCheck inspectionCheck;      // Bảng chínhid
+    private String fileId;		// Tệpid
+    private Patient patient;      // Bệnh nhânid
+    private Date samplingDate;		// lấynhưThời gian
+    private String samplingNum;		// nhưnàysố
+    private String instrument;		// Xét nghiệmthiết bị
+    private String checkoutNum;		// Xét nghiệmsố
+    private Date checkoutDate;		// Xét nghiệmThời gian
+    private String checkoutOffice;		// Xét nghiệmKhoa
+    private String reportConclusion;		// kết luận báo cáo
+    private String checkType;          //Kiểm traLoại
+    private String checkPart;         //Kiểm trabộvị
+    private String checkAdvise;      //Kiểm tranhìn thấy
+    private String opinion;      //ý kiến
+    private String doctor;      //Bác sĩ
+    private String checkProject;   //Kiểm trahạng mục
+    private List<CostItems> costItemsList;  //Hạng mục khám chữa bệnh
     private List<InspectionCheckDetailCostItem> inspectionCheckDetails;
 }

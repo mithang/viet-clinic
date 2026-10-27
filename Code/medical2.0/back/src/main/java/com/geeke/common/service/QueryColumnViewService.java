@@ -22,7 +22,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Lists;
 
 /**
- * 查询条件的业务字段Service
+ * Điều kiện truy vấn của nghiệp vụTrườngService
  * 
  * @author lys
  * @version 2020/8/17
@@ -48,7 +48,7 @@ public class QueryColumnViewService {
 	public List<GenTableColumn> listColumn(String tableId, String schemeId) {
 		List<DictItem> itemList = getItemList();
 		
-		// 排除不在列表中显示的字段
+		// Loại trừ trường không hiển thị trong danh sách
 		List<Parameter> Params = SearchParamsBuilder.create()
 				.eq("gen_table_id", tableId)
 				.notIn("name", Arrays.asList("del_flag"))
@@ -60,7 +60,7 @@ public class QueryColumnViewService {
 		List<GenTableColumn> columns = genTableColumnDao.listAll(pageRequest);
 		
 		
-		//自定义java类型
+		//Tùy chỉnhjavaLoại
 		for(GenTableColumn column: columns) {
 			if("ids".equals(column.getName())) {
 				column.setJavaType(getDictItem(itemList, "5001", "This"));

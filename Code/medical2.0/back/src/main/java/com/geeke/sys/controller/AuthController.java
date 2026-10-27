@@ -69,7 +69,7 @@ public class AuthController {
     private PersonalThemeService personalThemeService;
 
     /**
-     * 登陆前检查所处诊所
+     * đăng nhậptrướcKiểm tranơinơiPhòng khám
      *
      * @param loginName
      * @return
@@ -84,13 +84,13 @@ public class AuthController {
         try {
             currentUser.login(token);
         } catch (UnknownAccountException e) {
-            logger.info("用户 {} 登录账号密码错误", loginName);
+            logger.info("Người dùng {} Đăng nhậpTài khoản hoặc mật khẩu sai", loginName);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10010));
         } catch (DisabledAccountException e) {
-            logger.info("用户 {} 账号禁用", loginName);
+            logger.info("Người dùng {} Tài khoản bị vô hiệu hóa", loginName);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10011));
         } catch (AuthenticationException e) {
-            logger.info("用户 {} 验证错误", loginName);
+            logger.info("Người dùng {} Lỗi xác thực", loginName);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
         }
 
@@ -103,37 +103,37 @@ public class AuthController {
         Map<String, Object> response = null;
         List<String> idList = new ArrayList<>();
         try {
-            //登陆
+            //Đăng nhập
             HttpStatus httpStatus = loginService.authLogin(loginName, password, companyId);
 
-            if (HttpStatus.UNAUTHORIZED.equals(httpStatus)) {        //账号密码错误
+            if (HttpStatus.UNAUTHORIZED.equals(httpStatus)) {        //Tài khoản hoặc mật khẩu sai
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10010));
-            } else if (HttpStatus.FORBIDDEN.equals(httpStatus)) {            //账号禁用
+            } else if (HttpStatus.FORBIDDEN.equals(httpStatus)) {            //Tài khoản bị vô hiệu hóa
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10011));
-            } else if (HttpStatus.SERVICE_UNAVAILABLE.equals(httpStatus)) {  //验证错误
+            } else if (HttpStatus.SERVICE_UNAVAILABLE.equals(httpStatus)) {  //Lỗi xác thực
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
             }
             User user = SessionUtils.getUser();
-            //确认是否是诊所在做切换
+            //xác nhậnCó hay không có Phòng khámtạilàm切đổi
             if (!StringUtils.isNullOrEmpty(companyId)) {
-                //多诊所登录
+                //nhiềuPhòng khámĐăng nhập
                 user = changeClinics(user, companyId);
                 Company company = companyService.get(companyId);
                 SessionUtils.setLoginTenantId(companyId);
                 SessionUtils.setLoginTenant(company);
             } else {
-                //单诊所登录
+                //đơnPhòng khámĐăng nhập
                 companyId = user.getCompanyId();
                 SessionUtils.setLoginTenantId(companyId);
                 SessionUtils.setLoginTenant(user.getCompany());
             }
-            //更新用户，返回当前登陆人信息
+            //Cập nhậtNgười dùng, Trả vềHiện tạiđăng nhậpngườiThông tin
             response = getLoginUserInfo(request, user, companyId);
         } catch (Exception e) {
-            logger.error("登录失败", e);
+            logger.error("Đăng nhậpThất bại", e);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
         } finally {
-            //把删除的修改回来
+            //ĐưaXóa của Sửatrả lạiđến
             if (!idList.isEmpty()) {
                 for (String updateId : idList) {
                     userService.updateDelFlag(updateId, "0");
@@ -145,7 +145,7 @@ public class AuthController {
 
     @PostMapping("/loginedtocken")
     public ResponseEntity<?> getLoginedToken(HttpServletRequest request) {
-        // 是否登录过
+        // Có hay khôngĐăng nhậpqua
         HttpStatus httpStatus = loginService.authLogin();
 
         if (!HttpStatus.OK.equals(httpStatus)) {
@@ -159,30 +159,30 @@ public class AuthController {
 
 
     /**
-     * 登出
+     * đăngra
      *
      * @return
      */
     @PostMapping("/logout")
     public ResponseEntity<JSONObject> logout() {
         loginService.logout();
-        return ResponseEntity.ok(ResultUtil.successJson("退出成功"));
+        return ResponseEntity.ok(ResultUtil.successJson("ThoátThành công"));
     }
 
     /**
-     * 获取所有用户登录状态
+     * Lấytất cảNgười dùngĐăng nhậpTrạng thái
      *
      * @return
      */
     @GetMapping("/userLoginStatus")
     public List<User> getUserLoginStatus() {
-        //TODO：查询需要检查登录状态的用户列表
+        //TODO: Truy vấnCầnKiểm traĐăng nhậpTrạng thái của Người dùngDanh sách
         List<User> userList = loginService.loginUser();
 
-        //处理所有Session，对应到每个用户
+        //Xử lýtất cảSession, tương ứngĐếnmỗiCáiNgười dùng
         DefaultWebSecurityManager securittyManager = (DefaultWebSecurityManager) SecurityUtils.getSecurityManager();
         StatelessSessionManager sessionManager = (StatelessSessionManager) securittyManager.getSessionManager();
-        Collection<Session> sessionList = sessionManager.getActiveSessions();//所有当前登录Session
+        Collection<Session> sessionList = sessionManager.getActiveSessions();//tất cảHiện tạiĐăng nhậpSession
         Map<String, Session> userSessionCache = new HashMap<>();
         for (Session s : sessionList) {
             //java.util.Date startTime = s.getStartTimestamp();
@@ -194,7 +194,7 @@ public class AuthController {
             User user = userJson.toJavaObject(User.class);
             if (userSessionCache.containsKey(user.getId())) {
                 Session cachedSession = userSessionCache.get(user.getId());
-                //同一用户可能存在两个Session的情况，取最后访问的Session
+                //cùngmộtNgười dùngcó thểTồn tạihaiCáiSession của tình hình, lấynhấtsautruy cập của Session
                 if (s.getLastAccessTime().compareTo(cachedSession.getLastAccessTime()) > 0) {
                     userSessionCache.replace(user.getId(), s);
                 }
@@ -203,66 +203,66 @@ public class AuthController {
             }
         }
 
-        //遍历用户，根据上面处理后的Session更新其登录状态和登录时长
+        //duyệtNgười dùng, TheotrênmặtXử lýsau của SessionCập nhậtcủa nóĐăng nhậpTrạng thái và Đăng nhập giờdài
         java.util.Date now = new java.util.Date();
         for (User u : userList) {
-            boolean isLogined = userSessionCache.containsKey(u.getId());//存在Session则视为已登录
-            Long loginedSeconds = 0L;//已登录秒数
+            boolean isLogined = userSessionCache.containsKey(u.getId());//Tồn tạiSessionthìxem là ĐãĐăng nhập
+            Long loginedSeconds = 0L;//ĐãĐăng nhậpgiâysố
             if (isLogined) {
                 Session session = userSessionCache.get(u.getId());
-                java.util.Date startTime = session.getStartTimestamp();//session开始时间，即登录时间
+                java.util.Date startTime = session.getStartTimestamp();//sessionThời gian bắt đầu, tức làĐăng nhậpThời gian
                 loginedSeconds = (now.getTime() - startTime.getTime()) / 1000;
             }
-            //TODO:将isLogined、loginedSeconds赋值到用户登录信息，返回给页面
+            //TODO:Sẽ isLogined, loginedSecondsgánGiá trịĐếnNgười dùngĐăng nhậpThông tin, Trả vềchotrangmặt
             String days = secondToTime(loginedSeconds);
             if (isLogined){
-                u.setStatus("已登录");
+                u.setStatus("ĐãĐăng nhập");
                 u.setLoginDuration(days);
             }else {
-                u.setStatus("未登录");
+                u.setStatus("ChưaĐăng nhập");
                 u.setLoginDuration("--");
             }
         }
-        //TODO：返回值另外用对象封装
+        //TODO: Trả vềGiá trị另ngoàidùngĐối tượngđóng gói
         return userList;
     }
     /**
-     * 返回日时分秒
+     * Trả vềNgày giờ phútgiây
      * @param second
      * @return
      */
     private String secondToTime(long second) {
 
-        long days = second / 86400;//转换天数
-        second = second % 86400;//剩余秒数
+        long days = second / 86400;//chuyển đổi ngàysố
+        second = second % 86400;//Số giây còn lại
 
-        long hours = second / 3600;//转换小时数
-        second = second % 3600;//剩余秒数
+        long hours = second / 3600;//chuyển đổi thành số giờ
+        second = second % 3600;//Số giây còn lại
 
-        long minutes = second / 60;//转换分钟
-        second = second % 60;//剩余秒数
+        long minutes = second / 60;//chuyển đổi phútphút
+        second = second % 60;//Số giây còn lại
 
         if (0 < days){
-            return days + "天"+hours+"时"+minutes+"分";
+            return days + " ngày"+hours+" giờ"+minutes+" phút";
         }else {
-            // return hours+"小时"+minutes+"分，"+second+"秒";
-            return hours+"时"+minutes+"分";
+            // return hours+" giờ"+minutes+" phút, "+second+"giây";
+            return hours+" giờ"+minutes+" phút";
         }
 
     }
 
     private Map<String, Object> getLoginUserInfo(HttpServletRequest request, User user, String companyId) {
-        // 用户访问资源权限
+        // Người dùngtruy cậptài nguyênQuyền
         List<String> permissionList = permissionService.listResourcePermissionByUser(user.getId(), companyId);
         SessionUtils.setUserPermission(permissionList);
 
-        // 用户路由权限
+        // Người dùngtuyến đườngQuyền
         List<Router> listRouter = permissionService.listRouterPermission(user.getId(), companyId);
 
-        // 用户数据权限
+        // Người dùngDữ liệuQuyền
         List<DataPermission> listDataPermission = permissionService.listDataPermissionByUserId(user.getId(), companyId);
 
-        // 获取主题
+        // Lấychủ đề
         PersonalTheme personalTheme = getPersonalTheme(user.getId());
 
         Map<String, Object> response = new HashMap<String, Object>();
@@ -286,7 +286,7 @@ public class AuthController {
     }
 
     private Map<String, Object> LoginUserInfo(HttpServletRequest request, User user, String companyId) {
-        // 用户访问资源权限
+        // Người dùngtruy cậptài nguyênQuyền
         List<String> permissionList = permissionService.listResourcePermissionByUser(user.getId(), companyId);
         SessionUtils.setUserPermission(permissionList);
 
@@ -305,7 +305,7 @@ public class AuthController {
 
 
     /**
-     * 切换诊所
+     * 切đổiPhòng khám
      *
      * @param user
      * @param wantCompanyId
@@ -322,7 +322,7 @@ public class AuthController {
 
 
     private PersonalTheme getPersonalTheme(String userId) {
-        // 获取个性化主题
+        // LấyCáitínhhóachủ đề
         List<Parameter> parms = SearchParamsBuilder.create()
                 .eq("user_id", userId)
                 .build();
@@ -331,7 +331,7 @@ public class AuthController {
             return list.get(0);
         }
 
-        // 系统默认主题
+        // Hệ thốngMặc địnhchủ đề
         PersonalTheme defaultTheme = new PersonalTheme();
         defaultTheme.setUserId(Long.parseUnsignedLong(userId));
         List<Theme> themes = themeService.listAll(Lists.newArrayList(), null);
@@ -342,7 +342,7 @@ public class AuthController {
                     return defaultTheme;
                 }
             }
-            // 未设置默认主题时，第一个作为默认主题
+            // ChưaĐặtMặc địnhchủ đề giờ, Dòng mộtCáilàm là Mặc địnhchủ đề
             defaultTheme.setTheme(themes.get(0).getTheme());
         }
         return defaultTheme;
@@ -356,38 +356,38 @@ public class AuthController {
         String companyId = null;
         List<String> idList = new ArrayList<>();
         try {
-            //登陆
+            //Đăng nhập
             HttpStatus httpStatus = loginService.authLogin(loginName, password, companyId);
 
-            if (HttpStatus.UNAUTHORIZED.equals(httpStatus)) {        //账号密码错误
+            if (HttpStatus.UNAUTHORIZED.equals(httpStatus)) {        //Tài khoản hoặc mật khẩu sai
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10010));
-            } else if (HttpStatus.FORBIDDEN.equals(httpStatus)) {            //账号禁用
+            } else if (HttpStatus.FORBIDDEN.equals(httpStatus)) {            //Tài khoản bị vô hiệu hóa
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10011));
-            } else if (HttpStatus.SERVICE_UNAVAILABLE.equals(httpStatus)) {  //验证错误
+            } else if (HttpStatus.SERVICE_UNAVAILABLE.equals(httpStatus)) {  //Lỗi xác thực
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
             }
             User user = SessionUtils.getUser();
-            //确认是否是诊所在做切换
+            //xác nhậnCó hay không có Phòng khámtạilàm切đổi
             if (!StringUtils.isNullOrEmpty(companyId)) {
-                //多诊所登录
+                //nhiềuPhòng khámĐăng nhập
                 user = changeClinics(user, companyId);
                 Company company = companyService.get(companyId);
                 SessionUtils.setLoginTenantId(companyId);
                 SessionUtils.setLoginTenant(company);
             } else {
-                //单诊所登录
+                //đơnPhòng khámĐăng nhập
                 companyId = user.getCompanyId();
                 SessionUtils.setLoginTenantId(companyId);
                 SessionUtils.setLoginTenant(user.getCompany());
             }
 
-            //更新用户，返回当前登陆人信息
+            //Cập nhậtNgười dùng, Trả vềHiện tạiđăng nhậpngườiThông tin
             response = getLoginUserInfo(request, user, companyId);
         } catch (Exception e) {
-            logger.error("登录失败", e);
+            logger.error("Đăng nhậpThất bại", e);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
         } finally {
-            //把删除的修改回来
+            //ĐưaXóa của Sửatrả lạiđến
             if (!idList.isEmpty()) {
                 for (String updateId : idList) {
                     userService.updateDelFlag(updateId, "0");

@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/gen/genTable')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getGenTableById = baseApi.getById
 export const listGenTablePage = baseApi.listPage
 export const listGenTableAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertGenTable = baseApi.bulkInsert
 export const bulkUpdateGenTable = baseApi.bulkUpdate
 export const bulkDeleteGenTable = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const importGenTable = (genTable) =>
     request({
         url: '/gen/genTable/importJson',

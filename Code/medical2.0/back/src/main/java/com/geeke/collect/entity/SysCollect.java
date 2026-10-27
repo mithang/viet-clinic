@@ -8,15 +8,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 收藏夹Entity
+ * Mục yêu thíchEntity
  * @author szy
  * @version 2021-07-28
  */
 public class SysCollect extends DataEntity<SysCollect> {
 
 	private static final long serialVersionUID = 1L;
-	private User userId;      // 用户id 
-	private Router routerId;      // 路由id 
+	private User userId;      // Người dùngid 
+	private Router routerId;      // Định tuyếnid 
     private Long sort;
 
     public Long getSort() {
@@ -36,7 +36,7 @@ public class SysCollect extends DataEntity<SysCollect> {
 	}
 	
 
-	@NotNull(message="用户id不能为空")
+	@NotNull(message="Người dùngidKhông được để trống")
     public User getUserId() {
         return userId;
     }
@@ -45,7 +45,7 @@ public class SysCollect extends DataEntity<SysCollect> {
         this.userId = userId;
     }
     
-	@NotNull(message="路由id不能为空")
+	@NotNull(message="Định tuyếnidKhông được để trống")
     public Router getRouterId() {
         return routerId;
     }
@@ -58,7 +58,7 @@ public class SysCollect extends DataEntity<SysCollect> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -67,7 +67,7 @@ public class SysCollect extends DataEntity<SysCollect> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -77,7 +77,7 @@ public class SysCollect extends DataEntity<SysCollect> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

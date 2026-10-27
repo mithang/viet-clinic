@@ -3,7 +3,7 @@ package com.geeke.admin.common.entity;
 
 
 /**
- * 数据权限类
+ * Dữ liệuQuyềnLớp
  * 
  * @author lys
  * @date 2020/6/24
@@ -14,7 +14,7 @@ public final class DataPermission implements java.io.Serializable {
 	private String id;
 	private String routerId;
 	private String roleId;
-	private String metaId;	// 源数据Id
+	private String metaId;	// nguồnDữ liệuId
 	private String conditions;
 	
 	public String getId() {

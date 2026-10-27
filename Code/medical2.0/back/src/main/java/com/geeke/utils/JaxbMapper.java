@@ -21,10 +21,10 @@ import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.util.Assert;
 
 /**
- * 使用Jaxb2.0实现XML<->Java Object的Mapper.
+ * Sử dụngJaxb2.0Triển khaiXML<->Java Object của Mapper.
  * 
- * 在创建时需要设定所有需要序列化的Root对象的Class.
- * 特别支持Root对象是Collection的情形.
+ * Khi tạo cần đặt tất cả những thứ cần tuần tự hóaRootĐối tượng của Class.
+ * Hỗ trợ đặc biệtRootĐối tượng có Collection của trường hợp.
  * 
  * @author calvin
  * @version 2013-01-15
@@ -64,14 +64,14 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * Java Collection->Xml without encoding, 特别支持Root Element是Collection的情形.
+	 * Java Collection->Xml without encoding, Hỗ trợ đặc biệtRoot Element có Collection của trường hợp.
 	 */
 	public static String toXml(Collection<?> root, String rootName, Class clazz) {
 		return toXml(root, rootName, clazz, null);
 	}
 
 	/**
-	 * Java Collection->Xml with encoding, 特别支持Root Element是Collection的情形.
+	 * Java Collection->Xml with encoding, Hỗ trợ đặc biệtRoot Element có Collection của trường hợp.
 	 */
 	public static String toXml(Collection<?> root, String rootName, Class clazz, String encoding) {
 		try {
@@ -104,8 +104,8 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * 创建Marshaller并设定encoding(可为null).
-	 * 线程不安全，需要每次创建或pooling。
+	 * TạoMarshallervàđặtchỉ địnhencoding(có thể là null).
+	 * luồngkhôngan toàn, Cầnmỗi lầntạo hoặc pooling. 
 	 */
 	public static Marshaller createMarshaller(Class clazz, String encoding) {
 		try {
@@ -126,8 +126,8 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * 创建UnMarshaller.
-	 * 线程不安全，需要每次创建或pooling。
+	 * TạoUnMarshaller.
+	 * luồngkhôngan toàn, Cầnmỗi lầntạo hoặc pooling. 
 	 */
 	public static Unmarshaller createUnmarshaller(Class clazz) {
 		try {
@@ -154,7 +154,7 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * 封装Root Element 是 Collection的情况.
+	 * đóng góiRoot Element  có  Collection của tình hình.
 	 */
 	public static class CollectionWrapper {
 

@@ -12,7 +12,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -31,7 +31,7 @@
       <div class="tab-item" v-show="tabIndex === '1'">
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="患者姓名" prop="name">
+            <el-form-item label="Tên bệnh nhân" prop="name">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.name"
@@ -39,7 +39,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="性别" prop="gender">
+            <el-form-item label="Giới tính" prop="gender">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.gender"
@@ -67,7 +67,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="申请科室" prop="department">
+            <el-form-item label="Khoa/phòng đề nghị" prop="department">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.department"
@@ -75,7 +75,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="申请医生" prop="medic">
+            <el-form-item label="Bác sĩ đề nghị" prop="medic">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.medic"
@@ -85,23 +85,23 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="状态" prop="status" v-if="dialogProps.action === 'view'">
-              <el-input :disabled="true" v-if="bizFormModel.status === '2'" value="就诊中"></el-input>
-              <el-input :disabled="true" v-if="bizFormModel.status === '3'" value="已结束"></el-input>
-              <el-input :disabled="true" v-if="bizFormModel.status === '4'" value="已发药"></el-input>
-              <el-input :disabled="true" v-if="bizFormModel.status === '5'" value="已退回"></el-input>
+            <el-form-item label="Trạng thái" prop="status" v-if="dialogProps.action === 'view'">
+              <el-input :disabled="true" v-if="bizFormModel.status === '2'" value="Đang khám"></el-input>
+              <el-input :disabled="true" v-if="bizFormModel.status === '3'" value="Đã kết thúc"></el-input>
+              <el-input :disabled="true" v-if="bizFormModel.status === '4'" value="Đã phát thuốc"></el-input>
+              <el-input :disabled="true" v-if="bizFormModel.status === '5'" value="Đã trả lại"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
             <el-form-item label="申请结果" prop="applicationResults" v-if="dialogProps.action === 'view'">
-              <el-input :disabled="true" v-if="bizFormModel.applicationResults === '0'" value="通过"></el-input>
+              <el-input :disabled="true" v-if="bizFormModel.applicationResults === '0'" value="Qua"></el-input>
               <el-input :disabled="true" v-if="bizFormModel.applicationResults === '1'" value="退回"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <!--<el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="订单号" prop="orderNo" v-if="dialogProps.action === 'view'">
+            <el-form-item label="Số đơn hàng" prop="orderNo" v-if="dialogProps.action === 'view'">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.orderNo"
@@ -121,7 +121,7 @@
         </el-row>-->
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="预约时间" prop="diagnosisTime">
+            <el-form-item label="Thời gian hẹn" prop="diagnosisTime">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.diagnosisTime"
@@ -130,7 +130,7 @@
           </el-col>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="创建时间" prop="createDate" v-if="dialogProps.action === 'view'">
+              <el-form-item label="Thời gian tạo" prop="createDate" v-if="dialogProps.action === 'view'">
                 <el-input
                   :disabled="true"
                   v-model="bizFormModel.createDate"
@@ -144,10 +144,10 @@
     </el-form>
     <span slot='footer' class='dialog-footer'>
       <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true'
-                 @click='onSubmit("patientForm")'>提 交
+                 @click='onSubmit("patientForm")'>Gửi
       </el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -180,26 +180,26 @@
       VDistpicker
     },
     data() {
-      //身份证校验
+      //Kiểm tra CMND/CCCD
       const isCnNewID = (rule, value, callback) => {
-        const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//加权因子
-        const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//校验码
+        const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
+        const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
         if (/^\d{17}\d|x$/i.test(value)) {
           let sum = 0, idx;
           for (let i = 0; i < value.length - 1; i++) {
-            // 对前17位数字与权值乘积求和
+            // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
             sum += parseInt(value.substr(i, 1), 10) * arrExp[i];
           }
-          // 计算模（固定算法）
+          // Tính modulo（Thuật toán cố định）
           idx = sum % 11;
-          // 检验第18为是否与校验码相等
+          // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
           if (arrValid[idx] === value.substr(17, 1).toUpperCase()) {
             callback()
           } else {
-            callback("身份证格式有误")
+            callback("Định dạng CMND/CCCD không đúng")
           }
         } else {
-          callback("身份证格式有误")
+          callback("Định dạng CMND/CCCD không đúng")
         }
       }
       return {
@@ -207,52 +207,52 @@
         tokenData: null,
         bizFormModel: this.initFormModel(),
         tabIndex: "1",
-        gender_List: [], // 性别
-        //省市区三级联动
+        gender_List: [], // Giới tính
+        //Liên kết ba cấp tỉnh/thành phố/quận/huyện
         province: '',
         city: '',
         area: '',
-        flag: false,//防止重复提交
-        withPatientNexus_List: [], // 与患者关系
+        flag: false,//Ngăn gửi trùng lặp
+        withPatientNexus_List: [], // Quan hệ với bệnh nhân
         dialogProps: {
           visible: false,
           action: '',
           title: '',
         },
         formRules: {
-          /*name: [{required: true, message: "请输入患者姓名", trigger: "blur"}],
+          /*name: [{required: true, message: "Vui lòng nhập tên bệnh nhân", trigger: "blur"}],
           "gender.value": [
-            {required: true, message: "请选择性别", trigger: "change"},
+            {required: true, message: "Vui lòng chọn giới tính", trigger: "change"},
           ],
-          age: [{required: true, message: "请输入年龄", trigger: "blur"}],
-          month: [{required: true, message: "请输入月", trigger: "blur"}],
-          // phone: [{ required: true, message: "请输入联系方式", trigger: "blur" }],
+          age: [{required: true, message: "Vui lòng nhập tuổi", trigger: "blur"}],
+          month: [{required: true, message: "Vui lòng nhập tháng", trigger: "blur"}],
+          // phone: [{ required: true, message: "Vui lòng nhập thông tin liên hệ", trigger: "blur" }],
           "birthday": [
-            {required: true, message: "请选择出生日期", trigger: "change"},
+            {required: true, message: "Vui lòng chọn ngày sinh", trigger: "change"},
           ],
           // "card": [
-          //   { required: true, message: '请输入身份证号码', trigger: 'blur' },
-          //   { min:18,max:18, message: "请输入18位身份证号码", trigger: "blur" },
-          //   {	//调用上面定义的方法校验格式是否正确
+          //   { required: true, message: 'Vui lòng nhập số CMND/CCCD', trigger: 'blur' },
+          //   { min:18,max:18, message: "Vui lòng nhập18chữ số của số CMND/CCCD", trigger: "blur" },
+          //   {	//Gọi phương thức đã định nghĩa ở trên để kiểm tra định dạng có đúng không
           //            validator: isCnNewID,trigger: "blur"
           //   }
           // ],
-          guardianName: [{required: false, message: "请输入监护人姓名", trigger: "change"},],
-          guardianPhone: [{required: false, message: "请输入监护人电话", trigger: "change"},]*/
+          guardianName: [{required: false, message: "Vui lòng nhập tên người giám hộ", trigger: "change"},],
+          guardianPhone: [{required: false, message: "Vui lòng nhập số điện thoại người giám hộ", trigger: "change"},]*/
         },
-        province_List: [], // 省
-        city_List: [], //市
-        area_List: [] //区
+        province_List: [], // Tỉnh/Thành phố
+        city_List: [], //Thành phố
+        area_List: [] //Quận/Huyện
       };
     },
     props: {
-      // 权限
+      // Quyền
       permission: {
         type: Object,
       },
     },
     methods: {
-      //通过获取身份证号获取出生年月日
+      //Lấy ngày tháng năm sinh qua số CMND/CCCD
       getBirthday() {
         if (this.bizFormModel.card.length === 18) {
           let birthDay = this.bizFormModel.card.substring(6, 14)
@@ -263,7 +263,7 @@
           this.bizFormModel.birthday = newBirthday
           this.birthdayChanges()
 
-          // 性别
+          // Giới tính
           let sexStr = this.bizFormModel.card.substring(16, 17)
           // 0女1男
           let sexName = "男";
@@ -284,7 +284,7 @@
           this.birthdayChanges()
         }
       },
-      //变更年龄事件
+      //Sự kiện thay đổi tuổi
       exchageAge() {
         if (this.bizFormModel.age < 12) {
           this.formRules.guardianName[0].required = true
@@ -299,7 +299,7 @@
         }
       },
 
-      //自动计算年龄事件
+      //Sự kiện tự tính tuổi
       birthdayChanges() {
 
         if (!this.bizFormModel.birthday) {
@@ -391,7 +391,7 @@
       },
 
       getToken() {
-        // 获取远程诊所token
+        // Lấy phòng khám từ xatoken
         this.$axios.post('/token/Auth/GetAppFrienAuthToken', loginForm, config)
           .then((response) => {
             this.tokenData = response.data.BusData.data.Token
@@ -400,7 +400,7 @@
             console.error(error);
           });
       },
-      // 状态修改
+      // Sửa trạng thái
       statusEdit(index) {
         this.bizFormModel.status = index
         saveDiagnosis(this.bizFormModel).then(responseData => {
@@ -435,7 +435,7 @@
         }).catch((error) => { console.error(error); });
       },
       async onSubmit(formName) {
-        // 获取远程诊所token
+        // Lấy phòng khám từ xatoken
         await this.$axios.post('/token/Auth/GetAppFrienAuthToken', loginForm, config)
           .then((response) => {
             this.tokenData = response.data.BusData.data.Token
@@ -462,7 +462,7 @@
               this.bizFormModel.applyId = response.data.BusData.data.ApplyId
               this.dialogProps.visible = false;
               this.statusEdit("1")
-              this.$message.success("保存成功！")
+              this.$message.success("Lưu thành công！")
               modifiedState(this.bizFormModel).then(responseData => {
                 if (responseData.code === 100) {
                 } else {
@@ -473,7 +473,7 @@
                 this.outputError(error)
               })
             } else {
-              this.$message.warning("诊疗申请信息异常，请联系管理员后重新发送申请!")
+              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，Vui lòng liên hệ quản trị viên rồi gửi lại đề nghị!")
             }
 
           })
@@ -485,19 +485,19 @@
       },
       doSave() {
         let flagCard = false
-        //校验身份证号码
+        //Kiểm tra số CMND/CCCD
         if (this.bizFormModel.card) {
-          const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//加权因子
-          const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//校验码
+          const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
+          const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
           if (/^\d{17}\d|x$/i.test(this.bizFormModel.card)) {
             let sum = 0, idx;
             for (let i = 0; i < this.bizFormModel.card.length - 1; i++) {
-              // 对前17位数字与权值乘积求和
+              // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
               sum += parseInt(this.bizFormModel.card.substr(i, 1), 10) * arrExp[i];
             }
-            // 计算模（固定算法）
+            // Tính modulo（Thuật toán cố định）
             idx = sum % 11;
-            // 检验第18为是否与校验码相等
+            // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
             if (arrValid[idx] === this.bizFormModel.card.substr(17, 1).toUpperCase()) {
               flagCard = true
             } else {
@@ -509,7 +509,7 @@
         }
 
         if (!flagCard && this.bizFormModel.card) {
-          this.$message.error("身份证号码不正确，请重新输入")
+          this.$message.error("Số CMND/CCCD không đúng，Vui lòng nhập lại")
           this.flag = false
           return;
         }
@@ -535,7 +535,7 @@
       },
       switchEdit() {
         this.dialogProps.action = "edit";
-        this.dialogProps.title = "修改患者信息";
+        this.dialogProps.title = "Sửa thông tin bệnh nhân";
         this.initOptions(this.bizFormModel);
       },
       onDialogClose() {
@@ -549,32 +549,32 @@
       initFormModel(This) {
         return {
           company: {
-            // 诊所id
+            // Phòng khámid
             id: currentUser.company.id,
             name: null,
           },
-          name: "", // 患者姓名
+          name: "", // Tên bệnh nhân
           gender: {
-            // 性别
+            // Giới tính
             value: null,
             name: null,
           },
-          age: "", // 年龄
-          month: "", // 月
-          birthday: "", // 出生日期
-          phone: "", // 联系方式
-          card: "", // 身份证号
+          age: "", // Tuổi
+          month: "", // tháng
+          birthday: "", // Ngày sinh
+          phone: "", // Thông tin liên hệ
+          card: "", // Số CMND/CCCD
           withPatientNexus: {
-            // 与患者关系
+            // Quan hệ với bệnh nhân
             value: null,
             name: null,
           },
-          healthCardNo: "", // 健康卡号
-          province: "", // 省
-          city: "", // 市
-          area: "", // 区
-          address: "", // 详细地址
-          remarks: "", // 备注信息
+          healthCardNo: "", // Số thẻ sức khỏe
+          province: "", // Tỉnh/Thành phố
+          city: "", // Thành phố
+          area: "", // Quận/Huyện
+          address: "", // Địa chỉ chi tiết
+          remarks: "", // Thông tin ghi chú
         };
       },
       initOptions(This) {
@@ -604,7 +604,7 @@
           this.withPatientNexus_List = data
         })
       },
-      // 获取到省市区三级联动的值
+      // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện
       onChangeProvince(data) {
         this.province = data.value
 
@@ -632,7 +632,7 @@
       },
       openAddPatientDialog() {
         this.dialogProps.action = 'add'
-        this.dialogProps.title = '添加患者信息'
+        this.dialogProps.title = 'Thêm thông tin bệnh nhân'
         this.bizFormModel = this.initFormModel(this.user)
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
@@ -647,7 +647,7 @@
         this.bizFormModel = {...this.initFormModel(this.user), ...patient}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
-        this.bizFormModel.id = null   //把id设置为空，添加一个新的
+        this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
         this.dialogProps.visible = true
       },
     },

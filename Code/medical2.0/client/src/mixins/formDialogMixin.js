@@ -15,7 +15,7 @@
  *     data() {
  *       return {
  *         entityName: 'Role',          // required: event suffix, e.g. openViewRoleDialog
- *         entityLabel: '角色',          // optional: used in dialog titles
+ *         entityLabel: 'Vai trò',          // optional: used in dialog titles
  *         formRefName: 'roleForm',     // optional: auto clearValidate in onDialogOpen
  *         formRules: { ... },          // validation rules
  *       }
@@ -48,7 +48,7 @@ export default {
     return {
       // ---- subclass should define these ----
       entityName: '',       // e.g. 'Role'   — event name suffix
-      entityLabel: '',      // e.g. '角色'    — dialog title label
+      entityLabel: '',      // e.g. 'Vai trò'    — dialog title label
       formRefName: '',      // e.g. 'roleForm' — form ref for clearValidate
 
       // ---- managed by mixin ----
@@ -109,10 +109,10 @@ export default {
     getTitle(action) {
       const label = this.entityLabel || ''
       const map = {
-        view: '查看' + label,   // 查看
-        edit: '修改' + label,   // 修改
-        add:  '添加' + label,   // 添加
-        copy: '添加' + label    // 添加
+        view: 'Xem' + label,   // Xem
+        edit: 'Sửa' + label,   // Sửa
+        add:  'Thêm' + label,   // Thêm
+        copy: 'Thêm' + label    // Thêm
       }
       return map[action] || ''
     },

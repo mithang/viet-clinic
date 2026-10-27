@@ -36,7 +36,7 @@
                             <el-table-column prop="date" width="150"></el-table-column>
                             <el-table-column width="120">
                                 <template slot-scope="scope">
-                                    <el-button type="danger" @click="handleDel(scope.$index)">删除</el-button>
+                                    <el-button type="danger" @click="handleDel(scope.$index)">Xóa</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -45,7 +45,7 @@
                         </div>
                     </template>
                 </el-tab-pane>
-                <el-tab-pane :label="`回收站(${recycle.length})`" name="third">
+                <el-tab-pane :label="`Thùng rác(${recycle.length})`" name="third">
                     <template v-if="message === 'third'">
                         <el-table :data="recycle" :show-header="false" style="width: 100%">
                             <el-table-column>
@@ -56,7 +56,7 @@
                             <el-table-column prop="date" width="150"></el-table-column>
                             <el-table-column width="120">
                                 <template slot-scope="scope">
-                                    <el-button @click="handleRestore(scope.$index)">还原</el-button>
+                                    <el-button @click="handleRestore(scope.$index)">Khôi phục</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -88,18 +88,18 @@
           },          
           {
             date: '2018-04-19 20:00:00',
-            title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
+            title: '【Thông báo hệ thống】Hệ thống này sẽ tiến hành nâng cấp bảo trì vào rạng sáng nay lúc2giờ đến5giờ để nâng cấp bảo trì'
           }, {
             date: '2018-04-19 21:00:00',
             title: '今晚12点整发大红包，先到先得'
           }],
           read: [{
             date: '2018-04-19 20:00:00',
-            title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
+            title: '【Thông báo hệ thống】Hệ thống này sẽ tiến hành nâng cấp bảo trì vào rạng sáng nay lúc2giờ đến5giờ để nâng cấp bảo trì'
           }],
           recycle: [{
             date: '2018-04-19 20:00:00',
-            title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
+            title: '【Thông báo hệ thống】Hệ thống này sẽ tiến hành nâng cấp bảo trì vào rạng sáng nay lúc2giờ đến5giờ để nâng cấp bảo trì'
           }]
         }
       },

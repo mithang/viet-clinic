@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 处方详情Entity
+ * Chi tiết đơn thuốcEntity
  * @author txl
  * @version 2022-06-07
  */
@@ -14,36 +14,36 @@ import java.util.List;
 public class RecipelDetailEvt implements Serializable {
 
 	private static final long serialVersionUID = 1014474470772900078L;
-	//名称
+	//Tên
 	private String name;
-	//规格
+	//Quy cách
     private String norms;
-	//数量
+	//Số lượng
 	private String num;
-	//单价
+	//Đơn giá
     private String price;
-    //天数
+    //Số ngày
     private String days;
-    //用法标识
-    private String useText = "用法:";
-	//频次
+    //dùngphương phápđịnh danh
+    private String useText = "Cách dùng:";
+	//tần suất lần
 	private String frequency;
-	//用法
+	//Cách dùng
 	private String use;
-	//备注
+	//Ghi chú
 	private String remarks;
-	//名称标题
-	private String nameTitle = "名称";
-	//数量标题
-	private String numTitle = "数量";
-	//单位标题
-	private String unitTitle = "单位";
-	//单价标题
-	private String priceTitle = "单价";
-	//备注标题
-	private String remarksTitle = "备注";
-	//材料费
-	private String stuffPriceName = "材料费";
-	//材料费金额
+	//Têntiêu đề
+	private String nameTitle = "Tên";
+	//Số lượngtiêu đề
+	private String numTitle = "Số lượng";
+	//Đơn vịtiêu đề
+	private String unitTitle = "Đơn vị";
+	//đơn giátiêu đề
+	private String priceTitle = "Đơn giá";
+	//Ghi chútiêu đề
+	private String remarksTitle = "Ghi chú";
+	//Phí vật tư
+	private String stuffPriceName = "Phí vật tư";
+	//Phí vật tưSố tiền
 	private String stuffPrice;
 }

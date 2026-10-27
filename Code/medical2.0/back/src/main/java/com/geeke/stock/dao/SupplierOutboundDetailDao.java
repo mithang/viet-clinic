@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 出库单DAO接口
+ * Phiếu xuất khoDAOGiao diện
  * @author txl
  * @version 2022-06-02/
  */

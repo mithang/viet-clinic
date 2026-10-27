@@ -2,7 +2,7 @@ package com.geeke.config.shiro;
 
 /**
  * @Author lys
- * @Description redis服务配置
+ * @Description redisdịch vụcấu hình
  * @Date 15:18 2019/12/20
  **/
 
@@ -38,21 +38,21 @@ public class StatelessSessionManager extends DefaultWebSessionManager {
     private JwtUtils jwtUtils;
 
     /**
-     * 这个是客户端请求给服务端带的header
+     * nàyCái có Khách hàngđầuVui lòngyêu cầuchodịch vụđầukèm của header
      */
     private final static String HEADER_TOKEN_NAME = "X-Token";
 
     @Override
     protected Serializable getSessionId(ServletRequest servletRequest, ServletResponse servletResponse) {
-        // 从请求头中获取token
+        // Từ Vui lòngtiêu đề yêu cầu trong Lấytoken
         HttpServletRequest httpRequest = WebUtils.toHttp(servletRequest);
         String token = httpRequest.getHeader(HEADER_TOKEN_NAME);
-        if (token == null) {  // 通过url参数传递token
+        if (token == null) {  // QuaurlTham sốtruyềntoken
             token = httpRequest.getParameter("token");
         }
-        // 判断是否有值
+        // Kiểm traCó hay khôngcóGiá trị
         if (StringUtils.isNoneBlank(token)) {
-            // 设置当前session状态
+            // ĐặtHiện tạisessionTrạng thái
             servletRequest.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE, "url");
             servletRequest.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID, token);
             servletRequest.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_IS_VALID, Boolean.TRUE);
@@ -71,15 +71,15 @@ public class StatelessSessionManager extends DefaultWebSessionManager {
             logger.info("Request {} get tokenId from request header {}", httpRequest.getRequestURI(), token);
             return token;
         }
-        // 若header获取不到token则尝试从cookie中获取
+        // nếuheaderLấykhôngĐếntokenthì尝试Từ cookie trong Lấy
         // Serializable serializable = super.getSessionId(servletRequest, servletResponse);
-        Serializable serializable = UUID.randomUUID();  // 支持浏览器两个页面用不同的用户登录
+        Serializable serializable = UUID.randomUUID();  // Hỗ trợ trình duyệt mở hai trang đăng nhập bằng người dùng khác nhau
         logger.info("Request {} get sessionId from super get getSessionId {}", httpRequest.getRequestURI(), serializable.toString());
         return serializable;
     }
 
     /**
-     * 获取所有活动中的Session
+     * Lấytất cảsống动TrongSession
      * @return
      */
     public Collection<Session> getActiveSessions() {

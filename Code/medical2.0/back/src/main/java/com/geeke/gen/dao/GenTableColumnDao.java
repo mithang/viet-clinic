@@ -5,7 +5,7 @@ import com.geeke.gen.entity.GenTableColumn;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 业务表管理DAO接口
+ * Quản lý bảng nghiệp vụDAOGiao diện
  * @author lys
  * @version 2021-08-26
  */

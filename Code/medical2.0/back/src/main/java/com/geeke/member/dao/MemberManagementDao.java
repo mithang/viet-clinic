@@ -9,7 +9,7 @@ import com.geeke.member.entity.MemberManagement;
 import java.util.List;
 
 /**
- * 会员卡管理DAO接口
+ * Quản lý thẻ hội viênDAOGiao diện
  * @author rys
  * @version 2022-10-26
  */

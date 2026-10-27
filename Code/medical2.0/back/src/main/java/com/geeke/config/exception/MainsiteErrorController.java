@@ -11,7 +11,7 @@ import com.geeke.utils.constants.ErrorEnum;
 
 /**
  * @author: hxy
- * @description: 系统错误拦截, 主要是针对404的错误
+ * @description: Lỗi hệ thốngchặn, chínhcần có Đối với404 của Lỗi
  * @date: 2017/10/24 10:31
  */
 @Controller
@@ -20,10 +20,10 @@ public class MainsiteErrorController implements ErrorController {
     private static final String ERROR_PATH = "/error";
 
     /**
-     * 主要是登陆后的各种错误路径  404页面改为返回此json
-     * 未登录的情况下,大部分接口都已经被shiro拦截,返回让用户登录了
+     * chínhcần có đăng nhậpsau của đủ loạiLỗiđường dẫn  404trangmặtsửa là Trả vềnàyjson
+     * ChưaĐăng nhập của tình hìnhdưới,lớnMột phầngiao diệnđềuĐãbịshirochặn,Trả vềđểNgười dùngĐăng nhậprồi
      *
-     * @return 501的错误信息json
+     * @return 501 của Thông tin lỗijson
      */
     @RequestMapping(value = ERROR_PATH)
     @ResponseBody

@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/admin/router')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getRouterById = baseApi.getById
 export const listRouterPage = baseApi.listPage
 export const listRouterAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertRouter = baseApi.bulkInsert
 export const bulkUpdateRouter = baseApi.bulkUpdate
 export const bulkDeleteRouter = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const treeRouter = (search) =>
     request({
         url: '/admin/router/tree',

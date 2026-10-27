@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.ActionRecycle;
 
 /**
- * 操作日志DAO接口
+ * Nhật ký thao tácDAOGiao diện
  * @author lys
  * @version 2019-12-11
  */

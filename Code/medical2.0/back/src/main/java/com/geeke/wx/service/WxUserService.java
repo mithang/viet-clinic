@@ -43,12 +43,12 @@ public class WxUserService extends CrudService<WxUserDao, WxUser> {
     @Transactional(readOnly = false)
     public WxUser getCode(WxUser wxUser) {
        // WxUser wxUser = new WxUser();
-        // 获取code数据
+        // LấycodeDữ liệu
         JSONObject object = wechatUtil.getOpenId(wxUser.getCode());
-        // json数据转换成字符串
+        // jsonDữ liệuChuyển đổi thành chuỗi
         String openid = object.get("openid").toString();
         String sessionkey = object.get("session_key").toString();
-        // 当主体账户绑定小程序后就可以获取到，未绑定无法获取
+        // Khi tài khoản chính liên kết với mini-program thì có thể lấy được, Chưaliên kếtchỉ địnhkhôngphương phápLấy
         String unionId="";
         if(!ObjectUtils.isEmpty(object.get("unionid"))){
             unionId=object.get("unionid").toString();
@@ -57,18 +57,18 @@ public class WxUserService extends CrudService<WxUserDao, WxUser> {
         wxUser.setSessionKey(sessionkey);
         wxUser.setUnionId(unionId);
 
-        //获取是否存在该微信用户
+        //LấyCó tồn tại khôngđóWeChatNgười dùng
         WxUser user = wxUserDao.getByOpenId(openid);
         if(!ObjectUtils.isEmpty(user)&&!ObjectUtils.isEmpty(user.getPhone())){
 
             return user;
         }
 
-        //保存用户的openId
+        //LưuNgười dùng của openId
         String uuid = IdGen.uuid();
         wxUser.setId(uuid);
         wxUserDao.save(wxUser);
-        // 返回参数
+        // Trả vềTham số
         return wxUser;
     }
 
@@ -82,24 +82,24 @@ public class WxUserService extends CrudService<WxUserDao, WxUser> {
                 String phone_info = phone.get("phone_info").toString();
                 JSONObject jsonObject = JSONObject.parseObject(phone_info);
                 String phoneNumber = jsonObject.get("phoneNumber").toString();
-                //通过openId获取是否有该用户信息
+                //QuaopenIdLấyCó hay khôngcóđóNgười dùngThông tin
                 WxUser byOpenId = wxUserDao.getByOpenId(wxUser.getOpenId());
                 String tokens="";
                 if(!ObjectUtils.isEmpty(byOpenId)){
                     logger.debug("WxUser found: {}", byOpenId);
                     wxUserDao.update(phoneNumber,wxUser.getOpenId());
 
-                    //保存完后进行后端保存微信患者
+                    //Lưuxongsautiến hành dòngsauđầuLưuWeChatBệnh nhân
 
-                    //根据诊所id和openid获取是否有该用户
+                    //TheoPhòng khámid và openidLấyCó hay khôngcóđóNgười dùng
                     User user1 = userService.getCompanyIdAndOpenId(byOpenId.getCompany().getId(),wxUser.getOpenId());
                     User user = new User();
                     if(!ObjectUtils.isEmpty(user1)){
-                        // 用户已存在，更新
+                        // Người dùngĐã tồn tại, Cập nhật
                         user.setId(user1.getId());
                         userService.updateWxUser(user);
                     }else {
-                        // 用户不存在，新建
+                        // Người dùngKhông tồn tại, mớixây dựng
                         user.setId(IdGen.uuid());
                         user.setCompany(byOpenId.getCompany());
                         user.setIsWxuser("1");
@@ -128,7 +128,7 @@ public class WxUserService extends CrudService<WxUserDao, WxUser> {
     @Transactional(readOnly = false)
     public WxUser initLogin(WxUser wxUser) {
         JSONObject object = wechatUtil.getOpenId(wxUser.getCode());
-        // json数据转换成字符串
+        // jsonDữ liệuChuyển đổi thành chuỗi
         String openid = object.get("openid").toString();
         WxUser user = wxUserDao.getByOpenId(openid);
         if(ObjectUtils.isEmpty(user)){

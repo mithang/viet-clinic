@@ -7,7 +7,7 @@ import com.geeke.org.entity.Company;
 import javax.validation.constraints.NotNull;
 
 /**
- * 会员卡管理Entity
+ * Quản lý thẻ hội viênEntity
  * @author rys
  * @version 2022-10-26
  */
@@ -15,8 +15,8 @@ import javax.validation.constraints.NotNull;
 public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
 
 	private static final long serialVersionUID = 1225301049409470622L;
-	private Company company;      // 诊所id
-	private MemberItem memberItem;      // 患者信息
+	private Company company;      // Phòng khámid
+	private MemberItem memberItem;      // Thông tin bệnh nhân
 	private MemberManagement memberManagement;
 	private Integer number;
 	private Integer useNumber;
@@ -30,7 +30,7 @@ public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
 	}
 	
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -72,7 +72,7 @@ public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -81,7 +81,7 @@ public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -91,7 +91,7 @@ public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

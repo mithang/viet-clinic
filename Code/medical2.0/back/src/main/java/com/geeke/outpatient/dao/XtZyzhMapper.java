@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 /**
 * @author 47826
-* @description 针对表【xt_zyzh】的数据库操作Mapper
+* @description Đối với bảng[xt_zyzh] của Dữ liệukhothao tácMapper
 * @createDate 2024-11-22 14:28:53
 * @Entity com.geeke.outpatient.entity.XtZyzh
 */

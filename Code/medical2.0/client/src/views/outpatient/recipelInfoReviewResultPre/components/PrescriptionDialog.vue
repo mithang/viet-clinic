@@ -1,7 +1,7 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" title="处方查询" width="50%">
+  <el-dialog :visible.sync="dialogVisible" title="Truy vấn đơn thuốc" width="50%">
     <el-form :model="formData" ref="prescriptionForm" label-width="120px">
-      <el-form-item label="处方编号">
+      <el-form-item label="Số đơn thuốc">
         <el-input v-model="formData.prescriptionCode" readonly></el-input>
       </el-form-item>
       <el-form-item label="处方医生">
@@ -12,7 +12,7 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="closeDialog">关闭</el-button>
+      <el-button @click="closeDialog">Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.$emit('update:dialogVisible', false); // 关闭模态框
+      this.$emit('update:dialogVisible', false); // Đóng hộp thoại
     }
   }
 };

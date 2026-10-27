@@ -16,7 +16,7 @@
 
     data() {
       return {
-        typeList: [{name:'待审核',id:'1'},{name:'已审核',id:'2'},{name:'已撤销',id:'3'}],
+        typeList: [{name:'Chờ xét duyệt',id:'1'},{name:'Đã xét duyệt',id:'2'},{name:'Đã thu hồi',id:'3'}],
         selectedStatus: null
       };
     },

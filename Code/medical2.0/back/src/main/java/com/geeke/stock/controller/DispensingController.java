@@ -15,7 +15,7 @@ import com.geeke.common.controller.SearchParams;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 发药明细Controller
+ * Chi tiết phát thuốcController
  * @author txl
  * @version 2022-08-11
  */
@@ -32,7 +32,7 @@ public class DispensingController extends CrudController<DispensingService, Disp
 	}
 
     /**
-     * 发药报表
+     * phát thuốcbáo cáo
      * @param searchParams
      * @return
      */
@@ -49,7 +49,7 @@ public class DispensingController extends CrudController<DispensingService, Disp
     }
 
     /**
-     * 发药报表
+     * phát thuốcbáo cáo
      * @param searchParams
      * @return
      */

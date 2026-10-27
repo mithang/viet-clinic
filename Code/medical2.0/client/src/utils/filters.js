@@ -30,7 +30,7 @@ export default {
     return v;
   },
   'yesNo'(v) {
-    return v ? '是' : '否';
+    return v ? 'Có' : 'Không';
   },
   'getObjectValue'(obj, str = '', text = '') {
     if (!obj || typeof(obj) !== 'object' || !str) return text;

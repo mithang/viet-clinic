@@ -12,7 +12,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 /**
- * FreeMarkers工具类
+ * FreeMarkersLớp công cụ
  * @author lys
  * @version 2018-01-15
  */

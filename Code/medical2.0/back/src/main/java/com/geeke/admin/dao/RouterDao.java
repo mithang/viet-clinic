@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 路由管理DAO接口
+ * Quản lý tuyến đườngDAOGiao diện
  * @author lys
  * @version 2021-11-18
  */

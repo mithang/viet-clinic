@@ -40,7 +40,7 @@ export default {
     },
     placeholder: {
       type: String,
-      default: '请选择'
+      default: 'Vui lòng chọn'
     },
     disabled: {
       type: Boolean,
@@ -73,10 +73,10 @@ export default {
     async loadDictItems() {
       try {
         if (this.dictCode) {
-          // 推荐方式：按字典类型 code 获取（带缓存）
+          // 推荐方式：Theo loại từ điển code Lấy（Có bộ nhớ đệm）
           this.options = await getDictItemsByCode(this.dictCode)
         } else if (this.dictTypeId) {
-          // 兼容方式：按 dict_type_id 获取
+          // 兼容方式：按 dict_type_id Lấy
           const res = await listDictItemAll({
             params: [{ columnName: 'dict_type_id', queryType: '=', value: this.dictTypeId }]
           })

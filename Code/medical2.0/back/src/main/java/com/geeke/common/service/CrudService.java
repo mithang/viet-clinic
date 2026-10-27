@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service基类
+ * ServiceLớp cơ sở
  * @author lys
  * @version 2014-05-16
  */
@@ -31,7 +31,7 @@ import java.util.Map;
 public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>> extends BaseService {
 
 	/**
-	 * 持久层对象
+	 * tầng persistenceĐối tượng
 	 */
 	@Autowired
 	protected D dao;
@@ -42,7 +42,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	private CompanyService companyService;
 
 	/**
-	 * 获取单条数据
+	 * LấyđơnmụcDữ liệu
 	 * @param id
 	 * @return
 	 */
@@ -55,8 +55,8 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 查询分页数据
-	 * @param page 分页对象
+	 * Truy vấn phúttrangDữ liệu
+	 * @param page  phúttrangĐối tượng
 	 * @param entity
 	 * @return
 	 */
@@ -70,7 +70,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
 
 	/**
-	 * 查询列表数据
+	 * Truy vấnDanh sáchDữ liệu
 	 * @param entity
 	 * @return
 	 */
@@ -82,11 +82,11 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
 
 	/**
-	 * 保存数据（插入或更新）
+	 * LưuDữ liệu(Chèn hoặc cập nhật)
 	 * @param entity
 	 */
 	public T save(T entity) {
-		// 更新操作需要校验租户归属
+		// Cập nhậtthao tácCầnKiểm tratenantthuộc về
 		if (StringUtils.isNotBlank(entity.getId())) {
 			verifyTenantOwnership(entity);
 		}
@@ -104,7 +104,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 实体表有删除字段时，采用逻辑删除；否则采用物理删除数据
+	 * thực thểbảngcóXóaTrường giờ, lấydùnglogicXóa; Nếu khônglấydùngvật lýXóaDữ liệu
 	 * @param entity
 	 */
 	public int delete(T entity) {
@@ -118,7 +118,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 批量添加
+	 * hàng loạtThêm
 	 * @param entitys
 	 * @return
 	 */
@@ -133,7 +133,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 批量修改
+	 * hàng loạtSửa
 	 * @param entitys
 	 * @return
 	 */
@@ -149,7 +149,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 批量删除
+	 * Xóa hàng loạt
 	 * @param entitys
 	 * @return
 	 */
@@ -162,15 +162,15 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 租户过滤兜底：如果参数中没有 company_id，则自动注入当前登录租户的 company_id
-	 * 仅对实体类自身声明了 company 字段的业务实体生效（排除仅从 DataEntity 继承的系统实体）
-	 * @param parameters 查询参数列表
+	 * tenantqualọc兜底: NếuTham số trong Không có company_id, thìtự độnginjectHiện tạiĐăng nhậptenant của  company_id
+	 * chỉđối vớithực thểLớpbản thânkhai báorồi company Trường của nghiệp vụthực thểsinh效(排除chỉTừ  DataEntity kế thừa của Hệ thốngthực thể)
+	 * @param parameters Danh sách tham số truy vấn
 	 */
 	protected void ensureCompanyFilter(List<Parameter> parameters) {
 		if (parameters == null) {
 			return;
 		}
-		// 检查实体类自身是否有 company 字段（不含父类），没有则跳过
+		// Kiểm trathực thểLớpbản thânCó hay khôngcó company Trường(khôngchứachaLớp), Không cóthìBỏ qua
 		try {
 			Class<?> entityClass = Reflections.getClassGenricType(getClass(), 1);
 			if (entityClass == null || entityClass == Object.class || !Reflections.hasOwnField(entityClass, "company")) {
@@ -180,9 +180,9 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			logger.debug("ensureCompanyFilter check failed: {}", e.getMessage());
 			return;
 		}
-		// 移除前端传入的 company_id，避免越权查询/操作其它租户数据（IDOR）
+		// Loại bỏ ở frontendtruyền vào của  company_id, Tránh越权Truy vấn/thao táccủa nónótenantDữ liệu(IDOR)
 		Parameter.extractAndRemoveCompanyId(parameters);
-		// 统一以【会话登录租户】作为隔离边界，与 verifyTenantOwnership 保持一致
+		// thống nhấtbằng[phiênĐăng nhậptenant]làm là cách ly边界,  và  verifyTenantOwnership Giữ nhất quán
 		String tenantId = SessionUtils.getLoginTenantId();
 		if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
 			parameters.add(new Parameter("company_id", "=", tenantId));
@@ -190,17 +190,17 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 校验实体是否属于当前租户
-	 * 用于 get/save/delete 等操作的安全校验
-	 * @param entity 待校验的实体
-	 * @throws ServiceException 如果实体不属于当前租户
+	 * Kiểm trathực thểCó hay khôngthuộctạiHiện tạitenant
+	 * dùng để get/save/delete  v.v. thao tác của an toànKiểm tra
+	 * @param entity chờKiểm tra của thực thể
+	 * @throws ServiceException Nếuthực thểkhôngthuộctạiHiện tạitenant
 	 */
 	protected void verifyTenantOwnership(DataEntity<?> entity) {
 		if (entity == null || entity.getCompany() == null) {
 			return;
 		}
 		String tenantId = SessionUtils.getLoginTenantId();
-		// 超管 / 哨兵（tenantId 为空或 "null"）不限制
+		// vượtquản lý / 哨兵(tenantId  là trống hoặc  "null")khônggiới hạn
 		if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
 			return;
 		}
@@ -208,24 +208,24 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		if (StringUtils.isBlank(entityCompanyId)) {
 			return;
 		}
-		// 诊所级数据隔离：业务数据只属于登录诊所自己（与列表 ensureCompanyFilter 的精确 company_id 一致）。
+		// Phòng khámcấpDữ liệucách ly: nghiệp vụDữ liệuchỉthuộctạiĐăng nhậpPhòng khámbản thân(Với danh sách ensureCompanyFilter  của chính xác company_id Nhất quán). 
 		if (!tenantId.equals(entityCompanyId)) {
-			// 机构共享字典实体（药品/耗材/费用项目等，列表 SQL 为 company_id=#{id} or #{institution}）：
-			// 允许访问归属"机构诊所"(同 parent 下 is_institution=1) 的数据，与列表可见范围保持一致
+			// Cơ sởtừ điển dùng chungthực thể(Thuốc/vật tư tiêu hao/Chi phíhạng mục v.v. , Danh sách SQL  là  company_id=#{id} or #{institution}): 
+			// cho phéptruy cậpthuộc về"Cơ sởPhòng khám"(cùng parent dưới is_institution=1) Dữ liệu của, Với danh sáchcó thể见范围Giữ nhất quán
 			if (isInstitutionShared()) {
 				String institution = companyService.getInstitution(tenantId);
 				if (StringUtils.isNotBlank(institution) && institution.equals(entityCompanyId)) {
 					return;
 				}
 			}
-			throw new ServiceException("无权访问其他租户数据");
+			throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
 		}
 	}
 
 	/**
-	 * 实体是否为"机构共享字典"（基础资料随机构诊所共享给同机构下各诊所）。
-	 * 默认 false（业务数据严格诊所级隔离）；仅字典类 Service（Drug/Stuff/CostItem 等）重写为 true，
-	 * 与其列表 SQL（company_id = #{id} or company_id = #{institution}）的可见范围保持一致。
+	 * thực thểCó hay không là "Cơ sởtừ điển dùng chung"(Dữ liệu cơ bản theo phòng khám của cơ sở được chia sẻ cho các phòng khám thuộc cùng cơ sở). 
+	 * Mặc định false(nghiệp vụDữ liệu严ôPhòng khámcấpcách ly); chỉtừ điểnLớp Service(Drug/Stuff/CostItem  v.v. )viết lại là  true, 
+	 *  và của nóDanh sách SQL(company_id = #{id} or company_id = #{institution}) của có thể见范围Giữ nhất quán. 
 	 */
 	protected boolean isInstitutionShared() {
 		return false;
@@ -233,14 +233,14 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
 
 	/**
-	 * 构建带租户信息的分页请求
-	 * 从参数中提取company_id，获取机构信息，构建PageRequest
-	 * @param parameters 查询参数
-	 * @param orderby 排序
+	 * Xây dựng yêu cầu phân trang kèm thông tin tenant
+	 * Trích xuất từ tham sốcompany_id, LấyCơ sởThông tin, xây dựngPageRequest
+	 * @param parameters Tham số truy vấn
+	 * @param orderby Sắp xếp
 	 * @return PageRequest
 	 */
 	protected PageRequest buildTenantPageRequest(List<Parameter> parameters, String orderby) {
-		// 移除前端 company_id（防止越权），统一以会话登录租户作为隔离边界
+		// Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
 		Parameter.extractAndRemoveCompanyId(parameters);
 		String id = SessionUtils.getLoginTenantId();
 		if ("null".equals(id)) {
@@ -251,15 +251,15 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 构建带租户信息的分页请求（带分页参数）
-	 * @param parameters 查询参数
-	 * @param offset 偏移量
-	 * @param limit 每页数量
-	 * @param orderby 排序
+	 * Xây dựng yêu cầu phân trang kèm thông tin tenant(kèm phúttrangTham số)
+	 * @param parameters Tham số truy vấn
+	 * @param offset 偏移lượng
+	 * @param limit mỗitrangSố lượng
+	 * @param orderby Sắp xếp
 	 * @return PageRequest
 	 */
 	protected PageRequest buildTenantPageRequest(List<Parameter> parameters, int offset, int limit, String orderby) {
-		// 移除前端 company_id（防止越权），统一以会话登录租户作为隔离边界
+		// Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
 		Parameter.extractAndRemoveCompanyId(parameters);
 		String id = SessionUtils.getLoginTenantId();
 		if ("null".equals(id)) {
@@ -270,10 +270,10 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 检查是否有重复的数据
+	 * Kiểm traCó hay khôngcótrùng lặp của Dữ liệu
 	 * @param curdDao   dao
-	 * @param entity	业务数据
-	 * @param colMaps	检查字段
+	 * @param entity	nghiệp vụDữ liệu
+	 * @param colMaps	Kiểm traTrường
 	 * @return
 	 */
 	protected boolean exists(CrudDao<?> curdDao, DataEntity<?> entity, Map<String, String> colMaps) {
@@ -298,7 +298,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 插入操作
+	 * chènthao tác
 	 * @param entity
 	 * @return
 	 */
@@ -308,7 +308,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
 
 	/**
-	 * 更新操作
+	 * Cập nhậtthao tác
 	 * @param entity
 	 * @return
 	 */
@@ -317,7 +317,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 删除操作
+	 * Xóathao tác
 	 * @param entity
 	 * @return
 	 */
@@ -326,13 +326,13 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 生成操作日志
-	 * @param actionTypeId  操作类型Id
-	 * @param entity		操作的实体对象
+	 * Tạo nhật ký thao tác
+	 * @param actionTypeId  Loại thao tácId
+	 * @param entity		Đối tượng thực thể được thao tác
 	 * @return
 	 */
 	protected Action createAction(String actionTypeId, T entity) {
-		// 没有del_flag字段
+		// Không códel_flagTrường
 		if(entity == null || !entity.getBusTableHasDelFlag()) {
 			return null;
 		}
@@ -348,7 +348,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
 
 		List<ActionRecycle> recycles = Lists.newArrayList();
-		// 删除时记录把保存的数据保存到回收站
+		// Khi xóa, ghi lại và lưu dữ liệu đã lưu vào thùng rác
 		if(ActionConstants.ACTION_DELETED.equals(actionTypeId)) {
 			ActionRecycle recycle = new ActionRecycle();
 			recycle.setTableName(entity.getBusTableName());
@@ -361,7 +361,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 批量更新之前执行方法，需要手动调用
+	 * hàng loạtPhương thức thực thi trước khi cập nhật, Cần gọi thủ công
 	 * @param entities
 	 * @return
 	 */
@@ -373,17 +373,17 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 保存操作日志
+	 * LưuNhật ký thao tác
 	 */
 	protected void saveAction(Action action) {
 		actionSaver.saveAction(action);
 	}
 
 	/**
-	 * 分页查询模板方法
-	 * @param countFn 查询总数的函数
-	 * @param listFn 查询列表的函数
-	 * @return 分页结果
+	 * Truy vấn phân trangmẫuPhương thức
+	 * @param countFn Truy vấntổng số của Hàm
+	 * @param listFn Truy vấnDanh sách của Hàm
+	 * @return  phúttrangKết quả
 	 */
 	protected <R> Page<R> paginate(java.util.function.Supplier<Integer> countFn, java.util.function.Supplier<List<R>> listFn) {
 		int total = countFn.get();
@@ -392,10 +392,10 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 构建单条件查询参数
-	 * @param column 列名
-	 * @param operator 操作符
-	 * @param value 值
+	 * xây dựngđơnĐiều kiệnTham số truy vấn
+	 * @param column Cộttên
+	 * @param operator thao tácký tự
+	 * @param value Giá trị
 	 * @return PageRequest
 	 */
 	protected PageRequest buildPageRequest(String column, String operator, Object value) {
@@ -403,8 +403,8 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 构建多条件精确匹配查询参数
-	 * @param exactFilters 精确匹配条件Map
+	 * xây dựngnhiềuĐiều kiệnchính xáckhớpTham số truy vấn
+	 * @param exactFilters chính xáckhớpĐiều kiệnMap
 	 * @return PageRequest
 	 */
 	protected PageRequest buildPageRequest(Map<String, Object> exactFilters) {
@@ -416,11 +416,11 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * 子表同步：比较旧列表和新列表，执行删除、更新、新增操作
-	 * @param oldList 旧数据列表
-	 * @param newList 新数据列表
-	 * @param childDao 子表DAO
-	 * @param idMatcher ID匹配器
+	 * conbảngđồng bộ: so với较cũDanh sách và mớiDanh sách, hành nghề dòngXóa, Cập nhật, Thêm mớithao tác
+	 * @param oldList cũDữ liệuDanh sách
+	 * @param newList mớiDữ liệuDanh sách
+	 * @param childDao Bảng conDAO
+	 * @param idMatcher IDkhớpthiết bị
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E> void syncChildList(List<E> oldList, List<E> newList,
@@ -429,7 +429,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		List<E> toInsert = new java.util.ArrayList<>();
 		List<E> toUpdate = new java.util.ArrayList<>();
 
-		// 用 Set 缓存 newList 的 ID，将 O(n*m) 降为 O(n+m)
+		// dùng Set Bộ nhớ đệm newList  của  ID, Sẽ  O(n*m) 降 là  O(n+m)
 		java.util.Set<String> newIds = new java.util.HashSet<>();
 		for (E newItem : newList) {
 			if (newItem instanceof DataEntity) {
@@ -440,7 +440,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			}
 		}
 
-		// 找出需要删除的记录（oldList 中不在 newList 中的）
+		// tìm raCầnXóa của Bản ghi(oldList  trong không ở newList Trong)
 		for (E oldItem : oldList) {
 			if (oldItem instanceof DataEntity) {
 				String oldId = ((DataEntity<?>) oldItem).getId();
@@ -448,7 +448,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 					toDelete.add(oldItem);
 				}
 			} else {
-				// 非 DataEntity 类型回退到 BiPredicate 匹配
+				// không phải DataEntity Loạitrả lạitrảĐến BiPredicate khớp
 				boolean found = newList.stream().anyMatch(newItem -> idMatcher.test(oldItem, newItem));
 				if (!found) {
 					toDelete.add(oldItem);
@@ -456,7 +456,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			}
 		}
 
-		// 找出需要新增和更新的记录
+		// tìm raCầnThêm mới và Cập nhật của Bản ghi
 		for (E newItem : newList) {
 			if (newItem instanceof DataEntity) {
 				DataEntity<?> entity = (DataEntity<?>) newItem;
@@ -470,7 +470,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			}
 		}
 
-		// 执行批量操作
+		// hành nghề dònghàng loạtthao tác
 		if (!toDelete.isEmpty()) {
 			childDao.bulkDelete(toDelete);
 		}

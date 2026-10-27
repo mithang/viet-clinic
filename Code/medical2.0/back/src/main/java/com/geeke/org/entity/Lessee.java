@@ -6,22 +6,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 租户管理Entity
+ * Quản lý tenantEntity
  * @author txl
  * @version 2022-05-23
  */
 public class Lessee extends DataEntity<Lessee> {
 
 	private static final long serialVersionUID = 985180319911059468L;
-	private String userName;		// 租户名
-	private String phoneNumber;		// 电话号码
-	private String company;		// 公司名称
-	private String contactName;		// 联系人姓名
-	private String addressProvince;		// 地址（省）
-	private String addressCity;		// 地址（市）
-	private String addressRegion;		// 地址（区）
-	private String address;		// 联系地址
-	private String isUse;		// 状态
+	private String userName;		// tenanttên
+	private String phoneNumber;		// Số điện thoạisố
+	private String company;		// công tyTên
+	private String contactName;		// người liên hệTên
+	private String addressProvince;		// Địa chỉ(Tỉnh)
+	private String addressCity;		// Địa chỉ(Thành phố)
+	private String addressRegion;		// Địa chỉ(Quận)
+	private String address;		// liên hệĐịa chỉ
+	private String isUse;		// Trạng thái
 
 	
 	public Lessee() {
@@ -33,7 +33,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 
-	@Length(min=1, max=100, message="租户名长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="tenanttênĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getUserName() {
 		return userName;
 	}
@@ -42,7 +42,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
-	@Length(min=1, max=20, message="电话号码长度必须介于 1 和 20 之间")
+	@Length(min=1, max=20, message="Số điện thoạisốĐộ dài phải nằm trong khoảng 1 đến 20 ")
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -51,7 +51,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 
 
-	@Length(min=0, max=50, message="联系人姓名长度必须介于 0 和 50 之间")
+	@Length(min=0, max=50, message="người liên hệTênĐộ dài phải nằm trong khoảng 0 đến 50 ")
 	public String getContactName() {
 		return contactName;
 	}
@@ -60,7 +60,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
-	@Length(min=0, max=10, message="地址（省）长度必须介于 0 和 10 之间")
+	@Length(min=0, max=10, message="Địa chỉ(Tỉnh)Độ dài phải từ 0  và  10 Giữa")
 	public String getAddressProvince() {
 		return addressProvince;
 	}
@@ -69,7 +69,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
-	@Length(min=0, max=10, message="地址（市）长度必须介于 0 和 10 之间")
+	@Length(min=0, max=10, message="Địa chỉ(Thành phố)Độ dài phải từ 0  và  10 Giữa")
 	public String getAddressCity() {
 		return addressCity;
 	}
@@ -78,7 +78,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
-	@Length(min=0, max=10, message="地址（区）长度必须介于 0 和 10 之间")
+	@Length(min=0, max=10, message="Địa chỉ(Quận)Độ dài phải từ 0  và  10 Giữa")
 	public String getAddressRegion() {
 		return addressRegion;
 	}
@@ -87,7 +87,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
-	@Length(min=0, max=100, message="联系地址长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="liên hệĐộ dài địa chỉ phải nằm trong khoảng 0 đến 100 ")
 	public String getAddress() {
 		return address;
 	}
@@ -96,7 +96,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
-	@Length(min=1, max=1, message="状态长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message="Độ dài trạng thái phải nằm trong khoảng 1 đến 1 ")
 	public String getIsUse() {
 		return isUse;
 	}
@@ -109,7 +109,7 @@ public class Lessee extends DataEntity<Lessee> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -118,7 +118,7 @@ public class Lessee extends DataEntity<Lessee> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -128,7 +128,7 @@ public class Lessee extends DataEntity<Lessee> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

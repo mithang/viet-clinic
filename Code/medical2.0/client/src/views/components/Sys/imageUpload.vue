@@ -62,7 +62,7 @@
     },
     methods: {
       handleExceed(files, fileList) {
-        this.$message.warning(`限制只能选择1个文件`)
+        this.$message.warning(`限制只能选择1tệp`)
       },
       submit() {
         this.$refs.imageUpload.submit()

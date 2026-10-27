@@ -10,22 +10,22 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 门诊日志DAO接口
+ * Nhật ký khám ngoại trúDAOGiao diện
  * @author lc
  * @version 2022-06-15
  */
 @Mapper
 public interface OutpatientLogDao extends CrudDao<OutpatientLog> {
     public OutpatientLog getLogs(String id);
-    /** 查询 */
+    /** Truy vấn */
     int logCount(PageRequest var1);
 
     List<OutpatientLog> getOutpatientLog(OutpatientLogRc outpatientLogRc);
 
-    /** 查询所有集合 */
+    /** Truy vấntất cảtập hợp */
     List<OutpatientLog> getOutpatientlist(OutpatientLogRc outpatientLogRc);
 
-    /** 修改日志信息 */
+    /** SửaNgàynhật kýThông tin */
     int updateLog(OutpatientLog outpatientLogRc);
 
     List<Patient> getPovert(Patient patient);

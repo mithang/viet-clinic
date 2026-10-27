@@ -17,7 +17,7 @@ import com.geeke.common.controller.CrudController;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 处方详情Controller
+ * Chi tiết đơn thuốcController
  * @author txl
  * @version 2022-06-07
  */

@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 /**
- * 诊所版本Entity
+ * Phiên bản phòng khámEntity
  * @author txl
  * @version 2022-05-23
  */
@@ -16,8 +16,8 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 	private static final long serialVersionUID = 987744398207139863L;
 	private String code;
 	private String roleId;
-	private BigDecimal price;		// 版本价格
-	private String description;		// 版本描述　
+	private BigDecimal price;		// phiên bảnGiá
+	private String description;		// phiên bảnMô tả　
 	
 	public ClinicVersion() {
 		super();
@@ -27,7 +27,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 		super(id);
 	}
 
-	@NotNull(message="版本编码不能为空")
+	@NotNull(message="phiên bảnMãKhông thể là trống")
 	public String getCode() {
 		return code;
 	}
@@ -35,7 +35,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 		this.code = code;
 	}
 
-	@NotNull(message="版本角色不能为空")
+	@NotNull(message="phiên bảnVai tròKhông thể là trống")
 	public String getRoleId() {
 		return roleId;
 	}
@@ -43,7 +43,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 		this.roleId = roleId;
 	}
 
-	@NotNull(message="版本价格不能为空")
+	@NotNull(message="phiên bảnGiáKhông thể là trống")
 	public BigDecimal getPrice() {
 		return price;
 	}
@@ -52,7 +52,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 	}
 
 
-	@Length(min=0, max=200, message="版本描述长度必须介于 0 和 200 之间")
+	@Length(min=0, max=200, message="phiên bảnMô tảĐộ dài phải nằm trong khoảng 0 đến 200 ")
 	public String getDescription() {
 		return description;
 	}
@@ -65,7 +65,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -74,7 +74,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -84,7 +84,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * LC
- * 汇总报表出参
+ * tổng hợptổngbáo cáoratham
  */
 @Data
 public class TollVo implements Serializable {
@@ -18,11 +18,11 @@ public class TollVo implements Serializable {
     private static final long serialVersionUID = 1024846610635145503L;
 
     private Page page;
-    private BigDecimal amountReceivableTotal;		// 应收(退)金额合计
-    private BigDecimal amountReceivedTotal;		// 实收金额合计
-    private BigDecimal cashTotal;		// 现金支付合计
-    private BigDecimal weChatTotal;		// 微信支付合计
-    private BigDecimal alipayTotal;		// 支付宝支付合计
-    private BigDecimal bankCardPayTotal;		// 银行卡支付合计
-    private BigDecimal ybTotal;		// 医保支付合计
+    private BigDecimal amountReceivableTotal;		// phải thu(trả)Số tiềnTổng cộng
+    private BigDecimal amountReceivedTotal;		// thực thuSố tiềnTổng cộng
+    private BigDecimal cashTotal;		// tiền mặtthanh toánTổng cộng
+    private BigDecimal weChatTotal;		// WeChatthanh toánTổng cộng
+    private BigDecimal alipayTotal;		// thanh toánbảothanh toánTổng cộng
+    private BigDecimal bankCardPayTotal;		// ngân hàng dòngthẻthanh toánTổng cộng
+    private BigDecimal ybTotal;		// BHYTthanh toánTổng cộng
 }

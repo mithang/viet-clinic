@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Length;
 import java.math.BigDecimal;
 import java.util.Date;
 /**
- * 挂号信息Entity
+ * Thông tin đăng ký khámEntity
  * @author txl
  * @version 2022-06-15
  */
@@ -22,65 +22,65 @@ import java.util.Date;
 public class Registration extends DataEntity<Registration> {
 
 	private static final long serialVersionUID = 1008534118685450402L;
-	private Company company;      // 诊所id 
-	private ClinicOffice clinicOffice;      // 科室
-	private Patient patientId;      // 患者 
-	private User doctor;      // 医生 
-	private DictItem treatType;      // 治疗类型 
-	private DictItem infectType;      // 传染病
-	private Date receptionStartDate;		// 接诊开始时间
-	private DictItem source;      // 来源 
-	private Date receptionEndDate;		// 接诊结束时间
-	private String pulse;		// 脉搏
-	private String breathe;		// 呼吸
-	private String temperature;		// 体温
-	private String isGoHigharea;		// 是否去过疫区
-	private String highArea;		// 疫区地点
-	private String freeRegistrationFee;		// 免挂号费
-	private BigDecimal registrationFee;		// 挂号费
-	private DictItem payType;      // 支付方式
-	private DictItem status;      // 状态 
-	private String dispensingStatus;		// 发药状态
-	private Date dispensingDate;		// 发/退药时间
-	private String chargeStatus;		// 收费状态        0- 待收费   1-部分收费   2- 已收费   3-  部分退费    4- 已退费
-	private Date chargeDate;		// 收费时间
-	private DictItem refundRegistrationPayType;		// 退挂号费支付方式
-	private String refundRegistrationRemarks;		// 退挂号费备注
-	private  BigDecimal practicleRegistrationFee;   //实际支付挂号费
-	private String practicalRegistrationPayRemarks;	//实际支付挂号费备注
-	private String guardianName;      //监护人姓名
-	private String guardianPhone;     //监护人电话
-	private String workplace;     //工作单位
-	private String nation;     //民族
-	private String card;     //身份证号
-	private String occupation;     //职业
-	private Date signedDate;		// 签到时间
-	private Date exitNumberDate;		// 退号时间
-	private Date followUpDate;		// 复诊时间
-	private Date payDate;		// 支付时间
+	private Company company;      // Phòng khámid 
+	private ClinicOffice clinicOffice;      // Khoa
+	private Patient patientId;      // Bệnh nhân 
+	private User doctor;      // Bác sĩ 
+	private DictItem treatType;      // điều trịLoại 
+	private DictItem infectType;      // Bệnh truyền nhiễm
+	private Date receptionStartDate;		// tiếp nhậnThời gian bắt đầu
+	private DictItem source;      // Nguồn 
+	private Date receptionEndDate;		// tiếp nhậnThời gian kết thúc
+	private String pulse;		// mạch
+	private String breathe;		// hô hấp
+	private String temperature;		// Nhiệt độ cơ thể
+	private String isGoHigharea;		// Có hay khôngđiquadịchQuận
+	private String highArea;		// dịchQuậnđịa phươngđiểm
+	private String freeRegistrationFee;		// miễnPhí đăng ký khám
+	private BigDecimal registrationFee;		// Phí đăng ký khám
+	private DictItem payType;      // phương thức thanh toán
+	private DictItem status;      // Trạng thái 
+	private String dispensingStatus;		// phát thuốcTrạng thái
+	private Date dispensingDate;		// phát/Thời gian trả thuốc
+	private String chargeStatus;		// Trạng thái thu phí        0- Chờ thu phí   1-Một phầnThu phí   2- Đã thu phí   3-  Một phầnhoàn phí    4- Đã hoàn phí
+	private Date chargeDate;		// Thu phíThời gian
+	private DictItem refundRegistrationPayType;		// trảPhí đăng ký khámphương thức thanh toán
+	private String refundRegistrationRemarks;		// trảPhí đăng ký khámGhi chú
+	private  BigDecimal practicleRegistrationFee;   //thực tếthanh toánPhí đăng ký khám
+	private String practicalRegistrationPayRemarks;	//thực tếthanh toánPhí đăng ký khámGhi chú
+	private String guardianName;      //người giám hộTên
+	private String guardianPhone;     //người giám hộSố điện thoại
+	private String workplace;     //Đơn vị công tác
+	private String nation;     //Dân tộc
+	private String card;     //Số CMND/CCCD
+	private String occupation;     //Nghề nghiệp
+	private Date signedDate;		// kýĐếnThời gian
+	private Date exitNumberDate;		// hủy số khámThời gian
+	private Date followUpDate;		// tái khámThời gian
+	private Date payDate;		// thanh toánThời gian
 
-	private String recipeStatus;//所有处方作废的状态显示
+	private String recipeStatus;//tất cảĐơn thuốchủy của Trạng tháihiển thị
 
-	private String bloodPressure;  //血压
+	private String bloodPressure;  //Huyết áp
 
-	private Date subscribeDate;   //预约时间
-	private String subscribeProject; //预约项目
+	private Date subscribeDate;   //đặt lịchThời gian
+	private String subscribeProject; //đặt lịchhạng mục
 
-	private Date retreatsDate;    //退费时间
-	private Date returnDate;     //退药时间
-	private Date morbidityTime;     //发病时间
+	private Date retreatsDate;    //Thời gian hoàn phí
+	private Date returnDate;     //Thời gian trả thuốc
+	private Date morbidityTime;     //phátbệnhThời gian
 
-	private Date treatmentDate;  //诊疗完成时间
-	private String overlook;//是否忽略
-     /**医保字段**/
-	private  String mdtrtId ;// 医保接口唯一流水号
-	//暂定11普通门诊 12 门诊挂号 13 急诊
-    private  DictItem medType; //医疗类别
-	private  DictItem cardType; //就诊凭证类型
-	private  String iptOtpNo;// 住院/门诊号 院内唯一流水
-	private  String mdtrtCertNo;//就诊凭证号 03社保卡时才填写
-	private  String setlId;//医保结算id
-	private  Boolean isPre;//是否电子处方
+	private Date treatmentDate;  //khámtrị liệuhoàn thànhThời gian
+	private String overlook;//Có hay khôngbỏ qua
+     /**Trường BHYT**/
+	private  String mdtrtId ;// BHYTSố thứ tự duy nhất của giao diện
+	//tạmchỉ định11thông thườngngoại trú 12 ngoại trúĐăng ký khám 13 cấp cứu
+    private  DictItem medType; //Loại hình y tế
+	private  DictItem cardType; //Loại giấy tờ khám bệnh
+	private  String iptOtpNo;// Nhập viện/Số khám ngoại trú Số thứ tự duy nhất trong viện
+	private  String mdtrtCertNo;//Số giấy tờ khám bệnh 03社bảothẻ giờmớiđiền
+	private  String setlId;//BHYTQuyết toánid
+	private  Boolean isPre;//Có hay khôngđiện tửĐơn thuốc
 
 	public Date getPayDate() {
 		return payDate;
@@ -233,7 +233,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=45, message="脉搏长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="mạchĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getPulse() {
 		return pulse;
 	}
@@ -242,7 +242,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=45, message="呼吸长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="hô hấpĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getBreathe() {
 		return breathe;
 	}
@@ -251,7 +251,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=45, message="体温长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Nhiệt độ cơ thểĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getTemperature() {
 		return temperature;
 	}
@@ -260,7 +260,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=64, message="是否去过疫区长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="Có hay khôngđiquadịchĐộ dài quận phải nằm trong khoảng 0 đến 64 ")
 	public String getIsGoHigharea() {
 		return isGoHigharea;
 	}
@@ -269,7 +269,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=128, message="疫区地点长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="dịchQuậnđịa phươngđiểmĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getHighArea() {
 		return highArea;
 	}
@@ -278,7 +278,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=64, message="免挂号费长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="miễnPhí đăng ký khámĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getFreeRegistrationFee() {
 		return freeRegistrationFee;
 	}
@@ -311,7 +311,7 @@ public class Registration extends DataEntity<Registration> {
         this.status = status;
     }
     
-	@Length(min=0, max=1, message="发药状态长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="phát thuốcĐộ dài trạng thái phải nằm trong khoảng 0 đến 1 ")
 	public String getDispensingStatus() {
 		return dispensingStatus;
 	}
@@ -329,7 +329,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=1, message="收费状态长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="Thu phíĐộ dài trạng thái phải nằm trong khoảng 0 đến 1 ")
 	public String getChargeStatus() {
 		return chargeStatus;
 	}
@@ -464,7 +464,7 @@ public class Registration extends DataEntity<Registration> {
 	public void setOverlook(String overlook){this.overlook=overlook;}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -473,7 +473,7 @@ public class Registration extends DataEntity<Registration> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -483,7 +483,7 @@ public class Registration extends DataEntity<Registration> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

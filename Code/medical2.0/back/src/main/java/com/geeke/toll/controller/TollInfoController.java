@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 收费管理Controller
+ * Quản lý thu phíController
  * @author lc
  * @version 2022-06-22
  */
@@ -77,7 +77,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
         return tollInfoService.tollDetailForm(searchParams);
     }
 
-    //根据缴费信息查询挂号信息
+    //Theo缴phíThông tinTruy vấnThông tin đăng ký khám
     @GetMapping("registration/{chargeStatus}")
     public ResponseEntity<JSONObject> listRegistrationPage(@PathVariable("chargeStatus") String chargeStatus) {
         List<MedicalRecord> medicalRecords = medicalRecordService.listMedicalRecordByChargeStatus(chargeStatus);
@@ -86,20 +86,20 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    //根据缴费状态获取挂号信息下的处方
+    //Lấy đơn thuốc thuộc thông tin đăng ký khám theo trạng thái nộp phí
     @PostMapping(value = "medicalRecipelEvt/{chargeStatus}")
     public ResponseEntity<JSONObject> medicalRecipelEvt(@RequestBody Registration registration,
                                                @PathVariable("chargeStatus") String chargeStatus)
     {
         if(StringUtils.isNullOrEmpty(chargeStatus))
         {
-            throw new ServiceException("参数有误");
+            throw new ServiceException("Tham sốcósai");
         }
         MedicalRecipelEvt medicalRecipelEvt = medicalRecordService.allQuery(registration,chargeStatus);
         return ResponseEntity.ok(ResultUtil.successJson(medicalRecipelEvt));
     }
 
-    //收费接口 -- 增加type
+    //Thu phígiao diện -- tăngtype
     @PostMapping(value = "save/toll/{type}")
     public ResponseEntity<JSONObject> saveToll(@RequestBody @NotNull TollEvt tollEvt,
                                                @PathVariable("type") String type) {
@@ -138,7 +138,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 药品进销存信息
+     * Thông tin nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
@@ -149,7 +149,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 获取药品进销存信息汇总数量和金额
+     * Lấy tổng hợp số lượng và số tiền nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
@@ -160,7 +160,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 获取耗材销售信息
+     * Lấyvật tư tiêu haobán hàngThông tin
      * @param stuffsalessummaryRc
      * @return
      */
@@ -171,7 +171,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 获取耗材销售信息汇总价格和数量
+     * Lấy tổng hợp giá và số lượng bán vật tư tiêu hao
      * @param stuffsalessummaryRc
      * @return
      */
@@ -184,7 +184,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
 
 
     /**
-     * 材料进销存信息
+     * Thông tin nhập - xuất - tồn của vật tư
      * @param ypjxcRc
      * @return
      */
@@ -195,7 +195,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 获取材料进销存信息汇总数量和金额
+     * Lấy tổng hợp số lượng và số tiền nhập - xuất - tồn của vật tư
      * @param ypjxcRc
      * @return
      */
@@ -206,7 +206,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 药品材料入库信息统计
+     * Thống kê thông tin nhập kho thuốc và vật tư
      * @param ypjxcRc
      * @return
      */
@@ -217,7 +217,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 药品材料入库信息汇总
+     * Tổng hợp thông tin nhập kho thuốc và vật tư
      * @param ypjxcRc
      * @return
      */
@@ -228,7 +228,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 报表导出
+     * báo cáoXuất
      * @param searchParams
      * @param response
      * @param request
@@ -253,7 +253,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
 
 
     /**
-     * 机构管理-药品进销存信息
+     * Quản lý cơ sở-Thông tin nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
@@ -264,7 +264,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 机构管理-获取药品进销存信息汇总数量和金额
+     * Quản lý cơ sở-Lấy tổng hợp số lượng và số tiền nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
@@ -275,7 +275,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /*
-    获取租户底下的诊所
+    Lấytenant底dưới của Phòng khám
      */
     @PostMapping(value = "getjglist")
     public ResponseEntity<JSONObject> getjglist(@RequestBody YpjxcRc ypjxcRc){
@@ -284,7 +284,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 机构管理-材料进销存信息
+     * Quản lý cơ sở-Thông tin nhập - xuất - tồn của vật tư
      * @param ypjxcRc
      * @return
      */
@@ -295,7 +295,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 机构管理-获取材料进销存信息汇总数量和金额
+     * Quản lý cơ sở-Lấy tổng hợp số lượng và số tiền nhập - xuất - tồn của vật tư
      * @param ypjxcRc
      * @return
      */
@@ -306,7 +306,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 药品材料入库信息统计
+     * Thống kê thông tin nhập kho thuốc và vật tư
      * @param ypjxcRc
      * @return
      */
@@ -317,7 +317,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 药品材料入库信息汇总
+     * Tổng hợp thông tin nhập kho thuốc và vật tư
      * @param ypjxcRc
      * @return
      */
@@ -328,7 +328,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 机构管理-获取耗材销售信息
+     * Quản lý cơ sở-Lấyvật tư tiêu haobán hàngThông tin
      * @param stuffsalessummaryRc
      * @return
      */
@@ -339,7 +339,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /**
-     * 机构管理-获取耗材销售信息汇总价格和数量
+     * Quản lý cơ sở-Lấy tổng hợp giá và số lượng bán vật tư tiêu hao
      * @param stuffsalessummaryRc
      * @return
      */
@@ -362,7 +362,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
 
 
     /*
-    机构管理-医生收入
+    Quản lý cơ sở-Bác sĩThu nhập
      */
     @PostMapping(value = "getdoctorDetailstatistics")
     public ResponseEntity<JSONObject> getdoctorDetailstatistics(@RequestBody SearchParams searchParams) {
@@ -371,7 +371,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /*
-    机构管理-医生收入
+    Quản lý cơ sở-Bác sĩThu nhập
      */
     @PostMapping(value = "getdoctorDetailstatisticsStat")
     public ResponseEntity<JSONObject> getdoctorDetailstatisticsStat(@RequestBody SearchParams searchParams){

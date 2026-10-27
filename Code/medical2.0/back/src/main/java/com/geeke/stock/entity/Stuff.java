@@ -11,44 +11,44 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 /**
- * 材料信息Entity
+ * Thông tin vật tưEntity
  * @author txl
  * @version 2022-06-22
  */
 public class Stuff extends DataEntity<Stuff> {
 
 	private static final long serialVersionUID = 1004462867645374480L;
-    private Company company;      // 诊所id
-    private String syncId;     //同步过来的ID
-    private int syncNum;    //药品是否已同步
-	private String commonName;		// 常用名
-	private String code;		// 材料编码
-	private DictItem type;      // 材料类型 
-	private ManufactureFactory factory;      // 生产厂家 
-	private DictItem nature;      // 性质 
-	private String barCode;		// 条形码
-	private String registrationName;		// 注册证名称
-	private String registrationCode;		// 注册证号
-	private String specifications;		// 规格
-	private Integer packNumber;		// 包装数量
-	private DictItem minUnit;      // 最小单位 
-	private DictItem packUnit;      // 包装单位 
-	private String isOutSell;		// 允许对外销售
-	private BigDecimal priceOutSell;		// 对外销售价格
-	private String isUnpackSell;		// 允许拆零销售
-	private BigDecimal retailPrice;		// 拆开后零售价
-	private String status;		// 启用标志
-	private String pinyinCode;		// 拼音码
-	private String stockNumber;     //库存
-	private int inventory;  //库存
-	private String locationNumber;   //货位号
-	private String inventoryLimit;   //库存上限
-	private String inventoryFloor;   //库存下限
+    private Company company;      // Phòng khámid
+    private String syncId;     //đồng bộquađến của ID
+    private int syncNum;    //ThuốcCó hay khôngĐãđồng bộ
+	private String commonName;		// thườngdùngtên
+	private String code;		// Vật tưMã
+	private DictItem type;      // Loại vật tư 
+	private ManufactureFactory factory;      // Nhà sản xuất 
+	private DictItem nature;      // Tính chất 
+	private String barCode;		// Mã vạch
+	private String registrationName;		// đăng kýchứngTên
+	private String registrationCode;		// đăng kýchứngsố
+	private String specifications;		// Quy cách
+	private Integer packNumber;		// Số lượng đóng gói
+	private DictItem minUnit;      // Đơn vị nhỏ nhất 
+	private DictItem packUnit;      // Đơn vị đóng gói 
+	private String isOutSell;		// Cho phép bán ra ngoài
+	private BigDecimal priceOutSell;		// Giá bán ra ngoài
+	private String isUnpackSell;		// Cho phép bán lẻ
+	private BigDecimal retailPrice;		// Giá bán lẻ sau khi tách
+	private String status;		// Cờ bật
+	private String pinyinCode;		// Mã pinyin
+	private String stockNumber;     //Tồn kho
+	private int inventory;  //Tồn kho
+	private String locationNumber;   //hàngvịsố
+	private String inventoryLimit;   //Tồn khotrêngiới hạn
+	private String inventoryFloor;   //Tồn khodướigiới hạn
 
-	private InventoryVerification inventoryVerification;  //库存盘点
-	private String inventoryVerificationDetailId;       //库存盘点详情id
-	private BigDecimal bid;      //成本合计
-	private String indate;        //有效期
+	private InventoryVerification inventoryVerification;  //Kiểm kê tồn kho
+	private String inventoryVerificationDetailId;       //Chi tiết kiểm kê tồn khoid
+	private BigDecimal bid;      //Tổng chi phí
+	private String indate;        //Thời hạn hiệu lực
 	private MedicinalStockControl stock;
 
 
@@ -91,8 +91,8 @@ public class Stuff extends DataEntity<Stuff> {
         this.company = company;
     }
     
-	@ExcelImportField(columnIndex = 1, label = "通用名", maxLength = 45)
-	@Length(min=0, max=45, message="常用名长度必须介于 0 和 45 之间")
+	@ExcelImportField(columnIndex = 1, label = "Tên chung", maxLength = 45)
+	@Length(min=0, max=45, message="thườngdùngtênĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getCommonName() {
 		return commonName;
 	}
@@ -101,7 +101,7 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@Length(min=0, max=45, message="材料编码长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Vật tưĐộ dài mã phải nằm trong khoảng 0 đến 45 ")
 	public String getCode() {
 		return code;
 	}
@@ -110,7 +110,7 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-    @ExcelImportField(columnIndex = 3, label = "材料类型", dictTypeId = "1004462867645374476")
+    @ExcelImportField(columnIndex = 3, label = "Loại vật tư", dictTypeId = "1004462867645374476")
     public DictItem getType() {
         return type;
     }
@@ -127,7 +127,7 @@ public class Stuff extends DataEntity<Stuff> {
         this.factory = factory;
     }
     
-    @ExcelImportField(columnIndex = 5, label = "材料性质", dictTypeId = "1004078055755374607")
+    @ExcelImportField(columnIndex = 5, label = "Vật tưtính chất", dictTypeId = "1004078055755374607")
     public DictItem getNature() {
         return nature;
     }
@@ -136,8 +136,8 @@ public class Stuff extends DataEntity<Stuff> {
         this.nature = nature;
     }
     
-	@ExcelImportField(columnIndex = 6, label = "条码", maxLength = 64)
-	@Length(min=0, max=64, message="条形码长度必须介于 0 和 64 之间")
+	@ExcelImportField(columnIndex = 6, label = "mụcmã", maxLength = 64)
+	@Length(min=0, max=64, message="mã vạchĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getBarCode() {
 		return barCode;
 	}
@@ -146,8 +146,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 7, label = "注册名称", maxLength = 64)
-	@Length(min=0, max=64, message="注册证名称长度必须介于 0 和 64 之间")
+	@ExcelImportField(columnIndex = 7, label = "đăng kýTên", maxLength = 64)
+	@Length(min=0, max=64, message="đăng kýchứngTênĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getRegistrationName() {
 		return registrationName;
 	}
@@ -156,8 +156,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 8, label = "注册证号", maxLength = 64)
-	@Length(min=0, max=64, message="注册证号长度必须介于 0 和 64 之间")
+	@ExcelImportField(columnIndex = 8, label = "đăng kýchứngsố", maxLength = 64)
+	@Length(min=0, max=64, message="đăng kýchứngsốĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getRegistrationCode() {
 		return registrationCode;
 	}
@@ -166,8 +166,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 9, label = "规格", maxLength = 45)
-	@Length(min=0, max=45, message="规格长度必须介于 0 和 45 之间")
+	@ExcelImportField(columnIndex = 9, label = "Quy cách", maxLength = 45)
+	@Length(min=0, max=45, message="Quy cáchĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getSpecifications() {
 		return specifications;
 	}
@@ -176,8 +176,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 10, label = "包装数量")
-	@NotNull(message="包装数量不能为空")
+	@ExcelImportField(columnIndex = 10, label = "Số lượng đóng gói")
+	@NotNull(message="Số lượng đóng góiKhông thể là trống")
 	public Integer getPackNumber() {
 		return packNumber;
 	}
@@ -186,8 +186,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 11, label = "制剂单位", dictTypeId = "1004406758192578593")
-	@NotNull(message="最小单位不能为空")
+	@ExcelImportField(columnIndex = 11, label = "Đơn vị bào chế", dictTypeId = "1004406758192578593")
+	@NotNull(message="Đơn vị nhỏ nhấtKhông thể là trống")
     public DictItem getMinUnit() {
         return minUnit;
     }
@@ -196,8 +196,8 @@ public class Stuff extends DataEntity<Stuff> {
         this.minUnit = minUnit;
     }
     
-	@ExcelImportField(columnIndex = 12, label = "包装单位", dictTypeId = "1004406758192578597")
-	@NotNull(message="包装单位不能为空")
+	@ExcelImportField(columnIndex = 12, label = "Đơn vị đóng gói", dictTypeId = "1004406758192578597")
+	@NotNull(message="Đơn vị đóng góiKhông thể là trống")
     public DictItem getPackUnit() {
         return packUnit;
     }
@@ -206,8 +206,8 @@ public class Stuff extends DataEntity<Stuff> {
         this.packUnit = packUnit;
     }
     
-	@ExcelImportField(columnIndex = 13, label = "是否外销", maxLength = 2)
-	@Length(min=0, max=2, message="允许对外销售长度必须介于 0 和 2 之间")
+	@ExcelImportField(columnIndex = 13, label = "Có hay khôngbán ra ngoài", maxLength = 2)
+	@Length(min=0, max=2, message="Cho phép bán ra ngoàiĐộ dài phải nằm trong khoảng 0 đến 2 ")
 	public String getIsOutSell() {
 		return isOutSell;
 	}
@@ -216,7 +216,7 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 14, label = "外销价格")
+	@ExcelImportField(columnIndex = 14, label = "bán ra ngoàiGiá")
 	public BigDecimal getPriceOutSell() {
 		return priceOutSell;
 	}
@@ -225,8 +225,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 15, label = "是否拆零销售", maxLength = 2)
-	@Length(min=0, max=2, message="允许拆零销售长度必须介于 0 和 2 之间")
+	@ExcelImportField(columnIndex = 15, label = "Có bán lẻ không", maxLength = 2)
+	@Length(min=0, max=2, message="Độ dài cho phép bán lẻ phải nằm trong khoảng 0 đến 2 ")
 	public String getIsUnpackSell() {
 		return isUnpackSell;
 	}
@@ -235,7 +235,7 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 16, label = "零售价")
+	@ExcelImportField(columnIndex = 16, label = "Giá bán lẻ")
 	public BigDecimal getRetailPrice() {
 		return retailPrice;
 	}
@@ -244,8 +244,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 
 
-	@ExcelImportField(columnIndex = 19, label = "状态", maxLength = 1)
-	@Length(min=1, max=1, message="启用标志长度必须介于 1 和 1 之间")
+	@ExcelImportField(columnIndex = 19, label = "Trạng thái", maxLength = 1)
+	@Length(min=1, max=1, message="Cờ bậtĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getStatus() {
 		return status;
 	}
@@ -254,8 +254,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 
 
-	@ExcelImportField(columnIndex = 2, label = "拼音码", maxLength = 100)
-	@Length(min=0, max=100, message="拼音码长度必须介于 0 和 100 之间")
+	@ExcelImportField(columnIndex = 2, label = "Mã pinyin", maxLength = 100)
+	@Length(min=0, max=100, message="PinyinmãĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getPinyinCode() {
 		return pinyinCode;
 	}
@@ -336,7 +336,7 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -345,7 +345,7 @@ public class Stuff extends DataEntity<Stuff> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -355,7 +355,7 @@ public class Stuff extends DataEntity<Stuff> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

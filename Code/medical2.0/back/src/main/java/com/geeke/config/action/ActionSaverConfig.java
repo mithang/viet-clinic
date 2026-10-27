@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import com.geeke.common.IActionSaver;
 
 /**
- * 日志写入配置类
+ * Ngàynhật kýghicấu hìnhLớp
  * @author lys
  * version: 2021/11/16
  */
@@ -16,10 +16,10 @@ import com.geeke.common.IActionSaver;
 public class ActionSaverConfig {
 	
 	@Value("${spring.rabbitmq.enable: false}")
-	private boolean enableMq;		// 是否启用mq
+	private boolean enableMq;		// Có bật khôngmq
 
 	/**
-	 * spring.rabbitmq.enable=true时，启用消息队列入库；=false时，直接入库
+	 * spring.rabbitmq.enable=true giờ, Bậtthông báo队Cộtnhập kho; =false giờ, trực tiếpnhập kho
 	 * @return
 	 */
 	@Bean(name = "actionSaver")

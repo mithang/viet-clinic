@@ -6,24 +6,24 @@
         label-position="right" class="edit-form">
         <el-row>
           <el-col :span="6">
-            <SearchItem label="供应商">
+            <SearchItem label="Nhà cung cấp">
               <SupplierSelect v-model="supplierId" :type="addType"></SupplierSelect>
             </SearchItem>
           </el-col>
           <el-col :span="6">
-            <SearchItem :label="addType === '1'?'药品名称':'材料名称'">
+            <SearchItem :label="addType === '1'?'Tên thuốc':'Tên vật tư'">
               <DrugStuffStorageSelect :type="addType" :supplierId="supplierId"
                 @onMedicinalStorageSelect="onMedicinalStorageSelect"></DrugStuffStorageSelect>
             </SearchItem>
           </el-col>
 
           <el-col :span="6">
-            <SearchItem label="出库方式">
+            <SearchItem label="Phương thức xuất kho">
               <DictItemSelect type="outboundMethod" v-model="otherInfo.method"></DictItemSelect>
             </SearchItem>
           </el-col>
           <el-col :span="6">
-            <SearchItem label="备注">
+            <SearchItem label="Ghi chú">
               <el-input v-model="otherInfo.remarks" placeholder="出库单备注"></el-input>
             </SearchItem>
           </el-col>
@@ -33,20 +33,20 @@
         <el-row>
           <el-col :span="24">
             <el-table :data="storageDetailTable" style="width: 100%" height="350">
-              <el-table-column prop="drugStuffName" label="名称" width="150">
+              <el-table-column prop="drugStuffName" label="Tên" width="150">
               </el-table-column>
-              <el-table-column prop="norms" label="规格"></el-table-column>
-              <el-table-column prop="factoryName" label="厂家"></el-table-column>
-              <el-table-column prop="batchNo" label="生产批号"></el-table-column>
-              <el-table-column label="生产日期">
+              <el-table-column prop="norms" label="Quy cách"></el-table-column>
+              <el-table-column prop="factoryName" label="Nhà sản xuất"></el-table-column>
+              <el-table-column prop="batchNo" label="Số lô sản xuất"></el-table-column>
+              <el-table-column label="Ngày sản xuất">
                 <template slot-scope="scope">{{scope.row.produceDate|dateFormat}}</template>
               </el-table-column>
-              <el-table-column label="有效日期">
+              <el-table-column label="Ngày hiệu lực">
                 <template slot-scope="scope">{{scope.row.endDate|dateFormat}}</template>
               </el-table-column>
-              <!-- <el-table-column prop="occupyStock" label="占用库存"></el-table-column>-->
+              <!-- <el-table-column prop="occupyStock" label="Chiếm dụng tồn kho"></el-table-column>-->
 
-              <el-table-column prop="surplusStock" label="可用库存" v-if="thisType===1">
+              <el-table-column prop="surplusStock" label="Tồn kho khả dụng" v-if="thisType===1">
                 <template slot-scope="scope">
                   {{parseInt(scope.row.surplusStock/scope.row.drug.preparation)}}
                   <DictItemView type="medicalPackUnit" :dictValue="scope.row.packValue" style="width: 80px;">
@@ -59,11 +59,11 @@
               <el-table-column
                 v-if="addType === 1"
                 prop="drugTracCodg"
-                label="药品追溯码"
+                label="Mã truy xuất thuốc"
               > <template slot-scope="scope">
-                <el-button :type="scope.row.completed ? 'success' : 'warning'" @click="openDrugDialog(scope)">输入追溯码</el-button>
+                <el-button :type="scope.row.completed ? 'success' : 'warning'" @click="openDrugDialog(scope)">Nhập mã truy xuất</el-button>
               </template></el-table-column>
-              <el-table-column prop="specification" label="是否拆零">
+              <el-table-column prop="specification" label="Có tách hộp không">
                 <template slot-scope="scope"><el-switch
                   v-model="scope.row.isSplit"
                   active-color="#13ce66"
@@ -73,29 +73,29 @@
                 </template>
               </el-table-column>
 
-              <el-table-column label="数量" width="250" v-if="thisType===1">
+              <el-table-column label="Số lượng" width="250" v-if="thisType===1">
                 <template slot-scope="scope">
                   <div class="quantity-box  num-color" v-if="parseInt(scope.row.surplusStock/scope.row.drug.preparation) < scope.row.packAmount
                   || (parseInt(scope.row.surplusStock/scope.row.drug.preparation) === scope.row.packAmount && parseInt(scope.row.surplusStock%scope.row.drug.preparation) < scope.row.preparationAmount)">
-                    <el-input v-model="scope.row.packAmount" type="number" @input="onNumInput" min="0" required="true" placeholder="数量">
+                    <el-input v-model="scope.row.packAmount" type="number" @input="onNumInput" min="0" required="true" placeholder="Số lượng">
 
                     </el-input>
                     <DictItemView type="medicalPackUnit" :dictValue="scope.row.packValue" style="width: 80px;">
                     </DictItemView>
                     <el-input v-model="scope.row.preparationAmount" type="number" min="0" required="true"
-                              placeholder="数量">
+                              placeholder="Số lượng">
                     </el-input>
                     <DictItemView type="medicalPreparationUnit" :dictValue="scope.row.preparationUnitValue"
                                   style="width: 80px;"></DictItemView>
                   </div>
                   <div v-else class="quantity-box">
-                    <el-input v-model="scope.row.packAmount" type="number" min="0" required="true" placeholder="数量">
+                    <el-input v-model="scope.row.packAmount" type="number" min="0" required="true" placeholder="Số lượng">
 
                     </el-input>
                     <DictItemView type="medicalPackUnit" :dictValue="scope.row.packValue" style="width: 80px;">
                     </DictItemView>
                     <el-input  v-if="scope.row.isSplit"  v-model="scope.row.preparationAmount" type="number" min="0" required="true"
-                      placeholder="数量">
+                      placeholder="Số lượng">
                     </el-input>
                     <DictItemView   v-if="scope.row.isSplit"  type="medicalPreparationUnit" :dictValue="scope.row.preparationUnitValue"
                       style="width: 80px;"></DictItemView>
@@ -103,7 +103,7 @@
                 </template>
               </el-table-column>
 
-              <el-table-column prop="surplusStock" label="可用库存" v-if="thisType===2">
+              <el-table-column prop="surplusStock" label="Tồn kho khả dụng" v-if="thisType===2">
                 <template slot-scope="scope">
                   {{parseInt(scope.row.surplusStock/scope.row.stuff.packNumber)}}
                   <DictItemView type="medicalPackUnit" :dictValue="scope.row.packUnitValue" style="width: 80px;">
@@ -113,41 +113,41 @@
                   </DictItemView>
                 </template>
               </el-table-column>
-              <el-table-column label="数量" width="250" prop="specification" v-if="thisType===2">
+              <el-table-column label="Số lượng" width="250" prop="specification" v-if="thisType===2">
                 <template slot-scope="scope">
                   <div class="quantity-box">
-                    <el-input v-model="scope.row.packAmount" type="number" min="0" required="true" placeholder="数量">
+                    <el-input v-model="scope.row.packAmount" type="number" min="0" required="true" placeholder="Số lượng">
                     </el-input>
                     <DictItemView type="medicalPackUnit" :dictValue="scope.row.packUnitValue" style="width: 80px;">
                     </DictItemView>
                     <el-input v-if="scope.row.isSplit" v-model="scope.row.preparationAmount" type="number" min="0" required="true"
-                      placeholder="数量">
+                      placeholder="Số lượng">
                     </el-input>
                     <DictItemView type="medicalPreparationUnit" :dictValue="scope.row.minUnitValue"
                       style="width: 80px;"></DictItemView>
                   </div>
                 </template>
               </el-table-column>
-              <!-- <el-table-column prop="reason" label="出库原因">
-                <el-select v-model="otherInfo.reason" filterable placeholder="请选择出库原因">
+              <!-- <el-table-column prop="reason" label="Lý do xuất kho">
+                <el-select v-model="otherInfo.reason" filterable placeholder="Vui lòng chọn lý do xuất kho">
                   <el-option v-for="reasonxz in reasonLists" :label="reasonxz.name" :value="reasonxz.id"
                     :key="reasonxz.id"></el-option>
                 </el-select>
               </el-table-column>-->
-              <el-table-column prop="bid" label="进价"></el-table-column>
-              <el-table-column prop="retailPrice" label="零售价"></el-table-column>
-              <el-table-column label="总进价">
+              <el-table-column prop="bid" label="Giá nhập"></el-table-column>
+              <el-table-column prop="retailPrice" label="Giá bán lẻ"></el-table-column>
+              <el-table-column label="Tổng giá nhập">
                 <template slot-scope="scope">{{ calcTotalInPrice(scope.row)|numberFormatter(2) }}
                 </template>
               </el-table-column>
-              <el-table-column label="总零售价">
+              <el-table-column label="Tổng giá bán lẻ">
                 <template slot-scope="scope">{{ calcTotalOutPrice(scope.row) |numberFormatter(2)}}
                 </template>
               </el-table-column>
               <el-table-column label="" width="80">
                 <template slot-scope="scope">
                   <el-button type="danger" size="small"
-                    @click.native.prevent="deleteRow(scope.$index, storageDetailTable)">删除
+                    @click.native.prevent="deleteRow(scope.$index, storageDetailTable)">Xóa
                   </el-button>
                 </template>
               </el-table-column>
@@ -155,31 +155,31 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="3" :offset="12">品种：{{ CalcBreed() }}</el-col>
-          <el-col :span="3">数量：{{ calcTotalNumber() }}</el-col>
-          <el-col :span="3">总进价：{{ otherInfo.allBid}}</el-col>
-          <el-col :span="3">总零售价：{{ otherInfo.allRetailPrice }}</el-col>
+          <el-col :span="3" :offset="12">Chủng loại：{{ CalcBreed() }}</el-col>
+          <el-col :span="3">Số lượng：{{ calcTotalNumber() }}</el-col>
+          <el-col :span="3">Tổng giá nhập：{{ otherInfo.allBid}}</el-col>
+          <el-col :span="3">Tổng giá bán lẻ：{{ otherInfo.allRetailPrice }}</el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
             <div class="footer-box footer-box1">
-              <el-button type="primary" @click="saveSupplierOutbound">确定</el-button>
-              <el-button type="" @click="closeDialog()">取消</el-button>
+              <el-button type="primary" @click="saveSupplierOutbound">Xác nhận</el-button>
+              <el-button type="" @click="closeDialog()">Hủy</el-button>
             </div>
           </el-col>
         </el-row>
       </el-form>
     </div>
-    <!-- 点击输入追溯码后弹出框 -->
-    <el-dialog @keydown.native="handleKeydown" :modal="false"  :visible.sync="drugDialogVisible" title="输入药品追溯码" @open="focusInput" @close="resetInput">
+    <!-- Hộp thoại hiện sau khi nhấn nhập mã truy xuất -->
+    <el-dialog @keydown.native="handleKeydown" :modal="false"  :visible.sync="drugDialogVisible" title="Nhập mã truy xuất thuốc" @open="focusInput" @close="resetInput">
       <el-input
         v-model="currentInput"
-        placeholder="请输入药品追溯码"
+        placeholder="Vui lòng nhập mã truy xuất thuốc"
         ref="inputFocus"
       ></el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="submitInput" type="primary">确定</el-button>
-        <el-button @click="drugDialogVisible = false">取消</el-button>
+        <el-button @click="submitInput" type="primary">Xác nhận</el-button>
+        <el-button @click="drugDialogVisible = false">Hủy</el-button>
       </span>
     </el-dialog>
   </el-dialog>
@@ -242,28 +242,28 @@
     data() {
       return {
         test: 1,
-        thisType: 1, //当前类型，药品 或材料
+        thisType: 1, //Loại hiện tại，Thuốc hoặc vật tư
         flag: true,
-        outboundId: 0, //当前要编辑的出库单编号
+        outboundId: 0, //Mã đơn xuất kho hiện cần sửa
         supplierId: null,
-        dialogVisibleTo: false, //是否显示
-        //设置失效日期今天之前的日期不可选
+        dialogVisibleTo: false, //Có hiển thị không
+        //Đặt ngày trước hôm nay của ngày hết hiệu lực thành không thể chọn
         expireTimeOption: {
           // disabledDate(date) {
-          //   //disabledDate 文档上：设置禁用状态，参数为当前日期，要求返回 Boolean
+          //   //disabledDate Trên tài liệu：Đặt trạng thái vô hiệu hóa，Tham số là ngày hiện tại，Yêu cầu trả về Boolean
           //   return date.getTime() < Date.now() - 24 * 60 * 60 * 1000;
           // },
         },
-        // radio: "1", // 1 药品，2材料
-        company_id: currentUser.company.id /*诊所ID*/ ,
-        examine_id: "1005787933775863930" /*通过状态ID*/ ,
-        examine_value: "supplierStorageExamineStatus_0" /*通过状态Value值*/ ,
-        title: "新增入库单",
+        // radio: "1", // 1 Thuốc，2Vật tư
+        company_id: currentUser.company.id /*Phòng khámID*/ ,
+        examine_id: "1005787933775863930" /*Trạng thái đã quaID*/ ,
+        examine_value: "supplierStorageExamineStatus_0" /*Trạng thái đã quaValuegiá trị*/ ,
+        title: "Thêm mới đơn nhập kho",
         goodsNameTemp: "",
         drugPreparation: 0,
         stuffPackNum: 0,
-        drugStuffName: "", //药品或者材料名称
-        drugStuffPlaceholder: "", //对应的placeholder
+        drugStuffName: "", //Tên thuốc hoặc vật tư
+        drugStuffPlaceholder: "", //tương ứngplaceholder
         goodsInfo: null,
         storageDetailTable: [],
         reasonLists: null, //不同的出库原因
@@ -273,18 +273,18 @@
         }], //不同的出库方式
         otherInfo: {
           supplierID: null,
-          /*供应商*/
+          /*Nhà cung cấp*/
           reason: null,
-          /*出库原因*/
+          /*Lý do xuất kho*/
           method: null,
-          /*出库方式*/
-          breed: 0 /*品种数量*/ ,
-          totalNumber: 0 /*总数量*/ ,
-          allBid: 0 /*总进价*/ ,
-          allRetailPrice: 0 /*总零售价*/ ,
-          withGoodsNo: "" /*供货单号*/ ,
-          invoiceNumber: "" /*发票号*/ ,
-          remarks: "" /*备注*/ ,
+          /*Phương thức xuất kho*/
+          breed: 0 /*Số lượng chủng loại*/ ,
+          totalNumber: 0 /*Tổng số lượng*/ ,
+          allBid: 0 /*Tổng giá nhập*/ ,
+          allRetailPrice: 0 /*Tổng giá bán lẻ*/ ,
+          withGoodsNo: "" /*Số đơn cung ứng*/ ,
+          invoiceNumber: "" /*Số hóa đơn*/ ,
+          remarks: "" /*Ghi chú*/ ,
         },
         reason: {
           params: [{
@@ -294,8 +294,8 @@
           }],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         methodSearch: {
           params: [{
@@ -305,16 +305,16 @@
           }],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
-        //追溯码弹窗控制
+        //Điều khiển hộp thoại mã truy xuất
         drugDialogVisible: false,
         currentInput: '',
-        inputCount: 0, // 当前输入次数
-        maxInputCount: 0, // 最大输入次数
-        currentRow: null, // 当前操作的行
-        allInputs: [], // 所有输入的追溯码
+        inputCount: 0, // Số lần nhập hiện tại
+        maxInputCount: 0, // Số lần nhập tối đa
+        currentRow: null, // Dòng đang thao tác
+        allInputs: [], // Tất cả mã truy xuất đã nhập
       };
     },
     watch: {
@@ -347,7 +347,7 @@
           }
         },
         immediate: true,
-        deep: true, // 需要添加deep为true即可对obj进行深度监听
+        deep: true, // Cần thêmdeeplàtruelà có thể đối vớiobjtiến hành theo dõi sâu
       },
     },
     inject: ["fatherMethod"],
@@ -355,54 +355,54 @@
     methods: {
       handleKeydown(event) {
         if (event.key === 'Enter') {
-          // 调用确定操作
+          // Gọi thao tác xác nhận
           this.submitInput();
         }
       },
       focusInput() {
-        // 使用 ref 来访问输入框并调用 focus() 方法
+        // Sử dụng ref để truy cập ô nhập và gọi focus() Phương pháp
         this.$nextTick(() => {
-          this.$refs.inputFocus.focus(); // 自动聚焦输入框
+          this.$refs.inputFocus.focus(); // Tự động focus vào ô nhập
         });
       },
       openDrugDialog(scope) {
         if ( scope.row.packAmount <= 0 || ! scope.row.packAmount) {
-          this.$message.error('请先输入有效的数量与是否拆零！');
-          return; // 如果数量无效，停止执行
+          this.$message.error('Vui lòng nhập trước số lượng hợp lệ và có tách hộp không！');
+          return; // Nếu số lượng không hợp lệ，Dừng thực hiện
         }
-        this.currentRow = scope.row; // 记录当前行
-        this.inputCount = 0; // 重置输入计数
-        this.allInputs = []; // 清空之前的输入
+        this.currentRow = scope.row; // Ghi lại dòng hiện tại
+        this.inputCount = 0; // Đặt lại bộ đếm nhập liệu
+        this.allInputs = []; // Xóa dữ liệu nhập trước đó
         this.drugDialogVisible = true;
-        // 根据当前行的数量设置基础输入次数和最大输入次数
+        // Đặt số lần nhập cơ bản và tối đa theo số lượng của dòng hiện tại
         const quantity = this.currentRow.packAmount;
         this.maxInputCount = this.currentRow.isSplit ? this.currentRow.preparation * quantity: quantity;
       },
       submitInput() {
         if (this.currentInput) {
-          this.allInputs.push(this.currentInput); // 添加当前输入
-          this.currentRow.drugTracCodg = this.allInputs.join(','); // 更新当前行的药品追溯码
-          this.currentInput = ''; // 清空输入框
-          this.inputCount++; // 增加输入计数
+          this.allInputs.push(this.currentInput); // Thêm dữ liệu nhập hiện tại
+          this.currentRow.drugTracCodg = this.allInputs.join(','); // Cập nhật mã truy xuất thuốc của dòng hiện tại
+          this.currentInput = ''; // Xóa ô nhập
+          this.inputCount++; // Tăng bộ đếm nhập
 
-          // 检查是否达到最大输入次数
+          // Kiểm tra đã đạt số lần nhập tối đa chưa
           if (this.inputCount >= this.maxInputCount) {
-            this.$set(this.currentRow, 'completed', true); // 设置为完成状态
-            this.drugDialogVisible = false; // 关闭对话框
+            this.$set(this.currentRow, 'completed', true); // Đặt thành trạng thái hoàn thành
+            this.drugDialogVisible = false; // Đóng hộp thoại
           }
           this.$nextTick(() => {
-            this.$refs.inputFocus.focus(); // 自动聚焦输入框
+            this.$refs.inputFocus.focus(); // Tự động focus vào ô nhập
           });
         }
       },
       resetInput() {
-        this.currentInput = ''; // 清空输入框
-        this.inputCount = 0; // 重置输入计数
-        this.currentRow = null; // 清空当前行记录
+        this.currentInput = ''; // Xóa ô nhập
+        this.inputCount = 0; // Đặt lại bộ đếm nhập liệu
+        this.currentRow = null; // Xóa bản ghi dòng hiện tại
       },
       updateMaxInputCount(row) {
-        this.$set(this.currentRow, 'isSplit', true); // 设置为完成状态
-        // 每次开关状态改变时更新最大输入次数
+        this.$set(this.currentRow, 'isSplit', true); // Đặt thành trạng thái hoàn thành
+        // Mỗi khi trạng thái công tắc thay đổi thì cập nhật số lần nhập tối đa
         const quantity = row.packAmount;
         this.maxInputCount = row.isSplit ? quantity * row.preparationAmount: quantity;
       },
@@ -416,7 +416,7 @@
           this.initOutbound();
         }
       },
-      //从outboundId初始化出库单以编辑
+      //TừoutboundIdKhởi tạo đơn xuất kho để sửa
       initOutbound() {
         this.loadSupplierOutbound();
         this.loadSupplierOutboundDetail();
@@ -430,11 +430,11 @@
               id: data.id,
               code: data.code,
               number: data.number,
-              breed: data.breed /*品种数量*/ ,
-              totalNumber: 0 /*总数量*/ ,
-              allBid: data.allBid /*总进价*/ ,
-              allRetailPrice: data.allRetailPrice /*总零售价*/ ,
-              remarks: data.remarks /*备注*/ ,
+              breed: data.breed /*Số lượng chủng loại*/ ,
+              totalNumber: 0 /*Tổng số lượng*/ ,
+              allBid: data.allBid /*Tổng giá nhập*/ ,
+              allRetailPrice: data.allRetailPrice /*Tổng giá bán lẻ*/ ,
+              remarks: data.remarks /*Ghi chú*/ ,
               method: data.method,
               reason: data.reason
             };
@@ -539,7 +539,7 @@
         } */
         if (!this.otherInfo.method) {
           this.$message({
-            message: "请选择出库方式",
+            message: "Vui lòng chọn phương thức xuất kho",
             type: "warning"
           });
           return;
@@ -547,7 +547,7 @@
 
         if (this.storageDetailTable.length === 0) {
           this.$message({
-            message: "请录入入库明细信息",
+            message: "Vui lòng nhập thông tin chi tiết nhập kho",
             type: "warning"
           });
           return;
@@ -578,26 +578,26 @@
         this.storageDetailTable.forEach((element) => {
           try {
             if (element.quantity === "" || element.quantity === 0) {
-              throw "数量";
+              throw "Số lượng";
             }
             const detail = {
               company: {
-                // 诊所id
+                // Phòng khámid
                 id: this.company_id,
               },
               number: this.getNumber(element), //element.quantity,
               cnt:   element.packAmount,        //医保数量
-              drugTracCodg:element.drugTracCodg,//医保追溯码
+              drugTracCodg:element.drugTracCodg,//Mã truy xuất bảo hiểm y tế
               supplierId: {
-                // 供应商
+                // Nhà cung cấp
                 id: this.otherInfo.supplierID,
               },
               drug: {
-                // 药品名称
+                // Tên thuốc
                 id: element.drug.id
               },
               stuff: {
-                // 材料名称
+                // Tên vật tư
                 id: element.stuff.id
               },
               currentStock: element.surplusStock,
@@ -612,9 +612,9 @@
             console.error('格式化出库单明细出错', e);
           }
         });
-        if (this.flag === "数量") {
+        if (this.flag === "Số lượng") {
           this.$message({
-            message: "入库数量不可为空",
+            message: "Số lượng nhập kho không được để trống",
             type: "warning"
           });
           this.flag = "";
@@ -623,7 +623,7 @@
           saveSupplierOutbound(saveInfo).then((responseData) => {
             if (responseData.code === 100) {
               this.$message({
-                message: "保存成功",
+                message: "Lưu thành công",
                 type: "success"
               });
               this.$emit('onSupplierOutboundUpdated');
@@ -637,7 +637,7 @@
           });
         }
       },
-      //关闭弹框
+      //Đóng hộp thoại
       closeDialog() {
         this.dialogVisibleTo = false;
         //this.fatherMethod();
@@ -650,11 +650,11 @@
           id: null,
           code: null,
           number: 0,
-          breed: 0 /*品种数量*/ ,
-          totalNumber: 0 /*总数量*/ ,
-          allBid: 0 /*总进价*/ ,
-          allRetailPrice: 0 /*总零售价*/ ,
-          remarks: "" /*备注*/ ,
+          breed: 0 /*Số lượng chủng loại*/ ,
+          totalNumber: 0 /*Tổng số lượng*/ ,
+          allBid: 0 /*Tổng giá nhập*/ ,
+          allRetailPrice: 0 /*Tổng giá bán lẻ*/ ,
+          remarks: "" /*Ghi chú*/ ,
           reason: null
         };
       },
@@ -701,7 +701,7 @@
         this.otherInfo.totalNumber = totalNumber;
         return totalNumber;
       },
-      //获取拆零后的数量
+      //Lấy số lượng sau khi tách hộp
       getNumber(row) {
         let packNumber = 0;
         if (row.drug && row.drug.id) {

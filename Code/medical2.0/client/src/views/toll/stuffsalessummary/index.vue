@@ -2,79 +2,79 @@
 <el-card class="page-container" style="padding: 0px;">
    <!-- <el-row>
         <el-col style="text-align:right;margin-bottom:10px">
-          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>导出</el-button>
+          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>Xuất</el-button>
         </el-col>
       </el-row> -->
 <el-row>
   <!-- <el-col :span="24">
     <div style="margin:0 0 10px 0;">
     <el-radio-group v-model="YpjxcRc.orderby" size="mini" @change="orderbyChange">
-      <el-radio-button label="batch_no">批号</el-radio-button>
-      <el-radio-button label="code">商品</el-radio-button>
+      <el-radio-button label="batch_no">Số lô</el-radio-button>
+      <el-radio-button label="code">Hàng hóa</el-radio-button>
       
     </el-radio-group>
   </div>
   </el-col> -->
    <el-col :span="24">
      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-    <el-form-item label="查询时间"  style="margin-right: 3px;">
+    <el-form-item label="Thời gian truy vấn"  style="margin-right: 3px;">
   <div class="block" style="width:50%">
     <el-date-picker
       v-model="TimeInterval"
       type="datetimerange"
       :picker-options="pickerOptions"
       :default-time="['00:00:00','23:59:59']"
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
+      range-separator="đến"
+      start-placeholder="Ngày bắt đầu"
+      end-placeholder="Ngày kết thúc"
       align="right"
       :clearable="false">
     </el-date-picker>
   </div>
     </el-form-item>
-    <el-form-item label="类型"  style="margin-right: 3px;">
-    <el-select v-model="formInline.lx" placeholder="类型">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="医用材料" value="stuffType_0"></el-option>
-      <el-option label="非医用材料" value="stuffType_1"></el-option>
+    <el-form-item label="Loại"  style="margin-right: 3px;">
+    <el-select v-model="formInline.lx" placeholder="Loại">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Vật tư y tế" value="stuffType_0"></el-option>
+      <el-option label="Vật tư phi y tế" value="stuffType_1"></el-option>
     </el-select>
   </el-form-item>
-  <!-- <el-form-item label="状态"  style="margin-right: 3px;">
-    <el-select v-model="formInline.zt" placeholder="状态">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="停用" value="0"></el-option>
-      <el-option label="启用" value="1"></el-option>
+  <!-- <el-form-item label="Trạng thái"  style="margin-right: 3px;">
+    <el-select v-model="formInline.zt" placeholder="Trạng thái">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Ngừng sử dụng" value="0"></el-option>
+      <el-option label="Kích hoạt" value="1"></el-option>
     </el-select>
   </el-form-item> -->
 
-  <!-- <el-form-item label="批号" style="margin-right: 3px;">
-    <el-input v-model="formInline.ph" placeholder="请输入批号"></el-input>
+  <!-- <el-form-item label="Số lô" style="margin-right: 3px;">
+    <el-input v-model="formInline.ph" placeholder="Vui lòng nhập số lô"></el-input>
   </el-form-item> -->
-    <el-form-item label="材料名称" style="margin-right: 3px;">
-    <el-input v-model="formInline.clmc" placeholder="请输入材料名称"></el-input>
+    <el-form-item label="Tên vật tư" style="margin-right: 3px;">
+    <el-input v-model="formInline.clmc" placeholder="Vui lòng nhập tên vật tư"></el-input>
   </el-form-item>
 
       <!-- <el-collapse-transition style="margin-right: 5px;">
         <div v-show="show3">
-          <el-form-item label="批号" style="margin-right: 5px;">
-    <el-input v-model="formInline.ph" placeholder="请输入批号"></el-input>
+          <el-form-item label="Số lô" style="margin-right: 5px;">
+    <el-input v-model="formInline.ph" placeholder="Vui lòng nhập số lô"></el-input>
   </el-form-item>
-    <el-form-item label="商品名" style="float:left;margin-right: 5px;">
-    <el-input v-model="formInline.spm" placeholder="请输入商品名"></el-input>
+    <el-form-item label="Tên hàng hóa" style="float:left;margin-right: 5px;">
+    <el-input v-model="formInline.spm" placeholder="Vui lòng nhập tên hàng hóa"></el-input>
   </el-form-item>
         </div>
       </el-collapse-transition> -->
   
-  <!-- <el-form-item label="批号">
-    <el-input v-model="formInline.ph" placeholder="请输入批号"></el-input>
+  <!-- <el-form-item label="Số lô">
+    <el-input v-model="formInline.ph" placeholder="Vui lòng nhập số lô"></el-input>
   </el-form-item>
-    <el-form-item label="商品名">
-    <el-input v-model="formInline.spm" placeholder="请输入商品名"></el-input>
+    <el-form-item label="Tên hàng hóa">
+    <el-input v-model="formInline.spm" placeholder="Vui lòng nhập tên hàng hóa"></el-input>
   </el-form-item> -->
   <el-form-item style="margin-right: 3px;">
-    <el-button type="primary" @click="onSubmit">查询</el-button>
-    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
-    <!-- <el-button @click="show3 = !show3">{{show3==true?"收起":"展开"}}</el-button> -->
+    <el-button type="primary" @click="onSubmit">Truy vấn</el-button>
+    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
+    <!-- <el-button @click="show3 = !show3">{{show3==true?"Thu gọn":"Mở rộng"}}</el-button> -->
   </el-form-item>
      </el-form>
    </el-col>
@@ -88,7 +88,7 @@
     show-summary
    >
     <el-table-column
-             label="序号"
+             label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -96,122 +96,122 @@
     <el-table-column
     align="center"
       prop="clbm"
-      label="材料编码">
+      label="Mã vật tư">
     </el-table-column>
     <el-table-column
       align="center"
       prop="clmc"
-      label="材料名称">
+      label="Tên vật tư">
     </el-table-column>
     <el-table-column
       align="center"
       prop="cllx"
-      label="分类">
+      label="Phân loại">
     </el-table-column>
     <!-- <el-table-column
     width="150px" 
       prop="txm"
-      label="条形码">
+      label="Mã vạch">
     </el-table-column> -->
     <!-- <el-table-column
     width="150px" 
       prop="gyzz"
-      label="国药准字">
+      label="Số đăng ký thuốc quốc gia">
     </el-table-column> -->
     <el-table-column
       prop="gg"
       align="center"
-      label="规格">
+      label="Quy cách">
     </el-table-column>
     <!-- <el-table-column
       prop="sccj"
-      label="生产厂家">
+      label="Nhà sản xuất">
     </el-table-column>
     <el-table-column
     align="center"
       prop="gys"
-      label="供应商">
+      label="Nhà cung cấp">
     </el-table-column>
     <el-table-column
     width="150px" 
     align="center"
       prop="lsj"
-      label="零售价">
+      label="Giá bán lẻ">
     </el-table-column>
     <el-table-column
     width="150px" 
     align="center"
       prop="cbj"
-      label="成本价">
+      label="Giá vốn">
     </el-table-column>
     <el-table-column
     width="120px"
       prop="ph"
-      label="批号">
+      label="Số lô">
     </el-table-column>
     <el-table-column
     width="200px" 
     align="center"
       prop="yxq"
-      label="有效期">
+      label="Hạn sử dụng">
     </el-table-column>
     <el-table-column
     width="150px" 
     align="center"
       prop="qcsl"
-      label="期初数量">
+      label="Số lượng đầu kỳ">
     </el-table-column>
     <el-table-column
     width="150px" 
     align="center"
       prop="qccb"
-      label="期初成本">
+      label="Chi phí đầu kỳ">
     </el-table-column>
     <el-table-column
     width="150px" 
       align="center"
       prop="bqrk"
-      label="本期入库数量">
+      label="Số lượng nhập kho trong kỳ">
     </el-table-column>
     <el-table-column
       width="150px" 
       align="center"
       prop="bqrkcb"
-      label="本期入库成本">
+      label="Chi phí nhập kho trong kỳ">
     </el-table-column>
     <el-table-column
     width="150px" 
       align="center"
       prop="bqcksl"
-      label="本期出库数量">
+      label="Số lượng xuất kho trong kỳ">
     </el-table-column>
     <el-table-column
     width="150px" 
       align="center"
       prop="bqckcb"
-      label="本期出库成本">
+      label="Chi phí xuất kho trong kỳ">
     </el-table-column>
     <el-table-column
     width="150px" 
       align="center"
       prop="bqpdsl"
-      label="本期盘点数量">
+      label="Số lượng kiểm kê trong kỳ">
     </el-table-column>
     <el-table-column
     width="150px" 
       align="center"
       prop="bqpdcb"
-      label="本期盘点成本">
+      label="Chi phí kiểm kê trong kỳ">
     </el-table-column> -->
     <el-table-column
     align="center"
       prop="sl"
-      label="数量">
+      label="Số lượng">
     </el-table-column>
     <el-table-column
     align="center"
       prop="zj"
-      label="总价">
+      label="Tổng giá">
     </el-table-column>
     
   </el-table>
@@ -243,7 +243,7 @@ import { BigNumber } from "bignumber.js";
     data() {
       return {
         show3: false,
-              //时间选择
+              //Chọn thời gian
       TimeInterval:this.getInitializeDate(),
       formInline: {
           clmc: '',
@@ -252,7 +252,7 @@ import { BigNumber } from "bignumber.js";
 
 pickerOptions: {
           shortcuts: [{
-            text: '最近一周',
+            text: 'Tuần gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -260,7 +260,7 @@ pickerOptions: {
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近一个月',
+            text: 'Tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -268,7 +268,7 @@ pickerOptions: {
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近三个月',
+            text: '3 tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -304,28 +304,28 @@ pickerOptions: {
     methods: {
     
   
-       //设置默认日期
+       //Đặt ngày mặc định
     getInitializeDate () {
-     let date = new Date()//获取新的时间
-     //获取当前年份,并且转为字符串
+     let date = new Date()//Lấy thời gian mới
+     //Lấy năm hiện tại,và chuyển thành chuỗi
      let year = date.getFullYear().toString()
-     //获取当前月份，因为月份是要从0开始，此处要加1，
-    //使用三元表达式，判断是否小于10，如果是的话，就在字符串前面拼接'0'
+     //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
+    //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
      let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-     //获取天，判断是否小于10，如果是的话，就在在字符串前面拼接'0'
+     //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
      let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-     //字符串拼接，将开始时间和结束时间进行拼接
-     let start = year + '-' + month + '-01'+' 00:00:00'    //当月第一天
+     //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+     let start = year + '-' + month + '-01'+' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
      //let end=new Date(year, month, 0).getDate();
-     let end = year + '-' + month + '-' + day +' 23:59:59'  //当天
-     return [start,end] //将值设置给组件DatePicker 绑定的数据
+     let end = year + '-' + month + '-' + day +' 23:59:59'  //Trong ngày
+     return [start,end] //Gán giá trị cho thành phầnDatePicker Dữ liệu đã liên kết
    },
       getSummaries(param) {
         const { columns, data } = param;
         const sums = [];
         columns.forEach((column, index) => {
           if (index === 0) {
-            sums[index] = '总价';
+            sums[index] = 'Tổng giá';
             return;
           }
           // else if (index === 8 || index ===9 ||index >11){
@@ -349,7 +349,7 @@ pickerOptions: {
           
         });
         // sums[4] = new BigNumber(Number(this.allTotal.sl)).toFormat(2)
-        sums[6] = new BigNumber(Number(this.allTotal.zj)).toFormat(2)+'元'
+        sums[6] = new BigNumber(Number(this.allTotal.zj)).toFormat(2)+'VNĐ'
         
         return sums;
       },
@@ -403,7 +403,7 @@ if (responseData.code === 100){
   this.patientTotal=responseData.data.total;
   if(responseData.data.total>0){
 responseData.data.rows.forEach((item)=>{
-  if(item.cllx==="stuffType_0"){item.cllx="医用材料"}else if(item.cllx==="stuffType_1"){item.cllx="非医用材料"}else{item.cllx=""}
+  if(item.cllx==="stuffType_0"){item.cllx="Vật tư y tế"}else if(item.cllx==="stuffType_1"){item.cllx="Vật tư phi y tế"}else{item.cllx=""}
     this.tableData.push({
       clbm:item.clbm,
       clmc:item.clmc,

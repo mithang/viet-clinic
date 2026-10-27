@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 /**
 * @author
-* @description 针对表【pres_drug(医疗目录表)】的数据库操作Service实现
+* @description Đối với bảng[pres_drug(Bảng danh mục y tế)] của Dữ liệukhothao tácServiceTriển khai
 * @createDate 2024-11-08
 */
 @Service

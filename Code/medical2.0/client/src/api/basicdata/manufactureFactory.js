@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/basicdata/manufactureFactory')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getManufactureFactoryById = baseApi.getById
 export const listManufactureFactoryPage = baseApi.listPage
 export const listManufactureFactoryAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertManufactureFactory = baseApi.bulkInsert
 export const bulkUpdateManufactureFactory = baseApi.bulkUpdate
 export const bulkDeleteManufactureFactory = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const ureportTest = (id) =>
     request({
         url: '/basicdata/manufactureFactory/bulkDelete',

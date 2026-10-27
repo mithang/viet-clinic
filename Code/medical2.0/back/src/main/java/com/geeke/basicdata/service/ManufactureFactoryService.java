@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 生产厂家Service
+ * Nhà sản xuấtService
  * @author txl
  * @version 2022-06-22
  */
@@ -29,7 +29,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
     @Autowired
     private ManufactureFactoryDao manufactureFactoryDao;
 
-    /** 生产厂家为机构共享字典：允许同机构下诊所访问机构诊所的数据（与列表 #{institution} SQL 一致） */
+    /** Nhà sản xuất là Cơ sởtừ điển dùng chung: Cho phép phòng khám thuộc cùng cơ sở truy cập dữ liệu phòng khám của cơ sở(Với danh sách #{institution} SQL Nhất quán) */
     @Override
     protected boolean isInstitutionShared() {
         return true;
@@ -40,16 +40,16 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
     @Transactional(readOnly = false)
     public ManufactureFactory save(ManufactureFactory manufactureFactory) {
         Map<String, String> colMaps = Maps.newHashMap();
-        // 生产厂家已存在
+        // Nhà sản xuấtĐã tồn tại
         colMaps.clear();
         colMaps.put("name", "name");
         
         // duplicate check handled below by findBy
-        //校验生产厂家是否存在
+        //Kiểm traNhà sản xuấtCó tồn tại không
        if(manufactureFactory.getId()==null){
            String by = manufactureFactoryDao.findBy(manufactureFactory.getName(), manufactureFactory.getCompany().getId());
            if(by!=null){
-               throw new ServiceException("生产厂家已存在");
+               throw new ServiceException("Nhà sản xuấtĐã tồn tại");
 
            }
        }
@@ -59,10 +59,10 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
     }
 
     /**
-     * 查询生产厂家列表
-     * @param parameters 查询参数列表
-     * @param orderby 排序条件
-     * @return 生产厂家列表
+     * Truy vấnNhà sản xuấtDanh sách
+     * @param parameters Danh sách tham số truy vấn
+     * @param orderby sắp xếpĐiều kiện
+     * @return Nhà sản xuấtDanh sách
      */
 public List<ManufactureFactory> listAlls(List<Parameter> parameters, String orderby) {
     PageRequest pageRequest = buildTenantPageRequest(parameters, orderby);

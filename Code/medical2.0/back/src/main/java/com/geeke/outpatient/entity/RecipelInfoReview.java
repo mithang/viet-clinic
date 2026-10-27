@@ -7,20 +7,20 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 /**
- * 处方信息审查Entity
+ * Đơn thuốcThông tinxem xétEntity
  * @author lc
  * @version 2023-10-09
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class RecipelInfoReview extends DataEntity<RecipelInfoReview> {
-    private RecipelInfo recipelInfo; //处方信息
-    private MedicalRecord medicalRecord; //病例信息
-    private Integer reviewResult = 2; // 审查结果：1表示合理，0表示不合理
-    private String reviewContent = ""; // 审查内容
-    private String reviewerName = ""; // 审查人的名字,审查时间取createDate
-    private Integer reviewStatus = 0; // 审查状态：0表示未审查，1表示已审查 ;2已撤销
-    private String reviewerId ; //审查人ID
+    private RecipelInfo recipelInfo; //Thông tin đơn thuốc
+    private MedicalRecord medicalRecord; //ca bệnhThông tin
+    private Integer reviewResult = 2; // xem xétKết quả: 1cho biếthợplý, 0cho biếtkhônghợplý
+    private String reviewContent = ""; // xem xétnội dung
+    private String reviewerName = ""; // xem xétngười của tênchữ,xem xétThời gianlấycreateDate
+    private Integer reviewStatus = 0; // xem xétTrạng thái: 0cho biếtChưaxem xét, 1cho biếtĐãxem xét ;2Đãhủy
+    private String reviewerId ; //xem xétngườiID
 
 
     public MedicalRecord getMedicalRecord() {

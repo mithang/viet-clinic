@@ -8,18 +8,18 @@ import java.util.Date;
 
 @Data
 public class HisDrugsStorage {
-    private String pc;//生产批号
-    private Date scrq;//生产日期
-    private Date Yxq; //有效期
-    private Integer Sl; //数量
-    private String ckdw;//出库单位
-    private BigDecimal Pfj; //最小单位批发价
-    private BigDecimal Ykpfj; //进价
-    private String Ypdm;//药品代码
-    private String FPh;//发票号
-    private String Ypmc;//药品名称
-    private String zstbzt; //同步状态
-    private String Ckzhyz;//出库转换因子 >1则为标准单位
-    private String crkmxId;//库存信息唯一标识
-    private String Cksj; //发药时间
+    private String pc;//Số lô sản xuất
+    private Date scrq;//Ngày sản xuất
+    private Date Yxq; //Thời hạn hiệu lực
+    private Integer Sl; //Số lượng
+    private String ckdw;//Xuất khoĐơn vị
+    private BigDecimal Pfj; //Đơn vị nhỏ nhấtlôphátgiá
+    private BigDecimal Ykpfj; //Giá nhập
+    private String Ypdm;//Thuốcmã
+    private String FPh;//Số hóa đơn
+    private String Ypmc;//Tên thuốc
+    private String zstbzt; //đồng bộTrạng thái
+    private String Ckzhyz;//Xuất khochuyển đổidocon >1thì là tiêu chuẩnĐơn vị
+    private String crkmxId;//Tồn khoThông tinduy nhấtđịnh danh
+    private String Cksj; //phát thuốcThời gian
 }

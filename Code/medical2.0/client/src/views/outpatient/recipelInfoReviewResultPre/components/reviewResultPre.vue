@@ -1,19 +1,19 @@
 <template>
   <div class="review-container">
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <review-form-pre ref='reviewPreForm' :permission='permission' @save-finished='getReviewList()'></review-form-pre>
-    <!--  搜索栏  开始 -->
+    <!--  Thanh tìm kiếm  Bắt đầu -->
     <div class='query-form-container'>
       <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
         <el-row v-if='!moreCodition' class='search-row'>
           <el-col :span="12">
-            <el-form-item label='开单时间' prop='createDate'>
+            <el-form-item label='Thời gian lập phiếu' prop='createDate'>
               <data-range-picker v-model='queryModel.createDate' ></data-range-picker>
             </el-form-item>
           </el-col>
           <!--<el-col :span="6">
-            <el-form-item label='开单诊所' prop='company'>
-              <el-select v-model='queryModel.company' value-key='value' filterable clearable placeholder='请选择操作'>
+            <el-form-item label='Phòng khám kê đơn' prop='company'>
+              <el-select v-model='queryModel.company' value-key='value' filterable clearable placeholder='Vui lòng chọn thao tác'>
                 <el-option v-for='company in company_List' :key='company.value' :label='company.name' :value='company'></el-option>
               </el-select>
             </el-form-item>
@@ -22,7 +22,7 @@
             <el-form-item label='关键字' prop='patientName'>
               <el-input
                 v-model="queryModel.patientName"
-                placeholder="姓名/门诊号"
+                placeholder="Họ tên/Số khám ngoại trú"
                 clearable
               />
             </el-form-item>
@@ -30,16 +30,16 @@
         </el-row >
         <el-row class='search-row'>
           <!--<el-col :span="6">
-            <el-form-item label='处方状态' prop='recipelStatus'>
-              <el-select v-model='queryModel.recipelStatus' value-key='value' filterable clearable placeholder='请选择操作'>
+            <el-form-item label='Trạng thái đơn thuốc' prop='recipelStatus'>
+              <el-select v-model='queryModel.recipelStatus' value-key='value' filterable clearable placeholder='Vui lòng chọn thao tác'>
                   <el-option v-for='recipelStatus in recipelStatus_List' :key='recipelStatus.value' :label='recipelStatus.name' :value='recipelStatus'></el-option>
               </el-select>
             </el-form-item>
           </el-col>-->
 
           <!--<el-col :span="6">
-            <el-form-item label='审查状态' prop='reviewStatus'>
-              <el-select v-model='queryModel.reviewStatus' value-key='value' filterable clearable placeholder='请选择操作'>
+            <el-form-item label='Trạng thái thẩm tra' prop='reviewStatus'>
+              <el-select v-model='queryModel.reviewStatus' value-key='value' filterable clearable placeholder='Vui lòng chọn thao tác'>
                 <el-option v-for='reviewStatus in reviewStatus_List' :key='reviewStatus.value' :label='reviewStatus.name' :value='reviewStatus'></el-option>
               </el-select>
             </el-form-item>
@@ -47,10 +47,10 @@
 
           <el-col :span="6">
             <el-button-group>
-              <el-tooltip  effect="light" content="搜索" placement="top-start">
+              <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                 <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
               </el-tooltip>
-              <el-tooltip  effect="light" content="重置" placement="top-start">
+              <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                 <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
               </el-tooltip>
             </el-button-group>
@@ -58,16 +58,16 @@
         </el-row>
       </el-form>
     </div>
-    <!-- 工具栏 开始 -->
+    <!-- Thanh công cụ Bắt đầu -->
     <!--      <div class="page-container-header-end">
             <div>
-              <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateTheme()'>添加</el-button>
+              <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateTheme()'>Thêm</el-button>
             </div>
           </div>-->
-    <!-- 工具栏 结束 -->
+    <!-- Thanh công cụ Kết thúc -->
 
-    <!--  搜索栏  结束 -->
-    <!-- 表格栏  开始 -->
+    <!--  Thanh tìm kiếm  Kết thúc -->
+    <!-- Thanh bảng  Bắt đầu -->
     <el-row>
       <el-col :span='24'>
         <div @mouseleave='moveTableOutside'>
@@ -78,73 +78,73 @@
                     @current-change="handleCurrentChange"
           >
             <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
             <!--<el-table-column
-              label='开单诊所'
+              label='Phòng khám kê đơn'
               prop='recipelInfo.company.name'
               align="center">
             </el-table-column>-->
             <el-table-column
-              label='开单科室'
+              label='Khoa lập phiếu'
               prop='recipelInfo.registration.clinicOffice.name'
               align="center">
             </el-table-column>
             <el-table-column
-              label='开单医生'
+              label='Bác sĩ kê đơn'
               prop='recipelInfo.registration.doctor.name'
               align="center">
             </el-table-column>
             <el-table-column
-              label='开单日期'
+              label='Ngày kê đơn'
               prop='recipelInfo.createDate'
               width="180"
               align="center">
             </el-table-column>
             <el-table-column
-              label='处方编号'
+              label='Số đơn thuốc'
               prop='recipelInfo.code'
               width="180"
               align="center">
             </el-table-column>
 
             <el-table-column
-              label='患者姓名'
+              label='Tên bệnh nhân'
               prop='recipelInfo.registration.patientId.name'
               align="center">
             </el-table-column>
 
 <!--            <el-table-column-->
-<!--              label='性别'-->
+<!--              label='Giới tính'-->
 <!--              prop='recipelInfo.registration.patientId.gender.name'-->
 <!--              align="center">-->
 <!--            </el-table-column>-->
 <!--            <el-table-column-->
-<!--              label='年龄'-->
+<!--              label='Tuổi'-->
 <!--              prop='recipelInfo.registration.patientId.age'-->
 <!--              align="center">-->
 <!--            </el-table-column>-->
 
 <!--            <el-table-column-->
-<!--              label='处方分类'-->
+<!--              label='Phân loại đơn thuốc'-->
 <!--              prop='recipelInfo.recipelType.name'-->
 <!--              align="center">-->
 <!--            </el-table-column>-->
 <!--            <el-table-column-->
-<!--              label='诊断信息'-->
+<!--              label='Thông tin chẩn đoán'-->
 <!--              prop='recipelInfo.recipelType.name'-->
 <!--              width="220"-->
 <!--              align="center">-->
 <!--              <template slot-scope="scope">-->
-<!--                中药诊断：{{scope.row.medicalRecord.chinaDiagnose}};-->
-<!--                西药诊断：{{scope.row.medicalRecord.westernDiagnose}};-->
+<!--                Chẩn đoán Đông y：{{scope.row.medicalRecord.chinaDiagnose}};-->
+<!--                Chẩn đoán Tây y：{{scope.row.medicalRecord.westernDiagnose}};-->
 <!--              </template>-->
 <!--            </el-table-column>-->
             <el-table-column
-              label='审核状态'
+              label='Trạng thái xét duyệt'
               prop='recipelInfo.recipelType.name'
               align="center">
               <template slot-scope="scope">
@@ -165,7 +165,7 @@
             </el-table-column>
 
             <el-table-column
-              label='审查结果'
+              label='Kết quả thẩm tra'
               prop='reviewResult'
               align="center">
               <template slot-scope="scope">
@@ -178,34 +178,34 @@
               align="center">
             </el-table-column>
             <el-table-column
-              label='审查人'
+              label='Người thẩm tra'
               prop='reviewerName'
               align="center">
             </el-table-column>
             <el-table-column
-              label='审查时间'
+              label='Thời gian thẩm tra'
               prop='createDate'
               width="180"
               align="center">
             </el-table-column>
-            <!--表行级操作按钮-->
-            <el-table-column label='操作' header-align='center' :width='60 + "px"' :key="'operate'">
+            <!--Nút thao tác theo dòng-->
+            <el-table-column label='Thao tác' header-align='center' :width='60 + "px"' :key="'operate'">
               <!--<template slot='header' slot-scope="scope">
-                <span>操作</span>
+                <span>Thao tác</span>
               </template>-->
               <template slot-scope='scope'>
-                <!--<OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                <!--<OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                                @click='onEditReview(scope.$index, scope.row)'></OperationIcon>-->
-                <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view'
+                <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
                                @click='onViewReviewResult(scope.$index, scope.row)'></OperationIcon>
               </template>
             </el-table-column>
           </el-table>
           <div  style="margin-top: 20px;">
-            <el-button @click="onQueryMedicine(selectedRow)" type="primary">取药查询</el-button>
-            <el-button @click="onAuditQuery(selectedRow)" type="primary">审核查询</el-button>
-<!--            <el-button @click="onPrescriptionQuery(selectedRow)" type="primary">处方查询</el-button>-->
-            <el-button  @click="onPrescriptionCancel(selectedRow)"  type="danger">处方撤销</el-button>
+            <el-button @click="onQueryMedicine(selectedRow)" type="primary">Truy vấn lấy thuốc</el-button>
+            <el-button @click="onAuditQuery(selectedRow)" type="primary">Truy vấn xét duyệt</el-button>
+<!--            <el-button @click="onPrescriptionQuery(selectedRow)" type="primary">Truy vấn đơn thuốc</el-button>-->
+            <el-button  @click="onPrescriptionCancel(selectedRow)"  type="danger">Thu hồi đơn thuốc</el-button>
           </div>
 
           <!-- 取药查询模态框 -->
@@ -229,20 +229,20 @@
         </div>
       </el-col>
     </el-row>
-<!--    撤销-->
-    <el-dialog title="撤销原因" :visible.sync="dialogVisible" width="400px">
+<!--    Thu hồi-->
+    <el-dialog title="Lý do thu hồi" :visible.sync="dialogVisible" width="400px">
       <el-form :model="cancelForm" ref="cancelForm" label-width="120px">
-        <el-form-item prop="reason" label="撤销原因" :rules="[{ required: true, message: '请输入撤销原因', trigger: 'submit' }]">
-          <el-input v-model="cancelForm.reason" type="textarea" placeholder="请输入撤销原因" maxlength="300"></el-input>
+        <el-form-item prop="reason" label="Lý do thu hồi" :rules="[{ required: true, message: 'Vui lòng nhập lý do thu hồi', trigger: 'submit' }]">
+          <el-input v-model="cancelForm.reason" type="textarea" placeholder="Vui lòng nhập lý do thu hồi" maxlength="300"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-      <el-button @click="dialogVisible = false">取消</el-button>
+      <el-button @click="dialogVisible = false">Hủy</el-button>
       <el-button type="primary" @click="submitCancel">确认撤销</el-button>
     </span>
     </el-dialog>
-    <!-- 表格栏  结束 -->
-    <!-- 分页栏     开始 -->
+    <!-- Thanh bảng  Kết thúc -->
+    <!-- Thanh phân trang     Bắt đầu -->
     <el-row>
       <el-col :span='24'>
         <el-pagination
@@ -257,7 +257,7 @@
         </el-pagination>
       </el-col>
     </el-row>
-    <!-- 分页栏     结束 -->
+    <!-- Thanh phân trang     Kết thúc -->
   </div>
 </template>
 
@@ -324,7 +324,7 @@ export default {
       auditFormData: {},
       prescriptionFormData: {},
       cancelForm: {
-        reason: '' // 撤销原因
+        reason: '' // Lý do thu hồi
       },
       permission: {
         view: false,
@@ -337,27 +337,27 @@ export default {
         'name': 'like',
       },
       queryModel: {
-        // 开单时间
+        // Thời gian lập phiếu
         'createDate': null,
-        // 开单诊所
+        // Phòng khám kê đơn
         'company': '',
-        // 开单医生
+        // Bác sĩ kê đơn
         'doctor': '',
-        // 门诊号/患者姓名
+        // Số khám ngoại trú/Tên bệnh nhân
         'patientName': '',
-        // 处方分类
+        // Phân loại đơn thuốc
         'recipelType': '',
-        // 处方状态
+        // Trạng thái đơn thuốc
         'recipelStatus': '',
-        // 审查状态
+        // Trạng thái thẩm tra
         'reviewStatus': '',
       },
       search: {
         params: [],
         offset: 0,
         limit: 10,
-        columnName: '',       // 排序字段名
-        order: ''             // 排序
+        columnName: '',       // Tên trường sắp xếp
+        order: ''             // Sắp xếp
       },
       currentPage: 1,
       reviewTotal: 0,
@@ -368,20 +368,20 @@ export default {
       recipelType_List:[
       ],
       recipelStatus_List:[
-        {name: "全部", value: ""},
-        {name: "待收费", value: "recipelInfo.charge_status&0&recipelInfo.status&1"},
-        {name: "已收费", value: "recipelInfo.charge_status&1&recipelInfo.dispension_status&0"},
-        {name: "已退费", value: "recipelInfo.charge_status&-1"},
-        // {name: "待发药", value: "recipelInfo.dispension_status&0&recipelInfo.charge_status&1"},
-        {name: "已发药", value: "recipelInfo.dispension_status&1"},
-        {name: "已退药未退费", value: "recipelInfo.dispension_status&-1&recipelInfo.charge_status&1"},
-        {name: "已作废", value: "recipelInfo.status&-1"},
+        {name: "Tất cả", value: ""},
+        {name: "Chờ thu phí", value: "recipelInfo.charge_status&0&recipelInfo.status&1"},
+        {name: "Đã thu phí", value: "recipelInfo.charge_status&1&recipelInfo.dispension_status&0"},
+        {name: "Đã hoàn phí", value: "recipelInfo.charge_status&-1"},
+        // {name: "Chờ phát thuốc", value: "recipelInfo.dispension_status&0&recipelInfo.charge_status&1"},
+        {name: "Đã phát thuốc", value: "recipelInfo.dispension_status&1"},
+        {name: "Đã trả thuốc, chưa hoàn phí", value: "recipelInfo.dispension_status&-1&recipelInfo.charge_status&1"},
+        {name: "Đã hủy bỏ", value: "recipelInfo.status&-1"},
       ],
       reviewStatus_List:[
-        {name: "全部", value: ""},
-        {name: "未审核", value: "0"},
-        {name: "已审核", value: "1"},
-        {name: "已撤销", value: "2"},
+        {name: "Tất cả", value: ""},
+        {name: "Chưa xét duyệt", value: "0"},
+        {name: "Đã xét duyệt", value: "1"},
+        {name: "Đã thu hồi", value: "2"},
       ],
       loginCompany:{},
 
@@ -393,10 +393,10 @@ export default {
     handleCurrentChange(val) {
       this.selectedRow = val;
     },
-    // 取药查询
+    // Truy vấn lấy thuốc
     onQueryMedicine(row) {
       if (!row) {
-        this.$message.warning('请先选择一条处方记录');
+        this.$message.warning('Vui lòng chọn trước một bản ghi đơn thuốc');
         return;
       }
       this.medicineDialogVisible = true;
@@ -407,10 +407,10 @@ export default {
       );
 
     },
-    // 审核查询
+    // Truy vấn xét duyệt
     onAuditQuery(row) {
       if (!row) {
-        this.$message.warning('请先选择一条处方记录');
+        this.$message.warning('Vui lòng chọn trước một bản ghi đơn thuốc');
         return;
       }
       this.auditDialogVisible = true;
@@ -420,10 +420,10 @@ export default {
       })
     },
 
-    // 处方查询
+    // Truy vấn đơn thuốc
     onPrescriptionQuery(row) {
       if (!this.selectedRow) {
-        this.$message.warning('请先选择一条处方记录');
+        this.$message.warning('Vui lòng chọn trước một bản ghi đơn thuốc');
         return;
       }
       this.prescriptionFormData = true;
@@ -431,10 +431,10 @@ export default {
       // 在这里编写处方查询的逻辑
     },
 
-    // 处方撤销
+    // Thu hồi đơn thuốc
     onPrescriptionCancel() {
       if (!this.selectedRow) {
-        this.$message.warning('请先选择一条处方记录');
+        this.$message.warning('Vui lòng chọn trước một bản ghi đơn thuốc');
         return;
       }else if(this.selectedRow.reviewStatus === 2){
         this.$message.warning('已撤销处方！');
@@ -466,7 +466,7 @@ export default {
     },
     getReviewList() {
       this.setLoad()
-      /* 查询参数 和数据权限 */
+      /* Tham số truy vấn và quyền dữ liệu */
       this.search.params = []
       this.search.params.push({
         columnName: 'create_date',
@@ -506,13 +506,13 @@ export default {
         queryType: '=',
         value: currentUser.company.id
       })
-      //筛选电子处方
+      //Lọc đơn thuốc điện tử
       this.search.params.push({
         columnName: 'recipelInfo.is_pre',
         queryType:  '=',
         value:'1'
       })
-      //筛选电子处方
+      //Lọc đơn thuốc điện tử
       if (this.queryModel.patientName) {
         this.search.params.push({
           logic: "AND",
@@ -535,7 +535,7 @@ export default {
           queryType: ")",
         });
       }
-      // 数据权限
+      // Quyền dữ liệu
       this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
       listRecipelInfoReviewPage(this.search).then(responseData => {
         if(responseData.code === 100) {
@@ -549,7 +549,7 @@ export default {
         this.outputError(error)
       })
     },
-    //将recipelStatus处方状态查询条件组装成后台需要的数据结构
+    //SẽrecipelStatusGhép điều kiện truy vấn trạng thái đơn thuốc thành cấu trúc dữ liệu backend cần
     createQueryObjects(inputString){
       let parts = inputString.split('&');
       let queryObjects = [];
@@ -606,7 +606,7 @@ export default {
           queryType:  '=',
           value:'1'
         })
-        // 数据权限: 处方审查
+        // Quyền dữ liệu: Thẩm tra đơn thuốc
         this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
         let [listReviewRespData, listPermissionRespData] = await Promise.all([
           listRecipelInfoReviewPage(this.search),
@@ -667,9 +667,9 @@ export default {
     async initOptions(This) {
       getDictItemsByCode(DICT_CODE.RECIPEL_TYPE).then((data) => {
         this.recipelType_List = data
-        this.recipelType_List.unshift({name: "全部", value: ""})
+        this.recipelType_List.unshift({name: "Tất cả", value: ""})
       })
-      //初始化开单医生
+      //Khởi tạo bác sĩ kê đơn
       let doctor_search = {
         params: [
           {
@@ -688,16 +688,16 @@ export default {
             value: this.Company.id,
           },
         ]}
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       doctor_search.params.push.apply(doctor_search.params, [])
-      // 数据权限: 字典项sys_dict_item
+      // Quyền dữ liệu: Mục từ điểnsys_dict_item
       this.pushDataPermissions(doctor_search.params, this.$route.meta.routerId, '1014474470772899974')
       this.doctor_List = []
       listUserAll(doctor_search).then(responseData => {
         this.doctor_List = responseData.data
-        this.doctor_List.unshift({name: "全部", id: ""})
+        this.doctor_List.unshift({name: "Tất cả", id: ""})
       })
-      //初始化开单诊所
+      //Khởi tạo phòng khám kê đơn
       let company_search = {
         params: [
           {
@@ -711,43 +711,43 @@ export default {
             value: 0,
           },
         ]}
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       company_search.params.push.apply(company_search.params, [])
-      // 数据权限: 字典项sys_dict_item
+      // Quyền dữ liệu: Mục từ điểnsys_dict_item
       this.pushDataPermissions(company_search.params, this.$route.meta.routerId, '1014474470772899974')
       this.company_List = []
       listCompanyAll(company_search).then(responseData => {
         this.company_List = responseData.data
-        this.company_List.unshift({name: "全部", id: ""})
+        this.company_List.unshift({name: "Tất cả", id: ""})
       })
-      //获取机构公司
+      //Lấy công ty/tổ chức
       let [companyRespData] = await Promise.all([getCompanyById(this.Company.id)])
       this.loginCompany = companyRespData.data
     },
     recipellnfoStatus(row,type){
       if(type === '1'){
         if (row.reviewStatus === 1) {
-          return "已审核";
+          return "Đã xét duyệt";
         }else if (row.reviewStatus === 0) {
-          return "未审核";
+          return "Chưa xét duyệt";
         }else {
-          return "已撤销";
+          return "Đã thu hồi";
         }
       }else{
         if (row.reviewStatus === 1) {
-          return "有效";
+          return "Hiệu lực";
         }else if (row.reviewStatus === 0) {
-          return "未审核";
+          return "Chưa xét duyệt";
         }else {
-          return "已撤销";
+          return "Đã thu hồi";
         }
       }
     },
     recipellnfoResult(row){
       if (row.reviewResult === 1) {
-        return "通过";
+        return "Qua";
       }else if (row.reviewResult === 0) {
-        return "不通过";
+        return "Không qua";
       }else {
         return "";
       }

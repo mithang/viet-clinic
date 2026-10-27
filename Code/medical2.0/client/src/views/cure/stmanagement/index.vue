@@ -3,38 +3,38 @@
 <el-row>
     <el-col :span="24">
       <el-form :inline="true" :model="strc" class="demo-form-inline">
-      <el-form-item label="患者姓名" style="margin-right: 3px;">
-    <el-input v-model="strc.hzxm" placeholder="请输入患者姓名"></el-input>
+      <el-form-item label="Tên bệnh nhân" style="margin-right: 3px;">
+    <el-input v-model="strc.hzxm" placeholder="Vui lòng nhập tên bệnh nhân"></el-input>
   </el-form-item>
-   <el-form-item label="查询时间"  style="margin-right: 3px;">
+   <el-form-item label="Thời gian truy vấn"  style="margin-right: 3px;">
   <div class="block" style="width:50%">
     <el-date-picker
       v-model="TimeInterval"
       type="datetimerange"
       :picker-options="pickerOptions"
       :default-time="['00:00:00','23:59:59']"
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
+      range-separator="đến"
+      start-placeholder="Ngày bắt đầu"
+      end-placeholder="Ngày kết thúc"
       align="right"
       :clearable="false">
     </el-date-picker>
   </div>
     </el-form-item>
-  <el-form-item label="执行状态"  style="margin-right: 3px;">
-  <el-select v-model="strc.zxzt" placeholder="执行状态">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="未皮试" value="0"></el-option>
-      <el-option label="已皮试" value="1"></el-option>
+  <el-form-item label="Trạng thái thực hiện"  style="margin-right: 3px;">
+  <el-select v-model="strc.zxzt" placeholder="Trạng thái thực hiện">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Chưa test da" value="0"></el-option>
+      <el-option label="Đã test da" value="1"></el-option>
     </el-select>
   </el-form-item>
-  <el-form-item label="开单医生" style="margin-right: 3px;">
-    <el-input v-model="strc.kdys" placeholder="请输入开单医生"></el-input>
+  <el-form-item label="Bác sĩ kê đơn" style="margin-right: 3px;">
+    <el-input v-model="strc.kdys" placeholder="Vui lòng nhập bác sĩ kê đơn"></el-input>
   </el-form-item>
     <el-form-item style="margin-right: 3px;">
-    <el-button type="primary" @click="onSubmit">查询</el-button>
-    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
-    <!-- <el-button @click="show3 = !show3">{{show3==true?"收起":"展开"}}</el-button> -->
+    <el-button type="primary" @click="onSubmit">Truy vấn</el-button>
+    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
+    <!-- <el-button @click="show3 = !show3">{{show3==true?"Thu gọn":"Mở rộng"}}</el-button> -->
   </el-form-item>
       </el-form>
     </el-col>
@@ -44,7 +44,7 @@
     border
     height="calc(100vh - 250px)">
     <el-table-column
-             label="序号"
+             label="Số thứ tự"
               type="index"
               :index="blmbindexMethod"
               align="center">
@@ -55,7 +55,7 @@
     </el-table-column>
     <el-table-column
       prop="hzxm"
-      label="患者">
+      label="Bệnh nhân">
     </el-table-column>
     <el-table-column
       prop="gmqk"
@@ -63,19 +63,19 @@
     </el-table-column>
     <el-table-column
       prop="kdsj"
-      label="开单时间"
+      label="Thời gian lập phiếu"
       width="150">
     </el-table-column>
     <el-table-column
       prop="kdys"
-      label="开单医生"
+      label="Bác sĩ kê đơn"
       width="130">
     </el-table-column>
     <el-table-column
       prop="ypmc"
-      label="药品">
+      label="Thuốc">
     </el-table-column>
-    <el-table-column prop="dosis" label="规格" width="150">
+    <el-table-column prop="dosis" label="Quy cách" width="150">
       <template slot-scope="scope">
         <template>
           {{scope.row.dosis}}{{scope.row.dosisunit}}*{{scope.row.preparation}}{{scope.row.preparationunit}}/{{scope.row.pack}}
@@ -84,16 +84,16 @@
      </el-table-column>
      <el-table-column
       prop="yf"
-      label="用法">
+      label="Cách dùng">
     </el-table-column>
     <el-table-column
       prop="zxsj"
-      label="执行时间"
+      label="Thời gian thực hiện"
       width="150">
     </el-table-column>
     <el-table-column
       prop="zxr"
-      label="执行人"
+      label="Người thực hiện"
       width="130">
     </el-table-column>
     <el-table-column  label="皮试结果" :width="140">
@@ -107,18 +107,18 @@
 <el-table-column  label="皮试时间" :width="140"  >
        <template slot-scope="scope">
       <el-select v-model="scope.row.sttime" filterable allow-create @change="pssjchange(scope.row)">
-      <el-option label="5分钟" value="5"></el-option>
-      <el-option label="10分钟" value="10"></el-option>
-      <el-option label="15分钟" value="15"></el-option>
-      <el-option label="20分钟" value="20"></el-option>
-      <el-option label="25分钟" value="25"></el-option>
-      <el-option label="30分钟" value="30"></el-option>
-      <el-option label="35分钟" value="35"></el-option>
-      <el-option label="40分钟" value="40"></el-option>
+      <el-option label="5Phút" value="5"></el-option>
+      <el-option label="10Phút" value="10"></el-option>
+      <el-option label="15Phút" value="15"></el-option>
+      <el-option label="20Phút" value="20"></el-option>
+      <el-option label="25Phút" value="25"></el-option>
+      <el-option label="30Phút" value="30"></el-option>
+      <el-option label="35Phút" value="35"></el-option>
+      <el-option label="40Phút" value="40"></el-option>
     </el-select>
         </template>
 </el-table-column>
-<el-table-column prop="intervalTime" label="倒计时" :width="140">
+<el-table-column prop="intervalTime" label="Đếm ngược" :width="140">
                 <template slot-scope="scope">
                     <span>
                        {{ scope.row.intervalTime }}
@@ -126,10 +126,10 @@
                 </template>
             </el-table-column>
     <el-table-column
-      label="操作"
+      label="Thao tác"
       width="100">
       <template slot-scope="scope">
-        <el-button type="text" :disabled="scope.row.intervalTime!=='' && scope.row.intervalTime!=null" @click.native="stclick(scope.$index,scope.row)">{{scope.row.stresult!=='' && scope.row.stresult!=null ?"重新皮试":"开始皮试"}}</el-button>
+        <el-button type="text" :disabled="scope.row.intervalTime!=='' && scope.row.intervalTime!=null" @click.native="stclick(scope.$index,scope.row)">{{scope.row.stresult!=='' && scope.row.stresult!=null ?"重新皮试":"Bắt đầu test da"}}</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -220,7 +220,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
         stdisabled:false,
         pickerOptions: {
           shortcuts: [{
-            text: '最近一周',
+            text: 'Tuần gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -228,7 +228,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近一个月',
+            text: 'Tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -236,7 +236,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近三个月',
+            text: '3 tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -245,7 +245,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
             }
           }]
         },
-      //时间选择
+      //Chọn thời gian
       TimeInterval:this.getInitializeDate(),
       }
     },
@@ -264,23 +264,23 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
     blmbindexMethod(index){
        return (this.currentPage-1)*this.strc.limit+index +1;
     },
-       //设置默认日期
+       //Đặt ngày mặc định
     getInitializeDate () {
-     let date = new Date()//获取新的时间
-     //获取当前年份,并且转为字符串
+     let date = new Date()//Lấy thời gian mới
+     //Lấy năm hiện tại,và chuyển thành chuỗi
      let year = date.getFullYear().toString()
-     //获取当前月份，因为月份是要从0开始，此处要加1，
-    //使用三元表达式，判断是否小于10，如果是的话，就在字符串前面拼接'0'
+     //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
+    //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
      let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-     //获取天，判断是否小于10，如果是的话，就在在字符串前面拼接'0'
+     //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
      let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-     //字符串拼接，将开始时间和结束时间进行拼接
-     let start = year + '-' + month + '-01'+' 00:00:00'    //当月第一天
+     //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+     let start = year + '-' + month + '-01'+' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
      //let end=new Date(year, month, 0).getDate();
-     let end = year + '-' + month + '-' + day +' 23:59:59'  //当天
-     return [start,end] //将值设置给组件DatePicker 绑定的数据
+     let end = year + '-' + month + '-' + day +' 23:59:59'  //Trong ngày
+     return [start,end] //Gán giá trị cho thành phầnDatePicker Dữ liệu đã liên kết
    },
-      /** 倒计时*/
+      /** Đếm ngược*/
     countDown(row,index) {
      if( !this.setIntervaltime.length>0){
         this.setIntervaltime = new Array(this.tableData.length);
@@ -288,8 +288,8 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
       clearInterval(this.setIntervaltime[index]);
     // acceptanceOverTime 是我后台返回的截止时间
       if(row.sttime >0 ){
-          let set = Date.parse(new Date()) //创建时间 获得时间戳
-          const end = set + 1000 * 60 * row.sttime  //结束 在当前时间戳的基础上添加30分钟
+          let set = Date.parse(new Date()) //Thời gian tạo 获得时间戳
+          const end = set + 1000 * 60 * row.sttime  //Kết thúc 在当前时间戳的基础上添加30Phút
         this.setIntervaltime[index] =setInterval(() => {
        //   row.intervalTime =  this.formatDuring(end - new Date());
      //  this.tableData[index].intervalTime = 1
@@ -316,11 +316,11 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
         return '';
       }
     },
-    //开始皮试
+    //Bắt đầu test da
     stclick(index,row){
         this.countDown(row,index);
     },
-    //重置
+    //Đặt lại
     resetCondition(){
          this.strc={
             limit: 20,
@@ -353,7 +353,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
                 this.patientTotal=responseData.data.total;
                 if(responseData.data.total>0){
                     responseData.data.rows.forEach((item)=>{
-                        if(item.pszt==='0'){item.pszt="未皮试"}else if(item.pszt==='1'){item.pszt="已皮试"}else{item.pszt=""}
+                        if(item.pszt==='0'){item.pszt="Chưa test da"}else if(item.pszt==='1'){item.pszt="Đã test da"}else{item.pszt=""}
                         this.tableData.push({
                             detailid:item.detailid,
                             pszt:item.pszt,
@@ -410,7 +410,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
       this.Getstmanagementlist();
     },
     beforeDestroy() {
-      // 清除所有倒计时定时器，防止内存泄漏
+      // 清除所有倒计时定时器，Ngăn rò rỉ bộ nhớ
       if (this.setIntervaltime && this.setIntervaltime.length > 0) {
         this.setIntervaltime.forEach(timer => {
           if (timer) clearInterval(timer);

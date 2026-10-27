@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Service基类
+ * ServiceLớp cơ sở
  * @author lys
  * @version 2014-05-16
  */
@@ -16,16 +16,16 @@ import java.util.Date;
 public abstract class BaseService {
 
 	/**
-	 * 日志对象
+	 * Ngàynhật kýĐối tượng
 	 */
 	protected static final Logger logger = LoggerFactory.getLogger(BaseService.class);
 
 	/**
-	 * 生成带日期前缀的自增编号
-	 * 格式：yyyyMMdd + 7位自增序号（如 202606170000001）
+	 * TạokèmNgàytiền tố của tựtăngmã số
+	 * Định dạng: yyyyMMdd + 7vịtựtăngsố thứ tự(Như  202606170000001)
 	 *
-	 * @param lastCode 数据库中最后一条记录的编号，可为null或空
-	 * @return 新编号
+	 * @param lastCode Dữ liệukho trong cuối cùng mộtmụcBản ghi của mã số, có thể là null hoặc trống
+	 * @return mớimã số
 	 */
 	protected static String generateDatePrefixCode(String lastCode) {
 		String datePrefix = new SimpleDateFormat("yyyyMMdd").format(new Date());

@@ -30,7 +30,7 @@
         <result property="healthEducation" column="health_education"/>
     </resultMap>
 
-    <!-- 新增任务 -->
+    <!-- Thêm tác vụ mới -->
     <select id="getQuest" resultType="String">taskmanagement
     select count(*)
     from taskmanagement t
@@ -40,7 +40,7 @@
     </select>
 
 
-    <!-- 今日挂号人数 -->
+    <!-- Số người đăng ký khám hôm nay -->
     <select id="getRegister" resultType="String">
         select count(*)
         from registration r
@@ -50,7 +50,7 @@
           and to_days(r.create_date) = to_days(now())
     </select>
 
-    <!-- 今日接诊数 -->
+    <!-- Số lượt tiếp nhận hôm nay -->
     <select id="getReceivePatients" resultType="String">
         select count(*)
         from registration r
@@ -60,7 +60,7 @@
           and to_days(r.create_date) = to_days(now())
     </select>
 
-    <!-- 今日收入 -->
+    <!-- Thu nhập hôm nay -->
     <select id="getIncome" resultType="String">
         select IFNULL(sum(ti.amount_received), 0)
         from toll_info ti
@@ -71,13 +71,13 @@
           and ti.company_id in (SELECT id FROM org_company WHERE parent_id = #{parentId})
     </select>
 
-    <!-- 今日新增签约数 -->
+    <!-- Số lượt ký mới hôm nay -->
     <select id="getSigning" resultType="String">
     </select>
 
-    <!-- 任务详情 -->
+    <!-- Chi tiết tác vụ -->
     <select id="taskDetails" resultType="String">
-        select (case t.tasktype when 0 THEN '常规任务' when 1 THEN '宣传任务' end) tasktype,
+        select (case t.tasktype when 0 THEN 'Tác vụ thông thường' when 1 THEN 'Tác vụ tuyên truyền' end) tasktype,
                t.taskname,
                t.taskdeadline,
                (SELECT COUNT(f.executeschedule)
@@ -93,7 +93,7 @@
         WHERE t.company_id = '1639720158872479714'
     </select>
 
-    <!-- 今日们门诊记录 -->
+    <!-- nayNgày们ngoại trúBản ghi -->
     <select id="outpatientRecord" resultType="String">
         select IFNULL(status.name, '')    as status,
                IFNULL(p.name, '')         as name,
@@ -120,7 +120,7 @@
           and to_days(r.create_date) = to_days(now())
     </select>
 
-    <!-- 高血压统计 -->
+    <!-- caoHuyết ápthống kê -->
     <select id="hypertension">
         select
             (SELECT COUNT(f.executeschedule)

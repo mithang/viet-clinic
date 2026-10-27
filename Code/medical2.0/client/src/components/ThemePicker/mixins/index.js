@@ -4,7 +4,7 @@
 
 const mixins={
   methods:{
-      prompt(msg){ //提示
+      prompt(msg){ //Nhắc nhở
       this.$message({
         message: msg,
         duration:1000,

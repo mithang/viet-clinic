@@ -13,14 +13,14 @@ class TestBuildinDatasource implements BuildinDatasource {
     @Autowired
     private DataSource dataSource;
     /**
-     * @return 返回数据源名称
+     * @return Trả vềDữ liệunguồnTên
      */
     @Override
     public String name() {
-        return "内置数据源DEMO";
+        return "trongđặtDữ liệunguồnDEMO";
     }
     /**
-     * @return 返回当前采用数据源的一个连接
+     * @return Trả vềHiện tạilấydùngDữ liệunguồn của mộtCái连tiếp
      */
     @Override
     public Connection getConnection() {

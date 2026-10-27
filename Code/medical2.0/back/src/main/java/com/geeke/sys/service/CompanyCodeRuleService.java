@@ -13,7 +13,7 @@ import com.geeke.sys.entity.CompanyCodeRule;
 import com.google.common.collect.Maps;
 
 /**
- * 公司编码规则Service
+ * Quy tắc mã công tyService
  * @author lys
  * @version 2021-05-17
  */
@@ -32,7 +32,7 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
         colMaps.put("code", "code");
         
         if(exists(dao, companyCodeRule, colMaps)) {
-            throw new ServiceException("已存在相同的数据(公司,编码)");
+            throw new ServiceException("Đã tồn tại dữ liệu giống hệt(Công ty,Mã)");
         }
 
         CompanyCodeRule companyCodeRuleTemp = super.save(companyCodeRule);

@@ -25,7 +25,7 @@ export const exportExcel = (luckysheet, value, needFormula) => {
   })
 
   // return
-  // 4.写入 buffer
+  // 4.Ghi buffer
   const buffer = workbook.xlsx.writeBuffer().then(data => {
       // console.log('data', data)
       const blob = new Blob([data], {
@@ -39,7 +39,7 @@ export const exportExcel = (luckysheet, value, needFormula) => {
 const setMerge = (luckyMerge = {}, worksheet) => {
   const mergearr = Object.values(luckyMerge)
   mergearr.forEach((elem) => {
-    // elem格式：{r: 0, c: 0, rs: 1, cs: 2}
+    // elemĐịnh dạng：{r: 0, c: 0, rs: 1, cs: 2}
     // 按开始行，开始列，结束行，结束列合并（相当于 K10:M12）
     worksheet.mergeCells(
       elem.r + 1,
@@ -54,7 +54,7 @@ const setBorder = (luckyBorderInfo, worksheet) => {
   if (!Array.isArray(luckyBorderInfo)) return
   // console.log('luckyBorderInfo', luckyBorderInfo)
   luckyBorderInfo.forEach((elem) => {
-    // 现在只兼容到borderType 为range的情况
+    // 现在只兼容到borderType làrange的情况
     // console.log('ele', elem)
     if (elem.rangeType === 'range') {
       let border = borderConvert(elem.borderType, elem.style, elem.color)
@@ -109,7 +109,7 @@ const setStyleAndValue = (cellArr, worksheet, needFormula) => {
       if (cell.f && needFormula) {
         value = { formula: cell.f, result: cell.v }
       } else if (!cell.v && cell.ct && cell.ct.s) {
-        // xls转为xlsx之后，内部存在不同的格式，都会进到富文本里，即值不存在与cell.v，而是存在于cell.ct.s之后
+        // xls转为xlsxSau đó，内部存在不同的格式，都会进到富文本里，即值不存在与cell.v，而是存在于cell.ct.sSau đó
         // value = cell.ct.s[0].v
         cell.ct.s.forEach(arr => {
           value += arr.v
@@ -165,7 +165,7 @@ const fontConvert = (
   cl = 0,
   ul = 0
 ) => {
-  // luckysheet：ff(样式), fc(颜色), bl(粗体), it(斜体), fs(大小), cl(删除线), ul(下划线)
+  // luckysheet：ff(Kiểu), fc(颜色), bl(粗体), it(Chữ nghiêng), fs(大小), cl(Gạch ngang chữ), ul(Gạch chân)
   const luckyToExcel = {
     0: '微软雅黑',
     1: '宋体（Song）',
@@ -184,7 +184,7 @@ const fontConvert = (
       return num === 0 ? false : true
     }
   }
-  // 出现Bug，导入的时候ff为luckyToExcel的val
+  // 出现Bug，导入的时候fflàluckyToExcelcủaval
   let color
   if (fc.indexOf('rgb') === -1) {
     color = fc.replace('#', '')
@@ -253,7 +253,7 @@ const alignmentConvert = (
 }
 
 const borderConvert = (borderType, style = 1, color = '#000') => {
-  // 对应luckysheet的config中borderinfo的的参数
+  // Tương ứngluckysheetcủaconfig中borderinfo的的参数
   if (!borderType) {
     return {}
   }

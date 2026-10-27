@@ -17,10 +17,10 @@
         label-width="20%"
         class="demo-articleForm"
       >
-        <el-form-item label="标题" prop="title">
-          <el-input :disabled="dialogProps.audit || articleForm.auditstatus!=='0'" placeholder="请输入" v-model="articleForm.title"></el-input>
+        <el-form-item label="Tiêu đề" prop="title">
+          <el-input :disabled="dialogProps.audit || articleForm.auditstatus!=='0'" placeholder="Vui lòng nhập" v-model="articleForm.title"></el-input>
         </el-form-item>
-        <el-form-item label="摘要" prop="abstracts">
+        <el-form-item label="Tóm tắt" prop="abstracts">
           <el-input
             type="textarea"
             :rows="3"
@@ -31,7 +31,7 @@
           </el-input>
         </el-form-item>
 
-        <el-form-item v-if="originallinkcheckbox && articleForm.auditstatus==='0'" label="正文" prop="content">
+        <el-form-item v-if="originallinkcheckbox && articleForm.auditstatus==='0'" label="Nội dung chính" prop="content">
       
             <editor
             ref="quilleditorref"
@@ -43,7 +43,7 @@
         </el-form-item>
        
        <div v-if="!originallinkcheckbox || articleForm.auditstatus!=='0'">
-         <el-form-item   label="正文" prop="content">
+         <el-form-item   label="Nội dung chính" prop="content">
            <div>
               <p v-html="articleForm.content"></p>
           </div>
@@ -52,7 +52,7 @@
 
        
 
-        <el-form-item label="来源作者" prop="sources">
+        <el-form-item label="Tác giả nguồn" prop="sources">
           <el-col :span="1">
             <el-checkbox :disabled="dialogProps.audit || articleForm.auditstatus!=='0'" v-model="sourcecheckbox"></el-checkbox>
           </el-col>
@@ -64,7 +64,7 @@
           </el-col>
         </el-form-item>
           
-        <el-form-item label="原文链接" prop="originallink">
+        <el-form-item label="Liên kết gốc" prop="originallink">
           <el-col :span="1">
             <el-checkbox :disabled="dialogProps.audit || articleForm.auditstatus!=='0'" v-model="originallinkcheckbox"></el-checkbox>
           </el-col>
@@ -84,13 +84,13 @@
               type="primary"
               :plain="true"
               @click="auditForm('1')"
-              >审核通过</el-button
+              >Xét duyệt qua</el-button
             >
             <el-button
               type="primary"
               :plain="true"
               @click="auditForm('2')"
-              >不通过</el-button
+              >Không qua</el-button
             >
           </el-col>
         </el-form-item>
@@ -104,7 +104,7 @@
         type="primary"
         :plain="true"
         @click="submitForm('articlesForm')"
-        >保 存</el-button
+        >Lưu</el-button
       >
       <el-button
         :disabled="flag"
@@ -116,7 +116,7 @@
       >
 
       <el-button :plain="true" type="primary" @click="onDialogClose()"
-        >取 消</el-button
+        >Hủy</el-button
       >
     </span>
   </el-dialog>
@@ -168,24 +168,24 @@ export default {
       sourcecheckbox: false,
       originallinkcheckbox: false,
       articleForm: {
-        companyid: currentUser.company.id, //诊所标识
-        userid: currentUser.id, //发布人标识
-        username: currentUser.name, //发布人名称
-        aricledate: "", //发布时间
-        title: "", //标题
-        abstracts: "", //摘要
-        content: "", //内容
-        sources: "", //来源作者
-        originallink: "", //原文链接
-        auditstatus: "0", //默认待审核
+        companyid: currentUser.company.id, //Định danh phòng khám
+        userid: currentUser.id, //Định danh người đăng
+        username: currentUser.name, //Tên người đăng
+        aricledate: "", //Thời gian đăng
+        title: "", //Tiêu đề
+        abstracts: "", //Tóm tắt
+        content: "", //Nội dung
+        sources: "", //Tác giả nguồn
+        originallink: "", //Liên kết gốc
+        auditstatus: "0", //Mặc định chờ xét duyệt
         id: "",
       },
 
       article: {
-        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+        title: [{ required: true, message: "Vui lòng nhập tiêu đề", trigger: "blur" }],
         abstracts: [
           { required: true, message: "请输入摘要", trigger: "blur" },
-          // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          // { min: 3, max: 5, message: 'Độ dài trong khoảng 3 đến 5 ký tự', trigger: 'blur' }
         ],
         content: [
           { required: true, message: "请输入正文内容", trigger: "change" },
@@ -204,16 +204,16 @@ export default {
     },
     emptylist() {
       this.articleForm = {
-        companyid: currentUser.company.id, //诊所标识
-        userid: currentUser.id, //发布人标识
-        username: currentUser.name, //发布人名称
-        aricledate: "", //发布时间
-        title: "", //标题
-        abstracts: "", //摘要
-        content: "", //内容
-        sources: "", //来源作者
-        originallink: "", //原文链接
-        auditstatus: "0", //默认待审核
+        companyid: currentUser.company.id, //Định danh phòng khám
+        userid: currentUser.id, //Định danh người đăng
+        username: currentUser.name, //Tên người đăng
+        aricledate: "", //Thời gian đăng
+        title: "", //Tiêu đề
+        abstracts: "", //Tóm tắt
+        content: "", //Nội dung
+        sources: "", //Tác giả nguồn
+        originallink: "", //Liên kết gốc
+        auditstatus: "0", //Mặc định chờ xét duyệt
       };
     },
     onDialogClose() {
@@ -235,7 +235,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          //   console.info("时间" + this.ruleForm.taskdeadline);
+          //   console.info("Thời gian" + this.ruleForm.taskdeadline);
           //   this.ruleForm.taskinitiator = currentUser.id;
           editSave(this.articleForm).then((responseData) => {
             if (responseData.code === 100) {
@@ -280,14 +280,14 @@ export default {
       this.emptylist();
       let titles = viewlist.view;
       // if (viewlist.view == "") {
-      //   titles = "新增";
+      //   titles = "Thêm mới";
       // } else if (viewlist.view != "") {
-      //   titles = "修改";
+      //   titles = "Sửa";
       // } else {
       //   titles = "";
       // }
 
-      if (titles === "修改" || titles === "审核" || titles === "查看") {
+      if (titles === "Sửa" || titles === "Duyệt" || titles === "Xem") {
         this.articleForm.id = viewlist.id;
         getarticleid(this.articleForm).then((responseData) => {
           if (responseData.code === 100) {
@@ -305,12 +305,12 @@ export default {
         this.dialogProps.action = "update";
         this.sourcecheckbox = true;
         this.originallinkcheckbox = true;
-        if (titles === "审核") {
+        if (titles === "Duyệt") {
           this.dialogProps.action = "audit";
           this.dialogProps.audit = true;
           this.sourcecheckbox = false;
           this.originallinkcheckbox = false;
-        }else if(titles === "查看"){
+        }else if(titles === "Xem"){
           this.dialogProps.action = "view";
           this.dialogProps.audit = true;
           this.sourcecheckbox = false;

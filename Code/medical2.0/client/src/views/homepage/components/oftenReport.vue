@@ -1,11 +1,11 @@
 <template>
   <el-card class="index-module-card" v-loading="isCardLoading" :style="styleObject">
     <div slot="header">
-      <span class="el-card-title">常用报表</span>
+      <span class="el-card-title">Báo cáo thường dùng</span>
       <i style="margin-left: 10px;" v-show="!isPanelSetIcon" class="card-close el-icon-close" @click="deletePanelItem"></i>
       <i style="margin-left: 10px;" v-show="isPanelSetIcon" class="card-setting iconfont icon-setting"></i>
       <el-radio-group v-model="currentType" size="mini" class="card-radio-group" @change="handleTypeChange">
-        <el-radio-button label="MY_REPORT">我的报表</el-radio-button>
+        <el-radio-button label="MY_REPORT">Báo cáo của tôi</el-radio-button>
         <el-radio-button label="MY_STORE">收藏报表</el-radio-button>
       </el-radio-group>
     </div>

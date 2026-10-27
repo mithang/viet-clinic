@@ -39,32 +39,32 @@ import java.util.*;
 @Component
 public class DataBean {
 
-    private static final String MEDICAL_REMARK = "特别提示：按卫生部、国家中医药管理局卫医发[2002]24号文件规定：" +
-            "为保证患者用药安全，药品一经发出，不得退换。";
+    private static final String MEDICAL_REMARK = "特loạiđề xuấthiển thị: theo卫sinhbộ, quốc gia trong y dượcQuản lýcục卫yphát[2002]24sốTệp规chỉ định: " +
+            " là bảochứngBệnh nhândùngthuốcan toàn, Thuốcmộtquaphátra, khôngđượctrảđổi. ";
 
-    private static final String CHARGE_REMARK = "温馨提示：\n此凭条不具备报销功能，请妥善保管好你的缴费凭条，就诊，退费时请出示该凭条。" +
-            "若有遗失，将造成退费不便和信息泄露。";
+    private static final String CHARGE_REMARK = "Lời nhắc thân thiện: \nPhiếu này không có chức năng thanh toán bảo hiểm, Vui lòng giữ cẩn thận biên lai nộp phí của bạn, Khám bệnh, hoàn phí giờVui lòngrahiển thịđóbằngmục. " +
+            "nếucó遗失, Sẽ gây rahoàn phíkhông便 và Thông tin泄露. ";
 
-    private static final String REGISTRATION_REMARK = "温馨提示：\n此凭条不具备报销功能，请妥善保管好你的缴费凭条，就诊，退费时请出示该凭条。";
+    private static final String REGISTRATION_REMARK = "Lời nhắc thân thiện: \nPhiếu này không có chức năng thanh toán bảo hiểm, Vui lòng giữ cẩn thận biên lai nộp phí của bạn, Khám bệnh, hoàn phí giờVui lòngrahiển thịđóbằngmục. ";
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
-     * 支付方式显示名称映射
+     * Hiển thị phương thức thanh toánTênánh xạ
      */
     private static final java.util.Map<String, String> PAY_TYPE_DISPLAY = new java.util.HashMap<>();
     static {
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_CASH, "现金支付");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_ALIPAY, "支付宝支付");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_WECHAT, "微信支付");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_BANK_CARD, "银行卡支付");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_MEDICAL, "医保支付");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_CASH, "tiền mặtthanh toán");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_ALIPAY, "thanh toánbảothanh toán");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_WECHAT, "WeChatthanh toán");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_BANK_CARD, "ngân hàng dòngthẻthanh toán");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_MEDICAL, "BHYTthanh toán");
     }
 
     /**
-     * 获取支付方式显示名称
-     * @param payTypeValue 支付方式字典值
-     * @return 显示名称，未知时返回空字符串
+     * LấyHiển thị phương thức thanh toánTên
+     * @param payTypeValue phương thức thanh toántừ điểnGiá trị
+     * @return hiển thịTên, Chưabiết giờTrả vềtrốngchuỗi
      */
     private static String getPayTypeDisplayName(String payTypeValue) {
         return PAY_TYPE_DISPLAY.getOrDefault(payTypeValue, "");
@@ -107,12 +107,12 @@ public class DataBean {
     private PresDrugService presDrugService;
 
     /**
-     * @return 组装处方其他信息
+     * @return lắp rápĐơn thuốckhácThông tin
      */
     public List<RecipelTempletEvt> buildReport(String dsName, String datasetName, Map<String, Object> parameters) {
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
-        //处方|发药 0|1
+        //Đơn thuốc|Phát thuốc 0|1
         String type = (String) parameters.get("type");
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
         List<Parameter> parameters2 = SearchParamsBuilder.create()
@@ -133,36 +133,36 @@ public class DataBean {
         RecipelTempletEvt recipelTempletEvt = new RecipelTempletEvt();
         recipelTempletEvt.setClinicName(recipelInfo.getCompany().getName());
         recipelTempletEvt.setSmallType(recipelInfo.getSmallType().getName());
-        recipelTempletEvt.setOffice("科室：" + registration.getClinicOffice().getName());
-        recipelTempletEvt.setCode("处方号：" + recipelInfo.getCode());
-        recipelTempletEvt.setName("姓名：" + patient.getName());
-        recipelTempletEvt.setGender("性别：" + patient.getGender().getName());
+        recipelTempletEvt.setOffice("Khoa: " + registration.getClinicOffice().getName());
+        recipelTempletEvt.setCode("Số đơn thuốc: " + recipelInfo.getCode());
+        recipelTempletEvt.setName("Họ tên: " + patient.getName());
+        recipelTempletEvt.setGender("Giới tính: " + patient.getGender().getName());
         recipelTempletEvt.setTreatType(registration.getTreatType().getName());
-        String billDate = DateUtils.formatDate(recipelInfo.getCreateDate(), "yyyy年MM月dd日");
-        recipelTempletEvt.setBillDate("开单日期：" + billDate);
-        recipelTempletEvt.setAge("年龄：" + patient.getAge() + "岁");
-        recipelTempletEvt.setFeeType("费别：" + (null == tollInfo ? "" : tollInfo.getPaymentType().getName()));
-        recipelTempletEvt.setDispenseDate("0".equals(type) ? "" : ("发药日期：" + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getDispensionDate())));
-        recipelTempletEvt.setIdCard("身份证号：" + patient.getCard());
-        recipelTempletEvt.setDiagnose("临床诊断：" + (StringUtils.isNotBlank(medicalRecord.getWesternDiagnose()) ? "西医诊断：" + medicalRecord.getWesternDiagnose() + ";" : "")
-                + (StringUtils.isNotBlank(medicalRecord.getChinaDiagnose()) ? "中医诊断：" + medicalRecord.getChinaDiagnose() + ";" : ""));
-        recipelTempletEvt.setDoctor("医师：" + registration.getDoctor().getName());
-        recipelTempletEvt.setFee("药费：" + recipelInfo.getFee() + "元");
-        recipelTempletEvt.setEntrust(StringUtils.isBlank(recipelInfo.getEntrust()) ? "" : "医嘱事项：" + recipelInfo.getEntrust());
-        recipelTempletEvt.setBlack("················以下空白················");
-        recipelTempletEvt.setApothecary("审配：");
-        recipelTempletEvt.setDeploy("调配：");
+        String billDate = DateUtils.formatDate(recipelInfo.getCreateDate(), "yyyyNămMMThángddNgày");
+        recipelTempletEvt.setBillDate("lập đơnNgày: " + billDate);
+        recipelTempletEvt.setAge("Tuổi: " + patient.getAge() + " tuổi");
+        recipelTempletEvt.setFeeType("Loại phí: " + (null == tollInfo ? "" : tollInfo.getPaymentType().getName()));
+        recipelTempletEvt.setDispenseDate("0".equals(type) ? "" : ("Ngày phát thuốc: " + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getDispensionDate())));
+        recipelTempletEvt.setIdCard("Số CMND/CCCD: " + patient.getCard());
+        recipelTempletEvt.setDiagnose("Chẩn đoán lâm sàng: " + (StringUtils.isNotBlank(medicalRecord.getWesternDiagnose()) ? "Chẩn đoán tây y: " + medicalRecord.getWesternDiagnose() + ";" : "")
+                + (StringUtils.isNotBlank(medicalRecord.getChinaDiagnose()) ? "Chẩn đoán đông y: " + medicalRecord.getChinaDiagnose() + ";" : ""));
+        recipelTempletEvt.setDoctor("Bác sĩ: " + registration.getDoctor().getName());
+        recipelTempletEvt.setFee("thuốcphí: " + recipelInfo.getFee() + " đồng");
+        recipelTempletEvt.setEntrust(StringUtils.isBlank(recipelInfo.getEntrust()) ? "" : "Hạng mục y lệnh: " + recipelInfo.getEntrust());
+        recipelTempletEvt.setBlack("················bằngdướitrống白················");
+        recipelTempletEvt.setApothecary("审phối: ");
+        recipelTempletEvt.setDeploy("Pha chế: ");
         recipelTempletEvt.setMedicalRemark(MEDICAL_REMARK);
         outList.add(recipelTempletEvt);
         return outList;
     }
 
     /**
-     * @return 组装西药
+     * @return lắp rápTâythuốc
      */
     public List<RecipelDetailEvt> westMedicine(String dsName, String datasetName, Map<String, Object> parameters) {
         List<RecipelDetailEvt> outList = new ArrayList<>();
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         List<RecipelDetail> detailList = recipelDetailDao.getByRecipelInfoId(recipelInfoId);
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
@@ -170,28 +170,28 @@ public class DataBean {
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
                 if (1 == recipelDetail.getIsExtra()) {
-                    //计算附加费用
+                    //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
                 if ("0".equals(recipelDetail.getStuffType())) {
                     if(recipelInfo.getIsPre() != null&&recipelInfo.getIsPre()){
-                        //电子处方药品
+                        //Thuốc trong đơn thuốc điện tử
                          PresDrug drug = presDrugService.getById(recipelDetail.getDrugStuffId().getDrugStuffId());
                         RecipelDetailEvt recipelDetailEvt = new RecipelDetailEvt();
                         recipelDetailEvt.setName(drug.getRegname());
                         recipelDetailEvt.setNorms(drug.getSpecname() +'*'+drug.getMinpaccnt()+drug.getMinprepunt()+'/'+drug.getMinpacunt());
                         recipelDetailEvt.setNum(recipelDetail.getTotal() + drug.getMinpacunt());
-                        recipelDetailEvt.setPrice(0 + "元");
+                        recipelDetailEvt.setPrice(0 + " đồng");
                         String daysName = recipelDetail.getDays() != null && recipelDetail.getDays().getName() != null
                                 ? recipelDetail.getDays().getName()
                                 : "0";
-                        recipelDetailEvt.setDays(daysName + "天");
-                        recipelDetailEvt.setFrequency(recipelDetail.getFrequency().getName() + "\t" + (daysName + "天"));
-                        recipelDetailEvt.setUse("Sig："+recipelDetail.getWesternMedicineUse().getName());
-                        recipelDetailEvt.setUseText("(" + recipelDetail.getSingleDosage() + drug.getMinprepunt()+")/次");
+                        recipelDetailEvt.setDays(daysName + " ngày");
+                        recipelDetailEvt.setFrequency(recipelDetail.getFrequency().getName() + "\t" + (daysName + " ngày"));
+                        recipelDetailEvt.setUse("Sig: "+recipelDetail.getWesternMedicineUse().getName());
+                        recipelDetailEvt.setUseText("(" + recipelDetail.getSingleDosage() + drug.getMinprepunt()+")/ lần");
                         outList.add(recipelDetailEvt);
-                        //无赖之举
+                        //khôngdựa vàocủanêu
                         RecipelDetailEvt recipelDetailEvt1 = new RecipelDetailEvt();
                         recipelDetailEvt1.setName(recipelDetailEvt.getUse());
                         recipelDetailEvt1.setNorms(recipelDetailEvt.getUseText());
@@ -203,16 +203,16 @@ public class DataBean {
                         recipelDetailEvt.setName(drug.getGoodsName());
                         recipelDetailEvt.setNorms("("+drug.getDosis() + drug.getDosisUnit().getName() + "*" + drug.getPreparation() + drug.getPreparationUnit().getName()+")");
                         recipelDetailEvt.setNum(recipelDetail.getTotal() + drug.getPreparationUnit().getName());
-                        recipelDetailEvt.setPrice(recipelDetail.getAllFee() + "元");
+                        recipelDetailEvt.setPrice(recipelDetail.getAllFee() + " đồng");
                         String daysName = recipelDetail.getDays() != null && recipelDetail.getDays().getName() != null
                                 ? recipelDetail.getDays().getName()
                                 : "0";
-                        recipelDetailEvt.setDays(daysName + "天");
-                        recipelDetailEvt.setFrequency(recipelDetail.getFrequency().getName() + "\t" + (daysName + "天"));
-                        recipelDetailEvt.setUse("Sig："+recipelDetail.getWesternMedicineUse().getName());
-                        recipelDetailEvt.setUseText("(" + recipelDetail.getSingleDosage() + drug.getDosisUnit().getName()+")/次");
+                        recipelDetailEvt.setDays(daysName + " ngày");
+                        recipelDetailEvt.setFrequency(recipelDetail.getFrequency().getName() + "\t" + (daysName + " ngày"));
+                        recipelDetailEvt.setUse("Sig: "+recipelDetail.getWesternMedicineUse().getName());
+                        recipelDetailEvt.setUseText("(" + recipelDetail.getSingleDosage() + drug.getDosisUnit().getName()+")/ lần");
                         outList.add(recipelDetailEvt);
-                        //无赖之举
+                        //khôngdựa vàocủanêu
                         RecipelDetailEvt recipelDetailEvt1 = new RecipelDetailEvt();
                         recipelDetailEvt1.setName(recipelDetailEvt.getUse());
                         recipelDetailEvt1.setNorms(recipelDetailEvt.getUseText());
@@ -224,21 +224,21 @@ public class DataBean {
             }
         }
         if (1 == count.compareTo(new BigDecimal(0))) {
-            //组装附加费
+            //Lắp ráp phí phụ thêm
             RecipelDetailEvt recipelDetailEvt = new RecipelDetailEvt();
             recipelDetailEvt.setUseText("");
-            recipelDetailEvt.setStuffPrice( count + "元");
+            recipelDetailEvt.setStuffPrice( count + " đồng");
             outList.add(recipelDetailEvt);
         }
         return outList;
     }
 
     /**
-     * @return 组装输液处方
+     * @return lắp rápTruyền dịchĐơn thuốc
      */
     public List<InfuseEvt> infuse(String dsName, String datasetName, Map<String, Object> parameters) {
         List<InfuseEvt> outList = new ArrayList<>();
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         List<RecipelDetail> detailList = recipelDetailDao.getInfuseByRecipelInfoId(recipelInfoId);
         InfuseEvt useMethod = new InfuseEvt();
@@ -247,7 +247,7 @@ public class DataBean {
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
                 if (1 == recipelDetail.getIsExtra()) {
-                    //计算附加费用
+                    //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
@@ -255,7 +255,7 @@ public class DataBean {
                     Integer infuseGroup = recipelDetail.getInfuseGroup();
                     Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
                     if (infuseGroup > num) {
-                        //拼接用法
+                        //nốidùngphương pháp
                         InfuseEvt use = new InfuseEvt();
                         BeanUtils.copyProperties(useMethod, use);
                         outList.add(use);
@@ -269,31 +269,31 @@ public class DataBean {
                             ? recipelDetail.getDays().getName()
                             : "0";
                     infuseEvt.setDays("x"+daysName);
-                    infuseEvt.setTotalNum("共"+recipelDetail.getTotal() + drug.getPreparationUnit().getName());
+                    infuseEvt.setTotalNum("Tổng "+recipelDetail.getTotal() + drug.getPreparationUnit().getName());
                     outList.add(infuseEvt);
-                    useMethod.setName("Sig：" + recipelDetail.getInfuseUse().getName());
+                    useMethod.setName("Sig: " + recipelDetail.getInfuseUse().getName());
                     useMethod.setSkinTest(recipelDetail.getFrequency().getRemarks());
-                    useMethod.setSingleDosage(recipelDetail.getDrippingSpeed() + "滴/分钟");
+                    useMethod.setSingleDosage(recipelDetail.getDrippingSpeed() + "滴/Phút");
                 }
             }
             outList.add(useMethod);
         }
         if (1 == count.compareTo(new BigDecimal(0))) {
-            //组装附加费
+            //Lắp ráp phí phụ thêm
             InfuseEvt infuseEvt = new InfuseEvt();
-            infuseEvt.setStuffPriceName("材料费");
-            infuseEvt.setStuffPrice(count + "元");
+            infuseEvt.setStuffPriceName("Phí vật tư");
+            infuseEvt.setStuffPrice(count + " đồng");
             outList.add(infuseEvt);
         }
         return outList;
     }
 
     /**
-     * @return 组装中药
+     * @return lắp ráp trong thuốc
      */
     public List<RecipelDetailEvt> chineseMedicine(String dsName, String datasetName, Map<String, Object> parameters) {
         List<RecipelDetailEvt> outList = new ArrayList<>();
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
         List<RecipelDetail> detailList = recipelDetailDao.getByRecipelInfoId(recipelInfoId);
@@ -303,7 +303,7 @@ public class DataBean {
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
                 if (1 == recipelDetail.getIsExtra()) {
-                    //计算附加费用
+                    //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
@@ -314,15 +314,15 @@ public class DataBean {
             }
         }
         RecipelDetailEvt reDetailEvt = new RecipelDetailEvt();
-        reDetailEvt.setRemarks(StringUtils.isBlank(recipelInfo.getEntrust()) ? "" : "医嘱事项： " + recipelInfo.getEntrust());
-        reDetailEvt.setNum("共" + recipelInfo.getDosage()+"付");
-        reDetailEvt.setUse("用法：" + recipelInfo.getRecipelUse().getName());
+        reDetailEvt.setRemarks(StringUtils.isBlank(recipelInfo.getEntrust()) ? "" : "Hạng mục y lệnh:  " + recipelInfo.getEntrust());
+        reDetailEvt.setNum("Tổng " + recipelInfo.getDosage()+" thang");
+        reDetailEvt.setUse("Cách dùng: " + recipelInfo.getRecipelUse().getName());
         reDetailEvt.setFrequency(recipelInfo.getFrequency().getName()
                 +" "+recipelInfo.getTakeFrequency().getName());
-        reDetailEvt.setNorms("一次" + recipelInfo.getSingleDosage() + "ml");
+        reDetailEvt.setNorms("một lần" + recipelInfo.getSingleDosage() + "ml");
         if (1 == count.compareTo(new BigDecimal(0))) {
-            //组装附加费
-            reDetailEvt.setName("材料费：" + count + "元");
+            //Lắp ráp phí phụ thêm
+            reDetailEvt.setName("Phí vật tư: " + count + " đồng");
         }
         outList.add(reDetailEvt);
 
@@ -330,11 +330,11 @@ public class DataBean {
     }
 
     /**
-     * @return 组装中药成分
+     * @return lắp ráp trong thuốcthành phút
      */
     public List<EachChineseMedicalEvt> eachChineseMedical(String dsName, String datasetName, Map<String, Object> parameters) {
         List<EachChineseMedicalEvt> outList = new ArrayList<>();
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         List<RecipelDetail> detailList = recipelDetailDao.getByRecipelInfoId(recipelInfoId);
         List<String> chineseMedicalNames = new ArrayList<>();
@@ -369,11 +369,11 @@ public class DataBean {
     }
 
     /**
-     * @return 组装诊疗项目
+     * @return lắp ráphạng mục khám chữa bệnh
      */
     public List<RecipelDetailEvt> costItem(String dsName, String datasetName, Map<String, Object> parameters) {
         List<RecipelDetailEvt> outList = new ArrayList<>();
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
 //        RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
         List<RecipelDetail> detailList = recipelDetailDao.getByRecipelInfoId(recipelInfoId);
@@ -381,7 +381,7 @@ public class DataBean {
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
                 if (1 == recipelDetail.getIsExtra()) {
-                    //计算附加费用
+                    //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
@@ -391,28 +391,28 @@ public class DataBean {
                     recipelDetailEvt.setName(costItem.getItemName());
                     recipelDetailEvt.setNum(recipelDetail.getTotal() + "");
                     recipelDetailEvt.setUseText(costItem.getUnit().getName());
-                    recipelDetailEvt.setPrice(new DecimalFormat("0.##").format(costItem.getSalePrice()) + "元");
+                    recipelDetailEvt.setPrice(new DecimalFormat("0.##").format(costItem.getSalePrice()) + " đồng");
                     recipelDetailEvt.setRemarks(costItem.getRemarks());
                     outList.add(recipelDetailEvt);
                 }
             }
         }
         if (1 == count.compareTo(new BigDecimal(0))) {
-            //组装附加费
+            //Lắp ráp phí phụ thêm
             RecipelDetailEvt recipelDetailEvt = new RecipelDetailEvt();
             recipelDetailEvt.setUseText("");
-            recipelDetailEvt.setStuffPrice(count + "元");
+            recipelDetailEvt.setStuffPrice(count + " đồng");
             outList.add(recipelDetailEvt);
         }
         return outList;
     }
 
     /**
-     * @return 组装收费
+     * @return lắp rápThu phí
      */
     public List<ChargeTicketEvt> charge(String dsName, String datasetName, Map<String, Object> parameters) {
         List<ChargeTicketEvt> outList = new ArrayList<>();
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
         //MedicalRecord medicalRecord = medicalRecordDao.get(recipelInfo.getMedicalRecord().getId());
@@ -427,31 +427,31 @@ public class DataBean {
 
         ChargeTicketEvt chargeTicketEvt = new ChargeTicketEvt();
         chargeTicketEvt.setClinicName(recipelInfo.getCompany().getName());
-        chargeTicketEvt.setName("姓名：" + patient.getName());
-        chargeTicketEvt.setGender("性别：" + patient.getGender().getName());
-        chargeTicketEvt.setAge("年龄：" + patient.getAge());
+        chargeTicketEvt.setName("Họ tên: " + patient.getName());
+        chargeTicketEvt.setGender("Giới tính: " + patient.getGender().getName());
+        chargeTicketEvt.setAge("Tuổi: " + patient.getAge());
         chargeTicketEvt.setTip(CHARGE_REMARK);
         if (null != tollInfo) {
-            chargeTicketEvt.setCode("收费单号：" + tollInfo.getId());
-            chargeTicketEvt.setType("收费类别：" + tollInfo.getPaymentType().getName());
-            chargeTicketEvt.setProject("收费项目：" + recipelInfo.getRecipelType().getName());
+            chargeTicketEvt.setCode("Số phiếu thu phí: " + tollInfo.getId());
+            chargeTicketEvt.setType("Thu phíLớploại: " + tollInfo.getPaymentType().getName());
+            chargeTicketEvt.setProject("Hạng mục thu phí: " + recipelInfo.getRecipelType().getName());
             String createBy = tollInfo.getCreateBy();
             if (createBy.contains("(")) {
                 createBy = createBy.substring(0,createBy.indexOf("("));
             }
-            chargeTicketEvt.setPeople("收费人：" + createBy);
-            chargeTicketEvt.setDate("就诊日期：" + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getCreateDate()));
-            chargeTicketEvt.setOffice("就诊科室：" + registration.getClinicOffice().getName());
-            chargeTicketEvt.setFee("收费金额：" + recipelInfo.getFee());
+            chargeTicketEvt.setPeople("Người thu phí: " + createBy);
+            chargeTicketEvt.setDate("Ngày khám bệnh: " + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getCreateDate()));
+            chargeTicketEvt.setOffice("khám bệnhKhoa: " + registration.getClinicOffice().getName());
+            chargeTicketEvt.setFee("Thu phíSố tiền: " + recipelInfo.getFee());
             String payTypeName = getPayTypeDisplayName(tollInfo.getPaymentType().getValue());
-            chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + "：" + recipelInfo.getFee());
+            chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + ": " + recipelInfo.getFee());
         }
         outList.add(chargeTicketEvt);
         return outList;
     }
 
     /**
-     * 普通/慢病处方
+     * thông thường/Đơn thuốc bệnh mạn tính
      * @param dsName
      * @param datasetName
      * @param parameters
@@ -459,7 +459,7 @@ public class DataBean {
      */
     public List<ChronicDiseaseEvt> chronicDisease(String dsName, String datasetName, Map<String, Object> parameters){
         List<ChronicDiseaseEvt> list = ListUtil.list(false);
-        //处方id
+        //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
         List<RecipelDetail> detailList = recipelDetailDao.getByRecipelInfoId(recipelInfoId);
@@ -473,8 +473,8 @@ public class DataBean {
             if (CollectionUtil.isNotEmpty(tollInfos)) {
                 TollInfo tollInfo = tollInfos.get(0);
                 String name = tollInfo.getCreateBy().substring(0, tollInfo.getCreateBy().indexOf("("));
-                evt.setTollCollector("收费员："+name);
-                evt.setDeploy("审核/调配："+name);
+                evt.setTollCollector("Nhân viên thu phí: "+name);
+                evt.setDeploy("Duyệt/Pha chế: "+name);
             }
             List<Parameter> dispensingParams = SearchParamsBuilder.create()
                     .eq("registration_id", registration.getId())
@@ -484,7 +484,7 @@ public class DataBean {
             if (CollectionUtil.isNotEmpty(dispensings)) {
                 String name = dispensings.get(0).getCreateBy()
                         .substring(0, dispensings.get(0).getCreateBy().indexOf("("));
-                evt.setDispensing("核对/发药：" + name);
+                evt.setDispensing("Đối chiếu/Phát thuốc: " + name);
             }
             list.add(evt);
         }
@@ -492,30 +492,30 @@ public class DataBean {
     }
 
     /**
-     * @return 组装挂号
+     * @return lắp rápĐăng ký khám
      */
     public List<ChargeTicketEvt> registration(String dsName, String datasetName, Map<String, Object> parameters) {
         List<ChargeTicketEvt> outList = new ArrayList<>();
-        //处方id
+        //Đơn thuốcid
         String registrationId = (String) parameters.get("registrationId");
         Registration registration = registrationService.get(registrationId);
         Patient patient = patientService.get(registration.getPatientId().getId());
         ChargeTicketEvt chargeTicketEvt = new ChargeTicketEvt();
-        chargeTicketEvt.setClinicName(registration.getCompany().getName() + "挂号凭证(客户联)");
-        chargeTicketEvt.setName("姓名：" + patient.getName());
-        chargeTicketEvt.setGender("性别：" + patient.getGender().getName());
-        chargeTicketEvt.setAge("年龄：" + patient.getAge());
-        chargeTicketEvt.setDate("挂号时间：" + new SimpleDateFormat(DATE_FORMAT).format(registration.getCreateDate()));
+        chargeTicketEvt.setClinicName(registration.getCompany().getName() + "Đăng ký khámchứng từ(Khách hàng联)");
+        chargeTicketEvt.setName("Họ tên: " + patient.getName());
+        chargeTicketEvt.setGender("Giới tính: " + patient.getGender().getName());
+        chargeTicketEvt.setAge("Tuổi: " + patient.getAge());
+        chargeTicketEvt.setDate("Đăng ký khámThời gian: " + new SimpleDateFormat(DATE_FORMAT).format(registration.getCreateDate()));
         String createBy = registration.getCreateBy();
         if (createBy.contains("(")) {
             createBy = createBy.substring(0,createBy.indexOf("("));
         }
-        chargeTicketEvt.setPeople("收费人：" + createBy);
-        chargeTicketEvt.setOffice("挂号科室：" + registration.getClinicOffice().getName());
-        chargeTicketEvt.setProject("挂号医生：" + registration.getDoctor().getName());
-        chargeTicketEvt.setFee("挂号金额：" + registration.getRegistrationFee() + "元");
+        chargeTicketEvt.setPeople("Người thu phí: " + createBy);
+        chargeTicketEvt.setOffice("Đăng ký khámKhoa: " + registration.getClinicOffice().getName());
+        chargeTicketEvt.setProject("Đăng ký khámBác sĩ: " + registration.getDoctor().getName());
+        chargeTicketEvt.setFee("Đăng ký khámSố tiền: " + registration.getRegistrationFee() + " đồng");
         String payTypeName = getPayTypeDisplayName(registration.getPayType().getValue());
-        chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + "：" + registration.getRegistrationFee() + "元");
+        chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + ": " + registration.getRegistrationFee() + " đồng");
         chargeTicketEvt.setTip(REGISTRATION_REMARK);
         Date zeroTimeOfDate = DateUtils.getZeroTimeOfDate(registration.getCreateDate());
         String todayStart = DateUtils.formatDateTime(zeroTimeOfDate);
@@ -537,7 +537,7 @@ public class DataBean {
                 }
             }
         }
-        chargeTicketEvt.setNum("今日序号："+todayNum);
+        chargeTicketEvt.setNum("nayNgàysố thứ tự: "+todayNum);
         outList.add(chargeTicketEvt);
         return outList;
     }

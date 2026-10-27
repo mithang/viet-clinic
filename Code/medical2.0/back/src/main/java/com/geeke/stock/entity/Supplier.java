@@ -7,25 +7,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 供应商管理Entity
+ * Quản lý nhà cung cấpEntity
  * @author txl
  * @version 2022-06-22
  */
 public class Supplier extends DataEntity<Supplier> {
 
 	private static final long serialVersionUID = 1005526731044757538L;
-	private Company company;      // 诊所id 
-	private String linkman;		// 联系人
-	private String phone;		// 电话
-	private String mail;		// 邮箱
-	private String province;		// 省
-	private String city;		// 市
-	private String creditCode;		// 信用代码
-	private String area;		// 区
-	private String address;		// 地址
-	private String status;      //是否启用
-	private String type;		//供应商类型标志
-	private String pinyinCode;  //拼音码
+	private Company company;      // Phòng khámid 
+	private String linkman;		// người liên hệ
+	private String phone;		// Điện thoại
+	private String mail;		// email
+	private String province;		// Tỉnh
+	private String city;		// Thành phố
+	private String creditCode;		// tindùngmã
+	private String area;		// Quận
+	private String address;		// Địa chỉ
+	private String status;      //Có bật không
+	private String type;		//Nhà cung cấpLoạicờ
+	private String pinyinCode;  //Mã pinyin
 	
 	public Supplier() {
 		super();
@@ -44,7 +44,7 @@ public class Supplier extends DataEntity<Supplier> {
         this.company = company;
     }
     
-	@Length(min=0, max=45, message="联系人长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="người liên hệĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getLinkman() {
 		return linkman;
 	}
@@ -53,7 +53,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=45, message="电话长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài số điện thoại phải nằm trong khoảng 0 đến 45 ")
 	public String getPhone() {
 		return phone;
 	}
@@ -62,7 +62,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=128, message="邮箱长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="emailĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getMail() {
 		return mail;
 	}
@@ -71,7 +71,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=45, message="省长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài tỉnh phải nằm trong khoảng 0 đến 45 ")
 	public String getProvince() {
 		return province;
 	}
@@ -80,7 +80,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=45, message="市长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài thành phố phải nằm trong khoảng 0 đến 45 ")
 	public String getCity() {
 		return city;
 	}
@@ -89,7 +89,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=128, message="信用代码长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="tindùngĐộ dài mã phải nằm trong khoảng 0 đến 128 ")
 	public String getCreditCode() {
 		return creditCode;
 	}
@@ -98,7 +98,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=45, message="区长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài quận phải nằm trong khoảng 0 đến 45 ")
 	public String getArea() {
 		return area;
 	}
@@ -107,7 +107,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=128, message="地址长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="Độ dài địa chỉ phải nằm trong khoảng 0 đến 128 ")
 	public String getAddress() {
 		return address;
 	}
@@ -139,7 +139,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -148,7 +148,7 @@ public class Supplier extends DataEntity<Supplier> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -158,7 +158,7 @@ public class Supplier extends DataEntity<Supplier> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -14,81 +14,81 @@ public class OutpatientLogRc {
     /** ID */
     private String id;
 
-    /** 患者姓名 */
+    /** Tên bệnh nhân */
     private String patientName;
 
-    /**家长姓名 */
+    /**Tên phụ huynh */
     private String patriarchName;
 
-    /** 性别 */
+    /** Giới tính */
     private String sex;
 
-    /** 患者年龄 */
+    /** Tuổi bệnh nhân */
     private String age;
 
-    /** 民族 */
+    /** Dân tộc */
     private String nation;
 
-    /** 职业 */
+    /** Nghề nghiệp */
     private String occupation;
 
-    /** 详细地址 */
+    /** Địa chỉ chi tiết */
     private String address;
 
-    /** 就诊日期 */
+    /** Ngày khám bệnh */
     private Date visitDate;
 
-    /** 初/复诊 */
+    /** ban đầu/Tái khám */
     private String initialVisit;
 
-    /** 血压 */
+    /** Huyết áp */
     private String bloodPressure;
 
-    /** 临床症状 */
+    /** Triệu chứng lâm sàng */
     private String symptom;
 
-    /** 体温发热 */
+    /** Sốt, nhiệt độ cơ thể tăng */
     private String fever;
 
-    /** 流行病学史 */
+    /** Tiền sử dịch tễ */
     private String epidemicDisease;
 
-    /** 诊断 */
+    /** Chẩn đoán */
     private String diagnosis;
 
-    /** 传染病 */
+    /** Bệnh truyền nhiễm */
     private String infect;
 
-    /** 处理情况 */
+    /** Tình hình xử lý */
     private String handle;
 
-    /** 有效证件号 */
+    /** Số giấy tờ hiệu lực */
     private String certificate;
 
-    /** 工作单位 */
+    /** Đơn vị công tác */
     private String unit;
 
-    /** 医生签名 */
+    /** Chữ ký bác sĩ */
     private String signature;
 
-    /** 贫困标志 */
+    /** Cờ hộ nghèo */
     private String poverty;
 
-    /** 联系电话 */
+    /** Số điện thoại liên hệ */
     private String telephone;
 
-    /** 发病日期 */
+    /** Ngày phát bệnh */
     private Date morbidityDate;
 
-    /** 实验室阳性结果 */
+    /** Kết quả dương tính trong phòng thí nghiệm */
     private String positiveResult;
 
-    /** 个体化健康教育 */
+    /** Giáo dục sức khỏe cá thể hóa */
     private String healthEducation;
 
-    /**机构状态（1：租户登录）*/
+    /**Trạng thái cơ sở(1: Đăng nhập tenant)*/
     private String jgzt;
 
-    /** 机构id（租户id）*/
+    /** Cơ sởid(Đơn vị thuêid)*/
     private String jgid;
 }

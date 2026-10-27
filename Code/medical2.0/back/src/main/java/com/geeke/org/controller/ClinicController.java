@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * 诊所管理Controller
+ * Quản lý phòng khámController
  * @author txl
  * @version 2022-05-19
  */
@@ -51,7 +51,7 @@ public class ClinicController extends BaseController {
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestParam("entity") String strEntity,
-      @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // 文件: 诊所许可证图片
+      @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh giấy phép phòng khám
       @RequestParam("deleteIds")String strDeleteIds) throws java.io.IOException {
         Company clinic = JSONObject.parseObject(strEntity, Company.class);
 //        Company clinic = new Company();

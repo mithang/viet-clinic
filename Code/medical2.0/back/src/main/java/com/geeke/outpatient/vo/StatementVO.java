@@ -2,22 +2,22 @@ package com.geeke.outpatient.vo;
 
 import java.io.Serializable;
 /**
- * 处方审查汇总VO
+ * Đơn thuốcxem xéttổng hợptổngVO
  */
 public class StatementVO implements Serializable {
     private String company;
     private String clinicOffice;
     private String doctor;
     /**
-     *点评处方数
+     *đánh giáĐơn thuốcsố
      */
     private Long comment;
     /**
-     *合格处方数
+     *đạt chuẩnĐơn thuốcsố
      */
     private Long rational;
     /**
-     *处方合格率
+     *Đơn thuốcđạt chuẩntỷ lệ
      */
     private Long rate;
 

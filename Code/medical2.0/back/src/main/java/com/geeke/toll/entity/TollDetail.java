@@ -7,15 +7,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 收费管理Entity
+ * Quản lý thu phíEntity
  * @author lc
  * @version 2022-06-15
  */
 public class TollDetail extends DataEntity<TollDetail> {
 
 	private static final long serialVersionUID = 1028225822184669188L;
-	private RecipelInfo recipel;      // 处方 
-	private TollInfo tollId;      // 收费主表 
+	private RecipelInfo recipel;      // Đơn thuốc 
+	private TollInfo tollId;      // Thu phíBảng chính 
 
 	
 	public TollDetail() {
@@ -50,7 +50,7 @@ public class TollDetail extends DataEntity<TollDetail> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -59,7 +59,7 @@ public class TollDetail extends DataEntity<TollDetail> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -69,7 +69,7 @@ public class TollDetail extends DataEntity<TollDetail> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

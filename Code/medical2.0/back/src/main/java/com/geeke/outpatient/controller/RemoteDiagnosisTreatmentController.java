@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 远程诊断管理Controller
+ * từ xaChẩn đoánQuản lýController
  * @author zh
  * @version 2023-12-06
  */
@@ -37,35 +37,35 @@ public class RemoteDiagnosisTreatmentController extends BaseController {
 	private RemoteDiagnosisTreatmentService remoteDiagnosisTreatmentService;
 
 
-    /** 根据id查询 */
+    /** TheoidTruy vấn */
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
         RemoteDiagnosisTreatment entity = remoteDiagnosisTreatmentService.diagnosisById(id);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
-    /** 根据挂号查询 */
+    /** TheoĐăng ký khámTruy vấn */
     @GetMapping("registrationId/{registrationId}")
     public ResponseEntity<JSONObject> getRegistrationId(@PathVariable("registrationId") String registrationId) {
         RemoteDiagnosisTreatment entity = remoteDiagnosisTreatmentService.getRegistrationId(registrationId);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
-    /** 分页查询 */
+    /** Truy vấn phân trang */
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
         Page<RemoteDiagnosisTreatment> result = remoteDiagnosisTreatmentService.diagnosisPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    /** 保存申请 */
+    /** Lưuđăng kýVui lòng */
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody RemoteDiagnosisTreatment entity) {
         String id = remoteDiagnosisTreatmentService.diagnosisSave(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
-    /** 处方信息保存 */
+    /** Đơn thuốcThông tinLưu */
     @PostMapping(value = "addRecipel")
     public ResponseEntity<JSONObject> addRecipel(@RequestBody RecipelInfo recipelInfo) {
         RemoteDiagnosisTreatment entity = remoteDiagnosisTreatmentService.diagnosisById(recipelInfo.getDiagnosisId());
@@ -74,21 +74,21 @@ public class RemoteDiagnosisTreatmentController extends BaseController {
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
-    /** 修改状态 */
+    /** Sửa trạng thái */
     @PostMapping(value = "modifiedState")
     public ResponseEntity<JSONObject> modifiedState(@RequestBody RemoteDiagnosisTreatment entity) {
         final int i = remoteDiagnosisTreatmentService.modifiedState(entity);
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }
 
-    /** 修改远程收费信息 */
+    /** Sửatừ xaThu phíThông tin */
     @PostMapping(value = "chargeState")
     public ResponseEntity<JSONObject> chargeState(@RequestBody @NotNull TollEvt tollEvt) {
         final int i = remoteDiagnosisTreatmentService.chargeState(tollEvt);
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }
 
-    /** 删除申请 */
+    /** Xóađăng kýVui lòng */
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody RemoteDiagnosisTreatment entity) {
         String id = entity.getId();

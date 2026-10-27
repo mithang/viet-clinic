@@ -4,7 +4,7 @@
       :icon="icon"
       :type="type"
       v-bind="$attrs"
-      @click="handleCopy(content)">复制</el-button>
+      @click="handleCopy(content)">Sao chép</el-button>
   </el-tooltip>
 </template>
 
@@ -21,7 +21,7 @@
       },
       tipText: {
         type: String,
-        default: () => '复制'
+        default: () => 'Sao chép'
       },
       placement: {
         type: String,

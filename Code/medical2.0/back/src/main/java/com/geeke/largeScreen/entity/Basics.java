@@ -4,25 +4,25 @@ import lombok.Data;
 
 
 /**
- * 大屏基础数据
+ * lớn屏cơ bảnDữ liệu
  * @author zhanghan
  * @version 2023-09-05
  */
 @Data
 public class Basics {
-	/** 新增任务数 */
+	/** Thêm tác vụ mớisố */
 	private String quest;
 
-	/** 今日挂号人数 */
+	/** Số người đăng ký khám hôm nay */
 	private String register;
 
-	/** 今日接诊数 */
+	/** Số lượt tiếp nhận hôm nay */
 	private String receivePatients;
 
-	/** 今日收入 */
+	/** Thu nhập hôm nay */
 	private String income;
 
-	/** 今日新增签约数 */
+	/** Số lượt ký mới hôm nay */
 	private String signing;
 
 }

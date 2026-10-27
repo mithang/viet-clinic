@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 药品/材料入库明细控制Service
+ * Thuốc/Kiểm soát chi tiết nhập kho vật tưService
  * @author hl
  * @version 2022-09-26
  */
@@ -61,7 +61,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
     @Autowired
     private RegistrationService registrationService;
     /**
-     * 新增入库信息时，控制药品或材料的动态库存明细
+     * Thêm mớinhập khoThông tin giờ, kiểm soátThuốc hoặc Vật tư của độngTồn khoChi tiết
      * @param supplierStorage
      */
     @Transactional(readOnly = false)
@@ -88,7 +88,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 Drug drug = this.drugService.get(supplierStock.getDrug().getId());
                 if (Objects.isNull(drug) || StringUtils.isBlank(drug.getId()))
                 {
-                    throw new ServiceException("入库失败,获取入库的药品基础维护信息失败！");
+                    throw new ServiceException("Nhập kho thất bại,Lấynhập kho của Thuốccơ bản维护Thông tinThất bại!");
                 }
                 this.medicinalStockControlService.initStock(drug);
 
@@ -101,7 +101,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 Stuff stuff = this.stuffService.get(supplierStock.getStuff().getId());
                 if (Objects.isNull(stuff) || StringUtils.isBlank(stuff.getId()))
                 {
-                    throw new ServiceException("入库失败,获取入库的材料基础维护信息失败！");
+                    throw new ServiceException("Nhập kho thất bại,Lấynhập kho của Vật tưcơ bản维护Thông tinThất bại!");
                 }
                 this.medicinalStockControlService.initStock(stuff);
 
@@ -111,7 +111,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             }
             else
             {
-                throw new ServiceException("入库失败，暂只支持药品或材料入库！");
+                throw new ServiceException("Nhập kho thất bại, tạmchỉhỗ trợThuốc hoặc Vật tưnhập kho!");
             }
 
             medicinalStorageControl.setStorageStock(new BigDecimal(supplierStock.getInitial()));
@@ -120,7 +120,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             medicinalStorageControl.setSurplusStock(new BigDecimal(supplierStock.getInitial()));
             medicinalStorageControl.setReimburseStock(BigDecimal.ZERO);
 
-            //添加药品/材料入库明细控制初始化数据
+            //ThêmThuốc/Kiểm soát chi tiết nhập kho vật tưKhởi tạoDữ liệu
             super.save(medicinalStorageControl);
 
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
@@ -134,16 +134,16 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
             medicinalStockControl.setStorageStock(medicinalStockControl.getStorageStock().add(medicinalStorageControl.getStorageStock()));
             medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(medicinalStorageControl.getSurplusStock()));
-            //更新动态库存入库汇总控制记录
+            //Cập nhật bản ghi kiểm soát tổng hợp nhập kho của tồn kho động
             this.medicinalStockControlService.save(medicinalStockControl);
 
-            //增加库存操作明细记录
+            //tăngTồn khothao tácChi tiếtBản ghi
             MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
             medicinalStockRecord.setCompany(supplierStock.getCompany());
             medicinalStockRecord.setDrugStuffId(medicinalStorageControl.getDrugStuffId());
             medicinalStockRecord.setDrugStuffName(medicinalStorageControl.getDrugStuffName());
             medicinalStockRecord.setType(medicinalStorageControl.getType());
-            medicinalStockRecord.setOperationType(1);    //库存入库操作标识
+            medicinalStockRecord.setOperationType(1);    //Tồn khonhập khothao tácđịnh danh
             medicinalStockRecord.setOperationStock(new BigDecimal(supplierStock.getInitial()));
             medicinalStockRecord.setStorageId(supplierStock.getSupplierStorage().getId());
 
@@ -151,7 +151,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         }
     }
 
-    //作废入库信息，更新动态库存
+    //hủynhập khoThông tin, Cập nhậtđộngTồn kho
     @Transactional(readOnly = false)
     public void invalidStorageStock(SupplierStorage supplierStorage)
     {
@@ -163,7 +163,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 SearchParamsBuilder.create().eq("supplier_storage_id", supplierStorage.getId()).build(), "");
         if (CollectionUtils.isEmpty(list))
         {
-            throw new ServiceException("入库信息作废失败，未查找到需要作废的入库明细信息。");
+            throw new ServiceException("nhập khoThông tinhủyThất bại, Chưatìm kiếmĐếnCầnhủy của Chi tiết nhập khoThông tin. ");
         }
 
         for (SupplierStock supplierStock:list)
@@ -177,19 +177,19 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
             for (MedicinalStorageControl medicinalStorageControl:medicinalStorageControlList)
             {
-                BigDecimal storageStock = medicinalStorageControl.getStorageStock();    //入库总量
-                BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();    //剩余可用库存数
+                BigDecimal storageStock = medicinalStorageControl.getStorageStock();    //Tổng lượng nhập kho
+                BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();    //Số lượng tồn kho còn khả dụng
                 if (storageStock.compareTo(surplusStock) != 0)
                 {
-                    throw new ServiceException("动态库存控制已发生变化，不能作废删除入库数据！");
+                    throw new ServiceException("độngTồn khokiểm soátĐãphátthay đổi, Không thểhủyXóanhập khoDữ liệu!");
                 }
 
-                //1.作废入库信息时，把可用库存置为0
+                //1.hủynhập khoThông tin giờ, Đưakhả dụngTồn khođặt là 0
                 medicinalStorageControl.setStorageStock(BigDecimal.ZERO);
                 medicinalStorageControl.setSurplusStock(BigDecimal.ZERO);
                 super.save(medicinalStorageControl);
 
-                //2.更新动态库存入库汇总控制记录，把总入库量和总的可用量减去作废的量
+                //2.Cập nhật bản ghi kiểm soát tổng hợp nhập kho của tồn kho động, Trừ lượng hủy khỏi tổng lượng nhập kho và tổng lượng khả dụng
                 List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                         SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStorageControl.getDrugStuffId()).build(), "");
                 if (CollectionUtils.isEmpty(medicinalStockControlList)) {
@@ -200,13 +200,13 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(surplusStock));
                 this.medicinalStockControlService.save(medicinalStockControl);
 
-                //3.插入动态库存操作明细
+                //3.chènChi tiết thao tác tồn kho động
                 MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
                 medicinalStockRecord.setCompany(medicinalStorageControl.getCompany());
                 medicinalStockRecord.setDrugStuffId(medicinalStorageControl.getDrugStuffId());
                 medicinalStockRecord.setDrugStuffName(medicinalStorageControl.getDrugStuffName());
                 medicinalStockRecord.setType(medicinalStorageControl.getType());
-                medicinalStockRecord.setOperationType(-1);    //库存入库作废操作标识
+                medicinalStockRecord.setOperationType(-1);    //Tồn khoĐịnh danh thao tác hủy nhập kho
                 medicinalStockRecord.setOperationStock(storageStock);
                 medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());
 
@@ -215,15 +215,15 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         }
     }
 
-    //入库明细自动到期功能调用逻辑（此处理后面放在前台界面手工做，不然后台跑定时任务可能会出现问题）
+    //Chi tiết nhập khotự độngĐếnLogic gọi chức năng theo kỳ(nàyXử lýPhần sau để giao diện frontend làm thủ công, Nếu không, chạy tác vụ định kỳ ở backend có thể gặp vấn đề)
     @Transactional(readOnly = false)
     public void autoInvalidStorageStock(SupplierStock supplierStock)
     {
-        //判断当前是否还有未释放出来被占用的动态库存
+        //Kiểm tra hiện tại còn tồn kho động bị chiếm dụng chưa được giải phóng không
         List<MedicinalStockRecord> medicinalStockRecords = this.medicinalStockRecordService.getStockRecordByStorageId(supplierStock.getId());
         if (!CollectionUtils.isEmpty(medicinalStockRecords))
         {
-            throw new ServiceException("当前还存在库存占用或退药未退费库存未释放的情况，请先处理后再操作！");
+            throw new ServiceException("Hiện vẫn còn tình trạng tồn kho bị chiếm dụng hoặc trả thuốc chưa hoàn phí và tồn kho chưa được giải phóng, Vui lòngtrướcXử lýsaulạithao tác!");
         }
 
         List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
@@ -234,11 +234,11 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         }
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-        BigDecimal storageStock = medicinalStorageControl.getStorageStock();		// 入库总量
-        BigDecimal usedStock = medicinalStorageControl.getUsedStock();		        // 已使用库存数
-        BigDecimal occupyStock = medicinalStorageControl.getOccupyStock();		    // 当前占用库存数
-        BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();        // 剩余可用库存数
-        BigDecimal reimburseStock = medicinalStorageControl.getReimburseStock();    // 报损库存数
+        BigDecimal storageStock = medicinalStorageControl.getStorageStock();		// Tổng lượng nhập kho
+        BigDecimal usedStock = medicinalStorageControl.getUsedStock();		        // Số lượng tồn kho đã sử dụng
+        BigDecimal occupyStock = medicinalStorageControl.getOccupyStock();		    // Số lượng tồn kho đang bị chiếm dụng
+        BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();        // Số lượng tồn kho còn khả dụng
+        BigDecimal reimburseStock = medicinalStorageControl.getReimburseStock();    // Số lượng tồn kho báo hỏng
         medicinalStorageControl.setSurplusStock(BigDecimal.ZERO);
         medicinalStorageControl.setReimburseStock(reimburseStock.add(surplusStock));
         super.save(medicinalStorageControl);
@@ -253,13 +253,13 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         medicinalStockControl.setReimburseStock(medicinalStockControl.getReimburseStock().add(surplusStock));
         this.medicinalStockControlService.save(medicinalStockControl);
 
-        //3.插入动态库存操作明细
+        //3.chènChi tiết thao tác tồn kho động
         MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
         medicinalStockRecord.setCompany(medicinalStorageControl.getCompany());
         medicinalStockRecord.setDrugStuffId(medicinalStorageControl.getDrugStuffId());
         medicinalStockRecord.setDrugStuffName(medicinalStorageControl.getDrugStuffName());
         medicinalStockRecord.setType(medicinalStorageControl.getType());
-        medicinalStockRecord.setOperationType(-2);    //库存入库作废操作标识
+        medicinalStockRecord.setOperationType(-2);    //Tồn khoĐịnh danh thao tác hủy nhập kho
         medicinalStockRecord.setOperationStock(surplusStock);
         medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());
 
@@ -267,7 +267,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
     }
 
     /**
-     * 根据处方取消预占库存数
+     * TheoĐơn thuốclấyhủychiếm dụng trướcTồn khosố
      */
     @Transactional(readOnly = false)
     public void cancelOccupy(RecipelInfo recipelInfo) {
@@ -275,7 +275,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
-        String recipelInfoId = recipelInfo.getId();    //处方ID
+        String recipelInfoId = recipelInfo.getId();    //Đơn thuốcID
         if (StringUtils.isBlank(recipelInfoId))
         {
             return;
@@ -289,8 +289,8 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
         for (MedicinalStockRecord medicinalStockRecord:list)
         {
-            BigDecimal operationStock = medicinalStockRecord.getOperationStock();    //占用库存数
-            //更新预占用的入库明细
+            BigDecimal operationStock = medicinalStockRecord.getOperationStock();    //chiếm dụngTồn khosố
+            //Cập nhậttrướcchiếm dụng của Chi tiết nhập kho
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
@@ -298,12 +298,12 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 return;
             }
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //当前占用库存数应该减回去
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));     //剩余可用库存数应该加回去
-            //TODO: 还回去刚好遇到入库明细到期了怎么处理？    解决方法：不处理，之前怎么占用的现在就怎么还回去
+            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
+            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
+            //TODO: Trả lại đúng lúc gặp chi tiết nhập kho hết hạn thì xử lý thế nào?    giải quyếtPhương thức: khôngXử lý, củatrước怎么chiếm dụng của Bây giờ trả lại như thế nào
             super.save(medicinalStorageControl);
 
-            //更新总控制的预占用
+            //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStockControlList))
@@ -311,17 +311,17 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 return;
             }
             MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //当前占用库存数应该减回去
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));     //剩余可用库存数应该加回去
+            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
+            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
             this.medicinalStockControlService.save(medicinalStockControl);
         }
 
-        //删除明细数据(目前做物理删除)
+        //XóaChi tiếtDữ liệu(mụctrướclàmvật lýXóa)
         this.medicinalStockRecordService.batchDelete(list);
     }
 
     /**
-     * 预占用库存
+     * Tồn kho đặt trước
      * @param recipelInfo
      */
     @Transactional(readOnly = false)
@@ -330,14 +330,14 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
-        String recipelInfoId = recipelInfo.getId();    //处方ID
+        String recipelInfoId = recipelInfo.getId();    //Đơn thuốcID
         if (StringUtils.isBlank(recipelInfoId))
         {
             return;
         }
-        //1.先释放一下预占用库存,报账占用库存的有效性
+        //1.Giải phóng trước lượng chiếm dụng trướcTồn kho,báosổ sáchchiếm dụngTồn kho của Hiệu lựctính
         this.cancelOccupy(recipelInfo);
-        //2.重新占用
+        //2.Lạichiếm dụng
         List<RecipelDetail> recipelDetailList = this.recipelDetailService.listAll(
                 SearchParamsBuilder.create().eq("recipel_info_id", recipelInfoId).build(), "");
         if (CollectionUtils.isEmpty(recipelDetailList))
@@ -348,12 +348,12 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         for (RecipelDetail recipelDetail:recipelDetailList)
         {
             String drugStuffId = recipelDetail.getDrugStuffId().getDrugStuffId();
-            BigDecimal calculationBigDecimal = BigDecimal.ZERO;                       //用于计算，最后与 totalBigDecimal 做比较进行控制
+            BigDecimal calculationBigDecimal = BigDecimal.ZERO;                       //dùng đểTính, nhấtsau và  totalBigDecimal làmso với较tiến hành dòngkiểm soát
             
             MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
             medicinalStockRecord.setCompany(recipelDetail.getCompany());
-            medicinalStockRecord.setOperationType(2);    //预占用操作标识
-            //TODO 加一个诊所 Id 的条件
+            medicinalStockRecord.setOperationType(2);    //Định danh thao tác chiếm dụng trước
+            //TODO thêmmộtCáiPhòng khám Id  của Điều kiện
             Drug drug = this.drugService.get(drugStuffId);
             Stuff stuff = this.stuffService.get(drugStuffId);
             if (Objects.nonNull(drug) && StringUtils.isNotBlank(drug.getId()))
@@ -363,7 +363,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStockRecord.setType(1);
                 if(Objects.equals(drug.getStatus(), "0"))
                 {
-                    throw new ServiceException("药品已停用");
+                    throw new ServiceException("ThuốcĐãdừngdùng");
                 }
             }
             else if (Objects.nonNull(stuff) && StringUtils.isNotBlank(stuff.getId()))
@@ -373,32 +373,32 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStockRecord.setType(2);
                 if(Objects.equals(stuff.getStatus(), "0"))
                 {
-                    throw new ServiceException("材料已停用");
+                    throw new ServiceException("Vật tưĐãdừngdùng");
                 }
             }
             else
             {
-                //目前只有药品、材料才进行动态库存控制，其他不控制
+                //mụctrướcchỉcóThuốc, Vật tưmớitiến hành dòngđộngTồn khokiểm soát, kháckhôngkiểm soát
                 continue;
             }
             
-            // 库存表存储的是包装单位
-            // - 不拆零时：直接使用 total（包装单位）与库存比较，占用也用包装单位
-            // - 拆零时：需要把总量（制剂单位）转换为包装单位来占用库存
+            // Tồn khobảnglưu trữ của  có Đơn vị đóng gói
+            // - khôngbán lẻ giờ: trực tiếpsử dụng total(Đơn vị đóng gói) và Tồn khoso với较, chiếm dụngcũngdùngĐơn vị đóng gói
+            // - bán lẻ giờ: CầnĐưatổng lượng(Đơn vị bào chế)Chuyển đổi thànhĐơn vị đóng góiđếnchiếm dụngTồn kho
             BigDecimal totalBigDecimal;
             boolean isUnpackSell = recipelDetail.getIsUnpackSell() != null && recipelDetail.getIsUnpackSell() == 1;
 
             if (isUnpackSell) {
-                // 拆零销售：total 是制剂单位，需要转换为包装单位（向上取整）
+                // Bán lẻ: total  có Đơn vị bào chế, CầnChuyển đổi thànhĐơn vị đóng gói(hướng tớitrênLàm tròn)
                 totalBigDecimal = new BigDecimal(recipelDetail.getTotal());
             } else {
-                // 不拆零销售：total 是包装单位，直接使用
+                // Không bán lẻ: total  có Đơn vị đóng gói, trực tiếpsử dụng
                 totalBigDecimal = new BigDecimal(recipelDetail.getTotal());
             }
             
             if (totalBigDecimal.compareTo(BigDecimal.ZERO) < 0)
             {
-                throw new ServiceException("处方用量存在开具负数的情况，请正确填写处方开具信息！");
+                throw new ServiceException("Đơn thuốcdùnglượngTồn tạikêâmsố của tình hình, Vui lòngđúngđiềnĐơn thuốckêThông tin!");
             }
             if (totalBigDecimal.compareTo(BigDecimal.ZERO) == 0)
             {
@@ -410,13 +410,13 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("[" + recipelInfo.getName() + "]中[" + medicinalStockRecord.getDrugStuffName() + "]库存不足！");
+                throw new ServiceException("[" + recipelInfo.getName() + "] trong [" + medicinalStockRecord.getDrugStuffName() + "]Tồn khokhông đủ!");
             }
 
-            // 拆零时，需要把总量（制剂单位）转换为包装单位
+            // bán lẻ giờ, CầnĐưatổng lượng(Đơn vị bào chế)Chuyển đổi thànhĐơn vị đóng gói
             BigDecimal stockToOccupy = totalBigDecimal;
             if (isUnpackSell && drug != null && drug.getPreparation() != null && Integer.valueOf(drug.getPreparation()) > 0) {
-                // 制剂单位转为包装单位：向上取整（确保有足够的制剂数量）
+                // Đơn vị bào chếchuyển là Đơn vị đóng gói: hướng tớitrênLàm tròn(确bảocóđủđủ của bào chếSố lượng)
                 BigDecimal preparationBD = new BigDecimal(drug.getPreparation());
                 stockToOccupy = totalBigDecimal.divide(preparationBD, 0, BigDecimal.ROUND_UP);
             }
@@ -428,16 +428,16 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     break;
                 }
 
-                BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();   //剩余可用库存数（包装单位）
-                BigDecimal occupyStock = medicinalStorageControl.getOccupyStock();		// 当前占用库存数
+                BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();   //Số lượng tồn kho còn khả dụng(Đơn vị đóng gói)
+                BigDecimal occupyStock = medicinalStorageControl.getOccupyStock();		// Số lượng tồn kho đang bị chiếm dụng
 
-                if (surplusStock.compareTo(stockToOccupy) >= 0)   //明细库存够用
+                if (surplusStock.compareTo(stockToOccupy) >= 0)   //Chi tiếtTồn khođủdùng
                 {
                     medicinalStockRecord.setId(null);
-                    medicinalStockRecord.setOperationStock(stockToOccupy);  //操作库存数
-                    medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //占用的入库明细ID
-                    medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //占用的处方ID
-                    medicinalStockRecord.setRefId(recipelDetail.getId());  //占用的关联记录ID
+                    medicinalStockRecord.setOperationStock(stockToOccupy);  //Số lượng tồn kho thao tác
+                    medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //chiếm dụng của Chi tiết nhập khoID
+                    medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //chiếm dụng của Đơn thuốcID
+                    medicinalStockRecord.setRefId(recipelDetail.getId());  //chiếm dụng của liên kếtBản ghiID
                     this.medicinalStockRecordService.save(medicinalStockRecord);
 
                     medicinalStorageControl.setOccupyStock(occupyStock.add(stockToOccupy));
@@ -447,17 +447,17 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     calculationBigDecimal = calculationBigDecimal.add(stockToOccupy);
                     stockToOccupy = stockToOccupy.subtract(stockToOccupy);
                 }
-                else                                            //明细库存不够用
+                else                                            //Chi tiếtTồn khokhôngđủdùng
                 {
                     medicinalStockRecord.setId(null);
-                    medicinalStockRecord.setOperationStock(surplusStock);  //操作库存数
-                    medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //占用的入库明细ID
-                    medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //占用的处方ID
-                    medicinalStockRecord.setRefId(recipelDetail.getId());  //占用的关联记录ID
+                    medicinalStockRecord.setOperationStock(surplusStock);  //Số lượng tồn kho thao tác
+                    medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //chiếm dụng của Chi tiết nhập khoID
+                    medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //chiếm dụng của Đơn thuốcID
+                    medicinalStockRecord.setRefId(recipelDetail.getId());  //chiếm dụng của liên kếtBản ghiID
                     this.medicinalStockRecordService.save(medicinalStockRecord);
 
                     medicinalStorageControl.setOccupyStock(occupyStock.add(surplusStock));
-                    medicinalStorageControl.setSurplusStock(surplusStock.subtract(surplusStock));    //剩余可用库存数,相当于0
+                    medicinalStorageControl.setSurplusStock(surplusStock.subtract(surplusStock));    //Số lượng tồn kho còn khả dụng,tươngkhitại0
                     super.save(medicinalStorageControl);
 
                     calculationBigDecimal = calculationBigDecimal.add(surplusStock);
@@ -467,10 +467,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
             if (stockToOccupy.compareTo(BigDecimal.ZERO) > 0)
             {
-                throw new ServiceException("[" + recipelInfo.getName() + "]中[" + medicinalStockRecord.getDrugStuffName() + "]库存不足！");
+                throw new ServiceException("[" + recipelInfo.getName() + "] trong [" + medicinalStockRecord.getDrugStuffName() + "]Tồn khokhông đủ!");
             }
 
-            //更新总控制的预占用
+            //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create()
                             .eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId())
@@ -481,15 +481,15 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 return;
             }
             MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().add(calculationBigDecimal));   //当前占用库存数应该加上去
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(calculationBigDecimal));     //剩余可用库存数应该减下去
+            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().add(calculationBigDecimal));   //Số lượng tồn kho đang bị chiếm dụngNênthêmtrênđi
+            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(calculationBigDecimal));     //Số lượng tồn kho còn khả dụngNêntrừdướiđi
             this.medicinalStockControlService.save(medicinalStockControl);
         }
     }
 
     /**
-     * 确认占用库存（即：把预占用库存转为实际占用库存）
-     * 一般在发药的时候即为把预占用库存转为实际占用库存
+     * xác nhậnchiếm dụngTồn kho(tức là: Chuyển tồn kho chiếm dụng trước thành tồn kho chiếm dụng thực tế)
+     * Thông thường khi phát thuốc tức là chuyển tồn kho chiếm dụng trước thành tồn kho chiếm dụng thực tế
      * @param
      */
     @Transactional(readOnly = false)
@@ -506,54 +506,54 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
-        String recipelInfoId = recipelInfo.getId();    //处方ID
+        String recipelInfoId = recipelInfo.getId();    //Đơn thuốcID
         if (StringUtils.isBlank(recipelInfoId))
         {
             return;
         }
-        //重新预占用库存一把，为了更好的控制库存没有问题，如果重新占用有问题，一般说明控制有我呢提
+        //Lạitrướcchiếm dụngTồn khomộtĐưa,  là rồihơntốt của kiểm soátTồn khoKhông cóvấn đề, NếuLạichiếm dụngcóvấn đề, mộtthông thườngGiải thíchkiểm soátcó我呢đề xuất
         this.preOccupyStock(recipelInfo);
 
-        //把预占用库存转为实际占用库存
+        //Chuyển tồn kho chiếm dụng trước thành tồn kho chiếm dụng thực tế
         List<MedicinalStockRecord> medicinalStockRecordList = this.medicinalStockRecordService.listAll(
                 SearchParamsBuilder.create().eq("recipel_info_id", recipelInfoId).build(), "");
         if (CollectionUtils.isEmpty(medicinalStockRecordList))
         {
-            logger.warn("处方[{}]未找到库存操作记录，跳过库存处理", recipelInfoId);
+            logger.warn("Đơn thuốc[{}]Không tìm thấy bản ghi thao tác tồn kho, Bỏ qua xử lý tồn kho", recipelInfoId);
             return;
         }
 
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
-            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// 操作库存数
+            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到需要控制库存的入库明细[明细ID=" + medicinalStockRecord.getStorageId() + "]。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().add(operationStock));            //当前已使用库存数应该加上去
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //当前占用库存数应该减回去
+            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().add(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được cộng thêm
+            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
             super.save(medicinalStorageControl);
 
-            //更新总控制的预占用
+            //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStockControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到物品[ " + medicinalStockRecord.getDrugStuffName() + " ]的库存总控制记录。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
             MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().add(operationStock));            //当前已使用库存数应该加上去
-            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //当前占用库存数应该减回去
+            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().add(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được cộng thêm
+            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
             this.medicinalStockControlService.save(medicinalStockControl);
 
-            //更新动态库存的操作记录状态
+            //Cập nhật trạng thái bản ghi thao tác tồn kho động
             medicinalStockRecord.setOperationType(3);
             this.medicinalStockRecordService.save(medicinalStockRecord);
 
-            //保存发药明细
+            //LưuChi tiết phát thuốc
             Dispensing dispensing = new Dispensing();
             dispensing.setRegistration(registration);
             dispensing.setRecipelInfo(recipelInfo);
@@ -568,7 +568,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
     }
 
     /**
-     * 退药暂不退费情况:此情况下药的已使用量要减掉，可用库存量要等退了费用后才加上去
+     * Trả thuốctạmkhônghoàn phítình hình:nàytình hìnhdướithuốc của Đãsử dụnglượngcầntrừrơi, Lượng tồn kho khả dụng phải đợi hoàn phí xong mới được cộng thêm
      * @param recipelInfo
      */
     @Transactional(readOnly = false)
@@ -578,7 +578,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
-        String recipelInfoId = recipelInfo.getId();    //处方ID
+        String recipelInfoId = recipelInfo.getId();    //Đơn thuốcID
         if (StringUtils.isBlank(recipelInfoId))
         {
             return;
@@ -591,47 +591,47 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                         .build(), "");
         if (CollectionUtils.isEmpty(medicinalStockRecordList))
         {
-            logger.warn("处方[{}]未找到库存操作记录，跳过库存处理", recipelInfoId);
+            logger.warn("Đơn thuốc[{}]Không tìm thấy bản ghi thao tác tồn kho, Bỏ qua xử lý tồn kho", recipelInfoId);
             return;
         }
 
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
-            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// 操作库存数
+            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到需要控制库存的入库明细[明细ID=" + medicinalStockRecord.getStorageId() + "]。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().subtract(operationStock));            //当前已使用库存数应该减回去
+            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
             BigDecimal returnTodoFeeStock1 =medicinalStorageControl.getReturnTodoFeeStock()==null?new BigDecimal("0"):medicinalStorageControl.getReturnTodoFeeStock();
             medicinalStorageControl.setReturnTodoFeeStock(returnTodoFeeStock1.add(operationStock));
 
             super.save(medicinalStorageControl);
 
-            //更新总控制的预占用
+            //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStockControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到物品[ " + medicinalStockRecord.getDrugStuffName() + " ]的库存总控制记录。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
             MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().subtract(operationStock));            //当前已使用库存数应该减回去
+            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
             BigDecimal returnTodoFeeStock2 =medicinalStockControl.getReturnTodoFeeStock()==null?new BigDecimal("0"):medicinalStockControl.getReturnTodoFeeStock();
             medicinalStockControl.setReturnTodoFeeStock(returnTodoFeeStock2.add(operationStock));
             this.medicinalStockControlService.save(medicinalStockControl);
 
-            //更新动态库存的操作记录状态
+            //Cập nhật trạng thái bản ghi thao tác tồn kho động
             medicinalStockRecord.setOperationType(4);
             this.medicinalStockRecordService.save(medicinalStockRecord);
         }
     }
 
     /**
-     * 退药后，进行退费的情况:此情况下由于之前退药操作已经把”已使用库存数“减回去了，此次只把可用库存加上去就行了
+     * Trả thuốcsau, tiến hành dònghoàn phí của tình hình:Trong trường hợp này do trước đóTrả thuốcthao tácĐãĐưa”Số lượng tồn kho đã sử dụng“trừtrả lạiđirồi, này lầnchỉĐưakhả dụngTồn khothêmtrênđithì dòngrồi
      * @param recipelInfo
      */
     @Transactional(readOnly = false)
@@ -641,7 +641,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
-        String recipelInfoId = recipelInfo.getId();    //处方ID
+        String recipelInfoId = recipelInfo.getId();    //Đơn thuốcID
         if (StringUtils.isBlank(recipelInfoId))
         {
             return;
@@ -654,42 +654,42 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                         .build(), "");
         if (CollectionUtils.isEmpty(medicinalStockRecordList))
         {
-            logger.warn("处方[{}]未找到库存操作记录，跳过库存处理", recipelInfoId);
+            logger.warn("Đơn thuốc[{}]Không tìm thấy bản ghi thao tác tồn kho, Bỏ qua xử lý tồn kho", recipelInfoId);
             return;
         }
 
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
-            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// 操作库存数
+            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到需要控制库存的入库明细[明细ID=" + medicinalStockRecord.getStorageId() + "]。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));            //当前剩余可用库存数应该加回去
+            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));            //Số lượng tồn kho còn khả dụng hiện tại cần được cộng trả lại
             medicinalStorageControl.setReturnTodoFeeStock(medicinalStorageControl.getReturnTodoFeeStock().subtract(operationStock));
             super.save(medicinalStorageControl);
 
-            //更新总控制的预占用
+            //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStockControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到物品[ " + medicinalStockRecord.getDrugStuffName() + " ]的库存总控制记录。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
             MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));            //当前剩余可用库存数应该加回去
+            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));            //Số lượng tồn kho còn khả dụng hiện tại cần được cộng trả lại
             medicinalStockControl.setReturnTodoFeeStock(medicinalStockControl.getReturnTodoFeeStock().subtract(operationStock));
             this.medicinalStockControlService.save(medicinalStockControl);
         }
 
-        //删除占用操作明细（此次物理删除）
+        //Xóachiếm dụngthao tácChi tiết(này lầnvật lýXóa)
         this.medicinalStockRecordService.batchDelete(medicinalStockRecordList);
     }
 
-    //获取所有的库存明细
+    //Lấytất cả của Tồn khoChi tiết
     @Transactional(readOnly = true)
     public List<MedicinalStorageControl> getAll(String compayId, String type,String variety) {
         return this.dao.getAll(compayId,type,variety);
@@ -708,7 +708,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
 
     /**
-     * 诊疗项目退费退材料操作
+     * Hoàn phí hạng mục khám chữa bệnhVật tưthao tác
      *
      * @param recipelInfo
      */
@@ -718,7 +718,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
-        String recipelInfoId = recipelInfo.getId();    //处方ID
+        String recipelInfoId = recipelInfo.getId();    //Đơn thuốcID
         if (StringUtils.isBlank(recipelInfoId))
         {
             return;
@@ -731,56 +731,56 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                         .build(), "");
         if (CollectionUtils.isEmpty(medicinalStockRecordList))
         {
-            logger.warn("处方[{}]未找到库存操作记录，跳过库存处理", recipelInfoId);
+            logger.warn("Đơn thuốc[{}]Không tìm thấy bản ghi thao tác tồn kho, Bỏ qua xử lý tồn kho", recipelInfoId);
             return;
         }
 
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
-            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// 操作库存数
+            BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到需要控制库存的入库明细[明细ID=" + medicinalStockRecord.getStorageId() + "]。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().subtract(operationStock));            //当前已使用库存数应该减回去
+            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
 //            BigDecimal returnTodoFeeStock1 =medicinalStorageControl.getReturnTodoFeeStock()==null?new BigDecimal("0"):medicinalStorageControl.getReturnTodoFeeStock();
 //            medicinalStorageControl.setReturnTodoFeeStock(returnTodoFeeStock1.add(operationStock));
             medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));
             super.save(medicinalStorageControl);
 
-            //更新总控制的预占用
+            //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStockControlList))
             {
-                throw new ServiceException("动态库存控制失败，未找到物品[ " + medicinalStockRecord.getDrugStuffName() + " ]的库存总控制记录。");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
             MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().subtract(operationStock));            //当前已使用库存数应该减回去
+            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
             medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));
             this.medicinalStockControlService.save(medicinalStockControl);
         }
-        //删除占用操作明细（此次物理删除）
+        //Xóachiếm dụngthao tácChi tiết(này lầnvật lýXóa)
         this.medicinalStockRecordService.batchDelete(medicinalStockRecordList);
     }
 
 
-    //预占：按处方来控制，先查询并且释放，再重新预占
+    //chiếm dụng trước: theoĐơn thuốcđếnkiểm soát, trướcTruy vấnvàvàgiải phóng, lạiLạichiếm dụng trước
 
-    //实占：就是发药时，按处方来控制， 先重新预占一把，再把预占的变为实占
+    //chiếm dụng thực tế: thì có phát thuốc giờ, theoĐơn thuốcđếnkiểm soát,  trướcLạichiếm dụng trướcmộtĐưa, lạiĐưachiếm dụng trước của thay đổi là chiếm dụng thực tế
 
-    //退药：先库存退回去，可用库存先不明释放，等退费才真正释放
+    //Trả thuốc: trướcTồn khotrảtrả lạiđi, khả dụngTồn khotrướckhôngrõgiải phóng,  v.v. Hoàn phí xong mới thực sự giải phóng
 
     //----------------------------
     /**
-     * 库房真实库存量=入库总量 - 已使用库存数 - 报损库存数
-     * 开药可用库存量=剩余可用库存数
-     * 当前占用库存数=当前占用库存数
-     * 报损库存数=报损库存数
-     * 已退药待退费的药占用库存量=(入库总量 - 已使用库存数 - 报损库存数) - 当前占用库存数 - 剩余可用库存数
-     *                                     实际库存（大）
+     * kho房真thựcTồn kholượng=Tổng lượng nhập kho - Số lượng tồn kho đã sử dụng - Số lượng tồn kho báo hỏng
+     * mởthuốckhả dụngTồn kholượng=Số lượng tồn kho còn khả dụng
+     * Số lượng tồn kho đang bị chiếm dụng=Số lượng tồn kho đang bị chiếm dụng
+     * Số lượng tồn kho báo hỏng=Số lượng tồn kho báo hỏng
+     * ĐãTrả thuốcchờhoàn phí của thuốcchiếm dụngTồn kholượng=(Tổng lượng nhập kho - Số lượng tồn kho đã sử dụng - Số lượng tồn kho báo hỏng) - Số lượng tồn kho đang bị chiếm dụng - Số lượng tồn kho còn khả dụng
+     *                                     thực tếTồn kho(lớn)
      */
 }

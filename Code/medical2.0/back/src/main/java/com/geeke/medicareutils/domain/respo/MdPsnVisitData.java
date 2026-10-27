@@ -6,192 +6,192 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * 人员就诊信息
+ * nhân viênkhám bệnhThông tin
  */
 @Data
 public class MdPsnVisitData {
 
-        /** 就诊 ID */
+        /** Khám bệnh ID */
         private String mdtrtId;
 
-        /** 人员编号 */
+        /** Mã nhân viên */
         private String psnNo;
 
-        /** 人员证件类型 */
+        /** Loại giấy tờ nhân viên */
         private String psnCertType;
 
-        /** 证件号码 */
+        /** Số giấy tờ */
         private String certno;
 
-        /** 人员姓名 */
+        /** Tên nhân viên */
         private String psnName;
 
-        /** 性别 */
+        /** Giới tính */
         private String gend;
 
-        /** 民族 */
+        /** Dân tộc */
         private String naty;
 
-        /** 出生日期 */
+        /** Ngày sinh */
         private LocalDate brdy;
 
-        /** 年龄 */
+        /** Tuổi */
         private int age;
 
-        /** 联系人姓名 */
+        /** người liên hệTên */
         private String conerName;
 
-        /** 联系电话 */
+        /** Số điện thoại liên hệ */
         private String tel;
 
-        /** 险种类型 */
+        /** Loại hình bảo hiểm */
         private String insutype;
 
-        /** 人员类别 */
+        /** Loại nhân viên */
         private String psnType;
 
-        /** 医疗救助对象标志 */
+        /** y tế救giúpĐối tượngcờ */
         private String mafPsnFlag;
 
-        /** 公务员标志 */
+        /** Cờ công chức */
         private String cvlservFlag;
 
-        /** 灵活就业标志 */
+        /** 灵sốngthìnghiệp vụcờ */
         private String flxempeFlag;
 
-        /** 新生儿标志 */
+        /** mớitrẻ sơ sinhcờ */
         private String nwbFlag;
 
-        /** 参保机构医保区划 */
+        /** tham gia bảo hiểmCơ sởBHYTQuận划 */
         private String insuOptins;
 
-        /** 单位名称 */
+        /** Tên đơn vị */
         private String empName;
 
-        /** 开始时间 */
+        /** Thời gian bắt đầu */
         private LocalDateTime begntime;
 
-        /** 结束时间 */
+        /** Thời gian kết thúc */
         private LocalDateTime endtime;
 
-        /** 就诊凭证类型 */
+        /** Loại giấy tờ khám bệnh */
         private String mdtrtCertType;
 
-        /** 医疗类别 */
+        /** Loại hình y tế */
         private String medType;
 
-        /** 跨年度住院标志 */
+        /** vượtNămđộNhập việncờ */
         private String arsYearIptFlag;
 
-        /** 先行支付标志 */
+        /** trước dòngthanh toáncờ */
         private String prePayFlag;
 
-        /** 住院/门诊号 */
+        /** Nhập viện/Số khám ngoại trú */
         private String iptOtpNo;
 
-        /** 病历号 */
+        /** bệnh ánsố */
         private String medrcdno;
 
-        /** 主治医生编码 */
+        /** chínhđiều trịBác sĩMã */
         private String atddrNo;
 
-        /** 主诊医师姓名 */
+        /** chẩn đoán chínhBác sĩTên */
         private String chfpdrName;
 
-        /** 入院科室编码 */
+        /** nhập việnKhoaMã */
         private String admDeptCodg;
 
-        /** 入院科室名称 */
+        /** nhập việnTên khoa */
         private String admDeptName;
 
-        /** 入院床位 */
+        /** nhập việngiườngvị */
         private String admBed;
 
-        /** 住院主诊断代码 */
+        /** Nhập việnchínhMã chẩn đoán */
         private String dscgMaindiagCode;
 
-        /** 住院主诊断名称 */
+        /** Nhập việnchínhTên chẩn đoán */
         private String dscgMaindiagName;
 
-        /** 出院科室编码 */
+        /** xuất việnKhoaMã */
         private String dscgDeptCodg;
 
-        /** 出院科室名称 */
+        /** xuất việnTên khoa */
         private String dscgDeptName;
 
-        /** 出院床位 */
+        /** xuất việngiườngvị */
         private String dscgBed;
 
-        /** 离院方式 */
+        /** 离院cách */
         private String dscgWay;
 
-        /** 主要病情描述 */
+        /** Mô tả chính về tình trạng bệnh */
         private String mainCondDscr;
 
-        /** 病种编码 */
+        /** Mã loại bệnh */
         private String diseCodg;
 
-        /** 病种名称 */
+        /** Tên loại bệnh */
         private String diseName;
 
-        /** 手术操作代码 */
+        /** Phẫu thuậtthao tácmã */
         private String oprnOprtCode;
 
-        /** 手术操作名称 */
+        /** Phẫu thuậtthao tácTên */
         private String oprnOprtName;
 
-        /** 门诊诊断信息 */
+        /** ngoại trúThông tin chẩn đoán */
         private String otpDiagInfo;
 
-        /** 在院状态 */
+        /** tại院Trạng thái */
         private String inhospStas;
 
-        /** 死亡日期 */
+        /** chết亡Ngày */
         private java.util.Date dieDate;
 
-        /** 住院天数 */
+        /** Nhập viện ngàysố */
         private int iptDays;
 
-        /** 计划生育服务证号 */
+        /** Số giấy chứng nhận dịch vụ kế hoạch hóa gia đình */
         private String fpscNo;
 
-        /** 生育类别 */
+        /** sinhsinhLớploại */
         private String matnType;
 
-        /** 计划生育手术类别 */
+        /** kế hoạchsinhsinhPhẫu thuậtLớploại */
         private String birctrlType;
 
-        /** 晚育标志 */
+        /** 晚sinhcờ */
         private String latechbFlag;
 
-        /** 孕周数 */
+        /** 孕tuầnsố */
         private int gesoVal;
 
-        /** 胎次 */
+        /** 胎 lần */
         private int fetts;
 
-        /** 胎儿数 */
+        /** 胎儿số */
         private int fetusCnt;
 
-        /** 早产标志 */
+        /** 早sảncờ */
         private String pretFlag;
 
-        /** 计划生育手术或生育日期 */
+        /** kế hoạchsinhsinhPhẫu thuật hoặc sinhsinhNgày */
         private LocalDateTime birctrlMatnDate;
 
-        /** 伴有并发症标志 */
+        /** Cờ kèm biến chứng */
         private String copFlag;
 
-        /** 经办人 ID */
+        /** Người thực hiện ID */
         private String opterId;
 
-        /** 经办人姓名 */
+        /** Tên người thực hiện */
         private String opterName;
 
-        /** 经办时间 */
+        /** qua办Thời gian */
         private java.util.Date optTime;
 
-        /** 备注 */
+        /** Ghi chú */
         private String memo;
 
 

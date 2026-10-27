@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 数据大屏Controller
+ * Màn hình dữ liệu lớnController
  * @author zhanghan
  * @version 2023-09-05
  */
@@ -21,7 +21,7 @@ public class ScreenController extends BaseController {
 	@Autowired
 	private ScreenService screenService;
 
-	/** 基础数据获取 */
+	/** cơ bảnDữ liệuLấy */
 	@GetMapping("/{parentId}")
 	public ResponseEntity<JSONObject> getBasics(@PathVariable("parentId") String parentId) {
 		Basics entity = screenService.getBasics(parentId);

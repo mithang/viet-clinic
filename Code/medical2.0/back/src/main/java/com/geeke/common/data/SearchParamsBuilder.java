@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 查询参数构建器
- * 提供流式API构建查询参数，提高代码可读性
+ * Tham số truy vấnxây dựngthiết bị
+ * cung cấpdạng luồngAPIxây dựngTham số truy vấn, Nâng cao tính dễ đọc của code
  *
- * 使用示例：
+ * Ví dụ sử dụng: 
  * List<Parameter> params = SearchParamsBuilder.create()
  *     .eq("company_id", companyId)
  *     .like("name", name)
@@ -24,21 +24,21 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 创建新的构建器实例
+     * tạomới của xây dựngthiết bịinstance
      */
     public static SearchParamsBuilder create() {
         return new SearchParamsBuilder();
     }
 
     /**
-     * 创建带租户过滤的构建器实例
+     * Tạo kèm bộ lọc tenant của xây dựngthiết bịinstance
      */
     public static SearchParamsBuilder createWithTenant(String companyId) {
         return new SearchParamsBuilder().eq("company_id", companyId);
     }
 
     /**
-     * 等于查询
+     *  v.v. tạiTruy vấn
      */
     public SearchParamsBuilder eq(String columnName, Object value) {
         if (value != null) {
@@ -48,7 +48,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 不等于查询
+     * không v.v. tạiTruy vấn
      */
     public SearchParamsBuilder ne(String columnName, Object value) {
         if (value != null) {
@@ -58,7 +58,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 模糊查询
+     * mờTruy vấn
      */
     public SearchParamsBuilder like(String columnName, Object value) {
         if (value != null && !"".equals(value.toString().trim())) {
@@ -68,7 +68,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 左模糊查询
+     * 左mờTruy vấn
      */
     public SearchParamsBuilder leftLike(String columnName, Object value) {
         if (value != null && !"".equals(value.toString().trim())) {
@@ -78,7 +78,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 右模糊查询
+     * 右mờTruy vấn
      */
     public SearchParamsBuilder rightLike(String columnName, Object value) {
         if (value != null && !"".equals(value.toString().trim())) {
@@ -88,7 +88,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 大于查询
+     * lớntạiTruy vấn
      */
     public SearchParamsBuilder gt(String columnName, Object value) {
         if (value != null) {
@@ -98,7 +98,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 大于等于查询
+     * lớntại v.v. tạiTruy vấn
      */
     public SearchParamsBuilder ge(String columnName, Object value) {
         if (value != null) {
@@ -108,7 +108,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 小于查询
+     * nhỏtạiTruy vấn
      */
     public SearchParamsBuilder lt(String columnName, Object value) {
         if (value != null) {
@@ -118,7 +118,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 小于等于查询
+     * nhỏtại v.v. tạiTruy vấn
      */
     public SearchParamsBuilder le(String columnName, Object value) {
         if (value != null) {
@@ -128,7 +128,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * IN查询
+     * INTruy vấn
      */
     public SearchParamsBuilder in(String columnName, List<?> values) {
         if (values != null && !values.isEmpty()) {
@@ -138,7 +138,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * NOT IN查询
+     * NOT INTruy vấn
      */
     public SearchParamsBuilder notIn(String columnName, List<?> values) {
         if (values != null && !values.isEmpty()) {
@@ -148,7 +148,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * BETWEEN查询
+     * BETWEENTruy vấn
      */
     public SearchParamsBuilder between(String columnName, Object start, Object end) {
         if (start != null && end != null) {
@@ -161,7 +161,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * IS NULL查询
+     * IS NULLTruy vấn
      */
     public SearchParamsBuilder isNull(String columnName) {
         parameters.add(new Parameter(columnName, "is null", null));
@@ -169,7 +169,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * IS NOT NULL查询
+     * IS NOT NULLTruy vấn
      */
     public SearchParamsBuilder isNotNull(String columnName) {
         parameters.add(new Parameter(columnName, "is not null", null));
@@ -177,7 +177,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 右模糊匹配（用于树形结构查询）
+     * 右mờkhớp(dùng đểcâyhìnhcấu trúcTruy vấn)
      */
     public SearchParamsBuilder rightLikeForTree(String columnName, Object value) {
         if (value != null && !"".equals(value.toString().trim())) {
@@ -187,7 +187,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 添加自定义参数
+     * Thêmtùy chỉnhTham số
      */
     public SearchParamsBuilder add(Parameter parameter) {
         if (parameter != null) {
@@ -197,7 +197,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 添加OR逻辑参数
+     * ThêmORlogicTham số
      */
     public SearchParamsBuilder or(String columnName, String queryType, Object value) {
         if (value != null) {
@@ -207,7 +207,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 构建参数列表
+     * xây dựngTham sốDanh sách
      */
     public List<Parameter> build() {
         return new ArrayList<>(parameters);

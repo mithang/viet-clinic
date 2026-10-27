@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 资源管理Service
+ * Quản lý tài nguyênService
  * @author lys
  * @version 2021-11-18
  */

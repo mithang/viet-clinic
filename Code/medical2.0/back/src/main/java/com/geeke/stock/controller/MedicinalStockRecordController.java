@@ -8,7 +8,7 @@ import com.geeke.stock.entity.MedicinalStockRecord;
 import com.geeke.stock.service.MedicinalStockRecordService;
 
 /**
- * 库存操作记录Controller
+ * Bản ghi thao tác tồn khoController
  * @author hl
  * @version 2022-09-26
  */

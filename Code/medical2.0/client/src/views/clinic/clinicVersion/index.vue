@@ -1,17 +1,17 @@
 <template>
   <el-row v-loading="loading">
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject="curentRow"></History>
     <!-- 权限窗口  -->
     <version-permission ref="versionPermission"></version-permission>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <clinicVersion-form
       ref="clinicVersionForm"
       :permission="permission"
       @save-finished="loadData"
     ></clinicVersion-form>
     <div class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class="query-form-container">
         <el-row v-if="!moreCodition" class="search-row">
           <el-form
@@ -23,17 +23,17 @@
             :inline-message="true"
           >
             <el-col :span="6">
-              <el-form-item label="版本名称" prop="name">
+              <el-form-item label="Tên phiên bản" prop="name">
                 <el-input
                   v-model="queryModel.name"
                   :clearable="true"
-                  placeholder="请输入版本名称"
+                  placeholder="Vui lòng nhập tên phiên bản"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-button-group>
-                <el-tooltip effect="light" content="搜索" placement="top-start">
+                <el-tooltip effect="light" content="Tìm kiếm" placement="top-start">
                   <el-button
                     type="primary"
                     icon="el-icon-search"
@@ -41,7 +41,7 @@
                     :plain="true"
                   ></el-button>
                 </el-tooltip>
-                <el-tooltip effect="light" content="重置" placement="top-start">
+                <el-tooltip effect="light" content="Đặt lại" placement="top-start">
                   <el-button
                     type="primary"
                     icon="el-icon-refresh-left"
@@ -49,7 +49,7 @@
                     :plain="true"
                   ></el-button>
                 </el-tooltip>
-                <el-tooltip effect="light" content="更多" placement="top-start">
+                <el-tooltip effect="light" content="Thêm" placement="top-start">
                   <el-button
                     type="primary"
                     icon="el-icon-d-arrow-right"
@@ -71,9 +71,9 @@
           @moreCodition="onMoreCodition()"
         ></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 工具栏 开始 -->
+      <!-- Thanh công cụ Bắt đầu -->
       <div class="page-container-header-end">
         <div>
           <el-button
@@ -81,13 +81,13 @@
             type="primary"
             icon="el-icon-plus"
             @click="onCreateEntity('clinicVersionForm')"
-            >添加</el-button
+            >Thêm</el-button
           >
         </div>
       </div>
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -139,14 +139,14 @@
                   }}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
+              <!--Nút thao tác theo dòng-->
               <el-table-column
-                label="操作"
+                label="Thao tác"
                 header-align="center"
                 :width="oprColumnWidth + 'px'"
               >
                 <template slot="header" slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select
                     v-model="columnViews"
                     v-on:save-column-view="saveColumn"
@@ -165,7 +165,7 @@
                   <OperationIcon
                     v-show="permission.view"
                     type="info"
-                    content="查看"
+                    content="Xem"
                     placement="top-start"
                     icon-name="el-icon-view"
                     @click="onViewEntity(scope.$index, scope.row, 'clinicVersionForm')"
@@ -173,7 +173,7 @@
                   <OperationIcon
                     v-show="permission.edit"
                     type="primary"
-                    content="编辑"
+                    content="Sửa"
                     placement="top-start"
                     icon-name="el-icon-edit"
                     @click="onEditEntity(scope.$index, scope.row, 'clinicVersionForm')"
@@ -181,7 +181,7 @@
                   <OperationIcon
                     v-show="permission.add"
                     type="primary"
-                    content="复制"
+                    content="Sao chép"
                     placement="top-start"
                     icon-name="el-icon-document"
                     @click="onCopyEntity(scope.$index, scope.row, 'clinicVersionForm')"
@@ -189,7 +189,7 @@
                   <OperationIcon
                     v-show="permission.edit"
                     type="primary"
-                    content="权限设置"
+                    content="Cài đặt quyền"
                     placement="top-start"
                     icon-name="el-icon-menu"
                     @click="handleSetPermission(scope.$index, scope.row)"
@@ -197,7 +197,7 @@
                   <OperationIcon
                     v-show="permission.remove"
                     type="danger"
-                    content="删除"
+                    content="Xóa"
                     placement="top-start"
                     icon-name="el-icon-delete"
                     @click="onDeleteEntity(scope.$index, scope.row, deleteClinicVersion)"
@@ -205,7 +205,7 @@
                   <OperationIcon
                     v-show="permission.view"
                     type="info"
-                    content="历史记录"
+                    content="Lịch sử"
                     placement="top-start"
                     icon-name="el-icon-info"
                     @click="onShowHistory(scope.$index, scope.row)"
@@ -216,8 +216,8 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <el-pagination
@@ -233,7 +233,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </div>
   </el-row>
 </template>
@@ -267,7 +267,7 @@ export default {
   },
   data() {
     return {
-      // listViewMixin 配置
+      // listViewMixin Cấu hình
       listApi: listClinicVersionPage,
       getApi: getClinicVersionById,
       deleteApi: deleteClinicVersion,
@@ -278,11 +278,11 @@ export default {
         name: "like",
       },
       queryModel: {
-        name: "", // 版本名称
+        name: "", // Tên phiên bản
       },
       clinicVersionTotal: 0,
       clinicVersionList: [],
-      oprColumnWidth: 150, // 操作列宽
+      oprColumnWidth: 150, // Độ rộng cột thao tác
       tableId: "987744398207139863",
       schemeId: "987744398207139875",
     };

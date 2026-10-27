@@ -1,6 +1,6 @@
 <template>
   <div  style="text-align:left" >
-    list窗口的基础组件类，处理列头拖动排序、导出数据的列头数据，以及列表显示个性化配置。
+    listLớp thành phần cơ sở của cửa sổ，处理列头拖动排序、导出数据的列头数据，以及列表显示个性化配置。
   </div>
 </template>
 <script>
@@ -12,8 +12,8 @@ export default {
   data() {
     return {
       columnViews: [],
-      oprColumnWidth: 140, // 操作列列宽，默认140px，在子类中重写修改
-      oprColumnDefaultWidth: null,    // 保存操作列默认列宽
+      oprColumnWidth: 140, // 操作列列宽，Mặc định140px，在子类中重写修改
+      oprColumnDefaultWidth: null,    // Lưu độ rộng cột thao tác mặc định
       tableId: '0',       // 在子类中覆写
       dragState: {
         startIndex: -1, // 拖动起始元素的index
@@ -24,7 +24,7 @@ export default {
         moveTableOutsideBack: false, // 拖出到table外之后又拖回来
         startClassName: '',          // 保存拖动起始列的class
         startCursor: '',            // 保存拖动列的光标形状cursor
-        startShowIndex: -1          // 记录拖动起始元素index在table中显示的列数
+        startShowIndex: -1          // 记录拖动起始元素indextạitable中显示的列数
       },
       curentRow: {},
       moreCodition: false,     // 搜素框是否更多查询条件
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     async mainUIInit() {
-      this.oprColumnDefaultWidth = this.oprColumnWidth  // 保存操作列默认列宽
+      this.oprColumnDefaultWidth = this.oprColumnWidth  // Lưu độ rộng cột thao tác mặc định
       if (this.tableId && this.tableId !== '0') {
         this.setLoad()
         listColumnView(this.$route.meta.routerId, this.tableId).then(responseData => {
@@ -119,7 +119,7 @@ export default {
           }
         },
         [
-          // 添加 <a> 用于显示表头 label
+          // Thêm <a> 用于显示表头 label
           h('a', column.label),
           // 添加一个空标签用于显示拖动动画
           h('span', {
@@ -132,7 +132,7 @@ export default {
 
     // 按下鼠标开始拖动
     handleMouseDown (e, column) {
-      // 判断是鼠标左键
+      // Kiểm tra có phải nút trái chuột không
       if (e.button === 0) {
         // 拖动改变列宽
         if(document.body.style.cursor === "col-resize") {
@@ -142,7 +142,7 @@ export default {
         this.dragState.dragging = true
         this.dragState.startIndex = parseInt(column.columnKey)
         this.dragState.startShowIndex = this.getShowIndex(this.dragState.startIndex)
-        // 给当前要拖动列的th设置class 和 cursor
+        // cho cột hiện cần kéothCài đặtclass và cursor
         let thElement = document.querySelectorAll('.drag_table table thead tr th')[this.dragState.startShowIndex]
         this.dragState.startClassName = thElement.className
         thElement.className = 'dragging_column'
@@ -151,9 +151,9 @@ export default {
         // 给拖动时的虚拟容器添加宽高
         let table = document.getElementsByClassName('drag_table')[0]
         let virtual = document.getElementsByClassName('virtual')
-        // 设置每一列的位置，以及宽度、高度
+        // 设置每一列的位置，以及宽度、chiều cao
         for (let item of virtual) {
-          // 与<th>的起始位置一样
+          // và<th>的起始位置一样
           item.style.top = item.parentElement.parentElement.parentElement.getBoundingClientRect().y + 'px'
           item.style.left = item.parentElement.parentElement.parentElement.getBoundingClientRect().x + 'px'
           item.style.height = table.clientHeight + 'px'
@@ -165,7 +165,7 @@ export default {
 
     // 拖动中
     handleMouseMove (e, column) {
-      // 判断是鼠标左键 并且触发过MouseDown事件
+      // Kiểm tra có phải nút trái chuột không và đã kích hoạtMouseDownsự kiện
       if (e.button === 0 && this.dragState.startIndex > -1) {
         if (this.dragState.dragging) {
           let currentIndex = parseInt(column.columnKey) // 拖动的当前列index
@@ -183,7 +183,7 @@ export default {
 
     // 鼠标放开结束拖动
     handleMouseUp (e, column) {
-      // 判断是鼠标左键 并且触发过MouseDown事件
+      // Kiểm tra có phải nút trái chuột không và đã kích hoạtMouseDownsự kiện
       if (e.button === 0 && this.dragState.startIndex > -1) {
         // 拖出当前table外之后又拖回来，不再进行易位操作（拖出去时已处理）
         if (this.dragState.moveTableOutsideBack) {
@@ -236,7 +236,7 @@ export default {
 
     // 拖动完成后的初始化
     finishDragInit () {
-      // 给当前要拖动列的th还原class 和 cursor
+      // cho cột hiện cần kéothKhôi phụcclass và cursor
       let thElement = document.querySelectorAll('.drag_table table thead tr th')[this.dragState.startShowIndex]
       thElement.className = this.dragState.startClassName
       thElement.style.cursor = this.dragState.startCursor
@@ -259,7 +259,7 @@ export default {
       return columnIndex === this.getShowIndex(this.dragState.afterMoveIndex) ? `drag_active_${this.dragState.direction}` : ''
     },
 
-    // 动态给表头单元格th添加class，实现拖动中的背景
+    // 动态给表头单元格thThêmclass，实现拖动中的背景
     cellClassName ({ column, columnIndex }) {
        return (columnIndex === this.dragState.startShowIndex ? `dragging_column` : '')
     },
@@ -267,7 +267,7 @@ export default {
     initViewColumn(columns) {
       this.columnViews.splice(0, this.columnViews.length)
       for (let i = 0; i <= columns.length - 1; i++) {
-        if(columns[i].prop === 'operate_column') {   // 操作列
+        if(columns[i].prop === 'operate_column') {   // Cột thao tác
 	        this.oprColumnWidth = columns[i].width
         } else {
           this.columnViews.push(columns[i])
@@ -280,7 +280,7 @@ export default {
       if(column.columnKey) {
         this.columnViews[column.columnKey].width = newWidth
         this.saveColumn(this.columnViews[column.columnKey])
-      } else {  // 操作列
+      } else {  // Cột thao tác
         this.oprColumnWidth = newWidth
         this.saveColumn({
           width: this.oprColumnWidth,
@@ -302,7 +302,7 @@ export default {
       return showIndex
     },
 
-    /* 导出excel的列表显示列头数组 */
+    /* Xuấtexcel的列表显示列头数组 */
     getHeads(){
       const heads = []
       for (let i = 0; i <= this.columnViews.length - 1; i++) {
@@ -312,7 +312,7 @@ export default {
       }
       return heads
     },
-    /* 导出excel的列表显示列数据字段数组 */
+    /* Xuấtexcel的列表显示列数据字段数组 */
     getFilterVal(){
       const filterVal = []
       for (let i = 0; i <= this.columnViews.length - 1; i++) {

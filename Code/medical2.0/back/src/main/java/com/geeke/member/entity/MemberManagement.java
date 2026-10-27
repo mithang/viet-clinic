@@ -14,24 +14,24 @@ import com.geeke.common.persistence.DataEntity;
 import java.util.List;
 
 /**
- * 会员卡管理Entity
+ * Quản lý thẻ hội viênEntity
  * @author rys
  * @version 2022-10-26
  */
 public class MemberManagement extends DataEntity<MemberManagement> {
 
 	private static final long serialVersionUID = 1225301049409470622L;
-	private Company company;      // 诊所id 
-	private Patient patient;      // 患者信息 
-	private MemberSet memberSet;      // 会员卡id 
-	private String age;		// 年龄
-	private DictItem gender;		// 性别
-	private String card;		// 卡号
-	private DictItem type;		// 会员卡类型
-	private String memberName;		// 会员卡名称
-	private String status;		// 状态
-	private String identityCard;		// 身份证号
-	private String phone;   //电话
+	private Company company;      // Phòng khámid 
+	private Patient patient;      // Thông tin bệnh nhân 
+	private MemberSet memberSet;      // Thẻ hội viênid 
+	private String age;		// Tuổi
+	private DictItem gender;		// Giới tính
+	private String card;		// thẻsố
+	private DictItem type;		// Hội viênthẻLoại
+	private String memberName;		// Hội viênthẻTên
+	private String status;		// Trạng thái
+	private String identityCard;		// Số CMND/CCCD
+	private String phone;   //Điện thoại
 	private List<MemberManagementDetail> memberManagementDetails;
 	private List<MemberItem> memberItems;
 	
@@ -44,7 +44,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -53,7 +53,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
         this.company = company;
     }
     
-	@NotNull(message="患者信息不能为空")
+	@NotNull(message="Thông tin bệnh nhânKhông thể là trống")
     public Patient getPatient() {
         return patient;
     }
@@ -62,7 +62,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
         this.patient = patient;
     }
     
-	@NotNull(message="会员卡id不能为空")
+	@NotNull(message="Thẻ hội viênidKhông được để trống")
     public MemberSet getMemberSet() {
         return memberSet;
     }
@@ -71,7 +71,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
         this.memberSet = memberSet;
     }
     
-	@Length(min=0, max=100, message="年龄长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="TuổiĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getAge() {
 		return age;
 	}
@@ -80,7 +80,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=0, max=100, message="性别长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Giới tínhĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public DictItem getGender() {
 		return gender;
 	}
@@ -89,7 +89,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=1, max=100, message="卡号长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="thẻsốĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getCard() {
 		return card;
 	}
@@ -98,7 +98,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=1, max=100, message="会员卡类型长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="Hội viênthẻLoạiĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public DictItem getType() {
 		return type;
 	}
@@ -107,7 +107,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=0, max=100, message="会员卡名称长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Hội viênthẻTênĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getMemberName() {
 		return memberName;
 	}
@@ -116,7 +116,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=1, max=1, message="状态长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message="Độ dài trạng thái phải nằm trong khoảng 1 đến 1 ")
 	public String getStatus() {
 		return status;
 	}
@@ -125,7 +125,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=0, max=255, message="身份证号长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="số CMND/CCCDĐộ dài phải nằm trong khoảng 0 đến 255 ")
 	public String getIdentityCard() {
 		return identityCard;
 	}
@@ -158,7 +158,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -167,7 +167,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -177,7 +177,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

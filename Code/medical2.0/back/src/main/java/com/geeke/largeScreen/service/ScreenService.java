@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 数据大屏Service
+ * Màn hình dữ liệu lớnService
  * @author zhanghan
  * @version 2021-10-12
  */
@@ -19,7 +19,7 @@ public class ScreenService{
     @Autowired
     private ScreenDao screenDao;
 
-    /** 获取大屏基础数据 */
+    /** Lấylớn屏cơ bảnDữ liệu */
     public Basics getBasics(String parentId) {
         Basics basics = new Basics();
         basics.setQuest(screenDao.getQuest(parentId));

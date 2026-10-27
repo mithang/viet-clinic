@@ -3,54 +3,54 @@
   <el-row>
     <el-col :span="24" style="height:40px;">
       <addtask-form ref='addtaskForm' @typeclick="typeclickload"></addtask-form>
-      <el-button type="primary" style="float:right;margin-right:4.5%;" icon='el-icon-plus'  @click.native="onCreatePatient('')">新增</el-button>
+      <el-button type="primary" style="float:right;margin-right:4.5%;" icon='el-icon-plus'  @click.native="onCreatePatient('')">Thêm mới</el-button>
     </el-col>
     <el-col :span="24">
      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-    <el-form-item label="截止时间"  style="margin-right: 3px;">
+    <el-form-item label="Thời hạn"  style="margin-right: 3px;">
   <div class="block" style="width:50%">
     <el-date-picker
       v-model="TimeInterval"
       type="datetimerange"
       :picker-options="pickerOptions"
       :default-time="['00:00:00','23:59:59']"
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
+      range-separator="đến"
+      start-placeholder="Ngày bắt đầu"
+      end-placeholder="Ngày kết thúc"
       align="right"
       :clearable="false">
     </el-date-picker>
   </div>
     </el-form-item>
-    <!-- <el-form-item label="诊所"  style="margin-right: 3px;">
-    <el-select v-model="formInline.jgid" placeholder="诊所">
-      <el-option label="全部" value="qb"></el-option>
+    <!-- <el-form-item label="Phòng khám"  style="margin-right: 3px;">
+    <el-select v-model="formInline.jgid" placeholder="Phòng khám">
+      <el-option label="Tất cả" value="qb"></el-option>
        <el-option v-for="item in jglist" :value="item.jgid" :key="item.jgid"  :label="item.jgmc">
         </el-option>
     </el-select>
   </el-form-item> -->
-    <el-form-item label="任务类型"  style="margin-right: 3px;">
-    <el-select v-model="formInline.tasktype" placeholder="任务类型">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="常规任务" value="0"></el-option>
-      <el-option label="宣传活动" value="1"></el-option>
+    <el-form-item label="Loại nhiệm vụ"  style="margin-right: 3px;">
+    <el-select v-model="formInline.tasktype" placeholder="Loại nhiệm vụ">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Nhiệm vụ thường xuyên" value="0"></el-option>
+      <el-option label="Hoạt động tuyên truyền" value="1"></el-option>
     </el-select>
   </el-form-item>
-  <el-form-item label="任务状态"  style="margin-right: 3px;">
-    <el-select v-model="formInline.taskstatus" placeholder="任务状态">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="待发布" value="0"></el-option>
-      <el-option label="已发布" value="1"></el-option>
+  <el-form-item label="Trạng thái nhiệm vụ"  style="margin-right: 3px;">
+    <el-select v-model="formInline.taskstatus" placeholder="Trạng thái nhiệm vụ">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Chờ đăng" value="0"></el-option>
+      <el-option label="Đã đăng" value="1"></el-option>
     </el-select>
   </el-form-item>
-    <el-form-item label="任务名称" style="margin-right: 3px;">
+    <el-form-item label="Tên nhiệm vụ" style="margin-right: 3px;">
     <el-input v-model="formInline.taskname" placeholder="请输入任务名称关键词"></el-input>
   </el-form-item>
 
   <el-form-item style="margin-right: 3px;">
-    <el-button type="primary" @click="onSearch">查询</el-button>
-    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
-    <!-- <el-button @click="show3 = !show3">{{show3==true?"收起":"展开"}}</el-button> -->
+    <el-button type="primary" @click="onSearch">Truy vấn</el-button>
+    <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
+    <!-- <el-button @click="show3 = !show3">{{show3==true?"Thu gọn":"Mở rộng"}}</el-button> -->
   </el-form-item>
      </el-form>
    </el-col>
@@ -61,14 +61,14 @@
     border
     style="width: 100%">
     <el-table-column
-             label="序号"
+             label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
     <!-- <el-table-column
       prop="date"
-      label="日期"
+      label="Ngày"
       width="150">
     </el-table-column> -->
     <el-table-column
@@ -78,12 +78,12 @@
     </el-table-column>
     <el-table-column
       prop="tasktype"
-      label="任务类型"
+      label="Loại nhiệm vụ"
       width="width">
     </el-table-column>
     <!-- <el-table-column
       prop="taskstatus"
-      label="任务状态"
+      label="Trạng thái nhiệm vụ"
       width="width">
     </el-table-column> -->
     <el-table-column
@@ -103,24 +103,24 @@
     </el-table-column>
     <el-table-column
       prop="createdTime"
-      label="发布时间"
+      label="Thời gian đăng"
       width="width">
     </el-table-column>
     <el-table-column
       prop="taskdeadline"
-      label="任务截止时间"
+      label="Thời hạn nhiệm vụ"
       width="width">
     </el-table-column>
     <el-table-column
       prop="taskstatus"
-      label="任务状态"
+      label="Trạng thái nhiệm vụ"
       width="width">
       <template slot-scope="scope">
         <span v-if="scope.row.taskstatus==='0'" style="color:orange">
-            待发布
+            Chờ đăng
         </span>
          <span v-else style="color:lightgreen">
-            已发布
+            Đã đăng
         </span>
       </template>
     </el-table-column>
@@ -130,14 +130,14 @@
       label="taskaccessory">
     </el-table-column>
     <el-table-column
-      label="操作"
+      label="Thao tác"
       width="width">
       <template slot-scope="scope">
-        <el-button v-if="scope.row.taskstatus==='1'" @click="onCreatedetails(scope.row,scope.$index)" type="text" size="small">查看</el-button>
-        <el-button v-if="scope.row.taskstatus==='0'" @click="onUpdate(scope.row,scope.$index)" type="text" size="small">修改</el-button>
-        <el-button v-if="scope.row.taskstatus==='0'" @click="onRelease(scope.row,scope.$index)" type="text" size="small" style="color:lightgreen">发布任务</el-button>
-        <el-button v-if="scope.row.taskstatus==='0'" @click="onDelete(scope.row,scope.$index)" type="text" size="small" style="color:red;">删除任务</el-button>
-        <!-- <el-button type="text" size="small">编辑</el-button> -->
+        <el-button v-if="scope.row.taskstatus==='1'" @click="onCreatedetails(scope.row,scope.$index)" type="text" size="small">Xem</el-button>
+        <el-button v-if="scope.row.taskstatus==='0'" @click="onUpdate(scope.row,scope.$index)" type="text" size="small">Sửa</el-button>
+        <el-button v-if="scope.row.taskstatus==='0'" @click="onRelease(scope.row,scope.$index)" type="text" size="small" style="color:lightgreen">Đăng nhiệm vụ</el-button>
+        <el-button v-if="scope.row.taskstatus==='0'" @click="onDelete(scope.row,scope.$index)" type="text" size="small" style="color:red;">Xóa nhiệm vụ</el-button>
+        <!-- <el-button type="text" size="small">Sửa</el-button> -->
       </template>
     </el-table-column>
   </el-table>
@@ -203,7 +203,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         TimeInterval:this.getInitializeDate(),
         pickerOptions: {
           shortcuts: [{
-            text: '最近一周',
+            text: 'Tuần gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -211,7 +211,7 @@ import { getjglist} from "@/api/toll/tollInfo";
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近一个月',
+            text: 'Tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -219,7 +219,7 @@ import { getjglist} from "@/api/toll/tollInfo";
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近三个月',
+            text: '3 tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -242,23 +242,23 @@ import { getjglist} from "@/api/toll/tollInfo";
     },
     methods: {
 
-      //删除任务
+      //Xóa nhiệm vụ
       onDelete(row,index){
         this.setLoad();
         deleteTask(row).then((res)=>{
           if(res.code===100){
-            this.$message.success("删除成功！")
+            this.$message.success("Xóa thành công！")
             this.loadData()
             this.resetLoad();
           }else{
-            this.$message.error("执行失败")
+            this.$message.error("Thực hiện thất bại")
           }
         }).catch((error)=>{
           this.$message.error(error)
         })
       },
 
-      //发布任务
+      //Đăng nhiệm vụ
       onRelease(row,index){
         row.taskstatus = "1"
         release(row).then((res)=>{
@@ -276,21 +276,21 @@ import { getjglist} from "@/api/toll/tollInfo";
         this.$refs.addtaskForm.openUpdateworkbenchDialog(this.taskAll[index]);
       },
 
-         //设置默认日期
+         //Đặt ngày mặc định
     getInitializeDate () {
-     let date = new Date()//获取新的时间
-     //获取当前年份,并且转为字符串
+     let date = new Date()//Lấy thời gian mới
+     //Lấy năm hiện tại,và chuyển thành chuỗi
      let year = date.getFullYear().toString()
-     //获取当前月份，因为月份是要从0开始，此处要加1，
-    //使用三元表达式，判断是否小于10，如果是的话，就在字符串前面拼接'0'
+     //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
+    //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
      let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-     //获取天，判断是否小于10，如果是的话，就在在字符串前面拼接'0'
+     //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
      let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-     //字符串拼接，将开始时间和结束时间进行拼接
-     let start = year + '-' + month + '-01'+' 00:00:00'    //当月第一天
+     //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+     let start = year + '-' + month + '-01'+' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
      //let end=new Date(year, month, 0).getDate();
-     let end = year + '-' + month + '-' + day +' 23:59:59'  //当天
-     return [start,end] //将值设置给组件DatePicker 绑定的数据
+     let end = year + '-' + month + '-' + day +' 23:59:59'  //Trong ngày
+     return [start,end] //Gán giá trị cho thành phầnDatePicker Dữ liệu đã liên kết
    },
        appendSearchParams() {
       if (this.TimeInterval) {
@@ -311,7 +311,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         responseData.data.rows.forEach((item) => {
           this.tableData.push({
             id: item.id,
-            tasktype: item.tasktype === "0" ? "常规任务" : "宣传活动",
+            tasktype: item.tasktype === "0" ? "Nhiệm vụ thường xuyên" : "Hoạt động tuyên truyền",
             taskname: item.taskname,
             taskdescribe: item.taskdescribe,
             createdTime: item.createdTime,

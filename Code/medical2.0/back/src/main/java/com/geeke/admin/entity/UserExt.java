@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 用户扩展Entity
+ * Người dùngmở rộngEntity
  * @author ch
  * @version 2021-08-25
  */
@@ -14,23 +14,23 @@ import lombok.EqualsAndHashCode;
 public class UserExt extends DataEntity<UserExt>{
 
     private static final long serialVersionUID = 1L;
-    private String userId;		// 用户id
-    private String companyId;		// 诊所id
-    private String photoId;		// 上传照片id
-    private String nation;		// 民族
-    private String sex;			// 性别
-    private String birthday;		// 生日
-    private String isDuty;		// 是否在职（0否1是）
-    private String creditType;		// 证件类型
-    private String creditNum;		// 证件号码
-    private String post;		// 职位
-    private String office;		// 科室名称
-    private String officeCode;		// 科室代码
-    private String jobType;		// 职业类型
-    private String description;		// 描述信息
-    private String startWorkTime;		// 诊所开始工作时间
-    private String endWorkTime;		// 诊所结束时间
-    //医保字段
-     private String pracPsnCode;//执业人员编码
+    private String userId;		// Người dùngid
+    private String companyId;		// Phòng khámid
+    private String photoId;		// Tải lênảnhid
+    private String nation;		// Dân tộc
+    private String sex;			// Giới tính
+    private String birthday;		// sinhNgày
+    private String isDuty;		// Có hay khôngtạichức vụ(0 không 1 có )
+    private String creditType;		// Loại giấy tờ
+    private String creditNum;		// Số giấy tờ
+    private String post;		// chức vụvị
+    private String office;		// Tên khoa
+    private String officeCode;		// Mã khoa
+    private String jobType;		// Nghề nghiệpLoại
+    private String description;		// Mô tảThông tin
+    private String startWorkTime;		// Phòng khámBắt đầucông việclàmThời gian
+    private String endWorkTime;		// Phòng khámThời gian kết thúc
+    //Trường BHYT
+     private String pracPsnCode;//nhân viên hành nghềMã
 
 }

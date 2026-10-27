@@ -9,7 +9,7 @@ import com.geeke.toll.entity.TollDetail;
 import com.geeke.toll.service.TollDetailService;
 
 /**
- * 收费管理Controller
+ * Quản lý thu phíController
  * @author lc
  * @version 2022-06-15
  */

@@ -3,7 +3,7 @@ package com.geeke.common.entity;
 import com.geeke.common.persistence.BaseEntity;
 
 /**
- * 表列头
+ * bảngCộttiêu đề
  * 
  * @author lys
  * @date 2019/2/2
@@ -11,19 +11,19 @@ import com.geeke.common.persistence.BaseEntity;
 public class ColumnView extends BaseEntity<ColumnView> implements Comparable<ColumnView> {
 	private static final long serialVersionUID = -4859316271465038916L;
 
-	private String userId;		//用户ID
-	private String routerId;	//路由ID
-	private String tableId;		//表ID
+	private String userId;		//Người dùngID
+	private String routerId;	//Định tuyếnID
+	private String tableId;		//bảngID
 	
-	private String prop;		// 属性名
-	private String label;		// 列头	
-	private String align;		// 单元格对齐方式
-	private Integer miniWidth;		// 最小宽度
-	private Integer width;		// 列宽
-	private Boolean display;		// 列表中是否显示 	
-	private Integer sort;		// 排序
-	private String showType;	//显示类型
-	private String javaType;	// java类型
+	private String prop;		// thuộc tínhtên
+	private String label;		// Cộttiêu đề	
+	private String align;		// đơn đồngôđối với齐cách
+	private Integer miniWidth;		// Nhỏ nhấtrộngđộ
+	private Integer width;		// Độ rộng cột
+	private Boolean display;		// Danh sách trong Có hay khônghiển thị 	
+	private Integer sort;		// Sắp xếp
+	private String showType;	//hiển thịLoại
+	private String javaType;	// javaLoại
 
 	public String getUserId() {
 		return userId;

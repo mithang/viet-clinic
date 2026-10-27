@@ -12,29 +12,29 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 /**
- * 诊疗项目Entity
+ * Hạng mục khám chữa bệnhEntity
  * @author txl
  * @version 2022-05-30
  */
 public class CostItem extends DataEntity<CostItem> {
 
 	private static final long serialVersionUID = 998465736089977637L;
-	private Company company;      // 诊所id
+	private Company company;      // Phòng khámid
 
-	private String syncId;  //同步ID
+	private String syncId;  //đồng bộID
 	private int syncNum;
-	private String itemCode;		// 项目编码
-	private String itemName;		// 项目名称
-	private DictItem itemType;      // 项目类别 
-	private DictItem unit;      // 单位 
-	private BigDecimal costPrice;		// 成本价
-	private BigDecimal salePrice;		// 销售价
-	private String isUse;		// 状态
-	private String isPackage;   //是否为打包项目
-	private String isDeduct;		// 是否执行划扣
-	private String itemCountryCode; //国家编码
-	private String pinyinCode;     //拼音码
-	private List<CostItemPackage> costItemPackages;  //子项目封装
+	private String itemCode;		// hạng mụcMã
+	private String itemName;		// hạng mụcTên
+	private DictItem itemType;      // Loại hạng mục 
+	private DictItem unit;      // Đơn vị 
+	private BigDecimal costPrice;		// Giá vốn
+	private BigDecimal salePrice;		// bán hànggiá
+	private String isUse;		// Trạng thái
+	private String isPackage;   //Có hay không là đánhgóihạng mục
+	private String isDeduct;		// Có thực hiện khấu trừ không
+	private String itemCountryCode; //quốc giaMã
+	private String pinyinCode;     //Mã pinyin
+	private List<CostItemPackage> costItemPackages;  //hạng mục conđóng gói
 	private RecipelDetail recipelDetail;
 	private InspectionCheckInfoCostItem inspectionCheckInfo;
 	
@@ -47,7 +47,7 @@ public class CostItem extends DataEntity<CostItem> {
 	}
 	
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -56,7 +56,7 @@ public class CostItem extends DataEntity<CostItem> {
         this.company = company;
     }
     
-	@Length(min=0, max=64, message="项目编码长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="hạng mụcĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
 	public String getItemCode() {
 		return itemCode;
 	}
@@ -65,7 +65,7 @@ public class CostItem extends DataEntity<CostItem> {
 	}
 	
 	
-	@Length(min=1, max=64, message="项目名称长度必须介于 1 和 64 之间")
+	@Length(min=1, max=64, message="hạng mụcTênĐộ dài phải nằm trong khoảng 1 đến 64 ")
 	public String getItemName() {
 		return itemName;
 	}
@@ -121,7 +121,7 @@ public class CostItem extends DataEntity<CostItem> {
 	}
 	
 	
-	@Length(min=0, max=2, message="状态长度必须介于 0 和 2 之间")
+	@Length(min=0, max=2, message="Độ dài trạng thái phải nằm trong khoảng 0 đến 2 ")
 	public String getIsUse() {
 		return isUse;
 	}
@@ -130,7 +130,7 @@ public class CostItem extends DataEntity<CostItem> {
 	}
 	
 	
-	@Length(min=0, max=2, message="是否执行划扣长度必须介于 0 和 2 之间")
+	@Length(min=0, max=2, message="Độ dài có thực hiện khấu trừ phải nằm trong khoảng 0 đến 2 ")
 	public String getIsDeduct() {
 		return isDeduct;
 	}
@@ -138,7 +138,7 @@ public class CostItem extends DataEntity<CostItem> {
 		this.isDeduct = isDeduct;
 	}
 
-	@Length(min=0, max=64, message="国家编码长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="quốc giaĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
 	public String getItemCountryCode() {
 		return itemCountryCode;
 	}
@@ -187,7 +187,7 @@ public class CostItem extends DataEntity<CostItem> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -196,7 +196,7 @@ public class CostItem extends DataEntity<CostItem> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -206,7 +206,7 @@ public class CostItem extends DataEntity<CostItem> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

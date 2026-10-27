@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 慢病处方详情Entity
+ * Đơn thuốc bệnh mạn tínhChi tiếtEntity
  * @author txl
  * @version 2022-06-07
  */
@@ -21,99 +21,99 @@ import java.util.Map;
 public class ChronicDiseaseEvt implements Serializable {
 
 	/**
-	 * 费别
+	 * Loại phí
 	 */
-	private String febbe = "费别：普通病人";
+	private String febbe = "Loại phí: thông thườngbệnhngười";
 	/**
-	 * 患者姓名
+	 * Tên bệnh nhân
 	 */
 	private String name;
 	/**
-	 * 性别
+	 * Giới tính
 	 */
 	private String gender;
 	/**
-	 * 年龄
+	 * Tuổi
 	 */
 	private String age;
 	/**
-	 * 体温
+	 * Nhiệt độ cơ thể
 	 */
 	private String temperature;
 	/**
-	 * 门诊/住院病历号，取挂号单号
+	 * ngoại trú/Nhập việnbệnh ánsố, lấyĐăng ký khámđơnsố
 	 */
 	private String registrationId;
 	/**
-	 * 科别/病区/床位号，取科室
+	 * Khoa/bệnhQuận/giườngvịsố, lấyKhoa
 	 */
 	private String clinicOffice;
 	/**
-	 * 临床诊断，取西药诊断
+	 * Chẩn đoán lâm sàng, lấyTâythuốcChẩn đoán
 	 */
 	private String westernDiagnose;
 	/**
-	 * 其他诊断，取中药诊断
+	 * khácChẩn đoán, lấy trong thuốcChẩn đoán
 	 */
 	private String chinaDiagnose;
 	/**
-	 * 并发疾病，数据先为空
+	 * vàphátBệnh, Dữ liệutrước là trống
 	 */
-	private String concurrentDisease="并发疾病：";
+	private String concurrentDisease="vàphátBệnh: ";
 	/**
-	 * 备注，取医嘱事项
+	 * Ghi chú, lấyY lệnhviệchạng mục
 	 */
 	private String doctorAdvice;
 	/**
-	 * 开具日期，取medicalRecord的创建时间
+	 * kêNgày, lấymedicalRecord của tạoThời gian
 	 */
 	private String createDate;
 	/**
-	 * 医师
+	 * Bác sĩ
 	 */
 	private String doctor;
 	/**
-	 * 药品金额
+	 * Số tiền thuốc
 	 */
 	private String amount;
 	/**
-	 * 收费员
+	 * Nhân viên thu phí
 	 */
-	private String tollCollector = "收费员：";
+	private String tollCollector = "Nhân viên thu phí: ";
 	/**
-	 * 注射费
+	 * 注射phí
 	 */
 	private String injectionFee;
 	/**
-	 * 审核/调配
+	 * Duyệt/Pha chế
 	 */
-	private String deploy = "审核/调配：";
+	private String deploy = "Duyệt/Pha chế: ";
 	/**
-	 * 核对发药
+	 * Đối chiếuphát thuốc
 	 */
-	private String dispensing = "核对/发药：";
+	private String dispensing = "Đối chiếu/Phát thuốc: ";
 	/**
-	 * 大额处方患者意见
+	 * lớnsố tiềnĐơn thuốcBệnh nhâný kiến
 	 */
-	private String patientOpinion = "大额处方患者意见：同意 不同意";
+	private String patientOpinion = "lớnsố tiềnĐơn thuốcBệnh nhâný kiến: cùngý khác nhauý";
 	/**
-	 * 患者签名
+	 * Bệnh nhânchữ ký
 	 */
-	private String signature = "患者签名：";
+	private String signature = "Bệnh nhânchữ ký: ";
 	/**
-	 * 联系地址和电话
+	 * liên hệĐịa chỉ và Số điện thoại
 	 */
 	private String address;
 	/**
-	 * 医院名称
+	 * Bệnh việnTên
 	 */
 	private String clinicName;
 	/**
-	 * 处方小类，慢病出发，普通处方
+	 * Tiểu loại đơn thuốc, chậmbệnhraphát, thông thườngĐơn thuốc
 	 */
-	private String smallType ="慢病处方";
+	private String smallType ="Đơn thuốc bệnh mạn tính";
 
-	private String tips = "（收费票据请贴附处方背面）";
+	private String tips = "(Thu phíphiếudữ liệuVui lòng贴附Đơn thuốc背mặt)";
 	public ChronicDiseaseEvt(Patient patient, Registration registration,
 							 MedicalRecord medicalRecord,RecipelInfo recipelInfo,
 							 List<RecipelDetail> detailList) {
@@ -130,42 +130,42 @@ public class ChronicDiseaseEvt implements Serializable {
 					.filter(detail -> detail.getIsExtra() == 1)
 					.map(RecipelDetail::getAllFee)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
-			this.injectionFee = "附加费：￥" + injectionFeeSum;
+			this.injectionFee = "Phí phụ thêm: ￥" + injectionFeeSum;
 			BigDecimal amountSum = detailList.stream()
 					.filter(detail -> detail.getIsExtra() == 0)
 					.map(RecipelDetail::getAllFee)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
-			this.amount = "药品金额：￥" + amountSum;
+			this.amount = "Số tiền thuốc: ￥" + amountSum;
 		}else {
-			this.injectionFee = "附加费：￥ 0";
-			this.amount = "药品金额：￥ 0";
+			this.injectionFee = "Phí phụ thêm: ￥ 0";
+			this.amount = "Số tiền thuốc: ￥ 0";
 		}
 	}
 
 	private void buildRecipelInfo(RecipelInfo recipelInfo) {
-		this.smallType = recipelInfo.getChronicDisease() ? "慢病处方" : "普通处方";
-		this.doctorAdvice = "备注：" + (StrUtil.isBlank(recipelInfo.getEntrust()) ? "" : recipelInfo.getEntrust());
+		this.smallType = recipelInfo.getChronicDisease() ? "Đơn thuốc bệnh mạn tính" : "thông thườngĐơn thuốc";
+		this.doctorAdvice = "Ghi chú: " + (StrUtil.isBlank(recipelInfo.getEntrust()) ? "" : recipelInfo.getEntrust());
 	}
 
 	private void buildPatient(Patient patient){
-		this.name = "患者姓名：" + patient.getName();
-		this.gender = "性别：" + patient.getGender().getName();
-		this.age = "年龄：" + (StrUtil.isBlank(patient.getAge()) ? "" : patient.getAge());
-		this.address = "联系电话或地址（患者自愿填写）：" + patient.getAddress();
-		this.clinicName = patient.getCompany().getName()+"处方笺";
+		this.name = "Tên bệnh nhân: " + patient.getName();
+		this.gender = "Giới tính: " + patient.getGender().getName();
+		this.age = "Tuổi: " + (StrUtil.isBlank(patient.getAge()) ? "" : patient.getAge());
+		this.address = "Số điện thoại liên hệ hoặc Địa chỉ(Bệnh nhântự愿điền): " + patient.getAddress();
+		this.clinicName = patient.getCompany().getName()+"Đơn thuốcgiấy";
 	}
 	private void buildRegistration(Registration registration){
-		this.registrationId ="门诊/住院病历号："+ registration.getId();
-//		this.clinicOffice = "科别/病区/床位号："+registration.getClinicOffice().getName();
-		this.clinicOffice = "科别："+registration.getClinicOffice().getName();
-		this.temperature = "体温：" + (StrUtil.isBlank(registration.getTemperature()) ? "" : registration.getTemperature())+"℃";
+		this.registrationId ="ngoại trú/Nhập việnbệnh ánsố: "+ registration.getId();
+//		this.clinicOffice = "Khoa/bệnhQuận/giườngvịsố: "+registration.getClinicOffice().getName();
+		this.clinicOffice = "Khoa: "+registration.getClinicOffice().getName();
+		this.temperature = "Nhiệt độ cơ thể: " + (StrUtil.isBlank(registration.getTemperature()) ? "" : registration.getTemperature())+"℃";
 	}
 
 	private void buildMedicalRecord(MedicalRecord medicalRecord){
-		this.westernDiagnose = "西医诊断：" + medicalRecord.getWesternDiagnose();
-		this.chinaDiagnose = "中医诊断：" + medicalRecord.getChinaDiagnose();
-		this.createDate = "开具日期：" + DateUtil.formatDateTime(medicalRecord.getCreateDate());
-		this.doctor = "医师：" + medicalRecord.getDoctor().getName();
+		this.westernDiagnose = "Chẩn đoán tây y: " + medicalRecord.getWesternDiagnose();
+		this.chinaDiagnose = "Chẩn đoán đông y: " + medicalRecord.getChinaDiagnose();
+		this.createDate = "kêNgày: " + DateUtil.formatDateTime(medicalRecord.getCreateDate());
+		this.doctor = "Bác sĩ: " + medicalRecord.getDoctor().getName();
 	}
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new HashMap<>();

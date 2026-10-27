@@ -29,7 +29,7 @@ import com.google.common.collect.Maps;
 import org.springframework.util.CollectionUtils;
 
 /**
- * 库存盘点Service
+ * Kiểm kê tồn khoService
  * @author rys
  * @version 2022-11-02
  */
@@ -76,22 +76,22 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
     }
 
     @Transactional(readOnly = false)
-    /*保存库存盘点单*/
+    /*LưuKiểm kê tồn khođơn*/
     public InventoryVerification save(String type,String variety){
 
         Company company = SessionUtils.getUser().getCompany();
 
-         // 新增盘点时先去判断是否有药品没有发药，需要进行发药或者退药处理
-        // 药品不能进行收费操作
-        // 医生不能进行完成接诊的操作
+         // Khi thêm kiểm kê mới, kiểm tra trước có thuốc nào chưa phát không, Cầntiến hành dòngphát thuốc hoặc ngườiTrả thuốcXử lý
+        // ThuốcKhông thểtiến hành dòngThu phíthao tác
+        // Bác sĩKhông thểtiến hành dònghoàn thành tiếp nhận của thao tác
 
 
-        //获取是否存在未发药的药品/材料
+        //LấyCó tồn tại khôngChưaphát thuốc của Thuốc/Vật tư
         if(InventoryVerificationService.Flage){
             whetherTheDispensing(company);
         }
 
-        //获取是否存在未收费的药品/材料
+        //LấyCó tồn tại khôngChưaThu phí của Thuốc/Vật tư
         if(InventoryVerificationService.Flage){
             //whetherTheDispensing(company);
             whetherChargeOrNot(company);
@@ -111,13 +111,13 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
 
         if(!StringUtils.isNullOrEmpty(save)){
             List<MedicinalStorageControl> medicinalStorageControls = medicinalStorageControlService.getAll(company.getId(), type, variety);
-            //保存库存盘点详情表
+            //LưuChi tiết kiểm kê tồn khobảng
             if(ObjectUtils.equals("0",variety)){
-                //盘点所有存在或者不存在库存的药品
+                //Kiểm kê tất cả thuốc có hoặc không có tồn kho
                 //List<Drug> drugs = drugService.getAll(company.getId(), type);
                 inventoryVerificationDetailService.save(save,variety,medicinalStorageControls);
             }else {
-//                //获取材料
+//                //LấyVật tư
 //                List<Stuff> stuffs = stuffService.getAll(company.getId(),type);
                 inventoryVerificationDetailService.saveStuff(save,variety,medicinalStorageControls);
             }
@@ -130,10 +130,10 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
     @Transactional(readOnly = false)
     public InventoryVerification accomplishInventoryVerification(InventoryVerification inventoryVerification) {
         int i = this.dao.accomplishInventoryVerification(inventoryVerification);
-        //完成盘点后去进行相关的库存增减工作
+        //Sau khi hoàn thành kiểm kê, thực hiện công việc tăng giảm tồn kho liên quan
         logger.debug("Accomplish inventory verification: {}", inventoryVerification);
         if(Objects.equals(inventoryVerification.getType(),"0")){
-            //药品进行库存增减
+            //Thuốctiến hành dòngTồn khotăngtrừ
             List<InventoryVerificationDetail> list = inventoryVerificationDetailService.getByInfoId(inventoryVerification.getId());
             for (InventoryVerificationDetail inventoryVerificationDetail : list) {
                 List<Parameter> parameters = SearchParamsBuilder.create()
@@ -142,11 +142,11 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
 //                parameters.add(new Parameter("storage_stock-used_stock-reimburse_stock",">",0));
 //                List<SupplierStock> supplierStocks = supplierStockService.listAll(parameters, "a.create_date");
                 List<MedicinalStorageControl> medicinalStorageControls = medicinalStorageControlService.listAll(parameters, "a.create_date");
-                //循环增减库存（正值增加，负值扣减）
+                //vòng lặptăngtrừTồn kho(Giá trị dương thì tăng, Giá trị âm thì trừ)
                 adjustStock(medicinalStorageControls, inventoryVerificationDetail.getProfitAndLoss(), inventoryVerificationDetail);
             }
         }else {
-            //材料进行库存增减
+            //Vật tưtiến hành dòngTồn khotăngtrừ
             List<InventoryVerificationDetail> list = inventoryVerificationDetailService.getByInfoId(inventoryVerification.getId());
             for (InventoryVerificationDetail inventoryVerificationDetail : list) {
                 List<Parameter> parameters = SearchParamsBuilder.create()
@@ -156,7 +156,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
 //                parameters.add(new Parameter("stuff_id","=",inventoryVerificationDetail.getStuff().getId()));
 //                parameters.add(new Parameter("number",">",0));
 //                List<SupplierStock> supplierStocks = supplierStockService.listAll(parameters, "a.create_date");
-                //循环增减库存（正值增加，负值扣减）
+                //vòng lặptăngtrừTồn kho(Giá trị dương thì tăng, Giá trị âm thì trừ)
                 adjustStock(medicinalStorageControls, inventoryVerificationDetail.getProfitAndLoss(), inventoryVerificationDetail);
             }
         }
@@ -164,7 +164,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
     }
 
     /**
-     * 调整库存（正值增加，负值扣减）
+     * điềunguyênTồn kho(Giá trị dương thì tăng, Giá trị âm thì trừ)
      */
     private void adjustStock(List<MedicinalStorageControl> medicinalStorageControls, Integer profitAndLoss, InventoryVerificationDetail inventoryVerificationDetail) {
         if (CollectionUtils.isEmpty(medicinalStorageControls)) {
@@ -176,7 +176,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         medicinalStorageControl.setSurplusStock(newStock);
         medicinalStorageControlService.save(medicinalStorageControl);
 
-        //查询动态库存总控制表
+        //Truy vấnđộngTồn khotổngkiểm soátbảng
         List<Parameter> parameters = SearchParamsBuilder.create()
                 .eq("drug_stuff_id", medicinalStorageControl.getDrug().getId())
                 .build();
@@ -185,14 +185,14 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             return;
         }
 
-        //动态库存总控制表修改
+        //độngTồn khotổngkiểm soátbảngSửa
         MedicinalStockControl medicinalStockControl = medicinalStockControls.get(0);
         BigDecimal newControlStock = medicinalStockControl.getStorageStock().add(new BigDecimal(profitAndLoss));
         medicinalStockControl.setStorageStock(newControlStock);
         medicinalStockControl.setSurplusStock(newControlStock);
         medicinalStockControlService.save(medicinalStockControl);
 
-        //库存操作记录
+        //Bản ghi thao tác tồn kho
         MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
         medicinalStockRecord.setOperationType(5);
         medicinalStockRecord.setOperationStock(new BigDecimal(profitAndLoss + ""));
@@ -207,7 +207,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         medicinalStockRecord.setDrugStuffName(medicinalStorageControl.getDrugStuffName());
         medicinalStockRecordService.save(medicinalStockRecord);
 
-        //盘点库存操作表保存
+        //Tồn kho kiểm kêthao tácbảngLưu
         InventoryVerificationRecord inventoryVerificationRecord = new InventoryVerificationRecord();
         inventoryVerificationRecord.setCompany(medicinalStorageControl.getCompany());
         SupplierStock supplierStock = new SupplierStock();
@@ -217,7 +217,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         inventoryVerificationRecordService.save(inventoryVerificationRecord);
     }
 
-    //判断是否存在药品没有发药
+    //Kiểm traCó tồn tại khôngThuốcKhông cóphát thuốc
     public void whetherTheDispensing(Company company){
         PageRegistration pageRegistration = new PageRegistration();
         pageRegistration.setCompanyId(company.getId());
@@ -233,17 +233,17 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             Date parse = simpleDateFormat.parse(dateTime);
             pageRegistration.setUpdateDate(parse);
         } catch (ParseException e) {
-            logger.warn("解析日期失败: {}", dateTime, e);
+            logger.warn("phân tíchNgàyThất bại: {}", dateTime, e);
         }
 
         List<String> strings = registrationService.whetherTheDispensing(pageRegistration);
         if(!CollectionUtils.isEmpty(strings)){
-            throw new ServiceException("存在药品/材料还未发药，不能进行盘点!");
+            throw new ServiceException("Tồn tạiThuốc/Vật tưcònChưaphát thuốc, Không thểtiến hành dòngkiểm kê!");
         }
 
     }
 
-    //判断是否存在未收费的
+    //Kiểm traCó tồn tại khôngChưaThu phí của 
     public void whetherChargeOrNot(Company company) {
         PageRegistration pageRegistration = new PageRegistration();
         pageRegistration.setCompanyId(company.getId());
@@ -258,11 +258,11 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             Date parse = simpleDateFormat.parse(dateTime);
             pageRegistration.setUpdateDate(parse);
         } catch (ParseException e) {
-            logger.warn("解析日期失败: {}", dateTime, e);
+            logger.warn("phân tíchNgàyThất bại: {}", dateTime, e);
         }
         List<String> strings = registrationService.whetherChargeOrNot(pageRegistration);
         if(!CollectionUtils.isEmpty(strings)){
-            throw new ServiceException("存在药品/材料还未收费，不能进行盘点!");
+            throw new ServiceException("Tồn tạiThuốc/Vật tưcònChưaThu phí, Không thểtiến hành dòngkiểm kê!");
         }
     }
 

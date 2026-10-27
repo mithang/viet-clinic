@@ -30,7 +30,7 @@ import com.google.common.collect.Maps;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 系统附件Service
+ * Tệp đính kèm hệ thốngService
  * @author szy
  * @version 2021-09-22
  */
@@ -46,7 +46,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     public SysFile get(String id) {
         SysFile sysFile = super.get(id);
 
-        /*获取子表列表   附件字节表*/
+        /*Lấy danh sách bảng con   Bảng byte tệp đính kèm*/
         List<Parameter> params = SearchParamsBuilder.create().eq("id", sysFile.getId()).build();
         PageRequest pageRequest = new PageRequest(params);
         sysFile.setSysFileContentList(sysFileContentDao.listAll(pageRequest));        
@@ -60,13 +60,13 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
         SysFile sysFileTemp = super.save(sysFile);
         if (StringUtils.isNoneBlank(sysFileTemp.getId())) {
 
-            /* 处理子表     附件字节表 */
+            /* Xử lý bảng con     Bảng byte tệp đính kèm */
             List<Parameter> params = SearchParamsBuilder.create().eq("id", sysFile.getId()).build();
             PageRequest pageRequest = new PageRequest(params);
             List<SysFileContent> list_SysFileContent = sysFileContentDao.listAll(pageRequest);            
-            List<SysFileContent> deleteSysFileContents = Lists.newArrayList(); // 删除列表
-            List<SysFileContent> insertSysFileContents = Lists.newArrayList(); // 添加列表
-            List<SysFileContent> updateSysFileContents = Lists.newArrayList(); // 更新列表
+            List<SysFileContent> deleteSysFileContents = Lists.newArrayList(); // Danh sách xóa
+            List<SysFileContent> insertSysFileContents = Lists.newArrayList(); // Danh sách thêm
+            List<SysFileContent> updateSysFileContents = Lists.newArrayList(); // Danh sách cập nhật
             for(SysFileContent sysFileContentSaved: list_SysFileContent) {
                 boolean found = false;   
                 for (SysFileContent sysFileContent : sysFile.getSysFileContentList()){
@@ -86,7 +86,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
             
 
                 if (StringUtils.isBlank(sysFileContent.getId())) {
-                    sysFileContent.setId(sysFileTemp.getId());  // 子表id与父表id一致
+                    sysFileContent.setId(sysFileTemp.getId());  // Bảng conid và chabảngidNhất quán
                     preInsert(sysFile,sysFileContent);
                     insertSysFileContents.add(sysFileContent);
                 } else {
@@ -106,35 +106,35 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     }
 
     /**
-     * multipartFiles文件转为SysFile集合对象
+     * multipartFilesTệpchuyển là SysFiletập hợpĐối tượng
      * @param multipartFiles
      * @param objectId
      * @return
      */
     @Transactional(readOnly = false)
     public List<SysFile> changeAndSaveSysFileList(MultipartFile[] multipartFiles, String objectId) throws IOException {
-        List<SysFile> fileList = new ArrayList<>(); // 文件集合对象
+        List<SysFile> fileList = new ArrayList<>(); // Tệptập hợpĐối tượng
         for(MultipartFile file : multipartFiles) {
-            List<SysFileContent> fileContentList = new ArrayList<>(); // 文件内容集合对象
+            List<SysFileContent> fileContentList = new ArrayList<>(); // Tệpnội dungtập hợpĐối tượng
             SysFile sysFile = new SysFile();
             String originalFilename = file.getOriginalFilename();
             int begin = originalFilename.indexOf(".");
             int last = originalFilename.length();
-            //获得文件后缀名
+            //Lấy đượcTệpsauhậu tốtên
             String suffix = originalFilename.substring(begin, last);
-            sysFile.setFileType(suffix); // 文件类型
+            sysFile.setFileType(suffix); // Loại tệp
 
-            sysFile.setObjectId(Long.parseLong(objectId)); // 业务表ID
-            sysFile.setName(file.getOriginalFilename()); // 文件名
-            sysFile.setFileSize(file.getSize()); // 文件大小
+            sysFile.setObjectId(Long.parseLong(objectId)); // Bảng nghiệp vụID
+            sysFile.setName(file.getOriginalFilename()); // Tên tệp
+            sysFile.setFileSize(file.getSize()); // Tệpkích thước
 
             SysFileContent fileContent = new SysFileContent();
             InputStream is = file.getInputStream();
             byte[] fContent = new byte[(int) file.getSize()];
             is.read(fContent);
-            fileContent.setFileByte(fContent); // 字节
-            fileContent.setFileType(suffix); // 文件类型
-            fileContentList.add(fileContent); // 文件存储内容
+            fileContent.setFileByte(fContent); // byte
+            fileContent.setFileType(suffix); // Loại tệp
+            fileContentList.add(fileContent); // Tệplưu trữnội dung
             sysFile.setSysFileContentList(fileContentList);
             fileList.add(sysFile);
             save(sysFile);
@@ -143,7 +143,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     }
 
     /**
-     * 根据objectId删除附件和附件存储表信息信息
+     * TheoobjectIdXóatệp đính kèm và tệp đính kèmlưu trữbảngThông tinThông tin
      * @param objectId
      */
     @Transactional(readOnly = false)
@@ -152,10 +152,10 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
         PageRequest pageRequest = new PageRequest(params);
         List<SysFile> sysFiles = dao.listAll(pageRequest);
         for (SysFile file : sysFiles) {
-            delete(file); // 删除附件包含存储表信息
+            delete(file); // XóaTệp đính kèm chứa bảng lưu trữThông tin
         }
         /*if (sysFiles.size() > 0) {
-            dao.bulkDelete(sysFiles); // 删除附件表信息
+            dao.bulkDelete(sysFiles); // Xóatệp đính kèmbảngThông tin
         }*/
 
     }
@@ -164,8 +164,8 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     /**
      * @param sysFile
      * @param sysFileContent
-     * 为了保存系统附件和系统字节表更新时间一致，用户回显图片做浏览器缓存使用
-     * 用原来的创建附件、更改附件用的是preInsert ,preUpdate方法 每张表更新都会new date() 会导致时间不同
+     * Để thời gian cập nhật của tệp đính kèm hệ thống và bảng byte hệ thống được nhất quán khi lưu, Người dùngẢnh hiển thị lại làm cho trình duyệtBộ nhớ đệmsử dụng
+     * dùnggốcđến của tạotệp đính kèm, hơnsửatệp đính kèmdùng của  có preInsert ,preUpdatePhương pháp mỗi张bảngCập nhậtđềusẽnew date() sẽdẫn đếnThời giankhác nhau
      */
 
     private void preInsert(SysFile sysFile, SysFileContent sysFileContent) {
@@ -176,13 +176,13 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     }
 
     /**
-     * 删除
+     * Xóa
      * @param entity
      */
     @Override
     @Transactional(readOnly = false)
     public int delete(SysFile sysFile) {
-        /* 处理子表     附件字节表 */
+        /* Xử lý bảng con     Bảng byte tệp đính kèm */
         List<Parameter> params = SearchParamsBuilder.create().eq("id", sysFile.getId()).build();
         PageRequest pageRequest = new PageRequest(params);
         sysFile.setSysFileContentList(sysFileContentDao.listAll(pageRequest));        
@@ -197,16 +197,16 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
 
     @Transactional(readOnly = false)
     public void delete(String[] ids) {
-        // 根据数组ID，删除附件
+        // TheomảngID, Xóatệp đính kèm
         dao.deleteByIds(ids);
-        // 根据数组ID，删除附件存储表
+        // TheomảngID, Xóatệp đính kèmlưu trữbảng
         sysFileContentDao.deleteByIds(ids);
     }
 
     /**
-     * 生成操作日志
-     * @param actionTypeId  操作类型Id
-     * @param entity        操作的实体对象
+     * Tạo nhật ký thao tác
+     * @param actionTypeId  Loại thao tácId
+     * @param entity        Đối tượng thực thể được thao tác
      * @return
      */
     @Override
@@ -215,7 +215,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
         if(action == null) {
             return null;
         }
-        // 删除时记录把保存的数据保存到回收站
+        // Khi xóa, ghi lại và lưu dữ liệu đã lưu vào thùng rác
         if(ActionConstants.ACTION_DELETED.equals(actionTypeId)) {   
             for(SysFileContent child: entity.getSysFileContentList()) {
                 ActionRecycle recycle = new ActionRecycle();

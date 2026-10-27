@@ -21,7 +21,7 @@ import java.util.List;
 
 
 /**
- * 药品信息Controller
+ * Thông tin thuốcController
  * @author txl
  * @version 2022-06-07
  */
@@ -41,7 +41,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
         Page<Drug> result = drugService.listPages(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         if (result.getRows() != null) {
-            //循环设置单位，前端要控制可以拆零销售的药品单位显示零售单位，不允许拆零的显示包装单位
+            //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
             result.getRows().forEach(x -> {
                 if (x.getIsUnpackSell().equals("1")) {
                     x.setStockUnit(x.getPreparationUnit().getName());
@@ -55,7 +55,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
 
 
     /**
-     * 只查询租户的药品
+     * chỉTruy vấntenant của Thuốc
      *
      * @param searchParams
      * @return
@@ -64,7 +64,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
     public ResponseEntity<JSONObject> listByInstitution(@RequestBody SearchParams searchParams) {
         Page<Drug> result = drugService.listByInstitution(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         if (result.getRows() != null) {
-            //循环设置单位，前端要控制可以拆零销售的药品单位显示零售单位，不允许拆零的显示包装单位
+            //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
             result.getRows().forEach(x -> {
                 if (x.getIsUnpackSell().equals("1")) {
                     x.setStockUnit(x.getPreparationUnit().getName());
@@ -77,7 +77,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
     }
 
     /**
-     * 只查询本公司的药品
+     * chỉTruy vấnnàycông ty của Thuốc
      *
      * @param searchParams
      * @return
@@ -86,7 +86,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
     public ResponseEntity<JSONObject> listByCompany(@RequestBody SearchParams searchParams) {
         Page<Drug> result = drugService.listByCompany(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         if (result.getRows() != null) {
-            //循环设置单位，前端要控制可以拆零销售的药品单位显示零售单位，不允许拆零的显示包装单位
+            //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
             result.getRows().forEach(x -> {
                 if (x.getIsUnpackSell().equals("1")) {
                     x.setStockUnit(x.getPreparationUnit().getName());
@@ -100,7 +100,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
 
 
     /**
-     * 只查询自己诊所下的药品
+     * chỉTruy vấnbản thânPhòng khámdưới của Thuốc
      * @param searchParams
      * @return
      */
@@ -163,7 +163,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
     }
 
     /**
-     * 租户药品同步至诊所
+     * tenantThuốcđồng bộđếnPhòng khám
      *
      * @param entitys
      * @return

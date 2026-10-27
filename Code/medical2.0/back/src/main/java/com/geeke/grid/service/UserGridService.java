@@ -10,7 +10,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 自定义布局Service
+ * Bố cục tùy chỉnhService
  * @author ycy
  * @version 2021-10-12
  */
@@ -23,12 +23,12 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
     @Transactional(readOnly = false)
     public UserGrid save(UserGrid userGrid) {
         Map<String, String> colMaps = Maps.newHashMap();
-        // 用户布局唯一
+        // Người dùngphát hànhcụcduy nhất
         colMaps.clear();
         colMaps.put("user_id", "userId");
         colMaps.put("router_id", "routerId");
         
-        if(exists(dao, userGrid, colMaps)) { // 一个用户在一个路由下 只能有一个布局
+        if(exists(dao, userGrid, colMaps)) { // mộtCáiNgười dùngtạimộtCáituyến đườngdưới chỉcó thểcómộtCáiphát hànhcục
             this.doUpdate(userGrid);
             return userGrid;
         }

@@ -11,18 +11,18 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
- * 用户管理DAO接口
+ * Quản lý người dùngDAOGiao diện
  * @author lys
  * @version 2021-08-25
  */
 @Mapper
 public interface UserDao extends CrudDao<User> {
     /**
-     * 修改 密码
+     * Sửa Mật khẩu
      */
     public int updateLoginPassword(@Param("id")String id, @Param("pass")String pass);
 
-    /** 获取需要监测登录状态用户 */
+    /** Lấy người dùng cần giám sát trạng thái đăng nhập */
     List<User> loginUser();
 
     List<User> getListByLoginName(@Param("loginName") String loginName);

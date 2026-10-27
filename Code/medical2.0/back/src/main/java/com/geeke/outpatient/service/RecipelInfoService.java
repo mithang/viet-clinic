@@ -21,7 +21,7 @@ import com.geeke.outpatient.dao.RecipelInfoDao;
 import com.google.common.collect.Maps;
 
 /**
- * 处方信息Service
+ * Thông tin đơn thuốcService
  * @author txl
  * @version 2022-06-15
  */
@@ -52,10 +52,10 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
                 recipelInfo.setStatus(-1);
                 super.save(recipelInfo);
 
-                //动态库存释放操作
+                //độngTồn khogiải phóngthao tác
                 this.medicinalStorageControlService.cancelOccupy(recipelInfo);
 
-                //根据病例id获取所有的处方信息
+                //Theoca bệnhidLấytất cả của Đơn thuốcThông tin
                 List<RecipelInfo> byMedicalId = recipelInfoDao.getByMedicalId(recipelInfo.getRegistration().getId());
                 int recipelInfoLength=byMedicalId.size();
                 int count=0;
@@ -65,11 +65,11 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
                     }
                 }
 
-                //所有处方都作废后，将登记信息的也标志
+                //tất cảĐơn thuốcđềuhủysau, Sẽ đăng kýThông tin của cũngcờ
                 if(count==recipelInfoLength){
-                    //根据病例信息获取登记信息
+                    //Theoca bệnhThông tinLấyđăng kýThông tin
                     //MedicalRecord medicalRecord = medicalRecordService.get(recipelInfo.getRegistration().getId());
-                    //根据病例信息获取登记id，设置登记的处方状态
+                    //Theoca bệnhThông tinLấyđăng kýid, Đặtđăng ký của Đơn thuốcTrạng thái
                     registrationService.updateRecipeStatus(recipelInfo.getRegistration().getId());
                 }
                 return 1;

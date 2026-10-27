@@ -7,16 +7,16 @@ import com.geeke.org.entity.Company;
 import javax.validation.constraints.NotNull;
 
 /**
- * 用户管理Entity
+ * Quản lý người dùngEntity
  * @author lys
  * @version 2021-08-25
  */
 public class UserRole extends DataEntity<UserRole> {
 
 	private static final long serialVersionUID = 1L;
-	private User user;      // 用户标识 
-	private Role role;      // 角色标识
-    private Company company; //所在租户
+	private User user;      // Định danh người dùng 
+	private Role role;      // Vai tròđịnh danh
+    private Company company; //nơitenant
 
     public Company getCompany() {
         return company;
@@ -40,7 +40,7 @@ public class UserRole extends DataEntity<UserRole> {
 		this.user = user;
 	}
 
-	@NotNull(message="用户标识不能为空")
+	@NotNull(message="Định danh người dùngKhông thể là trống")
     public User getUser() {
         return user;
     }
@@ -49,7 +49,7 @@ public class UserRole extends DataEntity<UserRole> {
         this.user = user;
     }
     
-	@NotNull(message="角色标识不能为空")
+	@NotNull(message="Vai tròđịnh danhKhông thể là trống")
     public Role getRole() {
         return role;
     }
@@ -62,7 +62,7 @@ public class UserRole extends DataEntity<UserRole> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -71,7 +71,7 @@ public class UserRole extends DataEntity<UserRole> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -81,7 +81,7 @@ public class UserRole extends DataEntity<UserRole> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

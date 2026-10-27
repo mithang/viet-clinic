@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 /**
- * 患者信息Entity
+ * Thông tin bệnh nhânEntity
  * @author txl
  * @version 2022-06-23
  */
@@ -22,22 +22,22 @@ import java.util.Date;
 public class Patient extends DataEntity<Patient> {
 
 	private static final long serialVersionUID = 1008489176147648530L;
-	private Company company;      // 诊所id 
-	private DictItem gender;      // 性别 
-	private String age;		// 年龄
-	private String month;		// 月
-	private Date birthday;		// 出生日期
-	private String phone;		// 联系方式
-	private String card;		// 证件号
-	private String cardType;		// 证件类型
-	private DictItem withPatientNexus;      // 与患者关系 
-	private String healthCardNo;		// 健康卡号
-	private String province;		// 省
-	private String city;		// 市
-	private String area;		// 区
-	private String address;		// 详细地址
-	private String guardianName;		// 监护人
-	private String guardianPhone;		// 监护人电话
+	private Company company;      // Phòng khámid 
+	private DictItem gender;      // Giới tính 
+	private String age;		// Tuổi
+	private String month;		// Tháng
+	private Date birthday;		// Ngày sinh
+	private String phone;		// Thông tin liên hệ
+	private String card;		// giấy tờsố
+	private String cardType;		// Loại giấy tờ
+	private DictItem withPatientNexus;      //  và Bệnh nhânquan hệ 
+	private String healthCardNo;		// sức khỏethẻsố
+	private String province;		// Tỉnh
+	private String city;		// Thành phố
+	private String area;		// Quận
+	private String address;		// Địa chỉ chi tiết
+	private String guardianName;		// người giám hộ
+	private String guardianPhone;		// người giám hộSố điện thoại
 	private String breathe;
 	private String temperature;
 	private String pulse;
@@ -62,7 +62,7 @@ public class Patient extends DataEntity<Patient> {
         this.company = company;
     }
     
-	@NotNull(message="性别不能为空")
+	@NotNull(message="Giới tínhKhông thể là trống")
     public DictItem getGender() {
         return gender;
     }
@@ -71,7 +71,7 @@ public class Patient extends DataEntity<Patient> {
         this.gender = gender;
     }
     
-	@Length(min=1, max=45, message="年龄长度必须介于 1 和 45 之间")
+	@Length(min=1, max=45, message="TuổiĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getAge() {
 		return age;
 	}
@@ -80,7 +80,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=1, max=45, message="月长度必须介于 1 和 45 之间")
+	@Length(min=1, max=45, message="ThángĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getMonth() {
 		return month;
 	}
@@ -98,7 +98,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=1, max=45, message="联系方式长度必须介于 1 和 45 之间")
+	@Length(min=1, max=45, message="liên hệcáchĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getPhone() {
 		return phone;
 	}
@@ -107,7 +107,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=1, max=45, message="身份证号长度必须介于 1 和 45 之间")
+	@Length(min=1, max=45, message="số CMND/CCCDĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getCard() {
 		return card;
 	}
@@ -124,7 +124,7 @@ public class Patient extends DataEntity<Patient> {
         this.withPatientNexus = withPatientNexus;
     }
     
-	@Length(min=0, max=45, message="健康卡号长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="sức khỏethẻsốĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getHealthCardNo() {
 		return healthCardNo;
 	}
@@ -133,7 +133,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=0, max=45, message="省长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài tỉnh phải nằm trong khoảng 0 đến 45 ")
 	public String getProvince() {
 		return province;
 	}
@@ -142,7 +142,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=0, max=45, message="市长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài thành phố phải nằm trong khoảng 0 đến 45 ")
 	public String getCity() {
 		return city;
 	}
@@ -151,7 +151,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=0, max=45, message="区长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="Độ dài quận phải nằm trong khoảng 0 đến 45 ")
 	public String getArea() {
 		return area;
 	}
@@ -160,7 +160,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=0, max=45, message="详细地址长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="详细Độ dài địa chỉ phải nằm trong khoảng 0 đến 45 ")
 	public String getAddress() {
 		return address;
 	}
@@ -169,7 +169,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=0, max=100, message="监护人长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="người giám hộĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getGuardianName(){
 		return guardianName;
 	}
@@ -178,7 +178,7 @@ public class Patient extends DataEntity<Patient> {
 		this.guardianPhone = guardianPhone;
 	}
 
-	@Length(min=0, max=100, message="监护人电话长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="người giám hộĐộ dài số điện thoại phải nằm trong khoảng 0 đến 100 ")
 	public String getGuardianPhone(){
 		return guardianPhone;
 	}
@@ -236,7 +236,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -245,7 +245,7 @@ public class Patient extends DataEntity<Patient> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -255,7 +255,7 @@ public class Patient extends DataEntity<Patient> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

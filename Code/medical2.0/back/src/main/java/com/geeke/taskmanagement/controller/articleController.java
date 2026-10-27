@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 文章管理Controller
+ * bài viếtQuản lýController
  * @author txl
  * @version 2022-06-13
  */

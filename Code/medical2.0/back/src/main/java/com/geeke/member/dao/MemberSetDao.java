@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.member.entity.MemberSet;
 
 /**
- * 会员卡设置DAO接口
+ * Cài đặt thẻ hội viênDAOGiao diện
  * @author rys
  * @version 2022-10-25
  */

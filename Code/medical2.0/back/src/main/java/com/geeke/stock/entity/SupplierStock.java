@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 供应商库存Entity
+ * Tồn kho nhà cung cấpEntity
  * @author txl
  * @version 2022-06-09
  */
@@ -27,30 +27,30 @@ import com.geeke.common.persistence.DataEntity;
 public class SupplierStock extends DataEntity<SupplierStock>  {
 
 	private static final long serialVersionUID = 1005591224273698934L;
-	private Company company;      // 诊所id 
-	private Supplier supplierId;      // 供应商 
-	private Drug drug;      // 药品名称 
-	private SupplierStorage supplierStorage;      // 入库单id
-	private Stuff stuff;      // 材料名称
-	private String norms;		// 规格
-	private ManufactureFactory factory;      // 厂家 
-	private String batchNo;		// 批号
-	private Date produceDate;		// 生产日期
-	private Date endDate;		// 有效期
-	private Integer number;		// 数量
-	private BigDecimal bid;		// 进价
-	private BigDecimal leastBid;		// 最小单位进价
-	private BigDecimal retailPrice;		// 零售价
-	private BigDecimal allBid;		// 总进价
-	private BigDecimal allRetailPrice;		// 总零售价
-	private int initial;     //初始库存
-	private String cancellation;  //作废标记
+	private Company company;      // Phòng khámid 
+	private Supplier supplierId;      // Nhà cung cấp 
+	private Drug drug;      // Tên thuốc 
+	private SupplierStorage supplierStorage;      // Phiếu nhập khoid
+	private Stuff stuff;      // Tên vật tư
+	private String norms;		// Quy cách
+	private ManufactureFactory factory;      // Nhà sản xuất 
+	private String batchNo;		// Số lô
+	private Date produceDate;		// Ngày sản xuất
+	private Date endDate;		// Thời hạn hiệu lực
+	private Integer number;		// Số lượng
+	private BigDecimal bid;		// Giá nhập
+	private BigDecimal leastBid;		// Đơn vị nhỏ nhấtgiá nhập
+	private BigDecimal retailPrice;		// Giá bán lẻ
+	private BigDecimal allBid;		// Tổng giá nhập
+	private BigDecimal allRetailPrice;		// Tổng giá bán lẻ
+	private int initial;     //Tồn kho ban đầu
+	private String cancellation;  //hủyđánh dấu
 	private MedicinalStorageControl medicinalStorageControl;
 
-	/** 医保字段 */
-	private  String drugtracinfo; //追溯码节点信息
-	private  String drugTracCodg;//药品追溯码
-	private  String cnt;//医报数量
+	/** Trường BHYT */
+	private  String drugtracinfo; //truy xuấtmãNútThông tin
+	private  String drugTracCodg;//Mã truy xuất thuốc
+	private  String cnt;//ybáoSố lượng
 	
 	public SupplierStock() {
 		super();
@@ -100,7 +100,7 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
         return stuff;
     }
 
-	@Length(min=0, max=64, message="规格长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="Quy cáchĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getNorms() {
 		return norms;
 	}
@@ -117,7 +117,7 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
         this.factory = factory;
     }
     
-	@Length(min=0, max=45, message="批号长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="lôsốĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getBatchNo() {
 		return batchNo;
 	}
@@ -215,7 +215,7 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -224,7 +224,7 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -234,7 +234,7 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -8,14 +8,14 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 /**
- * 业务表管理Entity
+ * Quản lý bảng nghiệp vụEntity
  * @author lys
  * @version 2019-12-06
  */
 public class GenTableEx extends GenTable {
 	private static final long serialVersionUID = 57593538386163538L;
 	
-	private List<GenTable> childList = Lists.newArrayList();	// 关联子表列表
+	private List<GenTable> childList = Lists.newArrayList();	// liên kếtDanh sách bảng con
 
 /*	//@Override
 	public List<GenTableColumn> getGenTableColumnList() {
@@ -31,12 +31,12 @@ public class GenTableEx extends GenTable {
 	}
 
 	/**
-	 * 获取导入依赖包字符串
+	 * LấyNhậppackage phụ thuộcchuỗi
 	 * @return
 	 */
 	@JsonIgnore
 	public List<String> getImportList(){
-		List<String> importList = Lists.newArrayList(); // 引用列表
+		List<String> importList = Lists.newArrayList(); // dẫndùngDanh sách
 		
 		//List<GenTableColumnEx>  columns = getGenTableColumnList();
 		
@@ -45,7 +45,7 @@ public class GenTableEx extends GenTable {
 			
 			GenTableColumnEx column = (GenTableColumnEx)c;
 			
-			//自定义类型
+			//tùy chỉnhLoại
 			if(column.getJavaType() != null && "Custom".equals(column.getJavaType().getValue())) {
 				GenScheme scheme = column.getCustomType();
 				if(scheme != null) {
@@ -64,13 +64,13 @@ public class GenTableEx extends GenTable {
 			
 			if (column.getIsNotBaseField() || ("1".equals(column.getIsQuery()) && "between".equals(column.getQueryType().getValue())
 							&& ("createDate".equals(column.getSimpleJavaField()) || "updateDate".equals(column.getSimpleJavaField())))){
-				// 导入类型依赖包， 如果类型中包含“.”，则需要导入引用。
+				// NhậpLoạipackage phụ thuộc,  NếuLoại trong bao gồm“.”, thìCầnNhậpdẫndùng. 
 				if (StringUtils.indexOf(column.getJavaType().getValue(), ".") != -1 && !importList.contains(column.getJavaType().getValue())){
 					importList.add(column.getJavaType().getValue());
 				}
 			}
 			if (column.getIsNotBaseField()){
-				// 导入JSR303、Json等依赖包
+				// NhậpJSR303, Json v.v. package phụ thuộc
 				for (String ann : column.getAnnotationList()){
 					if (!importList.contains(StringUtils.substringBeforeLast(ann, "("))){
 						importList.add(StringUtils.substringBefore(ann, "("));
@@ -78,7 +78,7 @@ public class GenTableEx extends GenTable {
 				}
 			}
 			
-			// Long类型字段序列化处理，解决转前端js溢出问题
+			// LongLoạiTrườngthứ tựCộthóaXử lý, giải quyếtchuyểntrướcđầujs溢ravấn đề
 			if("Long".equals(column.getJavaType().getValue())) {
 				if (!importList.contains("com.fasterxml.jackson.databind.annotation.JsonSerialize")){
 					importList.add("com.fasterxml.jackson.databind.annotation.JsonSerialize");
@@ -89,7 +89,7 @@ public class GenTableEx extends GenTable {
 			}
 		}
 		
-		// 如果有子表，则需要导入List相关引用
+		// Nếucóconbảng, thìCầnNhậpListtươngđóngdẫndùng
 		if (getChildList() != null && getChildList().size() > 0){
 			if (!importList.contains("java.util.List")){
 				importList.add("java.util.List");
@@ -105,7 +105,7 @@ public class GenTableEx extends GenTable {
 	
 	
 	/**
-	 * 是否存在Id标识字段
+	 * Có tồn tại khôngIdđịnh danhTrường
 	 * @return
 	 */
 	@JsonIgnore
@@ -115,7 +115,7 @@ public class GenTableEx extends GenTable {
 	}	
 	
 	/**
-	 * 是否存在父类
+	 * Có tồn tại khôngchaLớp
 	 * @return
 	 */
 	@JsonIgnore
@@ -129,7 +129,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否存在create_date列
+	 * Có tồn tại khôngcreate_dateCột
 	 * @return
 	 */
 	@JsonIgnore
@@ -143,7 +143,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否存在update_date列
+	 * Có tồn tại khôngupdate_dateCột
 	 * @return
 	 */
 	@JsonIgnore
@@ -157,7 +157,7 @@ public class GenTableEx extends GenTable {
 	}
 
 	/**
-	 * 是否存在update_by列
+	 * Có tồn tại khôngupdate_byCột
 	 * @return
 	 */
 	@JsonIgnore
@@ -171,7 +171,7 @@ public class GenTableEx extends GenTable {
 	}
 
 	/**
-	 * 是否存在sort列
+	 * Có tồn tại khôngsortCột
 	 * @return
 	 */
 	@JsonIgnore
@@ -185,7 +185,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 获得排序列
+	 * Lấy đượcsắp xếpCột
 	 * @return
 	 */
 	@JsonIgnore
@@ -200,7 +200,7 @@ public class GenTableEx extends GenTable {
 	
 
 	/**
-	 * 是否存在del_flag列
+	 * Có tồn tại khôngdel_flagCột
 	 * @return
 	 */
 	@JsonIgnore
@@ -214,7 +214,7 @@ public class GenTableEx extends GenTable {
 	}	
 	
 	/**
-	 * 是否包含树形选择框--编辑框
+	 * Có hay khôngChứa hộp chọn dạng cây--chỉnh sửakhung
 	 * @return
 	 */
 	@JsonIgnore
@@ -240,7 +240,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含StringMultiSelect--编辑框
+	 * Có hay khôngbao gồmStringMultiSelect--chỉnh sửakhung
 	 * @return
 	 */
 	@JsonIgnore
@@ -266,7 +266,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含树形选择框--查询条件
+	 * Có hay khôngChứa hộp chọn dạng cây--Điều kiện truy vấn
 	 * @return
 	 */
 	@JsonIgnore
@@ -282,7 +282,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含日期范围选择框--查询条件
+	 * Có hay khôngbao gồmNgàyHộp chọn phạm vi--Điều kiện truy vấn
 	 * @return
 	 */
 	@JsonIgnore
@@ -299,7 +299,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含数值范围选择框--查询条件
+	 * Có hay khôngbao gồmsốGiá trịHộp chọn phạm vi--Điều kiện truy vấn
 	 * @return
 	 */
 	@JsonIgnore
@@ -317,13 +317,13 @@ public class GenTableEx extends GenTable {
 		
 	
 	/**
-	 * 是否为树形表
+	 * Có hay không là câyhìnhbảng
 	 * @return
 	 */
 	@JsonIgnore
 	public boolean getIsTreeTable() {
 		for (GenTableColumn column : getGenTableColumnList()){
-			//java类型为This, 并且字段名为parent_id
+			//javaLoại là This, vàvàTên trường là parent_id
 			if(column.getJavaType() != null && "This".equals(column.getJavaType().getValue()) && StringUtils.equalsIgnoreCase("parent_id", column.getName())){
 				return true;
 			}
@@ -332,13 +332,13 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 获取parent列
+	 * LấyparentCột
 	 * @return
 	 */
 	@JsonIgnore
 	public GenTableColumn getParentColumn() {
 		for (GenTableColumn column : getGenTableColumnList()){
-			//java类型为This, 并且字段名为parent_id
+			//javaLoại là This, vàvàTên trường là parent_id
 			if(column.getJavaType() != null && "This".equals(column.getJavaType().getValue()) && StringUtils.equalsIgnoreCase("parent_id", column.getName())){
 				return column;
 			}
@@ -350,7 +350,7 @@ public class GenTableEx extends GenTable {
 
 	
 	/**
-	 * 客户端查询框导入的自定义类型处理接口，去除重复的
+	 * Giao diện xử lý loại tùy chỉnh được import từ ô truy vấn của client, Loại bỏ trùng lặp
 	 * @return
 	 */
 	@JsonIgnore
@@ -366,7 +366,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 客户端编辑框导入的自定义类型处理接口，去除重复的
+	 * Giao diện xử lý loại tùy chỉnh được import từ ô chỉnh sửa của client, Loại bỏ trùng lặp
 	 * @return
 	 */
 	@JsonIgnore
@@ -382,7 +382,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含密码框
+	 * Có hay khôngbao gồmMật khẩukhung
 	 * @return
 	 */
 	@JsonIgnore
@@ -397,7 +397,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否多文件上传组件
+	 * Có hay khôngnhiềuTệpTải lênnhómtệp
 	 * @return
 	 */
 	@JsonIgnore
@@ -413,7 +413,7 @@ public class GenTableEx extends GenTable {
 	
 	
 	/**
-	 * 获取查询窗联动变量及其联动所联动的值
+	 * Lấy biến liên động của cửa sổ truy vấn và giá trị liên động của nó
 	 * @return
 	 */
 	@JsonIgnore
@@ -427,7 +427,7 @@ public class GenTableEx extends GenTable {
 			if(!StringUtils.isBlank(interaction)) {
 				String arr[] = interaction.split(",");
 				for(String key : arr) {
-					// 触发事件列
+					// kích hoạtviệctệpCột
 					GenTableColumnEx actionColumn = getColumByName(key);
 					if(actionColumn == null || !"1".equals(actionColumn.getIsQuery())) {
 						continue;
@@ -448,7 +448,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 获取编辑窗联动变量及其联动所联动的值
+	 * Lấy biến liên động của cửa sổ chỉnh sửa và giá trị liên động của nó
 	 * @return
 	 */
 	@JsonIgnore
@@ -462,7 +462,7 @@ public class GenTableEx extends GenTable {
 			if(!StringUtils.isBlank(interaction)) {
 				String arr[] = interaction.split(",");
 				for(String key : arr) {
-					// 触发事件列
+					// kích hoạtviệctệpCột
 					GenTableColumnEx actionColumn = getColumByName(key);
 					if(actionColumn == null || !"1".equals(actionColumn.getIsEdit())) {
 						continue;
@@ -483,8 +483,8 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 获取列对象
-	 * @param columnName  数据表列名
+	 * LấyCộtĐối tượng
+	 * @param columnName  Dữ liệubảngCộttên
 	 * @return
 	 */
 	@JsonIgnore
@@ -499,12 +499,12 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 客户端导入的自定义类型处理接口，去除重复的
+	 * Khách hàngđầuNhập của tùy chỉnhLoạiXử lýgiao diện, Loại bỏ trùng lặp
 	 * @return
 	 */
 	private void getClientImportList(GenTable genTable, List<GenTableColumn> clientImports, String type) {
 		for (GenTableColumn column : genTable.getGenTableColumnList()){
-			// 作为查询框的控件，如果为This，并且为SelectTree避免重复import函数
+			// làm là Truy vấnkhung của điều khiển, Nếu là This, vàvà là SelectTreeTránhtrùng lặpimportHàm
 			if("query".equals(type) && "This".equals(column.getJavaType().getValue()) && "SelectTree".equals(column.getShowType().getValue())) {  
 				continue;
 			}
@@ -544,7 +544,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含流程实例字段
+	 * Có hay khôngbao gồmluồngquy trìnhinstanceTrường
 	 * @return
 	 */
 	@JsonIgnore
@@ -558,7 +558,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含流程实例状态字段
+	 * Có chứa trường trạng thái phiên bản quy trình không
 	 * @return
 	 */
 	@JsonIgnore
@@ -572,7 +572,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含流程实例状态字段
+	 * Có chứa trường trạng thái phiên bản quy trình không
 	 * @return
 	 */
 	@JsonIgnore
@@ -586,7 +586,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否有非关联的子表
+	 * Có hay khôngcókhông phảiliên kết của conbảng
 	 * @return
 	 */
 	@JsonIgnore
@@ -602,7 +602,7 @@ public class GenTableEx extends GenTable {
 	}
 	
 	/**
-	 * 是否包含自动编号类型的字段
+	 * Có hay khôngbao gồmtự độngmã sốLoại của Trường
 	 * @return
 	 */
 	@JsonIgnore
@@ -613,7 +613,7 @@ public class GenTableEx extends GenTable {
 			}
 		}
 		
-		// 子表中是否有自动编号类型字段
+		// conbảng trong Có hay khôngcótự độngmã sốLoạiTrường
 		if(childList != null && childList.size() > 0) {
 			for(GenTable child : childList) {
 				for (GenTableColumn column : child.getGenTableColumnList()){
@@ -627,7 +627,7 @@ public class GenTableEx extends GenTable {
 	}
 
 	/**
-	 * 是否包含属性定义器的字段
+	 * Có hay khôngChứa bộ định nghĩa thuộc tính của Trường
 	 * @return
 	 */
 	@JsonIgnore
@@ -641,7 +641,7 @@ public class GenTableEx extends GenTable {
 	}
 
 	/**
-	 * 是否包含属性输入器的字段
+	 * Có hay khôngbao gồmthuộc tínhNhậpthiết bị của Trường
 	 * @return
 	 */
 	@JsonIgnore

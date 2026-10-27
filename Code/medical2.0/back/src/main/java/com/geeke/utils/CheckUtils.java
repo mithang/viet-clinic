@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class CheckUtils {
 
     /**
-     * 判断是否是超级管理员
+     * Kiểm tra có phải quản trị viên cấp cao không
      * @param user
      * @return
      */
@@ -25,7 +25,7 @@ public class CheckUtils {
     }
 
     /**
-     * 判断是否是超级管理员
+     * Kiểm tra có phải quản trị viên cấp cao không
      * @param params
      * @return
      */

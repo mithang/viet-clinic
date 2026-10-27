@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 /**
 * @author 47826
-* @description 针对表【patient_md_data(患者医保信息表)】的数据库操作Mapper
+* @description Đối với bảng[patient_md_data(Bảng thông tin BHYT của bệnh nhân)] của Dữ liệukhothao tácMapper
 * @createDate 2024-09-09 16:14:57
 * @Entity com.geeke.outpatient.entity.PatientMdData
 */

@@ -2,7 +2,7 @@
   <el-card class="index-module-card" :class="{ panelBg: isPanelStyle }">
     <div class="personal-message-box">
       <el-avatar :size="70" src="https://picsum.photos/200/200"></el-avatar>
-      <span class="user-title">超级管理员</span>
+      <span class="user-title">Quản trị viên cấp cao</span>
       <div class="btn-box">
         <span @click="exitEdit" v-show="isPanelStyle" :class="{ exitBtn: isPanelStyle }">退出编辑</span>
         <span @click="editDesktop" v-show="!isPanelStyle" class="edit-btn">
@@ -31,7 +31,7 @@ export default {
     },
   },
   methods: {
-    // 删除面板项发送事件
+    // Sự kiện gửi khi xóa mục bảng
     deletePanelItem () {
       this.$emit('deletePanelItemEvent', this.panelId)
     },

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * 门诊日志Service
+ * Nhật ký khám ngoại trúService
  * @author lc
  * @version 2022-06-15
  */
@@ -64,35 +64,35 @@ public class OutpatientLogService {
 
     public void exportExcel(OutpatientLogRc outpatientLogRc, HttpServletResponse response) throws Exception {
         List<OutpatientLog> list = outpatientLogDao.getOutpatientLog(outpatientLogRc);
-        new ExcelExportBuilder("门诊日志")
+        new ExcelExportBuilder("Nhật ký khám ngoại trú")
             .addColumns(
-                new ExcelExportBuilder.Column("患者姓名", "patientName"),
-                new ExcelExportBuilder.Column("家长姓名", "patriarchName"),
-                new ExcelExportBuilder.Column("性别", "sex"),
-                new ExcelExportBuilder.Column("患者年龄", "age"),
-                new ExcelExportBuilder.Column("民族", "nation"),
-                new ExcelExportBuilder.Column("职业", "occupation"),
-                new ExcelExportBuilder.Column("详细地址", "address"),
-                new ExcelExportBuilder.Column("就诊日期", "visitDate"),
-                new ExcelExportBuilder.Column("初/复诊", "initialVisit"),
-                new ExcelExportBuilder.Column("血压", "bloodPressure"),
-                new ExcelExportBuilder.Column("临床症状", "symptom"),
-                new ExcelExportBuilder.Column("体温发热", "fever"),
-                new ExcelExportBuilder.Column("流行病学史", "epidemicDisease"),
-                new ExcelExportBuilder.Column("西医诊断", "westernDiagnose"),
-                new ExcelExportBuilder.Column("中医诊断", "chinaDiagnose"),
-                new ExcelExportBuilder.Column("传染病", "infect"),
-                new ExcelExportBuilder.Column("处理情况", "handle"),
-                new ExcelExportBuilder.Column("有效证件号", "certificate"),
-                new ExcelExportBuilder.Column("工作单位", "unit"),
-                new ExcelExportBuilder.Column("医生签名", "signature"),
-                new ExcelExportBuilder.Column("贫困标志", "poverty"),
-                new ExcelExportBuilder.Column("联系电话", "telephone"),
-                new ExcelExportBuilder.Column("发病日期", "morbidityDate"),
-                new ExcelExportBuilder.Column("实验室阳性结果", "positiveResult"),
-                new ExcelExportBuilder.Column("个体化健康教育", "healthEducation")
+                new ExcelExportBuilder.Column("Tên bệnh nhân", "patientName"),
+                new ExcelExportBuilder.Column("Tên phụ huynh", "patriarchName"),
+                new ExcelExportBuilder.Column("Giới tính", "sex"),
+                new ExcelExportBuilder.Column("Tuổi bệnh nhân", "age"),
+                new ExcelExportBuilder.Column("Dân tộc", "nation"),
+                new ExcelExportBuilder.Column("Nghề nghiệp", "occupation"),
+                new ExcelExportBuilder.Column("Địa chỉ chi tiết", "address"),
+                new ExcelExportBuilder.Column("Ngày khám bệnh", "visitDate"),
+                new ExcelExportBuilder.Column("ban đầu/Tái khám", "initialVisit"),
+                new ExcelExportBuilder.Column("Huyết áp", "bloodPressure"),
+                new ExcelExportBuilder.Column("Triệu chứng lâm sàng", "symptom"),
+                new ExcelExportBuilder.Column("Sốt, nhiệt độ cơ thể tăng", "fever"),
+                new ExcelExportBuilder.Column("Tiền sử dịch tễ", "epidemicDisease"),
+                new ExcelExportBuilder.Column("Chẩn đoán tây y", "westernDiagnose"),
+                new ExcelExportBuilder.Column("Chẩn đoán đông y", "chinaDiagnose"),
+                new ExcelExportBuilder.Column("Bệnh truyền nhiễm", "infect"),
+                new ExcelExportBuilder.Column("Tình hình xử lý", "handle"),
+                new ExcelExportBuilder.Column("Số giấy tờ hiệu lực", "certificate"),
+                new ExcelExportBuilder.Column("Đơn vị công tác", "unit"),
+                new ExcelExportBuilder.Column("Chữ ký bác sĩ", "signature"),
+                new ExcelExportBuilder.Column("Cờ hộ nghèo", "poverty"),
+                new ExcelExportBuilder.Column("Số điện thoại liên hệ", "telephone"),
+                new ExcelExportBuilder.Column("Ngày phát bệnh", "morbidityDate"),
+                new ExcelExportBuilder.Column("Kết quả dương tính trong phòng thí nghiệm", "positiveResult"),
+                new ExcelExportBuilder.Column("Giáo dục sức khỏe cá thể hóa", "healthEducation")
             )
             .data(list)
-            .write(response, "门诊日志.xlsx");
+            .write(response, "Nhật ký khám ngoại trú.xlsx");
     }
 }

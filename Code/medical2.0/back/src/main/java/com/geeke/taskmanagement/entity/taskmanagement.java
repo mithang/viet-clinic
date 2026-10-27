@@ -9,34 +9,34 @@ import java.util.List;
 @Data
 public class taskmanagement {
     private  String ID;
-    /** 租户号 */
+    /** Mã tenant */
     private String companyId ;
 
     private Company company;
-    /** 删除标记;（0：正常；1：删除） */
+    /** Cờ xóa;(0: Bình thường; 1: Xóa) */
     private String delFlag ;
-    /** 创建人 */
+    /** Người tạo */
     private String createdBy ;
-    /** 创建时间 */
+    /** Thời gian tạo */
     private Date createdTime ;
-    /** 更新人 */
+    /** Người cập nhật */
     private String updatedBy ;
-    /** 更新时间 */
+    /** Thời gian cập nhật */
     private Date updatedTime ;
-    private  String tasktype;//'任务类型;tasktype_0：常规任务，tasktype_1：宣传活动' ,
+    private  String tasktype;//'tác vụLoại;tasktype_0: Tác vụ thông thường, tasktype_1: 宣truyềnsống动' ,
     private  String taskname;
     private  String taskdescribe;
     private  String taskaccessory;
     private  String taskinitiator;
     private  Date taskdeadline;
-    private String taskstatus;//'任务状态;0：不通过；1：通过
-    private String auditresult;//'审核结果;auditresult_0：通过；auditresult_1：未通过' ,
+    private String taskstatus;//'tác vụTrạng thái;0: Không đạt; 1: Qua
+    private String auditresult;//'xét duyệtKết quả;auditresult_0: Qua; auditresult_1: ChưaQua' ,
     private String taskremark;
-    private String taskinitiatorname;//任务发起人
+    private String taskinitiatorname;//tác vụphátbắt đầungười
 
 
 /*
-执行人
+hành nghề dòngngười
  */
     private List<String> taskregion;
 

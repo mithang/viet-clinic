@@ -9,19 +9,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.utils.JwtUtils;
 
 /**
- * Controller基类
+ * ControllerLớp cơ sở
  * @author lys
  * @date 2017/11/15
  */
 public class BaseController {
 	
 	/**
-	 * 日志对象
+	 * Ngàynhật kýĐối tượng
 	 */
 	protected static final Logger logger = LoggerFactory.getLogger(BaseController.class);
 	
 	/**
-	 * 从jwt中获取subject信息
+	 * Từ jwt trong LấysubjectThông tin
 	 * @param jwtUtils
 	 * @param jwt
 	 * @param key

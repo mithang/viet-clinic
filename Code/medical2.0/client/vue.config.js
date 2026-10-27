@@ -140,7 +140,7 @@ module.exports = {
       console.log('No prod.env found, skipping environment variable injection')
     }
 
-    // HTML 配置
+    // HTML Cấu hình
     config.plugin('html').tap(args => {
       args[0].template = path.resolve(__dirname, 'index.html')
       args[0].favicon = 'src/assets/images/Logo.png'
@@ -152,7 +152,7 @@ module.exports = {
       return args
     })
 
-    // 修复 SVG 处理：让默认 svg 规则排除 src/icons，并为 icons 目录单独使用 svg-sprite-loader
+    // 修复 SVG Xử lý：让默认 svg 规则排除 src/icons，并为 icons 目录单独使用 svg-sprite-loader
     config.module.rule('svg').exclude.add(path.resolve(__dirname, 'src/icons')).end()
 
     config.module
@@ -166,7 +166,7 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
 
-    // 添加 .xlsx 文件处理规则
+    // Thêm .xlsx 文件处理规则
     config.module
       .rule('xlsx')
       .test(/\.xlsx$/)

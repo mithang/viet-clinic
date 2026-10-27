@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 模板处方Service
+ * Đơn thuốc mẫuService
  * @author rys
  * @version 2022-10-08
  */
@@ -75,7 +75,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     public List<RecipeTemplateDetail> getByRecipeTemplateInfoId(String recipeTemplateInfoId) {
         List<RecipeTemplateDetail> recipeTemplateDetails=this.dao.getByRecipeTemplateInfoId(recipeTemplateInfoId);
 
-        //获取到处方详情后根据处方详情获取到药品材料，过滤非本诊所药品
+        //Sau khi lấy được chi tiết đơn thuốc, lấy thuốc và vật tư theo chi tiết đơn thuốc, qualọckhông phảinàyPhòng khámThuốc
         if(!CollectionUtils.isEmpty(recipeTemplateDetails)){
             List<RecipeTemplateDetail> validDetails = new java.util.ArrayList<>();
             for (RecipeTemplateDetail recipeTemplateDetail:
@@ -94,15 +94,15 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
 
     public DrugStuffEvt getDrugStuffEvt(RecipeTemplateDetail recipeTemplateDetail) {
         DrugStuffEvt drugStuffEvt = new DrugStuffEvt();
-        String stuffType = recipeTemplateDetail.getStuffType();        // 物料类型:0-西药 1-中药  2-输液 3-诊疗项目  4-材料
+        String stuffType = recipeTemplateDetail.getStuffType();        // Loại vật liệu:0-Thuốc tây 1-Thuốc đông y  2-Truyền dịch 3-Hạng mục khám chữa bệnh  4-Vật tư
         String detailCompanyId = recipeTemplateDetail.getCompany() != null ? recipeTemplateDetail.getCompany().getId() : null;
         if ("0".equals(stuffType) || "1".equals(stuffType) || "2".equals(stuffType)) {
-            //中药、西药、输液处方查询药品信息
+            //Thuốc đông y, Thuốc tây, Đơn truyền dịch tra cứu thông tin thuốc
             Drug drug = this.drugService.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (drug == null) return null;
-            // 诊所级隔离：跳过其他诊所的药品
+            // Phòng khámcấpcách ly: Bỏ quakhácPhòng khám của Thuốc
             if (detailCompanyId != null && drug.getCompany() != null && !detailCompanyId.equals(drug.getCompany().getId())) {
-                logger.warn("模板详情包含非本诊所药品，已跳过: detailCompanyId={}, drugCompanyId={}, drugName={}",
+                logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámThuốc, Đã bỏ qua: detailCompanyId={}, drugCompanyId={}, drugName={}",
                     detailCompanyId, drug.getCompany().getId(), drug.getGoodsName());
                 return null;
             }
@@ -116,11 +116,11 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             drugStuffEvt.setPack(drug.getPack());
             drugStuffEvt.setDrug(drug);
         } else if ("3".equals(stuffType)) {
-            //查询诊疗项目信息
+            //Truy vấn thông tin hạng mục khám chữa bệnh
             CostItem costItem = this.costItemService.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (costItem == null) return null;
             if (detailCompanyId != null && costItem.getCompany() != null && !detailCompanyId.equals(costItem.getCompany().getId())) {
-                logger.warn("模板详情包含非本诊所诊疗项目，已跳过: detailCompanyId={}, costItemCompanyId={}, itemName={}",
+                logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámhạng mục khám chữa bệnh, Đã bỏ qua: detailCompanyId={}, costItemCompanyId={}, itemName={}",
                     detailCompanyId, costItem.getCompany().getId(), costItem.getItemName());
                 return null;
             }
@@ -137,7 +137,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             Stuff stuff = this.stuffService.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (stuff == null) return null;
             if (detailCompanyId != null && stuff.getCompany() != null && !detailCompanyId.equals(stuff.getCompany().getId())) {
-                logger.warn("模板详情包含非本诊所材料，已跳过: detailCompanyId={}, stuffCompanyId={}, stuffName={}",
+                logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámVật tư, Đã bỏ qua: detailCompanyId={}, stuffCompanyId={}, stuffName={}",
                     detailCompanyId, stuff.getCompany().getId(), stuff.getName());
                 return null;
             }
@@ -159,7 +159,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     public void updateDetail(List<RecipeTemplateDetail> recipeTemplateDetails, Company company) {
         RecipeTemplateInfo recipeTemplateInfoId=recipeTemplateDetails.get(0).getRecipeTemplateInfo();
 
-        //详情的修改操作是先进行删除操作在进行添加操作
+        //Thao tác sửa chi tiết là xóa trước rồi mới thêm
         int i=this.dao.deleteTemplateDetail(recipeTemplateInfoId.getId());
 
         if(!CollectionUtils.isEmpty(recipeTemplateDetails)&&i>0){

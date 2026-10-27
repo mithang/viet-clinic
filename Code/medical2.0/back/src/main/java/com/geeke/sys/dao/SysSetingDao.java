@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.SysSeting;
 
 /**
- * 系统设置DAO接口
+ * Cài đặt hệ thốngDAOGiao diện
  * @author szy
  * @version 2021-08-26
  */

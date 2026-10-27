@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * 系统设置Controller
+ * Cài đặt hệ thốngController
  *
  * @author szy
  * @version 2021-08-26
@@ -56,7 +56,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
     }
 
     /**
-     * 系统设置回显图片
+     * Ảnh hiển thị lại của cài đặt hệ thống
      *
      * @param id
      * @param response
@@ -71,7 +71,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
     }
 
     /**
-     * 系统设置回显图片
+     * Ảnh hiển thị lại của cài đặt hệ thống
      *
      * @param id
      * @param response
@@ -88,7 +88,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
     }
 
     /**
-     * 系统设置回显图片
+     * Ảnh hiển thị lại của cài đặt hệ thống
      *
      * @param id
      * @param response
@@ -99,10 +99,10 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
             id = id.substring(0, id.lastIndexOf("."));
         }
         String modifiedSice = request.getHeader("if-modified-since");
-        //日期格式化
+        //Định dạng ngày
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
         if (StringUtils.isNotBlank(modifiedSice)) {
-            //Thu, 04 Feb 2021 07:02:25 GMT   转化日期
+            //Thu, 04 Feb 2021 07:02:25 GMT   chuyển hóaNgày
             Date modifiedSiceDate = simpleDateFormat.parse(modifiedSice);
             SysFile sysFile = sysFileService.get(id);
             if (sysFile != null) {
@@ -128,7 +128,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
 
                 os.close();
             } catch (IOException e) {
-                logger.error("文件输出失败", e);
+                logger.error("Xuất tệp thất bại", e);
             }
         }
     }
@@ -140,10 +140,10 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         }
         logger.info("fileId = {}", fileId);
         String modifiedSice = request.getHeader("if-modified-since");
-        //日期格式化
+        //Định dạng ngày
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
         if (StringUtils.isNotBlank(modifiedSice)) {
-            //Thu, 04 Feb 2021 07:02:25 GMT   转化日期
+            //Thu, 04 Feb 2021 07:02:25 GMT   chuyển hóaNgày
             Date modifiedSiceDate = simpleDateFormat.parse(modifiedSice);
             SysFile sysFile = sysFileService.get(fileId);
             if (sysFile != null) {
@@ -168,7 +168,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
 
             os.close();
         } catch (IOException e) {
-            logger.error("文件输出失败", e);
+            logger.error("Xuất tệp thất bại", e);
         }
 
     }

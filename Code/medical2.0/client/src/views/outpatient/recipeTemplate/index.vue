@@ -1,32 +1,32 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow'></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <recipetemplate-form ref='recipetemplateForm' :permission='permission'
                          @save-finished='loadData'></recipetemplate-form>
     <div class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
         <el-row v-if='!moreCodition' class='search-row'>
           <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm'
                    :inline-message='true'>
             <el-col :span="4">
-              <el-form-item label='模板名称' prop='recipetemplateName'>
+              <el-form-item label='Tên mẫu' prop='recipetemplateName'>
                 <!-- <div style="margin-left:40px;">  -->
-                <el-input v-model='queryModel.recipetemplateName' :clearable='true' placeholder='请输入模板名称'></el-input>
+                <el-input v-model='queryModel.recipetemplateName' :clearable='true' placeholder='Vui lòng nhập tên mẫu'></el-input>
                 <!-- </div> -->
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='模板编号' prop='doce'>
+              <el-form-item label='Mã mẫu' prop='doce'>
                 <!-- <div style="margin-left:40px;">  -->
                 <el-input v-model='queryModel.code' :clearable='true' placeholder='请输入模板编号'></el-input>
                 <!-- </div> -->
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label='处方类型' prop='type'>
+              <el-form-item label='Loại đơn thuốc' prop='type'>
                 <el-select v-model="queryModel.type" placeholder="请选择处方类型">
                   <el-option
                     v-for="type in type_List"
@@ -38,20 +38,20 @@
               </el-form-item>
             </el-col>
             <el-col :span="5">
-              <el-form-item label='模板类别' prop='category'>
-                <el-radio v-model="queryModel.category" label="0">私人模板</el-radio>
-                <el-radio v-model="queryModel.category" label="1">公开模板</el-radio>
-                <el-radio v-model="queryModel.category" label="2">AI模板</el-radio>
+              <el-form-item label='Danh mục mẫu' prop='category'>
+                <el-radio v-model="queryModel.category" label="0">Mẫu riêng tư</el-radio>
+                <el-radio v-model="queryModel.category" label="1">Mẫu công khai</el-radio>
+                <el-radio v-model="queryModel.category" label="2">AIMẫu</el-radio>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label='日期' prop='updateDate'>
+              <el-form-item label='Ngày' prop='updateDate'>
                 <el-date-picker
                   v-model="queryModel.updateDate"
                   type="datetimerange"
                   align="right"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
+                  start-placeholder="Ngày bắt đầu"
+                  end-placeholder="Ngày kết thúc"
                   format="yyyy-MM-dd HH:mm:ss"
                   :default-time="['00:00:00', '23:59:59']">
                 </el-date-picker>
@@ -64,7 +64,7 @@
                   type="primary"
                   icon="el-icon-plus"
                   @click="onCreateTemplate()"
-                >添加
+                >Thêm
                 </el-button
                 >
               </el-button-group>
@@ -75,14 +75,14 @@
                 icon="el-icon-search"
                 @click="onSearch()"
                 :plain="true"
-              >搜索
+              >Tìm kiếm
               </el-button>
               <el-button
                 type="info"
                 icon="el-icon-refresh-left"
                 @click="reset"
                 :plain="true"
-              >重置
+              >Đặt lại
               </el-button>
             </el-col>
 
@@ -91,17 +91,17 @@
         <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :routerId='$route.meta.routerId'
                    @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 工具栏 开始 -->
+      <!-- Thanh công cụ Bắt đầu -->
       <!-- <div class="page-container-header-end">
         <div>
-          <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateRecipetemplate()'>添加</el-button>
+          <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateRecipetemplate()'>Thêm</el-button>
         </div>
       </div> -->
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
@@ -109,7 +109,7 @@
                       @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName'
                       :header-cell-class-name='headerCellClassName' highlight-current-row>
               <el-table-column
-                label="序号"
+                label="Số thứ tự"
                 type="index"
                 :index="indexMethod"
                 align="center">
@@ -128,19 +128,19 @@
 
                    </li> -->
                     <span v-if='getAttrValue(row, columnViews[index].prop) === "1"'>
-                      公开模板
+                      Mẫu công khai
                     </span>
                      <span v-else>
-                      私人模板
+                      Mẫu riêng tư
                     </span>
                   </span>
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType) }}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='140 + "px"' :key="'operate'">
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='140 + "px"' :key="'operate'">
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn'
                                        v-on:show-all-column='showAllColumn'
                                        v-on:show-default-column='showDefaultColumn'></view-columns-select>
@@ -148,19 +148,19 @@
                                        :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start'
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start'
                                  icon-name='el-icon-view'
                                  @click='onViewRecipetemplate(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start'
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start'
                                  icon-name='el-icon-edit'
                                  @click='onEditRecipetemplate(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start'
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start'
                                  icon-name='el-icon-document'
                                  @click='onCopyRecipetemplate(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start'
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start'
                                  icon-name='el-icon-delete'
                                  @click='onDeleteRecipetemplate(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start'
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start'
                                  icon-name='el-icon-info'
                                  @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
@@ -169,8 +169,8 @@
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -185,7 +185,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->     </div>
+      <!-- Thanh phân trang     Kết thúc -->     </div>
 
     <!-- 添加弹出框 -->
     <el-dialog
@@ -204,8 +204,8 @@
         <!-- </div> -->
       </er-row>
       <!-- <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button @click="dialogVisible = false">Hủy</el-button>
+        <el-button type="primary" @click="dialogVisible = false">Xác nhận</el-button>
       </span> -->
     </el-dialog>
 
@@ -259,7 +259,7 @@
         recipetemplateTotal: 0,
         recipetemplateList: [],
 
-        oprColumnWidth: 140,  // 操作列宽
+        oprColumnWidth: 140,  // Độ rộng cột thao tác
         tableId: '1186832625065336477',
         schemeId: '1186832625065336461',
         templateDialogVisible: false,
@@ -287,8 +287,8 @@
         // this.$refs.recipetemplateForm.$emit('openAddRecipetemplateDialog')
         getDictItemsByCode(DICT_CODE.RECIPEL_TYPE).then((data) => {
           this.type_List = data
-          this.type_List = this.type_List.filter((item) => item.name !== "零售处方")
-          this.type_List = this.type_List.filter((item) => item.name !== '附加费')
+          this.type_List = this.type_List.filter((item) => item.name !== "Đơn thuốc bán lẻ")
+          this.type_List = this.type_List.filter((item) => item.name !== 'Phí phụ thêm')
           this.templateDialogVisible = true
         })
       },
@@ -347,7 +347,7 @@
             })
           }
         }
-        // 数据权限: 模板处方表recipetemplate
+        // Quyền dữ liệu: Bảng mẫu đơn thuốcrecipetemplate
         this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
       },
       handleListResponse(responseData) {
@@ -397,16 +397,16 @@
         })
       },
       onDeleteRecipetemplate(index, row) {
-        this.$confirm('确定删除吗？', '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
           type: 'warning'
         }).then(() => {
           this.setLoad()
           deleteRecipetemplate(row).then(responseData => {
             if (responseData.code === 100) {
               this.loadData()
-              this.showMessage({type: 'success', msg: '删除成功'})
+              this.showMessage({type: 'success', msg: 'Xóa thành công'})
             } else {
               this.showMessage(responseData)
             }
@@ -445,8 +445,8 @@
         // Load prescription type options after page init
         getDictItemsByCode(DICT_CODE.RECIPEL_TYPE).then((data) => {
           this.type_List = data
-          this.type_List = this.type_List.filter((item) => item.name !== "零售处方")
-          this.type_List = this.type_List.filter((item) => item.name !== '附加费')
+          this.type_List = this.type_List.filter((item) => item.name !== "Đơn thuốc bán lẻ")
+          this.type_List = this.type_List.filter((item) => item.name !== 'Phí phụ thêm')
         })
       },
       initOptions(This) {
@@ -454,13 +454,13 @@
       }
     },
     watch: {
-      // tableData是el-table绑定的数据
+      // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
-        // 解决表格显示错位问题
+        // Khắc phục lỗi hiển thị lệch bảng
         handler() {
           this.$nextTick(() => {
-            // tableRef是el-table绑定的ref属性值
-            this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+            // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+            this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
           })
         },
         deep: true
@@ -469,8 +469,8 @@
     updated() {
       if (this.$refs.tableRef) {
         this.$nextTick(() => {
-          // tableRef是el-table绑定的ref属性值
-          this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+          // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+          this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
         })
       }
     },

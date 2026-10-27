@@ -2,55 +2,55 @@
   <el-dialog :title="dialogProps.title" :visible.sync="dialogProps.visible" :close-on-click-modal="false" width="90%"
     v-loading="loading" :destroy-on-close="true">
     <el-row>
-      <!-- 编辑窗口  -->
+      <!-- Cửa sổ chỉnh sửa  -->
       <synchronousStuffForm ref="synchronousStuffFormRef" :permission='permission' v-on:save-finished='getStuffList'>
       </synchronousStuffForm>
 
       <el-card class="page-container">
-        <!--  搜索栏  开始 -->
+        <!--  Thanh tìm kiếm  Bắt đầu -->
         <div class='query-form-container'>
           <el-row class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm'
               :inline-message='true'>
               <el-col :span="5">
-                <el-form-item label='材料名称' prop='name'>
-                  <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入材料名称'></el-input>
+                <el-form-item label='Tên vật tư' prop='name'>
+                  <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên vật tư'></el-input>
                 </el-form-item>
               </el-col>
 
               <el-col :span="3" style="display:flex;justivy-content:space-around">
-                <el-button type="primary" icon="el-icon-search" @click="onSearch()" :plain="true">搜索
+                <el-button type="primary" icon="el-icon-search" @click="onSearch()" :plain="true">Tìm kiếm
                 </el-button>
-                <el-button type="info" icon="el-icon-refresh-left" @click="reset" :plain="true">重置
+                <el-button type="info" icon="el-icon-refresh-left" @click="reset" :plain="true">Đặt lại
                 </el-button>
               </el-col>
               <el-col :span="16" style="text-align:right;padding-right:5px">
                 <el-button-group>
                   <div style="display: flex;align-items: center;">
-                    <div style="margin-right: 10px;">已选择{{ currentData.length }}条</div>
+                    <div style="margin-right: 10px;">Đã chọn{{ currentData.length }}dòng</div>
                     <div style="display: flex;align-items: center;">
-                      <div style="width: 80px;">数据来源</div>
+                      <div style="width: 80px;">Nguồn dữ liệu</div>
                       <el-select @change="handleSource" v-model="source">
-                        <el-option label="租户" value="1"></el-option>
-                        <el-option label="院版His" value="2"></el-option>
+                        <el-option label="Đơn vị thuê" value="1"></el-option>
+                        <el-option label="Bản phòng khámHis" value="2"></el-option>
                       </el-select>
                     </div>
                   </div>
-                  <!-- <el-button v-show="permission.add" type="primary" icon="el-icon-plus" @click="onCreateStuff()">添加
+                  <!-- <el-button v-show="permission.add" type="primary" icon="el-icon-plus" @click="onCreateStuff()">Thêm
                   </el-button> -->
                   <!-- <el-dropdown v-show="permission.add" style="padding-left:10px">
                     <span class="el-dropdown-link">
-                      批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+                      Thao tác hàng loạt<i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item>
-                        <el-button type="text" @click="indateClick">批量设置有效期预警</el-button>
+                        <el-button type="text" @click="indateClick">Đặt hàng loạt cảnh báo hạn sử dụng</el-button>
                       </el-dropdown-item>
                       <el-dropdown-item>
-                        <el-button type="text" @click="inventoryClick">批量设置库存预警</el-button>
+                        <el-button type="text" @click="inventoryClick">Đặt hàng loạt cảnh báo tồn kho</el-button>
                       </el-dropdown-item>
                       <el-dropdown-item>
-                        <el-button type="text" @click="importStudentExcel">批量导入</el-button>
+                        <el-button type="text" @click="importStudentExcel">Nhập hàng loạt</el-button>
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown> -->
@@ -72,7 +72,7 @@
                 <el-table-column type='selection' :reserve-selection="true" width='50' align='center'
                   :selectable="selectable">
                 </el-table-column>
-                <el-table-column label="序号" type="index" :index="indexMethod" align="center">
+                <el-table-column label="Số thứ tự" type="index" :index="indexMethod" align="center">
                 </el-table-column>
                 <!-- <el-table-column v-for="(cv, index) in columnViews" v-if='cv.display' :prop='cv.prop'
                   :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'
@@ -89,7 +89,7 @@
                   </template>
 </el-table-column> -->
                 <el-table-column v-for="item in columnList" :label="item.label" :prop="item.prop"></el-table-column>
-                <el-table-column prop="inventory" label="可用库存" sortable="custom" width="100px" v-if="source === 1">
+                <el-table-column prop="inventory" label="Tồn kho khả dụng" sortable="custom" width="100px" v-if="source === 1">
                   <template slot-scope="scope">
                     <span v-if="scope.row.stock.surplusStock != null">
                       {{
@@ -103,18 +103,18 @@
                     <span v-else>0</span>
                   </template>
                 </el-table-column>
-                <!-- <el-table-column label='操作' header-align='center' :width='50 + "px"' :key="Math.random()">
+                <!-- <el-table-column label='Thao tác' header-align='center' :width='50 + "px"' :key="Math.random()">
                   <template slot='header' slot-scope="scope">
-                    <span>操作</span>
+                    <span>Thao tác</span>
                   </template>
                   <template slot-scope='scope'>
-                    <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start'
+                    <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start'
                       icon-name='el-icon-view' @click='onViewStuff(scope.$index, scope.row)'></OperationIcon>
-                    <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start'
+                    <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start'
                       icon-name='el-icon-edit' @click='onEditStuff(scope.$index, scope.row)'></OperationIcon>
-                    <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start'
+                    <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start'
                       icon-name='el-icon-document' @click='onCopyStuff(scope.$index, scope.row)'></OperationIcon>
-                    <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start'
+                    <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start'
                       icon-name='el-icon-info' @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                   </template>
                 </el-table-column> -->
@@ -131,67 +131,67 @@
           </el-col>
         </el-row>
       </el-card>
-      <!-- 批量设置有效期预警 -->
+      <!-- Đặt hàng loạt cảnh báo hạn sử dụng -->
       <div class="stuff_indate">
-        <el-dialog title="批量设置有效期" :visible.sync="indateDialogVisible" width="30%" :before-close="handleClose">
+        <el-dialog title="Đặt hàng loạt hạn sử dụng" :visible.sync="indateDialogVisible" width="30%" :before-close="handleClose">
           <!-- <el-divider style="margin-top:-30px;"></el-divider> -->
           <div style="padding-bottom:10px;margin-top:-20px">
-            <el-alert title="批量设置后将修改所有药品的效期预警时间" :closable="false" type="warning">
+            <el-alert title="Sau khi đặt hàng loạt sẽ sửa thời gian cảnh báo hạn sử dụng của tất cả thuốc" :closable="false" type="warning">
             </el-alert>
           </div>
-          <span>药品有效期的预警时间为</span>
+          <span>Thời gian cảnh báo hạn sử dụng của thuốc là</span>
           <el-input v-model="indate" oninput="value=value.replace(/[^\d.]/g,'')">
             <template slot="append">
-              天
+              ngày
             </template>
           </el-input>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="indateSave(0)">取 消</el-button>
-            <el-button type="primary" @click="indateSave(1)">确 定</el-button>
+            <el-button @click="indateSave(0)">Hủy</el-button>
+            <el-button type="primary" @click="indateSave(1)">Xác nhận</el-button>
           </span>
         </el-dialog>
 
-        <!-- 库存预警 -->
-        <el-dialog title="批量设置库存预警" :visible.sync="inventoryDialogVisible" width="30%"
+        <!-- Cảnh báo tồn kho -->
+        <el-dialog title="Đặt hàng loạt cảnh báo tồn kho" :visible.sync="inventoryDialogVisible" width="30%"
           :before-close="handleCloseInventory">
           <!-- <el-divider style="margin-top:-30px;"></el-divider> -->
           <div style="padding-bottom:10px;margin-top:-20px">
-            <el-alert title="批量设置后将修改所有药品的库存预警数量（按包装代为预警）" :closable="false" type="warning">
+            <el-alert title="Sau khi đặt hàng loạt sẽ sửa số lượng cảnh báo tồn kho của tất cả thuốc（Cảnh báo theo đơn vị đóng gói）" :closable="false" type="warning">
             </el-alert>
           </div>
-          <span>药品的库存预警数量为</span>
+          <span>Số lượng cảnh báo tồn kho của thuốc là</span>
           <el-input v-model="inventoryFloor" oninput="value=value.replace(/[^\d.]/g,'')">
           </el-input>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="inventorySave(0)">取 消</el-button>
-            <el-button type="primary" @click="inventorySave(1)">确 定</el-button>
+            <el-button @click="inventorySave(0)">Hủy</el-button>
+            <el-button type="primary" @click="inventorySave(1)">Xác nhận</el-button>
           </span>
         </el-dialog>
 
-        <!-- 点击导入后弹出框 -->
-        <el-dialog title="导入材料" :visible.sync="importDialogVisible" width="45%" :before-close="cancellation">
+        <!-- Hộp thoại hiện sau khi nhấn nhập -->
+        <el-dialog title="Nhập vật tư" :visible.sync="importDialogVisible" width="45%" :before-close="cancellation">
           <input ref="file" type="file" accept=".xlsx,.xls" style="display: none;" @change="uploadFile">
-          <el-button type="primary" icon="el-icon-upload" @click="clickFile">选择文件</el-button>
-          <el-button type="primary" icon="el-icon-download" @click="downloadExcel">模板下载</el-button>
-          <el-button @click="cancellation()">取 消</el-button>
+          <el-button type="primary" icon="el-icon-upload" @click="clickFile">Chọn tệp</el-button>
+          <el-button type="primary" icon="el-icon-download" @click="downloadExcel">Tải mẫu xuống</el-button>
+          <el-button @click="cancellation()">Hủy</el-button>
         </el-dialog>
 
-        <el-dialog title="材料信息导入错误" :visible.sync="dialogVisible" width="30%" :before-close="mistakeClose">
-          <span> 导入成功<span style="white-space:pre;color:#08ff00;font-size: 16px">{{ chengGong
-              }}</span>条&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-dialog title="Lỗi nhập thông tin vật tư" :visible.sync="dialogVisible" width="30%" :before-close="mistakeClose">
+          <span> Nhập dữ liệu thành công<span style="white-space:pre;color:#08ff00;font-size: 16px">{{ chengGong
+              }}</span>dòng&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           </span>
-          <span> 导入失败<span style="white-space:pre;color:red;font-size: 16px">{{ shiBai }}</span>条 </span><br>
+          <span> Nhập dữ liệu thất bại<span style="white-space:pre;color:red;font-size: 16px">{{ shiBai }}</span>dòng </span><br>
           <span style="white-space:pre;color:red;font-size: 15px">{{ mistake }}</span>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+            <el-button @click="dialogVisible = false">Hủy</el-button>
+            <el-button type="primary" @click="dialogVisible = false">Xác nhận</el-button>
           </span>
         </el-dialog>
       </div>
     </el-row>
     <span slot='footer' class='dialog-footer'>
-      <el-button :disabled="flag" type='primary' :plain='true' @click='onSubmit()'>同 步</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
+      <el-button :disabled="flag" type='primary' :plain='true' @click='onSubmit()'>Đồng bộ</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
     </span>
   </el-dialog>
 </template>
@@ -244,94 +244,94 @@ export default {
         'bar_code': 'like',
       },
       queryModel: {
-        'name': '',   // 材料名称
-        'type': {     // 材料类型
+        'name': '',   // Tên vật tư
+        'type': {     // Loại vật tư
           'value': '',
           'name': '',
         },
-        'barCode': '',   // 条形码
+        'barCode': '',   // Mã vạch
         'status': '',
       },
       status: [
         {
           value: '0',
-          label: '否'
+          label: 'Không'
         },
         {
           value: '1',
-          label: '是'
+          label: 'Có'
         },
-      ],//是否启用
+      ],//Có kích hoạt không
       isOutSell: [
         {
           value: '0',
-          label: '否'
+          label: 'Không'
         },
         {
           value: '1',
-          label: '是'
+          label: 'Có'
         },
       ],
       search: {
         params: [{ columnName: 'company_id', queryType: '=', value: currentUser.company.id }],
         offset: 0,
         limit: 20,
-        columnName: '',      // 排序字段名
-        order: ''            // 排序
+        columnName: '',      // Tên trường sắp xếp
+        order: ''            // Sắp xếp
       },
       currentPage: 1,
       stuffTotal: 0,
       stuffList: [],
 
-      typeList: [],    // 材料类型
+      typeList: [],    // Loại vật tư
 
-      oprColumnWidth: 140,  // 操作列宽
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1004462867645374480',
       schemeId: '1004462867645374509',
-      indateDialogVisible: false,  //批量设置有效期弹出框
-      inventoryDialogVisible: false,   //批量设置库存预警弹出框
-      importDialogVisible: false, // 批量导入弹框变量
-      indate: "",   //有效期
-      inventoryFloor: "",   //库存下限
+      indateDialogVisible: false,  //Hộp thoại đặt hàng loạt hạn sử dụng
+      inventoryDialogVisible: false,   //Hộp thoại đặt hàng loạt cảnh báo tồn kho
+      importDialogVisible: false, // Biến hộp thoại nhập hàng loạt
+      indate: "",   //Hạn sử dụng
+      inventoryFloor: "",   //Ngưỡng tồn kho tối thiểu
       currentData: [],
       source: '1',
       columnList: [],
       columnListOne: [
         {
           prop: 'name',
-          label: '材料名称',
+          label: 'Tên vật tư',
         },
         {
           prop: 'commonName',
-          label: '常用名',
+          label: 'Tên thường dùng',
         },
         {
           prop: 'code',
-          label: '材料编码',
+          label: 'Mã vật tư',
         },
         {
           prop: 'typeName',
-          label: '材料类型',
+          label: 'Loại vật tư',
         },
         {
           prop: 'factoryName',
-          label: '生产厂家',
+          label: 'Nhà sản xuất',
         },
         {
           prop: 'natureName',
-          label: '性质',
+          label: 'Tính chất',
         },
         {
           prop: 'barCode',
-          label: '条形码',
+          label: 'Mã vạch',
         },
         {
           prop: 'syncNumName',
-          label: '是否已同步',
+          label: 'Đã đồng bộ chưa',
         },
         {
           prop: 'createDate',
-          label: '创建日期',
+          label: 'Ngày tạo',
         },
         {
           prop: 'updateDate',
@@ -342,15 +342,15 @@ export default {
       columnListTwo: [
         {
           prop: 'sfxmmc',
-          label: '材料名称',
+          label: 'Tên vật tư',
         },
         {
           prop: 'py',
-          label: '拼音码',
+          label: 'Mã pinyin',
         },
         {
           prop: 'sfxmCode',
-          label: '材料编码',
+          label: 'Mã vật tư',
         },
         {
           prop: 'dwjls',
@@ -358,26 +358,26 @@ export default {
         },
         {
           prop: 'dw',
-          label: '最小单位',
+          label: 'Đơn vị nhỏ nhất',
         },
         {
           prop: 'gg',
-          label: '包装规格',
+          label: 'Quy cách đóng gói',
         },
         {
           prop: 'dj',
-          label: '对外销售价格',
+          label: 'Giá bán ra ngoài',
         },
         {
           prop: 'syncNumName',
-          label: '是否已同步',
+          label: 'Đã đồng bộ chưa',
         },
       ]
 
     };
   },
   props: {
-    // 权限
+    // Quyền
     // permission: {
     //   type: Object,
     // },
@@ -422,7 +422,7 @@ export default {
       const res = await functionSync(this.currentData);
       if (res.code === 100) {
         this.$message({
-          message: '同步成功',
+          message: 'Đồng bộ thành công',
           type: 'success'
         });
         this.dialogProps.visible = false
@@ -443,7 +443,7 @@ export default {
     handleCloseInventory() {
       this.inventorySave(0)
     },
-    //批量设置有效期保存
+    //Lưu đặt hàng loạt hạn sử dụng
     indateSave(index) {
       if (index === 0) {
         this.indateDialogVisible = false
@@ -458,7 +458,7 @@ export default {
             this.indateDialogVisible = false
             this.indate = ""
             this.getStuffList();
-            this.$message.success("修改成功")
+            this.$message.success("Sửa thành công")
           }
         }).catch((error) => {
           this.$message.error(error)
@@ -466,7 +466,7 @@ export default {
       }
     },
 
-    //批量设置库存预警保存
+    //Lưu đặt hàng loạt cảnh báo tồn kho
     inventorySave(index) {
       if (index === 0) {
         this.inventoryDialogVisible = false
@@ -481,7 +481,7 @@ export default {
             this.inventoryDialogVisible = false
             this.inventoryFloor = ""
             this.getStuffList();
-            this.$message.success("修改成功")
+            this.$message.success("Sửa thành công")
           }
         }).catch((error) => {
           this.$message.error(error)
@@ -489,11 +489,11 @@ export default {
       }
     },
 
-    // 下载模板
+    // Tải mẫu xuống
     downloadExcel() {
       let a = document.createElement('a');
       let evt = document.createEvent('MouseEvents');
-      a.download = '材料信息';
+      a.download = 'Thông tin vật tư';
       a.href = fileurl;
       evt.initEvent('click', true, true);
       a.dispatchEvent(evt);
@@ -501,26 +501,26 @@ export default {
     },
 
 
-    // 关闭导入报错
+    // Đóng thông báo lỗi nhập
     mistakeClose(done) {
-      this.$confirm('确认关闭？')
+      this.$confirm('Xác nhận đóng？')
         .then(_ => {
           done();
         })
         .catch(_ => { });
     },
 
-    // 批量导入按钮点击事件
+    // Sự kiện nhấn nút nhập hàng loạt
     importStudentExcel() {
       this.importDialogVisible = true;
     },
 
-    // 选择文件事件
+    // Sự kiện chọn tệp
     clickFile() {
       this.$refs.file.dispatchEvent(new MouseEvent('click'))
     },
 
-    // 上传文件
+    // Tải tệp lên
     async uploadFile() {
       const file = this.$refs.file.files
       const extName = file[0].name.substring(file[0].name.lastIndexOf('.')).toLowerCase()
@@ -528,13 +528,13 @@ export default {
         const formData = new FormData()
         let id = currentUser.company.id;
         formData.append('file', file[0])
-        this.$message.success('正在导入中，请耐心等待')
+        this.$message.success('Đang nhập dữ liệu，Vui lòng chờ')
         uploadExcel(formData).then((res) => {
           if (res.code === 100) {
             if (res.data[2] === "") {
               this.$message({
                 type: 'success',
-                message: '数据导入成功,共导入' + res.data[0] + '条信息!'
+                message: 'Nhập dữ liệu thành công,Đã nhập tổng cộng' + res.data[0] + 'bản ghi!'
               })
               this.cancellation();
             } else {
@@ -554,13 +554,13 @@ export default {
         })
       }
       else {
-        this.$message.error('数据导入失败，请选择正确的xlsx模板文件')
+        this.$message.error('Nhập dữ liệu thất bại，Vui lòng chọn đúngxlsxTệp mẫu')
         this.cancellation();
       }
       this.load();
     },
 
-    // 关闭导入窗口
+    // Đóng cửa sổ nhập
     cancellation() {
       this.importDialogVisible = false;
       this.reset();
@@ -568,12 +568,12 @@ export default {
 
 
 
-    //批量设置库存弹出框
+    //Hộp thoại đặt hàng loạt tồn kho
     inventoryClick() {
       this.inventoryDialogVisible = true
     },
 
-    //批量设置有效期弹出框
+    //Hộp thoại đặt hàng loạt hạn sử dụng
     indateClick() {
       this.indateDialogVisible = true
     },
@@ -588,43 +588,43 @@ export default {
     },
     getStuffList(val) {
       this.setLoad()
-      /* 查询参数 和数据权限 */
+      /* Tham số truy vấn và quyền dữ liệu */
       this.search.params = [{ columnName: 'company_id', queryType: '=', value: currentUser.company.id }]
       if (val === "1") {
         this.search.params = this.search.params.concat(this.compositeCondition())
       } else {
-        // 查询参数: 材料名称
+        // Tham số truy vấn: Tên vật tư
         this.search.params.push({
           columnName: this.source === 1 ? 'name' : 'keyword',
           queryType: 'like',
           value: this.queryModel.name
         })
-        // 查询参数: 材料类型
+        // Tham số truy vấn: Loại vật tư
         this.search.params.push({
           columnName: 'type',
           queryType: '=',
           value: validatenull(this.queryModel.type.value) ? '' : this.queryModel.type.value
         })
-        // 查询参数: 条形码
+        // Tham số truy vấn: Mã vạch
         this.search.params.push({
           columnName: 'bar_code',
           queryType: 'like',
           value: this.queryModel.barCode
         })
-        // 查询参数: 状态
+        // Tham số truy vấn: Trạng thái
         this.search.params.push({
           columnName: "status",
           queryType: "=",
           value: this.queryModel.status,
         });
-        // 查询参数: 是否对外销售
+        // Tham số truy vấn: Có bán ra ngoài không
         this.search.params.push({
           columnName: "is_out_sell",
           queryType: "=",
           value: this.queryModel.isOutSell,
         });
       }
-      // 数据权限: 材料stuff
+      // Quyền dữ liệu: Vật tưstuff
       this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
       const functionList = this.source === '1' ? listParentStuffPage : listInstitutionStuffPage
       functionList(this.search).then(responseData => {
@@ -673,7 +673,7 @@ export default {
         this.initOptions(this.queryModel)
         this.search.params = [{ columnName: 'company_id', queryType: '=', value: currentUser.company.id }]
         const functionList = this.source === '1' ? listParentStuffPage : listInstitutionStuffPage
-        // 数据权限: 材料stuff
+        // Quyền dữ liệu: Vật tưstuff
         this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
         let [listStuffRespData, listPermissionRespData] = await Promise.all([
           functionList(this.search),
@@ -686,12 +686,12 @@ export default {
               item.typeName = item.type.name
               item.natureName = item.nature.name
               item.factoryName = item.factory.name
-              item.syncNumName = item.syncNum === 1 ? '是' : '否'
+              item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
               return item
             })
           } else {
             this.stuffList = listStuffRespData.data.rows.map((item) => {
-              item.syncNumName = item.syncNum === 1 ? '是' : '否'
+              item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
               return item
             })
           }
@@ -766,7 +766,7 @@ export default {
       setTimeout(() => {
         if (this.inventory !== 0) {
           this.$message({
-            message: "物品存在库存，不能修改",
+            message: "Vật phẩm còn tồn kho，Không thể sửa",
             type: 'warning',
           })
         } else if (this.inventory === 0) {
@@ -801,16 +801,16 @@ export default {
     }
     ,
     onDeleteStuff(index, row) {
-      this.$confirm('确定删除吗？', '确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
         type: 'warning'
       }).then(() => {
         this.setLoad()
         deleteStuff(row).then(responseData => {
           if (responseData.code === 100) {
             this.getStuffList()
-            this.showMessage({ type: 'success', msg: '删除成功' })
+            this.showMessage({ type: 'success', msg: 'Xóa thành công' })
           } else {
             this.showMessage(responseData)
           }
@@ -846,13 +846,13 @@ export default {
     },
   },
   watch: {
-    // tableData是el-table绑定的数据
+    // tableDataCóel-tableDữ liệu đã liên kết
     tableData: {
-      // 解决表格显示错位问题
+      // Khắc phục lỗi hiển thị lệch bảng
       handler() {
         this.$nextTick(() => {
-          // tableRef是el-table绑定的ref属性值
-          this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+          // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+          this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
         })
       },
       deep: true
@@ -861,7 +861,7 @@ export default {
   updated() {
     if (this.$refs.tableRef) {
       this.$nextTick(() => {
-        this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+        this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
       })
     }
   },

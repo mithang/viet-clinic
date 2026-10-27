@@ -280,7 +280,7 @@ public class ExcelUtils {
 			for (int i = 0; i < data.headers.size(); i++) {
 				XSSFCell cell = row.createCell(i);
 				cell.setCellValue(data.headers.get(i));
-				if (data.headers.get(i).indexOf("链接") != -1) {
+				if (data.headers.get(i).indexOf("liên kết") != -1) {
 					urllist.add(i);
 				}
 			}
@@ -487,17 +487,17 @@ public class ExcelUtils {
 			}
 			//if (cell.getCellType() == XSSFCell.CELL_TYPE_NUMERIC) {
 			if (cell.getCellType() == NUMERIC) {
-				if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
+				if (HSSFDateUtil.isCellDateFormatted(cell)) {// Xử lýNgàyđịnh dạng, Thời gianđịnh dạng
 					SimpleDateFormat sdf = null;
 					if (cell.getCellStyle().getDataFormat() == HSSFDataFormat.getBuiltinFormat("h:mm")) {
 						sdf = new SimpleDateFormat("HH:mm");
-					} else {// 日期
+					} else {// Ngày
 						sdf = new SimpleDateFormat("yyyy-MM-dd");
 					}
 					Date date = cell.getDateCellValue();
 					return sdf.format(date);
 				} else if (cell.getCellStyle().getDataFormat() == 58) {
-					// 处理自定义日期格式：m月d日(通过判断单元格的格式id解决，id的值是58)
+					// Xử lýtùy chỉnhNgàyđịnh dạng: mThángdNgày(QuaKiểm trađơn đồngô của định dạngidgiải quyết, id của Giá trị có 58)
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 					double value = cell.getNumericCellValue();
 					Date date = DateUtil.getJavaDate(value);

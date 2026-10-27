@@ -13,14 +13,14 @@
       <sidebar-item v-for="(router, index) in routers" :key="index" :item="router"></sidebar-item>
     </el-menu>
 
-    <!-- 版权信息区域：左对齐 + 协议单独一行 + 沉底 + 超链接 -->
+    <!-- 版权信息区域：Căn trái + 协议单独一行 + 沉底 + 超链接 -->
     <div
       class="sidebar-copyright"
       :style="{
         backgroundColor: settings.sidebarColor,
         color: isLight('sidebarColor') ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
         fontSize: '9.5px',
-        textAlign: 'left', // 左对齐
+        textAlign: 'left', // Căn trái
         padding: isCollapse ? '12px 12px' : '16px 20px',
         lineHeight: '1.6',
         borderTop: isLight('sidebarColor') ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(255,255,255,0.05)',
@@ -118,7 +118,7 @@
       },
       handleScreenView() {
         return false
-        // 暂时禁用
+        // Tạm thời vô hiệu hóa
         // let screenWindow = null;
         // this.openWindow(screenWindow)
       },
@@ -211,7 +211,7 @@
     overflow: hidden;
   }
 
-  /* 可选：优化滚动条样式 */
+  /* Có thể chọn：优化滚动条样式 */
   .nav-menu::-webkit-scrollbar {
     width: 4px;
   }
@@ -233,9 +233,9 @@
     overflow-x: hidden;
   }
 
-  /* 优化链接hover效果（兼容scoped样式） */
+  /* 优化链接hover效果（兼容scopedKiểu） */
   .sidebar-copyright a {
-    color: var(--el-color-primary) !important; /* 复用element-plus主题色 */
+    color: var(--el-color-primary) !important; /* 复用element-plusMàu chủ đề */
     text-decoration: none;
   }
 
@@ -243,7 +243,7 @@
     text-decoration: underline !important;
   }
 
-  /* 可选：优化滚动条样式 */
+  /* Có thể chọn：优化滚动条样式 */
   .nav-menu::-webkit-scrollbar {
     width: 4px;
   }

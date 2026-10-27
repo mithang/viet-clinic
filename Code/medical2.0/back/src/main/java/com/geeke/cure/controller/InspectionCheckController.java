@@ -9,7 +9,7 @@ import com.geeke.cure.service.InspectionCheckService;
 import com.geeke.common.controller.CrudController;
 
 /**
- * 检验检查Controller
+ * Xét nghiệm và kiểm traController
  * @author rys
  * @version 2022-10-18
  */

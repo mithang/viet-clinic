@@ -8,7 +8,7 @@ import com.geeke.sys.entity.Theme;
 import com.geeke.sys.service.ThemeService;
 
 /**
- * 系统主题Controller
+ * Chủ đề hệ thốngController
  * @author lys
  * @version 2021-09-19
  */

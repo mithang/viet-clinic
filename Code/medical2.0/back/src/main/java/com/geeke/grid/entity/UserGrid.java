@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 自定义布局Entity
+ * Bố cục tùy chỉnhEntity
  * @author ycy
  * @version 2021-08-02
  */
@@ -19,11 +19,11 @@ public class UserGrid extends DataEntity<UserGrid> {
 	private static final long serialVersionUID = 1L;
 
 	@JsonSerialize(using= ToStringSerializer.class)
-	private Long userId;		// 用户id
+	private Long userId;		// Người dùngid
 	@JsonSerialize(using= ToStringSerializer.class)
-	private Long routerId;		//路由id
-	private String gridInfo;		// 自定义布局信息
-	private String defaultCheck;		// 选中展示的模块
+	private Long routerId;		//Định tuyếnid
+	private String gridInfo;		// Bố cục tùy chỉnhThông tin
+	private String defaultCheck;		// chọn trong 展hiển thị của mô-đun
 
 	
 	public UserGrid() {
@@ -35,7 +35,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	}
 	
 
-	@NotNull(message="用户id不能为空")
+	@NotNull(message="Người dùngidKhông được để trống")
 	public Long getUserId() {
 		return userId;
 	}
@@ -44,7 +44,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	}
 	
 	
-	@Length(min=0, max=1000, message="自定义布局信息长度必须介于 0 和 1000 之间")
+	@Length(min=0, max=1000, message="Bố cục tùy chỉnhThông tinĐộ dài phải nằm trong khoảng 0 đến 1000 ")
 	public String getGridInfo() {
 		return gridInfo;
 	}
@@ -53,7 +53,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	}
 	
 	
-	@Length(min=0, max=200, message="选中展示的模块长度必须介于 0 和 200 之间")
+	@Length(min=0, max=200, message="chọn trong 展hiển thị của mô-đunĐộ dài phải nằm trong khoảng 0 đến 200 ")
 	public String getDefaultCheck() {
 		return defaultCheck;
 	}
@@ -71,7 +71,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -80,7 +80,7 @@ public class UserGrid extends DataEntity<UserGrid> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -90,7 +90,7 @@ public class UserGrid extends DataEntity<UserGrid> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

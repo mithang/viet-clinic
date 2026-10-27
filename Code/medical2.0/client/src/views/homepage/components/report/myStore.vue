@@ -25,7 +25,7 @@
         </el-pagination>
       </el-col>
     </el-row>-->
-    <div class="no-data" v-if="collectList.length === 0">暂无数据</div>
+    <div class="no-data" v-if="collectList.length === 0">Chưa có dữ liệu</div>
   </div>
 </template>
 
@@ -122,12 +122,12 @@
           this.$store.dispatch('panel/setPanelInfo', data)
           // bus.$emit('set-panel-show-type', 0)
 
-          // 刷新联动信息
+          // Làm mới thông tin liên kết
           getPanelAllLinkageInfo(row.panelGroupId).then(rsp => {
             this.$store.commit('report/setNowPanelTrackInfo', rsp.data)
           })
 
-          // 刷新跳转信息
+          // Làm mới thông tin chuyển hướng
           queryPanelJumpInfo(row.panelGroupId).then(rsp => {
             this.$store.commit('report/setNowPanelJumpInfo', rsp.data)
           })

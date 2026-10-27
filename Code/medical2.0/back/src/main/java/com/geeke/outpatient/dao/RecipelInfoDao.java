@@ -11,13 +11,13 @@ import com.geeke.outpatient.entity.RecipelInfo;
 import java.util.List;
 
 /**
- * 处方信息DAO接口
+ * Thông tin đơn thuốcDAOGiao diện
  * @author txl
  * @version 2022-06-20
  */
 @Mapper
 public interface RecipelInfoDao extends CrudDao<RecipelInfo> {
-    //根据病例id获取所有的处方信息
+    //Theoca bệnhidLấytất cả của Đơn thuốcThông tin
     List<RecipelInfo> getByMedicalId(String registrationId);
 
     int updateById(@Param("cureType") int cureType,@Param("infuseType") int infuseType,@Param("id") String  id);

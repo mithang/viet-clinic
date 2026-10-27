@@ -55,21 +55,21 @@ public class EasyGmUtils {
 
     public static byte[] signSm3WithSm2Asn1Rs(byte[] msg, byte[] userId, AsymmetricKeyParameter privateKey) {
         try {
-            // 创建 SM3 摘要
+            // Tạo SM3 Tóm tắt
             SM3Digest digest = new SM3Digest();
-            // 创建 SM2 签名器
+            // Tạo SM2 chữ kýthiết bị
             Signer signer = new SM2Signer();
 
-            // 初始化签名器
+            // Khởi tạochữ kýthiết bị
             signer.init(true, new ParametersWithRandom(privateKey, new SecureRandom()));
 
-            // 更新签名内容
+            // Cập nhậtchữ kýnội dung
             signer.update(msg, 0, msg.length);
 
-            // 生成签名
+            // Tạochữ ký
             return signer.generateSignature();
         } catch (Exception e) {
-            logger.error("国密运算异常", e);
+            logger.error("Ngoại lệ tính toán mật mã quốc gia", e);
             return null;
         }
     }
@@ -102,16 +102,16 @@ public class EasyGmUtils {
 
     public static boolean verifySm3WithSm2Asn1Rs(byte[] msg, byte[] userId, byte[] sign, AsymmetricKeyParameter publicKey) {
         try {
-            // 初始化 SM2 签名器
+            // Khởi tạo SM2 chữ kýthiết bị
             SM2Signer signer = new SM2Signer();
-            signer.init(false, publicKey); // false 表示初始化为验证模式
-            signer.update(msg, 0, msg.length); // 更新消息
+            signer.init(false, publicKey); // false cho biếtKhởi tạo là Xác thực模kiểu
+            signer.update(msg, 0, msg.length); // Cập nhậtthông báo
 
-            // 验证签名
+            // Xác thựcchữ ký
             return signer.verifySignature(sign);
         } catch (Exception e) {
-            logger.error("国密运算异常", e);
-            return false; // 验证失败
+            logger.error("Ngoại lệ tính toán mật mã quốc gia", e);
+            return false; // Xác thựcThất bại
         }
     }
 
@@ -149,7 +149,7 @@ public class EasyGmUtils {
             sm2Engine.init(true, new ParametersWithRandom(pubkey, new SecureRandom()));
             return sm2Engine.processBlock(data, 0, data.length);
         } catch (Exception e) {
-            logger.error("国密运算异常", e);
+            logger.error("Ngoại lệ tính toán mật mã quốc gia", e);
             return null;
         }
     }
@@ -160,7 +160,7 @@ public class EasyGmUtils {
             sm2Engine.init(false, key);
             return sm2Engine.processBlock(data, 0, data.length);
         } catch (Exception e) {
-            logger.error("国密运算异常", e);
+            logger.error("Ngoại lệ tính toán mật mã quốc gia", e);
             return null;
         }
     }
@@ -177,7 +177,7 @@ public class EasyGmUtils {
 //            return null;
 //        }
 //    }
-    // SM4 解密 (CBC)
+    // SM4 Giải mã (CBC)
     public static byte[] sm4DecryptCBC(byte[] keyBytes, byte[] cipher, byte[] iv) {
         if (keyBytes.length != 16) throw new IllegalArgumentException("err key length");
         if (cipher.length % 16 != 0) throw new IllegalArgumentException("err data length");
@@ -197,7 +197,7 @@ public class EasyGmUtils {
         }
     }
 
-    // SM4 加密 (CBC)
+    // SM4 Mã hóa (CBC)
     public static byte[] sm4EncryptCBC(byte[] keyBytes, byte[] plain, byte[] iv) {
         if (keyBytes.length != 16) throw new IllegalArgumentException("err key length");
         if (plain.length % 16 != 0) throw new IllegalArgumentException("err data length");
@@ -217,7 +217,7 @@ public class EasyGmUtils {
         }
     }
 
-    // SM4 加密 (ECB)
+    // SM4 Mã hóa (ECB)
     public static byte[] sm4EncryptECB(byte[] keyBytes, byte[] plain) {
         if (keyBytes.length != 16) throw new IllegalArgumentException("err key length");
         if (plain.length % 16 != 0) throw new IllegalArgumentException("err data length");
@@ -232,7 +232,7 @@ public class EasyGmUtils {
             return null;
         }
     }
-    // SM4 解密 (ECB)
+    // SM4 Giải mã (ECB)
     public static byte[] sm4DecryptECB(byte[] keyBytes, byte[] cipher) {
         if (keyBytes.length != 16) throw new IllegalArgumentException("err key length");
         if (cipher.length % 16 != 0) throw new IllegalArgumentException("err data length");
@@ -372,7 +372,7 @@ public class EasyGmUtils {
         try {
             return new DERSequence(v).getEncoded();
         } catch (IOException e) {
-            logger.error("ASN1编码异常", e);
+            logger.error("ASN1Mãngoại lệ", e);
             return null;
         }
     }
@@ -382,21 +382,21 @@ public class EasyGmUtils {
 
     public static byte[] zeroIv(String algo) {
         try {
-            // 创建适当的加密器，根据算法名称选择相应的引擎
+            // tạophù hợpkhi của Mã hóathiết bị, Theothuật toánTênchọn择tươngnên của engine
             PaddedBufferedBlockCipher cipher;
             if (algo.equals("AES/ECB/PKCS7Padding")) {
                 cipher = new PaddedBufferedBlockCipher(new AESEngine());
-                // 添加其他算法支持，如DES, SM4等
+                // Thêmkhácthuật toánhỗ trợ, Như DES, SM4 v.v. 
             } else {
                 throw new IllegalArgumentException("Unsupported algorithm: " + algo);
             }
-            // 获取块大小并创建零IV
+            // LấyKích thước khối và tạo số 0IV
             int blockSize = cipher.getBlockSize();
             byte[] iv = new byte[blockSize];
             Arrays.fill(iv, (byte) 0);
             return iv;
         } catch (Exception e) {
-            logger.error("SM4加密异常", e);
+            logger.error("SM4Mã hóangoại lệ", e);
             return null;
         }
     }

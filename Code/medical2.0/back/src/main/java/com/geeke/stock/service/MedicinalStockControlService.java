@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 药品/材料库存总控制Service
+ * Thuốc/Kiểm soát tổng tồn kho vật tưService
  * @author hl
  * @version 2022-09-26
  */
@@ -38,7 +38,7 @@ import java.util.Objects;
 public class MedicinalStockControlService extends CrudService<MedicinalStockControlDao, MedicinalStockControl>{
     private final MedicinalStockControlDao dao;
 
-    /** 药品库存控制为机构共享数据：允许同机构下诊所访问机构诊所的数据（与列表 #{institution} SQL 一致） */
+    /** ThuốcTồn khokiểm soát là Cơ sởTổng hưởngDữ liệu: Cho phép phòng khám thuộc cùng cơ sở truy cập dữ liệu phòng khám của cơ sở(Với danh sách #{institution} SQL Nhất quán) */
     @Override
     protected boolean isInstitutionShared() {
         return true;
@@ -54,7 +54,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
     public static final Boolean enable = Boolean.TRUE;
 
     /**
-     * 新增药品或材料基础主数据时，初始化库存总控制记录数据
+     * Thêm mớiThuốc hoặc Vật tưcơ bảnchínhDữ liệu giờ, Khởi tạo dữ liệu bản ghi kiểm soát tổng tồn kho
      * @param dataEntity
      */
     @Transactional(readOnly = false)
@@ -75,7 +75,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Drug drug = drugService.get(dataEntity.getId());
             if (Objects.isNull(drug) || StringUtils.isBlank(drug.getId()))
             {
-                throw new ServiceException("初始化[药品库存]总控制时,未获取到药品基础维护信息！");
+                throw new ServiceException("Khởi tạo[ThuốcTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của thuốc!");
             }
 
             medicinalStockControl.setDrugStuffName(drug.getGoodsName());
@@ -96,7 +96,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Stuff stuff = stuffService.get(dataEntity.getId());
             if (Objects.isNull(stuff) || StringUtils.isBlank(stuff.getId()))
             {
-                throw new ServiceException("初始化[材料库存]总控制时,未获取到材料基础维护信息！");
+                throw new ServiceException("Khởi tạo[Vật tưTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của vật tư!");
             }
 
             medicinalStockControl.setDrugStuffName(stuff.getName());
@@ -117,7 +117,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
     }
 
     /**
-     * 新增药品或材料库存时，初始化库存总控制记录数据
+     * Thêm mớiThuốc hoặc Vật tưTồn kho giờ, Khởi tạo dữ liệu bản ghi kiểm soát tổng tồn kho
      * @param dataEntity
      */
     @Transactional(readOnly = false)
@@ -142,7 +142,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Drug drug = drugService.get(dataEntity.getId());
             if (Objects.isNull(drug) || StringUtils.isBlank(drug.getId()))
             {
-                throw new ServiceException("初始化[药品库存]总控制时,未获取到药品基础维护信息！");
+                throw new ServiceException("Khởi tạo[ThuốcTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của thuốc!");
             }
 
             medicinalStockControl.setDrugStuffName(drug.getGoodsName());
@@ -163,7 +163,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Stuff stuff = stuffService.get(dataEntity.getId());
             if (Objects.isNull(stuff) || StringUtils.isBlank(stuff.getId()))
             {
-                throw new ServiceException("初始化[材料库存]总控制时,未获取到材料基础维护信息！");
+                throw new ServiceException("Khởi tạo[Vật tưTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của vật tư!");
             }
 
             medicinalStockControl.setDrugStuffName(stuff.getName());
@@ -188,7 +188,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
     }
 
     /**
-     * 作废删除药品或材料主数据时，校验库存是否使用，如果使用则不允许作废删除主数据；如果未使用，则允许作废删除主数据，同时把库存控制数据打上作废删除标记
+     * hủyXóaThuốc hoặc Vật tưchínhDữ liệu giờ, Kiểm traTồn khoCó hay khôngsử dụng, NếuNếu đang sử dụng thì không cho phép hủyXóachínhDữ liệu; NếuChưasử dụng, thìcho phéphủyXóachínhDữ liệu, Đồng thời đánh dấu hủy/xóa cho dữ liệu kiểm soát tồn kho
      * @param dataEntity
      */
     @Transactional(readOnly = false)
@@ -209,24 +209,24 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
 
         if (CollectionUtils.isEmpty(list))
         {
-            //TODO: 在启用动态库存控制功能时，之前的历史产生数据如何处理？？？   不管，还是手工补录数据到数据库
+            //TODO: tạiBậtđộngTồn khokiểm soátchức năng giờ, củatrước của lịch sửsảnsinhDữ liệuNhư 何Xử lý???   khôngquản lý, còn có 手công việc补录Dữ liệuĐếnDữ liệukho
             return;
         }else {
-            throw new ServiceException("该药品存在库存不能删除！");
+            throw new ServiceException("đóThuốcTồn tạiTồn khoKhông thểXóa!");
         }
 
 //        MedicinalStockControl medicinalStockControl = list.get(0);
-//        BigDecimal storageStock = medicinalStockControl.getStorageStock();    //入库总量
-//        BigDecimal surplusStock = medicinalStockControl.getSurplusStock();    //剩余可用库存数
+//        BigDecimal storageStock = medicinalStockControl.getStorageStock();    //Tổng lượng nhập kho
+//        BigDecimal surplusStock = medicinalStockControl.getSurplusStock();    //Số lượng tồn kho còn khả dụng
 //        if (storageStock.compareTo(surplusStock) != 0)
 //        {
-//            throw new RuntimeException("动态库存控制已发生变化，不能作废删除基础配置数据！");
+//            throw new RuntimeException("độngTồn khokiểm soátĐãphátthay đổi, Không thểhủyXóacơ bảncấu hìnhDữ liệu!");
 //        }
 //
-//        //总库存控制数据打上作废删除标记
+//        //tổngTồn khokiểm soátDữ liệuđánhtrênhủyXóađánh dấu
 //        super.delete(medicinalStockControl);
 //
-//        //TODO:是否需要把动态库存操作明细删除掉
+//        //TODO:Có cần xóa chi tiết thao tác tồn kho động không
     }
 
     @Transactional(readOnly = true)
@@ -234,7 +234,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
         return this.dao.getByDrugOrStuffId(drugOrStuffId,companyId);
     }
 
-    //查询租户下库存
+    //Truy vấntenantdướiTồn kho
     public List<MedicinalStockControl> listAlls(List<Parameter> parameters, String orderby) {
         PageRequest pageRequest = buildTenantPageRequest(parameters, orderby);
 
@@ -242,7 +242,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
     }
 
     /**
-     * 只查询本诊所下库存 2025.4.2
+     * chỉTruy vấnnàyPhòng khámdướiTồn kho 2025.4.2
      * @param parameters
      * @param orderby
      * @return

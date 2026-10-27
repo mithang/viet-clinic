@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.CompanyCodeRule;
 
 /**
- * 公司编码规则DAO接口
+ * Quy tắc mã công tyDAOGiao diện
  * @author lys
  * @version 2021-05-17
  */
@@ -15,7 +15,7 @@ import com.geeke.sys.entity.CompanyCodeRule;
 public interface CompanyCodeRuleDao extends CrudDao<CompanyCodeRule> {
 	
 	/**
-	 * 获取编码规则
+	 * LấyMãquy tắc
 	 * @param companyId
 	 * @param code
 	 * @return

@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 病历填写DAO接口
+ * Điền bệnh ánDAOGiao diện
  * @author txl
  * @version 2022-06-13
  */

@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.grid.entity.UserGrid;
 
 /**
- * 自定义布局DAO接口
+ * Bố cục tùy chỉnhDAOGiao diện
  * @author ycy
  * @version 2021-08-02
  */

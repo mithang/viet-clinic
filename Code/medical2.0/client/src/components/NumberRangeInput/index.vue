@@ -1,7 +1,7 @@
 <template>
   <div class="input-number-range">
     <number-input v-model="beginValue" :currency="type === 'java.math.BigDecimal' ? 'CNY' : null" :precision="precision" clearable></number-input>
-    <span>至</span>
+    <span>đến</span>
     <number-input v-model="endValue" :currency="type === 'java.math.BigDecimal' ? 'CNY' : null" :precision="precision" clearable></number-input>
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
     }
   },
   props: {
-    // 接受外部v-model传入的值
+    // Nhận từ bên ngoàiv-modelgiá trị truyền vào
     arrValue: {
       type: Array
     },
@@ -34,13 +34,13 @@ export default {
       type: Number,
       default: 0
     },
-    // 数据类型 （一般数值、金额）
+    // 数据类型 （一般数值、Số tiền）
     type: {
       type: String
     }
   },
   watch: {
-    //判断下拉框的值是否有改变
+    //Kiểm tra giá trị hộp thả xuống có thay đổi không
     beginValue(val, oldVal) {
       if(val!==oldVal){
           this.$emit('input', [this.beginValue, this.endValue]);
@@ -75,7 +75,7 @@ export default {
         return false
       }*/
 
-      //无论任何情况，皆可执行 回退、删除、左方向、右方向
+      //无论任何情况，皆可执行 回退、Xóa、左方向、右方向
       if(code === '8' || code === '46' || code === '37' || code === '39') {
         return true
       }

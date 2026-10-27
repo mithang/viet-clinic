@@ -11,7 +11,7 @@ import com.geeke.stock.entity.MedicinalStockControl;
 import java.util.List;
 
 /**
- * 药品/材料库存总控制DAO接口
+ * Thuốc/Kiểm soát tổng tồn kho vật tưDAOGiao diện
  * @author hl
  * @version 2022-09-26
  */

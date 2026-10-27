@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 处方审查接口
+ * Đơn thuốcxem xétgiao diện
  * @author lc
  */
 @Mapper

@@ -8,7 +8,7 @@ import com.geeke.schedule.entity.ScheduleJob;
 import org.apache.ibatis.annotations.Select;
 
 /**
- * 定时任务管理DAO接口
+ * Quản lý tác vụ định kỳDAOGiao diện
  * @author shenzy
  * @version 2021-10-28
  */

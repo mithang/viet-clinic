@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
 * @author 47826
-* @description 针对表【patient_md_data(患者医保信息表)】的数据库操作Service
+* @description Đối với bảng[patient_md_data(Bảng thông tin BHYT của bệnh nhân)] của Dữ liệukhothao tácService
 * @createDate 2024-09-10 14:55:58
 */
 public interface PatientMdDataService extends IService<PatientMdData> {

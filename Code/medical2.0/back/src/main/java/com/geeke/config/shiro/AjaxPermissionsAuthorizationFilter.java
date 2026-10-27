@@ -24,7 +24,7 @@ import com.geeke.utils.constants.ErrorEnum;
 
 /**
  * @author: lys
- * @description: 对没有登录的请求进行拦截, 全部返回json信息. 覆盖掉shiro原本的跳转login.jsp的拦截方式
+ * @description: đối vớiKhông cóĐăng nhậpYêu cầutiến hành dòngchặn, Tất cảTrả vềjsonThông tin. ghi đèrơishirogốcnày của 跳chuyểnlogin.jsp của chặncách
  * @date: 2017/10/24 10:11
  */
 @Component
@@ -42,8 +42,8 @@ public class AjaxPermissionsAuthorizationFilter extends FormAuthenticationFilter
     	HttpServletRequest httpRequest = WebUtils.toHttp(request);
 		String token = httpRequest.getHeader("X-Token");
 
-		// 注意：通过URL参数传递token存在安全风险（token会出现在访问日志、浏览器历史中）
-		// 仅在无法设置请求头的场景（如文件下载）中使用
+		// chú ý: QuaURLTham sốtruyềntokenTồn tạian toàn风险(tokensẽrahiệntạitruy cậpNgàynhật ký, Lịch sử trình duyệt trong )
+		// chỉtạikhôngphương phápĐặt tiêu đề yêu cầu của trường hợp(Như TệpTải xuống) trong sử dụng
 		if( token == null ) {
 			token = httpRequest.getParameter("token");
 		}
@@ -55,7 +55,7 @@ public class AjaxPermissionsAuthorizationFilter extends FormAuthenticationFilter
     	try {
 
 	    	Claims claims = jwtUtils.parseJWT(token);
-	    	// JWT过期验证已通过JwtUtils中的setExpiration实现
+	    	// JWThết hạnXác thựcĐãQuaJwtUtilsTrongsetExpirationTriển khai
 	    	String host = request.getRemoteHost();
 			JSONObject json = JSONObject.parseObject(claims.getSubject());
 			if(!host.equals(json.getString("host"))) {
@@ -63,7 +63,7 @@ public class AjaxPermissionsAuthorizationFilter extends FormAuthenticationFilter
 				return false;
 			}
 
-			// 检查用户Id
+			// Kiểm traNgười dùngId
 			IUser user = SessionUtils.getUser();
 			if(user == null) {
 				logger.info("Session is expired. {}", httpRequest.getRequestURI());

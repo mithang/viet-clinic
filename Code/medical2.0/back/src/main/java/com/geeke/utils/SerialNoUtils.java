@@ -12,11 +12,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class SerialNoUtils {
-    /** 本地计数器，key=前缀+日期, value=当前序号 */
+    /** nàyđịa phươngtínhsốthiết bị, key=tiền tố+Ngày, value=Hiện tạisố thứ tự */
     private final Map<String, AtomicInteger> counterMap = new ConcurrentHashMap<>();
 
     /**
-     * 生成17位唯一流水号，"LSH"+yyyyMMdd+6位数字
+     * Tạo17vịduy nhấtsố thứ tự, "LSH"+yyyyMMdd+6vịSố
      */
     public String generateSerialNo(String codeKey){
         String todayDate = new SimpleDateFormat("yyyyMMdd").format(new Date());

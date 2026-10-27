@@ -3,11 +3,11 @@
     v-loading='loading'>
     <div slot='title' class='dialog-header' style="margin-top:-5px">
       {{ dialogProps.title }}
-      <!-- <OperationIcon v-show='dialogProps.action == "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon> -->
+      <!-- <OperationIcon v-show='dialogProps.action == "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon> -->
       <div style="float:right;margin-right:200px;margin-top:-3px">
           <el-button type="primary" @click="exportExcel" icon='el-icon-upload2'>导 出</el-button>
-          <el-button type="primary" v-if="this.inventoryVerifications.status==='0'" @click="save">保 存</el-button>
-          <el-button type="primary" v-if="this.inventoryVerifications.status==='0'" @click="accomplish">完成盘点</el-button>
+          <el-button type="primary" v-if="this.inventoryVerifications.status==='0'" @click="save">Lưu</el-button>
+          <el-button type="primary" v-if="this.inventoryVerifications.status==='0'" @click="accomplish">Hoàn thành kiểm kê</el-button>
             <el-button @click="goBack">返 回</el-button>
       </div>
     </div>
@@ -24,13 +24,13 @@
           >
           <el-row>
             <el-col :span="24/4">
-                <el-form-item label="药品类型" prop="type">
+                <el-form-item label="Loại thuốc" prop="type">
                 <el-select
                   v-model="queryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择药品类型"
+                  placeholder="Vui lòng chọn loại thuốc"
                 >
                   <el-option
                     v-for="type in drugType"
@@ -42,11 +42,11 @@
               </el-form-item>
             </el-col>
                <el-col :span="24/4">
-                  <el-form-item  label-width="120px" label="药品名称/拼音码" prop="goodsName">
+                  <el-form-item  label-width="120px" label="Tên thuốc/Mã pinyin" prop="goodsName">
                 <el-input
                   v-model="queryModel.goodsName"
                   :clearable="true"
-                  placeholder="请输入药品名称/拼音码"
+                  placeholder="Vui lòng nhập tên thuốc/Mã pinyin"
                  style="width:200px"
                 ></el-input>
               </el-form-item>
@@ -57,13 +57,13 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
                </el-col>
           </el-row>
          </el-form>
@@ -73,20 +73,20 @@
         <div class="inventoryVerificationShow" style="margin-top:-30px">
           <el-row class="inventoryMessages">
             <el-col :span="24/4">
-              盘点单号：{{this.inventoryVerifications.code}}
+              Số đơn kiểm kê：{{this.inventoryVerifications.code}}
             </el-col>
              <el-col :span="24/4">
-              盘点人：{{this.inventoryVerifications.createBy}}
+              Người kiểm kê：{{this.inventoryVerifications.createBy}}
             </el-col>
              <el-col :span="24/4">
-              创建时间：{{this.inventoryVerifications.createDate}}
+              Thời gian tạo：{{this.inventoryVerifications.createDate}}
             </el-col>
             <el-col :span="24/4">
               <span v-if="inventoryVerifications.allPrice>=0" style="color:	#32CD32">
-                盈亏总金额：{{this.inventoryVerifications.allPrice}} 元
+                Tổng số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
               </span>
               <span v-else style="color:	#FF0000">
-                盈亏总金额：{{this.inventoryVerifications.allPrice}} 元
+                Tổng số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
               </span>
             </el-col>
           </el-row>
@@ -97,59 +97,59 @@
           :data="inventoryVerificationDetail"
           style="width: 100%">
           <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
           </el-table-column>
           <!-- <el-table-column
             prop="drug.code"
-            label="药品编码"
+            label="Mã thuốc"
             width="width">
           </el-table-column> -->
           <el-table-column
             prop="drug.goodsName"
-            label="药品名称"
+            label="Tên thuốc"
             width="width">
           </el-table-column>
            <el-table-column
             prop="supplierStock.norms"
-            label="规格"
+            label="Quy cách"
             width="width">
           </el-table-column>
           <!-- <el-table-column
             prop="drug.locationNumber"
-            label="货位号">
+            label="Số vị trí kho">
           </el-table-column> -->
           <el-table-column
             prop="drug.type.name"
-            label="类型">
+            label="Loại">
             <!-- <template scope="scope">
               {{scope.row.drug.type.name}}
             </template> -->
           </el-table-column>
           <el-table-column
             prop="drug.factory.name"
-            label="生产厂家">
+            label="Nhà sản xuất">
           </el-table-column>
            <el-table-column
             prop="supplierStock.supplierId.name"
-            label="供应商">
+            label="Nhà cung cấp">
           </el-table-column>
            <el-table-column
             prop="supplierStock.batchNo"
-            label="批号">
+            label="Số lô">
           </el-table-column>
            <el-table-column
             prop="supplierStock.endDate"
-            label="有效期">
+            label="Hạn sử dụng">
             <template slot-scope="scope">
               {{getEndDate(scope.row.supplierStock.endDate)}}
             </template>
           </el-table-column>
            <el-table-column
             prop="currentInventory"
-            label="当前库存数量">
+            label="Số lượng tồn kho hiện tại">
             <template slot-scope="scope">
                               {{
                                 Math.floor(
@@ -174,7 +174,7 @@
           </el-table-column>
             <el-table-column
               prop="medicinalStorageControl.surplusStock"
-              label="可用库存"
+              label="Tồn kho khả dụng"
               width="100px"
             >
               <template slot-scope="scope">
@@ -201,7 +201,7 @@
             </el-table-column>
            <el-table-column
             prop="checkInventory"
-            label="盘点库存"
+            label="Tồn kho kiểm kê"
             width="220px"
             >
            <template slot-scope="scope">
@@ -214,7 +214,7 @@
           </el-table-column>
           <el-table-column
             prop="profitAndLoss"
-            label="盘盈盘亏">
+            label="Thừa/thiếu kiểm kê">
               <template slot-scope="scope">
             <span v-if="scope.row.profitAndLoss!==undefined">
                <span v-if="scope.row.profitAndLoss<0" style="color:	#FF0000">
@@ -266,20 +266,20 @@
 
            <el-table-column
             prop="remarks"
-            label="备注">
+            label="Ghi chú">
               <template slot-scope="scope">
               <el-input :disabled="inventoryVerifications.status!=='0'" v-model="scope.row.remarks" placeholder=""></el-input>
            </template>
           </el-table-column>
           <el-table-column
             prop="profitAndLossPrice"
-            label="盈亏金额">
+            label="Số tiền lãi/lỗ">
               <template slot-scope="scope">
               <span v-if="scope.row.profitAndLossPrice>=0" style="color:	#32CD32">
-                  {{scope.row.profitAndLossPrice}} 元
+                  {{scope.row.profitAndLossPrice}} VNĐ
               </span>
               <span v-else style="color:	#FF0000">
-                  {{scope.row.profitAndLossPrice}} 元
+                  {{scope.row.profitAndLossPrice}} VNĐ
               </span>
            </template>
           </el-table-column>
@@ -301,13 +301,13 @@
           >
           <el-row>
             <el-col :span="24/3">
-                <el-form-item label="材料类型" prop="type">
+                <el-form-item label="Loại vật tư" prop="type">
                 <el-select
                   v-model="queryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择药品类型"
+                  placeholder="Vui lòng chọn loại thuốc"
                 >
                   <el-option
                     v-for="type in stuffType"
@@ -319,11 +319,11 @@
               </el-form-item>
             </el-col>
                <el-col :span="24/3">
-                  <el-form-item  label-width="120px" label="材料名称/拼音码" prop="name">
+                  <el-form-item  label-width="120px" label="Tên vật tư/Mã pinyin" prop="name">
                 <el-input
                   v-model="queryModel.goodsName"
                   :clearable="true"
-                  placeholder="请输入材料名称/拼音码"
+                  placeholder="Vui lòng nhập tên vật tư/Mã pinyin"
                  style="width:200px"
                 ></el-input>
               </el-form-item>
@@ -334,13 +334,13 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
                </el-col>
           </el-row>
          </el-form>
@@ -350,20 +350,20 @@
         <div class="inventoryVerificationShow" style="margin-top:-30px">
           <el-row class="inventoryMessages">
             <el-col :span="24/4">
-              盘点单号：{{this.inventoryVerifications.code}}
+              Số đơn kiểm kê：{{this.inventoryVerifications.code}}
             </el-col>
              <el-col :span="24/4">
-              盘点人：{{this.inventoryVerifications.createBy}}
+              Người kiểm kê：{{this.inventoryVerifications.createBy}}
             </el-col>
              <el-col :span="24/4">
-              创建时间：{{this.inventoryVerifications.createDate}}
+              Thời gian tạo：{{this.inventoryVerifications.createDate}}
             </el-col>
              <el-col :span="24/4">
               <span v-if="inventoryVerifications.allPrice>=0" style="color:	#32CD32">
-                盈亏金额：{{this.inventoryVerifications.allPrice}} 元
+                Số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
               </span>
               <span v-else style="color:	#FF0000">
-                盈亏金额：{{this.inventoryVerifications.allPrice}} 元
+                Số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
               </span>
             </el-col>
           </el-row>
@@ -374,46 +374,46 @@
           :data="inventoryVerificationDetail"
           style="width: 100%">
           <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
           </el-table-column>
           <el-table-column
             prop="stuff.code"
-            label="材料编码"
+            label="Mã vật tư"
             width="width">
           </el-table-column>
           <el-table-column
             prop="stuff.name"
-            label="材料名称"
+            label="Tên vật tư"
             width="width">
           </el-table-column>
           <el-table-column
             prop="stuff.locationNumber"
-            label="货位号">
+            label="Số vị trí kho">
           </el-table-column>
           <el-table-column
             prop="stuff.type.name"
-            label="类型">
+            label="Loại">
             <!-- <template scope="scope">
               {{scope.row.drug.type.name}}
             </template> -->
           </el-table-column>
           <el-table-column
             prop="stuff.specifications"
-            label="规格">
+            label="Quy cách">
              <template slot-scope="scope">
               {{scope.row.stuff.packNumber}}{{scope.row.stuff.minUnit.name}}/{{scope.row.stuff.packUnit.name}}
             </template>
           </el-table-column>
           <el-table-column
             prop="drug.factory.name"
-            label="生产厂家">
+            label="Nhà sản xuất">
           </el-table-column>
            <el-table-column
             prop="currentInventory"
-            label="当前库存数量">
+            label="Số lượng tồn kho hiện tại">
             <template slot-scope="scope">
                 {{
                   Math.floor(
@@ -438,7 +438,7 @@
           </el-table-column>
             <el-table-column
               prop="medicinalStorageControl.surplusStock"
-              label="可用库存"
+              label="Tồn kho khả dụng"
               width="100px"
             >
               <template slot-scope="scope">
@@ -465,7 +465,7 @@
             </el-table-column>
            <el-table-column
             prop="checkInventory"
-            label="盘点库存"
+            label="Tồn kho kiểm kê"
             width="220px"
             >
            <template slot-scope="scope">
@@ -475,7 +475,7 @@
           </el-table-column>
           <el-table-column
             prop="profitAndLoss"
-            label="盘盈盘亏">
+            label="Thừa/thiếu kiểm kê">
               <template slot-scope="scope">
             <span v-if="scope.row.profitAndLoss!==undefined">
                <span v-if="scope.row.profitAndLoss<0"  style="color:	#FF0000">
@@ -527,20 +527,20 @@
 
            <el-table-column
             prop="remarks"
-            label="备注">
+            label="Ghi chú">
               <template slot-scope="scope">
               <el-input :disabled="inventoryVerifications.status!=='0'" v-model="scope.row.remarks" placeholder=""></el-input>
            </template>
           </el-table-column>
            <el-table-column
             prop="profitAndLossPrice"
-            label="盈亏金额">
+            label="Số tiền lãi/lỗ">
               <template slot-scope="scope">
               <span v-if="scope.row.profitAndLossPrice>=0" style="color:	#32CD32">
-                  {{scope.row.profitAndLossPrice}} 元
+                  {{scope.row.profitAndLossPrice}} VNĐ
               </span>
               <span v-else style="color:	#FF0000">
-                  {{scope.row.profitAndLossPrice}} 元
+                  {{scope.row.profitAndLossPrice}} VNĐ
               </span>
            </template>
           </el-table-column>
@@ -548,11 +548,11 @@
         </div>
     </div>
     <!-- <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("inventoryVerificationForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("inventoryVerificationForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span> -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -589,22 +589,22 @@ export default {
       inventoryVerifications:{},   //库存盘点主表存储
       inventoryVerificationDetail:[],  //库存盘点详情
       inventoryVerificationDetailTotal:0,
-      preparation:[],  //药品/材料最小单位数量集合
-      pack:[],        //药品/最小单位数量集合
-      drugType:[],   //药品类型
-      stuffType:[],  //材料类型
+      preparation:[],  //Thuốc/材料最小单位数量集合
+      pack:[],        //Thuốc/最小单位数量集合
+      drugType:[],   //Loại thuốc
+      stuffType:[],  //Loại vật tư
       bizFormModel: {
-        'company': {     // 诊所id
+        'company': {     // Phòng khámid
           'id': currentUser.company.id,
           'name': null,
         },
-        'code': '',   // 盘点单号
-        'status': '',   // 盘点状态
+        'code': '',   // Số đơn kiểm kê
+        'status': '',   // Trạng thái kiểm kê
       },
       queryModel:{
-        goodsName: "", // 药品名称
+        goodsName: "", // Tên thuốc
          type: {
-          // 药品类型
+          // Loại thuốc
           value: "",
           name: "",
         },
@@ -619,19 +619,19 @@ export default {
         params: [{columnName: 'company_id', queryType: '=', value: ""}],
         offset: 0,
         limit: 20,
-		    columnName: '',      // 排序字段名
-        order: ''            // 排序
+		    columnName: '',      // Tên trường sắp xếp
+        order: ''            // Sắp xếp
       },
       saveInformation:[],    //分页数据暂存
       formRules: {
         'code': [
-            { required: true, message: '请输入盘点单号', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập số đơn kiểm kê', trigger: 'blur' }
         ],
       }
     }
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -663,11 +663,11 @@ export default {
         return year+"-"+month+"-"+day
       },
 
-    //导出
+    //Xuất
     exportExcel(){
       exportExcel(this.inventoryVerifications).then((res)=>{
        //const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]) || '.xls'
-        const filename = "库存盘点.xls"
+        const filename = "Kiểm kê tồn kho.xls"
         const blob = new Blob([res.data], {
 
         type: 'application/octet-stream'
@@ -693,15 +693,15 @@ export default {
       })
     },
 
-    //返回
+    //Quay lại
     goBack(){
       this.$emit('save-finished')
             this.dialogProps.visible=false
     },
 
-    //完成盘点
+    //Hoàn thành kiểm kê
     accomplish(){
-      //盘点库存不能小于当前库存数量-可用库存
+      //Tồn kho kiểm kê không được nhỏ hơn số lượng tồn kho hiện tại-Tồn kho khả dụng
       if (!this.checkStock()) {
         return;
       }
@@ -710,7 +710,7 @@ export default {
       ]).then(()=>{
         accomplishInventoryVerification(this.inventoryVerifications).then((res)=>{
         if(res.code === 100){
-          this.$message.success("完成盘点")
+          this.$message.success("Hoàn thành kiểm kê")
           this.$emit('save-finished')
             this.dialogProps.visible=false
         }else{
@@ -721,7 +721,7 @@ export default {
       })
       })
     },
-      //盘点库存不能小于当前库存数量-可用库存
+      //Tồn kho kiểm kê không được nhỏ hơn số lượng tồn kho hiện tại-Tồn kho khả dụng
       checkStock(){
         let arr = [];
         for(let i=0;i<this.inventoryVerificationDetail.length;i++){
@@ -734,32 +734,32 @@ export default {
           return true
         }
         let str = JSON.stringify(arr).replace(/,/g, ', ')
-        this.$message.warning("药品"+str+"存在库存占用，请等待门诊发药完成后在进行盘点")
+        this.$message.warning("Thuốc"+str+"存在库存占用，请等待门诊发药完成后在进行盘点")
         return false
       },
-    //保存
+    //Lưu
     save(){
       this.saveInformation[this.currentPage-1]=this.inventoryVerificationDetail
       return saveAll(this.saveInformation).then((res)=>{
-        if(res.code === 100&&res.data==='执行成功'){
-          this.$message.success("保存成功！")
+        if(res.code === 100&&res.data==='Thực hiện thành công'){
+          this.$message.success("Lưu thành công！")
             this.$emit('save-finished')
             this.dialogProps.visible=false
         }else{
 
-          this.$$message.error("保存失败，数据异常，请重新尝试或联系管理员!")
+          this.$$message.error("Lưu thất bại，数据异常，请重新尝试或联系管理员!")
         }
       }).catch((error)=>{
         this.outputError(error)
       })
     },
 
-    //重置
+    //Đặt lại
     reset(){
       this.queryModel={
-         goodsName: "", // 药品名称
+         goodsName: "", // Tên thuốc
          type: {
-          // 药品类型
+          // Loại thuốc
           value: "",
           name: "",
         },
@@ -768,7 +768,7 @@ export default {
       this.getInventoryVerificationDetail()
     },
 
-    //搜索
+    //Tìm kiếm
     onSearch(){
         this.saveInformation=[]
         this.getInventoryVerificationDetail()
@@ -783,11 +783,11 @@ export default {
         let num=0
         num = (figure1+figure2)-row.currentInventory
         this.inventoryVerificationDetail[index].profitAndLoss=num
-        //计算价格
+        //Tính giá
         let price=0
         let retailPrice=0
-        let drugNum=num/row.drug.preparation>0?Math.floor(num/row.drug.preparation):Math.ceil(num/row.drug.preparation)  //计算整数包装
-        let residueNum=num-(drugNum*row.drug.preparation)   //计算拆零数量
+        let drugNum=num/row.drug.preparation>0?Math.floor(num/row.drug.preparation):Math.ceil(num/row.drug.preparation)  //Tính đóng gói nguyên
+        let residueNum=num-(drugNum*row.drug.preparation)   //Tính số lượng tách hộp
 
         price=(drugNum*row.drug.price).toFixed(2)-0
         if(row.drug.isUnpackSell==='1'){
@@ -798,7 +798,7 @@ export default {
         this.inventoryVerificationDetail[index].profitAndLossPrice=price+retailPrice
         this.inventoryVerificationDetail[index].checkInventory=figure1+figure2
 
-        //计算获得值后需要赋值
+        //Sau khi tính được giá trị cần gán
         this.saveInformation[this.currentPage-1]=this.inventoryVerificationDetail
         let allPrice=0
         for (let i = 0; i < this.saveInformation.length; i++) {
@@ -815,7 +815,7 @@ export default {
        num = (figure1+figure2)-row.currentInventory
        this.inventoryVerificationDetail[index].profitAndLoss=num
 
-        //计算价格
+        //Tính giá
         if(row.stuff.isOutSell==='1'){
         let price=0
         let retailPrice=0
@@ -824,8 +824,8 @@ export default {
           drugNum=0
         } else{
           drugNum=num/row.stuff.packNumber>0?Math.floor(num/row.stuff.packNumber):Math.ceil(num/row.stuff.packNumber)
-        }//计算整数包装
-        let residueNum=num-(drugNum*row.stuff.packNumber)   //计算拆零数量
+        }//Tính đóng gói nguyên
+        let residueNum=num-(drugNum*row.stuff.packNumber)   //Tính số lượng tách hộp
 
         price=(drugNum*row.stuff.packNumber).toFixed(2)-0
         if(row.stuff.isUnpackSell==='1'){
@@ -836,7 +836,7 @@ export default {
         this.inventoryVerificationDetail[index].profitAndLossPrice=price+retailPrice
        this.inventoryVerificationDetail[index].checkInventory=figure1+figure2
 
-        //计算获得值后需要赋值
+        //Sau khi tính được giá trị cần gán
         this.saveInformation[this.currentPage-1]=this.inventoryVerificationDetail
         let allPrice=0
         for (let i = 0; i < this.saveInformation.length; i++) {
@@ -872,7 +872,7 @@ export default {
       this.searchParms.params = [{columnName: 'company_id', queryType: '=', value: this.inventoryVerifications.company.id},{columnName: 'inventory_verification_id', queryType: '=', value: this.inventoryVerifications.id}]
      if(this.inventoryVerifications.type==='0'){
         if(this.queryModel.goodsName!==''&&this.queryModel!==undefined){
-         //判断是否输入的是英文
+         //Kiểm tra có phải nhập tiếng Anh không
       const pattern = new RegExp("[A-Za-z]+");
       if (pattern.test(this.queryModel.goodsName)) {
         let pinyinCode =
@@ -888,7 +888,7 @@ export default {
       }
      }else{
         if(this.queryModel.goodsName!==''&&this.queryModel!==undefined){
-         //判断是否输入的是英文
+         //Kiểm tra có phải nhập tiếng Anh không
       const pattern = new RegExp("[A-Za-z]+");
       if (pattern.test(this.queryModel.goodsName)) {
         let pinyinCode =
@@ -982,8 +982,8 @@ export default {
         params: [],
         offset: 0,
         limit: 20,
-		    columnName: '',      // 排序字段名
-        order: ''            // 排序
+		    columnName: '',      // Tên trường sắp xếp
+        order: ''            // Sắp xếp
       }
       this.currentPage=1
       this.saveInformation=[]
@@ -1056,7 +1056,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改库存盘点'
+      this.dialogProps.title = 'Sửa kiểm kê tồn kho'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -1069,12 +1069,12 @@ export default {
     },
     initFormModel(This) {
       return {
-        'company': {     // 诊所id
+        'company': {     // Phòng khámid
           'id': currentUser.company.id,
           'name': null,
         },
-        'code': '',   // 盘点单号
-        'status': '',   // 盘点状态
+        'code': '',   // Số đơn kiểm kê
+        'status': '',   // Trạng thái kiểm kê
 
       }
     },
@@ -1098,7 +1098,7 @@ export default {
   methods: {
     openViewInventoryVerificationDialog(inventoryVerification) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '新增盘点'
+      this.dialogProps.title = 'Thêm kiểm kê'
       this.saveInformation = []
       this.inventoryVerificationDetail = []
       this.inventoryVerificationDetailTotal = 0
@@ -1121,7 +1121,7 @@ export default {
     },
     openEditInventoryVerificationDialog(inventoryVerification) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改库存盘点'
+      this.dialogProps.title = 'Sửa kiểm kê tồn kho'
       this.bizFormModel = {...this.initFormModel(), ...inventoryVerification}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -1129,7 +1129,7 @@ export default {
     },
     openAddInventoryVerificationDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加库存盘点'
+      this.dialogProps.title = 'Thêm kiểm kê tồn kho'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -1137,7 +1137,7 @@ export default {
     },
     openCopyInventoryVerificationDialog(inventoryVerification) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加库存盘点'
+      this.dialogProps.title = 'Thêm kiểm kê tồn kho'
       this.bizFormModel = {...this.initFormModel(), ...inventoryVerification}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

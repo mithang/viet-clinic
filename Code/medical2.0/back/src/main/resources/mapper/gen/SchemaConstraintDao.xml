@@ -4,7 +4,7 @@
 	<select id='listAll' resultType="com.geeke.gen.entity.Constraint">
 		SELECT  cnt.CONSTRAINT_NAME AS "name",
 				group_concat(uc.COLUMN_NAME) AS "constraintColumn",
-                     concat('已存在相同的数据(', group_concat(cs.COLUMN_COMMENT),')') AS "comments"
+                     concat('Đã tồn tại dữ liệu giống hệt(', group_concat(cs.COLUMN_COMMENT),')') AS "comments"
 		FROM  information_schema.TABLE_CONSTRAINTS cnt 
 		    INNER JOIN information_schema.KEY_COLUMN_USAGE uc 
 		    	ON cnt.CONSTRAINT_SCHEMA = uc.CONSTRAINT_SCHEMA 

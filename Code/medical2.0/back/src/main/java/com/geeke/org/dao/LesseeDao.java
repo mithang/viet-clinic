@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.org.entity.Lessee;
 
 /**
- * 租户管理DAO接口
+ * Quản lý tenantDAOGiao diện
  * @author txl
  * @version 2022-05-23
  */

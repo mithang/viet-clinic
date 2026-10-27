@@ -1,38 +1,38 @@
 <template>
   <el-row v-loading='loading'>
     <el-container>
-      <!-- 历史记录  -->
+      <!-- Lịch sử  -->
       <History :bussObject='curentRow' ></History>
-      <!-- 编辑窗口  -->
+      <!-- Cửa sổ chỉnh sửa  -->
       <department-form ref='departmentForm' :permission='permission' @save-finished='loadData'></department-form>
-      <!-- 非系统管理员不可见  -->
+      <!-- Người không phải quản trị hệ thống không thấy được  -->
       <div class="page-left-container" v-show='currentUser.id === 1001'>
         <el-aside>
           <el-table ref='treeTable' :data='companys' row-key='id' :tree-props="{children: 'children', hasChildren: 'hasChildren'}" highlight-current-row :cell-style="function() {return {borderBottom: 'none'} }" @current-change='onLeftCurrentChange'>
-            <el-table-column label='公司' prop='name'></el-table-column>
+            <el-table-column label='Công ty' prop='name'></el-table-column>
           </el-table>
         </el-aside>
       </div>
       <div class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
         <el-main>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='名称' prop='name'>
-                  <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入名称'></el-input>
+                <el-form-item label='Tên' prop='name'>
+                  <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên'></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-button-group>
-                  <el-tooltip  effect="light" content="搜索" placement="top-start">
+                  <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                     <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                   </el-tooltip>
-                    <el-tooltip  effect="light" content="重置" placement="top-start">
+                    <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                     <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                   </el-tooltip>
-                  <el-tooltip  effect="light" content="更多" placement="top-start">
+                  <el-tooltip  effect="light" content="Thêm" placement="top-start">
                     <el-button type="primary" icon="el-icon-d-arrow-right" @click='onMoreCodition()' :plain='true'></el-button>
                   </el-tooltip>
                 </el-button-group>
@@ -42,17 +42,17 @@
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :curNode='currentCompany' exclude='company_id' :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </el-main>
       </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 工具栏 开始 -->
+      <!-- Thanh công cụ Bắt đầu -->
       <div class="page-container-header-end">
         <div>
-          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateDepartment()'>添加</el-button>
+          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateDepartment()'>Thêm</el-button>
         </div>
       </div>
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
@@ -65,25 +65,25 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType)}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='oprColumnWidth + "px"'>
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"'>
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='departmentList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view'
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
                     @click='onViewDepartment(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='添加下级' placement='top-start' icon-name='el-icon-circle-plus-outline'
+                  <OperationIcon v-show='permission.add' type='primary' content='Thêm cấp dưới' placement='top-start' icon-name='el-icon-circle-plus-outline'
                     @click='onCreateDepartment(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                     @click='onEditDepartment(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document'
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyDepartment(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.remove && (!(scope.row.children) || scope.row.children.length <=0)' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete'
+                  <OperationIcon v-show='permission.remove && (!(scope.row.children) || scope.row.children.length <=0)' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
                     @click='onDeleteDepartment(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info'
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -91,7 +91,7 @@
     	  </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
+      <!-- Thanh bảng  Kết thúc -->
       </div>
     </el-container>
   </el-row>
@@ -135,17 +135,17 @@ export default {
         'name': 'like',
       },
       queryModel:  {
-        'company': {     // 父表 公司
+        'company': {     // Bảng cha Công ty
           'id': null,
           'name': '',
         },
-        'name': '',   // 名称
+        'name': '',   // Tên
       },
-      currentCompany: {},     //树形结构中选择的公司
-      departmentList: [],     // 数表数据
-      companys: [],           // 公司树表
+      currentCompany: {},     //Công ty được chọn trong cấu trúc cây
+      departmentList: [],     // Dữ liệu bảng số
+      companys: [],           // Bảng cây công ty
 
-      oprColumnWidth: 165,  // 操作列宽
+      oprColumnWidth: 165,  // Độ rộng cột thao tác
       tableId: '52676365136650250',
       schemeId: '52676365136650309'
     }
@@ -153,8 +153,8 @@ export default {
   methods: {
     appendSearchParams() {
       if(validatenull(this.currentCompany)) {
-        this.$alert('请选择公司', '提示', {
-          confirmButtonText: '确定',
+        this.$alert('Vui lòng chọn công ty', 'Nhắc nhở', {
+          confirmButtonText: 'Xác nhận',
           type: 'info'
         })
         return
@@ -180,11 +180,11 @@ export default {
       this.setLoad()
       try {
         let params = []
-        /* 非系统管理员，只能查询自己所在公司的数据 */
+        /* Người không phải quản trị hệ thống，Chỉ truy vấn được dữ liệu của công ty mình */
         if(currentUser.id !== 1001) {
           params.push({'columnName':'id', 'queryType': '=', 'value': currentUser.company.id})
         }
-        // 数据权限: 公司org_company
+        // Quyền dữ liệu: Công tyorg_company
         this.pushDataPermissions(params, this.$route.meta.routerId, '41040096140492800')
         let [treeCompanyRespData, listPermissionRespData] = await Promise.all([
           treeCompany({params: params, columnName: '', 'order': ''}),
@@ -225,8 +225,8 @@ export default {
     },
     onCreateDepartment(index, row) {
       if(validatenull(this.currentCompany)) {
-        this.$alert('请选择公司', '提示', {
-          confirmButtonText: '确定',
+        this.$alert('Vui lòng chọn công ty', 'Nhắc nhở', {
+          confirmButtonText: 'Xác nhận',
           type: 'info'
         })
         return
@@ -275,16 +275,16 @@ export default {
       })
     },
     onDeleteDepartment(index, row) {
-      this.$confirm('确定删除吗？', '确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
         type: 'warning'
       }).then(() => {
         this.setLoad()
         deleteDepartment(row).then(responseData => {
           if(responseData.code === 100) {
             this.loadData()
-            this.showMessage({type: 'success', msg: '删除成功'})
+            this.showMessage({type: 'success', msg: 'Xóa thành công'})
           } else {
             this.showMessage(responseData)
           }

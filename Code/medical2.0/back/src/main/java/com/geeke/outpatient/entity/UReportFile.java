@@ -10,7 +10,7 @@ import java.util.Date;
 public class UReportFile extends DataEntity<UReportFile> {
 
     private static final long serialVersionUID = 1014786989773332527L;
-    private String content;      // 报表内容
+    private String content;      // báo cáonội dung
 
     public String getContent() {
         return content;

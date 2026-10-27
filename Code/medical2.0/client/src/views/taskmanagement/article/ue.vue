@@ -17,7 +17,7 @@ value: {
 type: String,
 default: ''
 },
-/* 高度 */
+/* chiều cao */
 height: {
 
 type: Number,
@@ -44,32 +44,32 @@ bounds: document.body,
 debug: 'warn',
 modules: {
 
-// 工具栏配置
+// Cấu hình thanh công cụ
 toolbar: [
-['bold', 'italic', 'underline', 'strike'], // 加粗 斜体 下划线 删除线
-//['blockquote', 'code-block'], // 引用 代码块
+['bold', 'italic', 'underline', 'strike'], // In đậm Chữ nghiêng Gạch chân Gạch ngang chữ
+//['blockquote', 'code-block'], // Trích dẫn Khối mã
 [{
  list: 'ordered' }, {
- list: 'bullet' }], // 有序、无序列表
+ list: 'bullet' }], // Có thứ tự、Danh sách không thứ tự
 [{
  indent: '-1' }, {
- indent: '+1' }], // 缩进
+ indent: '+1' }], // Thụt lề
 [{
- size: ['small', false, 'large', 'huge'] }], // 字体大小
+ size: ['small', false, 'large', 'huge'] }], // Cỡ chữ
 [{
- header: [1, 2, 3, 4, 5, 6, false] }], // 标题
+ header: [1, 2, 3, 4, 5, 6, false] }], // Tiêu đề
 [{
  color: [] }, {
- background: [] }], // 字体颜色、字体背景颜色
+ background: [] }], // Màu chữ、Màu nền chữ
 [{
- align: [] }], // 对齐方式
-['clean'], // 清除文本格式
-//['link', 'image', 'video'] // 链接、图片、视频
-[ 'image'] // 图片
+ align: [] }], // Cách căn chỉnh
+['clean'], // Xóa định dạng văn bản
+//['link', 'image', 'video'] // Liên kết、Hình ảnh、Video
+[ 'image'] // Hình ảnh
 ]
 },
-placeholder: '请输入内容',
-readOnly: false //只读模式 true
+placeholder: 'Vui lòng nhập nội dung',
+readOnly: false //Chế độ chỉ đọc true
 }
 }
 },
@@ -170,17 +170,17 @@ display: none;
 }
 .ql-snow .ql-tooltip[data-mode="link"]::before {
 
-content: "请输入链接地址:";
+content: "Vui lòng nhập địa chỉ liên kết:";
 }
 .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
 
 border-right: 0;
-content: "保存";
+content: "Lưu";
 padding-right: 0;
 }
 .ql-snow .ql-tooltip[data-mode="video"]::before {
 
-content: "请输入视频地址:";
+content: "Vui lòng nhập địa chỉ video:";
 }
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item::before {
@@ -205,51 +205,51 @@ content: "32px";
 .ql-snow .ql-picker.ql-header .ql-picker-label::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item::before {
 
-content: "文本";
+content: "Văn bản";
 }
 .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
 
-content: "标题1";
+content: "Tiêu đề1";
 }
 .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
 
-content: "标题2";
+content: "Tiêu đề2";
 }
 .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
 
-content: "标题3";
+content: "Tiêu đề3";
 }
 .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
 
-content: "标题4";
+content: "Tiêu đề4";
 }
 .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
 
-content: "标题5";
+content: "Tiêu đề5";
 }
 .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="6"]::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
 
-content: "标题6";
+content: "Tiêu đề6";
 }
 .ql-snow .ql-picker.ql-font .ql-picker-label::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item::before {
 
-content: "标准字体";
+content: "Phông chữ chuẩn";
 }
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before {
 
-content: "衬线字体";
+content: "Phông chữ serif";
 }
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="monospace"]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="monospace"]::before {
 
-content: "等宽字体";
+content: "Phông chữ đẳng rộng";
 }
 </style>

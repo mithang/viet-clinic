@@ -6,7 +6,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/drug')
 
-// 标准CRUD接口
+// Tiêu chuẩnCRUDGiao diện
 export const getDrugById = baseApi.getById
 export const listDrugPage = baseApi.listPage
 export const listDrugAll = baseApi.listAll
@@ -16,7 +16,7 @@ export const bulkInsertDrug = baseApi.bulkInsert
 export const bulkUpdateDrug = baseApi.bulkUpdate
 export const bulkDeleteDrug = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const listByCompanyDrugPage = (search) =>
   request({ url: '/stock/drug/listByCompany', method: 'post', data: search })
 

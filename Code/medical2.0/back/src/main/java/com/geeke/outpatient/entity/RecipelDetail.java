@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 /**
- * 处方详情Entity
+ * Chi tiết đơn thuốcEntity
  * @author txl
  * @version 2022-07-20
  */
@@ -19,37 +19,37 @@ import java.math.BigDecimal;
 @Data
 public class RecipelDetail extends DataEntity<RecipelDetail> {
 	private static final long serialVersionUID = 1014474470772900073L;
-	private Company company;      // 诊所id 
-	private RecipelInfo recipelInfo;      // 处方 
-	private DrugStuffEvt drugStuffId;		// 药品材料id
-	private BigDecimal singleDosage;		// 单次用量
-	private Integer total;		// 总量
-	private BigDecimal allFee;		// 应付总价
-	private BigDecimal actualPayment;		// 实付总价
-	private DictItem westernMedicineUse;      // 西药用法
-	private DictItem frequency;      // 频次用量 
-	private DictItem days;      // 天数
-	private DictItem chineseMedicineUse;      // 中药用法 
-	private DictItem infuseUse;      // 输液用法 
-	private String drippingSpeed;		// 滴速
-	private DictItem skinTest;      // 皮试 
-	private Integer infuseGroup;		// 组数
-	private String retailType;		// 零售类型
-	private Integer isExtra;		// 是否附加费
-	private Integer seq;		// 显示顺序
-	private Integer isUnpackSell;		// 是否拆零销售
-	private BigDecimal unitPrice;		// 单价
-	private String unitType;		// 单价单位
-	private String stuffType;		// 物料类型
-	private Integer minTotal;		// 最小单位总量
-	private BigDecimal executions;			//执行进度
-	private int infuseType;        //输液执行状态
-	private int treatment;        //治疗执行状态
-	private int drugOrder;        //药品顺序
+	private Company company;      // Phòng khámid 
+	private RecipelInfo recipelInfo;      // Đơn thuốc 
+	private DrugStuffEvt drugStuffId;		// ThuốcVật tưid
+	private BigDecimal singleDosage;		// Liều dùng mỗi lần
+	private Integer total;		// Tổng số lượng
+	private BigDecimal allFee;		// nên thangtổng giá
+	private BigDecimal actualPayment;		// thực thangtổng giá
+	private DictItem westernMedicineUse;      // Cách dùng thuốc Tây
+	private DictItem frequency;      // Tần suất và liều dùng 
+	private DictItem days;      // Số ngày
+	private DictItem chineseMedicineUse;      // Cách dùng thuốc Đông y 
+	private DictItem infuseUse;      // Cách dùng truyền dịch 
+	private String drippingSpeed;		// Tốc độ truyền
+	private DictItem skinTest;      // Test da 
+	private Integer infuseGroup;		// nhómsố
+	private String retailType;		// bán lẻLoại
+	private Integer isExtra;		// Có hay khôngphí phụ thêm
+	private Integer seq;		// hiển thịthứ tự
+	private Integer isUnpackSell;		// Có bán lẻ không
+	private BigDecimal unitPrice;		// Đơn giá
+	private String unitType;		// đơn giáĐơn vị
+	private String stuffType;		// Loại vật liệu
+	private Integer minTotal;		// Đơn vị nhỏ nhấttổng lượng
+	private BigDecimal executions;			//Tiến độ thực hiện
+	private int infuseType;        //Truyền dịchhành nghề dòngTrạng thái
+	private int treatment;        //điều trịhành nghề dòngTrạng thái
+	private int drugOrder;        //Thuốcthứ tự
 
-	//医保字段
-	private PresDrug presDrug; //电子处方药品
-	private String drugTracCodg ;//药品追溯码
+	//Trường BHYT
+	private PresDrug presDrug; //Thuốc trong đơn thuốc điện tử
+	private String drugTracCodg ;//Mã truy xuất thuốc
 
 	public int getTreatment() {
 		return treatment;
@@ -168,7 +168,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
         this.infuseUse = infuseUse;
     }
     
-	@Length(min=0, max=45, message="滴速长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="tốc độ truyềnĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getDrippingSpeed() {
 		return drippingSpeed;
 	}
@@ -193,7 +193,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
 	}
 
 
-	@Length(min=0, max=1, message="retail_type长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="retail_typeĐộ dài phải từ 0  và  1 Giữa")
 	public String getRetailType() {
 		return retailType;
 	}
@@ -218,7 +218,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
 	}
 
 
-	@NotNull(message="是否拆零销售不能为空")
+	@NotNull(message="Có bán lẻ khôngKhông thể là trống")
 	public Integer getIsUnpackSell() {
 		return isUnpackSell;
 	}
@@ -235,7 +235,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
 	}
 
 
-	@Length(min=0, max=100, message="单价单位长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="đơn giáĐơn vịĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getUnitType() {
 		return unitType;
 	}
@@ -269,7 +269,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -278,7 +278,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -288,7 +288,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

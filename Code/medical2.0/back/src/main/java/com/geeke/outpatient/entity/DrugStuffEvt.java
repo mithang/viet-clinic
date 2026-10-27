@@ -15,21 +15,21 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * 处方详情Entity
+ * Chi tiết đơn thuốcEntity
  * @author txl
  * @version 2022-06-07
  */
 public class DrugStuffEvt implements Serializable {
 
 	private static final long serialVersionUID = 1014474470772900073L;
-	private String drugStuffId;          // 药品/材料/诊疗项目id
-    private String name;                 // 名称
-    private BigDecimal price;            // 包装单价
-    private BigDecimal retailPrice;		 // 拆开后零售价
-    private DictItem dosisUnit;          // 剂量单位(作废)
-    private DictItem preparationUnit;    // 制剂单位
-    private DictItem pack;               // 包装单位
-    private String isUnpackSell;		 // 允许拆零销售
+	private String drugStuffId;          // Thuốc/Vật tư/Hạng mục khám chữa bệnhid
+    private String name;                 // Tên
+    private BigDecimal price;            // đóng góiđơn giá
+    private BigDecimal retailPrice;		 // Giá bán lẻ sau khi tách
+    private DictItem dosisUnit;          // Đơn vị liều lượng(hủy)
+    private DictItem preparationUnit;    // Đơn vị bào chế
+    private DictItem pack;               // Đơn vị đóng gói
+    private String isUnpackSell;		 // Cho phép bán lẻ
     private Drug drug;
     private Stuff stuff;
     private CostItem costItem;

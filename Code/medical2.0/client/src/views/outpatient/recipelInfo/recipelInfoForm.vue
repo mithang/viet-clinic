@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
@@ -11,7 +11,7 @@
       <div class="tab-item" v-show='tabIndex==="1"'>  
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='病历' prop='medicalRecord.id' >
+          <el-form-item label='Bệnh án' prop='medicalRecord.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.medicalRecord.diagnose'></el-input>
             <el-select v-else v-model='bizFormModel.medicalRecord' value-key='id' filterable clearable placeholder='请选择病历' 
               @clear='bizFormModel.medicalRecord={
@@ -23,7 +23,7 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='处方类别' prop='recipelType.value' >
+          <el-form-item label='Loại đơn thuốc' prop='recipelType.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.recipelType.name'></el-input>
             <el-select v-else v-model='bizFormModel.recipelType' value-key='value' filterable clearable placeholder='请选择处方类别' 
               @clear='bizFormModel.recipelType={
@@ -37,14 +37,14 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='剂量' prop='dosage' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.dosage' :maxlength='45' :placeholder='dialogProps.action === "view"? "" : "请输入剂量"' ></el-input>
+          <el-form-item label='Liều lượng' prop='dosage' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.dosage' :maxlength='45' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập liều lượng"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='用法' prop='recipelUse.value' >
+          <el-form-item label='Cách dùng' prop='recipelUse.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.recipelUse.name'></el-input>
-            <el-select v-else v-model='bizFormModel.recipelUse' value-key='value' filterable clearable placeholder='请选择用法' 
+            <el-select v-else v-model='bizFormModel.recipelUse' value-key='value' filterable clearable placeholder='Vui lòng chọn cách dùng' 
               @clear='bizFormModel.recipelUse={
                 "value": null,
                                 "name": null,
@@ -56,9 +56,9 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='频次用量' prop='frequency.value' >
+          <el-form-item label='Liều lượng theo tần suất' prop='frequency.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.frequency.name'></el-input>
-            <el-select v-else v-model='bizFormModel.frequency' value-key='value' filterable clearable placeholder='请选择频次用量' 
+            <el-select v-else v-model='bizFormModel.frequency' value-key='value' filterable clearable placeholder='Vui lòng chọn liều lượng theo tần suất' 
               @clear='bizFormModel.frequency={
                 "value": null,
                                 "name": null,
@@ -68,7 +68,7 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='服用频次' prop='takeFrequency.value' >
+          <el-form-item label='Tần suất uống' prop='takeFrequency.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.takeFrequency.name'></el-input>
             <el-select v-else v-model='bizFormModel.takeFrequency' value-key='value' filterable clearable placeholder='请选择服用频次' 
               @clear='bizFormModel.takeFrequency={
@@ -82,12 +82,12 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='单次用量' prop='singleDosage' >
+          <el-form-item label='Liều dùng mỗi lần' prop='singleDosage' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.singleDosage' :maxlength='11' :placeholder='dialogProps.action === "view"? "" : "请输入单次用量"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='处方总价' prop='fee' >
+          <el-form-item label='Tổng giá đơn thuốc' prop='fee' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.fee'></el-input>
             <number-input v-else v-model="bizFormModel.fee" currency='CNY' :precision="2"></number-input>
           </el-form-item>
@@ -95,46 +95,46 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='是否付款' prop='isPay' >
+          <el-form-item label='Đã thanh toán chưa' prop='isPay' >
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isPay' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
         </el-col>
                         </el-row>
       <el-row>
         <el-col>
-          <el-form-item label='备注信息' prop='remarks' >
+          <el-form-item label='Thông tin ghi chú' prop='remarks' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea'
-                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入备注信息"'  clearable></el-input>
+                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"'  clearable></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='付款时间' prop='payDate' >
+          <el-form-item label='Thời gian thanh toán' prop='payDate' >
             <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.payDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入付款时间"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='是否退药' prop='isReturnDrug' >
+          <el-form-item label='Đã trả thuốc chưa' prop='isReturnDrug' >
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isReturnDrug' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='退药时间' prop='returnDrugDate' >
+          <el-form-item label='Thời gian trả thuốc' prop='returnDrugDate' >
             <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnDrugDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入退药时间"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='是否退费' prop='isReturnFee' >
+          <el-form-item label='Đã hoàn phí chưa' prop='isReturnFee' >
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isReturnFee' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='退费时间' prop='returnFeeDate' >
+          <el-form-item label='Thời gian hoàn phí' prop='returnFeeDate' >
             <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnFeeDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入退费时间"' ></el-date-picker>             
           </el-form-item>
         </el-col>
@@ -142,9 +142,9 @@
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("recipelInfoForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("recipelInfoForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -165,11 +165,11 @@ export default {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: '1',
-          medicalRecord_List: [],  // 病历
-          recipelType_List: [],  // 处方类别
-          recipelUse_List: [],  // 用法
-          frequency_List: [],  // 频次用量
-          takeFrequency_List: [],  // 服用频次
+          medicalRecord_List: [],  // Bệnh án
+          recipelType_List: [],  // Loại đơn thuốc
+          recipelUse_List: [],  // Cách dùng
+          frequency_List: [],  // Liều lượng theo tần suất
+          takeFrequency_List: [],  // Tần suất uống
           flag:false,
        dialogProps: {
         visible: false,
@@ -182,7 +182,7 @@ export default {
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -217,7 +217,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改处方信息'
+      this.dialogProps.title = 'Sửa thông tin đơn thuốc'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -230,40 +230,40 @@ export default {
     },
     initFormModel(This) {
       return {
-        'company': {     // 诊所id
+        'company': {     // Phòng khámid
           'id': currentUser.company.id,
           'name': null,
         },
-        'medicalRecord': {     // 病历
+        'medicalRecord': {     // Bệnh án
           'id': null,
           'diagnose': null,
         },
-        'recipelType': {     // 处方类别
+        'recipelType': {     // Loại đơn thuốc
           'value': null,
           'name': null,
         },
-        'dosage': '',   // 剂量
-        'recipelUse': {     // 用法
+        'dosage': '',   // Liều lượng
+        'recipelUse': {     // Cách dùng
           'value': null,
           'name': null,
         },
-        'frequency': {     // 频次用量
+        'frequency': {     // Liều lượng theo tần suất
           'value': null,
           'name': null,
         },
-        'takeFrequency': {     // 服用频次
+        'takeFrequency': {     // Tần suất uống
           'value': null,
           'name': null,
         },
-        'singleDosage': '',   // 单次用量
-        'fee': 0,    // 处方总价
-        'isPay': '0',   // 是否付款
-        'remarks': '',   // 备注信息
-        'payDate': '',   // 付款时间
-        'isReturnDrug': '0',   // 是否退药
-        'returnDrugDate': '',   // 退药时间
-        'isReturnFee': '0',   // 是否退费
-        'returnFeeDate': '',   // 退费时间
+        'singleDosage': '',   // Liều dùng mỗi lần
+        'fee': 0,    // Tổng giá đơn thuốc
+        'isPay': '0',   // Đã thanh toán chưa
+        'remarks': '',   // Thông tin ghi chú
+        'payDate': '',   // Thời gian thanh toán
+        'isReturnDrug': '0',   // Đã trả thuốc chưa
+        'returnDrugDate': '',   // Thời gian trả thuốc
+        'isReturnFee': '0',   // Đã hoàn phí chưa
+        'returnFeeDate': '',   // Thời gian hoàn phí
 
       }
     },
@@ -271,9 +271,9 @@ export default {
       let medicalRecord_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         medicalRecord_search.params.push.apply(medicalRecord_search.params, [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}])
-      // 数据权限: 病历表medical_record
+      // Quyền dữ liệu: Bảng bệnh ánmedical_record
       this.pushDataPermissions(medicalRecord_search.params, this.$route.meta.routerId, '1014786989773332526')
       this.medicalRecord_List.splice(0, this.medicalRecord_List.length)
       listMedicalRecordAll(medicalRecord_search).then(responseData => {
@@ -302,7 +302,7 @@ export default {
     },
     openEditRecipelInfoDialog(recipelInfo) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改处方信息'
+      this.dialogProps.title = 'Sửa thông tin đơn thuốc'
       this.bizFormModel = {...this.initFormModel(), ...recipelInfo}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -310,7 +310,7 @@ export default {
     },
     openAddRecipelInfoDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加处方信息'
+      this.dialogProps.title = 'Thêm thông tin đơn thuốc'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -318,7 +318,7 @@ export default {
     },
     openCopyRecipelInfoDialog(recipelInfo) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加处方信息'
+      this.dialogProps.title = 'Thêm thông tin đơn thuốc'
       this.bizFormModel = {...this.initFormModel(), ...recipelInfo}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

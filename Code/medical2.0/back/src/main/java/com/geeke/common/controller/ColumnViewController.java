@@ -41,7 +41,7 @@ public class ColumnViewController extends BaseController {
     }
     
     /**
-     * 全选显示列
+     * toàn bộchọnhiển thịCột
      * @param routerId
      * @param tableId
      * @return
@@ -53,7 +53,7 @@ public class ColumnViewController extends BaseController {
     } 
     
     /**
-     * 选择默认显示列
+     * chọn择Mặc địnhhiển thịCột
      * @param routerId
      * @param tableId
      * @return

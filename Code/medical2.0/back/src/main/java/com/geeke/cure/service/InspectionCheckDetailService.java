@@ -18,7 +18,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 检验检查详情Service
+ * Chi tiết xét nghiệm và kiểm traService
  * @author rys
  * @version 2022-10-19
  */

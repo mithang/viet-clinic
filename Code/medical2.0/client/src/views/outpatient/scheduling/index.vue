@@ -9,8 +9,8 @@
           @tab-click="handleClick"
           style="width: 100%; height: 100%"
         >
-          <el-tab-pane label="预约总览" name="schedulingzl">
-            <span slot="label">预约总览 </span>
+          <el-tab-pane label="Tổng quan lịch hẹn" name="schedulingzl">
+            <span slot="label">Tổng quan lịch hẹn </span>
 
             <el-row>
               <el-radio-group
@@ -18,8 +18,8 @@
                 style="margin-bottom: 30px"
                 @change="changeTheme"
               >
-                <el-radio-button label="0">周</el-radio-button>
-                <el-radio-button label="1">日</el-radio-button>
+                <el-radio-button label="0">tuần</el-radio-button>
+                <el-radio-button label="1">ngày</el-radio-button>
               </el-radio-group>
             </el-row>
             <el-row>
@@ -36,12 +36,12 @@
                 <div style="float: right">
                   <el-button
                     @click="schedulingzlDayList(-(7 * 24 * 60 * 60 * 1000))"
-                    >上一周</el-button
+                    >Tuần trước</el-button
                   >
-                  <el-button @click="schedulingzlDayList()">本周</el-button>
+                  <el-button @click="schedulingzlDayList()">Tuần này</el-button>
                   <el-button
                     @click="schedulingzlDayList(+(7 * 24 * 60 * 60 * 1000))"
-                    >下一周</el-button
+                    >Tuần sau</el-button
                   >
                 </div>
               </el-col>
@@ -51,7 +51,7 @@
                     @click="schedulingzlrdaysList(-(86400000))"
                     >上一天</el-button
                   >
-                  <el-button @click="schedulingzlrdaysList()">当天</el-button>
+                  <el-button @click="schedulingzlrdaysList()">Trong ngày</el-button>
                   <el-button
                     @click="schedulingzlrdaysList(+(86400000))"
                     >下一天</el-button
@@ -81,7 +81,7 @@
               >
                 <el-table-column
                   prop="dayname"
-                  label="日期"
+                  label="Ngày"
                   width="100"
                 ></el-table-column>
                 <el-table-column prop="timename" label="时间段" width="180">
@@ -95,7 +95,7 @@
 
                 <el-table-column
                   prop="userid"
-                  label="序号"
+                  label="Số thứ tự"
                   v-if="false"
                   width="180"
                 >
@@ -124,7 +124,7 @@
                             scope.row.timeendint > scope.row.newdatetime))
                       "
                     >
-                      <!-- <el-button plain  @click="rowbutton(scope.row[item.prop], item,scope.row)">新增</el-button> -->
+                      <!-- <el-button plain  @click="rowbutton(scope.row[item.prop], item,scope.row)">Thêm mới</el-button> -->
                       <el-button
                         plain
                         style="width: 42%"
@@ -135,7 +135,7 @@
                             scope.row
                           )
                         "
-                        >新增</el-button
+                        >Thêm mới</el-button
                       >
                       <el-button
                         plain
@@ -147,7 +147,7 @@
                             scope.row
                           )
                         "
-                        >明细</el-button
+                        >Chi tiết</el-button
                       >
                     </span>
                     <span
@@ -166,7 +166,7 @@
                             scope.row
                           )
                         "
-                        >新增</el-button
+                        >Thêm mới</el-button
                       >
                       <el-button
                         plain
@@ -178,7 +178,7 @@
                             scope.row
                           )
                         "
-                        >明细</el-button
+                        >Chi tiết</el-button
                       >
                     </span>
                   </template>
@@ -191,7 +191,7 @@
                 :data="schedulingzlrdayList"
                 style="width: 100%"
               >
-                <el-table-column prop="label" label="时间" width="180">
+                <el-table-column prop="label" label="Thời gian" width="180">
                 </el-table-column>
                 <el-table-column v-for="(item, index) in schedulingzlrday"
                   :key="index"
@@ -199,7 +199,7 @@
                   :label="item.username + '(' + item.ksname + ')'"
                   width="130">
                   <template slot-scope="scope">
-                    <el-button v-if="getlist(item.datehouse,scope.row.strattime,scope.row.endtime)!==0" @click="rdaybutton(scope.row)" >明细</el-button>
+                    <el-button v-if="getlist(item.datehouse,scope.row.strattime,scope.row.endtime)!==0" @click="rdaybutton(scope.row)" >Chi tiết</el-button>
                   </template>
 
                 </el-table-column>
@@ -208,33 +208,33 @@
             </el-row>
 
           </el-tab-pane>
-          <el-tab-pane label="预约明细" name="schedulingmx">
-            <span slot="label">预约明细 </span>
+          <el-tab-pane label="Chi tiết lịch hẹn" name="schedulingmx">
+            <span slot="label">Chi tiết lịch hẹn </span>
             <el-row>
               <el-form ref="form" :model="schedulingmxseachmodel">
                 <el-col :span="8">
-                  <el-form-item label="预约时间" prop="pickervalues">
+                  <el-form-item label="Thời gian hẹn" prop="pickervalues">
                     <el-date-picker
                       v-model="schedulingmxseachmodel.pickervalues"
                       type="daterange"
                       style="width: 180px"
                       value-format="yyyy-MM-dd HH:mm"
                       format="MM/dd"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
+                      start-placeholder="Ngày bắt đầu"
+                      end-placeholder="Ngày kết thúc"
                       :default-time="['00:00:00', '23:59:59']"
                     >
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="状态" prop="status">
+                  <el-form-item label="Trạng thái" prop="status">
                     <el-select
                       v-model="schedulingmxseachmodel.status"
                       value-key="id"
                       filterable
                       clearable
-                      placeholder="请选择登记状态"
+                      placeholder="Vui lòng chọn trạng thái đăng ký"
                     >
                       <el-option
                         v-for="status in statusList"
@@ -246,7 +246,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="患者信息" prop="patientname">
+                  <el-form-item label="Thông tin bệnh nhân" prop="patientname">
                     <input
                       type="text"
                       style="width: 140px"
@@ -260,7 +260,7 @@
                     icon="el-icon-search"
                     @click="schedulingmxdayList()"
                     :plain="true"
-                    >搜索</el-button
+                    >Tìm kiếm</el-button
                   >
                 </el-col>
               </el-form>
@@ -277,47 +277,47 @@
               >
                 <el-table-column
                   property="name"
-                  label="患者"
+                  label="Bệnh nhân"
                   width="120"
                 ></el-table-column>
                 <el-table-column
                   property="gendername"
-                  label="性别"
+                  label="Giới tính"
                   width="60"
                 ></el-table-column>
                 <el-table-column
                   property="age"
-                  label="年龄"
+                  label="Tuổi"
                   width="60"
                 ></el-table-column>
                 <el-table-column
                   property="ksname"
-                  label="预约科室"
+                  label="Khoa/phòng hẹn"
                   width="120"
                 ></el-table-column>
                 <el-table-column
                   property="ysname"
-                  label="预约员工"
+                  label="Nhân viên hẹn"
                   width="120"
                 ></el-table-column>
                 <el-table-column
                   property="sourcename"
-                  label="预约来源"
+                  label="Nguồn hẹn"
                 ></el-table-column>
                 <el-table-column
                   property="subscribedate"
-                  label="预约时间"
+                  label="Thời gian hẹn"
                   width="200"
                 ></el-table-column>
                 <el-table-column
                   property="statusname"
-                  label="预约状态"
+                  label="Trạng thái hẹn"
                 ></el-table-column>
               </el-table>
             </el-row>
           </el-tab-pane>
-          <el-tab-pane label="排班" name="scheduling">
-            <span slot="label">排班 </span>
+          <el-tab-pane label="Lịch trực" name="scheduling">
+            <span slot="label">Lịch trực </span>
             <el-row>
               <el-col :span="12">
                 <input
@@ -332,12 +332,12 @@
                 <div style="float: right">
                   <el-button
                     @click="schedulingDayList(-(7 * 24 * 60 * 60 * 1000))"
-                    >上一周</el-button
+                    >Tuần trước</el-button
                   >
-                  <el-button @click="schedulingDayList()">本周</el-button>
+                  <el-button @click="schedulingDayList()">Tuần này</el-button>
                   <el-button
                     @click="schedulingDayList(+(7 * 24 * 60 * 60 * 1000))"
-                    >下一周</el-button
+                    >Tuần sau</el-button
                   >
                 </div>
               </el-col>
@@ -355,12 +355,12 @@
               >
                 <el-table-column
                   prop="userid"
-                  label="员工ID"
+                  label="Nhân viênID"
                   v-if="false"
                   width="180"
                 >
                 </el-table-column>
-                <el-table-column prop="username" label="员工" fixed width="180">
+                <el-table-column prop="username" label="Nhân viên" fixed width="180">
                   <template slot-scope="scope">
                     {{ scope.row.username }}({{ scope.row.ksname }})
                   </template>
@@ -383,7 +383,7 @@
                         @clear="
                           delrowdata(column[item.key], item.key, scope.row)
                         "
-                        placeholder="请选择"
+                        placeholder="Vui lòng chọn"
                         :key="index"
                       >
                         <el-option
@@ -412,45 +412,45 @@
       <el-table width="100%" height="80%" :data="schedulingmxList">
         <el-table-column
           property="name"
-          label="患者"
+          label="Bệnh nhân"
           width="150"
         ></el-table-column>
         <el-table-column
           property="gendername"
-          label="性别"
+          label="Giới tính"
           width="200"
         ></el-table-column>
         <el-table-column
           property="age"
-          label="年龄"
+          label="Tuổi"
           width="200"
         ></el-table-column>
         <el-table-column
           property="ksname"
-          label="预约科室"
+          label="Khoa/phòng hẹn"
           width="200"
         ></el-table-column>
         <el-table-column
           property="ysname"
-          label="预约员工"
+          label="Nhân viên hẹn"
           width="200"
         ></el-table-column>
         <el-table-column
           property="sourcename"
-          label="预约来源"
+          label="Nguồn hẹn"
         ></el-table-column>
         <el-table-column
           property="subscribedate"
-          label="预约时间"
+          label="Thời gian hẹn"
           width="200"
         ></el-table-column>
         <el-table-column
           property="statusname"
-          label="预约状态"
+          label="Trạng thái hẹn"
         ></el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogTableVisible = false">取 消</el-button>
+        <el-button @click="dialogTableVisible = false">Hủy</el-button>
       </div>
     </el-dialog>
   </div>
@@ -503,24 +503,24 @@ export default {
       housrslist : [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
       flagchange: true,
       dateweeklist: [],
-      //预约总览
+      //Tổng quan lịch hẹn
       schedulingzlList: [],
       schedulingzlday: [],
       schedulingzlrdayList: [],
       schedulingzlrday:[],
-      //预约明细
+      //Chi tiết lịch hẹn
       schedulingmxList: [],
       schedulingmxseachmodel: {
-        pickervalues: [], //预约明细时间条件
+        pickervalues: [], //Điều kiện thời gian chi tiết lịch hẹn
         status: null,
         patientname: null,
       },
       statusList: [],
-      //排班
+      //Lịch trực
       schedulingList: [],
       listLoading: false,
       tableKey: 0,
-      emptyText: "暂无数据",
+      emptyText: "Chưa có dữ liệu",
       formThead: [],
       dayList: [],
       lists: [],
@@ -531,15 +531,15 @@ export default {
       options: [
         {
           value: "998324809623056666",
-          label: "全天",
+          label: "Cả ngày",
         },
         {
           value: "998324809623057777",
-          label: "上午",
+          label: "Buổi sáng",
         },
         {
           value: "998324809623058888",
-          label: "下午",
+          label: "Buổi chiều",
         },
       ],
       tableData: [],
@@ -631,7 +631,7 @@ export default {
     },
     schedulingmxdaylistcreate() {
       this.schedulingmxseachmodel = {
-        pickervalues: [], //预约明细时间条件
+        pickervalues: [], //Điều kiện thời gian chi tiết lịch hẹn
         status: null,
         patientname: null,
       };
@@ -692,7 +692,7 @@ export default {
           //this.flag = false;
           if (responseData.code === 100) {
             if (responseData.data && responseData.data > 0) {
-              this.$message.success("撤销排班成功");
+              this.$message.success("Thu hồi lịch trực thành công");
             }
           } else {
             //this.showMessage(responseData)
@@ -729,7 +729,7 @@ export default {
           if (responseData.code === 100) {
             this.schedulingmxList = responseData.data;
             // if (responseData.data && responseData.data > 0) {
-            //   this.$message.success("撤销排班成功");
+            //   this.$message.success("Thu hồi lịch trực thành công");
             // }
           } else {
             //this.showMessage(responseData);
@@ -760,7 +760,7 @@ export default {
           if (responseData.code === 100) {
             this.schedulingmxList = responseData.data;
             // if (responseData.data && responseData.data > 0) {
-            //   this.$message.success("撤销排班成功");
+            //   this.$message.success("Thu hồi lịch trực thành công");
             // }
           } else {
             //this.showMessage(responseData);
@@ -791,7 +791,7 @@ export default {
       this.schedulingzlday = [];
       this.dateweeklist = [];
       this.schedulingzlList=[];
-      // 动态添加天数及对应星期几
+      // Thêm động số ngày và thứ tương ứng
       let tableprop = 0;
 
       let time = new Date();
@@ -809,7 +809,7 @@ export default {
       }
 
       let currenDay = time.getDay();
-      //获取当前日期的星期 开始和结束  strat
+      //Lấy thứ của ngày hiện tại Bắt đầu và kết thúc  strat
       let newtime1 = new Date(
         timesStamp + 24 * 60 * 60 * 1000 * (0 - ((currenDay + 6) % 7))
       )
@@ -847,7 +847,7 @@ export default {
           ? "0" + newdates2.getDate()
           : newdates2.getDate());
 
-      //获取当前日期的星期 开始和结束  end
+      //Lấy thứ của ngày hiện tại Bắt đầu và kết thúc  end
 
       let endtime =
         newdates2.getMonth() +
@@ -880,21 +880,21 @@ export default {
 
       let nowDate = new Date(Date.parse(new Date()));
       let nowDay =
-        nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate(); //日
-      let nowmonth = nowDate.getMonth() + 1; //月
-      let yeare = nowDate.getFullYear(); //年
-      let hh = nowDate.getHours(); //小时
+        nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate(); //ngày
+      let nowmonth = nowDate.getMonth() + 1; //tháng
+      let yeare = nowDate.getFullYear(); //năm
+      let hh = nowDate.getHours(); //giờ
       let thecurrent = yeare + "-" + nowmonth + "-" + nowDay;
       let daytime = [
         {
-          timename: "上午",
+          timename: "Buổi sáng",
           timestrea: "08:00",
           timeend: "12:00",
           timestreaint: 8,
           timeendint: 12,
         },
         {
-          timename: "下午",
+          timename: "Buổi chiều",
           timestrea: "12:00",
           timeend: "18:00",
           timestreaint: 12,
@@ -1016,14 +1016,14 @@ export default {
         this.datetimebutton = null;
       }
 
-      let nowDay =nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate(); //日
+      let nowDay =nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate(); //ngày
       let nowmonth =
         nowDate.getMonth() + 1 < 10
           ? "0" + nowDate.getMonth() + 1
-          : nowDate.getMonth() + 1; //月
-      let yeare = nowDate.getFullYear(); //年
+          : nowDate.getMonth() + 1; //tháng
+      let yeare = nowDate.getFullYear(); //năm
       this.week_time = yeare + "/" + nowmonth + "/" + nowDay;
-      let hh = nowDate.getHours(); //小时
+      let hh = nowDate.getHours(); //giờ
       let housrs = this.housrslist;
       for (let i = 0; i < housrs.length - 1; i++) {
         let daylist = {
@@ -1087,11 +1087,11 @@ export default {
       this.schedulingList = []; //先清空数据
       this.dateweeklist = [];
       this.formThead = [];
-      // 动态添加天数及对应星期几
+      // Thêm động số ngày và thứ tương ứng
       let nowDate = new Date(Date.parse(new Date()));
-      let nowDay = nowDate.getDate(); //日
-      let nowmonth = nowDate.getMonth() + 1; //月
-      let yeare = nowDate.getFullYear(); //年
+      let nowDay = nowDate.getDate(); //ngày
+      let nowmonth = nowDate.getMonth() + 1; //tháng
+      let yeare = nowDate.getFullYear(); //năm
       let nowDayss = nowDate.getDate() - nowDate.getDay() + 1; //星期
 
       let time = new Date();
@@ -1108,7 +1108,7 @@ export default {
         this.datetimebutton = null;
       }
       let currenDay = time.getDay();
-      //获取当前日期的星期 开始和结束  strat
+      //Lấy thứ của ngày hiện tại Bắt đầu và kết thúc  strat
       let newtime1 = new Date(
         timesStamp + 24 * 60 * 60 * 1000 * (0 - ((currenDay + 6) % 7))
       )
@@ -1146,7 +1146,7 @@ export default {
           ? "0" + newdates2.getDate()
           : newdates2.getDate());
 
-      //获取当前日期的星期 开始和结束  end
+      //Lấy thứ của ngày hiện tại Bắt đầu và kết thúc  end
       let stratime = vardates1;
       let enddate = vardates2;
       let seachmode = this.seachmodel;

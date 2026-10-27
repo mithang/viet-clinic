@@ -38,15 +38,15 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
 
     @Override
     public List<String> bulkInsert(List<HisMaterials> entitys) {
-        //院版诊所对应关系/
+        //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> preMap = getTypeMap(BizConstants.DICT_TYPE_PREPARATION_UNIT);
         Map<String, String> packMap = getTypeMap(BizConstants.DICT_TYPE_PACK_SPEC);
         List<String> ids = Lists.newArrayList();
         JSONObject userObj = SessionUtils.getUserJson();
         for(HisMaterials entity : entitys) {
             entity.setCompanyId(userObj.getString("companyId"));
-            entity.setDw(preMap.getOrDefault(entity.getDw(), preMap.get("个")));
-            entity.setGg(packMap.getOrDefault(entity.getGg(), preMap.get("个")));
+            entity.setDw(preMap.getOrDefault(entity.getDw(), preMap.get("Cái")));
+            entity.setGg(packMap.getOrDefault(entity.getGg(), preMap.get("Cái")));
             entity.preInsert();
             ids.add(entity.getId());
         }

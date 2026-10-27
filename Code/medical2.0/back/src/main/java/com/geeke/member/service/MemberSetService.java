@@ -20,7 +20,7 @@ import com.google.common.collect.Maps;
 import javax.swing.text.html.parser.Entity;
 
 /**
- * 会员卡设置Service
+ * Cài đặt thẻ hội viênService
  * @author rys
  * @version 2022-10-25
  */
@@ -51,15 +51,15 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
            }
        }else {
            memberSet.preUpdate();
-           //修改会员卡数量需要去判断会员卡发放数量是否大于发放数量
+           //Khi sửa số lượng thẻ hội viên cần kiểm tra số lượng thẻ đã phát hành có lớn hơn số lượng phát hành không
            List<MemberManagement> memberManagements = memberManagementService.getByMemberSetId(memberSet.getId());
 
            if(memberManagements.size()>memberSet.getAmount()){
-               throw new ServiceException("修改的会员卡数量不能低于已发放会员卡数量！");
+               throw new ServiceException("Số lượng thẻ hội viên sau khi sửa không được thấp hơn số lượng thẻ hội viên đã phát hành!");
            }
            int i = this.dao.update(memberSet);
            if(i>0){
-               //先将原来的项目进行删除在添加
+               //trướcSẽ gốcđến của hạng mụctiến hành dòngXóatạiThêm
                int delete=memberItemService.deleteByMemberSet(memberSet.getId());
 
                    List<MemberItem> memberItemList = memberSet.getMemberItem();
@@ -79,10 +79,10 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
 
     @Transactional
     public int updateNumber(String id) {
-        //获取现有会员卡数量
+        //LấyhiệncóHội viênthẻSố lượng
         MemberSet memberSet = this.dao.get(id);
         if(memberSet.getNumber()==0){
-            throw new ServiceException("会员卡剩余数量为0，不能再添加会员！");
+            throw new ServiceException("Hội viênthẻSố lượng còn lại là 0, Không thểlạiThêmHội viên!");
 
         }else {
             int newNumber=memberSet.getNumber()-1;
@@ -93,7 +93,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
     }
     @Transactional
     public int addNumber(String id) {
-        //获取现有会员卡数量
+        //LấyhiệncóHội viênthẻSố lượng
         MemberSet memberSet = this.dao.get(id);
         int newNumber = memberSet.getNumber()+1;
         int i = this.dao.updateNumber(id, newNumber);

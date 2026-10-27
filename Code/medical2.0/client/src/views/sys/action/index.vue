@@ -1,22 +1,22 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <action-form ref='actionForm' :permission='permission' @save-finished='loadData'></action-form>
     <div class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class="query-form-container">
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='操作' prop='actionType'>
-                  <el-select v-model='queryModel.actionType' value-key='value' filterable clearable placeholder='请选择操作'>
+                <el-form-item label='Thao tác' prop='actionType'>
+                  <el-select v-model='queryModel.actionType' value-key='value' filterable clearable placeholder='Vui lòng chọn thao tác'>
                     <el-option v-for='actionType in actionType_List' :key='actionType.value' :label='actionType.name' :value='actionType'></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label='对象名称' prop='objectName'>
-                  <el-input v-model='queryModel.objectName' :clearable='true' placeholder='请输入对象名称'></el-input>
+                <el-form-item label='Tên đối tượng' prop='objectName'>
+                  <el-input v-model='queryModel.objectName' :clearable='true' placeholder='Vui lòng nhập tên đối tượng'></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -31,13 +31,13 @@
               </el-col>
               <el-col :span="6">
                 <el-button-group>
-                  <el-tooltip  effect="light" content="搜索" placement="top-start">
+                  <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                     <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                   </el-tooltip>
-                    <el-tooltip  effect="light" content="重置" placement="top-start">
+                    <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                     <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                   </el-tooltip>
-                  <el-tooltip  effect="light" content="更多" placement="top-start">
+                  <el-tooltip  effect="light" content="Thêm" placement="top-start">
                     <el-button type="primary" icon="el-icon-d-arrow-right" @click='onMoreCodition()' :plain='true'></el-button>
                   </el-tooltip>
                 </el-button-group>
@@ -47,16 +47,16 @@
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
       </div>
 
-      <!-- 工具栏 开始 -->
+      <!-- Thanh công cụ Bắt đầu -->
       <div class="page-container-header-end">
         <div>
-          <el-button type='primary' icon='el-icon-plus'  @click='onCreateAction()'>添加</el-button>
+          <el-button type='primary' icon='el-icon-plus'  @click='onCreateAction()'>Thêm</el-button>
         </div>
       </div>
-      <!-- 工具栏 结束 -->
+      <!-- Thanh công cụ Kết thúc -->
 
-      <!--  搜索栏  结束 -->
-      <!-- 表格栏  开始 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
+      <!-- Thanh bảng  Bắt đầu -->
           <el-row>
             <el-col :span='24'>
               <div @mouseleave='moveTableOutside'>
@@ -69,21 +69,21 @@
                       <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType)}}</span>
                     </template>
                   </el-table-column>
-                  <!--表行级操作按钮-->
-                  <el-table-column label='操作' header-align='center' :width='oprColumnWidth + "px"'>
+                  <!--Nút thao tác theo dòng-->
+                  <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"'>
                     <template slot='header' slot-scope="scope">
-                      <span>操作</span>
+                      <span>Thao tác</span>
                       <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                       <export-excel-button v-show='permission.export' :data='actionList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                     </template>
                     <template slot-scope='scope'>
-                      <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view'
+                      <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
                         @click='onViewEntity(scope.$index, scope.row, "actionForm")'></OperationIcon>
-                      <OperationIcon v-show='permission.restore && scope.row.status === "0" && scope.row.actionType.value === "deleted"' type='primary' content='还原' placement='top-start' icon-name='el-icon-refresh-left'
+                      <OperationIcon v-show='permission.restore && scope.row.status === "0" && scope.row.actionType.value === "deleted"' type='primary' content='Khôi phục' placement='top-start' icon-name='el-icon-refresh-left'
                         @click='onRestoreAction(scope.$index, scope.row)'></OperationIcon>
-                      <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                      <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                         @click='onEditEntity(scope.$index, scope.row, "actionForm")'></OperationIcon>
-                      <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document'
+                      <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                         @click='onCopyEntity(scope.$index, scope.row, "actionForm")'></OperationIcon>
                       <OperationIcon v-show='permission.remove' type='danger' content='隐藏' placement='top-start' icon-name='el-icon-delete'
                         @click='onDeleteEntity(scope.$index, scope.row, deleteAction)'></OperationIcon>
@@ -93,8 +93,8 @@
             </div>
             </el-col>
           </el-row>
-          <!-- 表格栏  结束 -->
-          <!-- 分页栏     开始 -->
+          <!-- Thanh bảng  Kết thúc -->
+          <!-- Thanh phân trang     Bắt đầu -->
           <el-row>
             <el-col :span='24'>
               <el-pagination
@@ -109,7 +109,7 @@
               </el-pagination>
             </el-col>
           </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </div>
   </el-row>
 </template>
@@ -143,7 +143,7 @@ export default {
   },
   data() {
     return {
-      // listViewMixin 配置
+      // listViewMixin Cấu hình
       listApi: listActionPage,
       getApi: getActionById,
       deleteApi: deleteAction,
@@ -158,25 +158,25 @@ export default {
         restore: false,
       },
       queryModel:  {
-        'actionType': {     // 操作
+        'actionType': {     // Thao tác
           'value': '',
           'name': '',
         },
-        'objectType': {     // 对象类型
+        'objectType': {     // Loại đối tượng
           'id': null,
           'comments': '',
         },
-        'objectId': '',   // 业务对象
-        'objectName': '',   // 对象名称
+        'objectId': '',   // Đối tượng nghiệp vụ
+        'objectName': '',   // Tên đối tượng
         'status': 0,
-        'remarks': '',    //备注信息
-        createBy:'',      //创建人
-        createDate:undefined,  //创建时间
+        'remarks': '',    //Thông tin ghi chú
+        createBy:'',      //Người tạo
+        createDate:undefined,  //Thời gian tạo
       },
       actionTotal: 0,
       actionList: [],
 
-      actionType_List: [],    // 操作
+      actionType_List: [],    // Thao tác
 
       tableId: '4000',
       schemeId: '6012'

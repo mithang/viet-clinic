@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 工作台
+ * công việclàmmáy
  */
 @RestController
 @RequestMapping(value = "/workbench/Schedules")
@@ -42,7 +42,7 @@ public class SchedulesController extends BaseController {
     private MemberManagementService memberManagementService;
 
     /**
-     * 获取待就诊信息
+     * Lấychờkhám bệnhThông tin
      * @param searchParams
      * @return
      */
@@ -53,7 +53,7 @@ public class SchedulesController extends BaseController {
     }
 
     /**
-     * 待发药
+     * chờphát thuốc
      * @param pageRegistration
      * @return
      */
@@ -82,7 +82,7 @@ public class SchedulesController extends BaseController {
     }
 
     /**
-     * 通过ID进行修改是否忽略状态
+     * QuaIDtiến hành dòngSửaCó hay khôngbỏ quaTrạng thái
      * @param strRecipelInfoIds
      * @return
      */

@@ -1,0 +1,738 @@
+# Bản dịch kèm theo — Sổ tay hướng dẫn hệ thống quản lý Phòng khám đám mây
+
+> **Lưu ý:** Đây là bản dịch kèm theo của văn bản trích xuất từ file PDF gốc `云诊所管理系统说明书.pdf` (78 trang, 17 MB). File PDF gốc giữ nguyên, không sửa đổi. Các ảnh chụp màn hình trong PDF không được dịch; các chú thích trong ngoặc 【 】 chỉ tên giao diện/ảnh chụp màn hình tương ứng trong PDF. Tên thương hiệu “新致万全 V2.0” được giữ nguyên.
+
+## Mục lục (số trang theo PDF gốc)
+
+- Giao diện đăng nhập — trang 4
+- Khám ngoại trú — trang 5
+- 1. Hồ sơ khách hàng — trang 5
+- 2. Thông tin đăng ký — trang 7
+- 3. Bác sĩ ngoại trú — trang 12
+- 4. Mẫu đơn thuốc — trang 17
+- Thu phí / phát thuốc — trang 19
+- 1. Bàn làm việc — trang 19
+- 2. Đặt lịch / xếp lịch trực — trang 20
+- 3. Tiến độ khám bệnh — trang 22
+- 4. Mẫu bệnh án — trang 22
+- Thu phí / phát thuốc — trang 22
+- 1. Quản lý thu phí — trang 23
+- 2. Nhà thuốc phát thuốc — trang 24
+- 3. Thu phí bán lẻ — trang 25
+- Điều trị — trang 27
+- 1. Quản lý điều trị — trang 27
+- 2. Thực hiện truyền dịch — trang 28
+- 3. Xét nghiệm / kiểm tra — trang 29
+- 4. Test da — trang 30
+- Tra cứu báo cáo — trang 31
+- 1. Tra cứu chi phí — trang 31
+- 2. Thống kê chi tiết doanh số bán thuốc — trang 32
+- 3. Thống kê thu nhập bác sĩ — trang 32
+- 4. Thống kê tổng hợp doanh số bán thuốc — trang 33
+- 5. Thống kê nhập – bán – tồn thuốc — trang 33
+- 6. Thống kê tổng hợp doanh số bán vật tư tiêu hao — trang 34
+- 7. Thống kê nhập – bán – tồn vật tư — trang 35
+- 8. Thống kê nhập kho thuốc / vật tư — trang 35
+- Quản lý tồn kho — trang 36
+- 1. Nhà sản xuất — trang 36
+- 2. Thông tin thuốc — trang 37
+- 3. Thông tin vật tư — trang 39
+- 4. Quản lý nhà cung cấp — trang 39
+- 5. Nhập kho — trang 40
+- 6. Kiểm kê tồn kho — trang 42
+- 7. Tồn kho hiện tại — trang 44
+- 8. Cảnh báo — trang 44
+- Quản trị hệ thống — trang 45
+- 1. Quản lý khoa — trang 45
+- 2. Quản lý vai trò — trang 49
+- 3. Quản lý người dùng — trang 54
+- 4. Hạng mục chẩn trị — trang 59
+- 5. Theo dõi bệnh mạn tính — trang 64
+- 5.1 Theo dõi bệnh nhân tăng huyết áp — trang 64
+- 5.2 Theo dõi bệnh nhân đái tháo đường type 2 — trang 65
+- 5.3 Theo dõi bệnh lao — trang 65
+- 5.4 Theo dõi bệnh nhân rối loạn tâm thần nặng — trang 66
+- 5.5 Theo dõi COPD — trang 66
+- 5.6 Thông tin cơ bản cá nhân — trang 67
+- 5.7 Giấy đồng ý sau khi được thông báo về dịch vụ rối loạn tâm thần nặng — trang 67
+- 5.8 Bảng nhận diện thể chất Đông y — trang 68
+- Quản lý hội viên — trang 68
+- 1. Thiết lập thẻ hội viên — trang 68
+- 1. Quản lý hội viên — trang 71
+- Quản lý nhiệm vụ — trang 74
+- 1. Nhiệm vụ của tôi — trang 74
+- 2. Đăng bài viết — trang 77
+
+## Nội dung
+
+**Giao diện đăng nhập**
+
+Khi đăng nhập, cần nhập tên người dùng và mật khẩu rồi nhấn nút “Đăng nhập”; nếu tài khoản này liên kết với nhiều tenant thì cần chọn phòng khám tương ứng. Như vậy là hoàn thành quá trình đăng nhập.
+
+*【Giao diện đăng nhập】*
+
+*【Nhắc nhở đăng nhập】*
+
+**Khám ngoại trú**
+
+1. Hồ sơ khách hàng
+
+Có thể tìm thông tin chi tiết của bệnh nhân theo tên bệnh nhân, phương thức liên hệ, chứng minh nhân dân.
+
+Danh sách trên giao diện hiển thị tên, giới tính, tuổi, phương thức liên hệ, v.v. của bệnh nhân.
+
+*【Hồ sơ khách hàng】*
+
+Nhấn nút 【Thêm】 để thêm hồ sơ khách hàng mới; mục có dấu * là bắt buộc (bệnh nhân chưa thành niên bắt buộc phải điền thông tin người giám hộ), các trường khác có thể điền theo tình hình thực tế; đối với bệnh nhân đã tồn tại, có thể sửa thông tin ở phía bên phải giao diện chính hồ sơ khách hàng.
+
+【Xem】: Xem thông tin bệnh nhân, có thể chỉnh sửa.
+
+【Chỉnh sửa】: Chỉnh sửa thông tin bệnh nhân.
+
+【Sao chép】: Thuận tiện cho người dùng thêm mới bệnh nhân có thông tin tương tự.
+
+【Lịch sử】: Có thể xem bệnh nhân này do ai tạo.
+
+Cột hiển thị tùy chỉnh: Người dùng có thể tự chọn thông tin bệnh nhân cần hiển thị. Nhấn 【】 để xuất ra tài liệu Excel.
+
+*【Xem thông tin bệnh nhân】*
+
+*【Sao chép, thêm thông tin bệnh nhân】*
+
+*【Lịch sử】*
+
+*【Cột hiển thị tùy chỉnh】*
+
+2. Thông tin đăng ký
+
+Có thể tìm kiếm thông tin bệnh nhân đã đăng ký theo thời gian đăng ký, khoa, nguồn, bệnh nhân, trạng thái; thông tin bệnh nhân trong danh sách hỗ trợ xuất ra tệp Excel.
+
+【Nguồn】 gồm: trực tiếp, trực tuyến.
+
+【Trạng thái】 gồm: chờ phân loại, chờ check-in, chờ khám, đã tiếp nhận khám, đã hủy, đã hết hiệu lực. Người dùng cũng có thể chọn nguồn và trạng thái để tra cứu phân loại bệnh nhân đã đăng ký.
+
+*【Thông tin đăng ký】*
+
+Chọn bệnh nhân, nhấn 【Xem】 trong danh sách bệnh nhân thì có thể xem thông tin cơ bản của bệnh nhân; chức năng này không thể sửa thông tin bệnh nhân.
+
+*【Xem thông tin đăng ký】*
+
+Bệnh nhân chưa được tiếp nhận khám có thể sửa thông tin và thực hiện 【Trả số khám / hoàn phí】. Nhấn nút 【Sửa】 trong mô-đun thao tác để sửa 【Thông tin đăng ký】 của bệnh nhân đã đăng ký khám. Bệnh nhân đã đặt lịch cần nhấn 【Check-in】 rồi mới khám.
+
+*【Sửa thông tin đăng ký】*
+
+*【Trả số khám】*
+
+*【Check-in】*
+
+Nhấn nút 【Thêm】 để thêm thông tin đăng ký mới; mục có dấu * là bắt buộc, các trường khác có thể điền theo tình hình thực tế.
+
+Thông tin cơ bản của bệnh nhân: Có thể chọn tên bệnh nhân đã có trong hồ sơ bệnh nhân, hệ thống tự động lấy thông tin liên quan của bệnh nhân đó; cũng có thể điền thông tin cơ bản của bệnh nhân, sau khi hoàn thành đăng ký, hệ thống sẽ tự động tạo thông tin hồ sơ bệnh nhân tương ứng của bệnh nhân đó.
+
+Thông tin đăng ký: Chọn bác sĩ khám bệnh tương ứng và khoa nơi bác sĩ làm việc; sau khi hoàn thành đăng ký, thông tin bệnh nhân này sẽ nằm trong thông tin chờ tiếp nhận khám của bác sĩ khám bệnh đó để chờ bác sĩ tiếp nhận khám. Nếu cần 【Miễn phí đăng ký khám】, chỉ cần bật nút miễn phí đăng ký khám; màu xanh lá (0) nghĩa là “Có”.
+
+Đặt lịch / phân loại khám: Giao diện này hiển thị bệnh nhân đặt lịch / phân loại khám. Nhấn 【Khám sơ bộ】, nhập 【Thông tin dấu hiệu sinh tồn】 và 【Thông tin bệnh án】 rồi nhấn Xác nhận, bệnh nhân có thể khám bệnh.
+
+*【Đặt lịch / phân loại khám】*
+
+*【Khám sơ bộ】*
+
+3. Bác sĩ ngoại trú
+
+Giao diện này hiển thị thông tin chi tiết của bệnh nhân đã khám và chưa khám; bác sĩ có thể tìm bệnh nhân liên quan bằng cách tìm theo chứng minh nhân dân, tên, phương thức liên hệ, v.v. của bệnh nhân.
+
+Chờ khám: Bác sĩ nhấn vào bệnh nhân 【Chờ khám】, hệ thống tự động lấy thông tin cơ bản của bệnh nhân; bác sĩ chỉ cần điền 【Bệnh án】 và 【Kê đơn thuốc】 (đơn thuốc Tây y / đơn thuốc Đông y / hạng mục chẩn trị) của bệnh nhân là xong.
+
+Đối với bệnh nhân đã từng khám tại bệnh viện này, nhấn 【Hồ sơ khám bệnh】 trong mô-đun thông tin cơ bản thì có thể xem thông tin khám bệnh các lần trước của bệnh nhân này.
+
+*【Hồ sơ khám bệnh】*
+
+Bệnh án: Hệ thống mặc định hiển thị lý do khám chính là chẩn đoán Đông / Tây y; nhấn mẫu bệnh án có thể gọi mẫu đã thiết lập sẵn, cũng có thể nhấn 【Cấu hình】 để tự chọn các trường bệnh án cần thiết. Sau khi cấu hình xong các trường cần thiết, nhấn 【Lưu mẫu】 thì có thể lưu các trường bệnh án đã cấu hình; lần khám sau có thể gọi trong mẫu bệnh án.
+
+*【Gọi mẫu bệnh án】*
+
+*【Cấu hình bệnh án】*
+
+*【Lưu mẫu】*
+
+Kê đơn thuốc: Nhấn nút 【Kê đơn thuốc】, chọn đơn thuốc cần kê (đơn thuốc Tây y / đơn thuốc Đông y / hạng mục chẩn trị), chọn loại đơn thuốc (thường, nhi khoa, gây mê, cấp cứu, nhi khoa, tinh thần loại 1, tinh thần loại 2), nhập tên thuốc trong đơn hoặc mã pinyin để tìm và thêm; sau khi thêm thuốc, điền các thông tin liên quan của thuốc đã kê như cách dùng, liều lượng, tần suất, số ngày; hệ thống tự động
+
+**tính số tiền đơn thuốc.**
+
+Phí phụ thêm: Nếu đơn thuốc này có phí vật tư và các chi phí liên quan khác, có thể tìm và thêm theo tên hoặc mã pinyin trong cột phí phụ thêm; điền số lượng đã kê, hệ thống tự động tính tổng số tiền.
+
+*【Đơn thuốc Tây y】*
+
+*【Đơn thuốc Đông y】*
+
+Hạng mục chẩn trị: Nhập tên hạng mục chẩn trị hoặc mã pinyin để tìm và thêm; sau khi thêm, điền số lượng hạng mục, hệ thống tự động tính tổng số tiền.
+
+Phí phụ thêm: Nếu đơn thuốc này có phí vật tư và các chi phí liên quan khác, có thể tìm và thêm theo tên hoặc mã pinyin trong cột phí phụ thêm; điền số lượng đã kê, hệ thống tự động tính tổng số tiền.
+
+*【Hạng mục chẩn trị】*
+
+Đã khám: Sau khi bác sĩ hoàn thành tiếp nhận khám, có thể xem thông tin bệnh nhân trong cột đã khám ở phía bên trái. Nếu cần hủy đơn thuốc, có thể nhấn 【Hủy】 để hủy đơn thuốc liên quan. (Chỉ đơn thuốc chưa thu phí mới được hủy.)
+
+In đơn thuốc: Nhấn nút 【In】 để in / xem trước đơn thuốc của bệnh nhân này.
+
+Đơn thuốc ký:
+
+*【Đơn thuốc Tây y đã ký】*
+
+*【Đơn thuốc Đông y đã ký】*
+
+*【Đơn thuốc hạng mục chẩn trị đã ký】*
+
+4. Mẫu đơn thuốc
+
+Mẫu đơn thuốc: Nhấn nút thêm, chọn mẫu đơn thuốc cần thêm.
+
+*【Thêm mẫu đơn thuốc】*
+
+Thêm mẫu: Vào giao diện thêm mẫu đơn thuốc, dấu * là mục bắt buộc; loại mẫu gồm: mẫu riêng tư, mẫu công khai.
+
+Đơn thuốc gồm: đơn thuốc thường, đơn thuốc nhi khoa, đơn thuốc gây mê, đơn thuốc cấp cứu, đơn thuốc tinh thần loại 1, đơn thuốc tinh thần loại 2.
+
+Nhập tên mẫu, chẩn đoán. Chọn loại mẫu. Chỉnh sửa thông tin đơn thuốc, phí phụ thêm, nội dung y lệnh rồi nhấn Lưu.
+
+Thông tin đơn thuốc: Nhập tên thuốc hoặc mã pinyin vào thanh tìm kiếm rồi tìm kiếm. Đặt chuột lên thanh tìm kiếm, hộp thoại thuốc sẽ bật lên, hiển thị tên thuốc / vật tư, giá bán lẻ, tồn kho và các thông tin khác.
+
+*【Thêm đơn thuốc】*
+
+**Thu phí / phát thuốc**
+
+1. Bàn làm việc
+
+Giao diện chính bàn làm việc: Thuận tiện cho người dùng nhanh chóng tìm được bệnh nhân chưa xử lý.
+
+Ví dụ chờ khám: Người dùng 【nhấn】 vào mục khám bệnh trên mô-đun chờ khám, giao diện sẽ chuyển tới giao diện khám bệnh. Các việc chờ xử lý khác cũng vậy, nhấn vào sẽ chuyển tới giao diện tương ứng. Nhấn Bỏ qua thì có thể xóa thông tin chờ xử lý.
+
+*【Giao diện chuyển tới sau khi nhấn chờ khám】*
+
+2. Đặt lịch / xếp lịch trực
+
+Tổng quan đặt lịch: Bệnh nhân đặt lịch, chọn khoảng thời gian, nhấn Thêm mới, thêm bệnh nhân, nhập thông tin bệnh nhân rồi nhấn Lưu.
+
+Chi tiết đặt lịch: Có thể xem các thông tin chi tiết như 【Thời gian đặt lịch】 và 【Trạng thái đặt lịch】 của bệnh nhân.
+
+Xếp lịch trực: Chọn bác sĩ để xếp lịch trực.
+
+*【Giao diện tổng quan đặt lịch】*
+
+*【Giao diện thêm bệnh nhân đặt lịch mới】*
+
+*【Giao diện chi tiết đặt lịch】*
+
+*【Giao diện xếp lịch trực】*
+
+3. Tiến độ khám bệnh
+
+Vào giao diện chính tiến độ khám bệnh: Người dùng tra cứu tiến độ khám bệnh của bệnh nhân theo thời gian tra cứu, tên bệnh nhân, số điện thoại, chứng minh nhân dân, trạng thái khám bệnh.
+
+4. Mẫu bệnh án
+
+Nhấn Thêm mới, chọn 【Loại bệnh án】 và 【Loại mẫu】, nhập thông tin mẫu mới rồi nhấn Lưu là xong.
+
+Loại mẫu gồm: dùng chung, cá nhân.
+
+Loại bệnh án gồm: bệnh án Tây y, bệnh án Đông y.
+
+*【Thêm mẫu mới】*
+
+**Thu phí / phát thuốc**
+
+1. Quản lý thu phí
+
+Giao diện này hiển thị thông tin 【Bệnh nhân chờ thu phí】, 【Đã thu phí】 và 【Đã hoàn phí】.
+
+Có thể tra cứu thông tin chi phí của bệnh nhân liên quan theo tên bệnh nhân hoặc số thẻ phòng khám.
+
+Chọn mô-đun 【Chờ thu phí】, chọn bệnh nhân cần thu phí, đối chiếu thông tin cần thu phí, nhấn nút 【Thu phí】; hỗ trợ thu phí chiết khấu, hệ thống tự động tính số tiền sau chiết khấu; chọn 【Phương thức thanh toán】 (tiền mặt, Alipay, WeChat, thẻ ngân hàng) để hoàn thành thao tác thu phí.
+
+Sau khi hoàn thành thu phí, có thể xem chi tiết thông tin đã thu phí của bệnh nhân trong mô-đun đã thu phí và hỗ trợ 【In hóa đơn thu phí】. Cũng có thể 【hoàn phí】 cho các hạng mục chưa thực hiện.
+
+*【Chờ thu phí】*
+
+*【Giao diện thu phí】*
+
+*【In thu phí】*
+
+2. Nhà thuốc phát thuốc
+
+Giao diện này hiển thị chi tiết bệnh nhân 【Chờ phát thuốc】, 【Đã phát thuốc】 và 【Đã trả thuốc】.
+
+Chọn bệnh nhân tương ứng, xem thuốc cần phát, nhấn nút 【Phát thuốc theo đơn này】 để hoàn thành phát thuốc.
+
+Chọn bệnh nhân, xem thuốc đã phát, có thể 【trả thuốc】, 【in đơn thuốc đã ký】 đối với thuốc đã phát. Chọn nội dung đã phát thuốc, có thể xem thông tin phát thuốc của bệnh nhân và hỗ trợ 【in đơn thuốc đã ký】.
+
+*【Giao diện chờ phát thuốc】*
+
+*【Giao diện đã phát thuốc】*
+
+*【Giao diện đã trả thuốc】*
+
+3. Thu phí bán lẻ
+
+Người dùng có thể trực tiếp bán 【thuốc】 và 【vật tư】 cho bệnh nhân tại mục thu phí bán lẻ.
+
+Chọn bệnh nhân; ngày sinh, tuổi và các thông tin khác sẽ do hệ thống tự động lấy; sau đó chọn thuốc hoặc vật tư, nhập số lượng rồi nhấn 【Thu phí】 là xong.
+
+*【Giao diện thuốc bán lẻ】*
+
+*【Giao diện vật tư bán lẻ】*
+
+*【Thu phí】*
+
+**Điều trị**
+
+1. Quản lý điều trị
+
+Quản lý điều trị: Người dùng có thể 【thực hiện y lệnh cho bệnh nhân】 trong chức năng này.
+
+Chờ hoàn thành: Người dùng chọn bệnh nhân cần thực hiện, nhấn nút 【Chờ thực hiện】, chọn tiến độ thực hiện rồi nhấn Lưu là xong.
+
+Đã hoàn thành: Người dùng chọn bệnh nhân, nhấn nút đã hoàn thành, có thể xem và 【hủy】 bản ghi thực hiện của bệnh nhân này.
+
+*【Giao diện chờ hoàn thành】*
+
+*【Giao diện đã hoàn thành】*
+
+2. Thực hiện truyền dịch
+
+Thực hiện truyền dịch: Người dùng có thể thực hiện 【y lệnh truyền dịch cho bệnh nhân】 trong chức năng này. Truyền dịch thực hiện trong ngày cũng có thể 【hủy】 trong mục đã hoàn thành.
+
+*【Giao diện chờ hoàn thành】*
+
+*【Giao diện đã hoàn thành】*
+
+3. Xét nghiệm / kiểm tra
+
+Người dùng có thể tra cứu báo cáo cần điền theo 【thời gian lập phiếu】, tên bệnh nhân, bác sĩ lập phiếu, trạng thái; trạng thái gồm: chờ điền và đã điền.
+
+Chờ điền: Chọn bệnh nhân, nhấn 【Điền báo cáo】, hệ thống sẽ bật 【hộp thoại báo cáo xét nghiệm】; nhập kết quả kiểm tra của bệnh nhân rồi nhấn 【Lưu】 là xong; nhấn 【Tải lên】 để tải lên báo cáo xét nghiệm.
+
+Đã điền: Người dùng nhấn 【Xem chi tiết】, hộp thoại báo cáo xét nghiệm bật lên, nhấn 【Chỉnh sửa】 để sửa báo cáo đã hoàn thành.
+
+*【Giao diện chờ điền】*
+
+*【Đã điền】*
+
+4. Test da (thử phản ứng da)
+
+Người dùng nhập tên bệnh nhân test da, hoặc chọn thời gian tra cứu, trạng thái thực hiện. Có thể tra cứu thông tin bệnh nhân đã test da hoặc chưa test da trong khoảng thời gian đã chọn. Cũng có thể tra cứu bệnh nhân test da theo bác sĩ lập phiếu.
+
+Trạng thái thực hiện gồm: đã test da và chưa test da.
+
+Thực hiện test da: Chọn bệnh nhân chưa test da, chọn thời gian test da, hệ thống sẽ đếm ngược; sau khi hết thời gian, người dùng nhập kết quả test da thì hoàn thành test da.
+
+*【Test da】*
+
+**Tra cứu báo cáo**
+
+1. Tra cứu chi phí
+
+Báo cáo tổng hợp: Người dùng chọn ngày thu phí rồi nhấn Tìm kiếm; chọn loại chi phí thì có thể xem thông tin thu phí của loại chi phí được chỉ định trong khoảng thời gian đã chọn. Cũng có thể nhập tên bệnh nhân, số phiếu thu phí, bác sĩ lập phiếu, v.v. để tra cứu dữ liệu. Hỗ trợ xuất tài liệu Excel.
+
+Báo cáo chi tiết: Chọn ngày thu phí, loại chi phí để tra cứu chi tiết hạng mục thu phí của bệnh nhân trong khoảng thời gian đã chọn; có thể chọn người thu phí, nhập tên bệnh nhân, số phiếu thu phí, khoa lập phiếu, v.v. để chỉ định
+
+tìm kiếm chi tiết chi phí. Hệ thống hỗ trợ xuất tài liệu Excel.
+
+*【Báo cáo tổng hợp】*
+
+*【Báo cáo chi tiết】*
+
+2. Thống kê chi tiết doanh số bán thuốc
+
+Chọn ngày phát thuốc, nhập tên thuốc, số đơn thuốc, loại thuốc để tra cứu chi tiết phát thuốc trong ngày đã chọn. Hỗ trợ xuất.
+
+*【Thống kê chi tiết doanh số bán thuốc】*
+
+3. Thống kê thu nhập bác sĩ
+
+Chọn ngày thu phí, nhập tên bác sĩ thì có thể tra cứu được số lần tiếp nhận khám, tổng số tiền và các khoản chi phí khác của bác sĩ này trong khoảng thời gian đó; hỗ trợ xuất ra tài liệu.
+
+*【Thống kê thu nhập bác sĩ】*
+
+4. Thống kê tổng hợp doanh số bán thuốc
+
+Chọn ngày thu phí, nhập tên thuốc, loại thuốc, nhấn Tìm kiếm thì có thể xem số lượng thuốc đã bán, tổng giá trong ngày đã chọn. Hỗ trợ xuất ra tài liệu.
+
+*【Thống kê tổng hợp doanh số bán thuốc】*
+
+5. Thống kê nhập – bán – tồn thuốc
+
+Thống kê nhập – bán – tồn thuốc gồm: 【Thống kê theo số lô】 và 【Thống kê theo hàng hóa】.
+
+Người dùng chọn thời gian tra cứu, nhấn Tra cứu thì có thể tra cứu được chi tiết thuốc trong khoảng thời gian đã chọn.
+
+*【Thống kê nhập – bán – tồn thuốc】*
+
+6. Thống kê tổng hợp doanh số bán vật tư tiêu hao
+
+Người dùng chọn thời gian tra cứu, loại, nhập tên vật tư thì có thể tra cứu được số lượng bán của vật tư được tra cứu trong khoảng thời gian đã chọn.
+
+Loại gồm: vật tư y tế và vật tư không phải y tế.
+
+*【Thống kê tổng hợp doanh số bán vật tư tiêu hao】*
+
+7. Thống kê nhập – bán – tồn vật tư
+
+Thống kê nhập – bán – tồn vật tư gồm: thống kê theo số lô và thống kê theo hàng hóa.
+
+Người dùng chọn thời gian tra cứu, nhấn Tra cứu thì có thể tra cứu được chi tiết vật tư trong khoảng thời gian đã chọn.
+
+*【Thống kê nhập – bán – tồn vật tư】*
+
+8. Thống kê nhập kho thuốc / vật tư
+
+Chọn thời gian tra cứu, loại, trạng thái, nhập số lô, v.v. thì có thể tra cứu chi tiết nhập kho thuốc / vật tư trong khoảng thời gian đã chọn; hỗ trợ xuất ra tài liệu Excel.
+
+*【Thống kê nhập kho thuốc】*
+
+*【Thống kê nhập kho vật tư】*
+
+**Quản lý tồn kho**
+
+1. Nhà sản xuất
+
+Nhập tên nhà sản xuất, chọn loại, trạng thái kích hoạt để tra cứu nhà sản xuất và thông tin chi tiết trong khoảng thời gian đã chọn.
+
+Loại nhà sản xuất gồm: nhà sản xuất thuốc, nhà sản xuất vật tư.
+
+Thêm nhà sản xuất mới: Nhấn nút 【Thêm】 ở góc trên bên phải giao diện, hệ thống bật hộp thoại thêm nhà sản xuất; người dùng nhập thông tin chi tiết của nhà sản xuất cần thêm mới, nhấn 【Có kích hoạt hay không】 rồi Lưu là xong.
+
+*【Nhà sản xuất】*
+
+*【Thêm nhà sản xuất】*
+
+2. Thông tin thuốc
+
+Tra cứu thuốc: Người dùng nhập tên thuốc hoặc mã vạch, chọn loại thuốc (thuốc Tây y, thuốc thảo dược Trung y, thuốc thành phẩm Trung y), chọn trạng thái kích hoạt (Có / Không) thì có thể tra cứu được thông tin chi tiết của thuốc này.
+
+Thêm thuốc mới: Nhấn nút 【Thêm】 ở góc trên bên phải giao diện, hệ thống bật hộp thoại thêm thông tin thuốc, nhập thông tin thuốc mới, thông tin quy cách, thông tin bán hàng, hướng dẫn về công dụng, v.v., nhấn Lưu là
+
+xong. Dấu 【*】 là mục bắt buộc. Chọn thuốc, nhấn Sao chép để sao chép thông tin thuốc giống nhau
+
+**để thêm mới.**
+
+Thao tác hàng loạt: Chức năng này hỗ trợ người dùng thiết lập hàng loạt 【cảnh báo hạn dùng】 và 【cảnh báo tồn kho】 cho thuốc.
+
+*【Giao diện thông tin thuốc】*
+
+*【Thêm thông tin thuốc】*
+
+*【Sao chép thông tin thuốc】*
+
+*【Thao tác hàng loạt】*
+
+3. Thông tin vật tư
+
+Thao tác thông tin vật tư giống với thông tin thuốc; 【Tra cứu vật tư】: Nhập tên vật tư hoặc mã vạch, chọn loại (vật tư y tế / vật tư không phải y tế), nhấn Tìm kiếm để tra cứu thông tin vật tư.
+
+*【Thông tin vật tư】*
+
+4. Quản lý nhà cung cấp
+
+Nhập tên nhà cung cấp, người liên hệ, điện thoại, địa chỉ, loại nhà sản xuất (nhà cung cấp thuốc / nhà cung cấp vật tư), nhấn Tìm kiếm để xem thông tin nhà cung cấp. Nhấn 【Thêm】 để thêm nhà cung cấp mới.
+
+*【Quản lý nhà cung cấp】*
+
+*【Thêm quản lý nhà cung cấp】*
+
+5. Nhập kho
+
+Chọn nhà cung cấp, trạng thái nhập kho (Tất cả, Đạt, Không đạt, Đã hủy) hoặc nhập số lô sản xuất, chọn ngày để tra cứu thông tin thuốc cần nhập kho. Hỗ trợ quét mã vạch.
+
+Thêm thuốc / vật tư mới: Nhấn 【Thêm mới】, chọn nhà cung cấp, nhập tên thuốc / vật tư, chọn số lô sản xuất, ngày sản xuất, ngày hết hạn, v.v. của thuốc / vật tư cần thêm mới rồi nhấn Xác nhận là xong. Thuốc nhập kho sai được hỗ trợ hủy; chọn thuốc cần hủy, nhấn 【Tra cứu chi tiết】 rồi nhấn Hủy, Xác nhận là xong.
+
+Hỗ trợ nhiều thuốc hoặc vật tư nhập kho cùng lúc, có thể 【xuất chi tiết】.
+
+*【Thêm thuốc mới】*
+
+*【Thêm vật tư mới】*
+
+*【Hủy thuốc / vật tư】*
+
+6. Kiểm kê tồn kho
+
+Chọn thời gian tạo hoặc nhập số phiếu kiểm kê thì có thể tra cứu được dữ liệu kiểm kê trong khoảng thời gian đã chọn. Chọn
+
+một số phiếu kiểm kê, nhấn Xem thì có thể xem chi tiết của số phiếu kiểm kê này, hỗ trợ 【Xuất】.
+
+*【Kiểm kê tồn kho】*
+
+*【Thêm kiểm kê mới】*
+
+Thêm kiểm kê thuốc / vật tư mới: Chọn kiểm kê thuốc hoặc kiểm kê vật tư, nhấn 【Kiểm kê】 rồi chọn dữ liệu đang kiểm kê để 【Xem】; hệ thống bật hộp thoại kiểm kê, nhập tồn kho kiểm kê rồi nhấn Lưu hoặc Hoàn thành kiểm kê, hỗ trợ xuất tài liệu Excel. “Đang kiểm kê” hỗ trợ xóa.
+
+*【Đang kiểm kê】*
+
+7. Tồn kho hiện tại
+
+Tra cứu số lượng tồn kho hiện tại của thuốc / vật tư theo 【số lô】 và 【hàng hóa】. Hệ thống hỗ trợ xuất ra tài liệu Excel.
+
+8. Cảnh báo
+
+Thiết lập 【cảnh báo hạn dùng】 và 【cảnh báo tồn kho】 cho thuốc / vật tư, hỗ trợ xuất tài liệu Excel.
+
+*【Cảnh báo hạn dùng】*
+
+*【Cảnh báo tồn kho】*
+
+**Quản trị hệ thống**
+
+1. Quản lý khoa
+
+Giao diện 【Quản trị hệ thống】 – 【Quản lý khoa】: Nhấn nút 【Tìm kiếm】 để tra cứu thông tin khoa theo tên khoa, điều kiện có kích hoạt hay không; nút 【Đặt lại】 để đặt lại thông tin giao diện.
+
+*【Giao diện chính quản lý khoa】*
+
+Nút 【Thêm】 vào giao diện thêm khoa; trên giao diện thêm khoa, nhập mã khoa (bắt buộc), tên khoa (bắt buộc), nhóm lớn của khoa, địa chỉ, có phải khoa đăng ký hay không, khoa đăng ký mặc định, có kích hoạt hay không; nút 【Lưu】 để thêm khoa mới, nút 【Hủy】 để hủy thêm khoa.
+
+*【Giao diện thêm khoa】*
+
+Dưới mục thao tác hiển thị trên giao diện chính có 【Cột hiển thị tùy chỉnh】 để tùy chỉnh tra cứu và hiển thị các dữ liệu thông tin khoa; chọn và hủy chọn qua ô đánh dấu; nút 【Xuất】 để xuất dữ liệu đã tìm kiếm trên giao diện quản lý khoa ra bảng XLSX.
+
+*【Dữ liệu hiển thị tùy chỉnh】*
+
+*【Chức năng xuất bảng XLSX】*
+
+Cột thao tác thông tin khoa chính có các chức năng xem, sửa, sao chép, lịch sử; 【Xem】 thông tin chi tiết khoa được duy trì, 【Chỉnh sửa】 để sửa thông tin khoa, 【Sao chép】 để thêm thông tin khoa giống nhau, 【Lịch sử】 để xem thông tin lịch sử tạo và sửa khoa.
+
+*【Xem thông tin khoa】*
+
+*【Chỉnh sửa khoa】*
+
+*【Sao chép để thêm khoa】*
+
+*【Lịch sử khoa】*
+
+2. Quản lý vai trò
+
+Giao diện 【Quản trị hệ thống】 – 【Quản lý vai trò】: Nhập tên rồi nhấn nút 【Tìm kiếm】 để tra cứu thông tin khoa, nút 【Đặt lại】 để đặt lại thông tin giao diện.
+
+*【Giao diện quản lý vai trò】*
+
+Nhấn nút 【Thêm】 để vào giao diện thêm vai trò; nhập mã (bắt buộc), tên (bắt buộc), có kích hoạt hay không, nội dung ghi chú rồi nhấn nút 【Lưu】 để thêm vai trò.
+
+*【Thêm vai trò】*
+
+Dưới mục thao tác hiển thị trên giao diện chính có 【Cột hiển thị tùy chỉnh】 để tùy chỉnh tra cứu và hiển thị dữ liệu thông tin vai trò; chọn và hủy chọn qua ô đánh dấu; nút 【Xuất】 để xuất dữ liệu đã tìm kiếm trên giao diện quản lý vai trò ra bảng XLSX.
+
+*【Cột hiển thị tùy chỉnh】*
+
+*【Xuất dữ liệu vai trò】*
+
+Dưới dữ liệu thao tác thông tin vai trò có các nút chức năng 【Xem】, 【Chỉnh sửa】, 【Sao chép】, 【Quyền】, 【Xóa】, 【Lịch sử】; nhấn nút 【Xem】 để xem thông tin vai trò, nhấn nút 【Chỉnh sửa】 để sửa nội dung vai trò, nhấn nút 【Sao chép】 để sao chép vai trò và thêm vai trò mới, nhấn nút 【Quyền】 để vào giao diện thiết lập quyền, đánh dấu ô chọn để cấp quyền thao tác hệ thống Phòng khám đám mây cho vai trò, nhấn nút 【Xóa】 để xóa dữ liệu vai trò, nhấn nút 【Lịch sử】 để xem lịch sử sửa vai trò.
+
+*【Xem thông tin vai trò】*
+
+*【Chỉnh sửa thông tin vai trò】*
+
+*【Sao chép để thêm vai trò】*
+
+*【Nút quyền thiết lập vai trò】*
+
+*【Xóa vai trò】*
+
+*【Bản ghi lịch sử sửa vai trò】*
+
+3. Quản lý người dùng
+
+Giao diện 【Quản trị hệ thống】 – 【Quản lý người dùng】: Chọn phòng ban trong hộp thả xuống, nhập tên người dùng rồi nhấn nút 【Tìm kiếm】 để tra cứu thông tin người dùng, nút 【Đặt lại】 để đặt lại thông tin giao diện.
+
+*【Giao diện chính quản lý người dùng】*
+
+Nhấn nút 【Thêm】 để mở giao diện thêm người dùng; nhập họ tên (bắt buộc), số điện thoại (bắt buộc), tải lên ảnh đại diện, loại giấy tờ, số giấy tờ, khoa (bắt buộc), chức vụ (bắt buộc), loại (bắt buộc), thời gian bắt đầu hành nghề tại phòng khám này, thời gian kết thúc hành nghề tại phòng khám này, tên đăng nhập tự động lấy số điện thoại,
+
+có kích hoạt hay không, dữ liệu giới thiệu rồi nhấn nút 【Lưu】 để thêm người dùng.
+
+*【Giao diện thêm người dùng】*
+
+Dưới mục thao tác hiển thị trên giao diện chính có 【Cột hiển thị tùy chỉnh】 để tùy chỉnh tra cứu và hiển thị dữ liệu thông tin vai trò; chọn và hủy chọn qua ô đánh dấu; nút 【Xuất】 để xuất dữ liệu đã tìm kiếm trên giao diện quản lý vai trò ra bảng XLSX.
+
+*【Cột hiển thị tùy chỉnh】*
+
+*【Xuất dữ liệu người dùng】*
+
+Dưới dữ liệu thao tác thông tin người dùng có các nút chức năng 【Xem】, 【Chỉnh sửa】, 【Sao chép】, 【Xóa】, 【Lịch sử】.
+
+*【Các nút xem, chỉnh sửa, sửa, xóa, lịch sử trong thao tác】*
+
+Nhấn nút 【Xem】 để xem thông tin người dùng; nút chỉnh sửa trên giao diện xem người dùng có thể vào giao diện sửa người dùng để sửa dữ liệu người dùng.
+
+*【Giao diện xem người dùng】*
+
+Nhấn nút 【Chỉnh sửa】 để sửa nội dung vai trò; sau khi sửa xong nội dung, nhấn nút Lưu để lưu thông tin người dùng.
+
+*【Giao diện sửa người dùng】*
+
+Nhấn nút 【Sao chép】 để sao chép thông tin vai trò sang giao diện thêm người dùng, nhấn nút Lưu để thêm thông tin người dùng. Lưu ý: Số điện thoại không được trùng nhau.
+
+*【Giao diện sao chép để thêm】*
+
+Nhấn nút 【Xóa】 để xóa dữ liệu vai trò, nhấn Xác nhận để xóa vai trò.
+
+*【Xóa vai trò】*
+
+Nhấn nút 【Lịch sử】 để xem lịch sử đăng nhập và sửa của người dùng.
+
+*【Lịch sử】*
+
+4. Hạng mục chẩn trị
+
+Giao diện 【Quản trị hệ thống】 – 【Hạng mục chẩn trị】: Có thể nhập tên hạng mục, chọn loại hạng mục, chọn trạng thái kích hoạt rồi nhấn nút 【Tìm kiếm】 để tra cứu dữ liệu hạng mục chẩn trị; nút 【Đặt lại】 để đặt lại giao diện.
+
+*【Giao diện chính hạng mục chẩn trị】*
+
+Nhấn nút 【Thêm】 để vào giao diện thêm hạng mục chẩn trị; nhập mã quốc gia, tên hạng mục (bắt buộc), loại hạng mục (bắt buộc), nhóm hạng mục, đơn vị, giá vốn, giá bán, có kích hoạt hay không,
+
+thông tin ghi chú rồi nhấn nút 【Lưu】 để thêm hạng mục chẩn trị. Lưu ý: Loại hạng mục gồm hạng mục đơn lẻ và hạng mục kết hợp; khi chọn hạng mục kết hợp, cần chọn hạng mục con trong hộp thả xuống tên hạng mục con chẩn trị ở phía bên phải, nhập số lượng để tự động tính giá vốn và giá bán.
+
+*【Thêm hạng mục đơn lẻ】*
+
+*【Thêm hạng mục kết hợp】*
+
+Dưới mục thao tác hiển thị trên giao diện chính có nút 【Cột hiển thị tùy chỉnh】 để tùy chỉnh tra cứu và hiển thị cột dữ liệu thống kê hạng mục chẩn trị; chọn và hủy chọn qua ô đánh dấu; nút 【Xuất】 để xuất dữ liệu đã tìm kiếm trên giao diện quản lý chẩn trị ra bảng XLSX.
+
+*【Thiết lập cột hiển thị tùy chỉnh】*
+
+*【Xuất hạng mục chẩn trị】*
+
+Cột thao tác trên giao diện chính hạng mục chẩn trị có các chức năng xem, sửa, sao chép, lịch sử; 【Xem】 thông tin chi tiết hạng mục chẩn trị, 【Chỉnh sửa】 để sửa thông tin hạng mục chẩn trị, 【Sao chép】 để thêm hạng mục chẩn trị giống nhau, 【Lịch sử】 để xem thông tin lịch sử tạo và sửa hạng mục chẩn trị.
+
+Nhấn nút 【Xem】 để vào giao diện xem hạng mục chẩn trị; chỉ xem được, không sửa được; có thể nhấn nút Chỉnh sửa để vào giao diện sửa hạng mục chẩn trị.
+
+*【Xem hạng mục chẩn trị】*
+
+*【Sửa hạng mục chẩn trị】*
+
+Nhấn 【nút Chỉnh sửa】 để vào giao diện sửa hạng mục chẩn trị; sau khi sửa thông tin hạng mục, nhấn nút 【Lưu】 để lưu thông tin hạng mục chẩn trị.
+
+*【Sửa hạng mục chẩn trị】*
+
+Nhấn nút 【Sao chép】 để mở giao diện thêm hạng mục chẩn trị, sao chép lựa chọn
+
+*【Sao chép để thêm hạng mục chẩn trị】*
+
+Nhấn nút 【Lịch sử】 để mở bản ghi thao tác lịch sử tạo và sửa hạng mục chẩn trị.
+
+*【Lịch sử】*
+
+5. Theo dõi bệnh mạn tính
+
+5.1【Theo dõi bệnh nhân tăng huyết áp】
+
+Nhập thông tin theo dõi trên giao diện rồi nhấn Gửi. Trong đó, các nội dung dữ liệu như thời gian theo dõi, triệu chứng, huyết áp, mục tiêu lần sau, cân nặng, mục tiêu lần sau, chiều cao, chỉ số mỡ cơ thể, nhịp tim, thời gian theo dõi lần sau là mục bắt buộc.
+
+5.2【Theo dõi bệnh nhân đái tháo đường type 2】
+
+Điền dữ liệu theo dõi trên giao diện, nhấn nút Gửi.
+
+5.3【Theo dõi bệnh lao】
+
+Điền dữ liệu theo dõi trên giao diện, nhấn nút Gửi.
+
+5.4【Theo dõi bệnh nhân rối loạn tâm thần nặng】
+
+Điền dữ liệu theo dõi trên giao diện, nhấn nút Gửi.
+
+5.5【Theo dõi COPD】
+
+Điền dữ liệu theo dõi trên giao diện, nhấn nút Gửi.
+
+5.6【Thông tin cơ bản cá nhân】
+
+Điền dữ liệu thông tin cơ bản trên giao diện, nhấn nút Gửi.
+
+5.7【Giấy đồng ý sau khi được thông báo về dịch vụ rối loạn tâm thần nặng】
+
+Điền dữ liệu theo dõi trên giao diện, nhấn nút Gửi.
+
+5.8【Bảng nhận diện thể chất Đông y】
+
+Điền dữ liệu theo dõi trên giao diện, nhấn nút Gửi.
+
+**Quản lý hội viên**
+
+1. Thiết lập thẻ hội viên
+
+Giao diện 【Quản lý hội viên】 – 【Thiết lập thẻ hội viên】: Nhấn nút 【Tìm kiếm】 để tra cứu thông tin khoa theo tên thẻ hội viên, loại, có kích hoạt hay không,
+
+có hiệu lực hay không; nút 【Đặt lại】 để đặt lại thông tin giao diện.
+
+*【Giao diện chính thiết lập thẻ hội viên】*
+
+Nút 【Thêm】 vào giao diện thêm thẻ hội viên; nhập tên thẻ hội viên (bắt buộc), số lượng thẻ hội viên (bắt buộc), loại thẻ hội viên (bắt buộc), thời gian hiệu lực, có kích hoạt hay không; nhập hạng mục trải nghiệm: chọn tên hạng mục trong hộp thả xuống, nhập số lượng hạng mục; nút 【Thêm hạng mục trải nghiệm】 có thể thêm dòng nhập hạng mục trải nghiệm mới; nút 【Lưu】 để thêm thẻ hội viên.
+
+Dưới mục thao tác hiển thị trên giao diện chính có 【Cột hiển thị tùy chỉnh】 để tùy chỉnh tra cứu và hiển thị dữ liệu thẻ hội viên; chọn và hủy chọn qua ô đánh dấu; nút 【Xuất】 để xuất dữ liệu đã tìm kiếm trên giao diện thiết lập thẻ hội viên ra bảng XLSX.
+
+*【Cột hiển thị tùy chỉnh】*
+
+*【Xuất tệp Excel】*
+
+Cột thao tác trên giao diện chính thiết lập thẻ hội viên có chức năng chi tiết; nút 【Chi tiết】 mở giao diện xem thẻ hội viên để xem thông tin chi tiết.
+
+*【Giao diện xem chi tiết thẻ hội viên】*
+
+Giao diện xem thẻ hội viên có nút 【Chỉnh sửa】; nhấn nút 【Chỉnh sửa】 để vào giao diện sửa thẻ hội viên.
+
+*【Giao diện sửa thẻ hội viên】*
+
+1. Quản lý hội viên
+
+Giao diện 【Quản lý hội viên】 – 【Quản lý hội viên】: Nhấn nút 【Tìm kiếm】 để tra cứu thông tin thẻ hội viên theo tên, số thẻ hội viên, trạng thái, ngày mở thẻ, loại thẻ hội viên, tên thẻ hội viên; nút 【Đặt lại】 để đặt lại thông tin giao diện.
+
+*【Giao diện quản lý hội viên】*
+
+Nút 【Thêm】 vào giao diện thêm hội viên; chọn tên trong hộp thả xuống (bắt buộc chọn), tự động lấy thông tin giới tính, chứng minh nhân dân, điện thoại; chọn loại thẻ hội viên (bắt buộc chọn), tên thẻ hội viên (bắt buộc chọn) trong hộp thả xuống,
+
+số thẻ tự động tạo, nút 【Lưu】 để thêm hội viên.
+
+*【Giao diện thêm hội viên】*
+
+Dưới mục thao tác hiển thị trên giao diện chính có 【Cột hiển thị tùy chỉnh】 để tùy chỉnh tra cứu và hiển thị dữ liệu hội viên; chọn và hủy chọn qua ô đánh dấu; nút 【Xuất】 để xuất dữ liệu đã tìm kiếm trên giao diện quản lý hội viên ra bảng XLSX.
+
+*【Cột hiển thị tùy chỉnh】*
+
+*【Xuất bảng Excel】*
+
+Cột thao tác trên giao diện chính quản lý hội viên có các chức năng 【Chi tiết】, 【Vô hiệu hóa】; nút 【Chi tiết】 mở giao diện xem hội viên để xem thông tin chi tiết, nhấn nút 【Vô hiệu hóa】 để vô hiệu hóa hội viên.
+
+*【Xem chi tiết thông tin hội viên】*
+
+*【Thao tác vô hiệu hóa hội viên】*
+
+**Quản lý nhiệm vụ**
+
+1. Nhiệm vụ của tôi
+
+Giao diện 【Quản lý nhiệm vụ】 – 【Nhiệm vụ của tôi】: Lọc theo tên nhiệm vụ, trạng thái nhiệm vụ rồi nhấn 【Tìm kiếm】 để
+
+tra cứu thông tin nhiệm vụ của tôi; nút 【Đặt lại】 để đặt lại thông tin giao diện.
+
+Dưới mục thao tác hiển thị trên giao diện chính có 【Cột hiển thị tùy chỉnh】 để tùy chỉnh tra cứu và hiển thị dữ liệu nhiệm vụ; chọn và hủy chọn qua ô đánh dấu; nút 【Xuất】 để xuất dữ liệu đã tìm kiếm trên giao diện nhiệm vụ của tôi ra bảng XLSX.
+
+*【Cột hiển thị tùy chỉnh】*
+
+*【Xuất tệp Excel】*
+
+Cột thao tác trên giao diện chính nhiệm vụ của tôi có các chức năng 【Thực hiện ngay】, 【Xem chi tiết】; nút 【Thực hiện ngay】 để thực hiện nhiệm vụ, nút 【Xem chi tiết】 để mở và xem thông tin chi tiết của nhiệm vụ đã phát hành.
+
+Nhấn nút 【Thực hiện ngay】 để vào giao diện thực hiện nhiệm vụ; trên giao diện hiển thị thông tin nhiệm vụ và thông tin tệp đính kèm do cơ sở phát hành; điền thông tin phản hồi tình hình thực hiện như tiến độ thực hiện: chờ thực hiện, đã thực hiện, tải lên tệp đính kèm, thông tin ghi chú rồi nhấn Xác nhận để thực hiện nhiệm vụ.
+
+*【Giao diện thực hiện ngay】*
+
+*【Giao diện xem chi tiết】*
+
+2. Đăng bài viết
+
+Giao diện 【Quản lý bài viết】 – 【Đăng bài viết】: Lọc theo khoảng thời gian hết hạn, trạng thái xét duyệt, tiêu đề bài viết rồi nhấn 【Tìm kiếm】 để tra cứu thông tin bài viết đã đăng; nút 【Đặt lại】 để đặt lại thông tin giao diện.
+
+Nhấn nút 【Thêm】 để mở giao diện thêm mới; nhập tiêu đề (bắt buộc), tóm tắt (bắt buộc), nội dung chính (bắt buộc), thông tin tác giả gốc và liên kết gốc rồi nhấn nút 【Lưu】 để đăng bài viết. Dữ liệu nội dung chính có thể điều chỉnh thông tin phông chữ của bài viết (tham khảo định dạng tài liệu Word), có thể tải lên hình ảnh.
+
+*【Thêm bài viết mới】*
+
+Dưới mục thao tác hiển thị trên giao diện chính có nút chức năng 【Xem chi tiết】; nhấn nút 【Xem chi tiết】 để mở giao diện sửa, có thể sửa thông tin bài viết rồi nhấn nút 【Sửa】 để lưu.
+
+*【Giao diện xem chi tiết】*

@@ -6,7 +6,7 @@ import com.geeke.medicareutils.db.entity.YbjkLogcontent;
 
 /**
 * @author 47826
-* @description 针对表【ybjk_logcontent】的数据库操作Service
+* @description Đối với bảng[ybjk_logcontent] của Dữ liệukhothao tácService
 * @createDate 2025-03-12 17:10:08
 */
 public interface YbjkLogcontentService extends IService<YbjkLogcontent> {

@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 患者信息DAO接口
+ * Thông tin bệnh nhânDAOGiao diện
  * @author txl
  * @version 2022-06-23
  */
@@ -28,7 +28,7 @@ public interface PatientDao extends CrudDao<Patient> {
 
     void wxInsert(Patient patient);
 
-    /* 根据患者姓名身份证查询患者信息 */
+    /* Tra cứu thông tin bệnh nhân theo họ tên và CMND/CCCD của bệnh nhân */
     Patient inquire(Patient patient);
 
 }

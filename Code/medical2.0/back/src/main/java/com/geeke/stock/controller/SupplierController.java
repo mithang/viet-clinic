@@ -8,7 +8,7 @@ import com.geeke.stock.entity.Supplier;
 import com.geeke.stock.service.SupplierService;
 
 /**
- * 供应商管理Controller
+ * Quản lý nhà cung cấpController
  * @author txl
  * @version 2022-06-22
  */

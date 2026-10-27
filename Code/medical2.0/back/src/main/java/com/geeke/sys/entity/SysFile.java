@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 系统附件Entity
+ * Tệp đính kèm hệ thốngEntity
  * @author szy
  * @version 2021-09-22
  */
@@ -19,14 +19,14 @@ public class SysFile extends DataEntity<SysFile> {
 
 	private static final long serialVersionUID = 592905357446275112L;
     @JsonSerialize(using= ToStringSerializer.class)
-	private Long objectId;		// 业务表
-	private String fileType;		// 文件类型
+	private Long objectId;		// Bảng nghiệp vụ
+	private String fileType;		// Loại tệp
     @JsonSerialize(using= ToStringSerializer.class)
-	private Long fileSize;		// 文件大小
-	private String fileUrl;		// 文件路径
-	private byte[] fileByte;		// 图片字节
+	private Long fileSize;		// Tệpkích thước
+	private String fileUrl;		// Tệpđường dẫn
+	private byte[] fileByte;		// ảnhbyte
 
-	private List<SysFileContent> sysFileContentList = Lists.newArrayList();		// 子表列表
+	private List<SysFileContent> sysFileContentList = Lists.newArrayList();		// Danh sách bảng con
 	
 	public SysFile() {
 		super();
@@ -37,7 +37,7 @@ public class SysFile extends DataEntity<SysFile> {
 	}
 	
 
-	@NotNull(message="业务表不能为空")
+	@NotNull(message="nghiệp vụbảngKhông thể là trống")
 	public Long getObjectId() {
 		return objectId;
 	}
@@ -46,7 +46,7 @@ public class SysFile extends DataEntity<SysFile> {
 	}
 	
 	
-	@Length(min=0, max=64, message="文件类型长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="Độ dài loại tệp phải nằm trong khoảng 0 đến 64 ")
 	public String getFileType() {
 		return fileType;
 	}
@@ -63,7 +63,7 @@ public class SysFile extends DataEntity<SysFile> {
 	}
 	
 	
-	@Length(min=0, max=255, message="文件路径长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="Tệpđường dẫnĐộ dài phải nằm trong khoảng 0 đến 255 ")
 	public String getFileUrl() {
 		return fileUrl;
 	}
@@ -88,7 +88,7 @@ public class SysFile extends DataEntity<SysFile> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -97,7 +97,7 @@ public class SysFile extends DataEntity<SysFile> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -107,7 +107,7 @@ public class SysFile extends DataEntity<SysFile> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

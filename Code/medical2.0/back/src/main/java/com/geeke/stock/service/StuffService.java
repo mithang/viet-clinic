@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 材料信息Service
+ * Thông tin vật tưService
  *
  * @author txl
  * @version 2022-06-22
@@ -53,7 +53,7 @@ import java.util.Objects;
 public class StuffService extends CrudService<StuffDao, Stuff> {
     private static final Logger logger = LoggerFactory.getLogger(StuffService.class);
 
-    /** 耗材为机构共享字典：允许同机构下诊所访问机构诊所的数据（与列表 #{institution} SQL 一致） */
+    /** vật tư tiêu hao là Cơ sởtừ điển dùng chung: Cho phép phòng khám thuộc cùng cơ sở truy cập dữ liệu phòng khám của cơ sở(Với danh sách #{institution} SQL Nhất quán) */
     @Override
     protected boolean isInstitutionShared() {
         return true;
@@ -81,11 +81,11 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     private ManufactureFactoryService manufactureFactoryService;
 
     /**
-     * 从参数中提取 company_id 并构建带租户信息的 PageRequest
-     * 使用 Parameter.extractAndRemoveCompanyId 统一处理
+     * Trích xuất từ tham số company_id Và xây dựng kèm tenantThông tin của  PageRequest
+     * Sử dụng Parameter.extractAndRemoveCompanyId thống nhấtXử lý
      */
     private PageRequest buildStuffTenantPageRequest(List<Parameter> params, int offset, int limit, String orderby) {
-        // 移除前端 company_id（防止越权），统一以会话登录租户作为隔离边界
+        // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
         Parameter.extractAndRemoveCompanyId(params);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
@@ -96,7 +96,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     }
 
     /**
-     * 从参数中提取 company_id 并构建带租户信息的 PageRequest（无分页）
+     * Trích xuất từ tham số company_id Và xây dựng kèm tenantThông tin của  PageRequest(không phúttrang)
      */
     private PageRequest buildStuffTenantPageRequest(List<Parameter> params, String orderby) {
         String id = Parameter.extractAndRemoveCompanyId(params);
@@ -107,13 +107,13 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     @Override
     @Transactional(readOnly = false)
     public Stuff save(Stuff stuff) {
-        // 判断材料是否重复
+        // Kiểm traVật tưCó hay khôngtrùng lặp
         final int repeat = this.repeat(stuff);
         if (repeat!=0){
             throw new NegativeArraySizeException("材料信息重复");
 
         }
-        // 新增时, 处理自动编号字段
+        // Khi thêm mới, Xử lý trường tự động đánh số
         if (StringUtils.isBlank(stuff.getId())) {
             String sn = sequenceService.generate(SessionUtils.getUser().getCompanyId(), "stuff_code", stuff);
             stuff.setCode(sn);
@@ -121,7 +121,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
 
         Stuff stuffTemp = super.save(stuff);
 
-        //保存动态库存
+        //LưuđộngTồn kho
         this.medicinalStockControlService.initStock(stuffTemp);
         return stuffTemp;
     }
@@ -145,7 +145,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         return list;
     }
 
-    // 已废弃 — stuffDao.updateInventory 方法不存在，且所有调用已注释
+    // Đã废弃 — stuffDao.updateInventory Phương thứcKhông tồn tại, vàtất cảgọiĐã注释
 //    @Transactional(readOnly = false)
 //    public void updateInventory(int inventory, String id) {
 //        Stuff stuff = this.dao.get(id);
@@ -166,9 +166,9 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             () -> this.dao.count(pageRequest),
             () -> {
                 List<Stuff> list = this.dao.listPages(pageRequest);
-                //获取到当前材料后去库存明细中获取其进价并算出其成本合计
+                //Sau khi lấy được vật tư hiện tại, lấy giá nhập từ chi tiết tồn kho và tính tổng chi phí
                 for (Stuff stuff : list) {
-                    //根据动态库存获取成本合计
+                    //Lấy tổng chi phí theo tồn kho động
                     BigDecimal totalCost = medicinalStorageControlService.getByDrugOrStuffId(stuff.getId());
                     if (!Objects.isNull(stuff.getStock()) && !Objects.isNull(stuff.getStock().getStorageStock())) {
                         String inventory =
@@ -230,17 +230,17 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         Company company = new Company();
         company.setId(companyId);
 
-        // 判断文件格式
+        // Kiểm traTệpđịnh dạng
         String fileName = file.getOriginalFilename();
         if (!fileName.matches("^.+\\.(?i)(xls)$") && !fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            throw new Exception("上传文件格式不正确");
+            throw new Exception("Tải lênTệpđịnh dạngkhôngđúng");
         }
 
         int chengGong = 0;
         int siBai = 0;
         StringBuilder mistake = new StringBuilder();
 
-        // Step 1: 使用 ExcelImportBuilder 读取并校验 Excel 数据
+        // Step 1: Sử dụng ExcelImportBuilder đọcvàKiểm tra Excel Dữ liệu
         ExcelImportResult<Stuff> result;
         try (InputStream is = file.getInputStream()) {
             result = new ExcelImportBuilder<>(Stuff.class, is)
@@ -249,7 +249,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                     .read();
         }
 
-        // Step 2: 重新打开工作簿，读取材料名称（列0）和生产厂家名称（列4）
+        // Step 2: Lạimởcông việclàm簿, đọcVật tưTên(Cột0) và Tên nhà sản xuất(Cột4)
         List<String> nameList = new ArrayList<>();
         List<String> manufacturerNames = new ArrayList<>();
         try (InputStream is2 = file.getInputStream(); XSSFWorkbook workbook = new XSSFWorkbook(is2)) {
@@ -272,7 +272,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             }
         }
 
-        // Step 3: 处理校验失败的行（ExcelImportBuilder 发现的字段级错误）
+        // Step 3: Xử lýKiểm traThất bại của  dòng(ExcelImportBuilder pháthiện của TrườngcấpLỗi)
         java.util.Map<Integer, java.util.List<ImportError>> errorsByRow = new java.util.LinkedHashMap<>();
         for (ImportError err : result.getErrors()) {
             errorsByRow.computeIfAbsent(err.getRowNum(), k -> new java.util.ArrayList<>()).add(err);
@@ -280,36 +280,36 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         for (java.util.Map.Entry<Integer, java.util.List<ImportError>> entry : errorsByRow.entrySet()) {
             siBai++;
             StringBuilder rowMsg = new StringBuilder();
-            rowMsg.append("表格第").append(entry.getKey()).append("行");
+            rowMsg.append("Bảng dòng ").append(entry.getKey()).append(" dòng");
             for (ImportError err : entry.getValue()) {
                 if (err.getFieldName() != null) {
                     rowMsg.append("[").append(err.getFieldName()).append("]");
                 }
             }
-            rowMsg.append("数据校验失败：");
+            rowMsg.append("Dữ liệuKiểm traThất bại: ");
             for (ImportError err : entry.getValue()) {
-                rowMsg.append(err.getMessage()).append("；");
+                rowMsg.append(err.getMessage()).append("; ");
             }
-            rowMsg.append("请核对后重新导入\n");
+            rowMsg.append("Vui lòng đối chiếu rồi nhập lại\n");
             mistake.append(rowMsg);
         }
 
-        // Step 4: 处理校验通过的行，逐行保存
+        // Step 4: Xử lýKiểm traQua của  dòng, từng dòngLưu
         List<Stuff> dataList = result.getDataList();
         for (int i = 0; i < dataList.size(); i++) {
             Stuff stuff = dataList.get(i);
-            int rowNum = i + 3; // Excel 行号（跳过2行表头，行号从1开始）
+            int rowNum = i + 3; // Excel Số dòng(Bỏ qua2 dòngbảngtiêu đề, Số dòngTừ 1Bắt đầu)
             String stuffName = (i < nameList.size() && nameList.get(i) != null) ? nameList.get(i) : "";
             try {
-                // 设置诊所
+                // ĐặtPhòng khám
                 stuff.setCompany(company);
 
-                // 设置材料名称（列0）
+                // ĐặtVật tưTên(Cột0)
                 if (i < nameList.size() && StringUtils.isNotBlank(nameList.get(i))) {
                     stuff.setName(nameList.get(i));
                 }
 
-                // 处理生产厂家（列4）：按名称查找，不存在则创建
+                // Xử lýNhà sản xuất(Cột4): theoTêntìm kiếm, Không tồn tạithìtạo
                 if (i < manufacturerNames.size() && StringUtils.isNotBlank(manufacturerNames.get(i))) {
                     String mfgName = manufacturerNames.get(i);
                     ManufactureFactory manufactureFactory = new ManufactureFactory();
@@ -326,21 +326,21 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                     stuff.setFactory(manufactureFactory);
                 }
 
-                // 处理是否外销："是" -> "1", 其他 -> "0"
+                // Xử lýCó hay khôngbán ra ngoài: "是" -> "1", Khác -> "0"
                 if ("是".equals(stuff.getIsOutSell())) {
                     stuff.setIsOutSell("1");
                 } else {
                     stuff.setIsOutSell("0");
                 }
 
-                // 处理是否拆零销售："是" -> "1", 其他 -> "0"
+                // Xử lýCó bán lẻ không: "是" -> "1", Khác -> "0"
                 if ("是".equals(stuff.getIsUnpackSell())) {
                     stuff.setIsUnpackSell("1");
                 } else {
                     stuff.setIsUnpackSell("0");
                 }
 
-                // 处理状态："是" -> "1", 其他 -> "0"
+                // Xử lýTrạng thái: "是" -> "1", Khác -> "0"
                 if ("是".equals(stuff.getStatus())) {
                     stuff.setStatus("1");
                 } else {
@@ -350,13 +350,13 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 this.save(stuff).getId();
                 chengGong++;
             } catch (Exception e) {
-                logger.warn("导入第{}行失败", rowNum, e);
+                logger.warn("NhậpDòng {} dòng thất bại", rowNum, e);
                 String a = "";
                 if (e.getMessage() != null) {
-                    a = e.getMessage().equals("材料信息重复") ? "材料信息重复," : "";
+                    a = e.getMessage().equals("材料信息重复") ? "Thông tin vật tưtrùng lặp," : "";
                 }
                 siBai++;
-                mistake.append("表格第").append(rowNum).append("行[").append(stuffName).append("]材料信息异常，").append(a).append("请核对后重新导入\n");
+                mistake.append("Bảng dòng ").append(rowNum).append(" dòng[").append(stuffName).append("]Thông tin vật tưngoại lệ, ").append(a).append("Vui lòng đối chiếu rồi nhập lại\n");
             }
         }
 
@@ -367,7 +367,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         return error;
     }
 
-    // 材料新增查重
+    // Vật tưThêm mớitratrọng
     public int repeat(Stuff stuff) {
         String companyId = SessionUtils.getUserDto().getCompanyId();
         Company company = companyService.get(companyId);
@@ -417,7 +417,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 String sn = sequenceService.generate(company.getId(), "stuff_code", stuff);
                 stuff.setCode(sn);
                 super.save(stuff);
-                //保存动态库存
+                //LưuđộngTồn kho
                 this.medicinalStockControlService.initStock(stuff);
                 list.add(stuff.getId());
             }

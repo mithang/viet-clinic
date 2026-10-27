@@ -2,14 +2,14 @@
   <div class="visitRecords">
     <ul class="patientInfo">
       <li>
-        患者姓名：{{ NowVisitInfo.info.name }}（{{ NowVisitInfo.info.age }}岁）
+        Tên bệnh nhân：{{ NowVisitInfo.info.name }}（{{ NowVisitInfo.info.age }}tuổi）
       </li>
-      <li>性别：{{ NowVisitInfo.info.gender.name }}</li>
-      <li>就诊时间：{{ NowVisitInfo.medicalRecord.diagnoseDate }}</li>
+      <li>Giới tính：{{ NowVisitInfo.info.gender.name }}</li>
+      <li>Thời gian khám：{{ NowVisitInfo.medicalRecord.diagnoseDate }}</li>
       <li>科室医生：{{ NowVisitInfo.medicalRecord.createBy }}</li>
     </ul>
     <div class="titleBox">
-      <h4><el-checkbox v-model="checkedForm.record">病例</el-checkbox></h4>
+      <h4><el-checkbox v-model="checkedForm.record">Bệnh án</el-checkbox></h4>
       <el-button class="titleBtn">{{ NowVisitInfo.info.treatType }}</el-button>
     </div>
     <ul class="infoItem">
@@ -24,45 +24,45 @@
     </ul>
     <div class="titleBox" v-if="NowVisitInfo.recipelInfoEvtList.length">
       <h4>
-        <el-checkbox v-model="checkedForm.Prescription">处方</el-checkbox>
+        <el-checkbox v-model="checkedForm.Prescription">Đơn thuốc</el-checkbox>
       </h4>
     </div>
     <ul class="translateBox" v-if="NowVisitInfo.recipelInfoEvtList.length">
       <li v-if="WesternMedicineModel.recipelDetailEvtList.length">
-        <p>【西药处方】</p>
+        <p>【Đơn thuốc tây】</p>
         <el-table
           :data="WesternMedicineModel.recipelDetailEvtList"
           border
           style="width: 100%"
         >
-          <el-table-column type="index" label="序号" width="50" align="center">
+          <el-table-column type="index" label="Số thứ tự" width="50" align="center">
           </el-table-column>
-          <el-table-column prop="drugStuffId.name" label="名称" align="center">
+          <el-table-column prop="drugStuffId.name" label="Tên" align="center">
           </el-table-column>
-          <el-table-column prop="singleDosage" label="单次用量" width="100">
+          <el-table-column prop="singleDosage" label="Liều dùng mỗi lần" width="100">
           </el-table-column>
           <el-table-column
             prop="westernMedicineUse.name"
-            label="用法"
+            label="Cách dùng"
             width="100"
           >
           </el-table-column>
-          <el-table-column prop="frequency.name" label="频度" width="120">
+          <el-table-column prop="frequency.name" label="Tần suất" width="120">
           </el-table-column>
-          <el-table-column prop="days.name" label="天数" width="100">
+          <el-table-column prop="days.name" label="Số ngày" width="100">
           </el-table-column>
-          <el-table-column prop="total" label="总量" width="100">
+          <el-table-column prop="total" label="Tổng số lượng" width="100">
           </el-table-column>
           <el-table-column
             prop="drugStuffId.price"
-            label="单价"
+            label="Đơn giá"
             width="100"
             align="center"
           >
           </el-table-column>
           <el-table-column
             prop="allFee"
-            label="合计"
+            label="Tổng cộng"
             width="100"
             align="center"
           >
@@ -73,7 +73,7 @@
         </p>
       </li>
       <li v-if="ChineseMedicineModel.recipelDetailEvtList.length">
-        <p>【中药处方】</p>
+        <p>【Đơn thuốc đông y】</p>
         <ul class="medicineBox">
           <li
             v-for="(item, index) in ChineseMedicineModel.recipelDetailEvtList"
@@ -86,7 +86,7 @@
         <p class="userTypeBox">
           {{
             ChineseMedicineModel.recipelInfo.dosage
-          }}剂&nbsp;&nbsp;&nbsp;&nbsp;{{
+          }}thang&nbsp;&nbsp;&nbsp;&nbsp;{{
             ChineseMedicineModel.recipelInfo.recipelUse.name
           }}&nbsp;&nbsp;&nbsp;&nbsp;{{
             ChineseMedicineModel.recipelInfo.frequency.name
@@ -96,7 +96,7 @@
         </p>
       </li>
       <li v-if="InfusionItemList.length">
-        <p>【输液处方】</p>
+        <p>【Đơn truyền dịch】</p>
         <div v-for="(item, index) in InfusionItemList" :key="index">
           <InfusionPrescription
             :InfusionUseOption="InfusionUseOption"
@@ -112,24 +112,24 @@
         <p class="userTypeBox">{{ InfusionModel.remarks }}</p>
       </li>
       <li v-if="CostItemList.length">
-        <p>【诊疗项目】</p>
+        <p>【Hạng mục khám chữa bệnh】</p>
         <el-table
           :data="CostItemList"
           border
           style="width: 100%"
           class="tableStyle"
         >
-          <el-table-column type="index" label="序号" width="50" align="center">
+          <el-table-column type="index" label="Số thứ tự" width="50" align="center">
           </el-table-column>
-          <el-table-column prop="drugStuffId.name" label="项目名称">
+          <el-table-column prop="drugStuffId.name" label="Tên hạng mục">
           </el-table-column>
-          <el-table-column prop="total" label="数量" width="100">
+          <el-table-column prop="total" label="Số lượng" width="100">
           </el-table-column>
-          <el-table-column prop="drugStuffId.price" label="单价" width="80">
+          <el-table-column prop="drugStuffId.price" label="Đơn giá" width="80">
           </el-table-column>
           <el-table-column
             prop="allFee"
-            label="合计"
+            label="Tổng cộng"
             width="100"
             align="center"
           >
@@ -137,24 +137,24 @@
         </el-table>
       </li>
       <li v-if="SurchargeList.length">
-        <p>【附加费】</p>
+        <p>【Phí phụ thêm】</p>
         <el-table
           :data="SurchargeList"
           border
           style="width: 100%"
           class="tableStyle"
         >
-          <el-table-column type="index" label="序号" width="50" align="center">
+          <el-table-column type="index" label="Số thứ tự" width="50" align="center">
           </el-table-column>
-          <el-table-column prop="drugStuffId.name" label="费用名称">
+          <el-table-column prop="drugStuffId.name" label="Tên chi phí">
           </el-table-column>
-          <el-table-column prop="total" label="数量" width="100">
+          <el-table-column prop="total" label="Số lượng" width="100">
           </el-table-column>
-          <el-table-column prop="drugStuffId.price" label="单价" width="80">
+          <el-table-column prop="drugStuffId.price" label="Đơn giá" width="80">
           </el-table-column>
           <el-table-column
             prop="allFee"
-            label="合计"
+            label="Tổng cộng"
             width="100"
             align="center"
           >
@@ -195,92 +195,92 @@ export default {
       //全部病例配置
       AllMedicineRecordLabelList: [
         {
-          label: "主诉",
+          label: "Lý do khám chính",
           name: "patientTell",
           value: "",
         },
         {
-          label: "现病史",
+          label: "Bệnh sử hiện tại",
           name: "nowHistory",
           value: "",
         },
         {
-          label: "既往史",
+          label: "Tiền sử bệnh",
           name: "beforeHistory",
           value: "",
         },
         {
-          label: "其他检查",
+          label: "Xét nghiệm khác",
           name: "otherCheck",
           value: "",
         },
         {
-          label: "诊断",
+          label: "Chẩn đoán",
           name: "diagnose",
           value: "",
         },
         {
-          label: "个人史",
+          label: "Tiền sử cá nhân",
           name: "personalHistory",
           value: "",
         },
         {
-          label: "过敏史",
+          label: "Tiền sử dị ứng",
           name: "allergyHistory",
           value: "",
         },
         {
-          label: "疾病史",
+          label: "Tiền sử bệnh",
           name: "diseaseHistory",
           value: "",
         },
         {
-          label: "传染病史",
+          label: "Tiền sử bệnh truyền nhiễm",
           name: "infectiousHistory",
           value: "",
         },
         {
-          label: "手术史",
+          label: "Tiền sử phẫu thuật",
           name: "surgeryHistory",
           value: "",
         },
         {
-          label: "输血史",
+          label: "Tiền sử truyền máu",
           name: "transfusionHistory",
           value: "",
         },
         {
-          label: "体格检查",
+          label: "Khám thực thể",
           name: "physiqueCheck",
           value: "",
         },
         {
-          label: "急诊诊断",
+          label: "Chẩn đoán cấp cứu",
           name: "emergencyDiagnose",
           value: "",
         },
         {
-          label: "急诊效果",
+          label: "Hiệu quả cấp cứu",
           name: "emergencyEffect",
           value: "",
         },
         {
-          label: "家族史",
+          label: "Tiền sử gia đình",
           name: "familyHistory",
           value: "",
         },
         {
-          label: "月经史",
+          label: "Tiền sử kinh nguyệt",
           name: "lunariaHistory",
           value: "",
         },
         {
-          label: "婚育史",
+          label: "Tiền sử hôn nhân/sinh đẻ",
           name: "pregnancyHistory",
           value: "",
         },
         {
-          label: "辅助检查",
+          label: "Xét nghiệm bổ sung",
           name: "assistCheck",
           value: "",
         },
@@ -329,13 +329,13 @@ export default {
       });
       this.NowVisitInfo.recipelInfoEvtList.map((prescriptionItem) => {
         switch (prescriptionItem.recipelInfo.recipelType.name) {
-          case "西药处方":
+          case "Đơn thuốc tây":
             this.WesternMedicineModel = prescriptionItem;
             break;
-          case "中药处方":
+          case "Đơn thuốc đông y":
             this.ChineseMedicineModel = prescriptionItem;
             break;
-          case "输液处方":
+          case "Đơn truyền dịch":
             this.InfusionModel = prescriptionItem.recipelInfo;
             this.InfusionItemList = [];
             let GroupArr = [];
@@ -366,10 +366,10 @@ export default {
               });
             });
             break;
-          case "诊疗项目":
+          case "Hạng mục khám chữa bệnh":
             this.CostItemList = prescriptionItem.recipelDetailEvtList;
             break;
-          case "附加费":
+          case "Phí phụ thêm":
             this.SurchargeList = prescriptionItem.recipelDetailEvtList;
             break;
           default:
@@ -382,8 +382,8 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-$borderColor: rgb(219, 219, 219); //灰色边框下划线
-$fontAndBgColor: #169bd5; //蓝色按钮和字体
+$borderColor: rgb(219, 219, 219); //Gạch chân viền xám
+$fontAndBgColor: #169bd5; //Nút và chữ màu xanh dương
 .visitRecords {
   padding: 0 10px;
   max-height: 60vh;

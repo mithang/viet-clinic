@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.geeke.common.data.PageRequest;
 
 /**
- * DAO支持类实现
+ * DAOLớp hỗ trợ triển khai
  * @author lys
  * @version 2014-05-16
  * @param <T>
@@ -16,7 +16,7 @@ import com.geeke.common.data.PageRequest;
 public interface CrudDao<T> extends BaseDao {
 
 	/**
-	 * 获取单条数据
+	 * LấyđơnmụcDữ liệu
 	 * @param id
 	 * @return
 	 */
@@ -24,21 +24,21 @@ public interface CrudDao<T> extends BaseDao {
 	
 	
 	/**
-	 * 查询数据条数(用在分页查询)
+	 * Truy vấnDữ liệusố dòng(dùngtạiTruy vấn phân trang)
 	 * @param pageRequest
 	 * @return
 	 */
 	public int count(PageRequest pageRequest);
 	
 	/**
-	 * 分页查询数据列表
+	 * Truy vấn phân trangDữ liệuDanh sách
 	 * @param pageRequest
 	 * @return
 	 */
 	public List<T> listPage(PageRequest pageRequest);
 	
 	/**
-	 * 查询所有数据列表
+	 * Truy vấntất cảDữ liệuDanh sách
 	 * @param parameters
 	 * @return
 	 */
@@ -46,21 +46,21 @@ public interface CrudDao<T> extends BaseDao {
 	
 	
 	/**
-	 * 插入数据
+	 * chènDữ liệu
 	 * @param entity
 	 * @return
 	 */
 	public int insert(T entity);
 	
 	/**
-	 * 更新数据
+	 * Cập nhậtDữ liệu
 	 * @param entity
 	 * @return
 	 */
 	public int update(T entity);
 	
 	/**
-	 * 有删除字段时，一般为逻辑删除，更新del_flag字段为1；否则物理删除
+	 * cóXóaTrường giờ, mộtthông thường là logicXóa, Cập nhậtdel_flagTrường là 1; Nếu khôngvật lýXóa
 	 * @param entity
 	 * @see public int delete(T entity)
 	 * @return
@@ -69,21 +69,21 @@ public interface CrudDao<T> extends BaseDao {
 	public int delete(T entity);
 	
 	/**
-	 * 批量增加
+	 * hàng loạttăng
 	 * @param entitys
 	 * @return
 	 */
 	public int bulkInsert(@Param("entitys")List<T> entitys);
 	
 	/**
-	 * 批量修改
+	 * hàng loạtSửa
 	 * @param entitys
 	 * @return
 	 */
 	public int bulkUpdate(@Param("entitys")List<T> entitys);
 	
 	/**
-	 * 批量删除
+	 * Xóa hàng loạt
 	 * @param entitys
 	 * @return
 	 */

@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 /**
- * 科室信息DAO接口
+ * Thông tin khoaDAOGiao diện
  * @author ch
  * @version 2022-06-14
  */

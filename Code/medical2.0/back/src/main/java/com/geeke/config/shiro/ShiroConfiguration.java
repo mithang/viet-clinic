@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * @author: lys
- * @description: shiro配置类
+ * @description: shirocấu hìnhLớp
  * @date: 2017/10/24 10:10
  */
 @Configuration
@@ -29,42 +29,42 @@ public class ShiroConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(ShiroConfiguration.class);
 
 	 /**
-	 * Shiro的Web过滤器Factory 命名:shiroFilter
+	 * Shiro của WebfilterFactory đặt têntên:shiroFilter
 	 */
     @Bean(name = "shiroFilter")
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, AjaxPermissionsAuthorizationFilter ajaxFilter) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-        //Shiro的核心安全接口,这个属性是必须的
+        //Shiro của 核心an toàngiao diện,nàyCáithuộc tính có Phải của 
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("authc", ajaxFilter);
         shiroFilterFactoryBean.setFilters(filterMap);
         
-        /*定义shiro过滤链  Map结构
-         * Map中key(xml中是指value值)的第一个'/'代表的路径是相对于HttpServletRequest.getContextPath()的值来的
-         * anon：它对应的过滤器里面是空的,什么都没做,这里.do和.jsp后面的*表示参数,比方说login.jsp?main这种
-         * authc：该过滤器下的页面必须验证后才能访问,它是Shiro内置的一个拦截器org.apache.shiro.web.filter.authc.FormAuthenticationFilter
+        /*định nghĩashiroquachuỗi filter  Mapcấu trúc
+         * Map trong key(xml trong  có chỉvalueGiá trị) của Dòng mộtCái'/'thaybảng của đường dẫn có tươngđối vớitạiHttpServletRequest.getContextPath() của Giá trịđến của 
+         * anon: nótương ứng của Bên trong filter có trống của ,Không làm gì cả,Ở đây.do và .jspsaumặt của *cho biếtTham số,so với方说login.jsp?mainnàyloại
+         * authc: Trang thuộc filter này phải được xác thực mới được truy cập,nó có Shirotrongđặt của mộtCáiinterceptororg.apache.shiro.web.filter.authc.FormAuthenticationFilter
          */
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-         /* 过滤链定义，从上向下顺序执行，一般将 / ** 放在最为下边:这是一个坑呢，一不小心代码就不好使了;
-          authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问 */
+         /* quachuỗi filterđịnh nghĩa, Từ trênhướng tớidướithứ tựhành nghề dòng, mộtthông thườngSẽ  / ** đặttạinhất là dưới边:này có mộtCái坑呢, Sơ ý một chút là code không chạy được nữa;
+          authc:Tất cảurlđềuPhảinhậnchứngQuamớiCó thểtruy cập; anon:Tất cảurlđềuđềuCó thể匿têntruy cập */
 
-		// camunda 加载流程示意图
+		// camunda Tải sơ đồ quy trình
         filterChainDefinitionMap.put("/rest/process-definition/*/diagram", "anon");
 
         filterChainDefinitionMap.put("/websocket/**", "anon");
 
-        // 认证相关接口（登录、获取Token等）
+        // nhậnchứngtươngđónggiao diện(Đăng nhập, LấyToken v.v. )
         filterChainDefinitionMap.put("/auth/token", "anon");
         filterChainDefinitionMap.put("/auth/getToken", "anon");
         filterChainDefinitionMap.put("/auth/getUserTenant", "anon");
         filterChainDefinitionMap.put("/auth/loginedtocken", "anon");
         filterChainDefinitionMap.put("/auth/wxToken", "anon");
 
-        //院版获取诊所信息放行
+        //bản việnLấyPhòng khámThông tinđặt dòng
         filterChainDefinitionMap.put("/hosdata/HosCollectData/listAll", "anon");
 
-//        关于微信用户登陆
+//        đóngtạiWeChatNgười dùngđăng nhập
         filterChainDefinitionMap.put("/wxUser/initLogin","anon");
         filterChainDefinitionMap.put("/wxUser/getCode","anon");
         filterChainDefinitionMap.put("/wxUser/getPhone","anon");
@@ -99,7 +99,7 @@ public class ShiroConfiguration {
 
     @Bean
     public SessionDAO sessionDAO() {
-        // 使用内存SessionDAO替代RedisSessionDAO
+        // sử dụngbộ nhớSessionDAOthaythayRedisSessionDAO
         return new MemorySessionDAO();
     }
 
@@ -107,15 +107,15 @@ public class ShiroConfiguration {
     public StatelessSessionManager sessionManager(SessionDAO sessionDAO) {
         StatelessSessionManager sessionManager = new StatelessSessionManager();
         sessionManager.setSessionDAO(sessionDAO);
-// 禁用会话验证器调度时间
+// Vô hiệu hóaphiênXác thựcthiết bịđiềuđộThời gian
         sessionManager.setSessionValidationSchedulerEnabled(false);
-// 会话超时设置为24小时（86400000毫秒），防止Redis内存泄漏
+// phiênvượt giờĐặt là 24nhỏ giờ(86400000Mili giây), phòngdừngRedisbộ nhớ泄漏
         sessionManager.setGlobalSessionTimeout(86400000);
-// 是否在会话过期后调用 SessionDAO 的删除方法，保持为 true 不会影响过期
+// Có hay khôngGọi sau khi phiên hết hạn SessionDAO  của XóaPhương thức, bảo持 là  true khôngsẽ影响hết hạn
         sessionManager.setDeleteInvalidSessions(true);
-// 禁用 URL 重写
+// Vô hiệu hóa URL viết lại
         sessionManager.setSessionIdUrlRewritingEnabled(false);
-// 启用会话 ID Cookie
+// Bậtphiên ID Cookie
         sessionManager.setSessionIdCookieEnabled(true);
         return sessionManager;
 
@@ -123,7 +123,7 @@ public class ShiroConfiguration {
     
 	
 	/**
-     * Shiro Realm 继承自AuthorizingRealm的自定义Realm,即指定Shiro验证用户登录的类为自定义的
+     * Shiro Realm kế thừatựAuthorizingRealm của tùy chỉnhRealm,tức làchỉchỉ địnhShiroXác thựcNgười dùngĐăng nhập của Lớp là tùy chỉnh của 
      */
     @Bean
     public Realm realm() {
@@ -132,7 +132,7 @@ public class ShiroConfiguration {
 
     
     /**
-     * 不指定名字的话，自动创建一个方法名第一个字母小写的bean
+     * khôngchỉchỉ địnhtênchữ của nói, Tự động tạo một tên phương thức có chữ cái đầu viết thườngbean
      * @param realm
      * @param sessionManager
      * @param
@@ -149,26 +149,26 @@ public class ShiroConfiguration {
 
 
     /**
-     * 凭证匹配器
-     * （由于我们的密码校验交给Shiro的SimpleAuthenticationInfo进行处理了
-     * 所以我们需要修改下doGetAuthenticationInfo中的代码;
-     * ）
-     * 可以扩展凭证匹配器，实现 输入密码错误次数后锁定等功能，下一次
+     * chứng từkhớpthiết bị
+     * (dotạichúng ta của Mật khẩuKiểm tragiaochoShiro của SimpleAuthenticationInfotiến hành dòngXử lýrồi
+     * vì vậychúng taCầnSửadướidoGetAuthenticationInfoTrongmã;
+     * )
+     * Có thểBộ khớp chứng từ mở rộng, Triển khai NhậpMật khẩuLỗi lầnsốsaukhóachỉ định v.v. chức năng, dướimột lần
      */
     @Bean(name = "credentialsMatcher")
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
         HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        //散列算法:这里使用MD5算法;
+        //phân tánCộtthuật toán:Ở đâysử dụngMD5thuật toán;
         hashedCredentialsMatcher.setHashAlgorithmName("md5");
-        //散列的次数，默认2次
+        //phân tánCột của  lầnsố, Mặc định2 lần
         hashedCredentialsMatcher.setHashIterations(2);
-        //storedCredentialsHexEncoded默认是true，此时用的是密码加密用的是Hex编码；false时用Base64编码
+        //storedCredentialsHexEncodedMặc định có true, này giờdùng của  có Mật khẩuMã hóadùng của  có HexMã; false giờdùngBase64Mã
         hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);
         return hashedCredentialsMatcher;
     }
 
     /**
-     * Shiro生命周期处理器
+     * Shirosinhđặt têntuầnkỳXử lýthiết bị
      */
     @Bean
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
@@ -177,12 +177,12 @@ public class ShiroConfiguration {
 
     
     /**
-     * 开启Shiro的注解(如@RequiresRoles,@RequiresPermissions),需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证
-     * 配置以下两个bean(DefaultAdvisorAutoProxyCreator(可选)和AuthorizationAttributeSourceAdvisor)即可实现此功能
+     * mởShiro của annotation(Như @RequiresRoles,@RequiresPermissions),cần借giúpSpringAOPquétsử dụngShiroannotation của Lớp,vàtại必cần giờtiến hành dòngan toànlogicXác thực
+     * cấu hìnhbằngdướihaiCáibean(DefaultAdvisorAutoProxyCreator(Tùy chọn) và AuthorizationAttributeSourceAdvisor)tức làcó thểTriển khainàychức năng
      */
 
     /**
-     * 禁用 Shiro Filter 的 Servlet Filter 注册，由 ShiroFilterFactoryBean 管理
+     * Vô hiệu hóa Shiro Filter  của  Servlet Filter đăng ký, do ShiroFilterFactoryBean Quản lý
      */
     @Bean
     public FilterRegistrationBean<AjaxPermissionsAuthorizationFilter> ajaxFilterRegistration(AjaxPermissionsAuthorizationFilter filter) {

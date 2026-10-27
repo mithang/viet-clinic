@@ -17,20 +17,20 @@ jwtUtils:
   secret: ${JWT_SECRET}
   ttlMillis: 3600000
 
-#启信宝
+#Qixinbao
 qixin:
   appkey: ${QIXIN_APPKEY:your_appkey_here}
   secretKey: ${QIXIN_SECRET_KEY:your_secretkey_here}
   host: https://api.qixin.com/
   profile: APIService
 
-#企业微信
+#WeChat doanh nghiệp
 weChat:
   corpid: ${WECHAT_CORPID:your_corpid_here}
   corpsecret: ${WECHAT_CORPSECRET:your_corpsecret_here}
   agentid: ${WECHAT_AGENTID:your_agentid_here}
 
-# 报表集成
+# Tích hợp báo cáo
 report:
   dataease:
     username: ${REPORT_USERNAME:your_report_user}

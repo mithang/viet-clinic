@@ -3,12 +3,12 @@
 
     <el-row>
       <el-col :span="6">
-        <span><b>诊所：</b></span>
+        <span><b>Phòng khám：</b></span>
         <el-select
           v-model="otherInfo.companyId"
           filterable
           @change="getDrugOrStuff"
-          placeholder="请选择诊所"
+          placeholder="Vui lòng chọn phòng khám"
         >
           <el-option
             v-for="clinic in clinicList"
@@ -19,11 +19,11 @@
         </el-select>
       </el-col>
       <el-col :span="6">
-        <span><b>供应商：</b></span>
+        <span><b>Nhà cung cấp：</b></span>
         <el-select
           v-model="otherInfo.supplierID"
           filterable
-          placeholder="请选择供应商"
+          placeholder="Vui lòng chọn nhà cung cấp"
         >
           <el-option
             v-for="supplierxz in supplierLists"
@@ -35,8 +35,8 @@
       </el-col>
 
       <el-col :span="6">
-        <span v-if="addType === 1"><b>药品名称：</b></span>
-        <span v-else><b>材料名称：</b></span>
+        <span v-if="addType === 1"><b>Tên thuốc：</b></span>
+        <span v-else><b>Tên vật tư：</b></span>
         <el-popover
           placement="right"
           v-if="!IsOnlyRead"
@@ -53,60 +53,60 @@
           >
             <el-table-column
               prop="goodsName"
-              :label="addType === 1 ? '药品名称' : '材料名称'"
+              :label="addType === 1 ? 'Tên thuốc' : 'Tên vật tư'"
               v-if="addType === 1"
             >
             </el-table-column>
             <el-table-column
               prop="name"
-              :label="addType === 1 ? '药品名称' : '材料名称'"
+              :label="addType === 1 ? 'Tên thuốc' : 'Tên vật tư'"
               v-if="addType === 2"
             >
             </el-table-column>
             <el-table-column
               prop="type.name"
-              :label="addType === 1 ? '药品类型' : '材料类型'"
+              :label="addType === 1 ? 'Loại thuốc' : 'Loại vật tư'"
             >
             </el-table-column>
             <el-table-column
               prop="specification"
-              label="规格"
+              label="Quy cách"
               width="100"
               v-if="addType === 1"
             >
             </el-table-column>
             <el-table-column
               prop="price1"
-              label="单价"
+              label="Đơn giá"
               width="100"
               v-if="addType === 2"
             >
             </el-table-column>
             <el-table-column
               prop="factory.name"
-              label="厂家"
+              label="Nhà sản xuất"
               width="100"
               v-if="addType === 1"
             >
             </el-table-column>
             <el-table-column
               prop="pack.name"
-              label="单位"
+              label="Đơn vị"
               width="80"
               v-if="addType === 1"
             >
             </el-table-column>
             <el-table-column
               prop="price1"
-              label="零售"
+              label="Bán lẻ"
               width="80"
               v-if="addType === 1"
             >
             </el-table-column>
           </el-table>
 
-          <!-- <span v-if="addType === 1">药品名称：</span>
-        材料名称： -->
+          <!-- <span v-if="addType === 1">Tên thuốc：</span>
+        Tên vật tư： -->
           <el-input
             style="width: 80%"
             slot="reference"
@@ -122,7 +122,7 @@
           popper-class="my-autocomplete"
           v-model="goodsNameTemp"
           :fetch-suggestions="queryGoods"
-          placeholder="请输入药品名称"
+          placeholder="Vui lòng nhập tên thuốc"
           @select="selectGoods"
         >
           <template slot-scope="{ item }">
@@ -133,16 +133,16 @@
 
 
       <el-col :span="1" style="margin-left:100px">
-        <el-button type="primary" @click="importStudentExcel(addType)">批量导入</el-button>
+        <el-button type="primary" @click="importStudentExcel(addType)">Nhập hàng loạt</el-button>
       </el-col>
       <!-- <el-col :span="6">
         <div>
-          <el-radio v-model="radio" label="1" border>药品</el-radio>
-          <el-radio v-model="radio" label="2" border>材料</el-radio>
+          <el-radio v-model="radio" label="1" border>Thuốc</el-radio>
+          <el-radio v-model="radio" label="2" border>Vật tư</el-radio>
         </div>
       </el-col> -->
       <!-- <el-col :span="6">
-        <el-link type="primary" @click="AddRow()">添加</el-link>
+        <el-link type="primary" @click="AddRow()">Thêm</el-link>
       </el-col> -->
     </el-row>
     <br>
@@ -153,49 +153,49 @@
           </el-table-column>
           <!-- <el-table-column
             prop="goodsName"
-            label="药品/材料名称"
+            label="Thuốc/Tên vật tư"
             width="200"
             v-if="radio === 2"
           >
           </el-table-column> -->
-          <el-table-column prop="specification" label="规格"></el-table-column>
-          <el-table-column prop="factoryName" label="厂家"></el-table-column>
-          <el-table-column label="生产批号">
+          <el-table-column prop="specification" label="Quy cách"></el-table-column>
+          <el-table-column prop="factoryName" label="Nhà sản xuất"></el-table-column>
+          <el-table-column label="Số lô sản xuất">
             <template slot-scope="scope">
               <el-input
                 v-model="scope.row.batchNumber"
-                placeholder="生产批号"
+                placeholder="Số lô sản xuất"
               ></el-input>
             </template>
           </el-table-column>
-          <el-table-column label="生产日期" :required="true" type="index" width="110">
+          <el-table-column label="Ngày sản xuất" :required="true" type="index" width="110">
             <template slot-scope="scope">
               <el-date-picker
                 :id="'a' + scope.$index"
                 v-model="scope.row.producedDate"
-                placeholder="生产日期"
+                placeholder="Ngày sản xuất"
                 type="date"
                 :picker-options="expireTimeOption"
               ></el-date-picker>
             </template>
           </el-table-column>
-          <el-table-column label="有效日期" :required="true" width="110">
+          <el-table-column label="Ngày hiệu lực" :required="true" width="110">
             <template slot-scope="scope">
               <el-date-picker
                 v-model="scope.row.expireDate"
-                placeholder="有效日期"
+                placeholder="Ngày hiệu lực"
                 type="date"
               ></el-date-picker>
             </template>
           </el-table-column>
-          <el-table-column label="数量" :required="true" width="150" prop="specification">
+          <el-table-column label="Số lượng" :required="true" width="150" prop="specification">
             <template slot-scope="scope">
               <div class="quantity-box">
                 <el-input
                   v-model="scope.row.quantity"
                   type="number"
                   required="true"
-                  placeholder="数量"
+                  placeholder="Số lượng"
                   oninput="value=((value.replace(/[^0-9.]/g,'')).replace(/([0-9]+\.[0-9]{2})[0-9]*/,'$1'))"
                 ></el-input
                 >
@@ -203,7 +203,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column :required="true" label="进价">
+          <el-table-column :required="true" label="Giá nhập">
             <template slot-scope="scope">
               <el-input
                 v-if="systemParamConfig===1"
@@ -211,29 +211,29 @@
                 v-model="scope.row.outPrice"
                 type="number"
                 :change="checkPrice()"
-                placeholder="进价"
+                placeholder="Giá nhập"
               ></el-input>
               <el-input
                 v-if="systemParamConfig===2"
                 v-model="scope.row.inPrice"
                 type="number"
                 :change="checkPrice()"
-                placeholder="进价"
+                placeholder="Giá nhập"
               ></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="outPrice" label="零售价"></el-table-column>
-          <el-table-column label="总进价" v-if="systemParamConfig===1">
+          <el-table-column prop="outPrice" label="Giá bán lẻ"></el-table-column>
+          <el-table-column label="Tổng giá nhập" v-if="systemParamConfig===1">
             <template slot-scope="scope"
             >{{ calcTotalOutPrice(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column label="总进价" v-if="systemParamConfig===2">
+          <el-table-column label="Tổng giá nhập" v-if="systemParamConfig===2">
             <template slot-scope="scope" v-if="systemParamConfig===2"
             >{{ calcTotalInPrice(scope.row) }}
             </template>
           </el-table-column>
-          <el-table-column label="总零售价">
+          <el-table-column label="Tổng giá bán lẻ">
             <template slot-scope="scope"
             >{{ calcTotalOutPrice(scope.row) }}
             </template>
@@ -246,7 +246,7 @@
                 @click.native.prevent="
                   deleteRow(scope.$index, storageDetailTable)
                 "
-              >删除
+              >Xóa
               </el-button
               >
             </template>
@@ -255,18 +255,18 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="3" :offset="12">品种：{{ CalcBreed() }}</el-col>
-      <el-col :span="3">数量：{{ calcTotalNumber() }}</el-col>
-      <el-col :span="3" v-if="systemParamConfig===1">总进价：{{ calcAllRetailPrice() }}</el-col>
-      <el-col :span="3" v-if="systemParamConfig===2">总进价：{{ calcAllBid() }}</el-col>
-      <el-col :span="3">总零售价：{{ calcAllRetailPrice() }}</el-col>
+      <el-col :span="3" :offset="12">Chủng loại：{{ CalcBreed() }}</el-col>
+      <el-col :span="3">Số lượng：{{ calcTotalNumber() }}</el-col>
+      <el-col :span="3" v-if="systemParamConfig===1">Tổng giá nhập：{{ calcAllRetailPrice() }}</el-col>
+      <el-col :span="3" v-if="systemParamConfig===2">Tổng giá nhập：{{ calcAllBid() }}</el-col>
+      <el-col :span="3">Tổng giá bán lẻ：{{ calcAllRetailPrice() }}</el-col>
     </el-row>
     <el-row>
       <el-col :span="24 / 4">
         <div class="footer-box">
           <el-input
             v-model="otherInfo.withGoodsNo"
-            placeholder="随货单号"
+            placeholder="Số đơn kèm hàng"
           ></el-input>
         </div>
       </el-col>
@@ -274,30 +274,30 @@
         <div class="footer-box">
           <el-input
             v-model="otherInfo.invoiceNumber"
-            placeholder="发票号"
+            placeholder="Số hóa đơn"
           ></el-input>
         </div>
       </el-col>
       <el-col :span="24 / 4">
         <div class="footer-box">
-          <el-input v-model="otherInfo.remarks" placeholder="备注"></el-input>
+          <el-input v-model="otherInfo.remarks" placeholder="Ghi chú"></el-input>
         </div>
       </el-col>
       <el-col :span="24 / 4">
         <div class="footer-box footer-box1">
-          <el-button type="primary" @click="saveSupplierStock">确定</el-button>
-          <el-button type="" @click="closeDialog()">取消</el-button>
+          <el-button type="primary" @click="saveSupplierStock">Xác nhận</el-button>
+          <el-button type="" @click="closeDialog()">Hủy</el-button>
         </div>
       </el-col>
     </el-row>
-    <!-- 点击导入后弹出框 -->
+    <!-- Hộp thoại hiện sau khi nhấn nhập -->
     <el-dialog
-    :title="addType===1 ?'导入药品':'导入材料'"
+    :title="addType===1 ?'Nhập thuốc':'Nhập vật tư'"
     :append-to-body="true"
     :visible.sync="importDialogVisible"
     width="45%"
     :before-close="cancellation">
-      <!--limit:最大上传数，on-exceed：超过最大上传数量时的操作  -->
+      <!--limit:Số lượng tải lên tối đa，on-exceed：Thao tác khi vượt quá số lượng tải lên tối đa  -->
       <el-upload
         class="upload-demo"
         action=""
@@ -306,21 +306,21 @@
         :on-exceed="handleExceed"
         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
         :auto-upload="false">
-        <el-button icon="el-icon-upload" type="primary">点击上传</el-button><br>
+        <el-button icon="el-icon-upload" type="primary">Nhấn để tải lên</el-button><br>
       </el-upload>
-      <el-button type="primary" icon="el-icon-download" @click="downloadExcel">模板下载</el-button>
-      <el-button @click="cancellation()">取 消</el-button>
+      <el-button type="primary" icon="el-icon-download" @click="downloadExcel">Tải mẫu xuống</el-button>
+      <el-button @click="cancellation()">Hủy</el-button>
     </el-dialog>
 
-    <el-dialog :title="addType===1 ?'药品信息导入错误':'材料信息导入错误'" :visible.sync="dialogVisible" width="36%"
+    <el-dialog :title="addType===1 ?'Lỗi nhập thông tin thuốc':'Lỗi nhập thông tin vật tư'" :visible.sync="dialogVisible" width="36%"
     :append-to-body="true"
                :before-close="mistakeClose">
-      <span> 导入成功<span style="white-space:pre;color:#08ff00;font-size: 16px">{{ chengGong }}</span>条&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
-      <span> 导入失败<span style="white-space:pre;color:red;font-size: 16px">{{ shiBai }}</span>条 </span><br>
+      <span> Nhập dữ liệu thành công<span style="white-space:pre;color:#08ff00;font-size: 16px">{{ chengGong }}</span>dòng&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+      <span> Nhập dữ liệu thất bại<span style="white-space:pre;color:red;font-size: 16px">{{ shiBai }}</span>dòng </span><br>
       <span style="white-space:pre;color:red;font-size: 15px">{{ mistake }}</span>
       <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+          <el-button @click="dialogVisible = false">Hủy</el-button>
+          <el-button type="primary" @click="dialogVisible = false">Xác nhận</el-button>
         </span>
     </el-dialog>
   </div>
@@ -353,71 +353,71 @@
 
     data() {
       return {
-        importDialogVisible: false, // 批量导入弹框变量
-        dialogVisible: false, // 导入报错弹框变量
+        importDialogVisible: false, // Biến hộp thoại nhập hàng loạt
+        dialogVisible: false, // Biến hộp thoại báo lỗi nhập
         chengGong: "",
         shiBai: "",
         mistake: "",
         newList: [],
         flag: true,
-        //设置失效日期今天之前的日期不可选
+        //Đặt ngày trước hôm nay của ngày hết hiệu lực thành không thể chọn
         expireTimeOption: {
           // disabledDate(date) {
-          //   //disabledDate 文档上：设置禁用状态，参数为当前日期，要求返回 Boolean
+          //   //disabledDate Trên tài liệu：Đặt trạng thái vô hiệu hóa，Tham số là ngày hiện tại，Yêu cầu trả về Boolean
           //   return date.getTime() < Date.now() - 24 * 60 * 60 * 1000;
           // },
         },
-        searchName: "", // 药品或材料的名称
-        // radio: "1", // 1 药品，2材料
+        searchName: "", // Tên thuốc hoặc vật tư
+        // radio: "1", // 1 Thuốc，2Vật tư
         company_id: JSON.parse(window.sessionStorage.getItem("currentUser"))
-          .company.id /*诊所ID*/,
-        // examine_id: "1005787933775863930" /*通过状态ID*/,
-        // examine_value: "supplierStorageExamineStatus_0" /*通过状态Value值*/,
-        examine_id: "2087542517503803429" /*待审核状态ID*/,
-        examine_value: "supplierStorageExamineStatus_3" /*待审核状态Value值*/,
-        title: "新增入库单",
+          .company.id /*Phòng khámID*/,
+        // examine_id: "1005787933775863930" /*Trạng thái đã quaID*/,
+        // examine_value: "supplierStorageExamineStatus_0" /*Trạng thái đã quaValuegiá trị*/,
+        examine_id: "2087542517503803429" /*Trạng thái chờ xét duyệtID*/,
+        examine_value: "supplierStorageExamineStatus_3" /*Trạng thái chờ xét duyệtValuegiá trị*/,
+        title: "Thêm mới đơn nhập kho",
         goodsNameTemp: "",
         drugPreparation: 0,
         stuffPackNum: 0,
-        drugStuffName: "",//药品或者材料名称
-        drugStuffPlaceholder: "",//对应的placeholder
+        drugStuffName: "",//Tên thuốc hoặc vật tư
+        drugStuffPlaceholder: "",//tương ứngplaceholder
         goodsInfo: null,
-        queryList: [], // 全部药品 或材料
+        queryList: [], // Tất cả thuốc hoặc vật tư
         selectGoodsTemp: null,
         storageDetailTable: [],
-        supplierLists: [],//不同的供应商
+        supplierLists: [],//Nhà cung cấp khác nhau
         clinicList: [], // 诊所列表
         otherInfo: {
           companyId: null,
           supplierID: null,
-          breed: 0 /*品种数量*/,
-          totalNumber: 0 /*总数量*/,
-          allBid: 0 /*总进价*/,
-          allRetailPrice: 0 /*总零售价*/,
-          withGoodsNo: "" /*供货单号*/,
-          invoiceNumber: "" /*发票号*/,
-          remarks: "" /*备注*/,
+          breed: 0 /*Số lượng chủng loại*/,
+          totalNumber: 0 /*Tổng số lượng*/,
+          allBid: 0 /*Tổng giá nhập*/,
+          allRetailPrice: 0 /*Tổng giá bán lẻ*/,
+          withGoodsNo: "" /*Số đơn cung ứng*/,
+          invoiceNumber: "" /*Số hóa đơn*/,
+          remarks: "" /*Ghi chú*/,
         },
         drugSearch: {
           params: [{columnName: "company_id", queryType: "=", value: ""}],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         stuffSearch: {
           params: [{columnName: "company_id", queryType: "=", value: ""}],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         },
         supplierSearch: {
           params: [{columnName: "company_id", queryType: "=", value: ""}],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
 
         },
         permission: {
@@ -427,7 +427,7 @@
           remove: false,
           export: false
         },
-        //系统参数配置
+        //Cấu hình tham số hệ thống
         systemParamConfig: "",
         systemParamConfigSearch: {
           params: []
@@ -488,7 +488,7 @@
               ) {
                 newVal[ind].expireDate = "";
                 this.$message({
-                  message: "有效期不可小于生产日期",
+                  message: "Hạn sử dụng không được nhỏ hơn ngày sản xuất",
                   type: "warning",
                 });
 
@@ -502,7 +502,7 @@
           }
         },
         immediate: true,
-        deep: true, // 需要添加deep为true即可对obj进行深度监听
+        deep: true, // Cần thêmdeeplàtruelà có thể đối vớiobjtiến hành theo dõi sâu
       },
     },
   methods: {
@@ -523,7 +523,7 @@
             console.error(err);
           })
       },
-      //  药品
+      //  Thuốc
       RowClickSurchargeTable(row) {
 
         this.searchName = row.goodsName ? row.goodsName : row.name;
@@ -572,7 +572,7 @@
         //   newStorage
         // );
       },
-      //点击添加按钮
+      //Nhấn nút thêm
       AddRow() {
         if (this.selectGoodsTemp) {
           const newStorage = {
@@ -608,21 +608,21 @@
           this.storageDetailTable.push(newStorage);
         } else {
           this.$message({
-            message: "请选择要新增入库的药品或材料",
+            message: "Vui lòng chọn thuốc hoặc vật tư cần thêm mới nhập kho",
             type: "warning",
           });
         }
         this.searchName = ""
       },
-      // 全部材料
+      // Tất cả vật tư
       getStuffList(hasSupplier = true) {
         this.storageDetailTable = []
-        this.drugStuffPlaceholder = '输入材料名称/拼音码'
-        this.drugStuffName = '材料名称'
+        this.drugStuffPlaceholder = 'Nhập tên vật tư/Mã pinyin'
+        this.drugStuffName = 'Tên vật tư'
         let stuff_search = {
           params: [],
         };
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         stuff_search.params.push.apply(stuff_search.params, [
           {
             columnName: "company_id",
@@ -635,7 +635,7 @@
             value: "1",
           }
         ]);
-        // 数据权限: 材料stuff
+        // Quyền dữ liệu: Vật tưstuff
         this.pushDataPermissions(
           stuff_search.params,
           this.$route.meta.routerId,
@@ -681,15 +681,15 @@
         }).catch(() => {
         })
       },
-      // 全部药品
+      // Tất cả thuốc
       getDrugList(hasSupplier=true) {
         this.storageDetailTable = []
-        this.drugStuffPlaceholder = '输入药品名称/拼音码'
-        this.drugStuffName = '药品名称'
+        this.drugStuffPlaceholder = 'Nhập tên thuốc/Mã pinyin'
+        this.drugStuffName = 'Tên thuốc'
         let drug_search = {
           params: [],
         };
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         drug_search.params.push.apply(drug_search.params, [
           {
             columnName: "company_id",
@@ -697,7 +697,7 @@
             value: this.otherInfo.companyId,
           },
         ]);
-        // 数据权限: 药品信息drug
+        // Quyền dữ liệu: Thông tin thuốcdrug
         this.pushDataPermissions(
           drug_search.params,
           this.$route.meta.routerId,
@@ -742,40 +742,40 @@
         })
 
       },
-      // 进价不可为负数
+      // Giá nhập không được là số âm
       checkPrice() {
         this.storageDetailTable.forEach((i) => {
           let checkPlan = "" + i.inPrice;
           checkPlan = checkPlan
-            .replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
-            .replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
-            .replace(/^\./g, "") // 保证第一个为数字而不是.
+            .replace(/[^\d.]/g, "") // Xóa“chữ số”và“.”ký tự khác
+            .replace(/\.{2,}/g, ".") // Chỉ giữ lại ký tự đầu tiên. Xóa các ký tự thừa
+            .replace(/^\./g, "") // Đảm bảo ký tự đầu tiên là chữ số chứ không phải.
             .replace(".", "$#$")
             .replace(/\./g, "")
             .replace("$#$", ".");
           if (checkPlan.indexOf(".") < 0 && checkPlan !== "") {
-            // 以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            // Các ký tự trên đã được lọc，Tại đây kiểm soát trường hợp không có dấu thập phân，Ký tự đầu tiên không được giống 01、02số tiền
             checkPlan = parseFloat(checkPlan) + "";
           } else if (checkPlan.indexOf(".") >= 0) {
-            // checkPlan = checkPlan.replace(/^()*(\d+)\.(\d\d).*$/, "$1$2.$3"); // 只能输入两个小数
-            checkPlan = checkPlan.replace(/^(\-)*(\d+)\.(\d{4}).*$/, '$1$2.$3'); // 只能输入两个小数
+            // checkPlan = checkPlan.replace(/^()*(\d+)\.(\d\d).*$/, "$1$2.$3"); // Chỉ được nhập tối đa hai chữ số thập phân
+            checkPlan = checkPlan.replace(/^(\-)*(\d+)\.(\d{4}).*$/, '$1$2.$3'); // Chỉ được nhập tối đa hai chữ số thập phân
           }
           i.inPrice = checkPlan;
         });
         // let checkPlan = '' + this.numberValidateForm.price
         // checkPlan = checkPlan
-        //   .replace(/[^\d.]/g, '') // 清除“数字”和“.”以外的字符
-        //   .replace(/\.{2,}/g, '.') // 只保留第一个. 清除多余的
-        //   .replace(/^\./g, '') // 保证第一个为数字而不是.
+        //   .replace(/[^\d.]/g, '') // Xóa“chữ số”và“.”ký tự khác
+        //   .replace(/\.{2,}/g, '.') // Chỉ giữ lại ký tự đầu tiên. Xóa các ký tự thừa
+        //   .replace(/^\./g, '') // Đảm bảo ký tự đầu tiên là chữ số chứ không phải.
         //   .replace('.', '$#$')
         //   .replace(/\./g, '')
         //   .replace('$#$', '.')
         // if (checkPlan.indexOf('.') < 0 && checkPlan !== '') {
-        //   // 以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+        //   // Các ký tự trên đã được lọc，Tại đây kiểm soát trường hợp không có dấu thập phân，Ký tự đầu tiên không được giống 01、02số tiền
         //   checkPlan = parseFloat(checkPlan) + ''
         // } else if (checkPlan.indexOf('.') >= 0) {
         //   checkPlan = checkPlan
-        //     .replace(/^()*(\d+)\.(\d\d).*$/, '$1$2.$3') // 只能输入两个小数
+        //     .replace(/^()*(\d+)\.(\d\d).*$/, '$1$2.$3') // Chỉ được nhập tối đa hai chữ số thập phân
         // }
         // this.numberValidateForm.price = checkPlan
       },
@@ -783,7 +783,7 @@
       async queryItem(queryString, callback) {
         await this.queryGoods(queryString, callback);
       },
-      // 进价是否为零售价
+      // Giá nhập có phải giá bán lẻ không
       GetSysParamConfig() {
         listSysParamConfigAll(this.systemParamConfigSearch).then(responseData => {
           if (responseData.code === 100) {
@@ -806,7 +806,7 @@
           this.outputError(error)
         })
       },
-      /*根据入参触发查询药品*/
+      /*Kích hoạt truy vấn thuốc theo tham số đầu vào*/
       queryGoods(queryString, callback) {
         this.goodsInfo = [];
         if (queryString !== "") {
@@ -905,7 +905,7 @@
           callback(this.goodsInfo);
         }
       },
-      //选中药品或材料
+      //Thuốc hoặc vật tư đang chọn
       selectGoods(item) {
         this.selectGoodsTemp = item;
       },
@@ -942,20 +942,20 @@
           newStorage
         );
       },
-      //保存药品或材料
+      //Lưu thuốc hoặc vật tư
       saveSupplierStock() {
         this.flag = true
         if (!this.otherInfo.companyId) {
-          this.$message({message: "请选择诊所", type: "warning"});
+          this.$message({message: "Vui lòng chọn phòng khám", type: "warning"});
           return;
         }
         if (!this.otherInfo.supplierID) {
-          this.$message({message: "请选择供应商", type: "warning"});
+          this.$message({message: "Vui lòng chọn nhà cung cấp", type: "warning"});
           return;
         }
 
         if (this.storageDetailTable.length === 0) {
-          this.$message({message: "请录入入库明细信息", type: "warning"});
+          this.$message({message: "Vui lòng nhập thông tin chi tiết nhập kho", type: "warning"});
           return;
         }
 
@@ -992,64 +992,64 @@
           }
           try {
             if (element.quantity === "" || element.quantity === 0) {
-              throw "数量";
+              throw "Số lượng";
             }
             if (element.inPrice === "") {
-              throw "进价";
+              throw "Giá nhập";
             }
             if (
               this.$moment(element.expireDate).format("YYYY-MM-DD HH:mm:ss") <
               this.$moment(element.producedDate).format("YYYY-MM-DD HH:mm:ss")
             ) {
-              throw "时间";
+              throw "Thời gian";
             }
             if (
               !element.expireDate
             ) {
-              throw "有效期";
+              throw "Hạn sử dụng";
             }
             const detail = {
               company: {
-                // 诊所id
+                // Phòng khámid
                 id: this.otherInfo.companyId,
               },
               supplierId: {
-                // 供应商
+                // Nhà cung cấp
                 id: this.otherInfo.supplierID,
               },
               drug: {
-                // 药品名称
+                // Tên thuốc
                 id: element.goodsType === 1 ? element.goodsID : null,
                 goodsName: element.goodsType === 1 ? element.goodsName : null,
               },
               supplierStorage: null,
               stuff: {
-                // 材料名称
+                // Tên vật tư
                 id: element.goodsType === 2 ? element.goodsID : null,
                 name: element.goodsType === 2 ? element.goodsName : null,
               },
-              norms: element.specification, // 规格
+              norms: element.specification, // Quy cách
               factory: {
                 id: element.factoryID,
                 name: element.factoryName,
-              }, // 厂家
-              batchNo: element.batchNumber, // 批号
+              }, // Nhà sản xuất
+              batchNo: element.batchNumber, // Số lô
               produceDate:
                 element.producedDate !== ""
                   ? this.$moment(element.producedDate).format(
                   "YYYY-MM-DD HH:mm:ss"
                   )
-                  : null, // 生产日期
+                  : null, // Ngày sản xuất
               endDate:
                 element.expireDate !== ""
                   ? this.$moment(element.expireDate).format("YYYY-MM-DD HH:mm:ss")
-                  : null, // 有效期
-              number: element.goodsType === 1 ? element.quantity * element.preparation : element.quantity * element.packNumber, // 数量
-              bid: element.inPrice, // 进价
-              retailPrice: element.outPrice, // 零售价
-              allBid: element.totalInPrice, // 总进价
-              allRetailPrice: element.totalOutPrice, // 总零售价
-              remarks: "", // 备注信息
+                  : null, // Hạn sử dụng
+              number: element.goodsType === 1 ? element.quantity * element.preparation : element.quantity * element.packNumber, // Số lượng
+              bid: element.inPrice, // Giá nhập
+              retailPrice: element.outPrice, // Giá bán lẻ
+              allBid: element.totalInPrice, // Tổng giá nhập
+              allRetailPrice: element.totalOutPrice, // Tổng giá bán lẻ
+              remarks: "", // Thông tin ghi chú
               leastBid: element.goodsType === 1 ? Number((element.inPrice / element.preparation).toFixed(4)) : Number((element.inPrice / element.packNumber).toFixed(4))
             };
             saveInfo.supplierStockList.push(detail);
@@ -1063,31 +1063,31 @@
           this.totalInPrice = this.totalOutPrice
           saveInfo.supplierStockList.allBid = saveInfo.supplierStockList.allRetailPrice
         }
-        if (this.flag === "数量") {
-          this.$message({message: "入库数量不可为空", type: "warning"});
+        if (this.flag === "Số lượng") {
+          this.$message({message: "Số lượng nhập kho không được để trống", type: "warning"});
           this.flag = "";
           return;
-        } else if (this.flag === "进价") {
-          this.$message({message: "进价不可为空", type: "warning"});
+        } else if (this.flag === "Giá nhập") {
+          this.$message({message: "Giá nhập không được để trống", type: "warning"});
           this.flag = "";
           return;
-        } else if (this.flag === "时间") {
+        } else if (this.flag === "Thời gian") {
           this.flag = "";
           this.$message({
-            message: "有效期不可小于生产日期",
+            message: "Hạn sử dụng không được nhỏ hơn ngày sản xuất",
             type: "warning",
           });
           return;
-        } else if (this.flag === "有效期") {
+        } else if (this.flag === "Hạn sử dụng") {
           this.$message({
-            message: "请输入有效期",
+            message: "Vui lòng nhập hạn sử dụng",
             type: "warning",
           });
           return;
         } else {
           saveSupplierStockListV1(saveInfo).then((responseData) => {
             if (responseData.code === 100) {
-              this.$message({message: "保存成功", type: "success"});
+              this.$message({message: "Lưu thành công", type: "success"});
               this.closeDialog();
             } else {
               this.$message({message: responseData.msg, type: "error"});
@@ -1095,19 +1095,19 @@
           });
         }
       },
-      //关闭弹框
+      //Đóng hộp thoại
       closeDialog() {
         this.storageDetailTable = [];
 
         this.otherInfo = {
           supplierID: null,
-          breed: 0 /*品种数量*/,
-          totalNumber: 0 /*总数量*/,
-          allBid: 0 /*总进价*/,
-          allRetailPrice: 0 /*总零售价*/,
-          withGoodsNo: "" /*供货单号*/,
-          invoiceNumber: "" /*发票号*/,
-          remarks: "" /*备注*/,
+          breed: 0 /*Số lượng chủng loại*/,
+          totalNumber: 0 /*Tổng số lượng*/,
+          allBid: 0 /*Tổng giá nhập*/,
+          allRetailPrice: 0 /*Tổng giá bán lẻ*/,
+          withGoodsNo: "" /*Số đơn cung ứng*/,
+          invoiceNumber: "" /*Số hóa đơn*/,
+          remarks: "" /*Ghi chú*/,
         };
         this.selectGoodsTemp = null;
 
@@ -1115,9 +1115,9 @@
         this.$emit("fatherMethod");
       },
 
-      // 关闭导入报错
+      // Đóng thông báo lỗi nhập
       mistakeClose(done) {
-        this.$confirm('确认关闭？')
+        this.$confirm('Xác nhận đóng？')
           .then(_ => {
             done();
           })
@@ -1192,18 +1192,18 @@
       },
       testSelectGoods(data) {
       },
-      // 批量导入按钮点击事件
+      // Sự kiện nhấn nút nhập hàng loạt
       importStudentExcel() {
         this.importDialogVisible = true;
       },
 
-      // 关闭导入窗口
+      // Đóng cửa sổ nhập
       cancellation() {
         this.importDialogVisible = false;
       },
 
 
-      //上传文件时处理方法
+      //Phương pháp xử lý khi tải tệp lên
       handleChange(file, fileList) {
         this.fileTemp = file.raw;
         if (this.fileTemp) {
@@ -1213,25 +1213,25 @@
           } else {
             this.$message({
               type: 'warning',
-              message: '附件格式错误，请删除后重新上传！'
+              message: 'Định dạng tệp đính kèm sai，Vui lòng xóa rồi tải lên lại！'
             })
           }
         } else {
           this.$message({
             type: 'warning',
-            message: '请上传附件！'
+            message: 'Vui lòng tải tệp đính kèm lên！'
           })
         }
       },
-      //超出最大上传文件数量时的处理方法
+      //Phương pháp xử lý khi vượt quá số lượng tệp tải lên tối đa
       handleExceed() {
         this.$message({
           type: 'warning',
-          message: '超出最大上传文件数量的限制！'
+          message: 'Giới hạn vượt quá số lượng tệp tải lên tối đa！'
         })
         return;
       },
-      //移除文件的操作方法
+      //Thao tác xóa tệp
       handleRemove(file, fileList) {
         this.fileTemp = null
       },
@@ -1239,11 +1239,11 @@
       async importfxx(obj) {
         let _this = this;
         let inputDOM = this.$refs.inputer;
-        // 通过DOM取文件数据
+        // QuaDOMLấy dữ liệu tệp
 
         this.file = event.currentTarget.files[0];
 
-        const rABS = false; //是否将文件读取为二进制字符串
+        const rABS = false; //Có đọc tệp dưới dạng chuỗi nhị phân không
         const f = this.file;
         const newList = this.newList;
         const storageDetailTable = this.storageDetailTable;
@@ -1257,9 +1257,9 @@
         //if (!FileReader.prototype.readAsBinaryString) {
         FileReader.prototype.readAsBinaryString = function (f) {
           let binary = "";
-          const rABS = false; //是否将文件读取为二进制字符串
+          const rABS = false; //Có đọc tệp dưới dạng chuỗi nhị phân không
           const pt = this;
-          let wb; //读取完成的数据
+          let wb; //Dữ liệu đã đọc xong
           let outdata;
           const reader = new FileReader();
           reader.onload = function (e) {
@@ -1268,11 +1268,11 @@
             for (let i = 0; i < length; i++) {
               binary += String.fromCharCode(bytes[i]);
             }
-            //此处引入，用于解析excel
+            //Tại đây nhập vào，Dùng để phân tíchexcel
             const XLSX = require("xlsx");
             if (rABS) {
               wb = XLSX.read(btoa(fixdata(binary)), {
-                //手动转化
+                //Chuyển đổi thủ công
                 type: "base64"
               });
             } else {
@@ -1281,8 +1281,8 @@
               });
             }
             outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-            //outdata就是读取的数据（不包含标题行即表头，表头会作为对象的下标）
-            //此处可对数据进行处理
+            //outdatachính là dữ liệu đã đọc（không bao gồm dòng tiêu đề tức là hàng đầu bảng，Hàng đầu bảng sẽ làm chỉ số của đối tượng）
+            //Tại đây có thể xử lý dữ liệu
             // let arr = [];
             // outdata.map(v => {
             //     let obj = {}
@@ -1297,12 +1297,12 @@
             // _this.dalen=arr.length;
             for (let i = 0; i < outdata.length; i++) {
               for (let j = 0; j < newList.length; j++) {
-                if (outdata[i].药品材料名称 === newList[j].goodsName && outdata[i].规格 === newList[j].specification && outdata[i].售价 === newList[j].price) {
-                  newList[j].batchNumber = outdata[i].生产批号;
-                  newList[j].producedDate = outdata[i].生产日期;
-                  newList[j].expireDate = outdata[i].过期日期;
-                  newList[j].quantity = outdata[i].入库数量;
-                  newList[j].inPrice = outdata[i].进价;
+                if (outdata[i].Tên thuốc/vật tư === newList[j].goodsName && outdata[i].Quy cách === newList[j].specification && outdata[i].Giá bán === newList[j].price) {
+                  newList[j].batchNumber = outdata[i].Số lô sản xuất;
+                  newList[j].producedDate = outdata[i].Ngày sản xuất;
+                  newList[j].expireDate = outdata[i].Ngày hết hạn;
+                  newList[j].quantity = outdata[i].Số lượng nhập kho;
+                  newList[j].inPrice = outdata[i].Giá nhập;
                   newList[j].outPrice = newList[j].price;
                   storageDetailTable.push(newList[j]);
                   dr += 1;
@@ -1311,7 +1311,7 @@
               }
               if (a !== 1){
                 wdr += 1;
-                cw += "表格第"+(i+1)+"行["+outdata[i].药品材料名称+"]信息异常，请核对后重新导入\n";
+                cw += "Dòng thứ"+(i+1)+"dòng["+outdata[i].Tên thuốc/vật tư+"]Thông tin bất thường，Vui lòng kiểm tra rồi nhập lại\n";
               }
               a = 0;
             }
@@ -1336,11 +1336,11 @@
         }, 3000);
       },
 
-      // 下载模板
+      // Tải mẫu xuống
       downloadExcel() {
         let a = document.createElement('a');
         let evt = document.createEvent('MouseEvents');
-        a.download = this.addType === 1 ? '药品导入信息' : '材料导入信息';
+        a.download = this.addType === 1 ? 'Thông tin nhập thuốc' : 'Thông tin nhập vật tư';
         a.href = fileurl;
         evt.initEvent('click', true, true);
         a.dispatchEvent(evt);

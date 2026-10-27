@@ -7,7 +7,7 @@ let currentUserCache = null
 let currentCompanyCache = null
 
 /**
- * 获取当前用户信息（带缓存）
+ * 获取当前用户信息（Có bộ nhớ đệm）
  * @returns {Object} 用户信息
  */
 export function getCurrentUser() {
@@ -26,7 +26,7 @@ export function getCurrentUser() {
 }
 
 /**
- * 获取当前公司信息（带缓存）
+ * 获取当前公司信息（Có bộ nhớ đệm）
  * @returns {Object} 公司信息
  */
 export function getCurrentCompany() {
@@ -46,7 +46,7 @@ export function getCurrentCompany() {
 
 /**
  * 获取当前用户ID
- * @returns {string} 用户ID
+ * @returns {string} Người dùngID
  */
 export function getCurrentUserId() {
     return getCurrentUser().id || ''
@@ -54,7 +54,7 @@ export function getCurrentUserId() {
 
 /**
  * 获取当前公司ID
- * @returns {string} 公司ID
+ * @returns {string} Công tyID
  */
 export function getCurrentCompanyId() {
     return getCurrentCompany().id || ''

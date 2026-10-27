@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 处方信息Evt
+ * Thông tin đơn thuốcEvt
  * @author txl
  * @version 2022-06-07
  */

@@ -20,7 +20,7 @@ import com.geeke.common.data.Page;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 模板处方Controller
+ * Đơn thuốc mẫuController
  * @author rys
  * @version 2022-10-08
  */
@@ -56,10 +56,10 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
         List<Recipetemplate> recipetemplates = result.getRows();
         if(!CollectionUtils.isEmpty(recipetemplates)){
             for (Recipetemplate recipetemplate : recipetemplates) {
-                //获取处方信息
+                //Lấy thông tin đơn thuốc
                 RecipeTemplateInfo recipeTemplateInfo=recipetemplateInfoService.getByRecipeTemplateId(recipetemplate.getId());
 
-                //获取处方详情
+                //Lấy chi tiết đơn thuốc
                 List<RecipeTemplateDetail> recipeTemplateDetails=recipetemplateDetailService.getByRecipeTemplateInfoId(recipeTemplateInfo.getId());
 
                 recipetemplate.setRecipeTemplateInfo(recipeTemplateInfo);
@@ -77,14 +77,14 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
         return ResponseEntity.ok(ResultUtil.successJson(""));
     }
 
-    // ai模板保存
+    // aimẫuLưu
     @PostMapping("aiSave")
     public ResponseEntity<JSONObject> aiSave(@RequestBody Recipetemplate entity) {
         final String s = recipetemplateService.aiSave(entity);
         return ResponseEntity.ok(ResultUtil.successJson(s));
     }
 
-    // ai模板查询
+    // aimẫuTruy vấn
     @PostMapping(value = "listAi")
     public ResponseEntity<JSONObject> listAi(@RequestBody String id) {
         List<Recipetemplate> result = recipetemplateService.listAi(id);

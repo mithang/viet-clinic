@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * 收费管理DAO接口
+ * Quản lý thu phíDAOGiao diện
  * @author lc
  * @version 2022-06-16
  */
@@ -62,10 +62,10 @@ public interface TollInfoDao extends CrudDao<TollInfo> {
     List<WorkLoad> getTemporaryCost(PageRequest var1);
 
     /**
-     * 批量查询多个医生的临时费用
-     * @param pageRequest 分页请求（包含通用过滤条件）
-     * @param doctorNames 医生名称列表
-     * @return 临时费用列表
+     * hàng loạtTruy vấnnhiềuCáiBác sĩ của lâm sàng giờChi phí
+     * @param pageRequest  phúttrangVui lòngyêu cầu(bao gồmChungqualọcĐiều kiện)
+     * @param doctorNames Bác sĩTênDanh sách
+     * @return lâm sàng giờChi phíDanh sách
      */
     List<WorkLoad> getTemporaryCostBatch(@Param("pageRequest") PageRequest pageRequest, @Param("doctorNames") List<String> doctorNames);
 

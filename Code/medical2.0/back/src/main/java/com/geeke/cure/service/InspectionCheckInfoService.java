@@ -23,7 +23,7 @@ import com.google.common.collect.Maps;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 检验检查明细Service
+ * Chi tiết xét nghiệm và kiểm traService
  * @author rys
  * @version 2022-10-19
  */
@@ -41,18 +41,18 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     @Transactional(readOnly = false)
     public void save(InspectionCheckInfo inspectionCheckInfo, MultipartFile[] fileIdUploads, String[] deleteIds) throws IOException {
 
-        //保存上传文件
+        //Lưu tệp đã tải lên
         List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, inspectionCheckInfo.getId());
         if(sysFiles!=null&&sysFiles.size()>0){
             inspectionCheckInfo.setFileId(sysFiles.get(0).getId());
         }
-        // 根据附件ID删除附件信息
+        // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
         if (null != deleteIds && deleteIds.length > 0) {
             sysFileService.delete(deleteIds);
         }
         this.dao.update(inspectionCheckInfo);
 
-        //保存完后保存明细
+        //LưuxongsauLưuChi tiết
         List<CostItems> costItemsList = inspectionCheckInfo.getCostItemsList();
         List<InspectionCheckDetail> inspectionCheckDetails = inspectionCheckInfo.getInspectionCheckDetails();
         for (InspectionCheckDetail inspectionCheckDetail : inspectionCheckDetails) {

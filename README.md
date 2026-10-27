@@ -1,49 +1,49 @@
-## 1. 高层摘要 (TL;DR)
+## 1. Tóm tắt cấp cao (TL;DR)
 
-*   **影响**: **中等** - 本次变更主要涉及后端业务逻辑优化、Session 异常处理增强，以及前端从 Webpack 迁移到 Vue CLI 构建工具。
-*   **核心变更**:
-    *   🔧 **生产厂家查询优化**: 重构参数处理逻辑，增加参数校验和空值保护
-    *   💊 **库存控制修复**: 支持拆零销售的库存计算逻辑
-    *   📋 **处方状态联动**: 处方保存时自动更新检验检查状态
-    *   🛡️ **Session 异常处理**: 增强工具类异常处理能力，防止 Session 过期导致崩溃
-    *   📦 **构建工具升级**: 前端从 Webpack 3 迁移到 Vue CLI 5
+*   **Ảnh hưởng**: **Trung bình** - Lần thay đổi này chủ yếu liên quan đến tối ưu logic nghiệp vụ backend, tăng cường xử lý ngoại lệ Session, và frontend chuyển từ Webpack sang công cụ build Vue CLI.
+*   **Thay đổi cốt lõi**:
+    *   🔧 **Tối ưu truy vấn nhà sản xuất**: Tái cấu trúc logic xử lý tham số, thêm kiểm tra tham số và bảo vệ giá trị rỗng
+    *   💊 **Sửa lỗi kiểm soát tồn kho**: Logic tính tồn kho hỗ trợ bán lẻ tách lẻ
+    *   📋 **Liên động trạng thái đơn thuốc**: Khi lưu đơn thuốc, tự động cập nhật trạng thái xét nghiệm - kiểm tra
+    *   🛡️ **Session Xử lý ngoại lệ**: Tăng cường khả năng xử lý ngoại lệ của lớp công cụ, ngăn Session hết hạn gây sập hệ thống
+    *   📦 **Nâng cấp công cụ build**: Frontend chuyển từ Webpack 3 sang Vue CLI 5
 
 ---
 
-## 2. 可视化概览 (代码与逻辑映射)
+## 2. Tổng quan trực quan (Ánh xạ mã và logic)
 
 ```mermaid
 graph TD
-    subgraph "生产厂家管理"
+    subgraph "Quản lý nhà sản xuất"
         A["ManufactureFactoryService.listAlls()"]
-        B["参数校验<br/>company_id"]
-        C["过滤参数列表"]
-        D["DAO查询"]
+        B["Kiểm tra tham số<br/>company_id"]
+        C["Lọc danh sách tham số"]
+        D["DAOTruy vấn"]
         A --> B --> C --> D
     end
     
-    subgraph "库存控制"
-        E["MedicinalStorageControlService<br/>预占用库存"]
-        F["判断拆零销售<br/>isUnpackSell"]
-        G["单位转换<br/>包装→制剂"]
-        H["库存校验"]
+    subgraph "Kiểm soát tồn kho"
+        E["MedicinalStorageControlService<br/>Tồn kho đặt trước"]
+        F["Xác định bán lẻ<br/>isUnpackSell"]
+        G["Chuyển đổi đơn vị<br/>Đóng gói→Chế phẩm"]
+        H["Kiểm tra tồn kho"]
         E --> F --> G --> H
     end
     
-    subgraph "处方业务"
-        I["RecipelDetailService<br/>保存处方"]
-        J["更新挂号就诊日期"]
-        K["获取检验检查列表"]
-        L["批量更新状态为已填写"]
+    subgraph "Nghiệp vụ đơn thuốc"
+        I["RecipelDetailService<br/>Lưu đơn thuốc"]
+        J["Cập nhật ngày khám đã đăng ký"]
+        K["Lấy danh sách kiểm tra xét nghiệm"]
+        L["Cập nhật hàng loạt trạng thái thành đã điền"]
         I --> J --> K --> L
     end
     
-    subgraph "Session工具类"
+    subgraph "SessionLớp công cụ"
         M["SessionUtils"]
         N["getUserJson()"]
         O["getUserDto()"]
         P["setUserJson()"]
-        Q["try-catch包装"]
+        Q["try-catchĐóng gói"]
         M --> N
         M --> O
         M --> P
@@ -60,30 +60,30 @@ graph TD
 
 ---
 
-## 3. 详细变更分析
+## 3. Phân tích chi tiết thay đổi
 
-### 3.1 后端业务逻辑优化
+### 3.1 Tối ưu logic nghiệp vụ backend
 
-#### 🔧 生产厂家查询服务 (`ManufactureFactoryService.java`)
+#### 🔧 Dịch vụ truy vấn nhà sản xuất (`ManufactureFactoryService.java`)
 
-**变更说明**:
-重构了 `listAlls` 方法，修复了参数处理逻辑中的潜在问题。
+**Mô tả thay đổi**:
+Đã tái cấu trúc `listAlls` Phương pháp，Đã sửaTham số处理Trong logic của Vấn đề tiềm ẩn。
 
-| 变更项 | 旧实现 | 新实现 |
+| Hạng mục thay đổi | Cách triển khai cũ | Cách triển khai mới |
 |--------|--------|--------|
-| 参数过滤 | 直接 `remove(0)` 删除第一个参数 | 使用 `stream().filter()` 过滤 `company_id` |
-| 参数校验 | 无校验，直接调用 `get()` | 使用 `isPresent()` 校验后抛出异常 |
-| 原列表修改 | 直接修改传入的 `parameters` | 创建新的 `filteredParameters` 列表 |
-| 代码注释 | 无注释 | 添加详细的方法和步骤注释 |
+| Lọc tham số | Trực tiếp `remove(0)` XóaĐầu tiênCáiTham số | Sử dụng `stream().filter()` Lọc `company_id` |
+| Kiểm tra tham số | Không kiểm tra，Gọi trực tiếp `get()` | Sử dụng `isPresent()` Kiểm tra rồi ném ngoại lệ |
+| Sửa danh sách gốc | Trực tiếpSửa đổiTruyền vào của  `parameters` | TạoMới của  `filteredParameters` Danh sách |
+| Chú thích mã | KhôngChú ýGiải thích | ThêmChi tiết của Phương pháp và bướcChú ýGiải thích |
 
-**关键代码片段**:
+**Quan trọngMãViênĐoạn**:
 ```java
-// 新增参数校验
+// Thêm kiểm tra tham số mới
 if (!companyOptional.isPresent()) {
     throw new IllegalArgumentException("Missing required parameter: company_id");
 }
 
-// 创建新参数列表，避免修改原列表
+// TạoMớiTham sốCộtBảng，TránhMiễnSửa đổiGốcCộtBảng
 List<Parameter> filteredParameters = parameters.stream()
         .filter(item -> !item.getColumnName().equals("`company_id`"))
         .collect(Collectors.toList());
@@ -91,23 +91,23 @@ List<Parameter> filteredParameters = parameters.stream()
 
 ---
 
-#### 💊 库存控制服务 (`MedicinalStorageControlService.java`)
+#### 💊 Dịch vụ kiểm soát tồn kho (`MedicinalStorageControlService.java`)
 
-**变更说明**:
-修复了库存预占用逻辑，支持拆零销售的库存计算。
+**Mô tả thay đổi**:
+Đã sửaTồn khoLogic chiếm trước，ỐngHỗ trợBán lẻ tách lẻ của Tồn khoTính toán。
 
-| 变更项 | 说明 |
+| Hạng mục thay đổi | Giải thích |
 |--------|------|
-| 单位转换逻辑 | 新增：当 `isUnpackSell == 0` 时，将包装单位转换为制剂单位 |
-| 转换公式 | `total = total × preparation` (制剂数量) |
-| 验证时机调整 | 将负数和零值校验移到单位转换之后 |
-| 注释优化 | 将中文注释规范化 |
+| Logic chuyển đổi đơn vị | Thêm mới：Khi `isUnpackSell == 0` Giờ，SẽĐơn vị đóng góiChuyển đổi là Đơn vị chế phẩm |
+| Công thức chuyển đổi | `total = total × preparation` (Số lượng chế phẩm) |
+| Điều chỉnh thời điểm kiểm tra | SẽSố âmvà零Giá trịKiểm tra移到Đơn vịChuyển đổiSau đó |
+| Tối ưu chú thích | SẽTrong文Chú ýGiải thíchChuẩn hóa |
 
-**关键代码片段**:
+**Quan trọngMãViênĐoạn**:
 ```java
-// 根据是否拆零销售判断总量单位
+// CâyDữ liệuCó hay khôngBán lẻ tách lẻXác địnhTổng lượngĐơn vị
 BigDecimal totalBigDecimal = new BigDecimal(recipelDetail.getTotal());
-// 如果不拆零销售，total 是包装单位，需要转换为制剂单位
+// Như果不Bán lẻ tách lẻ，total LàĐơn vị đóng gói，CầnChuyển đổi là Đơn vị chế phẩm
 if (recipelDetail.getIsUnpackSell() != null && recipelDetail.getIsUnpackSell() == 0) {
     if (drug != null && drug.getPreparation() != null) {
         totalBigDecimal = totalBigDecimal.multiply(new BigDecimal(drug.getPreparation()));
@@ -117,20 +117,20 @@ if (recipelDetail.getIsUnpackSell() != null && recipelDetail.getIsUnpackSell() =
 
 ---
 
-#### 📋 处方详情服务 (`RecipelDetailService.java`)
+#### 📋 Dịch vụ chi tiết đơn thuốc (`RecipelDetailService.java`)
 
-**变更说明**:
-在处方保存成功后，自动更新该处方下所有检验检查的状态为"已填写"。
+**Mô tả thay đổi**:
+TrongĐơn thuốcLưuSau khi thành công，Tự độngCập nhậtĐóĐơn thuốcDướiTất cảXét nghiệm - kiểm tra của Trạng thái là "Đã điền"。
 
-| 变更项 | 说明 |
+| Hạng mục thay đổi | Giải thích |
 |--------|------|
-| 新增依赖 | `InspectionCheckService` |
-| 新增导入 | `InspectionCheck` 实体类、`CollectionUtils` 工具类 |
-| 业务逻辑 | 在两处处方保存逻辑中添加检验检查状态更新 |
+| Thêm phụ thuộc mới | `InspectionCheckService` |
+| Thêm import mới | `InspectionCheck` Thực thểLớp、`CollectionUtils` Lớp công cụ |
+| Logic nghiệp vụ | Tại hai nơiĐơn thuốcLưuTrong logicThêmXét nghiệm - kiểm traTrạng tháiCập nhật |
 
-**关键代码片段**:
+**Quan trọngMãViênĐoạn**:
 ```java
-// 更新该处方下所有检验检查状态为已填写
+// Cập nhậtĐóĐơn thuốcDướiTất cảXét nghiệm - kiểm traTrạng thái là Đã điền
 List<InspectionCheck> inspectionChecks = inspectionCheckService.getByRecipelInfoId(recipelInfo.getId());
 if (!CollectionUtils.isEmpty(inspectionChecks)) {
     for (InspectionCheck inspectionCheck : inspectionChecks) {
@@ -142,32 +142,32 @@ if (!CollectionUtils.isEmpty(inspectionChecks)) {
 
 ---
 
-### 3.2 Session 工具类异常处理增强
+### 3.2 Session Tăng cường xử lý ngoại lệ cho lớp tiện ích
 
-#### 🛡️ SessionUtils (两个版本)
+#### 🛡️ SessionUtils (HaiCáiPhiên bản)
 
-**变更说明**:
-为所有 Session 相关方法添加 `try-catch` 异常处理，防止 Session 过期或不存在时抛出异常导致系统崩溃。
+**Mô tả thay đổi**:
+ là Tất cả Session Phương pháp liên quanThêm `try-catch` Xử lý ngoại lệ，Ngăn Session Hết hạnHoặc không tồn tạiGiờNémNgoại lệGây ra系统Sập hệ thống。
 
-| 方法 | 变更类型 | 异常处理策略 |
+| Phương pháp | Thay đổiLoại | Chiến lược xử lý ngoại lệ |
 |------|----------|--------------|
-| `getUserJson()` | 读取 | 捕获异常返回 `null` |
-| `getUserDto()` | 读取 | 捕获异常返回 `null` |
-| `getUserJson(Session)` | 读取 | 新增空值检查 + 捕获异常 |
-| `setUserJson()` | 写入 | 捕获异常静默处理 |
-| `getUserPermission()` | 读取 | 捕获异常返回 `null` |
-| `setUserPermission()` | 写入 | 捕获异常静默处理 |
-| `getWeChatUser()` | 读取 | 捕获异常返回 `null` |
-| `setWeChatUser()` | 写入 | 捕获异常静默处理 |
-| `getUser()` | 读取 | 新增空值检查 |
-| `setLoginTenantId()` | 写入 | 捕获异常静默处理 |
-| `setLoginTenant()` | 写入 | 捕获异常静默处理 |
-| `getLoginTenantId()` | 读取 | 捕获异常返回 `null` |
-| `getLoginTenant()` | 读取 | 捕获异常返回 `null` |
+| `getUserJson()` | Đọc | Bắt ngoại lệ và trả về `null` |
+| `getUserDto()` | Đọc | Bắt ngoại lệ và trả về `null` |
+| `getUserJson(Session)` | Đọc | Thêm kiểm tra null + Bắt ngoại lệ |
+| `setUserJson()` | Ghi | Bắt ngoại lệ và xử lý im lặng |
+| `getUserPermission()` | Đọc | Bắt ngoại lệ và trả về `null` |
+| `setUserPermission()` | Ghi | Bắt ngoại lệ và xử lý im lặng |
+| `getWeChatUser()` | Đọc | Bắt ngoại lệ và trả về `null` |
+| `setWeChatUser()` | Ghi | Bắt ngoại lệ và xử lý im lặng |
+| `getUser()` | Đọc | Thêm kiểm tra null |
+| `setLoginTenantId()` | Ghi | Bắt ngoại lệ và xử lý im lặng |
+| `setLoginTenant()` | Ghi | Bắt ngoại lệ và xử lý im lặng |
+| `getLoginTenantId()` | Đọc | Bắt ngoại lệ và trả về `null` |
+| `getLoginTenant()` | Đọc | Bắt ngoại lệ và trả về `null` |
 
-**关键代码示例**:
+**Quan trọngMãThể hiệnCa**:
 ```java
-// 读取方法示例
+// Phương pháp đọcThể hiệnCa
 public static JSONObject getUserJson(){
     try {
         return (JSONObject)SecurityUtils.getSubject().getSession().getAttribute(SESSION_USER_INFO);
@@ -176,129 +176,129 @@ public static JSONObject getUserJson(){
     }
 }
 
-// 写入方法示例
+// Phương pháp ghiThể hiệnCa
 public static void setUserJson(JSONObject userObj ){
     try {
         SecurityUtils.getSubject().getSession().setAttribute(SESSION_USER_INFO, userObj);
     } catch (Exception e) {
-        // Session 已过期或不存在
+        // Session ĐãHết hạnHoặc không tồn tại
     }
 }
 ```
 
 ---
 
-### 3.3 配置文件变更
+### 3.3 Thay đổi file cấu hình
 
-#### 📝 应用配置 (`application-demo.yml`)
+#### 📝 Cấu hình ứng dụng (`application-demo.yml`)
 
-| 配置项 | 旧值 | 新值 | 说明 |
+| Cấu hìnhHạng mục | CũGiá trị | MớiGiá trị | Giải thích |
 |--------|------|------|------|
-| **服务端口** | `9016` | `7016` | 服务端口变更 |
-| **数据库URL** | `61.172.179.48:19011/medical2.0` | `61.172.179.73:5011/md_yzs20250331` | 数据库迁移 |
-| **数据库用户** | `new_touch` | `root` | 用户变更 |
-| **数据库密码** | `bW9Ivzt0CAQdoJTDZ2wAnduvi` | `xZ_TTSL123` | 密码更新 |
-| **Redis主机** | `61.172.179.48` | `127.0.0.1` | 切换到本地 |
-| **Redis端口** | `19012` | `6379` | 使用默认端口 |
-| **JWT过期时间** | `3600000` (1小时) | `36000000` (10小时) | 延长会话时间 |
-| **报表后端** | `localhost` | `localhostx` | 配置变更 |
-| **RabbitMQ** | 已配置 | 已注释 | 移除消息队列配置 |
-| **启信宝配置** | 已配置 | 已注释 | 移除第三方服务 |
-| **企业微信配置** | 已配置 | 已注释 | 移除第三方服务 |
+| **Cổng dịch vụ** | `9016` | `7016` | Thay đổi cổng dịch vụ |
+| **Cơ sở dữ liệuURL** | `61.172.179.48:19011/medical2.0` | `61.172.179.73:5011/md_yzs20250331` | Cơ sở dữ liệuDi chuyển |
+| **Người dùng cơ sở dữ liệu** | `new_touch` | `root` | Người dùngThay đổi |
+| **Mật khẩu cơ sở dữ liệu** | `bW9Ivzt0CAQdoJTDZ2wAnduvi` | `xZ_TTSL123` | Mật khẩuCập nhật |
+| **RedisMáy chủ** | `61.172.179.48` | `127.0.0.1` | Chuyển sangCuốnMáy cục bộ |
+| **RedisCổng** | `19012` | `6379` | DùngMặc địnhCổng |
+| **JWTThời gian hết hạn** | `3600000` (1Giờ) | `36000000` (10Giờ) | Kéo dàiPhiênThời gian |
+| **Backend báo cáo** | `localhost` | `localhostx` | Cấu hìnhThay đổi |
+| **RabbitMQ** | ĐãCấu hình | ĐãChú ýGiải thích | 移除Tin nhắnHàng đợiCấu hình |
+| **QixinbaoCấu hình** | ĐãCấu hình | ĐãChú ýGiải thích | Loại bỏ dịch vụ bên thứ ba |
+| **WeChat doanh nghiệpCấu hình** | ĐãCấu hình | ĐãChú ýGiải thích | Loại bỏ dịch vụ bên thứ ba |
 
 ---
 
-#### 🚫 Git 忽略规则 (`.gitignore`)
+#### 🚫 Git Quy tắc bỏ qua (`.gitignore`)
 
-| 新增规则 | 说明 |
+| Thêm mớiQuy tắc | Giải thích |
 |----------|------|
-| `.vs/` | Visual Studio 配置目录 |
-| `.trae/` | Trae 工具配置目录 |
-| `.history/` | 文件历史记录目录 |
+| `.vs/` | Visual Studio Cấu hìnhDanh mục |
+| `.trae/` | Trae Công cụCấu hìnhDanh mục |
+| `.history/` | TệpLịch sửDanh mục |
 
 ---
 
-### 3.4 前端构建工具升级
+### 3.4 Nâng cấp công cụ build frontend
 
-#### 📦 依赖管理 (`package.json`)
+#### 📦 Quản lý phụ thuộc (`package.json`)
 
-**构建工具迁移**: 从自定义 Webpack 配置迁移到 Vue CLI 5
+**Di chuyển công cụ build**: TừTùy chỉnh Webpack Cấu hìnhSang Vue CLI 5
 
-| 构建脚本 | 旧命令 | 新命令 |
+| 构建脚Cuốn | Lệnh cũ | Lệnh mới |
 |----------|--------|--------|
-| 开发环境 | `webpack-dev-server` | `vue-cli-service serve --no-eslint` |
-| 生产构建 | `node build/build.js` | `vue-cli-service build` |
-| 代码检查 | 无 | `vue-cli-service lint` |
-| 单元测试 | `jest` | `vue-cli-service test:unit` |
+| Môi trường phát triển | `webpack-dev-server` | `vue-cli-service serve --no-eslint` |
+| Build production | `node build/build.js` | `vue-cli-service build` |
+| Kiểm tra mã | Không | `vue-cli-service lint` |
+| Kiểm thử đơn vị | `jest` | `vue-cli-service test:unit` |
 
-**依赖变更摘要**:
+**Tóm tắt thay đổi phụ thuộc**:
 
-| 类别 | 移除依赖 | 新增依赖 |
+| Loại | Loại bỏ phụ thuộc | Thêm phụ thuộc mới |
 |------|----------|----------|
-| **构建核心** | `webpack@3.6.0`, `webpack-dev-server@2.9.1` | `webpack@5.105.4`, `@vue/cli-service@5.0.9` |
+| **Lõi build** | `webpack@3.6.0`, `webpack-dev-server@2.9.1` | `webpack@5.105.4`, `@vue/cli-service@5.0.9` |
 | **Babel** | `babel-core@6.x`, `babel-loader@7.x` | `@babel/core@7.29.0`, `@vue/cli-plugin-babel@5.0.9` |
-| **工作流** | `bpmn-js@2.5.1`, `bpmn-js-properties-panel@0.33.1` | (已移除) |
-| **测试** | `jest@21.2.0`, `nightwatch@0.9.12` | `@vue/cli-plugin-unit-jest@5.0.9` |
-| **代码检查** | 无 | `eslint@10.2.0`, `eslint-plugin-vue@10.8.0` |
-| **其他** | `extract-text-webpack-plugin`, `uglifyjs-webpack-plugin` | `docx@9.6.1` |
+| **Luồng công việc** | `bpmn-js@2.5.1`, `bpmn-js-properties-panel@0.33.1` | (Đã loại bỏ) |
+| **Kiểm thử** | `jest@21.2.0`, `nightwatch@0.9.12` | `@vue/cli-plugin-unit-jest@5.0.9` |
+| **Kiểm tra mã** | Không | `eslint@10.2.0`, `eslint-plugin-vue@10.8.0` |
+| **Khác** | `extract-text-webpack-plugin`, `uglifyjs-webpack-plugin` | `docx@9.6.1` |
 
 ---
 
-## 4. 影响与风险评估
+## 4. Đánh giá ảnh hưởng và rủi ro
 
-### ⚠️ 破坏性变更
+### ⚠️ Thay đổi phá vỡ
 
-| 变更项 | 影响范围 | 风险等级 |
+| Hạng mục thay đổi | Phạm vi ảnh hưởng | Mức độ rủi ro |
 |--------|----------|----------|
-| **数据库连接配置** | 后端服务启动 | 🔴 高 |
-| **JWT 过期时间延长** | 用户会话管理 | 🟡 中 |
-| **前端构建工具迁移** | 前端构建流程 | 🟡 中 |
-| **Session 异常处理** | 所有依赖 Session 的功能 | 🟢 低 (正向改进) |
-| **库存计算逻辑** | 药品库存控制 | 🟡 中 |
+| **Cấu hình kết nối cơ sở dữ liệu** | Khởi động dịch vụ backend | 🔴 Cao |
+| **JWT Hết hạnThời gianKéo dài** | Người dùngPhiênQuản lý | 🟡 Trong |
+| **FrontendCông cụ buildDi chuyển** | Build frontendQuy trình | 🟡 Trong |
+| **Session Xử lý ngoại lệ** | Tất cảPhụ thuộc Session  của Chức năng | 🟢 Thấp (Cải tiến tích cực) |
+| **Logic tính tồn kho** | ThuốcTồn khoKiểm soát | 🟡 Trong |
 
-### 🧪 测试建议
+### 🧪 Đề xuất kiểm thử
 
-#### 后端测试
-1. **生产厂家查询**: 
-   - 测试缺少 `company_id` 参数时是否抛出异常
-   - 测试参数过滤是否正确
+#### Kiểm thử backend
+1. **Truy vấn nhà sản xuất**: 
+   - Kiểm tra thiếu `company_id` Tham sốGiờCó ném ngoại lệ không
+   - Kiểm tra lọc tham số có đúng không
 
-2. **库存控制**:
-   - 测试拆零销售 (`isUnpackSell = 0`) 的库存计算
-   - 测试不拆零销售 (`isUnpackSell = 1`) 的库存计算
-   - 验证负数和零值的校验逻辑
+2. **Kiểm soát tồn kho**:
+   - 测试Bán lẻ tách lẻ (`isUnpackSell = 0`)  của Tồn khoTính toán
+   - 测试不Bán lẻ tách lẻ (`isUnpackSell = 1`)  của Tồn khoTính toán
+   - Kiểm chứngSố âmvà零Giá trị của Logic kiểm tra
 
-3. **处方业务**:
-   - 验证处方保存后检验检查状态是否正确更新为 "1"
-   - 测试无检验检查时的处理逻辑
+3. **Nghiệp vụ đơn thuốc**:
+   - Kiểm chứngĐơn thuốcLưu后Xét nghiệm - kiểm traTrạng tháiCó hay không正确Cập nhật là  "1"
+   - 测试KhôngXét nghiệm - kiểm traGiờ của Logic xử lý
 
-4. **Session 异常处理**:
-   - 模拟 Session 过期场景，验证是否返回 `null` 而非抛出异常
-   - 测试所有 Session 读写方法的异常处理
+4. **Session Xử lý ngoại lệ**:
+   - Mô phỏng Session Kịch bản hết hạn，Xác minh có trả về không `null` Chứ không phảiNémNgoại lệ
+   - 测试Tất cả Session Phương pháp đọc/ghi của Xử lý ngoại lệ
 
-#### 前端测试
-1. **构建验证**:
-   - 运行 `npm run dev` 验证开发环境启动
-   - 运行 `npm run build` 验证生产构建
-   - 运行 `npm run lint` 验证代码规范
+#### Kiểm thử frontend
+1. **Xác minh build**:
+   - Chạy `npm run dev` Kiểm chứngPhát triển环境Khởi động
+   - Chạy `npm run build` Kiểm chứngSản xuất构建
+   - Chạy `npm run lint` Kiểm chứngMã规范
 
-2. **功能验证**:
-   - 验证工作流相关组件是否正常加载
-   - 检查第三方库 (echarts, element-ui) 的引用
+2. **Xác minh chức năng**:
+   - Kiểm chứngQuy trình làm việcLiên quanNhómChiếcCó hay khôngBình thường加载
+   - Kiểm traThư viện bên thứ ba (echarts, element-ui)  của Tham chiếu
 
 ---
 
-## 5. 总结
+## 5. Kết luận
 
-本次变更主要聚焦于 **后端业务逻辑优化** 和 **前端构建工具现代化**：
+Lần thay đổi nàyChủ yếu tập trung vào **Tối ưu logic nghiệp vụ backend** và **FrontendCông cụ build现代化**：
 
-✅ **正向改进**:
-- 增强了 Session 工具类的健壮性，防止异常导致系统崩溃
-- 修复了库存计算中的拆零销售逻辑缺陷
-- 优化了生产厂家查询的参数处理和校验
-- 前端构建工具升级到 Vue CLI 5，提升开发体验
+✅ **Cải tiến tích cực**:
+- Tăng cường了 Session Lớp công cụ của Tính robust，NgănNgoại lệGây ra系统Sập hệ thống
+- Đã sửaTồn khoTính toánTrong của Bán lẻ tách lẻLogic缺陷
+- Tối ưu了Nhà sản xuấtTra cứu của Tham số处理vàKiểm tra
+- FrontendCông cụ build升级到 Vue CLI 5，提升Phát triển体验
 
-⚠️ **注意事项**:
-- 数据库配置已变更，需要确保新数据库环境已准备就绪
-- JWT 过期时间延长至 10 小时，需评估安全影响
-- 前端构建流程变更，开发团队需要更新构建文档
+⚠️ **Lưu ý**:
+- Cơ sở dữ liệuCấu hìnhĐãThay đổi，Cần确保MớiCơ sở dữ liệu环境Đã准备就绪
+- JWT Hết hạnThời gianKéo dàiđến 10 Giờ，Cần đánh giá ảnh hưởng an toàn
+- Build frontendQuy trìnhThay đổi，Phát triển团队CầnCập nhật构建文档

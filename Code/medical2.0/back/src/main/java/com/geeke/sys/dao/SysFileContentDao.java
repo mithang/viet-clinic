@@ -7,13 +7,13 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.SysFileContent;
 
 /**
- * 系统附件DAO接口
+ * Tệp đính kèm hệ thốngDAOGiao diện
  * @author szy
  * @version 2021-09-22
  */
 @Mapper
 public interface SysFileContentDao extends CrudDao<SysFileContent> {
 
-    // 根据ID数组删除
+    // TheoIDmảngXóa
     int deleteByIds(@Param("ids") String[] ids);
 }

@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/treatment/costItem')
 
-// 标准CRUD接口
+// Tiêu chuẩnCRUDGiao diện
 export const getCostItemById = baseApi.getById
 export const listCostItemPage = baseApi.listPage
 export const listCostItemAll = baseApi.listAll
@@ -18,7 +18,7 @@ export const bulkInsertCostItem = baseApi.bulkInsert
 export const bulkUpdateCostItem = baseApi.bulkUpdate
 export const bulkDeleteCostItem = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 // 上级租户的诊疗项目列表信息
 export const listCostItemPageByParent = search =>
   request({

@@ -9,7 +9,7 @@ import com.geeke.utils.StringUtils;
 
 
 /**
- * Entity支持类
+ * Entityhỗ trợLớp
  * @author lys
  * @version 2014-05-16
  */
@@ -18,7 +18,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 实体编号（唯一标识）
+	 * thực thểmã số(duy nhấtđịnh danh)
 	 */
 	protected String id;
 
@@ -40,7 +40,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	
 	
 	/**
-	 * 插入之前执行方法，需要手动调用
+	 * Phương thức thực thi trước khi chèn, Cần gọi thủ công
 	 */
 	@JsonIgnore
 	public void preInsert(){
@@ -50,14 +50,14 @@ public abstract class BaseEntity<T> implements Serializable {
 	}
 
 	/**
-	 * 更新之前执行方法，需要手动调用
+	 * Phương thức thực thi trước khi cập nhật, Cần gọi thủ công
 	 */
 	@JsonIgnore
 	public void preUpdate(){
 	}
 	
 	/**
-	 * 获取实体对应表名，在实体类中覆盖
+	 * Lấy tên bảng tương ứng của thực thể, Ghi đè trong lớp thực thể
 	 */
 	@JsonIgnore
 	public String getBusTableName() {
@@ -65,7 +65,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	}
 	
 	/**
-	 * 获取实体对应表Id，在实体类中覆盖
+	 * Lấythực thểtương ứngbảngId, Ghi đè trong lớp thực thể
 	 */
 	@JsonIgnore
 	public String getBusTableId() {
@@ -73,7 +73,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	}
 	
 	/**
-	 * 获取实体表中是否存在del_flag字段，在实体类中覆盖
+	 * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường, Ghi đè trong lớp thực thể
 	 */
 	@JsonIgnore
 	public boolean getBusTableHasDelFlag() {
@@ -81,7 +81,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	}	
 	
 	/**
-	 * 删除标记（0：正常；1：删除；2：审核；）
+	 * Cờ xóa(0: Bình thường; 1: Xóa; 2: Duyệt; )
 	 */
 	public static final String DEL_FLAG_NORMAL = "0";
 	public static final String DEL_FLAG_DELETE = "1";

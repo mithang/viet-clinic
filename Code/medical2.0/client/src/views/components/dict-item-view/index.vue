@@ -59,8 +59,8 @@
           params: [],
           offset: 0,
           limit: 100,
-          columnName: "", // 排序字段名
-          order: "", // 排序
+          columnName: "", // Tên trường sắp xếp
+          order: "", // Sắp xếp
         };
 
         listDictItemAll(search).then(res => {

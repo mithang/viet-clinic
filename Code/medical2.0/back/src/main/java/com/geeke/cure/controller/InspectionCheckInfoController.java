@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 检验检查明细Controller
+ * Chi tiết xét nghiệm và kiểm traController
  * @author rys
  * @version 2022-10-19
  */
@@ -54,7 +54,7 @@ public class InspectionCheckInfoController extends CrudController<InspectionChec
                                            @RequestParam(value = "deleteIds",required = false)String strDeleteIds) throws IOException {
         InspectionCheckInfo inspectionCheckInfo = JSONObject.parseObject(strInspection, InspectionCheckInfo.class);
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
-        logger.debug("保存检验检查明细: {}", inspectionCheckInfo);
+        logger.debug("LưuChi tiết xét nghiệm và kiểm tra: {}", inspectionCheckInfo);
         inspectionCheckInfoService.save(inspectionCheckInfo,fileIdUploads,deleteIds);
         InspectionCheck inspectionCheck = inspectionCheckService.get(inspectionCheckInfo.getInspectionCheck().getId());
         inspectionCheck.setStatus("1");

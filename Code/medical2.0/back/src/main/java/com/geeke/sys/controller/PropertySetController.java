@@ -8,7 +8,7 @@ import com.geeke.sys.entity.PropertySet;
 import com.geeke.sys.service.PropertySetService;
 
 /**
- * 属性集管理Controller
+ * Quản lý tập thuộc tínhController
  * @author lys
  * @version 2021-12-26
  */

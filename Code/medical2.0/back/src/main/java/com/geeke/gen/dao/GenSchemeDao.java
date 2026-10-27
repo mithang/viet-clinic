@@ -5,7 +5,7 @@ import com.geeke.gen.entity.GenScheme;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 代码方案管理DAO接口
+ * mãphương ánQuản lýDAOGiao diện
  * @author lys
  * @version 2019-12-06
  */

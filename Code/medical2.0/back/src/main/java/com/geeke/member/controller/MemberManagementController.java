@@ -22,7 +22,7 @@ import com.geeke.common.data.Page;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 会员卡管理Controller
+ * Quản lý thẻ hội viênController
  * @author rys
  * @version 2022-10-26
  */
@@ -55,7 +55,7 @@ public class MemberManagementController extends CrudController<MemberManagementS
         List<MemberItem> byMemberSetId = memberItemService.getByMemberSetId(memberSet.getId());
         memberSet.setMemberItem(byMemberSetId);
         entity.setMemberSet(memberSet);
-        //根据管理id获取详情id
+        //TheoQuản lýidLấyChi tiếtid
         List<MemberManagementDetail> memberManagementDetails = memberManagementDetailService.getByManagementId(id);
         entity.setMemberManagementDetails(memberManagementDetails);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
@@ -65,14 +65,14 @@ public class MemberManagementController extends CrudController<MemberManagementS
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody MemberManagement entity) {
         int rows = memberManagementService.delete(entity);
-        //禁用卡成功后需要将卡还回会员卡
+        //Vô hiệu hóathẻThành côngsauCầnSẽ thẻcòntrả lạiHội viênthẻ
         if(rows>0){
             memberSetService.addNumber(entity.getMemberSet().getId());
         }
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
 
-    //根据处方明细和处方详情获取会员卡信息
+    //Lấy thông tin thẻ hội viên theo chi tiết đơn thuốc và chi tiết đơn thuốc
     @PostMapping(value = "getMember")
     public ResponseEntity<JSONObject> getMember(@RequestBody RecipelInfoEvt recipelInfoEvt){
         List<MemberManagement> member = memberManagementService.getMember(recipelInfoEvt);

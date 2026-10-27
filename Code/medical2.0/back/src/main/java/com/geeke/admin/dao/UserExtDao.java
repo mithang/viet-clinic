@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 用户拓展DAO接口
+ * Người dùngmở rộngDAOGiao diện
  * @author ch
  * @version 2022-06-10
  */
@@ -16,14 +16,14 @@ import java.util.List;
 public interface UserExtDao extends CrudDao<UserExt> {
 
     /**
-     * 根据用户id查扩展信息
+     * Theo người dùngidtramở rộngThông tin
      * @param userId
      * @return
      */
     UserExt getUserExtByUserId(@Param("userId")String userId,@Param("companyId")String companyId);
 
     /**
-     * 查询所有的拓展数据
+     * Truy vấntất cả của mở rộngDữ liệu
      * @param userId
      * @return
      */

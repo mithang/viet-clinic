@@ -5,8 +5,8 @@
         <template slot="title">
           <span class="collapse-title">{{title}}<span style="color: #ccc">（展开查看更多）</span></span>
           <div class="collapse-btn">
-<!--            <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='!action'>上传</el-button>-->
-            <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='authority === "add" || authority === "edit"'>上传</el-button>
+<!--            <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='!action'>Tải lên</el-button>-->
+            <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='authority === "add" || authority === "edit"'>Tải lên</el-button>
           </div>
         </template>
         <el-upload
@@ -25,20 +25,20 @@
           :on-success="fileSuccess"
           :on-exceed="onExceedFile"
           :on-change="onChangeFileList">
-          <el-button :id="uploadBtnId" size="small" type="primary">上传附件</el-button>
+          <el-button :id="uploadBtnId" size="small" type="primary">Tải tệp đính kèm lên</el-button>
         </el-upload>
         <el-table :data='viewFileList' style='width: 100%' v-show="authority !== 'add'">
 <!--        <el-table :data='viewFileList' style='width: 100%' v-show="action">-->
           <el-table-column prop='name' label='附件名' :width="width"></el-table-column>
           <el-table-column prop="createBy" label='上传人' width='190px'></el-table-column>
           <el-table-column prop='createDate' label='上传日期' width='160px'></el-table-column>
-          <el-table-column label='操作' header-align='center' width='120px'>
+          <el-table-column label='Thao tác' header-align='center' width='120px'>
             <template slot-scope='scope'>
-              <OperationIcon type='info' content='预览' placement='top-start' icon-name='el-icon-view'
+              <OperationIcon type='info' content='Xem trước' placement='top-start' icon-name='el-icon-view'
                              @click='onViewFileList(scope.$index, scope.row)'></OperationIcon>
-              <OperationIcon type='info' content='下载' placement='top-start' icon-name='el-icon-download'
+              <OperationIcon type='info' content='Tải xuống' placement='top-start' icon-name='el-icon-download'
                              @click='onUploadViewFile(scope.$index, scope.row)'></OperationIcon>
-              <OperationIcon v-if="authority === 'edit'" type='info' content='删除' placement='top-start' icon-name='el-icon-close'
+              <OperationIcon v-if="authority === 'edit'" type='info' content='Xóa' placement='top-start' icon-name='el-icon-close'
                              @click='onRemoveViewFile(scope.$index, scope.row)'></OperationIcon>
             </template>
           </el-table-column>
@@ -77,7 +77,7 @@
       title: {
         type: String,
         default: () => {
-          return '附件上传'
+          return 'Tải tệp đính kèm lên'
         }
       }
     },
@@ -99,7 +99,7 @@
       OperationIcon
     },
     methods: {
-      onUploadFile() { // 上传附件
+      onUploadFile() { // Tải tệp đính kèm lên
         if (this.activeNames.indexOf('3') === -1) {
           this.activeNames.push("3")
         }
@@ -108,7 +108,7 @@
       onRemoveFileList(file, fileList) { // 移除文件
         this.value.uploads = fileList
       },
-      onUploadViewFile(index, row) { // 下载
+      onUploadViewFile(index, row) { // Tải xuống
         // fileUploadById(row.id).then(responseData => {
         //   const content = responseData;
         //   this.download(content, row.name);
@@ -138,7 +138,7 @@
 
         const blob = this.dataURLtoBlob(uploadFiles)
         const elink = document.createElement('a')
-        // 设置下载文件名
+        // Đặt tên tệp tải xuống
         const timedate = Date.parse(new Date())
         elink.download = fileName
         elink.style.display = 'none'
@@ -147,7 +147,7 @@
         elink.click()
         document.body.removeChild(elink)
       },
-      // 将base64转换为blob
+      // Sẽbase64Chuyển đổi thànhblob
     dataURLtoBlob(dataurl) {
       const arr = dataurl.split(',')
       const mime = arr[0].match(/:(.*?);/)[1]
@@ -162,7 +162,7 @@
       onPreviewFile(file) {
       },
       onExceedFile(file, fileList) {
-        this.$message.warning(`当前限制上传 7 个文件`);
+        this.$message.warning(`当前限制上传 7 tệp`);
       },
       beforeRemoveFile(file, fileList) {
         let index = this.fileList.indexOf(file);
@@ -178,18 +178,18 @@
        this.value.uploads = fileList
        this.$emit("getFileList",this.fileList)
       },
-      onViewFileList(index, row) { // 预览
+      onViewFileList(index, row) { // Xem trước
         let suffix = row.name.substring(row.name.lastIndexOf("."))
-        let fileId = row.id + "" + suffix // 拼接参数，文件ID + 后缀名
+        let fileId = row.id + "" + suffix // 拼接参数，TệpID + 后缀名
         let token = getLocalToken()
         // 文件流访问路径
         let url = process.env.FILE_PREVIEW_URL + `sys/sysSeting/getFile/` + fileId + `?token=` + token
         window.open(process.env.KK_FILE_URL + encodeURIComponent(Base64.encode(url)));
       },
       onRemoveViewFile(index, row) {
-        this.$confirm(`确定移除 ${ row.name }吗？`, '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
+        this.$confirm(`Xác nhận xóa ${ row.name }吗？`, 'Xác nhận', {
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy'
         }).then(() => {
           this.viewFileList.splice(index, 1)
           //this.value.deletes.push(row.id)
@@ -202,7 +202,7 @@
       getViewFileList(){
         return this.viewFileList;
       },
-      // 根据objectId，获取附件信息
+      // TheoobjectId，获取附件信息
       getSysFileAll() {
         this.setLoad()
         let file_search = {
@@ -222,9 +222,9 @@
           this.outputError(error)
         })
       },
-      initOption() { // 初始化数据
-        this.fileList = []  // 上传附件列表
-        this.activeNames = [] // 折叠面板初始化
+      initOption() { // Khởi tạo dữ liệu
+        this.fileList = []  // Danh sách tệp đính kèm đã tải lên
+        this.activeNames = [] // Khởi tạo bảng gập
         this.viewFileList = []
         if (!validatenull(this.objectId)) {
           this.getSysFileAll()
@@ -238,14 +238,14 @@
         }
         if (typeof this.action === 'boolean') {
           if (this.action) {
-            this.fileList = []  // 上传附件列表
+            this.fileList = []  // Danh sách tệp đính kèm đã tải lên
             return "view";
           } else {
             return "add";
           }
         } else {
           if (this.action !== "add") {
-            this.fileList = []  // 上传附件列表
+            this.fileList = []  // Danh sách tệp đính kèm đã tải lên
           }
           return this.action;
         }
@@ -256,8 +256,8 @@
         if (!validatenull(this.objectId)) {
           this.getSysFileAll()
         }else{
-          this.fileList = []  // 上传附件列表
-          this.activeNames = [] // 折叠面板初始化
+          this.fileList = []  // Danh sách tệp đính kèm đã tải lên
+          this.activeNames = [] // Khởi tạo bảng gập
           this.viewFileList = []
         }
       },

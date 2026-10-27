@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 /**
- * 收费管理Entity
+ * Quản lý thu phíEntity
  * @author lc
  * @version 2022-06-22
  */
@@ -23,24 +23,24 @@ public class TollInfo extends DataEntity<TollInfo> {
 	private static final long serialVersionUID = 1024846610635145502L;
     private String jgid;
     private String jgmc;
-	private Company company;      // 诊所id 
-	private String department;      // 科室
-	private String doseUnit;      // 剂量
-	private RecipelInfo recipel;      // 处方
-	private BigDecimal amountReceivable;		// 应收(退)金额
-	private BigDecimal amountReceived;		// 实收金额
-	private BigDecimal amountDiscounted;		// 优惠金额
-	private Float discount;		// 折扣额度 
-	private DictItem paymentType;      // 支付类型
-	private DictItem amountStatus;      // 单据状态，参考枚举 
-	private String tollNumber;		// 收费单号
-	private DictItem tollType;      // 收费类型，参考枚举 
-	private Patient patient;      // 患者 
-	private MedicalRecord medical;      // 病例 
-    private User doctor;	// 开单科室/医生
-    private RecipelDetail recipelDetail;	// 收费项目，药品/材料/诊疗名称&数量
-    private String registrationFeeId;   //挂号费记录登记信息id
-    private int returnType;            //收费单退费标记
+	private Company company;      // Phòng khámid 
+	private String department;      // Khoa
+	private String doseUnit;      // Liều lượng
+	private RecipelInfo recipel;      // Đơn thuốc
+	private BigDecimal amountReceivable;		// phải thu(trả)Số tiền
+	private BigDecimal amountReceived;		// Số tiền thực thu
+	private BigDecimal amountDiscounted;		// Số tiền ưu đãi
+	private Float discount;		// 折扣số tiềnđộ 
+	private DictItem paymentType;      // thanh toánLoại
+	private DictItem amountStatus;      // đơndữ liệuTrạng thái, enum tham khảo 
+	private String tollNumber;		// Số phiếu thu phí
+	private DictItem tollType;      // Loại thu phí, enum tham khảo 
+	private Patient patient;      // Bệnh nhân 
+	private MedicalRecord medical;      // ca bệnh 
+    private User doctor;	// Khoa lập phiếu/Bác sĩ
+    private RecipelDetail recipelDetail;	// Hạng mục thu phí, Thuốc/Vật tư/khámtrị liệuTên&Số lượng
+    private String registrationFeeId;   //Phí đăng ký khámBản ghiđăng kýThông tinid
+    private int returnType;            //Thu phíđơnhoàn phíđánh dấu
 	
 	public TollInfo() {
 		super();
@@ -114,7 +114,7 @@ public class TollInfo extends DataEntity<TollInfo> {
 	}
 	
 	
-	@NotNull(message="支付类型不能为空")
+	@NotNull(message="thanh toánLoạiKhông thể là trống")
     public DictItem getPaymentType() {
         return paymentType;
     }
@@ -123,7 +123,7 @@ public class TollInfo extends DataEntity<TollInfo> {
         this.paymentType = paymentType;
     }
     
-	@NotNull(message="单据状态，参考枚举不能为空")
+	@NotNull(message="đơndữ liệuTrạng thái, enum tham khảoKhông thể là trống")
     public DictItem getAmountStatus() {
         return amountStatus;
     }
@@ -132,7 +132,7 @@ public class TollInfo extends DataEntity<TollInfo> {
         this.amountStatus = amountStatus;
     }
     
-	@Length(min=1, max=64, message="收费单号长度必须介于 1 和 64 之间")
+	@Length(min=1, max=64, message="Thu phíđơnsốĐộ dài phải nằm trong khoảng 1 đến 64 ")
 	public String getTollNumber() {
 		return tollNumber;
 	}
@@ -141,7 +141,7 @@ public class TollInfo extends DataEntity<TollInfo> {
 	}
 	
 	
-	@NotNull(message="收费类型，参考枚举不能为空")
+	@NotNull(message="Loại thu phí, enum tham khảoKhông thể là trống")
     public DictItem getTollType() {
         return tollType;
     }
@@ -201,7 +201,7 @@ public class TollInfo extends DataEntity<TollInfo> {
     }
 
     /**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -210,7 +210,7 @@ public class TollInfo extends DataEntity<TollInfo> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -220,7 +220,7 @@ public class TollInfo extends DataEntity<TollInfo> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

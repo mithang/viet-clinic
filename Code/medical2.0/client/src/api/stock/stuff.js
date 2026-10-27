@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/stuff')
 
-// 标准CRUD接口
+// Tiêu chuẩnCRUDGiao diện
 export const getStuffById = baseApi.getById
 export const listStuffPage = baseApi.listPage
 export const listStuffAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertStuff = baseApi.bulkInsert
 export const bulkUpdateStuff = baseApi.bulkUpdate
 export const bulkDeleteStuff = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const listSyncStuffPage = search =>
   request({
     url: "/stock/stuff/listByCompany",

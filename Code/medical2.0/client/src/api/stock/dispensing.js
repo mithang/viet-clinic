@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/dispensing')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getDispensingById = baseApi.getById
 export const listDispensingPage = baseApi.listPage
 export const listDispensingAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertDispensing = baseApi.bulkInsert
 export const bulkUpdateDispensing = baseApi.bulkUpdate
 export const bulkDeleteDispensing = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const getList = (data) =>
     request({
         url: '/stock/dispensing/reportList',

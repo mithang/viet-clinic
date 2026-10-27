@@ -9,22 +9,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 库存操作记录Entity
+ * Bản ghi thao tác tồn khoEntity
  * @author hl
  * @version 2022-09-26
  */
 public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 
 	private static final long serialVersionUID = 1139486400240443467L;
-	private Company company;      // 诊所ID 
-	private String drugStuffId;		// 药品/材料ID
-	private String drugStuffName;		// 药品/材料名称
-	private Integer type;		// 类型（1：药品；2：材料）
-	private Integer operationType;		// 操作类型：-2入库明细到期自动作废 -1作废入库信息   1入库操作  2预占库存   3实际占用  4退药暂未退费 6-出库单出库
-	private BigDecimal operationStock;		// 操作库存数
-	private String storageId;		// 入库明细ID
-	private String recipelInfoId;		// 处方ID
-	private String refId;		// 关联记录ID
+	private Company company;      // Phòng khámID 
+	private String drugStuffId;		// Thuốc/Vật tưID
+	private String drugStuffName;		// Thuốc/Tên vật tư
+	private Integer type;		// Loại(1: Thuốc; 2: Vật tư)
+	private Integer operationType;		// Loại thao tác: -2Chi tiết nhập khoĐếnkỳtự độnghủy -1hủynhập khoThông tin   1nhập khothao tác  2chiếm dụng trướcTồn kho   3thực tếchiếm dụng  4Trả thuốctạmChưahoàn phí 6-Xuất khođơnXuất kho
+	private BigDecimal operationStock;		// Số lượng tồn kho thao tác
+	private String storageId;		// Chi tiết nhập khoID
+	private String recipelInfoId;		// Đơn thuốcID
+	private String refId;		// liên kếtBản ghiID
 
 	
 	public MedicinalStockRecord() {
@@ -36,7 +36,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 
-	@NotNull(message="诊所ID不能为空")
+	@NotNull(message="Phòng khámIDKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -45,7 +45,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
         this.company = company;
     }
     
-	@Length(min=1, max=20, message="药品/材料ID长度必须介于 1 和 20 之间")
+	@Length(min=1, max=20, message="Thuốc/Vật tưIDĐộ dài phải từ 1  và  20 Giữa")
 	public String getDrugStuffId() {
 		return drugStuffId;
 	}
@@ -54,7 +54,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@Length(min=1, max=255, message="药品/材料名称长度必须介于 1 和 255 之间")
+	@Length(min=1, max=255, message="Thuốc/Độ dài tên vật tư phải nằm trong khoảng 1 đến 255 ")
 	public String getDrugStuffName() {
 		return drugStuffName;
 	}
@@ -63,7 +63,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@NotNull(message="类型（1：药品；2：材料）不能为空")
+	@NotNull(message="Loại(1: Thuốc; 2: Vật tư)Không được để trống")
 	public Integer getType() {
 		return type;
 	}
@@ -80,7 +80,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@NotNull(message="操作库存数不能为空")
+	@NotNull(message="Số lượng tồn kho thao tácKhông thể là trống")
 	public BigDecimal getOperationStock() {
 		return operationStock;
 	}
@@ -89,7 +89,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@Length(min=1, max=20, message="入库明细ID长度必须介于 1 和 20 之间")
+	@Length(min=1, max=20, message="Chi tiết nhập khoIDĐộ dài phải từ 1  và  20 Giữa")
 	public String getStorageId() {
 		return storageId;
 	}
@@ -98,7 +98,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@Length(min=0, max=20, message="处方ID长度必须介于 0 和 20 之间")
+	@Length(min=0, max=20, message="Đơn thuốcIDĐộ dài phải từ 0  và  20 Giữa")
 	public String getRecipelInfoId() {
 		return recipelInfoId;
 	}
@@ -107,7 +107,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@Length(min=0, max=255, message="关联记录ID长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="liên kếtBản ghiIDĐộ dài phải từ 0  và  255 Giữa")
 	public String getRefId() {
 		return refId;
 	}
@@ -120,7 +120,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -129,7 +129,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -139,7 +139,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

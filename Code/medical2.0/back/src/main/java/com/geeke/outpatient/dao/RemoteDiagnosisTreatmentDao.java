@@ -12,33 +12,33 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 远程诊断管理DAO接口
+ * từ xaChẩn đoánQuản lýDAOGiao diện
  * @author zh
  * @version 2023-12-06
  */
 @Mapper
 public interface RemoteDiagnosisTreatmentDao extends CrudDao<Patient> {
-    /** id查询 */
+    /** idTruy vấn */
     RemoteDiagnosisTreatment diagnosisById(@Param("id")String id);
-    /** 挂号查询 */
+    /** Đăng ký khámTruy vấn */
     RemoteDiagnosisTreatment getRegistrationId(@Param("registrationId")String registrationId);
-    /** 数量查询 */
+    /** Số lượngTruy vấn */
     int diagnosisCount(PageRequest pageRequest);
-    /** 分页查询 */
+    /** Truy vấn phân trang */
     List<RemoteDiagnosisTreatment> diagnosisPage(PageRequest pageRequest);
-    /** 新增数据 */
+    /** Thêm mớiDữ liệu */
     int diagnosisInsert(RemoteDiagnosisTreatment entity);
-    /** 修改数据 */
+    /** SửaDữ liệu */
     int diagnosisUpdate(RemoteDiagnosisTreatment entity);
-    /** 修改状态 */
+    /** Sửa trạng thái */
     int modifiedState(RemoteDiagnosisTreatment entity);
-    /** 远程诊疗收费 */
+    /** khám chữa bệnh từ xaThu phí */
     int chargeState(@Param("id")String id);
-    /** 获取处方信息 */
+    /** Lấy thông tin đơn thuốc */
     List<RecipelInfo> getCase(@Param("id")String id);
-    /** 修改收费状态 */
+    /** SửaTrạng thái thu phí */
     int chargeEdit(@Param("id")String id);
-    /** 删除记录 */
+    /** XóaBản ghi */
     int diagnosisDelete(@Param("id")String id);
 
 }

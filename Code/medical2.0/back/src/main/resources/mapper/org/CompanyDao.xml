@@ -250,12 +250,12 @@
             start_use_date,
             expire_date,
             contact_name,
-            fixmedins_name,             -- 新增 fixmedins_name
-            mdtrtarea_admvs,            -- 新增 mdtrtarea_admvs
-            app_id,                     -- 新增 app_id
-            app_secret,                 -- 新增 app_secret
-            private_key,                -- 新增 private_key
-            public_key                  -- 新增 public_key
+            fixmedins_name,             -- Thêm mới fixmedins_name
+            mdtrtarea_admvs,            -- Thêm mới mdtrtarea_admvs
+            app_id,                     -- Thêm mới app_id
+            app_secret,                 -- Thêm mới app_secret
+            private_key,                -- Thêm mới private_key
+            public_key                  -- Thêm mới public_key
         ) VALUES (
                      #{id},
                      #{parent.id},
@@ -284,12 +284,12 @@
                      #{startUseDate},
                      #{expireDate},
                      #{contactName},
-                     #{fixmedinsName},          -- 新增 fixmedinsName
-                     #{mdtrtareaAdmvs},         -- 新增 mdtrtareaAdmvs
-                     #{appId},                  -- 新增 appId
-                     #{appSecret},              -- 新增 appSecret
-                     #{privateKey},             -- 新增 privateKey
-                     #{publicKey}               -- 新增 publicKey
+                     #{fixmedinsName},          -- Thêm mới fixmedinsName
+                     #{mdtrtareaAdmvs},         -- Thêm mới mdtrtareaAdmvs
+                     #{appId},                  -- Thêm mới appId
+                     #{appSecret},              -- Thêm mới appSecret
+                     #{privateKey},             -- Thêm mới privateKey
+                     #{publicKey}               -- Thêm mới publicKey
                  )
 
     </insert>
@@ -316,11 +316,11 @@
             start_use_date = #{startUseDate},
             expire_date = #{expireDate},
             contact_name = #{contactName},
-            fixmedins_name = #{fixmedinsName},            -- 新增 fixmedins_name
-            mdtrtarea_admvs = #{mdtrtareaAdmvs},          -- 新增 mdtrtarea_admvs
-            app_id = #{appId},                            -- 新增 app_id
-            app_secret = #{appSecret},                    -- 新增 app_secret
-            private_key = #{privateKey},                  -- 新增 private_key
+            fixmedins_name = #{fixmedinsName},            -- Thêm mới fixmedins_name
+            mdtrtarea_admvs = #{mdtrtareaAdmvs},          -- Thêm mới mdtrtarea_admvs
+            app_id = #{appId},                            -- Thêm mới app_id
+            app_secret = #{appSecret},                    -- Thêm mới app_secret
+            private_key = #{privateKey},                  -- Thêm mới private_key
             public_key = #{publicKey}
         WHERE id = #{id}
     </update>

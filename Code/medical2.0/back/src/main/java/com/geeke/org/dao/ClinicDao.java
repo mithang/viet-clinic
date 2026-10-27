@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.org.entity.Clinic;
 
 /**
- * 诊所管理DAO接口
+ * Quản lý phòng khámDAOGiao diện
  * @author txl
  * @version 2022-05-19
  */

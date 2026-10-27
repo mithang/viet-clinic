@@ -29,7 +29,7 @@
     },
     mounted() {
       // Cookies.set('Authorization', sessionStorage.getItem('token'))
-      // 避免因域名相同（端口或许不同）时 共用一个 cookie 'Authorization'，要两者分开定义
+      // 避免因域名相同（端口或许不同）giờ 共用一个 cookie 'Authorization'，要两者分开定义
       Cookies.set('x-token', sessionStorage.getItem('token'))
 
       this.wactchDataView()

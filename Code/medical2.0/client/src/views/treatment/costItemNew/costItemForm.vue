@@ -14,7 +14,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -35,12 +35,12 @@
       <div class="tab-item" v-show="tabIndex === '1'">
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="项目编码" prop="itemCode">
+            <el-form-item label="Mã hạng mục" prop="itemCode">
               <el-input
                 disabled
                 v-model="bizFormModel.itemCode"
                 :maxlength="64"
-                placeholder="保存后自动生成"
+                placeholder="Tự động tạo sau khi lưu"
                 autofocus
               ></el-input>
             </el-form-item>
@@ -48,12 +48,12 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="国家编码" prop="itemCountryCode">
+            <el-form-item label="Mã quốc gia" prop="itemCountryCode">
               <el-input
                 :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')"
                 v-model="bizFormModel.itemCountryCode"
                 :maxlength="64"
-                :placeholder="dialogProps.action === 'view' ? '' : '请输入国家编码'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã quốc gia'"
                 autofocus
               ></el-input>
             </el-form-item>
@@ -61,14 +61,14 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="项目名称" prop="itemName">
+            <el-form-item label="Tên hạng mục" prop="itemName">
               <el-input
                 :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')"
                 v-model="bizFormModel.itemName"
                 :maxlength="64"
                 @input="pinyinInput"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入项目名称'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên hạng mục'
                 "
               ></el-input>
             </el-form-item>
@@ -76,14 +76,14 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="拼音码" prop="pinyinCode">
+            <el-form-item label="Mã pinyin" prop="pinyinCode">
               <el-input
                 disabled=true
                 v-model="bizFormModel.pinyinCode"
                 :maxlength="64"
                 @input="pinyinInput"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入拼音码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã pinyin'
                 "
               ></el-input>
             </el-form-item>
@@ -91,15 +91,15 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="项目类型" prop="isPackage">
-                 <el-radio :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" v-model="bizFormModel.isPackage" label="0">单项项目</el-radio>
-                 <el-radio :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" v-model="bizFormModel.isPackage" label="1">组合项目</el-radio>
+            <el-form-item label="Loại hạng mục" prop="isPackage">
+                 <el-radio :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" v-model="bizFormModel.isPackage" label="0">Hạng mục đơn</el-radio>
+                 <el-radio :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" v-model="bizFormModel.isPackage" label="1">Hạng mục kết hợp</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="项目类别" prop="itemType.value">
+            <el-form-item label="Loại hạng mục" prop="itemType.value">
               <el-input
                 v-if="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')"
                 :disabled="true"
@@ -111,7 +111,7 @@
                 value-key="value"
                 filterable
                 clearable
-                placeholder="请选择项目类别"
+                placeholder="Vui lòng chọn loại hạng mục"
                 :disabled="bizFormModel.syncId !== '' && dialogProps.action !== 'add'"
                 @clear="
                   bizFormModel.itemType = {
@@ -132,7 +132,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="单位" prop="unit.value">
+            <el-form-item label="Đơn vị" prop="unit.value">
               <el-input
                 v-if="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')"
                 :disabled="true"
@@ -144,7 +144,7 @@
                 value-key="value"
                 filterable
                 clearable
-                placeholder="请选择单位"
+                placeholder="Vui lòng chọn đơn vị"
                 @clear="
                   bizFormModel.unit = {
                     value: null,
@@ -164,7 +164,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="成本价" prop="costPrice">
+            <el-form-item label="Giá vốn" prop="costPrice">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -182,7 +182,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="销售价" prop="salePrice">
+            <el-form-item label="Giá bán" prop="salePrice">
               <el-input
                 v-if="dialogProps.action === 'view'"
                 :disabled="true"
@@ -200,7 +200,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="是否启用" prop="isUse">
+            <el-form-item label="Có kích hoạt không" prop="isUse">
               <el-switch
                 :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')"
                 v-model="bizFormModel.isUse"
@@ -214,14 +214,14 @@
         </el-row>
         <el-row>
           <el-col>
-            <el-form-item label="备注信息" prop="remarks">
+            <el-form-item label="Thông tin ghi chú" prop="remarks">
               <el-input
                 :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')"
                 v-model="bizFormModel.remarks"
                 type="textarea"
                 :maxlength="255"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入备注信息'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập thông tin ghi chú'
                 "
                 clearable
               ></el-input>
@@ -230,7 +230,7 @@
         </el-row>
         <!-- <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="是否执行划扣" prop="isDeduct">
+            <el-form-item label="Có thực hiện khấu trừ không" prop="isDeduct">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.isDeduct"
@@ -251,7 +251,7 @@
        <el-col :span="11">
       <el-row>
         <el-col :span="24/1">
-            <el-form-item label="诊疗子项目名称" prop="itemNames">
+            <el-form-item label="Tên hạng mục con khám chữa bệnh" prop="itemNames">
                 <el-select
                 :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')"
                    multiple
@@ -259,7 +259,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择子项目"
+                  placeholder="Vui lòng chọn hạng mục con"
                   @change="changeMessage"
                 >
                   <el-option
@@ -282,17 +282,17 @@
                 <el-table-column
                   fixed
                   prop="itemCode"
-                  label="项目编码"
+                  label="Mã hạng mục"
                   width="100">
                 </el-table-column>
                 <el-table-column
                   prop="itemName"
-                  label="子项目名"
+                  label="Tên hạng mục con"
                   width="120">
                 </el-table-column>
                 <el-table-column
                   prop="quantity"
-                  label="数量"
+                  label="Số lượng"
                   width="120">
                   <template slot-scope="scope">
                   <el-input-number :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" size="mini" v-model="subproject[scope.$index].quantity" @change="handleChange" :min="0"   ></el-input-number>
@@ -300,7 +300,7 @@
                 </el-table-column>
                 <el-table-column
                   prop="salePrice"
-                  label="销售价格"
+                  label="Giá bán"
                  
                   width="160">
                    <template slot-scope="scope">
@@ -309,7 +309,7 @@
                 </el-table-column>
                
                 <el-table-column
-                  label="操作"
+                  label="Thao tác"
                   width="50">
                   <template slot-scope="scope">
                     <el-button
@@ -317,7 +317,7 @@
                       @click.native.prevent="deleteRow(scope.$index, tableData)"
                       type="text"
                       size="small">
-                      移除
+                      Xóa
                     </el-button>
                   </template>
                 </el-table-column>
@@ -329,11 +329,11 @@
     <div v-else>
       <el-col :span="11">
       <el-form ref="form" :model="examine" label-width="80px">
-        <el-form-item label="参考单位">
-          <el-input  label="请输入参考单位" :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" v-model="examine.referenceUnit"></el-input>
+        <el-form-item label="Đơn vị tham khảo">
+          <el-input  label="Vui lòng nhập đơn vị tham khảo" :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" v-model="examine.referenceUnit"></el-input>
         </el-form-item>
-        <el-form-item label="参考值">
-          <el-input label="请输入参考值，换行添加多组" :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" type="textarea" v-model="examine.referenceValue"></el-input>
+        <el-form-item label="Giá trị tham khảo">
+          <el-input label="Vui lòng nhập giá trị tham khảo，Xuống dòng thêm nhiều nhóm" :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" type="textarea" v-model="examine.referenceValue"></el-input>
         </el-form-item>
       </el-form>
       </el-col>
@@ -342,9 +342,9 @@
     </el-form>
    
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' type='primary' :disabled="flag" :plain='true' @click='onSubmit("costItemForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' type='primary' :disabled="flag" :plain='true' @click='onSubmit("costItemForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -368,19 +368,19 @@ export default {
   data() {
     const salePrice = (rule, val, callback) => {
       if (val <= 0 || val === "") {
-        callback("请输入销售价格");
+        callback("Vui lòng nhập giá bán");
       } else {
-        callback("请输入销售价格");
+        callback("Vui lòng nhập giá bán");
       }
     };
     return {
       user: JSON.parse(sessionStorage.getItem("currentUser")),
       bizFormModel: this.initFormModel(this.user),
       tabIndex: "1",
-      subjectName:[],//子项目名称封装
-      itemType_List: [], // 项目类别
-      itemName_List:[],//子项目名称
-      unit_List: [], // 单位
+      subjectName:[],//Đóng gói tên hạng mục con
+      itemType_List: [], // Loại hạng mục
+      itemName_List:[],//Tên hạng mục con
+      unit_List: [], // Đơn vị
       flag:false,
       subproject:[],//子项目表格集合
       examine:{
@@ -388,42 +388,42 @@ export default {
         referenceValue:""
       },
       arr:[],
-      salesFlage:false,//销售价格是否能修改
-      sale:0,//暂存子项目销售价格
-      cost:0,//暂存子项目市场价
+      salesFlage:false,//Giá bán có thể sửa được không
+      sale:0,//Lưu tạm giá bán hạng mục con
+      cost:0,//Lưu tạm giá thị trường hạng mục con
       dto:{
         costItem:{},
         costItemPackage:[],
-      },//封装对象
+      },//Đối tượng đóng gói
       dialogProps: {
         visible: false,
         action: '',
         title: '',
         
       },
-       radio:"0",   //是否为打包项目
+       radio:"0",   //Có phải hạng mục đóng gói không
        objectType:"1",
       formRules: {
         itemName: [
-          { required: true, message: "请输入项目名称", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập tên hạng mục", trigger: "blur" },
         ],
         salePrice: [
-          { required: salePrice, message: "请输入销售价格", trigger: "blur" },
+          { required: salePrice, message: "Vui lòng nhập giá bán", trigger: "blur" },
         ],
         "itemType.value":[
-          { required: salePrice, message: "请选择项目类别", trigger: "change" }
+          { required: salePrice, message: "Vui lòng chọn loại hạng mục", trigger: "change" }
         ],
         "unit.value":[
-          { required: salePrice, message: "请选择项目单位", trigger: "change" }
+          { required: salePrice, message: "Vui lòng chọn đơn vị hạng mục", trigger: "change" }
         ],
         isPackage:[
-          { required: true, message: '请选择项目类型', trigger: 'change' }
+          { required: true, message: 'Vui lòng chọn loại hạng mục', trigger: 'change' }
         ]
       },
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object,
     },
@@ -472,7 +472,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改诊疗项目";
+      this.dialogProps.title = "Sửa hạng mục khám chữa bệnh";
       this.initOptions(this.bizFormModel);
     },
     onDialogClose() {
@@ -487,27 +487,27 @@ export default {
     initFormModel(This) {
       return {
         company: {
-          // 诊所id
+          // Phòng khámid
           id: This ? This.company.id : null,
           name: null,
         },
-        itemCode: "", // 项目编码
-        itemName: "", // 项目名称
+        itemCode: "", // Mã hạng mục
+        itemName: "", // Tên hạng mục
         itemType: {
-          // 项目类别
+          // Loại hạng mục
           value: null,
           name: null,
         },
         unit: {
-          // 单位
+          // Đơn vị
           value: null,
           name: null,
         },
-        costPrice: 0, // 成本价
-        salePrice: 0, // 销售价
-        isUse: "1", // 状态
-        remarks: "", // 备注信息
-        isDeduct: "0", // 是否执行划扣
+        costPrice: 0, // Giá vốn
+        salePrice: 0, // Giá bán
+        isUse: "1", // Trạng thái
+        remarks: "", // Thông tin ghi chú
+        isDeduct: "0", // Có thực hiện khấu trừ không
       };
     },
     initOptions(This) {
@@ -519,9 +519,9 @@ export default {
       });
     },
 
-    //子项目移除
+    //Xóa hạng mục con
     deleteRow(index, rows) {
-       //计算销售价
+       //Tính giá bán
         this.bizFormModel.salePrice-=(this.subproject[index].quantity*this.subproject[index].salePrice)
         this.bizFormModel.costPrice-=(this.subproject[index].quantity*this.subproject[index].costPrice)
         this.sale-=(this.subproject[index].quantity*this.subproject[index].salePrice)
@@ -548,7 +548,7 @@ export default {
       }      
       
     },
-    //子项目select下拉框事件
+    //Hạng mục conselectSự kiện hộp thả xuống
     changeMessage(value){
       
       if(value.length===0){
@@ -576,7 +576,7 @@ export default {
               for (let i = 0; i < this.subproject.length; i++) {
                 for (let j = 0; j < this.arr.length; j++) {
                   if(this.subproject[i].itemName===this.arr[j]){
-                     //计算销售价
+                     //Tính giá bán
                     this.bizFormModel.salePrice-=(this.subproject[i].quantity*this.subproject[i].salePrice)
                     this.sale-=(this.subproject[i].quantity*this.subproject[i].salePrice)
                     this.bizFormModel.costPrice-=(this.subproject[i].quantity*this.subproject[i].costPrice)
@@ -594,7 +594,7 @@ export default {
         
        }
      // this.subproject=[]
-      //增加
+      //Thêm
       
       if(this.subjectName.length>this.subproject.length){
       let selectChange1=[];         
@@ -617,7 +617,7 @@ export default {
             }
         }
       }
-      }else{//减少
+      }else{//Giảm
         let selectChange2=[];
         for (let i = 0; i < this.subproject.length; i++) {
           for (let j = 0; j < this.subjectName.length; j++) {
@@ -666,7 +666,7 @@ export default {
      close(){
        this.salesFlage=false
      },
-     //输入框拼音码
+     //Mã pinyin của ô nhập
      pinyinInput(value){
        this.bizFormModel.pinyinCode=pinyin.getCamelChars(value)
        
@@ -694,7 +694,7 @@ export default {
         this.dialogProps.action = "view";
         this.subjectName=[]
         this.subproject=[]
-        this.dialogProps.title = "查看诊疗项目";
+        this.dialogProps.title = "Xem hạng mục khám chữa bệnh";
         this.bizFormModel = { ...this.initFormModel(), ...costItemDTO.costItem };
         this.initOptions(this.bizFormModel);
        if(costItemDTO.costItemPackage[0]!=null&&costItemDTO.costItems[0]!=null){
@@ -733,7 +733,7 @@ export default {
         }
        
         this.dialogProps.action = "edit";
-        this.dialogProps.title = "修改诊疗项目";
+        this.dialogProps.title = "Sửa hạng mục khám chữa bệnh";
        
         
         this.bizFormModel = { ...this.initFormModel(), ...costItemDTO.response.costItem};
@@ -770,7 +770,7 @@ export default {
         }
         this.sale=0
         this.cost=0
-        //将subproject子项目中的价钱赋值给sale
+        //SẽsubprojectGán giá tiền của hạng mục con chosale
         for (let i = 0; i < this.subproject.length; i++) {
           this.sale+=(this.subproject[i].quantity*this.subproject[i].salePrice)
           this.cost+=(this.subproject[i].quantity*this.subproject[i].costPrice)
@@ -785,7 +785,7 @@ export default {
         this.itemName_List=[]
         this.arr=[]
         this.dialogProps.action = "add";
-        this.dialogProps.title = "添加诊疗项目";
+        this.dialogProps.title = "Thêm hạng mục khám chữa bệnh";
         this.bizFormModel = this.initFormModel(this.user);
         this.initOptions(this.bizFormModel);
         this.tabIndex = "1";
@@ -799,11 +799,11 @@ export default {
       });
       this.$on("openCopyCostItemDialog", function (costItemDTO) {
         // this.dialogProps.action = "add";
-        // this.dialogProps.title = "添加诊疗项目";
+        // this.dialogProps.title = "Thêm hạng mục khám chữa bệnh";
         // this.bizFormModel = { ...this.initFormModel(this.user), ...costItem };
         // this.initOptions(this.bizFormModel);
         // this.tabIndex = "1";
-        // this.bizFormModel.id = null; //把id设置为空，添加一个新的
+        // this.bizFormModel.id = null; //ĐặtidĐặt thành trống，Thêm mới một
         // this.dialogProps.visible = true;
         // this.subjectName=[]
         // this.subproject=[]
@@ -815,7 +815,7 @@ export default {
         // }
        
         this.dialogProps.action = "add";
-        this.dialogProps.title = "添加诊疗项目";
+        this.dialogProps.title = "Thêm hạng mục khám chữa bệnh";
        
         
         this.bizFormModel = { ...this.initFormModel(), ...costItemDTO.response.costItem};
@@ -852,7 +852,7 @@ export default {
         }
         this.sale=0
         this.cost=0
-        //将subproject子项目中的价钱赋值给sale
+        //SẽsubprojectGán giá tiền của hạng mục con chosale
         for (let i = 0; i < this.subproject.length; i++) {
           this.sale+=(this.subproject[i].quantity*this.subproject[i].salePrice)
           this.cost+=(this.subproject[i].quantity*this.subproject[i].costPrice)

@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
- * 反射工具类.
- * 提供调用getter/setter方法, 访问私有变量, 调用私有方法, 获取泛型类型Class, 被AOP过的真实类等工具函数.
+ * reflectionLớp công cụ.
+ * cung cấpgọigetter/setterPhương pháp, truy cậpriêngcóthay đổilượng, gọiriêngcóPhương thức, LấygenericLoạiClass, bịAOPqua của 真thựcLớp v.v. công việccụ thểHàm.
  * @author calvin
  * @version 2013-01-15
  */
@@ -34,8 +34,8 @@ public class Reflections {
 	private static Logger logger = LoggerFactory.getLogger(Reflections.class);
 
 	/**
-	 * 调用Getter方法.
-	 * 支持多级，如：对象名.对象名.方法
+	 * gọiGetterPhương pháp.
+	 * hỗ trợnhiềucấp, Như : Tên đối tượng.Tên đối tượng.Phương pháp
 	 */
 	public static Object invokeGetter(Object obj, String propertyName) {
 		Object object = obj;
@@ -47,8 +47,8 @@ public class Reflections {
 	}
 
 	/**
-	 * 调用Setter方法, 仅匹配方法名。
-	 * 支持多级，如：对象名.对象名.方法
+	 * gọiSetterPhương pháp, chỉkhớpPhương thứctên. 
+	 * hỗ trợnhiềucấp, Như : Tên đối tượng.Tên đối tượng.Phương pháp
 	 */
 	public static void invokeSetter(Object obj, String propertyName, Object value) {
 		Object object = obj;
@@ -65,7 +65,7 @@ public class Reflections {
 	}
 
 	/**
-	 * 直接读取对象属性值, 无视private/protected修饰符, 不经过getter函数.
+	 * trực tiếpđọcĐối tượngthuộc tínhGiá trị, Bỏ quaprivate/protectedTừ bổ nghĩa, khôngquaquagetterHàm.
 	 */
 	public static Object getFieldValue(final Object obj, final String fieldName) {
 		Field field = getAccessibleField(obj, fieldName);
@@ -78,13 +78,13 @@ public class Reflections {
 		try {
 			result = field.get(obj);
 		} catch (IllegalAccessException e) {
-			logger.error("不可能抛出的异常{}", e.getMessage());
+			logger.error("khôngcó thểném ra của ngoại lệ{}", e.getMessage());
 		}
 		return result;
 	}
 
 	/**
-	 * 直接设置对象属性值, 无视private/protected修饰符, 不经过setter函数.
+	 * trực tiếpĐặtĐối tượngthuộc tínhGiá trị, Bỏ quaprivate/protectedTừ bổ nghĩa, khôngquaquasetterHàm.
 	 */
 	public static void setFieldValue(final Object obj, final String fieldName, final Object value) {
 		Field field = getAccessibleField(obj, fieldName);
@@ -96,14 +96,14 @@ public class Reflections {
 		try {
 			field.set(obj, value);
 		} catch (IllegalAccessException e) {
-			logger.error("不可能抛出的异常:{}", e.getMessage());
+			logger.error("khôngcó thểném ra của ngoại lệ:{}", e.getMessage());
 		}
 	}
 
 	/**
-	 * 直接调用对象方法, 无视private/protected修饰符.
-	 * 用于一次性调用的情况，否则应使用getAccessibleMethod()函数获得Method后反复调用.
-	 * 同时匹配方法名+参数类型，
+	 * trực tiếpgọiĐối tượngPhương thức, Bỏ quaprivate/protectedTừ bổ nghĩa.
+	 * dùng đểmột lầntínhgọi của tình hình, Nếu khôngnênsử dụnggetAccessibleMethod()HàmLấy đượcMethodsaulặp đi lặp lạigọi.
+	 * cùng giờkhớpPhương thứctên+Tham sốLoại, 
 	 */
 	public static Object invokeMethod(final Object obj, final String methodName, final Class<?>[] parameterTypes,
 			final Object[] args) {
@@ -120,9 +120,9 @@ public class Reflections {
 	}
 
 	/**
-	 * 直接调用对象方法, 无视private/protected修饰符，
-	 * 用于一次性调用的情况，否则应使用getAccessibleMethodByName()函数获得Method后反复调用.
-	 * 只匹配函数名，如果有多个同名函数调用第一个。
+	 * trực tiếpgọiĐối tượngPhương thức, Bỏ quaprivate/protectedTừ bổ nghĩa, 
+	 * dùng đểmột lầntínhgọi của tình hình, Nếu khôngnênsử dụnggetAccessibleMethodByName()HàmLấy đượcMethodsaulặp đi lặp lạigọi.
+	 * chỉkhớpHàmtên, NếucónhiềuCáicùngtênHàmgọiDòng mộtCái. 
 	 */
 	public static Object invokeMethodByName(final Object obj, final String methodName, final Object[] args) {
 		Method method = getAccessibleMethodByName(obj, methodName);
@@ -138,7 +138,7 @@ public class Reflections {
 	}
 
 	/**
-	 * 判断类（含父类）是否包含指定名称的字段
+	 * Kiểm traLớp(chứachaLớp)Có hay khôngbao gồmchỉchỉ địnhTên của Trường
 	 */
 	public static boolean hasField(Class<?> clazz, String fieldName) {
 		for (Class<?> searchType = clazz; searchType != Object.class; searchType = searchType.getSuperclass()) {
@@ -153,7 +153,7 @@ public class Reflections {
 	}
 
 	/**
-	 * 判断类自身（不含父类）是否包含指定名称的字段
+	 * Kiểm traLớpbản thân(khôngchứachaLớp)Có hay khôngbao gồmchỉchỉ địnhTên của Trường
 	 */
 	public static boolean hasOwnField(Class<?> clazz, String fieldName) {
 		try {
@@ -165,9 +165,9 @@ public class Reflections {
 	}
 
 	/**
-	 * 循环向上转型, 获取对象的DeclaredField, 并强制设置为可访问.
+	 * Chuyển đổi lên trong vòng lặp, Lấy của đối tượngDeclaredField, Và bắt buộc đặt thành có thể truy cập.
 	 *
-	 * 如向上转型到Object仍无法找到, 返回null.
+	 * Như khi chuyển đổi lên thànhObjectVẫn không tìm được, Quay lạinull.
 	 */
 	public static Field getAccessibleField(final Object obj, final String fieldName) {
 		Validate.notNull(obj, "object can't be null");
@@ -178,7 +178,7 @@ public class Reflections {
 				makeAccessible(field);
 				return field;
 			} catch (NoSuchFieldException e) {//NOSONAR
-				// Field不在当前类定义,继续向上转型
+				// Fieldkhông ởHiện tạiLớpđịnh nghĩa,Tiếp tục chuyển đổi lên
 				continue;// new add
 			}
 		}
@@ -186,11 +186,11 @@ public class Reflections {
 	}
 
 	/**
-	 * 循环向上转型, 获取对象的DeclaredMethod,并强制设置为可访问.
-	 * 如向上转型到Object仍无法找到, 返回null.
-	 * 匹配函数名+参数类型。
+	 * Chuyển đổi lên trong vòng lặp, Lấy của đối tượngDeclaredMethod,Và bắt buộc đặt thành có thể truy cập.
+	 * Như khi chuyển đổi lên thànhObjectVẫn không tìm được, Quay lạinull.
+	 * khớpHàmtên+Tham sốLoại. 
 	 * 
-	 * 用于方法需要被多次调用的情况. 先使用本函数先取得Method,然后调用Method.invoke(Object obj, Object... args)
+	 * Dùng cho trường hợp phương thức cần được gọi nhiều lần. trướcsử dụngnàyHàmtrướclấyđượcMethod,nhưngsaugọiMethod.invoke(Object obj, Object... args)
 	 */
 	public static Method getAccessibleMethod(final Object obj, final String methodName,
 			final Class<?>... parameterTypes) {
@@ -203,7 +203,7 @@ public class Reflections {
 				makeAccessible(method);
 				return method;
 			} catch (NoSuchMethodException e) {
-				// Method不在当前类定义,继续向上转型
+				// Methodkhông ởHiện tạiLớpđịnh nghĩa,Tiếp tục chuyển đổi lên
 				continue;// new add
 			}
 		}
@@ -211,11 +211,11 @@ public class Reflections {
 	}
 
 	/**
-	 * 循环向上转型, 获取对象的DeclaredMethod,并强制设置为可访问.
-	 * 如向上转型到Object仍无法找到, 返回null.
-	 * 只匹配函数名。
+	 * Chuyển đổi lên trong vòng lặp, Lấy của đối tượngDeclaredMethod,Và bắt buộc đặt thành có thể truy cập.
+	 * Như khi chuyển đổi lên thànhObjectVẫn không tìm được, Quay lạinull.
+	 * chỉkhớpHàmtên. 
 	 * 
-	 * 用于方法需要被多次调用的情况. 先使用本函数先取得Method,然后调用Method.invoke(Object obj, Object... args)
+	 * Dùng cho trường hợp phương thức cần được gọi nhiều lần. trướcsử dụngnàyHàmtrướclấyđượcMethod,nhưngsaugọiMethod.invoke(Object obj, Object... args)
 	 */
 	public static Method getAccessibleMethodByName(final Object obj, final String methodName) {
 		Validate.notNull(obj, "object can't be null");
@@ -234,7 +234,7 @@ public class Reflections {
 	}
 
 	/**
-	 * 改变private/protected的方法为public，尽量不调用实际改动的语句，避免JDK的SecurityManager抱怨。
+	 * thay đổiprivate/protected của Phương thức là public, Cố gắng không gọi câu lệnh thực sự thay đổi dữ liệu, TránhJDK của SecurityManagerphàn nàn. 
 	 */
 	public static void makeAccessible(Method method) {
 		if ((!Modifier.isPublic(method.getModifiers()) || !Modifier.isPublic(method.getDeclaringClass().getModifiers()))
@@ -244,7 +244,7 @@ public class Reflections {
 	}
 
 	/**
-	 * 改变private/protected的成员变量为public，尽量不调用实际改动的语句，避免JDK的SecurityManager抱怨。
+	 * thay đổiprivate/protected của thànhnhân viênthay đổilượng là public, Cố gắng không gọi câu lệnh thực sự thay đổi dữ liệu, TránhJDK của SecurityManagerphàn nàn. 
 	 */
 	public static void makeAccessible(Field field) {
 		if ((!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers()) || Modifier
@@ -254,8 +254,8 @@ public class Reflections {
 	}
 
 	/**
-	 * 通过反射, 获得Class定义中声明的泛型参数的类型, 注意泛型必须定义在父类处
-	 * 如无法找到, 返回Object.class.
+	 * Quareflection, Lấy đượcClassđịnh nghĩa trong khai báo của genericTham số của Loại, chú ýgenericPhảiđịnh nghĩatạichaLớpnơi
+	 * Như khôngphương pháptìmĐến, Quay lạiObject.class.
 	 * eg.
 	 * public UserDao extends HibernateDao<User>
 	 *
@@ -268,10 +268,10 @@ public class Reflections {
 	}
 
 	/**
-	 * 通过反射, 获得Class定义中声明的父类的泛型参数的类型.
-	 * 如无法找到, 返回Object.class.
+	 * Quareflection, Lấy đượcClassKiểu của tham số generic của lớp cha được khai báo trong định nghĩa.
+	 * Như khôngphương pháptìmĐến, Quay lạiObject.class.
 	 * 
-	 * 如public UserDao extends HibernateDao<User,Long>
+	 * Như public UserDao extends HibernateDao<User,Long>
 	 *
 	 * @param clazz clazz The class to introspect
 	 * @param index the Index of the generic ddeclaration,start from 0.
@@ -315,7 +315,7 @@ public class Reflections {
 	}
 	
 	/**
-	 * 将反射时的checked exception转换为unchecked exception.
+	 * Sẽ reflection giờ của checked exceptionChuyển đổi thànhunchecked exception.
 	 */
 	public static RuntimeException convertReflectionExceptionToUnchecked(Exception e) {
 		if (e instanceof IllegalAccessException || e instanceof IllegalArgumentException

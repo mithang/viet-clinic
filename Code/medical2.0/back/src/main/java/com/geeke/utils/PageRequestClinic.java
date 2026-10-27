@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 新增租户相关概念
+ * Thêm mớitenanttươngđóng概念
  */
 public final class PageRequestClinic implements Serializable {
     private static final long serialVersionUID = 1L;

@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
@@ -11,81 +11,81 @@
       <div class="tab-item" v-show='tabIndex==="1"'>  
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='租户名' prop='userName' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.userName' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入租户名"' autofocus></el-input>
+          <el-form-item label='Tên đơn vị thuê' prop='userName' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.userName' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên đơn vị thuê"' autofocus></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='电话号码' prop='phoneNumber' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.phoneNumber' :maxlength='20' :placeholder='dialogProps.action === "view"? "" : "请输入电话号码"' ></el-input>
+          <el-form-item label='Số điện thoại' prop='phoneNumber' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.phoneNumber' :maxlength='20' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập số điện thoại"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='公司名称' prop='company' >
+          <el-form-item label='Tên công ty' prop='company' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.company' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入公司名称"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='联系人姓名' prop='contactName' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.contactName' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "请输入联系人姓名"' ></el-input>
+          <el-form-item label='Họ tên người liên hệ' prop='contactName' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.contactName' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập họ tên người liên hệ"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='地址（省）' prop='addressProvince' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressProvince' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "请输入地址（省）"' ></el-input>
+          <el-form-item label='Địa chỉ（Tỉnh/Thành phố）' prop='addressProvince' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressProvince' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Tỉnh/Thành phố）"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='地址（市）' prop='addressCity' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressCity' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "请输入地址（市）"' ></el-input>
+          <el-form-item label='Địa chỉ（Thành phố）' prop='addressCity' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressCity' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Thành phố）"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='地址（区）' prop='addressRegion' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressRegion' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "请输入地址（区）"' ></el-input>
+          <el-form-item label='Địa chỉ（Quận/Huyện）' prop='addressRegion' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressRegion' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Quận/Huyện）"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='联系地址' prop='address' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.address' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入联系地址"' ></el-input>
+          <el-form-item label='Địa chỉ liên hệ' prop='address' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.address' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ liên hệ"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='状态' prop='isUse' >
+          <el-form-item label='Trạng thái' prop='isUse' >
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isUse' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col>
-          <el-form-item label='备注' prop='remarks' >
+          <el-form-item label='Ghi chú' prop='remarks' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea'
-                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入备注"'  clearable></el-input>
+                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập ghi chú"'  clearable></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("lesseeForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("lesseeForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -113,16 +113,16 @@ export default {
       },
       formRules: {
         'userName': [
-            { required: true, message: '请输入租户名', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên đơn vị thuê', trigger: 'blur' }
         ],
         'phoneNumber': [
-            { required: true, message: '请输入电话号码', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập số điện thoại', trigger: 'blur' }
         ],
       }
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -157,7 +157,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改租户'
+      this.dialogProps.title = 'Sửa đơn vị thuê'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -170,16 +170,16 @@ export default {
     },
     initFormModel(This) {
       return {
-        'userName': '',   // 租户名
-        'phoneNumber': '',   // 电话号码
-        'company': '',   // 公司名称
-        'contactName': '',   // 联系人姓名
-        'addressProvince': '',   // 地址（省）
-        'addressCity': '',   // 地址（市）
-        'addressRegion': '',   // 地址（区）
-        'address': '',   // 联系地址
-        'isUse': '1',   // 状态
-        'remarks': '',   // 备注
+        'userName': '',   // Tên đơn vị thuê
+        'phoneNumber': '',   // Số điện thoại
+        'company': '',   // Tên công ty
+        'contactName': '',   // Họ tên người liên hệ
+        'addressProvince': '',   // Địa chỉ（Tỉnh/Thành phố）
+        'addressCity': '',   // Địa chỉ（Thành phố）
+        'addressRegion': '',   // Địa chỉ（Quận/Huyện）
+        'address': '',   // Địa chỉ liên hệ
+        'isUse': '1',   // Trạng thái
+        'remarks': '',   // Ghi chú
 
       }
     },
@@ -187,7 +187,7 @@ export default {
     },
     openViewLesseeDialog(lessee) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看租户'
+      this.dialogProps.title = 'Xem đơn vị thuê'
       this.bizFormModel = {...this.initFormModel(), ...lessee}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -195,7 +195,7 @@ export default {
     },
     openEditLesseeDialog(lessee) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改租户'
+      this.dialogProps.title = 'Sửa đơn vị thuê'
       this.bizFormModel = {...this.initFormModel(), ...lessee}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -203,7 +203,7 @@ export default {
     },
     openAddLesseeDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加租户'
+      this.dialogProps.title = 'Thêm đơn vị thuê'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -211,7 +211,7 @@ export default {
     },
     openCopyLesseeDialog(lessee) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加租户'
+      this.dialogProps.title = 'Thêm đơn vị thuê'
       this.bizFormModel = {...this.initFormModel(), ...lessee}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

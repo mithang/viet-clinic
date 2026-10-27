@@ -4,12 +4,12 @@ import java.util.UUID;
 
 /**
  * @author: hxy
- * @description: 生成随机码的工具类
+ * @description: Tạongẫu nhiênmã của Lớp công cụ
  * @date: 2017/10/26 14:20
  */
 public class RandomUtil {
     /**
-     * 生成前缀+32位编码 用作id
+     * Tạotiền tố+32vịMã dùnglàmid
      *
      * @return string
      */

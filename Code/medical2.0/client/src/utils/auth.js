@@ -17,11 +17,11 @@ export function clearLocalData() {
 export function getLocalToken() {
   return sessionStorage.getItem(TokenKey)
 }
-// 保存token
+// Lưutoken
 export function setLocalToken(token) {
   sessionStorage.setItem(TokenKey, token)
 }
-// 清除tocken
+// Xóatocken
 export function removeLocalToken() {
   sessionStorage.removeItem(TokenKey)
 }

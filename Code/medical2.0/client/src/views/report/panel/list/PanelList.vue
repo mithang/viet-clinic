@@ -34,7 +34,7 @@
                 :highlight-current-row="isHighLight === 'share'"
                 :cell-style="() => ({borderBottom: 'none'})"
                 @row-click='onShareClick'>
-        <el-table-column show-overflow-tooltip label='我的报表' prop='name'>
+        <el-table-column show-overflow-tooltip label='Báo cáo của tôi' prop='name'>
           <template slot-scope="scope">
             <svg-icon icon-class="panel" class="ds-icon-scene" />
             <span>{{scope.row.name}}</span>
@@ -155,12 +155,12 @@
           bus.$emit('setPanelInfo', data)
           this.resetPageLoad()
 
-          // 刷新联动信息
+          // Làm mới thông tin liên kết
           getPanelAllLinkageInfo(row.panelGroupId).then(rsp => {
             bus.$emit('setNowPanelTrackInfo', rsp.data)
           })
 
-          // 刷新跳转信息
+          // Làm mới thông tin chuyển hướng
           queryPanelJumpInfo(row.panelGroupId).then(rsp => {
             bus.$emit('setNowPanelJumpInfo', rsp.data)
           })
@@ -176,12 +176,12 @@
           bus.$emit('setPanelInfo', row)
           this.resetPageLoad()
 
-          // 刷新联动信息
+          // Làm mới thông tin liên kết
           getPanelAllLinkageInfo(row.id).then(rsp => {
             bus.$emit('setNowPanelTrackInfo', rsp.data)
           })
 
-          // 刷新跳转信息
+          // Làm mới thông tin chuyển hướng
           queryPanelJumpInfo(row.id).then(rsp => {
             bus.$emit('setNowPanelJumpInfo', rsp.data)
           })

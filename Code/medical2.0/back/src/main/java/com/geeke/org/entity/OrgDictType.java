@@ -13,7 +13,7 @@ import org.hibernate.validator.constraints.Length;
 
 public class OrgDictType extends DataEntity<OrgDictType> {
     private static final long serialVersionUID = 4002L;
-    private Company company;      // 诊所id
+    private Company company;      // Phòng khámid
     private String code;
     private String type;
     private List<OrgDictItem> dictItemList = Lists.newArrayList();
@@ -36,7 +36,7 @@ public class OrgDictType extends DataEntity<OrgDictType> {
     @Length(
             min = 1,
             max = 64,
-            message = "字典类型编码长度必须介于 1 和 64 之间"
+            message = "Độ dài mã loại từ điển phải nằm trong khoảng 1 đến 64 "
     )
     public String getCode() {
         return this.code;
@@ -49,7 +49,7 @@ public class OrgDictType extends DataEntity<OrgDictType> {
     @Length(
             min = 1,
             max = 1,
-            message = "类型长度必须介于 1 和 1 之间"
+            message = "LoạiĐộ dài phải nằm trong khoảng 1 đến 1 "
     )
     public String getType() {
         return type;

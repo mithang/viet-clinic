@@ -15,31 +15,31 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 检验检查明细Entity
+ * Chi tiết xét nghiệm và kiểm traEntity
  * @author rys
  * @version 2022-10-19
  */
 public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 
 	private static final long serialVersionUID = 1213629183723971377L;
-	private Company company;      // 诊所id 
-	private InspectionCheck inspectionCheck;      // 主表id 
-	private String fileId;		// 文件id
-	private Patient patient;      // 患者id 
-	private Date samplingDate;		// 采样时间
-	private String samplingNum;		// 样本号
-	private String instrument;		// 检验仪器
-	private String checkoutNum;		// 检验号
-	private Date checkoutDate;		// 检验时间
-	private String checkoutOffice;		// 检验科室
-	private String reportConclusion;		// 报告结论
-	private String checkType;          //检查类型
-	private String checkPart;         //检查部位
-	private String checkAdvise;      //检查所见
-	private String opinion;      //意见
-	private String doctor;      //医师
-	private String checkProject;   //检查项目
-	private List<CostItems> costItemsList;  //诊疗项目
+	private Company company;      // Phòng khámid 
+	private InspectionCheck inspectionCheck;      // Bảng chínhid 
+	private String fileId;		// Tệpid
+	private Patient patient;      // Bệnh nhânid 
+	private Date samplingDate;		// lấynhưThời gian
+	private String samplingNum;		// nhưnàysố
+	private String instrument;		// Xét nghiệmthiết bị
+	private String checkoutNum;		// Xét nghiệmsố
+	private Date checkoutDate;		// Xét nghiệmThời gian
+	private String checkoutOffice;		// Xét nghiệmKhoa
+	private String reportConclusion;		// kết luận báo cáo
+	private String checkType;          //Kiểm traLoại
+	private String checkPart;         //Kiểm trabộvị
+	private String checkAdvise;      //Kiểm tranhìn thấy
+	private String opinion;      //ý kiến
+	private String doctor;      //Bác sĩ
+	private String checkProject;   //Kiểm trahạng mục
+	private List<CostItems> costItemsList;  //Hạng mục khám chữa bệnh
 	private List<InspectionCheckDetail> inspectionCheckDetails;
 
 	public InspectionCheckInfo() {
@@ -51,7 +51,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -60,7 +60,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
         this.company = company;
     }
     
-	@NotNull(message="主表id不能为空")
+	@NotNull(message="Bảng chínhidKhông được để trống")
     public InspectionCheck getInspectionCheck() {
         return inspectionCheck;
     }
@@ -69,7 +69,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
         this.inspectionCheck = inspectionCheck;
     }
     
-	@Length(min=0, max=20, message="文件id长度必须介于 0 和 20 之间")
+	@Length(min=0, max=20, message="TệpidĐộ dài phải từ 0  và  20 Giữa")
 	public String getFileId() {
 		return fileId;
 	}
@@ -78,7 +78,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@NotNull(message="患者id不能为空")
+	@NotNull(message="Bệnh nhânidKhông được để trống")
     public Patient getPatient() {
         return patient;
     }
@@ -96,7 +96,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="样本号长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="nhưnàysốĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getSamplingNum() {
 		return samplingNum;
 	}
@@ -105,7 +105,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="检验仪器长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Xét nghiệmthiết bịĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getInstrument() {
 		return instrument;
 	}
@@ -114,7 +114,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="检验号长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Xét nghiệmsốĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getCheckoutNum() {
 		return checkoutNum;
 	}
@@ -132,7 +132,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="检验科室长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Xét nghiệmKhoaĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getCheckoutOffice() {
 		return checkoutOffice;
 	}
@@ -141,7 +141,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=255, message="报告结论长度必须介于 0 和 255 之间")
+	@Length(min=0, max=255, message="kết luận báo cáoĐộ dài phải nằm trong khoảng 0 đến 255 ")
 	public String getReportConclusion() {
 		return reportConclusion;
 	}
@@ -214,7 +214,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -223,7 +223,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -233,7 +233,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

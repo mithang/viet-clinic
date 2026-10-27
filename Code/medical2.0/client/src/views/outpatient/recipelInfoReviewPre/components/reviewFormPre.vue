@@ -8,40 +8,40 @@
       ref='reviewForm' label-width='120px' label-position='right' class='edit-form'>
       <el-row>
         <el-col :span='5'>
-          <el-form-item label='患者姓名' >
+          <el-form-item label='Tên bệnh nhân' >
             <el-input :disabled='true' v-model='bizFormModel.recipelInfoReview.recipelInfo.registration.patientId.name' :maxlength='128' :placeholder='""' ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='5'>
-          <el-form-item label='性别'>
+          <el-form-item label='Giới tính'>
             <el-input :disabled='true' v-model='bizFormModel.recipelInfoReview.recipelInfo.registration.patientId.gender.name' :maxlength='128' :placeholder='""' ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='5'>
-          <el-form-item label='年龄' >
+          <el-form-item label='Tuổi' >
             <el-input :disabled='true' v-model='bizFormModel.recipelInfoReview.recipelInfo.registration.patientId.age' :maxlength='128' :placeholder='""' ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='5'>
-          <el-form-item label='身份证' >
+          <el-form-item label='CMND/CCCD' >
             <el-input :disabled='true' v-model='bizFormModel.recipelInfoReview.recipelInfo.registration.patientId.card' :maxlength='128' :placeholder='""' ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='4'>
-          <el-form-item label='联系方式' >
+          <el-form-item label='Thông tin liên hệ' >
             <el-input :disabled='true' v-model='bizFormModel.recipelInfoReview.recipelInfo.registration.patientId.phone' :maxlength='128' :placeholder='""' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='西医诊断' >
+          <el-form-item label='Chẩn đoán tây y' >
             <el-input :disabled='true' v-model='bizFormModel.westernDiagnose' type='textarea'
                       :maxlength='2000' :placeholder='""'></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='24/2'>
-          <el-form-item label='中医诊断' >
+          <el-form-item label='Chẩn đoán đông y' >
             <el-input :disabled='true' v-model='bizFormModel.chinaDiagnose' type='textarea'
                       :maxlength='2000' :placeholder='""'></el-input>
           </el-form-item>
@@ -49,12 +49,12 @@
       </el-row>
       <el-row>
         <el-col>
-          <span class="price">本处方费用{{bizFormModel.recipelInfoReview.recipelInfo.fee}}元</span>
+          <span class="price">Chi phí của đơn thuốc này{{bizFormModel.recipelInfoReview.recipelInfo.fee}}VNĐ</span>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24/1">
-          <el-divider content-position="left">处方信息</el-divider>
+          <el-divider content-position="left">Thông tin đơn thuốc</el-divider>
         </el-col>
       </el-row>
       <el-row>
@@ -67,12 +67,12 @@
           <!--<el-checkbox v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value == 'recipelType_0'"
                        style="margin-left: 20px;"
                        disabled
-                       v-model="bizFormModel.recipelInfoReview.recipelInfo.chronicDisease"  >是否慢病</el-checkbox>-->
+                       v-model="bizFormModel.recipelInfoReview.recipelInfo.chronicDisease"  >Có phải bệnh mạn tính không</el-checkbox>-->
           <el-switch
             v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value === 'recipelType_0'"
             style="margin-left: 20px;"
             v-model="bizFormModel.recipelInfoReview.recipelInfo.chronicDisease"
-            active-text="是否慢病"
+            active-text="Có phải bệnh mạn tính không"
             disabled>
           </el-switch>
         </el-col>
@@ -80,11 +80,11 @@
       <el-row>
         <el-col :span="24/1">
           <el-table :data="bizFormModel.recipelDetails" >
-            <el-table-column label="序号" type="index" align="center">
+            <el-table-column label="Số thứ tự" type="index" align="center">
             </el-table-column>
             <el-table-column
               prop="drugStuffId.name"
-              label="药品名称"
+              label="Tên thuốc"
               width="width">
               <template slot-scope="scope">
                 {{ scope.row.drugStuffId.name }}
@@ -102,21 +102,21 @@
             </el-table-column>
             <el-table-column
               prop="drugStuffId.drug.factory.name"
-              label="厂家"
+              label="Nhà sản xuất"
               width="width"
             >
             </el-table-column>
 
             <el-table-column
               prop="westernMedicineUse.name"
-              label="用法"
+              label="Cách dùng"
               width="width"
               v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value === 'recipelType_0'"
             >
             </el-table-column>
             <el-table-column
               prop="singleDosage"
-              label="单次用量"
+              label="Liều dùng mỗi lần"
               width="width"
               v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value === 'recipelType_0'"
             >
@@ -126,7 +126,7 @@
             </el-table-column>
             <el-table-column
               prop="frequency"
-              label="频次"
+              label="Tần suất"
               align="center"
               v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value === 'recipelType_0'"
               width="width"
@@ -136,13 +136,13 @@
                 }}{{ scope.row.frequency.name }}</template
               >
             </el-table-column>
-            <el-table-column prop="days.name" label="天数" width="width" align="center"
+            <el-table-column prop="days.name" label="Số ngày" width="width" align="center"
                              v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value === 'recipelType_0'">
               <template slot-scope="scope">
-                {{scope.row.days.name}}天
+                {{scope.row.days.name}}ngày
               </template>
             </el-table-column>
-            <el-table-column prop="total" label="数量" width="width">
+            <el-table-column prop="total" label="Số lượng" width="width">
               <template slot-scope="scope">
                         <span v-if="scope.row.drugStuffId.costItem != null">
                           {{ scope.row.total
@@ -180,12 +180,12 @@
             </el-table-column>
             <el-table-column
               prop="unitPrice"
-              label="单价"
+              label="Đơn giá"
               width="width"
             >
               <template slot-scope="scope">
                       <span
-                      >{{ scope.row.unitPrice }}元/{{
+                      >{{ scope.row.unitPrice }}VNĐ/{{
                           scope.row.isUnpackSell === 1
                             ? scope.row.drugStuffId.preparationUnit.name
                             : scope.row.drugStuffId.pack.name
@@ -193,9 +193,9 @@
                       >
               </template>
             </el-table-column>
-            <el-table-column prop="allFee" width="width" label="总额">
+            <el-table-column prop="allFee" width="width" label="Tổng tiền">
               <template slot-scope="scope">
-                {{scope.row.allFee}}元
+                {{scope.row.allFee}}VNĐ
               </template>
             </el-table-column>
           </el-table>
@@ -203,20 +203,20 @@
       </el-row>
       <el-row v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value  ==='recipelType_1'">
         <el-input disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.dosage" oninput="value=value.replace(/[^\d.]/g,'')" style="width: 60px"></el-input>
-        &nbsp;剂 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用法：
-        <el-select disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.recipelUse" placeholder="请选择" style="width: 110px">
+        &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng：
+        <el-select disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.recipelUse" placeholder="Vui lòng chọn" style="width: 110px">
           <el-option v-for="pitem in ChineseUseOption" :key="pitem.value"
                      :label="pitem.name"
                      :value="{ name: pitem.name, value: pitem.value }">
           </el-option>
         </el-select>
-        <el-select disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.frequency" placeholder="请选择" style="width: 110px">
+        <el-select disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.frequency" placeholder="Vui lòng chọn" style="width: 110px">
           <el-option v-for="pitem in ChineseTimeOption" :key="pitem.value"
                      :label="pitem.name"
                      :value="{ name: pitem.name, value: pitem.value }">
           </el-option>
         </el-select>
-        <el-select disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.takeFrequency" placeholder="请选择" style="width: 110px">
+        <el-select disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.takeFrequency" placeholder="Vui lòng chọn" style="width: 110px">
           <el-option v-for="pitem in JSON.parse(
                             JSON.stringify(FrequencyOption)
                           )" :key="pitem.value" :label="pitem.name" :value="{
@@ -225,39 +225,39 @@
                           }">
           </el-option>
         </el-select>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一次&nbsp;<el-input disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.singleDosage" style="width: 60px"></el-input>&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; một lần&nbsp;<el-input disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.singleDosage" style="width: 60px"></el-input>&nbsp;
         <span>ml</span>
       </el-row>
       <el-row>
         <el-col :span="24/1">
-          <el-divider content-position="left">附加费</el-divider>
+          <el-divider content-position="left">Phí phụ thêm</el-divider>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24/1">
           <el-table :data="bizFormModel.additionalCharges">
-            <el-table-column label="序号" type="index" align="center" width="width">
+            <el-table-column label="Số thứ tự" type="index" align="center" width="width">
             </el-table-column>
             <el-table-column
               prop="drugStuffId.name"
-              label="名称"
+              label="Tên"
               width="width"
             >
             </el-table-column>
             <el-table-column
               prop="drugStuffId.drug.factory.name"
-              label="厂家"
+              label="Nhà sản xuất"
               width="width"
             >
             </el-table-column>
             <el-table-column
               prop="unitPrice"
-              label="单价"
+              label="Đơn giá"
               width="width"
             >
               <template slot-scope="scope">
                       <span
-                      >{{ scope.row.unitPrice }}元/{{
+                      >{{ scope.row.unitPrice }}VNĐ/{{
                           scope.row.isUnpackSell === 1
                             ? scope.row.drugStuffId.preparationUnit.name
                             : scope.row.drugStuffId.pack.name
@@ -265,7 +265,7 @@
                       >
               </template>
             </el-table-column>
-            <el-table-column prop="total" label="数量" width="width">
+            <el-table-column prop="total" label="Số lượng" width="width">
               <template slot-scope="scope">
                         <span v-if="scope.row.drugStuffId.costItem != null">
                           {{ scope.row.total
@@ -316,9 +316,9 @@
                         </span>
               </template>
             </el-table-column>
-            <el-table-column prop="allFee" label="总额" width="width">
+            <el-table-column prop="allFee" label="Tổng tiền" width="width">
               <template slot-scope="scope">
-                {{scope.row.allFee}}元
+                {{scope.row.allFee}}VNĐ
               </template>
             </el-table-column>
           </el-table>
@@ -326,7 +326,7 @@
       </el-row>
       <el-row>
         <el-col :span="24/1">
-          <el-divider content-position="left">医嘱事项</el-divider>
+          <el-divider content-position="left">Hạng mục y lệnh</el-divider>
         </el-col>
       </el-row>
       <el-row>
@@ -341,25 +341,25 @@
       </el-row>
       <el-row>
         <el-col :span="24/1">
-          <el-divider content-position="left">处方审查内容</el-divider>
+          <el-divider content-position="left">Nội dung thẩm tra đơn thuốc</el-divider>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24/3">
-          <el-form-item label='是否合理' >
+          <el-form-item label='Có hợp lý không' >
             <el-radio-group :disabled="dialogProps.action === 'view'" v-model="bizFormModel.recipelInfoReview.reviewResult">
-              <el-radio :label="1">合理</el-radio>
-              <el-radio :label="0">不合理</el-radio>
+              <el-radio :label="1">Hợp lý</el-radio>
+              <el-radio :label="0">Không hợp lý</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="24/3">
-          <el-form-item label='审查人'  v-if='bizFormModel.recipelInfoReview.reviewStatus === "1"'>
+          <el-form-item label='Người thẩm tra'  v-if='bizFormModel.recipelInfoReview.reviewStatus === "1"'>
             <el-input :disabled='true'  v-model='bizFormModel.recipelInfoReview.reviewerName' :placeholder='""'></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24/3">
-          <el-form-item label='审查时间'  v-if='bizFormModel.recipelInfoReview.reviewStatus === "1"'>
+          <el-form-item label='Thời gian thẩm tra'  v-if='bizFormModel.recipelInfoReview.reviewStatus === "1"'>
             <el-input :disabled='true'  v-model='bizFormModel.recipelInfoReview.createDate' :placeholder='""'></el-input>
           </el-form-item>
         </el-col>
@@ -369,7 +369,7 @@
           <el-input
             type="textarea"
             :rows="2"
-            :placeholder='"请输入内容"'
+            :placeholder='"Vui lòng nhập nội dung"'
             :disabled="dialogProps.action === 'view'"
             v-model="bizFormModel.recipelInfoReview.reviewContent">
           </el-input>
@@ -377,10 +377,10 @@
       </el-row>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("reviewForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmitAndContinue("reviewForm")'>保存并继续</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("reviewForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmitAndContinue("reviewForm")'>Lưu và tiếp tục</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -407,24 +407,24 @@
       },
       formRules: {
         'name': [
-          {required: true, message: '请输入名称', trigger: 'blur'}
+          {required: true, message: 'Vui lòng nhập tên', trigger: 'blur'}
         ],
         'theme': [
-          {required: true, message: '请输入主题', trigger: 'blur'}
+          {required: true, message: 'Vui lòng nhập chủ đề', trigger: 'blur'}
         ],
       },
-      //中药用法下拉列表
+      //Danh sách thả xuống cách dùng thuốc Đông y
       ChineseUseOption: [],
       ChineseTimeOption: [],
       ChineseUseTimeOption: [],
-      //特殊诊所
+      //Phòng khám đặc biệt
       isSpecial: false,
-      //西药频度下拉列表
+      //Danh sách thả xuống tần suất thuốc Tây y
       FrequencyOption: [],
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -476,7 +476,7 @@
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '电子处方审核'
+      this.dialogProps.title = 'Xét duyệt đơn thuốc điện tử'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -536,7 +536,7 @@
     },
     openViewReviewDialog(review) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '电子处方审核'
+      this.dialogProps.title = 'Xét duyệt đơn thuốc điện tử'
       this.bizFormModel = review
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
@@ -544,7 +544,7 @@
     },
     openEditReviewDialog(review) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '电子处方审核'
+      this.dialogProps.title = 'Xét duyệt đơn thuốc điện tử'
       this.bizFormModel = review
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
@@ -552,7 +552,7 @@
     },
     openAddReviewDialog(review) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加处方审查'
+      this.dialogProps.title = 'Thêm thẩm tra đơn thuốc'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
@@ -560,10 +560,10 @@
     },
     openCopyReviewDialog(review) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加处方审查'
+      this.dialogProps.title = 'Thêm thẩm tra đơn thuốc'
       this.bizFormModel = review
       this.initOptions(this.bizFormModel)
-      this.bizFormModel.id = null   //把id设置为空，添加一个新的
+      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
       this.dialogProps.visible = true
       this.dialogProps.dataLoaded = true
     },

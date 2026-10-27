@@ -8,7 +8,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.cure.entity.InspectionCheckInfo;
 
 /**
- * 检验检查明细DAO接口
+ * Chi tiết xét nghiệm và kiểm traDAOGiao diện
  * @author rys
  * @version 2022-10-19
  */

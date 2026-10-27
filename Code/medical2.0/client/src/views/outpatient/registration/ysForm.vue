@@ -19,13 +19,13 @@
     >
       <el-row>
         <el-col :span="24 / 2">
-          <el-form-item label="医生" prop="doctor">
+          <el-form-item label="Bác sĩ" prop="doctor">
             <el-select
               v-model="queryModel.doctor"
               value-key="id"
               filterable
               clearable
-              placeholder="请选择医生"
+              placeholder="Vui lòng chọn bác sĩ"
             >
               <el-option
                 v-for="doctor in doctor_List"
@@ -62,7 +62,7 @@ export default {
         action: "",
         title: "",
         source: {
-          name: "现场",
+          name: "Tại chỗ",
           value: "registrationSource_0",
         },
       },
@@ -73,13 +73,13 @@ export default {
       },
       queryModel: {
         doctor: {
-          // 医生
+          // Bác sĩ
           id: null,
           name: "",
         }
       },
-      doctor_List: [], // 医生
-      status_List: [], // 状态
+      doctor_List: [], // Bác sĩ
+      status_List: [], // Trạng thái
 
       insetModel:{
          registration:{
@@ -90,7 +90,7 @@ export default {
         },
         doctor:{id:null,name:null},
         patientId:{id:null,name:null},
-        status:{name:"待就诊",value:"registrationStatus_0"},
+        status:{name:"Chờ khám",value:"registrationStatus_0"},
          },
       },
     };
@@ -104,17 +104,17 @@ export default {
     arrlistcreat() {
       this.queryModel = {
         department: {
-          // 科室
+          // Khoa
           id: null,
           name: "",
         },
         patientId: {
-          // 父表 患者
+          // Bảng cha Bệnh nhân
           id: null,
           name: "",
         },
         doctor: {
-          // 医生
+          // Bác sĩ
           id: null,
           name: "",
         },
@@ -127,7 +127,7 @@ export default {
       this.arrlistcreat();
     },
     initys() {
-      //挂号状态
+      //Trạng thái đăng ký khám
       getDictItemsByCode(DICT_CODE.REGISTRATION_STATUS).then((data) => {
         this.status_List = data;
       });
@@ -140,13 +140,13 @@ export default {
           },
         ],
       };
-      // 响应字段的条件操作符，替换成触发字段的操作符
+      // Toán tử điều kiện của trường phản hồi，Thay bằng toán tử của trường kích hoạt
       doctor_search.params.forEach((item) => {
         if (this.queryTypes[item.columnName]) {
           item.queryType = this.queryTypes[item.columnName];
         }
       });
-      // 字段对应表上filter条件
+      // Trên bảng tương ứng của trườngfilterĐiều kiện
       doctor_search.params.push.apply(doctor_search.params, []);
 
       this.doctor_List.splice(0, this.doctor_List.length);
@@ -161,7 +161,7 @@ export default {
       if(this.queryModel.doctor.id==null&&this.queryModel.doctor.name===""){
          this.$message({
                 showClose: true,
-                message:'请选择医生',
+                message:'Vui lòng chọn bác sĩ',
                 type: 'error'
              });
              return;

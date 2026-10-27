@@ -28,7 +28,7 @@ import com.geeke.outpatient.entity.Recipetemplate;
 import com.geeke.utils.StringUtils;
 
 /**
- * 模板处方Service
+ * Đơn thuốc mẫuService
  * @author rys
  * @version 2022-10-08
  */
@@ -72,19 +72,19 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         recipetemplate.setUpdateDate(new Date());
         int i = this.dao.updateById(recipetemplate);
         if(i>0){
-            //模板处方信息修改
+            //mẫuĐơn thuốcThông tinSửa
             recipetemplateInfoService.updateInfo(recipetemplate.getRecipeTemplateInfo());
-            //模板处方详情修改
+            //mẫuĐơn thuốcChi tiếtSửa
             recipetemplateDetailService.updateDetail(recipetemplate.getRecipeTemplateDetail(),recipetemplate.getCompany());
         }
     }
 
     @Transactional(readOnly = false)
     public void saveTemplate(Recipetemplate recipetemplate){
-        //保存模板主数据
+        //LưumẫuchínhDữ liệu
         recipetemplate.preInsert();
         recipetemplate.setId(IdGen.uuid());
-        //自动生成模板编码
+        //tự độngTạoMã mẫu
         String code = this.dao.listOne(recipetemplate.getCompany().getId());
         if(code!=null){
             String substring = code.substring(2);
@@ -100,7 +100,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         }
         this.dao.allSave(recipetemplate);
 
-        //保存模板的处方信息
+        //Lưumẫu của Đơn thuốcThông tin
         RecipeTemplateInfo recipeTemplateInfo=null;
         if(recipetemplate.getRecipeTemplateInfo()!=null){
              recipeTemplateInfo = recipetemplate.getRecipeTemplateInfo();
@@ -108,17 +108,17 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             recipeTemplateInfo.setCompany(recipetemplate.getCompany());
             recipetemplateInfoService.allSave(recipeTemplateInfo);
         }
-        //保存模板的处方详情
+        //Lưumẫu của Đơn thuốcChi tiết
         List<RecipeTemplateDetail> recipeTemplateDetails = recipetemplate.getRecipeTemplateDetail();
         Company templateCompany = recipetemplate.getCompany();
-        // 诊所级隔离：过滤掉非本诊所的药品/材料/诊疗项目
+        // Phòng khámcấpcách ly: qualọcrơikhông phảinàyPhòng khám của Thuốc/Vật tư/Hạng mục khám chữa bệnh
         if (templateCompany != null && recipeTemplateDetails != null) {
             List<RecipeTemplateDetail> validDetails = new java.util.ArrayList<>();
             for (RecipeTemplateDetail detail : recipeTemplateDetails) {
                 if (isDetailBelongsToCompany(detail, templateCompany.getId())) {
                     validDetails.add(detail);
                 } else {
-                    logger.warn("保存模板时跳过非本诊所药品: companyId={}, drugStuffId={}, stuffType={}",
+                    logger.warn("Khi lưu mẫu, bỏ qua thuốc không thuộc phòng khám này: companyId={}, drugStuffId={}, stuffType={}",
                         templateCompany.getId(), detail.getDrugStuffId().getDrugStuffId(), detail.getStuffType());
                 }
             }
@@ -143,15 +143,15 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         this.createDate = this.updateDate;
     }
 
-    //根据id获取模板处方
+    //TheoidLấymẫuĐơn thuốc
     public Recipetemplate getById(String id){
-        //获取主表信息
+        //LấyBảng chínhThông tin
         Recipetemplate recipetemplate=this.dao.getById(id,SessionUtils.getUserDto().getCompanyId());
 
-        //获取处方信息
+        //Lấy thông tin đơn thuốc
         RecipeTemplateInfo recipeTemplateInfo=recipetemplateInfoService.getByRecipeTemplateId(recipetemplate.getId());
 
-        //获取处方详情
+        //Lấy chi tiết đơn thuốc
         List<RecipeTemplateDetail> recipeTemplateDetails=recipetemplateDetailService.getByRecipeTemplateInfoId(recipeTemplateInfo.getId());
 
         recipetemplate.setRecipeTemplateInfo(recipeTemplateInfo);
@@ -166,7 +166,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         List<RecipeTemplateDetail> validDetails = new java.util.ArrayList<>();
         for (RecipeTemplateDetail r :recipetemplate.getRecipeTemplateDetail()){
             if (!isDetailBelongsToCompany(r, medicalRecord.getCompany().getId())) {
-                logger.warn("AI保存模板时跳过非本诊所药品: companyId={}, drugStuffId={}, stuffType={}",
+                logger.warn("AIKhi lưu mẫu, bỏ qua thuốc không thuộc phòng khám này: companyId={}, drugStuffId={}, stuffType={}",
                     medicalRecord.getCompany().getId(), r.getDrugStuffId().getDrugStuffId(), r.getStuffType());
                 continue;
             }
@@ -175,7 +175,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
                 r.getDrugStuffId().setDrugStuffId(id);
                 validDetails.add(r);
             }else {
-                a += r.getDrugStuffId().getName()+ "药品无库存信息\n";
+                a += r.getDrugStuffId().getName()+ "ThuốckhôngTồn khoThông tin\n";
             }
         }
         recipetemplate.setRecipeTemplateDetail(validDetails);
@@ -187,7 +187,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         }else {
             this.updateTemplate(recipetemplate);
         }
-        a = "处方信息添加成功";
+        a = "Đơn thuốcThông tinThêmThành công";
         return a;
     }
 
@@ -196,20 +196,20 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
     }
 
     /**
-     * 检查模板详情是否属于指定诊所
-     * @param detail 模板详情
-     * @param companyId 诊所ID
-     * @return true-属于当前诊所，false-不属于
+     * Kiểm tramẫuChi tiếtCó hay khôngthuộctạichỉchỉ địnhPhòng khám
+     * @param detail mẫuChi tiết
+     * @param companyId Phòng khámID
+     * @return true-thuộctạiHiện tạiPhòng khám, false-khôngthuộctại
      */
     private boolean isDetailBelongsToCompany(RecipeTemplateDetail detail, String companyId) {
         if (detail == null || companyId == null) {
             return false;
         }
-        // 优先检查详情自身的company_id
+        // 优trướcKiểm traChi tiếtbản thân của company_id
         if (detail.getCompany() != null && companyId.equals(detail.getCompany().getId())) {
             return true;
         }
-        // 检查关联的药品/材料/诊疗项目是否属于当前诊所
+        // Kiểm traliên kết của Thuốc/Vật tư/hạng mục khám chữa bệnhCó hay khôngthuộctạiHiện tạiPhòng khám
         if (detail.getDrugStuffId() != null && detail.getDrugStuffId().getDrugStuffId() != null) {
             String stuffType = detail.getStuffType();
             String drugStuffId = detail.getDrugStuffId().getDrugStuffId();

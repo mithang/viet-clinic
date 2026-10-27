@@ -1,7 +1,7 @@
 package com.geeke.config.exception;
 
 /**
- * dao异常类
+ * daongoại lệLớp
  * 
  * @author Lining
  * @date 2017/11/15

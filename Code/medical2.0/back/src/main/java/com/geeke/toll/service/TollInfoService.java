@@ -65,7 +65,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 收费管理Service
+ * Quản lý thu phíService
  * @author lc
  * @version 2022-06-22
  */
@@ -134,8 +134,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     private final MdPsnDataService mdPsnDataService;
 
     /**
-     * 将 SearchParams 转换为 PageRequest
-     * 简化报表查询方法中的重复代码
+     * Sẽ  SearchParams Chuyển đổi thành PageRequest
+     * 简hóabáo cáoTruy vấnPhương thứcTrongtrùng lặpmã
      */
     private PageRequest toPageRequest(SearchParams searchParams) {
         return new PageRequest(searchParams.getOffset(), searchParams.getLimit(),
@@ -145,7 +145,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     @Override
     @Transactional(readOnly = false)
     public TollInfo save(TollInfo tollInfo) {
-        // 新增时, 处理自动编号字段
+        // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
             String sn = sequenceService.generate(SessionUtils.getUser().getCompanyId(), "toll_code", tollInfo);
@@ -160,30 +160,30 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     @Transactional(readOnly = false)
     public void saveToll(TollEvt tollEvt,String type) {
         Company company = SessionUtils.getUser().getCompany();
-        String seltId="";//医保结算id付费后存入挂号表
-        //正在进行盘点时不能进行收费/退费
+        String seltId="";//BHYTQuyết toánid thangphísaulưu vàoĐăng ký khámbảng
+        //Đang tiến hành kiểm kê giờKhông thểtiến hành dòngThu phí/Hoàn phí
         validateInventoryNotInProgress(company.getId(), tollEvt.getTollInfo().getAmountStatus().getValue());
         TollInfo tollInfo = tollEvt.getTollInfo();
         List<RecipelInfoEvt> recipelInfoEvts = tollEvt.getRecipelInfos();
         TollInfo tollSave = null;
         Registration registration = null;
         if (!CollectionUtils.isEmpty(recipelInfoEvts)) {
-            //校验重复提交
+            //Kiểm tratrùng lặpđề xuấtgiao
             List<String> InRecipeIds = recipelInfoEvts.stream().map(recipelInfoEvt -> {
                 return recipelInfoEvt.getRecipelInfo().getId();
             }).collect(Collectors.toList());
             List<TollInfo> inRecipeIds = this.getInRecipeIds(InRecipeIds,tollInfo.getAmountStatus().getValue());
             if (!CollectionUtils.isEmpty(inRecipeIds)) {
-                throw new ServiceException("数据已存在请勿重复提交");
+                throw new ServiceException("Dữ liệuĐã tồn tạiVui lòngđừngtrùng lặpđề xuấtgiao");
             }
             Patient patient = tollEvt.getTollInfo().getPatient();
             if (StringUtils.isNotBlank(patient.getId())) {
                 patient = patientService.get(patient.getId());
             }
-            //收费
+            //Thu phí
             if (BizConstants.AMOUNT_STATUS_PAID.equals(tollInfo.getAmountStatus().getValue())) {
                 if (BizConstants.TOLL_TYPE_REGISTRATION.equals(tollInfo.getTollType().getValue())){
-                    //零售收费
+                    //Thu phí bán lẻ
                     registration = processRetailCharge(tollEvt, tollInfo, patient, recipelInfoEvts);
                 }else {
                     registration = processNormalCharge(tollEvt, tollInfo, patient, recipelInfoEvts);
@@ -197,25 +197,25 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                     recipelDetailDao.updateActualPayment(e.getActualPayment(),e.getId());
                 }
             }
-            //退费
+            //Hoàn phí
             if (BizConstants.AMOUNT_STATUS_REFUNDED.equals(tollInfo.getAmountStatus().getValue())) {
                 processRefund(tollEvt, tollInfo, recipelInfoEvts);
             }
-            //挂号支付方式，收费状态
+            //Đăng ký khámphương thức thanh toán, Trạng thái thu phí
             if (null == registration) {
                 registration = registrationService.get(tollInfo.getMedical().getRegistration().getId());
 
             }
-            //支付方式共用
+            //phương thức thanh toánTổng dùng
             if (StringUtils.isNullOrEmpty(registration.getPayType())) {
                 registration.setPayType(tollInfo.getPaymentType());
             }
-            //没有申明方式 或零售 就默认是整个挂号单
+            //Không cóđăng kýrõcách  hoặc bán lẻ thìMặc định có nguyênCáiĐăng ký khámđơn
             if(StringUtils.isNullOrEmpty(type) || BizConstants.TOLL_TYPE_INFUSION.equals(tollInfo.getTollType().getValue()))
             {
                 registration.setChargeStatus(tollEvt.getChargeStatus());
             }
-            //否则只是单个处方
+            //Nếu khôngchỉ có đơnCáiĐơn thuốc
             if (BizConstants.AMOUNT_STATUS_PAID.equals(tollInfo.getAmountStatus().getValue())) {
                 registration.setChargeDate(new Date());
             }else if (BizConstants.AMOUNT_STATUS_REFUNDED.equals(tollInfo.getAmountStatus().getValue())) {
@@ -226,32 +226,32 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         }
     }
 
-    //诊疗项目退费，如果存在材料收费则需退还
+    //hạng mục khám chữa bệnhhoàn phí, NếuTồn tạiVật tưThu phíthìcầntrảcòn
     private void returnPremium(RecipelInfo recipelInfo) {
         medicinalStorageControlService.materialRefund(recipelInfo);
-        //修改发药信息表
+        //Sửaphát thuốcThông tinbảng
         dispensingService.updateDelFlag(recipelInfo.getId());
     }
 
-    //诊疗项目进行附加费材料扣减
+    //hạng mục khám chữa bệnhtiến hành dòngphí phụ thêmVật tưkhấu trừ
     private void deduction(RecipelInfo recipelInfo) {
         medicinalStorageControlService.okOccupyStock(recipelInfo.getRegistration().getId(),recipelInfo.getId());
     }
 
     /**
-     * 校验盘点状态：盘点中禁止收费/退费操作
+     * Kiểm trakiểm kêTrạng thái: kiểm kê trong 禁dừngThu phí/hoàn phíthao tác
      */
     private void validateInventoryNotInProgress(String companyId, String amountStatus) {
         List<InventoryVerification> inventoryVerifications = inventoryVerificationService.getByCompanyId(companyId);
         if (!CollectionUtils.isEmpty(inventoryVerifications)) {
             String msg = BizConstants.AMOUNT_STATUS_PAID.equals(amountStatus)
-                    ? "正在进行盘点，无法进行收费操作!" : "正在进行盘点，无法进行退费操作!";
+                    ? "Đang tiến hành kiểm kê, không thể tiến hành dòngThu phíthao tác!" : "Đang tiến hành kiểm kê, không thể tiến hành dònghoàn phíthao tác!";
             throw new ServiceException(msg);
         }
     }
 
     /**
-     * 处理零售收费：创建患者、挂号、病例、处方，预占库存
+     * Xử lýThu phí bán lẻ: tạoBệnh nhân, Đăng ký khám, ca bệnh, Đơn thuốc, chiếm dụng trướcTồn kho
      */
     private Registration processRetailCharge(TollEvt tollEvt, TollInfo tollInfo, Patient patient, List<RecipelInfoEvt> recipelInfoEvts) {
         Patient patient1 = patientService.get(patient.getId());
@@ -282,7 +282,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 处理正常收费（非零售）：保存处方、生成收费记录、医保上传、体验卡扣减、检验检查
+     * Xử lýbình thườngThu phí(không phảibán lẻ): Lưu đơn thuốc, TạoThu phíBản ghi, BHYTTải lên, Trừ thẻ trải nghiệm, Xét nghiệm và kiểm tra
      */
     private Registration processNormalCharge(TollEvt tollEvt, TollInfo tollInfo, Patient patient, List<RecipelInfoEvt> recipelInfoEvts) {
         Registration registration = null;
@@ -304,25 +304,25 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             newTollInfo.setAmountReceivable(recipelInfo.getFee());
             newTollInfo.setAmountReceived(tollInfo.getAmountReceived());
             newTollInfo.setAmountDiscounted(newTollInfo.getAmountReceivable().subtract(newTollInfo.getAmountReceived()));
-            // 根据处方名称映射收费类型
+            // TheoĐơn thuốcTênánh xạLoại thu phí
             String tollTypeName = recipelInfo.getName().substring(0, 2);
             DictItem tollType = newTollInfo.getTollType();
             tollType.setValue(getTollTypeByTypeName(tollTypeName));
             if ("诊疗".equals(tollTypeName) && newTollInfo.getAmountReceivable() != null && newTollInfo.getAmountReceived() != null && newTollInfo.getAmountReceivable().compareTo(newTollInfo.getAmountReceived()) != 0) {
-                newTollInfo.setRemarks("体验卡扣减");
+                newTollInfo.setRemarks("Trừ thẻ trải nghiệm");
             }
             newTollInfo.setTollType(tollType);
             this.save(newTollInfo);
-            // 医保收费信息上传
+            // BHYTThu phíThông tinTải lên
             if ("true".equals(medicareConfigProperties.getCheck())) {
                 registration = buildAndUploadMedicareData(tollInfo, newTollInfo, recipelInfoEvt, array);
             }
-            // 体验卡扣减
+            // Trừ thẻ trải nghiệm
             MemberManagement memberManagement = tollEvt.getMemberManagement();
             if (!ObjectUtils.isEmpty(memberManagement) && "诊疗".equals(tollTypeName) && !CollectionUtils.isEmpty(memberManagement.getMemberManagementDetails())) {
                 memberManagementDetailService.updateUseNumber(memberManagement);
             }
-            // 检验检查项目入库
+            // Xét nghiệm và kiểm trahạng mụcnhập kho
             if ("诊疗".equals(tollTypeName)) {
                 addInspectionCheck(recipelInfo);
                 deduction(recipelInfo);
@@ -335,20 +335,20 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 根据处方名称前两个字映射收费类型值
+     * Ánh xạ giá trị loại thu phí theo hai chữ đầu của tên đơn thuốc
      */
     private String getTollTypeByTypeName(String typeName) {
         switch (typeName) {
-            case "西药": return BizConstants.TOLL_TYPE_WESTERN;
-            case "中药": return BizConstants.TOLL_TYPE_CHINESE;
-            case "输液": return BizConstants.TOLL_TYPE_INFUSION;
+            case "Thuốc tây": return BizConstants.TOLL_TYPE_WESTERN;
+            case "Thuốc đông y": return BizConstants.TOLL_TYPE_CHINESE;
+            case "Truyền dịch": return BizConstants.TOLL_TYPE_INFUSION;
             case "诊疗": return BizConstants.TOLL_TYPE_TREATMENT;
             default: return "";
         }
     }
 
     /**
-     * 构建医保收费数据并上传
+     * xây dựngBHYTThu phíDữ liệuvàTải lên
      */
     private Registration buildAndUploadMedicareData(TollInfo tollInfo, TollInfo tollSave, RecipelInfoEvt recipelInfoEvt, JSONArray array) {
         Registration registration = registrationService.get(tollInfo.getMedical().getRegistration().getId());
@@ -395,26 +395,26 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 处理退费逻辑：校验、更新处方状态、生成退费记录、退还库存、医保退费
+     * Xử lýhoàn phílogic: Kiểm tra, Cập nhật trạng thái đơn thuốc, Tạohoàn phíBản ghi, trảcònTồn kho, BHYThoàn phí
      */
     private void processRefund(TollEvt tollEvt, TollInfo tollInfo, List<RecipelInfoEvt> recipelInfoEvts) {
         for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
             RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoEvt.getRecipelInfo().getId());
             String value = tollInfo.getAmountStatus().getValue();
-            // 校验是否已发药
+            // Kiểm traCó hay khôngĐãphát thuốc
             if ("1".equals(recipelInfo.getIsDispension())) {
-                throw new ServiceException("该用户已发药，无法退费！");
+                throw new ServiceException("đóNgười dùngĐãphát thuốc, Không thể hoàn phí!");
             }
-            // 诊疗处方退费校验
+            // khámtrị liệuĐơn thuốchoàn phíKiểm tra
             if (BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
                 validateRefundForTreatmentRecipel(recipelInfo);
             }
-            // 更新处方状态
+            // Cập nhật trạng thái đơn thuốc
             recipelInfo.setIsPay(value.substring(value.length() - 1));
             recipelInfo.setChargeStatus(-1);
             recipelInfo.setRetreatDate(new Date());
             recipelInfoService.save(recipelInfo);
-            // 生成退费记录
+            // Tạohoàn phíBản ghi
             List<TollInfo> tollInfos = this.getByRecipeId(recipelInfo.getId());
             for (TollInfo info : tollInfos) {
                 TollInfo refund = new TollInfo();
@@ -428,18 +428,18 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 this.save(refund);
                 this.save(tollInfo1);
             }
-            // 退还材料
+            // trảcònVật tư
             if (BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
                 returnPremium(recipelInfo);
             }
-            // 退药退材料操作
+            // Trả thuốctrảVật tưthao tác
             if (recipelInfo.getDispensionStatus() == 0 && !BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
                 medicinalStorageControlService.cancelOccupy(recipelInfo);
             } else if (recipelInfo.getDispensionStatus() == -1 && !BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
                 medicinalStorageControlService.goBackFee(recipelInfo);
             }
         }
-        // 医保退费
+        // BHYThoàn phí
         if ("true".equals(medicareConfigProperties.getCheck())) {
             Registration registration = registrationService.get(tollInfo.getMedical().getRegistration().getId());
             mdPsnDataService.getAndSetPsnData(registration);
@@ -449,34 +449,34 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 诊疗处方退费校验：检查执行状态和检验检查报告
+     * khámtrị liệuĐơn thuốchoàn phíKiểm tra: Kiểm trahành nghề dòngTrạng thái và Xét nghiệm và kiểm trabáo告
      */
     private void validateRefundForTreatmentRecipel(RecipelInfo recipelInfo) {
         List<RecipelDetail> recipelDetails = recipelDetailService.getByRecipelInfoId(recipelInfo.getId());
         for (RecipelDetail recipelDetail : recipelDetails) {
             if (recipelDetail.getExecutions().compareTo(BigDecimal.valueOf(0)) != 0) {
-                throw new ServiceException("诊疗项目已执行划扣，无法退费！");
+                throw new ServiceException("hạng mục khám chữa bệnhĐãhành nghề dòng划扣, Không thể hoàn phí!");
             }
         }
         List<InspectionCheck> inspectionChecks = inspectionCheckService.getByRecipelInfoId(recipelInfo.getId());
         for (InspectionCheck inspectionCheck : inspectionChecks) {
             if ("1".equals(inspectionCheck.getStatus())) {
-                throw new ServiceException("检验检查报告已填写，无法退费！");
+                throw new ServiceException("Xét nghiệm và kiểm trabáo告Đãđiền, Không thể hoàn phí!");
             }
         }
         inspectionCheckService.deleteByRecipelInfoId(recipelInfo.getId());
     }
 
-    //保存检验检测
+    //LưuXét nghiệm检测
     @Transactional(readOnly = false)
     public void addInspectionCheck(RecipelInfo recipelInfo) {
-        //通过处方id，去获取诊疗项目
+        //QuaĐơn thuốcid, điLấyhạng mục khám chữa bệnh
         List<CostItem> costItems = costItemService.getByRecipelInfo(recipelInfo);
-        //判断诊疗项目是否为检验检查
+        //Kiểm trahạng mục khám chữa bệnhCó hay không là Xét nghiệm và kiểm tra
         for (CostItem costItem : costItems) {
             String itemType = costItem.getItemType().getValue();
             if (BizConstants.TREATMENT_ITEM_TYPE_LAB.equals(itemType) || BizConstants.TREATMENT_ITEM_TYPE_EXAM.equals(itemType)) {
-                // 0-检验 1-检查
+                // 0-Xét nghiệm 1-Kiểm tra
                 String type = BizConstants.TREATMENT_ITEM_TYPE_LAB.equals(itemType) ? "0" : "1";
                 saveInspectionCheck(recipelInfo, costItem, type);
             }
@@ -484,10 +484,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 保存检验检查记录（合并检验和检查的公共逻辑）
+     * LưuXét nghiệm và kiểm traBản ghi(hợpvàXét nghiệm và Kiểm tra của 公Tổng logic)
      */
     private void saveInspectionCheck(RecipelInfo recipelInfo, CostItem costItem, String type) {
-        //根据登记信息获取患者信息
+        //Theođăng kýThông tinLấyThông tin bệnh nhân
         Registration registration = registrationService.get(recipelInfo.getRegistration().getId());
         Patient patient = patientService.get(registration.getPatientId().getId());
 
@@ -507,14 +507,14 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         inspectionCheck.setCompleteDate(registration.getReceptionEndDate());
         inspectionCheck.setId(IdGen.uuid());
 
-        // 检验类型需要设置 recipelDetail
+        // Xét nghiệmLoạiCầnĐặt recipelDetail
         if ("0".equals(type)) {
             inspectionCheck.setRecipelDetail(costItem.getRecipelDetail());
         }
 
         inspectionCheckService.allSave(inspectionCheck);
 
-        //插入主表后，需要插入到明细和详情表中
+        //chènBảng chínhsau, CầnchènĐếnChi tiết và Chi tiếtbảng trong 
         InspectionCheckInfo inspectionCheckInfo = new InspectionCheckInfo();
         inspectionCheckInfo.setId(IdGen.uuid());
         inspectionCheckInfo.setCompany(recipelInfo.getCompany());
@@ -527,7 +527,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         inspectionCheckInfo.setUpdateDate(new Date());
         inspectionCheckInfoService.allSave(inspectionCheckInfo);
 
-        //插入详情表
+        //chènChi tiếtbảng
         List<CostItemPackage> all = costItemPackageService.getAll(costItem.getId());
         if (!CollectionUtils.isEmpty(all)) {
             int seq = 0;
@@ -559,10 +559,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         MedicalRecord medicalRecord = new MedicalRecord();
         medicalRecord.setCompany(registration.getCompany());
         medicalRecord.setRegistration(registration);
-        //这个字段必填
+        //nàyCáiTrườngbắt buộc
         medicalRecord.setDoctor(SessionUtils.getUser());
-        medicalRecord.setPatientTell("零售挂号");
-        medicalRecord.setDiagnose("零售挂号");
+        medicalRecord.setPatientTell("bán lẻĐăng ký khám");
+        medicalRecord.setDiagnose("bán lẻĐăng ký khám");
         return medicalRecordService.save(medicalRecord);
     }
 
@@ -591,10 +591,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             registration.setPatientId(patient);
             registration.setDispensingStatus("0");
             DictItem dictItem = new DictItem();
-            //已就诊
+            //Đãkhám bệnh
             dictItem.setValue(BizConstants.REG_STATUS_VISITED);
             registration.setStatus(dictItem);
-            //已收费
+            //Đã thu phí
             registration.setChargeStatus("2");
             return registrationService.save(registration);
     }
@@ -603,7 +603,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         RecipelInfo save = null;
         DictItem dictItem = new DictItem();
         dictItem.setValue(BizConstants.RECIPEL_TYPE_EXTERNAL);
-        //零售处方默认只有一个处方
+        //bán lẻĐơn thuốcMặc địnhchỉ có mộtCáiĐơn thuốc
         for (RecipelInfoEvt recipelInfoEvt : recipelInfos) {
             RecipelInfo recipelInfo = recipelInfoEvt.getRecipelInfo();
             recipelInfo.setRecipelType(dictItem);
@@ -613,11 +613,11 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             String recipelNo = serialNoUtils.generateSerialNo(org.apache.commons.lang3.StringUtils.EMPTY);
             recipelInfo.setCode(recipelNo);
             save = recipelInfoService.save(recipelInfo);
-            //添加处方详情
+            //ThêmĐơn thuốcChi tiết
             for (RecipelDetail recipelDetail : recipelInfoEvt.getRecipelDetailEvtList()) {
                 recipelDetail.setRecipelInfo(recipelInfo);
                 recipelDetail.setCompany(recipelInfo.getCompany());
-                //目前只考虑药品
+                //mụctrướcchỉ考虑Thuốc
                 DrugStuffEvt drugStuffEvt = new DrugStuffEvt();
                 if(Objects.equals("4",recipelDetail.getStuffType())){
                     Stuff stuff = stuffService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
@@ -668,7 +668,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public ResponseEntity<JSONObject> tollTotalForm(SearchParams searchParams) {
-        // 入参columnName格式：recipelInfo.recipel_type|costItem.item_type
+        // Tham số đầu vàocolumnNameĐịnh dạng: recipelInfo.recipel_type|costItem.item_type
         PageRequest pageRequest = toPageRequest(searchParams);
         Page<TollInfo> page = paginate(
             () -> this.dao.formTollCount(pageRequest),
@@ -680,7 +680,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public ResponseEntity<JSONObject> orgtolldetail(SearchParams searchParams) {
-        // 入参columnName格式：recipelInfo.recipel_type|costItem.item_type
+        // Tham số đầu vàocolumnNameĐịnh dạng: recipelInfo.recipel_type|costItem.item_type
         PageRequest pageRequest = toPageRequest(searchParams);
         Page<TollInfo> page = paginate(
             () -> this.dao.formTollCount(pageRequest),
@@ -692,7 +692,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public ResponseEntity<JSONObject> tollDetailForm(SearchParams searchParams) {
-        // 入参columnName格式：toll_type|patient_id|department.id|user.id|recipelInfo.recipel_type in ["_0","_1"]
+        // Tham số đầu vàocolumnNameĐịnh dạng: toll_type|patient_id|department.id|user.id|recipelInfo.recipel_type in ["_0","_1"]
         PageRequest pageRequest = toPageRequest(searchParams);
         Page<TollInfo> page = paginate(
             () -> this.dao.formDetailCount(pageRequest),
@@ -713,7 +713,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
 
     public ResponseEntity<JSONObject> orgtollDetailForm(SearchParams searchParams) {
-        // 入参columnName格式：toll_type|patient_id|department.id|user.id|recipelInfo.recipel_type in ["_0","_1"]
+        // Tham số đầu vàocolumnNameĐịnh dạng: toll_type|patient_id|department.id|user.id|recipelInfo.recipel_type in ["_0","_1"]
         PageRequest pageRequest = toPageRequest(searchParams);
         Page<TollInfo> page = paginate(
             () -> this.dao.formDetailCount(pageRequest),
@@ -724,7 +724,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         return ResponseEntity.ok(ResultUtil.successJson(tollVo));
     }
 
-    //获取查询总金额（优化：合并为一次查询）
+    //LấyTruy vấntổngSố tiền(Tối ưu hóa: hợpvà là một lầnTruy vấn)
     private TollVo getTotalTollForSearch(PageRequest pageRequest) {
         return this.dao.tollTotalAllPayments(pageRequest);
     }
@@ -751,7 +751,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             workloads = this.dao.getWorkload(pageRequest);
             List<WorkLoad> workLoads = this.dao.getCount(pageRequest);
 
-            // 设置就诊次数
+            // Đặtkhám bệnh lầnsố
             for (WorkLoad workLoad: workloads) {
                 for (WorkLoad workload: workLoads){
                     if (workLoad.getName().equals(workload.getName())){
@@ -760,7 +760,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 }
             }
 
-            // 批量查询所有医生的临时费用（优化 N+1 查询）
+            // hàng loạtTruy vấntất cảBác sĩ của lâm sàng giờChi phí(Tối ưu hóa N+1 Truy vấn)
             List<String> doctorNames = workloads.stream()
                     .map(WorkLoad::getName)
                     .distinct()
@@ -768,11 +768,11 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             PageRequest batchPageRequest = new PageRequest(params, orderby);
             List<WorkLoad> allTemporaryCosts = this.dao.getTemporaryCostBatch(batchPageRequest, doctorNames);
 
-            // 按医生名称分组
+            // theoBác sĩTên phútnhóm
             Map<String, List<WorkLoad>> costsByDoctor = allTemporaryCosts.stream()
                     .collect(Collectors.groupingBy(WorkLoad::getName));
 
-            // 设置临时费用
+            // Đặtlâm sàng giờChi phí
             for (WorkLoad workLoad: workloads) {
                 List<WorkLoad> temporaryCosts = costsByDoctor.getOrDefault(workLoad.getName(), Collections.emptyList());
                 for (WorkLoad temporaryCost : temporaryCosts) {
@@ -828,7 +828,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 药品进销存信息
+     * Thông tin nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
@@ -844,7 +844,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 药品进销存汇总数量和价格
+     * Tổng hợp số lượng và giá nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
@@ -860,7 +860,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 获取耗材销售情况
+     * LấyTình hình bán vật tư tiêu hao
      * @param stuffsalessummaryRc
      * @return
      */
@@ -887,7 +887,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 材料进销存信息
+     * Thông tin nhập - xuất - tồn của vật tư
      * @param ypjxcRc
      * @return
      */
@@ -903,7 +903,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 材料进销存汇总数量和价格
+     * Tổng hợp số lượng và giá nhập - xuất - tồn của vật tư
      * @param ypjxcRc
      * @return
      */
@@ -919,7 +919,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 药品材料入库信息统计
+     * Thống kê thông tin nhập kho thuốc và vật tư
      * @param ypjxcRc
      * @return
      */
@@ -933,7 +933,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 药品材料入库信息汇总
+     * Tổng hợp thông tin nhập kho thuốc và vật tư
      * @param ypjxcRc
      * @return
      */
@@ -947,14 +947,14 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 机构管理-药品进销存信息
+     * Quản lý cơ sở-Thông tin nhập - xuất - tồn của thuốc
      */
     public Page<Ypjxc> getpharmaceuticalInventoryManagement(YpjxcRc ypjxcRc){
         ypjxcRc.setJgzt("1");
         return getypjxcmanagement(ypjxcRc);
     }
     /**
-     * 机构管理-药品进销存汇总数量和价格
+     * Quản lý cơ sở-Tổng hợp số lượng và giá nhập - xuất - tồn của thuốc
      */
     public Page<Ypjxc> getpharmaceuticalInventoryManagementsums(YpjxcRc ypjxcRc){
         ypjxcRc.setJgzt("1");
@@ -966,7 +966,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 机构管理-材料进销存信息
+     * Quản lý cơ sở-Thông tin nhập - xuất - tồn của vật tư
      */
     public Page<Ypjxc> getmaterialmanagement(YpjxcRc ypjxcRc){
         ypjxcRc.setJgzt("1");
@@ -974,7 +974,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 机构管理-材料进销存汇总数量和价格
+     * Quản lý cơ sở-Tổng hợp số lượng và giá nhập - xuất - tồn của vật tư
      */
     public Page<Ypjxc> getmaterialmanagementsums(YpjxcRc ypjxcRc){
         ypjxcRc.setJgzt("1");
@@ -982,7 +982,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 机构管理-药品材料入库信息统计
+     * Quản lý cơ sở-Thống kê thông tin nhập kho thuốc và vật tư
      */
     public Page<Ypclrkcx> drugmaterialsstockmanagement(YpjxcRc ypjxcRc){
         ypjxcRc.setJgzt("1");
@@ -990,7 +990,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 机构管理-药品材料入库信息汇总
+     * Quản lý cơ sở-Tổng hợp thông tin nhập kho thuốc và vật tư
      */
     public Page<Ypclrkcx> drugmaterialsstockmanagementsums(YpjxcRc ypjxcRc){
         ypjxcRc.setJgzt("1");
@@ -998,7 +998,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 机构管理-获取耗材销售情况
+     * Quản lý cơ sở-LấyTình hình bán vật tư tiêu hao
      */
     public Page<Stuffsalessummary> getconsumablemarketstatistics(StuffsalessummaryRc stuffsalessummaryRc){
         stuffsalessummaryRc.setJgzt("1");
@@ -1006,7 +1006,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 机构管理-获取耗材销售信息汇总价格和数量
+     * Quản lý cơ sở-Lấy tổng hợp giá và số lượng bán vật tư tiêu hao
      */
     public Page<Stuffsalessummary> getconsumablemarketstatisticssum(StuffsalessummaryRc stuffsalessummaryRc){
         stuffsalessummaryRc.setJgzt("1");
@@ -1084,18 +1084,18 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
 
-    //报表导出
+    //báo cáoXuất
     public void exportExcel(SearchParams searchParams, HttpServletResponse response) throws IOException {
         if(Objects.equals("doctorDetail",searchParams.getColumnName())){
-            //医生收入统计
+            //Bác sĩThu nhậpthống kê
             exportDoctorDetail(searchParams,response);
         }else if(Objects.equals("drugDetail",searchParams.getColumnName())){
-            //药品销售汇总统计
+            //ThuốcThống kê tổng hợp bán hàng
             exportDrugDetail(searchParams,response);
         }
     }
 
-    //药品销售汇总统计导出
+    //ThuốcThống kê tổng hợp bán hàngXuất
     private void exportDrugDetail(SearchParams searchParams, HttpServletResponse response) throws IOException {
         Page<DrugSales> drugSalesPage = getDrugSales(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -1104,10 +1104,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 Map<String, Object> row = new HashMap<>();
                 row.put("type", ds.getType());
                 row.put("name", ds.getName());
-                // 规格 = 剂量+剂量单位*数量+数量单位/包装
+                // Quy cách = Liều lượng+Đơn vị liều lượng*Số lượng+Số lượngĐơn vị/Đóng gói
                 String norms = ds.getDosis() + ds.getDosisUnit() + "*" + ds.getPreparation() + ds.getPreparationUnit() + "/" + ds.getPack();
                 row.put("norms", norms);
-                // 数量换算
+                // Số lượngquy đổi
                 int prep = Integer.parseInt(ds.getPreparation());
                 int wholePacks = ds.getTotal() / prep;
                 int remainder = ds.getTotal() % prep;
@@ -1117,19 +1117,19 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 rows.add(row);
             }
         }
-        new ExcelExportBuilder("药品销售汇总统计表")
+        new ExcelExportBuilder("ThuốcBảng thống kê tổng hợp bán hàng")
                 .addColumns(
-                        new ExcelExportBuilder.Column("药品分类", "type"),
-                        new ExcelExportBuilder.Column("药品名称", "name"),
-                        new ExcelExportBuilder.Column("规格", "norms"),
-                        new ExcelExportBuilder.Column("数量", "number"),
-                        new ExcelExportBuilder.Column("总价(元)", "allFee")
+                        new ExcelExportBuilder.Column("Phân loại thuốc", "type"),
+                        new ExcelExportBuilder.Column("Tên thuốc", "name"),
+                        new ExcelExportBuilder.Column("Quy cách", "norms"),
+                        new ExcelExportBuilder.Column("Số lượng", "number"),
+                        new ExcelExportBuilder.Column("tổng giá( đồng)", "allFee")
                 )
                 .data(rows)
-                .write(response, "药品销售汇总统计.xlsx");
+                .write(response, "ThuốcThống kê tổng hợp bán hàng.xlsx");
     }
 
-    //医生收入统计导出
+    //Bác sĩThu nhậpthống kêXuất
     private void exportDoctorDetail(SearchParams searchParams, HttpServletResponse response) throws IOException {
         Page<WorkLoad> workloadPage = getWorkload(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -1152,24 +1152,24 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 rows.add(row);
             }
         }
-        new ExcelExportBuilder("医生收入统计表")
+        new ExcelExportBuilder("Bác sĩThu nhậpthống kêbảng")
                 .addColumns(
-                        new ExcelExportBuilder.Column("医生姓名", "name"),
-                        new ExcelExportBuilder.Column("接诊次数", "count"),
-                        new ExcelExportBuilder.Column("总金额(元)", "grossAmount"),
-                        new ExcelExportBuilder.Column("挂号费(元)", "registrationCost"),
-                        new ExcelExportBuilder.Column("西药费(元)", "westCost"),
-                        new ExcelExportBuilder.Column("中草药费(元)", "chineseCost"),
-                        new ExcelExportBuilder.Column("中成药费(元)", "chinesePatentCost"),
-                        new ExcelExportBuilder.Column("材料费(元)", "stuffCost"),
-                        new ExcelExportBuilder.Column("检验费(元)", "examinesCost"),
-                        new ExcelExportBuilder.Column("检查费(元)", "checkoutCost"),
-                        new ExcelExportBuilder.Column("理疗费(元)", "therapyCost"),
-                        new ExcelExportBuilder.Column("治疗费(元)", "cureCost"),
-                        new ExcelExportBuilder.Column("其他", "otherCost")
+                        new ExcelExportBuilder.Column("Bác sĩTên", "name"),
+                        new ExcelExportBuilder.Column("Số lần tiếp nhận", "count"),
+                        new ExcelExportBuilder.Column("tổngSố tiền( đồng)", "grossAmount"),
+                        new ExcelExportBuilder.Column("Phí đăng ký khám( đồng)", "registrationCost"),
+                        new ExcelExportBuilder.Column("Tâythuốcphí( đồng)", "westCost"),
+                        new ExcelExportBuilder.Column(" trong 草thuốcphí( đồng)", "chineseCost"),
+                        new ExcelExportBuilder.Column(" trong thànhthuốcphí( đồng)", "chinesePatentCost"),
+                        new ExcelExportBuilder.Column("Phí vật tư( đồng)", "stuffCost"),
+                        new ExcelExportBuilder.Column("Xét nghiệmphí( đồng)", "examinesCost"),
+                        new ExcelExportBuilder.Column("Kiểm traphí( đồng)", "checkoutCost"),
+                        new ExcelExportBuilder.Column("Vật lý trị liệuphí( đồng)", "therapyCost"),
+                        new ExcelExportBuilder.Column("điều trịphí( đồng)", "cureCost"),
+                        new ExcelExportBuilder.Column("Khác", "otherCost")
                 )
                 .data(rows)
-                .write(response, "医生收入统计.xlsx");
+                .write(response, "Bác sĩThu nhậpthống kê.xlsx");
     }
 
     @Transactional(readOnly = true)
@@ -1179,8 +1179,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     private void exportDrugStock(YpjxcRc ypjxcRc, HttpServletResponse response) throws IOException {
         boolean isDrug = Objects.equals("1", ypjxcRc.getYpcltype());
-        String sheetName = isDrug ? "药品入库统计表" : "材料入库统计表";
-        String fileName = isDrug ? "药品入库统计.xlsx" : "材料入库统计.xlsx";
+        String sheetName = isDrug ? "Thuốcnhập khothống kêbảng" : "Vật tưnhập khothống kêbảng";
+        String fileName = isDrug ? "Thuốcnhập khothống kê.xlsx" : "Vật tưnhập khothống kê.xlsx";
 
         Page<Ypclrkcx> page = getypclrkcxlist(ypjxcRc);
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -1192,19 +1192,19 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 row.put("rkry", item.getRkry());
                 row.put("spbh", item.getSpbh());
                 row.put("spmc", item.getSpmc());
-                // 分类
+                // Phân loại
                 if (isDrug) {
-                    String type = Objects.equals(BizConstants.MEDICAL_TYPE_WESTERN, item.getLx()) ? "西药" : Objects.equals(BizConstants.MEDICAL_TYPE_HERBAL, item.getLx()) ? "中草药" : "中成药";
+                    String type = Objects.equals(BizConstants.MEDICAL_TYPE_WESTERN, item.getLx()) ? "Thuốc tây" : Objects.equals(BizConstants.MEDICAL_TYPE_HERBAL, item.getLx()) ? "Dược liệu đông y" : "Thuốc thành phẩm đông y";
                     row.put("type", type);
                 } else {
-                    String type = Objects.equals(BizConstants.STUFF_TYPE_MATERIAL, item.getLx()) ? "非医用材料" : "医用材料";
+                    String type = Objects.equals(BizConstants.STUFF_TYPE_MATERIAL, item.getLx()) ? "không phảiydùngVật tư" : "ydùngVật tư";
                     row.put("type", type);
                 }
                 row.put("ph", item.getPh() != null ? item.getPh() : "");
                 row.put("gg", item.getGg());
                 row.put("sccj", item.getSccj() != null ? item.getSccj() : "");
                 row.put("gys", item.getGys() != null ? item.getGys() : "");
-                // 数量换算
+                // Số lượngquy đổi
                 int sl = Integer.parseInt(item.getSl());
                 int zj = Integer.parseInt(item.getZj());
                 int wholePacks = sl / zj;
@@ -1216,42 +1216,42 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 row.put("cbj", new BigDecimal(item.getCbj() != null ? item.getCbj() : "0"));
                 row.put("cbhj", new BigDecimal(item.getCbhj() != null ? item.getCbhj() : "0"));
                 row.put("yxq", item.getYxq() != null ? item.getYxq() : "");
-                row.put("shzt", Objects.equals(BizConstants.SUPPLIER_STORAGE_EXAMINE_PASS, item.getShzt()) ? "通过" : "已作废");
+                row.put("shzt", Objects.equals(BizConstants.SUPPLIER_STORAGE_EXAMINE_PASS, item.getShzt()) ? "Qua" : "Đãhủy");
                 row.put("bz", item.getBz() != null ? item.getBz() : "");
                 rows.add(row);
             }
         }
         new ExcelExportBuilder(sheetName)
                 .addColumns(
-                        new ExcelExportBuilder.Column("入库日期", "rkrq"),
-                        new ExcelExportBuilder.Column("入库单号", "rkdh"),
-                        new ExcelExportBuilder.Column("入库人员", "rkry"),
-                        new ExcelExportBuilder.Column("商品编码", "spbh"),
-                        new ExcelExportBuilder.Column("商品名称", "spmc"),
-                        new ExcelExportBuilder.Column("分类", "type"),
-                        new ExcelExportBuilder.Column("批号", "ph"),
-                        new ExcelExportBuilder.Column("规格", "gg"),
-                        new ExcelExportBuilder.Column("生产厂家", "sccj"),
-                        new ExcelExportBuilder.Column("供应商", "gys"),
-                        new ExcelExportBuilder.Column("数量", "number"),
-                        new ExcelExportBuilder.Column("单位", "dw"),
-                        new ExcelExportBuilder.Column("零售价(元)", "lsj"),
-                        new ExcelExportBuilder.Column("成本价(元)", "cbj"),
-                        new ExcelExportBuilder.Column("成本合计(元)", "cbhj"),
-                        new ExcelExportBuilder.Column("有效期", "yxq"),
-                        new ExcelExportBuilder.Column("审核状态", "shzt"),
-                        new ExcelExportBuilder.Column("备注", "bz")
+                        new ExcelExportBuilder.Column("nhập khoNgày", "rkrq"),
+                        new ExcelExportBuilder.Column("phiếu nhập khosố", "rkdh"),
+                        new ExcelExportBuilder.Column("nhập khonhân viên", "rkry"),
+                        new ExcelExportBuilder.Column("hàng hóaMã", "spbh"),
+                        new ExcelExportBuilder.Column("Tên hàng hóa", "spmc"),
+                        new ExcelExportBuilder.Column("Phân loại", "type"),
+                        new ExcelExportBuilder.Column("Số lô", "ph"),
+                        new ExcelExportBuilder.Column("Quy cách", "gg"),
+                        new ExcelExportBuilder.Column("Nhà sản xuất", "sccj"),
+                        new ExcelExportBuilder.Column("Nhà cung cấp", "gys"),
+                        new ExcelExportBuilder.Column("Số lượng", "number"),
+                        new ExcelExportBuilder.Column("Đơn vị", "dw"),
+                        new ExcelExportBuilder.Column("Giá bán lẻ( đồng)", "lsj"),
+                        new ExcelExportBuilder.Column("Giá vốn( đồng)", "cbj"),
+                        new ExcelExportBuilder.Column("Tổng chi phí( đồng)", "cbhj"),
+                        new ExcelExportBuilder.Column("Thời hạn hiệu lực", "yxq"),
+                        new ExcelExportBuilder.Column("Trạng thái xét duyệt", "shzt"),
+                        new ExcelExportBuilder.Column("Ghi chú", "bz")
                 )
                 .data(rows)
                 .write(response, fileName);
     }
 
     /**
-     * 将费用明细按类型映射到统计对象的对应字段
-     * 消除 getWorkload/getWorkLoadStat/getdoctorDetailstatistics 中重复的 if-else 链
+     * Ánh xạ chi tiết chi phí theo loại sang trường tương ứng của đối tượng thống kê
+     * Xóa bỏ getWorkload/getWorkLoadStat/getdoctorDetailstatistics  trong trùng lặp của  if-else 链
      *
-     * @param items 费用明细列表（每项包含 types 和 temporaryCost）
-     * @param setter 类型→费用 的设置回调
+     * @param items Chi phíChi tiếtDanh sách(mỗihạng mụcbao gồm types  và  temporaryCost)
+     * @param setter Loại→Chi phí  của Đặtcallback
      */
     private <T> void applyCostByType(List<T> items, java.util.function.BiConsumer<String, java.math.BigDecimal> setter) {
         if (items == null || items.isEmpty()) return;
@@ -1272,37 +1272,37 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * 根据类型名称设置 WorkLoad 对应的费用字段
+     * TheoLoạiTênĐặt WorkLoad tương ứng của Chi phíTrường
      */
     private void setCostByTypeName(WorkLoad workLoad, String types, java.math.BigDecimal cost) {
         switch (types) {
-            case "中成药": workLoad.setChinesePatentCost(cost); break;
-            case "西药":   workLoad.setWestCost(cost); break;
-            case "中草药": workLoad.setChineseCost(cost); break;
-            case "材料":   workLoad.setStuffCost(cost); break;
-            case "检验":   workLoad.setExaminesCost(cost); break;
-            case "检查":   workLoad.setCheckoutCost(cost); break;
-            case "理疗":   workLoad.setTherapyCost(cost); break;
-            case "治疗":   workLoad.setCureCost(cost); break;
-            case "其他":   workLoad.setOtherCost(cost); break;
+            case "Thuốc thành phẩm đông y": workLoad.setChinesePatentCost(cost); break;
+            case "Thuốc tây":   workLoad.setWestCost(cost); break;
+            case "Dược liệu đông y": workLoad.setChineseCost(cost); break;
+            case "Vật tư":   workLoad.setStuffCost(cost); break;
+            case "Xét nghiệm":   workLoad.setExaminesCost(cost); break;
+            case "Kiểm tra":   workLoad.setCheckoutCost(cost); break;
+            case "Vật lý trị liệu":   workLoad.setTherapyCost(cost); break;
+            case "Điều trị":   workLoad.setCureCost(cost); break;
+            case "Khác":   workLoad.setOtherCost(cost); break;
             default: break;
         }
     }
 
     /**
-     * 根据类型名称设置 WorkLoadStat 对应的费用字段
+     * TheoLoạiTênĐặt WorkLoadStat tương ứng của Chi phíTrường
      */
     private void setCostByTypeName(WorkLoadStat stat, String types, java.math.BigDecimal cost) {
         switch (types) {
-            case "中成药": stat.setChinesePatentCost(cost); break;
-            case "西药":   stat.setWestCost(cost); break;
-            case "中草药": stat.setChineseCost(cost); break;
-            case "材料":   stat.setStuffCost(cost); break;
-            case "检验":   stat.setExaminesCost(cost); break;
-            case "检查":   stat.setCheckoutCost(cost); break;
-            case "理疗":   stat.setTherapyCost(cost); break;
-            case "治疗":   stat.setCureCost(cost); break;
-            case "其他":   stat.setOtherCost(cost); break;
+            case "Thuốc thành phẩm đông y": stat.setChinesePatentCost(cost); break;
+            case "Thuốc tây":   stat.setWestCost(cost); break;
+            case "Dược liệu đông y": stat.setChineseCost(cost); break;
+            case "Vật tư":   stat.setStuffCost(cost); break;
+            case "Xét nghiệm":   stat.setExaminesCost(cost); break;
+            case "Kiểm tra":   stat.setCheckoutCost(cost); break;
+            case "Vật lý trị liệu":   stat.setTherapyCost(cost); break;
+            case "Điều trị":   stat.setCureCost(cost); break;
+            case "Khác":   stat.setOtherCost(cost); break;
             default: break;
         }
     }

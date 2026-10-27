@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 报表文件DAO接口
+ * báo cáoTệpDAOGiao diện
  * @author txl
  * @version 2022-06-23
  */

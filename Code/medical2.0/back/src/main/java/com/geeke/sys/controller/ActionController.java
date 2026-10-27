@@ -8,7 +8,7 @@ import com.geeke.sys.entity.Action;
 import com.geeke.sys.service.ActionService;
 
 /**
- * 操作日志Controller
+ * Nhật ký thao tácController
  * @author lys
  * @version 2020-06-29
  */

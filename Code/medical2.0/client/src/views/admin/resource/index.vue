@@ -1,36 +1,36 @@
 <template>
   <el-row v-loading='loading'>
     <el-container>
-      <!-- 历史记录  -->
+      <!-- Lịch sử  -->
       <History :bussObject='curentRow' ></History>
-      <!-- 编辑窗口  -->
+      <!-- Cửa sổ chỉnh sửa  -->
       <resource-form ref='resourceForm' :permission='permission' @save-finished='loadData'></resource-form>
       <div class="page-left-container">
         <el-aside>
           <el-table ref='treeTable' :data='routers' row-key='id' :tree-props="{children: 'children', hasChildren: 'hasChildren'}" highlight-current-row :cell-style="function() {return {borderBottom: 'none'} }" @current-change='onLeftCurrentChange'>
-            <el-table-column label='路由' prop='name'></el-table-column>
+            <el-table-column label='Định tuyến' prop='name'></el-table-column>
           </el-table>
         </el-aside>
       </div>
       <div class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='名称' prop='name'>
-                  <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入名称'></el-input>
+                <el-form-item label='Tên' prop='name'>
+                  <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên'></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-button-group>
-                  <el-tooltip  effect="light" content="搜索" placement="top-start">
+                  <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                     <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                   </el-tooltip>
-                    <el-tooltip  effect="light" content="重置" placement="top-start">
+                    <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                     <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                   </el-tooltip>
-                  <el-tooltip  effect="light" content="更多" placement="top-start">
+                  <el-tooltip  effect="light" content="Thêm" placement="top-start">
                     <el-button type="primary" icon="el-icon-d-arrow-right" @click='onMoreCodition()' :plain='true'></el-button>
                   </el-tooltip>
                 </el-button-group> 
@@ -39,16 +39,16 @@
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :curNode='currentRouter' exclude='router_id' :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
-      <!-- 工具栏 开始 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
+      <!-- Thanh công cụ Bắt đầu -->
       <div class="page-container-header-end">
         <div>
           <el-button v-show='permission.add' :plain='true' @click='onFastCreateResourc()'>快速添加</el-button>
-          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateResource()'>添加</el-button>
+          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateResource()'>Thêm</el-button>
         </div>
       </div>
-      <!-- 工具栏 结束 -->
-      <!-- 表格栏  开始 -->
+      <!-- Thanh công cụ Kết thúc -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>        
@@ -61,23 +61,23 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='oprColumnWidth + "px"'>        
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"'>        
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='resourceList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view' 
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
                     @click='onViewEntity(scope.$index, scope.row, "resourceForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit' 
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit' 
                     @click='onEditEntity(scope.$index, scope.row, "resourceForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document' 
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document' 
                     @click='onCopyEntity(scope.$index, scope.row, "resourceForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete' 
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete' 
                     @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info' 
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -85,8 +85,8 @@
     	  </div>	          
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -101,7 +101,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 --> 
+      <!-- Thanh phân trang     Kết thúc --> 
       </div>
     </el-container>
   </el-row>
@@ -144,8 +144,8 @@ export default {
     	'router_id': '=',
       },
       queryModel:  {
-        'name': '',   // 名称
-        'router': {     // 父表 路由
+        'name': '',   // Tên
+        'router': {     // Bảng cha Định tuyến
           'id': null,
           'name': '',
         },
@@ -155,11 +155,11 @@ export default {
       },
       currentRouter: {},     //树形结构中选择的路由
       resourceTotal: 0,
-      resourceList: [],     // 数表数据
+      resourceList: [],     // Dữ liệu bảng số
       routers: [],           // 路由树表
     
-      oprColumnWidth: 140,  // 操作列宽
-      resourceDefs: [{name: '查询', permission: 'list'}, {name: '查看', permission: 'read'}, {name: '导出', permission: 'export'}, {name: '添加', permission: 'create'}, {name: '删除', permission: 'delete'}, {name: '更新', permission: 'update'}],
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
+      resourceDefs: [{name: 'Truy vấn', permission: 'list'}, {name: 'Xem', permission: 'read'}, {name: 'Xuất', permission: 'export'}, {name: 'Thêm', permission: 'create'}, {name: 'Xóa', permission: 'delete'}, {name: 'Cập nhật', permission: 'update'}],
       tableId: '4006',
       schemeId: '6008'
     }
@@ -197,8 +197,8 @@ export default {
     },
     appendSearchParams() {
       if(validatenull(this.currentRouter)) {
-        this.$alert('请选择路由', '提示', {
-          confirmButtonText: '确定',
+        this.$alert('Vui lòng chọn tuyến đường', 'Nhắc nhở', {
+          confirmButtonText: 'Xác nhận',
           type: 'info'
         })
         return
@@ -226,26 +226,26 @@ export default {
 
     onFastCreateResourc() {
       if(validatenull(this.currentRouter)) {
-        this.$alert('请选择路由', '提示', {
-          confirmButtonText: '确定',
+        this.$alert('Vui lòng chọn tuyến đường', 'Nhắc nhở', {
+          confirmButtonText: 'Xác nhận',
           type: 'info'
         })
         return
       }
       for(let item in this.resourceDefs) {
         let resource = {
-          'name': this.resourceDefs[item].name + this.currentRouter.name,   // 名称
-          'code': this.currentRouter.code,   // 代码
+          'name': this.resourceDefs[item].name + this.currentRouter.name,   // Tên
+          'code': this.currentRouter.code,   // Mã nguồn
           'url': this.currentRouter.url,   // Url
-          'permission': this.currentRouter.code.substr(this.currentRouter.code.lastIndexOf('/') + 1) + ':' + this.resourceDefs[item].permission,   // 权限
-          'canPermission': '1', // 可授权
+          'permission': this.currentRouter.code.substr(this.currentRouter.code.lastIndexOf('/') + 1) + ':' + this.resourceDefs[item].permission,   // Quyền
+          'canPermission': '1', // Có thể cấp quyền
           'isDefault': 0,  // 是否默认资源
-          'isLocked': 0,    // 禁用
-          'router': {     // 父表 路由
+          'isLocked': 0,    // Vô hiệu hóa
+          'router': {     // Bảng cha Định tuyến
             'id': this.currentRouter.id,
             'name': this.currentRouter.name,
           },
-          'remarks': '',   // 备注信息
+          'remarks': '',   // Thông tin ghi chú
         }
 
         this.setLoad()
@@ -264,8 +264,8 @@ export default {
     },
     onCreateResource() {
       if(validatenull(this.currentRouter)) {
-        this.$alert('请选择路由', '提示', {
-          confirmButtonText: '确定',
+        this.$alert('Vui lòng chọn tuyến đường', 'Nhắc nhở', {
+          confirmButtonText: 'Xác nhận',
           type: 'info'
         })
         return

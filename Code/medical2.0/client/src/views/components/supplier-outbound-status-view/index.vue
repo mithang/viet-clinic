@@ -20,9 +20,9 @@
         if(!this.value)return '';
         switch(this.value)
         {
-          case 1:return '待审核';
-          case 2:return '已审核';
-          case 3:return '已撤销';
+          case 1:return 'Chờ xét duyệt';
+          case 2:return 'Đã xét duyệt';
+          case 3:return 'Đã thu hồi';
         }
         return '';
       }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 系统附件字节Service
+ * Tệp đính kèm hệ thốngbyteService
  * @author szy
  * @version 2021-08-26
  */

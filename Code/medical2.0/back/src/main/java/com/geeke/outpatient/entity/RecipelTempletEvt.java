@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 处方详情Entity
+ * Chi tiết đơn thuốcEntity
  * @author txl
  * @version 2022-06-07
  */
@@ -19,58 +19,58 @@ import java.util.List;
 public class RecipelTempletEvt implements Serializable {
 
 	private static final long serialVersionUID = 1014474470772900077L;
-	//医院名称
+	//Bệnh việnTên
 	private String clinicName;
-	//处方签
-    private String recipelSign = "处方笺";
-	//处方小类
+	//Đơn thuốcký
+    private String recipelSign = "Đơn thuốcgiấy";
+	//Tiểu loại đơn thuốc
     private String smallType;
-    //科室
+    //Khoa
     private String office;
-    //处方号
+    //Số đơn thuốc
     private String code;
-	//姓名
+	//Họ tên
 	private String name;
-	//性别
+	//Giới tính
 	private String gender;
-    //开单日期
+    //lập đơnNgày
     private String billDate;
-	//年龄
+	//Tuổi
 	private String age;
-	//费别
+	//Loại phí
 	private String feeType;
-	//发药日期
+	//Ngày phát thuốc
     private String dispenseDate;
-    //发药
-    private String dispense = "发药：";
-    //身份证号
+    //Phát thuốc
+    private String dispense = "Phát thuốc: ";
+    //Số CMND/CCCD
     private String idCard;
-    //临床诊断
+    //Chẩn đoán lâm sàng
     private String diagnose;
-	//药品标识
+	//Thuốcđịnh danh
 	private String stuffSign = " RP:";
-	//医嘱
+	//Y lệnh
 	private String entrust;
-	//中药配置
+	// trong thuốccấu hình
     private String chineseMedicineUse;
-    //医师
+    //Bác sĩ
     private String doctor;
-    //金额
+    //Số tiền
     private String fee;
-    //药师
+    //Dược sĩ
     private String apothecary;
-    //审核
+    //Duyệt
     private String check;
-    //核对
-    private String checkAgain ="核对：";
-    //发药
+    //Đối chiếu
+    private String checkAgain ="Đối chiếu: ";
+    //Phát thuốc
     private String dispensing;
-    //药师/士（调配）
+    //Dược sĩ/士(Pha chế)
     private String deploy;
-    //注意事项
+    //Lưu ý
     private String medicalRemark;
     //black
     private String black;
-    //初诊/复诊
+    //Khám lần đầu/Tái khám
     private String treatType;
 }

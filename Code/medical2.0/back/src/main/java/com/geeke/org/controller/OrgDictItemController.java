@@ -9,7 +9,7 @@ import com.geeke.org.entity.OrgDictItem;
 import com.geeke.org.service.OrgDictItemService;
 
 /**
- * 字典项Controller
+ * Mục từ điểnController
  */
 @RestController
 @RequestMapping({"/org/dictItem"})

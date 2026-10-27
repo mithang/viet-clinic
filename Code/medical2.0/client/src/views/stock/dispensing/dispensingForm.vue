@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
@@ -11,9 +11,9 @@
       <div class="tab-item" v-show='tabIndex==="1"'>  
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='诊所id' prop='company.id' >
+          <el-form-item label='Phòng khámid' prop='company.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.company.name'></el-input>
-            <el-select v-else v-model='bizFormModel.company' value-key='id' filterable clearable placeholder='请选择诊所id' 
+            <el-select v-else v-model='bizFormModel.company' value-key='id' filterable clearable placeholder='Vui lòng chọn phòng khámid' 
               @clear='bizFormModel.company={
                 "id": null,
                                 "name": null,
@@ -23,9 +23,9 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='挂号id' prop='registration.id' >
+          <el-form-item label='Đăng ký khámid' prop='registration.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.registration.id'></el-input>
-            <el-select v-else v-model='bizFormModel.registration' value-key='id' filterable clearable placeholder='请选择挂号id' 
+            <el-select v-else v-model='bizFormModel.registration' value-key='id' filterable clearable placeholder='Vui lòng chọn đăng ký khámid' 
               @clear='bizFormModel.registration={
                 "id": null,
                 }'>
@@ -36,9 +36,9 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='库存id' prop='supplierStock.id' >
+          <el-form-item label='Tồn khoid' prop='supplierStock.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.supplierStock.id'></el-input>
-            <el-select v-else v-model='bizFormModel.supplierStock' value-key='id' filterable clearable placeholder='请选择库存id' 
+            <el-select v-else v-model='bizFormModel.supplierStock' value-key='id' filterable clearable placeholder='Vui lòng chọn tồn khoid' 
               @clear='bizFormModel.supplierStock={
                 "id": null,
                 }'>
@@ -47,9 +47,9 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='处方信息id' prop='recipelInfo.id' >
+          <el-form-item label='Thông tin đơn thuốcid' prop='recipelInfo.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.recipelInfo.name'></el-input>
-            <el-select v-else v-model='bizFormModel.recipelInfo' value-key='id' filterable clearable placeholder='请选择处方信息id' 
+            <el-select v-else v-model='bizFormModel.recipelInfo' value-key='id' filterable clearable placeholder='Vui lòng chọn thông tin đơn thuốcid' 
               @clear='bizFormModel.recipelInfo={
                 "id": null,
                                 "name": null,
@@ -61,7 +61,7 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='数量' prop='number' >
+          <el-form-item label='Số lượng' prop='number' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.number'></el-input>
             <number-input v-else v-model="bizFormModel.number"  :precision="0"></number-input>
           </el-form-item>
@@ -69,18 +69,18 @@
                         </el-row>
       <el-row>
         <el-col>
-          <el-form-item label='备注信息' prop='remarks' >
+          <el-form-item label='Thông tin ghi chú' prop='remarks' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea'
-                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入备注信息"'  clearable></el-input>
+                                  :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"'  clearable></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("dispensingForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' type='primary' :plain='true' @click='onSubmit("dispensingForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -103,10 +103,10 @@ export default {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: '1',
-          company_List: [],  // 诊所id
-          registration_List: [],  // 挂号id
-          supplierStock_List: [],  // 库存id
-          recipelInfo_List: [],  // 处方信息id
+          company_List: [],  // Phòng khámid
+          registration_List: [],  // Đăng ký khámid
+          supplierStock_List: [],  // Tồn khoid
+          recipelInfo_List: [],  // Thông tin đơn thuốcid
        dialogProps: {
         visible: false,
         action: '',
@@ -114,16 +114,16 @@ export default {
       },
       formRules: {
         'registration.id': [
-            { required: true, message: '请选择挂号id', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn đăng ký khámid', trigger: 'change' }
         ],
         'supplierStock.id': [
-            { required: true, message: '请选择库存id', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn tồn khoid', trigger: 'change' }
         ],
       }
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -154,7 +154,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改发药明细'
+      this.dialogProps.title = 'Sửa chi tiết phát thuốc'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -167,22 +167,22 @@ export default {
     },
     initFormModel(This) {
       return {
-        'company': {     // 诊所id
+        'company': {     // Phòng khámid
           'id': currentUser.company.id,
           'name': null,
         },
-        'registration': {     // 挂号id
+        'registration': {     // Đăng ký khámid
           'id': null,
         },
-        'supplierStock': {     // 库存id
+        'supplierStock': {     // Tồn khoid
           'id': null,
         },
-        'recipelInfo': {     // 处方信息id
+        'recipelInfo': {     // Thông tin đơn thuốcid
           'id': null,
           'name': null,
         },
-        'number': 0,    // 数量
-        'remarks': '',   // 备注信息
+        'number': 0,    // Số lượng
+        'remarks': '',   // Thông tin ghi chú
 
       }
     },
@@ -190,14 +190,14 @@ export default {
       let company_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         company_search.params.push.apply(company_search.params, [])
-      // 数据权限: 诊所org_company
+      // Quyền dữ liệu: Phòng khámorg_company
       this.pushDataPermissions(company_search.params, this.$route.meta.routerId, '41040096140492800')
       this.company_List.splice(0, this.company_List.length)
       listCompanyAll(company_search).then(responseData => {
         this.company_List = responseData.data
-        // 获取初始项的值
+        // Lấy giá trị ban đầu
         this.company_List.forEach( item => {
           if(item.id === this.bizFormModel.company.id) {
             this.bizFormModel.company = item
@@ -208,9 +208,9 @@ export default {
       let registration_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         registration_search.params.push.apply(registration_search.params, [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}])
-      // 数据权限: 挂号表registration
+      // Quyền dữ liệu: Bảng đăng ký khámregistration
       this.pushDataPermissions(registration_search.params, this.$route.meta.routerId, '1008534118685450402')
       this.registration_List.splice(0, this.registration_List.length)
       listRegistrationAll(registration_search).then(responseData => {
@@ -219,9 +219,9 @@ export default {
       let supplierStock_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         supplierStock_search.params.push.apply(supplierStock_search.params, [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}])
-      // 数据权限: 供应商库存supplier_stock
+      // Quyền dữ liệu: Tồn kho nhà cung cấpsupplier_stock
       this.pushDataPermissions(supplierStock_search.params, this.$route.meta.routerId, '1005591224273698934')
       this.supplierStock_List.splice(0, this.supplierStock_List.length)
       listSupplierStockAll(supplierStock_search).then(responseData => {
@@ -230,9 +230,9 @@ export default {
       let recipelInfo_search = {
         params: []
       }
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         recipelInfo_search.params.push.apply(recipelInfo_search.params, [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}])
-      // 数据权限: 处方信息recipel_info
+      // Quyền dữ liệu: Thông tin đơn thuốcrecipel_info
       this.pushDataPermissions(recipelInfo_search.params, this.$route.meta.routerId, '1014474470772900008')
       this.recipelInfo_List.splice(0, this.recipelInfo_List.length)
       listRecipelInfoAll(recipelInfo_search).then(responseData => {
@@ -249,7 +249,7 @@ export default {
     },
     openEditDispensingDialog(dispensing) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改发药明细'
+      this.dialogProps.title = 'Sửa chi tiết phát thuốc'
       this.bizFormModel = {...this.initFormModel(), ...dispensing}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -257,7 +257,7 @@ export default {
     },
     openAddDispensingDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加发药明细'
+      this.dialogProps.title = 'Thêm chi tiết phát thuốc'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -265,11 +265,11 @@ export default {
     },
     openCopyDispensingDialog(dispensing) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加发药明细'
+      this.dialogProps.title = 'Thêm chi tiết phát thuốc'
       this.bizFormModel = {...this.initFormModel(), ...dispensing}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
-      this.bizFormModel.id = null   //把id设置为空，添加一个新的
+      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
       this.dialogProps.visible = true
     }
   },

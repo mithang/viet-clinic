@@ -13,7 +13,7 @@
 export const calendar = {
 
     /**
-     * 农历1900-2100的润大小信息表
+     * Âm lịch1900-2100的润大小信息表
      * @Array Of Property
      * @return Hex
      */
@@ -226,7 +226,7 @@ export const calendar = {
     /**
      * 数字转中文速查表
      * @Array Of Property
-     * @trans ['日','一','二','三','四','五','六','七','八','九','十']
+     * @trans ['ngày','一','二','三','四','五','六','七','八','九','十']
      * @return Cn string
      */
     nStr1: ["\u65e5", "\u4e00", "\u4e8c", "\u4e09", "\u56db", "\u4e94", "\u516d", "\u4e03", "\u516b", "\u4e5d", "\u5341"],
@@ -248,7 +248,7 @@ export const calendar = {
     nStr3: ["\u6b63", "\u4e8c", "\u4e09", "\u56db", "\u4e94", "\u516d", "\u4e03", "\u516b", "\u4e5d", "\u5341", "\u51ac", "\u814a"],
 
     /**
-     * 返回农历y年一整年的总天数
+     * Trả về âm lịchy年一整年的总天数
      * @param y lunar Year
      * @return Number
      * @eg:var count = calendar.lYearDays(1987) ;//count=387
@@ -262,7 +262,7 @@ export const calendar = {
     },
 
     /**
-     * 返回农历y年闰月是哪个月；若y年没有闰月 则返回0
+     * Trả về âm lịchy年闰月是哪个月；若y年没有闰月 则返回0
      * @param y lunar Year
      * @return Number (0-12)
      * @eg:var leapMonth = calendar.leapMonth(1987) ;//leapMonth=6
@@ -272,7 +272,7 @@ export const calendar = {
     },
 
     /**
-     * 返回农历y年闰月的天数 若该年没有闰月则返回0
+     * Trả về âm lịchy年闰月的天数 若该年没有闰月则返回0
      * @param y lunar Year
      * @return Number (0、29、30)
      * @eg:var leapMonthDay = calendar.leapDays(1987) ;//leapMonthDay=29
@@ -285,7 +285,7 @@ export const calendar = {
     },
 
     /**
-     * 返回农历y年m月（非闰月）的总天数，计算m为闰月时的天数请使用leapDays方法
+     * Trả về âm lịchynămmtháng（非闰月）的总天数，Tính toánm为闰月时的天数请使用leapDaysPhương pháp
      * @param y lunar Year
      * @param m lunar Month
      * @return Number (-1、29、30)
@@ -294,12 +294,12 @@ export const calendar = {
     monthDays: function (y, m) {
         if (m > 12 || m < 1) {
             return -1
-        }//月份参数从1至12，参数错误返回-1
+        }//月份参数从1đến12，参数错误返回-1
         return ((this.lunarInfo[y - 1900] & (0x10000 >> m)) ? 30 : 29);
     },
 
     /**
-     * 返回公历(!)y年m月的天数
+     * 返回公历(!)ynămm月的天数
      * @param y solar Year
      * @param m solar Month
      * @return Number (-1、28、29、30、31)
@@ -308,9 +308,9 @@ export const calendar = {
     solarDays: function (y, m) {
         if (m > 12 || m < 1) {
             return -1
-        } //若参数错误 返回-1
+        } //若参数错误 Quay lại-1
         const ms = m - 1;
-        if (ms === 1) { //2月份的闰平规律测算后确认返回28或29
+        if (ms === 1) { //2月份的闰平规律测算后确认返回28hoặc29
             return (((y % 4 === 0) && (y % 100 !== 0) || (y % 400 === 0)) ? 29 : 28);
         } else {
             return (this.solarMonth[ms]);
@@ -355,9 +355,9 @@ export const calendar = {
     /**
      * 传入公历(!)y年获得该年第n个节气的公历日期
      * @param y y公历年(1900-2100)
-     * @param n n二十四节气中的第几个节气(1~24)；从n=1(小寒)算起
+     * @param n n二十四节气中的第几个节气(1~24)；Từn=1(小寒)算起
      * @return day Number
-     * @eg:var _24 = calendar.getTerm(1987,3) ;//_24=4;意即1987年2月4日立春
+     * @eg:var _24 = calendar.getTerm(1987,3) ;//_24=4;意即1987năm2tháng4日立春
      */
     getTerm: function (y, n) {
         if( y < 1900 || y > 2100 || n < 1 || n > 24) {
@@ -383,10 +383,10 @@ export const calendar = {
      * @return Cn string
      * @eg:var cnMonth = calendar.toChinaMonth(12) ;//cnMonth='腊月'
      */
-    toChinaMonth: function (m) { // 月 => \u6708
+    toChinaMonth: function (m) { // tháng => \u6708
         if (m > 12 || m < 1) {
             return -1
-        } //若参数错误 返回-1
+        } //若参数错误 Quay lại-1
         let s = this.nStr3[m - 1];
         s += "\u6708";//加上月字
         return s;
@@ -398,7 +398,7 @@ export const calendar = {
      * @return Cn string
      * @eg:var cnDay = calendar.toChinaDay(21) ;//cnMonth='廿一'
      */
-    toChinaDay: function (d) { //日 => \u65e5
+    toChinaDay: function (d) { //ngày => \u65e5
         let s;
         switch (d) {
             case 10:
@@ -428,7 +428,7 @@ export const calendar = {
     },
 
     /**
-     * 传入阳历年月日获得详细的公历、农历object信息 <=>JSON
+     * 传入阳历年月日获得详细的公历、Âm lịchobjectThông tin <=>JSON
      * !important! 公历参数区间1900.1.31~2100.12.31
      * @param yPara  solar year
      * @param mPara  solar month
@@ -456,7 +456,7 @@ export const calendar = {
             objDate = new Date(y, parseInt(m) - 1, d);
         }
         let i, leap = 0, temp = 0;
-        //修正ymd参数
+        //修正ymdTham số
         y = objDate.getFullYear();
         m = objDate.getMonth() + 1;
         d = objDate.getDate();
@@ -563,8 +563,8 @@ export const calendar = {
         let lunarFestivalDate = month + '-' + day;
 
         // bugfix https://github.com/jjonline/calendar.js/issues/29
-        // 农历节日修正：农历12月小月则29号除夕，大月则30号除夕
-        // 此处取巧修正：当前为农历12月29号时增加一次判断并且把lunarFestivalDate设置为12-30以正确取得除夕
+        // 农历节日修正：Âm lịch12月小月则29号除夕，大月则30号除夕
+        // 此处取巧修正：当前为农历12tháng29号时增加一次判断并且把lunarFestivalDate设置为12-30以正确取得除夕
         // 天朝农历节日遇闰月过前不过后的原则，此处取农历12月天数不考虑闰月
         // 农历润12月在本工具支持的200年区间内仅1574年出现
         if (month === 12 && day === 29 && this.monthDays(year, month) === 29) {
@@ -598,7 +598,7 @@ export const calendar = {
     },
 
     /**
-     * 传入农历年月日以及传入的月份是否闰月获得详细的公历、农历object信息 <=>JSON
+     * 传入农历年月日以及传入的月份是否闰月获得详细的公历、Âm lịchobjectThông tin <=>JSON
      * !important! 参数区间1900.1.31~2100.12.1
      * @param y  lunar year
      * @param m  lunar month
@@ -652,7 +652,7 @@ export const calendar = {
         if (isLeapMonth) {
             offset += day;
         }
-        //1900年农历正月一日的公历时间为1900年1月30日0时0分0秒(该时间也是本农历的最开始起始点)
+        //1900年农历正月一日的公历时间为1900năm1tháng30ngày0giờ0phút0giây(该时间也是本农历的最开始起始点)
         const strap = Date.UTC(1900, 1, 30, 0, 0, 0);
         const calObj = new Date((offset + d - 31) * 86400000 + strap);
         const cY = calObj.getUTCFullYear();

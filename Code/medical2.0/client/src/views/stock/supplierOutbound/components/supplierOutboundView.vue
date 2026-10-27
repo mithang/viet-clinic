@@ -6,33 +6,33 @@
         label-position="right" class="edit-form">
         <el-row>
           <el-col :span="3">
-            <SearchItem label="状态">
+            <SearchItem label="Trạng thái">
               <SupplierOutboundStatusView v-model="outbound.status"></SupplierOutboundStatusView>
             </SearchItem>
           </el-col>
           <el-col :span="4">
-            <SearchItem  label="创建人">
+            <SearchItem  label="Người tạo">
               {{outbound.createBy}}
             </SearchItem>
           </el-col>
           <el-col :span="4">
-            <SearchItem  label="创建时间">
+            <SearchItem  label="Thời gian tạo">
               {{outbound.createDate}}
             </SearchItem>
           </el-col>
           <el-col :span="3">
-            <SearchItem  label="审核人">
+            <SearchItem  label="Người duyệt">
               {{outbound.examineBy}}
             </SearchItem>
           </el-col>
 
           <el-col :span="4">
-            <SearchItem label="出库方式">
+            <SearchItem label="Phương thức xuất kho">
               <DictItemView type="outboundMethod" :dictValue="outbound.method"></DictItemView>
             </SearchItem>
           </el-col>
           <el-col :span="6">
-            <SearchItem label="备注">
+            <SearchItem label="Ghi chú">
               <el-input   :disabled="true" v-model="outbound.remarks" ></el-input>
             </SearchItem>
           </el-col>
@@ -42,20 +42,20 @@
         <el-row>
           <el-col :span="24">
             <el-table :data="storageDetailTable" style="width: 100%" height="350">
-              <el-table-column prop="drugStuffName" label="名称" width="150">
+              <el-table-column prop="drugStuffName" label="Tên" width="150">
               </el-table-column>
-              <el-table-column prop="norms" label="规格"></el-table-column>
-              <el-table-column prop="factoryName" label="厂家"></el-table-column>
-              <el-table-column prop="batchNo" label="生产批号"></el-table-column>
-              <el-table-column label="生产日期">
+              <el-table-column prop="norms" label="Quy cách"></el-table-column>
+              <el-table-column prop="factoryName" label="Nhà sản xuất"></el-table-column>
+              <el-table-column prop="batchNo" label="Số lô sản xuất"></el-table-column>
+              <el-table-column label="Ngày sản xuất">
                 <template slot-scope="scope">{{scope.row.produceDate|dateFormat}}</template>
               </el-table-column>
-              <el-table-column label="有效日期">
+              <el-table-column label="Ngày hiệu lực">
                 <template slot-scope="scope">{{scope.row.endDate|dateFormat}}</template>
               </el-table-column>
-              <!-- <el-table-column prop="occupyStock" label="占用库存"></el-table-column>-->
+              <!-- <el-table-column prop="occupyStock" label="Chiếm dụng tồn kho"></el-table-column>-->
 
-              <el-table-column prop="surplusStock" label="可用库存" v-if="thisType===1">
+              <el-table-column prop="surplusStock" label="Tồn kho khả dụng" v-if="thisType===1">
                 <template slot-scope="scope">
                   {{parseInt(scope.row.surplusStock/scope.row.drug.preparation)}}
                   <DictItemView type="medicalPackUnit" :dictValue="scope.row.packValue" style="width: 80px;">
@@ -65,15 +65,15 @@
                     style="width: 80px;"></DictItemView>
                 </template>
               </el-table-column>
-              <el-table-column label="数量" width="250" v-if="thisType===1">
+              <el-table-column label="Số lượng" width="250" v-if="thisType===1">
                 <template slot-scope="scope">
                   <div class="quantity-box">
-                    <el-input v-model="scope.row.packAmount" :disabled="true" type="number" min="0" required="true" placeholder="数量">
+                    <el-input v-model="scope.row.packAmount" :disabled="true" type="number" min="0" required="true" placeholder="Số lượng">
                     </el-input>
                     <DictItemView type="medicalPackUnit" :dictValue="scope.row.packValue" style="width: 80px;">
                     </DictItemView>
                     <el-input v-model="scope.row.preparationAmount" :disabled="true" type="number" min="0" required="true"
-                      placeholder="数量">
+                      placeholder="Số lượng">
                     </el-input>
                     <DictItemView type="medicalPreparationUnit" :dictValue="scope.row.preparationUnitValue"
                       style="width: 80px;"></DictItemView>
@@ -81,7 +81,7 @@
                 </template>
               </el-table-column>
 
-              <el-table-column prop="surplusStock" label="可用库存" v-if="thisType===2">
+              <el-table-column prop="surplusStock" label="Tồn kho khả dụng" v-if="thisType===2">
                 <template slot-scope="scope">
                   {{parseInt(scope.row.surplusStock/scope.row.stuff.packNumber)}}
                   <DictItemView type="medicalPackUnit" :dictValue="scope.row.packUnitValue" style="width: 80px;">
@@ -91,34 +91,34 @@
                   </DictItemView>
                 </template>
               </el-table-column>
-              <el-table-column label="数量" width="250" prop="specification" v-if="thisType===2">
+              <el-table-column label="Số lượng" width="250" prop="specification" v-if="thisType===2">
                 <template slot-scope="scope">
                   <div class="quantity-box">
-                    <el-input v-model="scope.row.packAmount" :disabled="true" type="number" min="0" required="true" placeholder="数量">
+                    <el-input v-model="scope.row.packAmount" :disabled="true" type="number" min="0" required="true" placeholder="Số lượng">
                     </el-input>
                     <DictItemView type="medicalPackUnit" :dictValue="scope.row.packUnitValue" style="width: 80px;">
                     </DictItemView>
                     <el-input v-model="scope.row.preparationAmount" :disabled="true" type="number" min="0" required="true"
-                      placeholder="数量">
+                      placeholder="Số lượng">
                     </el-input>
                     <DictItemView type="medicalPreparationUnit" :dictValue="scope.row.minUnitValue"
                       style="width: 80px;"></DictItemView>
                   </div>
                 </template>
               </el-table-column>
-              <!-- <el-table-column prop="reason" label="出库原因">
-                <el-select v-model="otherInfo.reason" filterable placeholder="请选择出库原因">
+              <!-- <el-table-column prop="reason" label="Lý do xuất kho">
+                <el-select v-model="otherInfo.reason" filterable placeholder="Vui lòng chọn lý do xuất kho">
                   <el-option v-for="reasonxz in reasonLists" :label="reasonxz.name" :value="reasonxz.id"
                     :key="reasonxz.id"></el-option>
                 </el-select>
               </el-table-column>-->
-              <el-table-column prop="bid" label="进价"></el-table-column>
-              <el-table-column prop="retailPrice" label="零售价"></el-table-column>
-              <el-table-column label="总进价">
+              <el-table-column prop="bid" label="Giá nhập"></el-table-column>
+              <el-table-column prop="retailPrice" label="Giá bán lẻ"></el-table-column>
+              <el-table-column label="Tổng giá nhập">
                 <template slot-scope="scope">{{ calcTotalInPrice(scope.row) |numberFormatter(2)}}
                 </template>
               </el-table-column>
-              <el-table-column label="总零售价">
+              <el-table-column label="Tổng giá bán lẻ">
                 <template slot-scope="scope">{{ calcTotalOutPrice(scope.row)|numberFormatter(2) }}
                 </template>
               </el-table-column>
@@ -126,15 +126,15 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="3" :offset="12">品种：{{ CalcBreed() }}</el-col>
-          <el-col :span="3">数量：{{ calcTotalNumber() }}</el-col>
-          <el-col :span="3">总进价：{{ calcAllBid() |numberFormatter(2)}}</el-col>
-          <el-col :span="3">总零售价：{{ calcAllRetailPrice() |numberFormatter(2) }}</el-col>
+          <el-col :span="3" :offset="12">Chủng loại：{{ CalcBreed() }}</el-col>
+          <el-col :span="3">Số lượng：{{ calcTotalNumber() }}</el-col>
+          <el-col :span="3">Tổng giá nhập：{{ calcAllBid() |numberFormatter(2)}}</el-col>
+          <el-col :span="3">Tổng giá bán lẻ：{{ calcAllRetailPrice() |numberFormatter(2) }}</el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
             <div class="footer-box footer-box1">
-              <el-button type="" @click="closeDialog()">取消</el-button>
+              <el-button type="" @click="closeDialog()">Hủy</el-button>
             </div>
           </el-col>
         </el-row>
@@ -200,27 +200,27 @@
     },
     data() {
       return {
-        thisType: 1, //当前类型，药品 或材料
-        outboundId: 0, //当前要编辑的出库单编号
-        dialogVisibleTo: false, //是否显示
-        // radio: "1", // 1 药品，2材料
-        company_id: currentUser.company.id /*诊所ID*/ ,
+        thisType: 1, //Loại hiện tại，Thuốc hoặc vật tư
+        outboundId: 0, //Mã đơn xuất kho hiện cần sửa
+        dialogVisibleTo: false, //Có hiển thị không
+        // radio: "1", // 1 Thuốc，2Vật tư
+        company_id: currentUser.company.id /*Phòng khámID*/ ,
         outbound: {},
         storageDetailTable: [],
         otherInfo: {
           supplierID: null,
-          /*供应商*/
+          /*Nhà cung cấp*/
           reason: null,
-          /*出库原因*/
+          /*Lý do xuất kho*/
           method: null,
-          /*出库方式*/
-          breed: 0 /*品种数量*/ ,
-          totalNumber: 0 /*总数量*/ ,
-          allBid: 0 /*总进价*/ ,
-          allRetailPrice: 0 /*总零售价*/ ,
-          withGoodsNo: "" /*供货单号*/ ,
-          invoiceNumber: "" /*发票号*/ ,
-          remarks: "" /*备注*/ ,
+          /*Phương thức xuất kho*/
+          breed: 0 /*Số lượng chủng loại*/ ,
+          totalNumber: 0 /*Tổng số lượng*/ ,
+          allBid: 0 /*Tổng giá nhập*/ ,
+          allRetailPrice: 0 /*Tổng giá bán lẻ*/ ,
+          withGoodsNo: "" /*Số đơn cung ứng*/ ,
+          invoiceNumber: "" /*Số hóa đơn*/ ,
+          remarks: "" /*Ghi chú*/ ,
         }
       };
     },
@@ -234,7 +234,7 @@
           this.initOutbound();
         }
       },
-      //从outboundId初始化出库单以编辑
+      //TừoutboundIdKhởi tạo đơn xuất kho để sửa
       initOutbound() {
         this.loadSupplierOutbound();
         this.loadSupplierOutboundDetail();
@@ -249,11 +249,11 @@
               id: data.id,
               code: data.code,
               number: data.number,
-              breed: data.breed  ,//品种数量
-              totalNumber: 0   ,//总数量
-              allBid: data.allBid  ,//总进价
-              allRetailPrice: data.allRetailPrice   ,//总零售价
-              remarks: data.remarks ,//备注
+              breed: data.breed  ,//Số lượng chủng loại
+              totalNumber: 0   ,//Tổng số lượng
+              allBid: data.allBid  ,//Tổng giá nhập
+              allRetailPrice: data.allRetailPrice   ,//Tổng giá bán lẻ
+              remarks: data.remarks ,//Ghi chú
               method: data.method,
               reason: data.reason
             }; */
@@ -311,7 +311,7 @@
           }
         });
       },
-      //关闭弹框
+      //Đóng hộp thoại
       closeDialog() {
         this.dialogVisibleTo = false;
         this.reset();
@@ -358,7 +358,7 @@
         this.otherInfo.totalNumber = totalNumber;
         return totalNumber;
       },
-      //获取拆零后的数量
+      //Lấy số lượng sau khi tách hộp
       getNumber(row) {
         let packNumber = 0;
         if (row.drug && row.drug.id) {

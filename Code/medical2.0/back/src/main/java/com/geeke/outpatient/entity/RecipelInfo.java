@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 /**
- * 处方信息Entity
+ * Thông tin đơn thuốcEntity
  * @author txl
  * @version 2022-07-20
  */
@@ -22,50 +22,50 @@ import java.util.Date;
 public class RecipelInfo extends DataEntity<RecipelInfo> {
 
 	private static final long serialVersionUID = 1014474470772900008L;
-	private Company company;      // 诊所id
-	private Registration registration;      // 登记信息（对应ID）
-	private DictItem recipelType;      // 处方类别
-	private String dosage;		// 剂量
-	private DictItem recipelUse;      // 用法
-	private DictItem frequency;      // 频次用量
-	private DictItem takeFrequency;      // 服用频次
-	private String singleDosage;		// 单次用量
-	private BigDecimal fee;		// 处方总价
-	private BigDecimal amountReceivedTotal;		// 实收金额合计
-	private String isPay;		// 是否付款
-	private Date payDate;		// 付款时间
-	private String isDispension;		// 是否发药
-	private Date dispensionDate;		// 发药时间
-	private Integer seq;		// 排序
-	private DictItem smallType;		// 小类小类【字典数据】
-	private String entrust;		// 医嘱
-	private Integer status;		// 基本状态（1：开具完成；-1：  作废处方）
-	private Integer chargeStatus;		// 收费状态（0：待收费；1：已收费 ；-1：已退费）
-	private Integer dispensionStatus;		// 发药状态（0：待发药；1： 已发药 ；-1：已退药）
-	private Date retreatChargeDate;		// 退费时间
-	private Date retreatDispensionDate;		// 退药时间
-	private Date invalidDate;		// 作废时间
-	private Integer isFollowUp;		// 是否复诊处方
-	private Date followUpDate;		// 复诊时间
-	private String payUser;		// 付款操作人
-	private String retreatChargeUser;		// 退费操作人
-	private String retreatDispensionUser;		// 退药操作人
-	private String dispensionUser;		// 发药操作人
-	private String code;		// 处方编号
-	private Date retreatDate;   //退费时间
-	private String drippingSpeed;  //输液滴速
-	private DictItem infusionDay;    //输液天数
-	private DictItem infusionFrequency;   //输液频次
-	private DictItem infusionUse;			//输液用法
-	private int cureType;            //诊疗项目完成标志
-	private int infuseType;          //输液执行完成标志
-	private Boolean chronicDisease;  //是否慢病标志
-	private Integer notShow; //目前针对门诊-工作台-不合格处方查询，是否显示 0 不显示 1 显示
-	private String diagnosisId; // 远程诊疗记录id
-	private String chinessNotes; //中药备注
-	/**医保字段*/
-	private  Boolean isPre; // 是否电子处方
-	private  String hiRxno; // 医保电子处方号
+	private Company company;      // Phòng khámid
+	private Registration registration;      // Thông tin đăng ký(Tương ứngID)
+	private DictItem recipelType;      // Đơn thuốcLớploại
+	private String dosage;		// Liều lượng
+	private DictItem recipelUse;      // Cách dùng
+	private DictItem frequency;      // Tần suất và liều dùng
+	private DictItem takeFrequency;      // dùngdùngtần suất lần
+	private String singleDosage;		// Liều dùng mỗi lần
+	private BigDecimal fee;		// Đơn thuốctổng giá
+	private BigDecimal amountReceivedTotal;		// thực thuSố tiềnTổng cộng
+	private String isPay;		// Có hay khôngthanh toán
+	private Date payDate;		// thanh toánThời gian
+	private String isDispension;		// Có hay khôngphát thuốc
+	private Date dispensionDate;		// phát thuốcThời gian
+	private Integer seq;		// Sắp xếp
+	private DictItem smallType;		// nhỏLớpnhỏLớp[Dữ liệu từ điển]
+	private String entrust;		// Y lệnh
+	private Integer status;		// cơ bảnTrạng thái(1: kêhoàn thành; -1:   hủyĐơn thuốc)
+	private Integer chargeStatus;		// Trạng thái thu phí(0: Chờ thu phí; 1: Đã thu phí ; -1: Đã hoàn phí)
+	private Integer dispensionStatus;		// phát thuốcTrạng thái(0: chờphát thuốc; 1:  Đãphát thuốc ; -1: ĐãTrả thuốc)
+	private Date retreatChargeDate;		// Thời gian hoàn phí
+	private Date retreatDispensionDate;		// Thời gian trả thuốc
+	private Date invalidDate;		// hủyThời gian
+	private Integer isFollowUp;		// Có hay khôngtái khámĐơn thuốc
+	private Date followUpDate;		// tái khámThời gian
+	private String payUser;		// thanh toánthao tácngười
+	private String retreatChargeUser;		// hoàn phíthao tácngười
+	private String retreatDispensionUser;		// Trả thuốcthao tácngười
+	private String dispensionUser;		// phát thuốcthao tácngười
+	private String code;		// Số đơn thuốc
+	private Date retreatDate;   //Thời gian hoàn phí
+	private String drippingSpeed;  //Truyền dịchtốc độ truyền
+	private DictItem infusionDay;    //Truyền dịch ngàysố
+	private DictItem infusionFrequency;   //Truyền dịchtần suất lần
+	private DictItem infusionUse;			//Cách dùng truyền dịch
+	private int cureType;            //Cờ hoàn thành hạng mục khám chữa bệnh
+	private int infuseType;          //Truyền dịchhành nghề dònghoàn thànhcờ
+	private Boolean chronicDisease;  //Có hay khôngchậmbệnhcờ
+	private Integer notShow; //mụctrướcĐối vớingoại trú-công việclàmmáy-khôngđạt chuẩnĐơn thuốcTruy vấn, Có hay khônghiển thị 0 khônghiển thị 1 Hiển thị
+	private String diagnosisId; // khám chữa bệnh từ xaBản ghiid
+	private String chinessNotes; // trong thuốcGhi chú
+	/**Trường BHYT*/
+	private  Boolean isPre; // Có hay khôngđiện tửĐơn thuốc
+	private  String hiRxno; // BHYTđiện tửSố đơn thuốc
 
 	public String getDiagnosisId() {
 		return diagnosisId;
@@ -140,7 +140,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 		this.recipelType = recipelType;
 	}
 
-	@Length(min=0, max=45, message="剂量长度必须介于 0 和 45 之间")
+	@Length(min=0, max=45, message="liềulượngĐộ dài phải nằm trong khoảng 0 đến 45 ")
 	public String getDosage() {
 		return dosage;
 	}
@@ -173,7 +173,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 		this.takeFrequency = takeFrequency;
 	}
 
-	@Length(min=0, max=11, message="单次用量长度必须介于 0 和 11 之间")
+	@Length(min=0, max=11, message="Liều dùng mỗi lầnĐộ dài phải nằm trong khoảng 0 đến 11 ")
 	public String getSingleDosage() {
 		return singleDosage;
 	}
@@ -197,7 +197,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 		this.amountReceivedTotal = amountReceivedTotal;
 	}
 
-	@Length(min=0, max=1, message="是否付款长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="Có hay khôngthanh toánĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsPay() {
 		return isPay;
 	}
@@ -215,7 +215,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=1, message="是否发药长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="Có hay khôngphát thuốcĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsDispension() {
 		return isDispension;
 	}
@@ -233,7 +233,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@NotNull(message="排序不能为空")
+	@NotNull(message="sắp xếpKhông thể là trống")
 	public Integer getSeq() {
 		return seq;
 	}
@@ -242,7 +242,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=1, max=255, message="小类小类【字典数据】长度必须介于 1 和 255 之间")
+	@Length(min=1, max=255, message="nhỏLớpnhỏLớp[Dữ liệu từ điển]Độ dài phải từ 1  và  255 Giữa")
 	public DictItem getSmallType() {
 		return smallType;
 	}
@@ -251,7 +251,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=4000, message="医嘱长度必须介于 0 和 4000 之间")
+	@Length(min=0, max=4000, message="Y lệnhĐộ dài phải nằm trong khoảng 0 đến 4000 ")
 	public String getEntrust() {
 		return entrust;
 	}
@@ -311,7 +311,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@NotNull(message="是否复诊处方不能为空")
+	@NotNull(message="Có hay khôngtái khámĐơn thuốcKhông thể là trống")
 	public Integer getIsFollowUp() {
 		return isFollowUp;
 	}
@@ -329,7 +329,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="付款操作人长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="thanh toánthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getPayUser() {
 		return payUser;
 	}
@@ -338,7 +338,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="退费操作人长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="hoàn phíthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getRetreatChargeUser() {
 		return retreatChargeUser;
 	}
@@ -347,7 +347,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="退药操作人长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="Trả thuốcthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getRetreatDispensionUser() {
 		return retreatDispensionUser;
 	}
@@ -356,7 +356,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="发药操作人长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="phát thuốcthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getDispensionUser() {
 		return dispensionUser;
 	}
@@ -420,7 +420,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 		this.infuseType = infuseType;
 	}
 	/**
-	 * 获取实体对应表名
+	 * Lấy tên bảng tương ứng của thực thể
 	 */
 	@Override
 	@JsonIgnore
@@ -429,7 +429,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 	/**
-	 * 获取实体对应Id
+	 * Lấy thực thể tương ứngId
 	 */
 	@Override
 	@JsonIgnore
@@ -439,7 +439,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 
 
 	/**
-	 * 获取实体表中是否存在del_flag字段
+	 * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
 	 */
 	@JsonIgnore
 	public boolean getBusTableHasDelFlag() {

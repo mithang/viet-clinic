@@ -3,7 +3,7 @@
     v-if='type === "datetimerange"'
     v-model='vModel'
     type='datetimerange'
-    range-separator='至'
+    range-separator='đến'
     start-placeholder='开始日期时间'
     end-placeholder='结束日期时间'
     align='right'
@@ -15,9 +15,9 @@
     v-else
     v-model='vModel'
     type='daterange'
-    range-separator='至'
-    start-placeholder='开始日期'
-    end-placeholder='结束日期'
+    range-separator='đến'
+    start-placeholder='Ngày bắt đầu'
+    end-placeholder='Ngày kết thúc'
     align='right'
     value-format='yyyy-MM-dd'
     :picker-options='pickerOptions'
@@ -33,7 +33,7 @@ export default {
       vModel: null,
       pickerOptions: {
         shortcuts: [{
-          text: '最近一周',
+          text: 'Tuần gần nhất',
           onClick(picker) {
             const end = new Date();
             const start = new Date();
@@ -41,7 +41,7 @@ export default {
             picker.$emit('pick', [start, end]);
           }
         }, {
-          text: '最近一个月',
+          text: 'Tháng gần nhất',
           onClick(picker) {
             const end = new Date();
             const start = new Date();
@@ -49,7 +49,7 @@ export default {
             picker.$emit('pick', [start, end]);
           }
         }, {
-          text: '最近三个月',
+          text: '3 tháng gần nhất',
           onClick(picker) {
             const end = new Date();
             const start = new Date();
@@ -61,7 +61,7 @@ export default {
     }
   },
   props: {
-    //接受外部v-model传入的值
+    //Nhận từ bên ngoàiv-modelgiá trị truyền vào
     value: {
       type: Array
     },
@@ -71,13 +71,13 @@ export default {
     }
   },
   watch:{
-    //判断下拉框的值是否有改变
+    //Kiểm tra giá trị hộp thả xuống có thay đổi không
     vModel(val, oldVal) {
       if(val!==oldVal){
           this.$emit('input', this.vModel);
       }
     },
-    value(val, oldVal){   //添加监听value值
+    value(val, oldVal){   //添加监听valuegiá trị
       if(val!==oldVal){
         this.vModel=this.value;
       }

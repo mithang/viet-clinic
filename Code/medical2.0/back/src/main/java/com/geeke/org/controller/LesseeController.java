@@ -9,7 +9,7 @@ import com.geeke.org.entity.Lessee;
 import com.geeke.org.service.LesseeService;
 
 /**
- * 租户管理Controller
+ * Quản lý tenantController
  * @author txl
  * @version 2022-05-23
  */

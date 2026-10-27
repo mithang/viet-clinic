@@ -6,28 +6,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
- * 医保接口配置参数
+ * BHYTgiao diệncấu hìnhTham số
  */
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "spring.medicare")
 public  class MedicareConfigProperties {
-    //是否开启医保接口
+    //Có hay khôngmởBHYTgiao diện
     private String check;
-    //省份
+    //Tỉnhphần
     private String province;
-    //医保接口地址
+    //BHYTgiao diệnĐịa chỉ
     private String url;
-    //医保中间件接口地址
+    //BHYT trong giữatệpgiao diệnĐịa chỉ
     private String webUrl;
     //APPID
     private String appId;
-    //应用密钥
+    //nêndùngkhóa bí mật
     private String appSecret;
-    //私钥
+    //khóa riêng
     private String privateKey;
 
-    //端口号
+    //đầu口số
     private String webPort;
 
     private String isDemo;

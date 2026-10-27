@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 处方详情Entity
+ * Chi tiết đơn thuốcEntity
  * @author txl
  * @version 2022-06-07
  */
@@ -13,20 +13,20 @@ import java.io.Serializable;
 public class InfuseEvt implements Serializable {
 
 	private static final long serialVersionUID = 1014474470772900079L;
-	//名称
+	//Tên
 	private String name;
-	//单次用量
+	//Liều dùng mỗi lần
     private String singleDosage;
-	//天数
+	//Số ngày
 	private String days;
-	//总计数量
+	//Tổng cộngSố lượng
 	private String totalNum;
-	//皮试
+	//Test da
 	private String skinTest;
-	//单价
+	//Đơn giá
 	private String price;
-	//材料费
+	//Phí vật tư
 	private String stuffPriceName;
-	//材料费金额
+	//Phí vật tưSố tiền
 	private String stuffPrice;
 }

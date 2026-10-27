@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 系统配置Controller
+ * Hệ thốngcấu hìnhController
  * @author lc
  */
 @RestController
@@ -33,7 +33,7 @@ public class SysParamConfigController extends CrudController<SysParamConfigServi
         if (CollectionUtil.isNotEmpty(entitys)) {
             entitys.forEach(sysParamConfigService::save);
         }
-        return ResponseEntity.ok(ResultUtil.successJson("操作成功"));
+        return ResponseEntity.ok(ResultUtil.successJson("thao tácThành công"));
     }
 
     @DeleteMapping(value = "delete")

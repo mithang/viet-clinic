@@ -59,7 +59,7 @@ export function isvalidatemobile(phone) {
   let result = true
   let msg = ''
   const isPhone = /^0\d{2,3}-?\d{7,8}$/
-  // 增加134 减少|1349[0-9]{7}，增加181,增加145，增加17[678]
+  // Thêm134 Giảm|1349[0-9]{7}，Thêm181,Thêm145，Thêm17[678]
   // const isMob = /^((\+?86)|(\(\+86\)))?(13[0123456789][0-9]{8}|15[012356789][0-9]{8}|18[012356789][0-9]{8}|14[57][0-9]{8}|17[3678][0-9]{8})$/
   if (!validatenull(phone)) {
     if (phone.length === 11) {
@@ -69,7 +69,7 @@ export function isvalidatemobile(phone) {
         result = false
       }
     } else {
-      msg = '手机号码长度不为11位'
+      msg = '手机号码长度不为11vị'
     }
   } else {
     msg = '手机号码不能为空'
@@ -82,20 +82,20 @@ export function isvalidatemobile(phone) {
 export function isMobileNumber (rule, value, callback) {
   if (rule.required) {
     if (!value) {
-      callback(new Error("请输入电话号码"));
+      callback(new Error("Vui lòng nhập số điện thoại"));
     } else {
       const reg = /^1[3|4|5|6|7|8|9][0-9]\d{8}$/;
       const isPhone = reg.test(value);
-      value = Number(value); //转换为数字
-      if (typeof value === "number" && !isNaN(value)) {//判断是否为数字
-        value = value.toString(); //转换成字符串
-        if (value.length !== 11 || !isPhone) { //判断是否为11位手机号
-          callback(new Error("手机号码格式如:138xxxx8888"));
+      value = Number(value); //Chuyển thành số
+      if (typeof value === "number" && !isNaN(value)) {//Kiểm tra có phải là số không
+        value = value.toString(); //Chuyển thành chuỗi
+        if (value.length !== 11 || !isPhone) { //Kiểm tra có phải là11chữ số của số điện thoại di động
+          callback(new Error("Định dạng số điện thoại ví dụ như:138xxxx8888"));
         } else {
           callback();
         }
       } else {
-        callback(new Error("请输入电话号码"));
+        callback(new Error("Vui lòng nhập số điện thoại"));
       }
     }
   } else {
@@ -128,14 +128,14 @@ export function validaChinese(str) {
       value = value.replace(/，/ig,',');
     }
     LatitudeAndlongitude = value.split(",") 
-    // 经度,整数部分为0-180小数部分为0到15位
+    // 经度,Phần nguyên là0-180Phần thập phân là0đến15vị
     const longreg = /^(\-|\+)?(((\d|[1-9]\d|1[0-7]\d|0{1,3})\.\d{0,15})|(\d|[1-9]\d|1[0-7]\d|0{1,3})|180\.0{0,15}|180)$/
-    // 纬度,整数部分为0-90小数部分为0到15位
+    // 纬度,Phần nguyên là0-90Phần thập phân là0đến15vị
     const latreg = /^(\-|\+)?([1-8]?\d{1}\.\d{0,15}|90\.0{0,15}|[1-8]?\d{1}|90)$/
     if (LatitudeAndlongitude[0] && !longreg.test(LatitudeAndlongitude[0])) {
-      callback(new Error('经度整数范围正负0-180,小数0到15位!东经正,西经负。'))
+      callback(new Error('经度整数范围正负0-180,Số thập phân0đến15vị!东经正,西经负。'))
     } else if (LatitudeAndlongitude[1] && !latreg.test(LatitudeAndlongitude[1])){
-      callback(new Error('纬度整数范围正负0-90,小数0到15位!北纬正,南纬负。'))
+      callback(new Error('纬度整数范围正负0-90,Số thập phân0đến15vị!北纬正,南纬负。'))
     } else if (LatitudeAndlongitude.length > 2 ){
       callback(new Error('格式错误!经纬度格式如: 118.88 , 78.88'))
     } else {

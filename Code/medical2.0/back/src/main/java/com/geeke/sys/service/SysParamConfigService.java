@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 /**
- * 系统参数配置Service
+ * Hệ thốngTham sốcấu hìnhService
  * @author lys
  * @version 2021-07-16
  */

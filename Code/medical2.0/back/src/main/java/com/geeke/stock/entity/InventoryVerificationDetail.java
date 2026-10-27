@@ -13,22 +13,22 @@ import com.geeke.common.persistence.DataEntity;
 import java.math.BigDecimal;
 
 /**
- * 库存盘点详情Entity
- * @author 超级管理员
+ * Chi tiết kiểm kê tồn khoEntity
+ * @author Quản trị viên cấp cao
  * @version 2022-11-02
  */
 public class InventoryVerificationDetail extends DataEntity<InventoryVerificationDetail> {
 
 	private static final long serialVersionUID = 1235640942656921614L;
-	private Company company;      // 诊所id 
-	private InventoryVerification inventoryVerification;      // 库存盘点id 
-	private Drug drug;      // 盘点药品id 
-	private Stuff stuff;      // 盘点材料id 
-	private Integer currentInventory;		// 当前库存
-	private Integer checkInventory;		// 盘点库存
-	private Integer profitAndLoss;		// 盈亏
-    private BigDecimal profitAndLossPrice;  //盈亏金额
-    private MedicinalStorageControl medicinalStorageControl;  //动态库存明细
+	private Company company;      // Phòng khámid 
+	private InventoryVerification inventoryVerification;      // Kiểm kê tồn khoid 
+	private Drug drug;      // kiểm kêThuốcid 
+	private Stuff stuff;      // kiểm kêVật tưid 
+	private Integer currentInventory;		// Tồn kho hiện tại
+	private Integer checkInventory;		// Tồn kho kiểm kê
+	private Integer profitAndLoss;		// lãi lỗ
+    private BigDecimal profitAndLossPrice;  //lãi lỗSố tiền
+    private MedicinalStorageControl medicinalStorageControl;  //độngTồn khoChi tiết
     private SupplierStock supplierStock;
 
 	
@@ -41,7 +41,7 @@ public class InventoryVerificationDetail extends DataEntity<InventoryVerificatio
 	}
 	
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -50,7 +50,7 @@ public class InventoryVerificationDetail extends DataEntity<InventoryVerificatio
         this.company = company;
     }
     
-	@NotNull(message="库存盘点id不能为空")
+	@NotNull(message="Kiểm kê tồn khoidKhông được để trống")
     public InventoryVerification getInventoryVerification() {
         return inventoryVerification;
     }
@@ -124,7 +124,7 @@ public class InventoryVerificationDetail extends DataEntity<InventoryVerificatio
     }
 
     /**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -133,7 +133,7 @@ public class InventoryVerificationDetail extends DataEntity<InventoryVerificatio
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -143,7 +143,7 @@ public class InventoryVerificationDetail extends DataEntity<InventoryVerificatio
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

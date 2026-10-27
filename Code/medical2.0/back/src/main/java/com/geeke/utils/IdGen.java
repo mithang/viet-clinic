@@ -5,7 +5,7 @@ import java.security.SecureRandom;
 import com.baidu.fsg.uid.UidGenerator;
 
 /**
- * 封装各种生成唯一性ID算法的工具类.
+ * đóng góiđủ loạiTạoduy nhấttínhIDthuật toán của Lớp công cụ.
  * @author lys
  * @version 2018-12-27
  */
@@ -17,7 +17,7 @@ public class IdGen {
 	private static UidGenerator uidGenerator;
 
 	/**
-	 * 封装JDK自带的UUID, 通过Random数字生成, 中间无-分割.
+	 * đóng góiJDKtựkèm của UUID, QuaRandomSốTạo,  trong giữakhông- phút割.
 	 */
 	public static String uuid() {
 		// return UUID.randomUUID().toString().replaceAll("-", "");
@@ -25,14 +25,14 @@ public class IdGen {
 	}
 	
 	/**
-	 * 使用SecureRandom随机生成Long. 
+	 * Sử dụngSecureRandomngẫu nhiênTạoLong. 
 	 */
 	public static long randomLong() {
 		return Math.abs(random.nextLong());
 	}
 
 	/**
-	 * 基于Base62编码的SecureRandom随机生成bytes.
+	 * Dựa trênBase62Mã của SecureRandomngẫu nhiênTạobytes.
 	 */
 	public static String randomBase62(int length) {
 		byte[] randomBytes = new byte[length];

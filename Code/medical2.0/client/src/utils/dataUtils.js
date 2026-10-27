@@ -5,9 +5,9 @@
 
 /**
  * 从复合值中提取数值部分
- * 例如: "BID_2" → 2, "tollType_0" → "0"
- * @param {string} value - 复合值字符串 (如 "BID_2")
- * @param {string} separator - 分隔符 (默认 "_")
+ * Ví dụ: "BID_2" → 2, "tollType_0" → "0"
+ * @param {string} value - 复合值字符串 (như "BID_2")
+ * @param {string} separator - 分隔符 (Mặc định "_")
  * @param {*} defaultValue - 解析失败时的默认值
  * @returns {string} 分隔符后的部分
  */
@@ -19,9 +19,9 @@ export function extractSuffix(value, separator = '_', defaultValue = '') {
 
 /**
  * 从复合值中提取前缀部分
- * 例如: "BID_2" → "BID", "tollType_0" → "tollType"
+ * Ví dụ: "BID_2" → "BID", "tollType_0" → "tollType"
  * @param {string} value - 复合值字符串
- * @param {string} separator - 分隔符 (默认 "_")
+ * @param {string} separator - 分隔符 (Mặc định "_")
  * @param {*} defaultValue - 解析失败时的默认值
  * @returns {string} 分隔符前的部分
  */
@@ -33,7 +33,7 @@ export function extractPrefix(value, separator = '_', defaultValue = '') {
 
 /**
  * 从频次值中提取次数
- * 例如: "BID_2" → 2, "QD_1" → 1
+ * Ví dụ: "BID_2" → 2, "QD_1" → 1
  * @param {string} frequencyValue - 频次值
  * @returns {number} 频次次数
  */
@@ -45,7 +45,7 @@ export function getFrequencyCount(frequencyValue) {
 
 /**
  * 拼接药品规格字符串
- * 例如: "10mg*12片/盒"
+ * Ví dụ: "10mg*12片/盒"
  * @param {object} drug - 药品对象
  * @returns {string} 规格字符串
  */

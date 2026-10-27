@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.Attachment;
 
 /**
- * 文件附件DAO接口
+ * Tệptệp đính kèmDAOGiao diện
  * @author lys
  * @version 2021-04-28
  */
@@ -15,7 +15,7 @@ import com.geeke.sys.entity.Attachment;
 public interface AttachmentDao extends CrudDao<Attachment> {
 	
 	/**
-	 * 根据业务对象id删除附件
+	 * TheoĐối tượng nghiệp vụidXóatệp đính kèm
 	 * @param bizId
 	 * @see public int delete(T entity)
 	 * @return

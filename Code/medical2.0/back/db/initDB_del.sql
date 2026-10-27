@@ -7,11 +7,11 @@ SET SESSION FOREIGN_KEY_CHECKS=0;
 CREATE TABLE gen_scheme
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 分类
-    category varchar(64) NOT NULL COMMENT '分类',
+    category varchar(64) NOT NULL COMMENT 'Phân loại',
     -- 生成包路径
     package_name varchar(512) NOT NULL COMMENT '生成包路径',
     -- 生成模块名
@@ -29,19 +29,19 @@ CREATE TABLE gen_scheme
     -- 编辑框布局列数
     col_counts int DEFAULT 1 NOT NULL COMMENT '编辑框布局列数',
     -- 业务表
-    gen_table_id bigint(20) unsigned NOT NULL COMMENT '业务表',
+    gen_table_id bigint(20) unsigned NOT NULL COMMENT 'Bảng nghiệp vụ',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '代码方案' DEFAULT CHARACTER SET utf8;
 
@@ -50,9 +50,9 @@ CREATE TABLE gen_scheme
 CREATE TABLE gen_table
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 描述
     comments varchar(64) COMMENT '描述',
     -- 表来源
@@ -60,7 +60,7 @@ CREATE TABLE gen_table
     -- 实体类名称
     class_name varchar(128) NOT NULL COMMENT '实体类名称',
     -- 父表
-    parent_table bigint(20) unsigned COMMENT '父表',
+    parent_table bigint(20) unsigned COMMENT 'Bảng cha',
     -- 关联父表外键
     parent_table_fk varchar(64) COMMENT '关联父表外键',
     -- 是关联表
@@ -68,17 +68,17 @@ CREATE TABLE gen_table
     -- 筛选条件
     filter varchar(2048) DEFAULT '''''' COMMENT '筛选条件',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '业务表' DEFAULT CHARACTER SET utf8;
 
@@ -87,17 +87,17 @@ CREATE TABLE gen_table
 CREATE TABLE gen_table_column
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 业务表
-    gen_table_id bigint(20) unsigned NOT NULL COMMENT '业务表',
+    gen_table_id bigint(20) unsigned NOT NULL COMMENT 'Bảng nghiệp vụ',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 描述
     comments varchar(64) NOT NULL COMMENT '描述',
     -- 列字段类型
     jdbc_type varchar(64) NOT NULL COMMENT '列字段类型',
     -- JAVA类型
-    java_type varchar(64) NOT NULL COMMENT 'JAVA类型',
+    java_type varchar(64) NOT NULL COMMENT 'JAVALoại',
     -- 自定义类型
     custom_type varchar(64) COMMENT '自定义类型',
     -- JAVA属性名
@@ -115,11 +115,11 @@ CREATE TABLE gen_table_column
     -- 是否列显
     is_list varchar(1) DEFAULT '0' NOT NULL COMMENT '是否列显',
     -- 列宽
-    width int NOT NULL COMMENT '列宽',
+    width int NOT NULL COMMENT 'Độ rộng cột',
     -- 是否查询字段
     is_query varchar(1) DEFAULT '0' NOT NULL COMMENT '是否查询字段',
     -- 查询方式（等于、不等于、大于、小于、范围、左LIKE、右LIKE、左右LIKE）
-    query_type varchar(64) COMMENT '查询方式（等于、不等于、大于、小于、范围、左LIKE、右LIKE、左右LIKE）',
+    query_type varchar(64) COMMENT '查询方式（等于、不等于、大于、Nhỏ hơn、范围、左LIKE、右LIKE、左右LIKE）',
     -- 查询条件
     query_val varchar(2048) DEFAULT '''''' COMMENT '查询条件',
     -- 控件
@@ -133,19 +133,19 @@ CREATE TABLE gen_table_column
     -- 其它设置（扩展字段JSON）
     settings varchar(2048) COMMENT '其它设置（扩展字段JSON）',
     -- 排序
-    sort bigint(20) unsigned DEFAULT 0 COMMENT '排序',
+    sort bigint(20) unsigned DEFAULT 0 COMMENT 'Sắp xếp',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '业务表字段' DEFAULT CHARACTER SET utf8;
 
@@ -154,27 +154,27 @@ CREATE TABLE gen_table_column
 CREATE TABLE gen_table_constraint
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 业务表
-    gen_table_id bigint(20) unsigned NOT NULL COMMENT '业务表',
+    gen_table_id bigint(20) unsigned NOT NULL COMMENT 'Bảng nghiệp vụ',
     -- 名称
-    name varchar(128) COMMENT '名称',
+    name varchar(128) COMMENT 'Tên',
     -- 描述
     comments varchar(64) COMMENT '描述',
     -- 约束字段
     constraint_column varchar(2048) NOT NULL COMMENT '约束字段',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '约束字段' DEFAULT CHARACTER SET utf8;
 
@@ -182,7 +182,7 @@ CREATE TABLE gen_table_constraint
 CREATE TABLE notice_record
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 消息发送者
     sender bigint(20) unsigned NOT NULL COMMENT '消息发送者',
     -- 消息模板
@@ -204,7 +204,7 @@ CREATE TABLE notice_record
     -- 站内消息发送状态：0 未发送；1 已发送；2 消息撤回；
     site_sent_status bigint(20) unsigned NOT NULL COMMENT '站内消息发送状态：0 未发送；1 已发送；2 消息撤回；',
     -- 接收消息类型：0 公司，1部门，2指定人员
-    receive_type bigint(20) unsigned NOT NULL COMMENT '接收消息类型：0 公司，1部门，2指定人员',
+    receive_type bigint(20) unsigned NOT NULL COMMENT '接收消息类型：0 Công ty，1Phòng ban，2指定人员',
     -- 消息接收的人员信息
     receive_assign varchar(500) COMMENT '消息接收的人员信息',
     -- 站内消息发送时间
@@ -212,17 +212,17 @@ CREATE TABLE notice_record
     -- 发送次数
     sent_times int(2) COMMENT '发送次数',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -230,23 +230,23 @@ CREATE TABLE notice_record
 CREATE TABLE notice_record_email
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 消息发送记录
     notice_record bigint(20) unsigned NOT NULL COMMENT '消息发送记录',
     -- 消息接收者
     receiver bigint(20) unsigned NOT NULL COMMENT '消息接收者',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -254,7 +254,7 @@ CREATE TABLE notice_record_email
 CREATE TABLE notice_record_site
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 消息发送记录
     notice_record bigint(20) unsigned NOT NULL COMMENT '消息发送记录',
     -- 消息接收者
@@ -264,17 +264,17 @@ CREATE TABLE notice_record_site
     -- 读取时间
     read_time datetime COMMENT '读取时间',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -282,19 +282,19 @@ CREATE TABLE notice_record_site
 CREATE TABLE notice_send_timer
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -302,11 +302,11 @@ CREATE TABLE notice_send_timer
 CREATE TABLE notice_template
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 编号
-    code varchar(64) COMMENT '编号',
+    code varchar(64) COMMENT 'Số hiệu',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 消息类型
     notice_type bigint(20) unsigned NOT NULL COMMENT '消息类型',
     -- 消息类型：0 系统自动发送；1 手动发送；
@@ -320,17 +320,17 @@ CREATE TABLE notice_template
     -- 短消息模板
     sms_template varchar(255) COMMENT '短消息模板',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -338,11 +338,11 @@ CREATE TABLE notice_template
 CREATE TABLE notice_unsubscribe
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 消息模板
     notice_template bigint(20) unsigned NOT NULL COMMENT '消息模板',
     -- 用户
-    user bigint(20) unsigned NOT NULL COMMENT '用户',
+    user bigint(20) unsigned NOT NULL COMMENT 'Người dùng',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -351,9 +351,9 @@ CREATE TABLE notice_unsubscribe
 CREATE TABLE org_company
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- 全称
     full_name varchar(512) NOT NULL COMMENT '全称',
     -- 父级
@@ -361,25 +361,25 @@ CREATE TABLE org_company
     -- 全标识
     ids varchar(2048) NOT NULL COMMENT '全标识',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 排序
-    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT '排序',
+    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT 'Sắp xếp',
     -- 董事长
     chairman bigint(20) unsigned COMMENT '董事长',
     -- 总经理
     manager bigint(20) unsigned COMMENT '总经理',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '公司' DEFAULT CHARACTER SET utf8;
 
@@ -388,35 +388,35 @@ CREATE TABLE org_company
 CREATE TABLE org_department
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 公司
-    company_id bigint(20) unsigned NOT NULL COMMENT '公司',
+    company_id bigint(20) unsigned NOT NULL COMMENT 'Công ty',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- 父级
     parent_id bigint unsigned NOT NULL COMMENT '父级',
     -- 全标识
     ids varchar(2048) NOT NULL COMMENT '全标识',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 排序
-    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT '排序',
+    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT 'Sắp xếp',
     -- 总监
     director bigint(20) unsigned COMMENT '总监',
     -- 经理
     manager bigint(20) unsigned COMMENT '经理',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '部门' DEFAULT CHARACTER SET utf8;
 
@@ -424,11 +424,11 @@ CREATE TABLE org_department
 CREATE TABLE schedule_job
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 名称
-    name varchar(128) COMMENT '名称',
+    name varchar(128) COMMENT 'Tên',
     -- 编号
-    code varchar(64) COMMENT '编号',
+    code varchar(64) COMMENT 'Số hiệu',
     -- 任务表达式
     cron varchar(128) COMMENT '任务表达式',
     -- 任务状态
@@ -436,17 +436,17 @@ CREATE TABLE schedule_job
     -- 是否禁用
     is_lock varchar(1) COMMENT '是否禁用',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -455,7 +455,7 @@ CREATE TABLE schedule_job
 CREATE TABLE sys_action
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 操作类型
     action_type varchar(128) NOT NULL COMMENT '操作类型',
     -- 对象类型
@@ -467,17 +467,17 @@ CREATE TABLE sys_action
     -- 已还原
     status varchar(1) DEFAULT '0' NOT NULL COMMENT '已还原',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '操作日志' DEFAULT CHARACTER SET utf8;
 
@@ -486,27 +486,27 @@ CREATE TABLE sys_action
 CREATE TABLE sys_action_recycle
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 日志
-    action_id bigint(20) unsigned NOT NULL COMMENT '日志',
+    action_id bigint(20) unsigned NOT NULL COMMENT 'Nhật ký',
     -- 表名
-    table_name varchar(128) NOT NULL COMMENT '表名',
+    table_name varchar(128) NOT NULL COMMENT 'Tên bảng',
     -- 业务对象
     object_id bigint(20) unsigned NOT NULL COMMENT '业务对象',
     -- 对象名称
     object_name varchar(128) COMMENT '对象名称',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '回收站' DEFAULT CHARACTER SET utf8;
 
@@ -515,9 +515,9 @@ CREATE TABLE sys_action_recycle
 CREATE TABLE sys_attachment
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 业务标识
     biz_id bigint(20) unsigned NOT NULL COMMENT '业务标识',
     -- 文件类型
@@ -525,17 +525,17 @@ CREATE TABLE sys_attachment
     -- 文件内容
     file_content longblob COMMENT '文件内容',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '附件' DEFAULT CHARACTER SET utf8;
 
@@ -544,25 +544,25 @@ CREATE TABLE sys_attachment
 CREATE TABLE sys_code_rule
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 规则
     rule_def varchar(512) NOT NULL COMMENT '规则',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id),
     UNIQUE (code)
 ) COMMENT = '系统编号规则' DEFAULT CHARACTER SET utf8;
@@ -572,25 +572,25 @@ CREATE TABLE sys_code_rule
 CREATE TABLE sys_collect
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 用户
-    user_id bigint(20) unsigned COMMENT '用户',
+    user_id bigint(20) unsigned COMMENT 'Người dùng',
     -- 路由
-    router_id bigint(20) unsigned NOT NULL COMMENT '路由',
+    router_id bigint(20) unsigned NOT NULL COMMENT 'Định tuyến',
     -- 排序
-    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT '排序',
+    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT 'Sắp xếp',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '功能收藏夹' DEFAULT CHARACTER SET utf8;
 
@@ -599,18 +599,18 @@ CREATE TABLE sys_collect
 CREATE TABLE sys_column_view
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 业务表
-    table_id bigint(20) unsigned NOT NULL COMMENT '业务表',
+    table_id bigint(20) unsigned NOT NULL COMMENT 'Bảng nghiệp vụ',
     -- 用户
-    user_id bigint(20) unsigned NOT NULL COMMENT '用户',
+    user_id bigint(20) unsigned NOT NULL COMMENT 'Người dùng',
     -- 路由
-    router_id bigint(20) unsigned NOT NULL COMMENT '路由',
+    router_id bigint(20) unsigned NOT NULL COMMENT 'Định tuyến',
     -- 属性
     prop varchar(128) NOT NULL COMMENT '属性',
     display varchar(1) DEFAULT '0' NOT NULL,
     -- 排序
-    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT '排序',
+    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT 'Sắp xếp',
     -- 列框
     width int COMMENT '列框',
     PRIMARY KEY (id)
@@ -621,29 +621,29 @@ CREATE TABLE sys_column_view
 CREATE TABLE sys_company_code_rule
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 公司
-    company_id bigint(20) unsigned NOT NULL COMMENT '公司',
+    company_id bigint(20) unsigned NOT NULL COMMENT 'Công ty',
     -- 系统编号规则
     sys_rule_id bigint(20) unsigned NOT NULL COMMENT '系统编号规则',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 规则
     rule_def varchar(512) NOT NULL COMMENT '规则',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id),
     UNIQUE (company_id, code)
 ) COMMENT = '公司编号规则' DEFAULT CHARACTER SET utf8;
@@ -653,27 +653,27 @@ CREATE TABLE sys_company_code_rule
 CREATE TABLE sys_condition
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 用户Id
-    user_id bigint(20) unsigned NOT NULL COMMENT '用户Id',
+    user_id bigint(20) unsigned NOT NULL COMMENT 'Người dùngId',
     -- 路由Id
-    router_id bigint(20) unsigned NOT NULL COMMENT '路由Id',
+    router_id bigint(20) unsigned NOT NULL COMMENT 'Định tuyếnId',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 条件
-    conditions text NOT NULL COMMENT '条件',
+    conditions text NOT NULL COMMENT 'Điều kiện',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '查询条件' DEFAULT CHARACTER SET utf8;
 
@@ -682,11 +682,11 @@ CREATE TABLE sys_condition
 CREATE TABLE sys_data_permission
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 路由
-    router_id bigint(20) unsigned NOT NULL COMMENT '路由',
+    router_id bigint(20) unsigned NOT NULL COMMENT 'Định tuyến',
     -- 角色
-    role_id bigint(20) unsigned NOT NULL COMMENT '角色',
+    role_id bigint(20) unsigned NOT NULL COMMENT 'Vai trò',
     -- 元数据
     meta_id bigint(20) NOT NULL COMMENT '元数据',
     -- 权限条件
@@ -699,25 +699,25 @@ CREATE TABLE sys_data_permission
 CREATE TABLE sys_dict_item
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 字典类
     dict_type_id bigint(20) unsigned NOT NULL COMMENT '字典类',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 字典项值
     value varchar(128) NOT NULL COMMENT '字典项值',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '字典项' DEFAULT CHARACTER SET utf8;
 
@@ -726,23 +726,23 @@ CREATE TABLE sys_dict_item
 CREATE TABLE sys_dict_type
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '字典类型' DEFAULT CHARACTER SET utf8;
 
@@ -751,11 +751,11 @@ CREATE TABLE sys_dict_type
 CREATE TABLE sys_file
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 业务表
-    object_id bigint(20) unsigned NOT NULL COMMENT '业务表',
+    object_id bigint(20) unsigned NOT NULL COMMENT 'Bảng nghiệp vụ',
     -- 名称
-    name varchar(128) COMMENT '名称',
+    name varchar(128) COMMENT 'Tên',
     -- 文件类型
     file_type varchar(64) COMMENT '文件类型',
     -- 文件大小
@@ -763,17 +763,17 @@ CREATE TABLE sys_file
     -- 文件路径
     file_url varchar(255) COMMENT '文件路径',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id),
     UNIQUE (id)
 ) COMMENT = '附件表' DEFAULT CHARACTER SET utf8;
@@ -783,23 +783,23 @@ CREATE TABLE sys_file
 CREATE TABLE sys_file_content
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 图片字节
     byte longblob COMMENT '图片字节',
     -- 文件类型
     file_type varchar(64) COMMENT '文件类型',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id),
     UNIQUE (id)
 ) COMMENT = '附件存储' DEFAULT CHARACTER SET utf8;
@@ -809,23 +809,23 @@ CREATE TABLE sys_file_content
 CREATE TABLE sys_personal_theme
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 用户
-    user_id bigint(20) unsigned NOT NULL COMMENT '用户',
+    user_id bigint(20) unsigned NOT NULL COMMENT 'Người dùng',
     -- 主题
-    theme text NOT NULL COMMENT '主题',
+    theme text NOT NULL COMMENT 'Chủ đề',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id),
     UNIQUE (user_id)
 ) COMMENT = '自定义主题' DEFAULT CHARACTER SET utf8;
@@ -835,33 +835,33 @@ CREATE TABLE sys_personal_theme
 CREATE TABLE sys_resource
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- URL
     url varchar(128) NOT NULL COMMENT 'URL',
     -- 权限
-    permission varchar(32) COMMENT '权限',
+    permission varchar(32) COMMENT 'Quyền',
     -- 默认资源
     is_default varchar(1) DEFAULT '0' NOT NULL COMMENT '默认资源',
     -- 禁用
-    is_locked varchar(1) DEFAULT '0' COMMENT '禁用',
+    is_locked varchar(1) DEFAULT '0' COMMENT 'Vô hiệu hóa',
     -- 路由
-    router_id bigint(20) unsigned NOT NULL COMMENT '路由',
+    router_id bigint(20) unsigned NOT NULL COMMENT 'Định tuyến',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '资源' DEFAULT CHARACTER SET utf8;
 
@@ -870,9 +870,9 @@ CREATE TABLE sys_resource
 CREATE TABLE sys_resource_permission
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 角色
-    role_id bigint(20) unsigned NOT NULL COMMENT '角色',
+    role_id bigint(20) unsigned NOT NULL COMMENT 'Vai trò',
     -- 资源
     resource_id bigint(20) unsigned NOT NULL COMMENT '资源',
     PRIMARY KEY (id)
@@ -883,27 +883,27 @@ CREATE TABLE sys_resource_permission
 CREATE TABLE sys_role
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 公司
-    company_id bigint(20) unsigned NOT NULL COMMENT '公司',
+    company_id bigint(20) unsigned NOT NULL COMMENT 'Công ty',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 禁用
-    is_locked varchar(1) DEFAULT '0' NOT NULL COMMENT '禁用',
+    is_locked varchar(1) DEFAULT '0' NOT NULL COMMENT 'Vô hiệu hóa',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '角色' DEFAULT CHARACTER SET utf8;
 
@@ -912,9 +912,9 @@ CREATE TABLE sys_role
 CREATE TABLE sys_router
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 编号
-    code varchar(64) COMMENT '编号',
+    code varchar(64) COMMENT 'Số hiệu',
     -- URL
     url varchar(128) COMMENT 'URL',
     -- 父级
@@ -922,25 +922,25 @@ CREATE TABLE sys_router
     -- 全标识
     ids varchar(2048) NOT NULL COMMENT '全标识',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 排序
-    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT '排序',
+    sort bigint(20) unsigned DEFAULT 0 NOT NULL COMMENT 'Sắp xếp',
     -- 禁用
-    is_locked varchar(1) DEFAULT '0' NOT NULL COMMENT '禁用',
+    is_locked varchar(1) DEFAULT '0' NOT NULL COMMENT 'Vô hiệu hóa',
     -- 扩展属性
     properties varchar(1024) NOT NULL COMMENT '扩展属性',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '路由' DEFAULT CHARACTER SET utf8;
 
@@ -949,11 +949,11 @@ CREATE TABLE sys_router
 CREATE TABLE sys_router_permission
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 角色
-    role_id bigint(20) unsigned NOT NULL COMMENT '角色',
+    role_id bigint(20) unsigned NOT NULL COMMENT 'Vai trò',
     -- 路由
-    router_id bigint(20) unsigned NOT NULL COMMENT '路由',
+    router_id bigint(20) unsigned NOT NULL COMMENT 'Định tuyến',
     PRIMARY KEY (id)
 ) COMMENT = '角色路由' DEFAULT CHARACTER SET utf8;
 
@@ -961,7 +961,7 @@ CREATE TABLE sys_router_permission
 CREATE TABLE sys_seting
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '标识',
+    id bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Định danh',
     sys_name varchar(255),
     sys_abbrname varchar(128),
     -- 登录背景色
@@ -981,17 +981,17 @@ CREATE TABLE sys_seting
     -- 登录配图
     login_graph bigint(20) unsigned COMMENT '登录配图',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id),
     UNIQUE (id)
 ) DEFAULT CHARACTER SET utf8;
@@ -1000,27 +1000,27 @@ CREATE TABLE sys_seting
 CREATE TABLE sys_squence
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 公司Id
-    company_id bigint(20) unsigned NOT NULL COMMENT '公司Id',
+    company_id bigint(20) unsigned NOT NULL COMMENT 'Công tyId',
     -- 编号
-    code varchar(64) NOT NULL COMMENT '编号',
+    code varchar(64) NOT NULL COMMENT 'Số hiệu',
     -- 前缀
     prefix varchar(64) NOT NULL COMMENT '前缀',
     -- 序列值
     val int unsigned DEFAULT 1 NOT NULL COMMENT '序列值',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id),
     UNIQUE (company_id, code, prefix)
 ) DEFAULT CHARACTER SET utf8;
@@ -1030,25 +1030,25 @@ CREATE TABLE sys_squence
 CREATE TABLE sys_theme
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 主题
-    theme text NOT NULL COMMENT '主题',
+    theme text NOT NULL COMMENT 'Chủ đề',
     -- 默认
-    is_default varchar(1) DEFAULT '1' COMMENT '默认',
+    is_default varchar(1) DEFAULT '1' COMMENT 'Mặc định',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '系统主题' DEFAULT CHARACTER SET utf8;
 
@@ -1057,19 +1057,19 @@ CREATE TABLE sys_theme
 CREATE TABLE sys_user
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 公司
-    company_id bigint(20) unsigned NOT NULL COMMENT '公司',
+    company_id bigint(20) unsigned NOT NULL COMMENT 'Công ty',
     -- 部门
-    department_id bigint(20) unsigned NOT NULL COMMENT '部门',
+    department_id bigint(20) unsigned NOT NULL COMMENT 'Phòng ban',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 登录账号
     login_name varchar(10) NOT NULL COMMENT '登录账号',
     -- 密码
-    login_password varchar(64) COMMENT '密码',
+    login_password varchar(64) COMMENT 'Mật khẩu',
     -- 禁用
-    is_locked varchar(1) DEFAULT '0' NOT NULL COMMENT '禁用',
+    is_locked varchar(1) DEFAULT '0' NOT NULL COMMENT 'Vô hiệu hóa',
     -- 手机号
     phone varchar(20) NOT NULL COMMENT '手机号',
     -- 邮箱地址
@@ -1077,17 +1077,17 @@ CREATE TABLE sys_user
     -- 企业微信标识
     qy_open_id varchar(100) COMMENT '企业微信标识',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '用户' DEFAULT CHARACTER SET utf8;
 
@@ -1096,23 +1096,23 @@ CREATE TABLE sys_user
 CREATE TABLE sys_user_role
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 标识
-    user_id bigint(20) unsigned NOT NULL COMMENT '标识',
+    user_id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 角色
-    role_id bigint(20) unsigned NOT NULL COMMENT '角色',
+    role_id bigint(20) unsigned NOT NULL COMMENT 'Vai trò',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '用户角色' DEFAULT CHARACTER SET utf8;
 
@@ -1121,29 +1121,29 @@ CREATE TABLE sys_user_role
 CREATE TABLE test_expense
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 申请人
     applier bigint(20) unsigned NOT NULL COMMENT '申请人',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 金额
     amount decimal(21,2) DEFAULT 0 NOT NULL COMMENT '金额',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 流程实例
     proc_inst bigint(20) unsigned NOT NULL COMMENT '流程实例',
     -- 审批状态
     proc_status bigint(20) unsigned DEFAULT 8045 NOT NULL COMMENT '审批状态',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '费用申请' DEFAULT CHARACTER SET utf8;
 
@@ -1152,29 +1152,29 @@ CREATE TABLE test_expense
 CREATE TABLE test_expense_detail
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 报销
     expense_id bigint(20) unsigned NOT NULL COMMENT '报销',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 金额
     amount decimal(21,2) DEFAULT 0 NOT NULL COMMENT '金额',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 流程实例
     proc_inst bigint(20) unsigned NOT NULL COMMENT '流程实例',
     -- 审批状态
     proc_status bigint(20) unsigned DEFAULT 8045 NOT NULL COMMENT '审批状态',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '报销明细' DEFAULT CHARACTER SET utf8;
 
@@ -1183,29 +1183,29 @@ CREATE TABLE test_expense_detail
 CREATE TABLE test_leave
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 请假人
     leaver bigint(20) unsigned NOT NULL COMMENT '请假人',
     -- 名称
-    name varchar(128) COMMENT '名称',
+    name varchar(128) COMMENT 'Tên',
     -- 请假天数
     days double COMMENT '请假天数',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 流程实例
     proc_inst bigint(20) unsigned NOT NULL COMMENT '流程实例',
     -- 审批状态
     proc_status bigint(20) unsigned DEFAULT 8045 NOT NULL COMMENT '审批状态',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '请假' DEFAULT CHARACTER SET utf8;
 
@@ -1213,26 +1213,26 @@ CREATE TABLE test_leave
 CREATE TABLE user_grid
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 用户id
-    user_id bigint(20) NOT NULL COMMENT '用户id',
+    user_id bigint(20) NOT NULL COMMENT 'Người dùngid',
     -- 路由id
-    router_id bigint(20) NOT NULL COMMENT '路由id',
+    router_id bigint(20) NOT NULL COMMENT 'Định tuyếnid',
     grid_info varchar(1000),
     -- 选中展示的模块id
     default_check varchar(200) COMMENT '选中展示的模块id',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8;
 
@@ -1241,9 +1241,9 @@ CREATE TABLE user_grid
 CREATE TABLE wf_draft
 (
     -- 标识
-    id bigint(20) unsigned NOT NULL COMMENT '标识',
+    id bigint(20) unsigned NOT NULL COMMENT 'Định danh',
     -- 名称
-    name varchar(128) NOT NULL COMMENT '名称',
+    name varchar(128) NOT NULL COMMENT 'Tên',
     -- 申请人
     applyer_id bigint(20) unsigned NOT NULL COMMENT '申请人',
     -- 流程id
@@ -1253,17 +1253,17 @@ CREATE TABLE wf_draft
     -- 表单数据
     form_data longtext COMMENT '表单数据',
     -- 备注信息
-    remarks varchar(255) COMMENT '备注信息',
+    remarks varchar(255) COMMENT 'Thông tin ghi chú',
     -- 创建者
-    create_by varchar(64) NOT NULL COMMENT '创建者',
+    create_by varchar(64) NOT NULL COMMENT 'Người tạo',
     -- 创建时间
-    create_date datetime NOT NULL COMMENT '创建时间',
+    create_date datetime NOT NULL COMMENT 'Thời gian tạo',
     -- 更新者
-    update_by varchar(64) NOT NULL COMMENT '更新者',
+    update_by varchar(64) NOT NULL COMMENT 'Người cập nhật',
     -- 更新时间
-    update_date datetime NOT NULL COMMENT '更新时间',
+    update_date datetime NOT NULL COMMENT 'Thời gian cập nhật',
     -- 删除标记（0：正常；1：删除）
-    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT '删除标记（0：正常；1：删除）',
+    del_flag varchar(1) DEFAULT '0' NOT NULL COMMENT 'Cờ xóa（0：Bình thường；1：Xóa）',
     PRIMARY KEY (id)
 ) COMMENT = '流程草稿' DEFAULT CHARACTER SET utf8;
 

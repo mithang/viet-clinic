@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 /**
- * 远程诊断管理
+ * từ xaChẩn đoánQuản lý
  * @author zh
  * @version 2023-12-06
  */
@@ -25,37 +25,37 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RemoteDiagnosisTreatment extends DataEntity<RemoteDiagnosisTreatment> {
     private static final long serialVersionUID = -7912591825814208871L;
-    private Company company;        // 诊所id
-    private String applyId;  // 远程诊疗流水号（由his系统生成）
-    private String registrationId;  // 挂号id
-    private String nameId;      // 患者id
-    private String name;        // 患者姓名
-	private String gender;      // 性别
-	private String card;		// 身份证号
-	private String hospital;	// 申请医院
-	private String hospitalId;	// 申请医院
-	private String department;	// 申请科室
-	private String departmentId;	// 申请科室
-	private String medic;		// 申请医生
-	private String medicId;		// 申请医生
+    private Company company;        // Phòng khámid
+    private String applyId;  // Số thứ tự khám chữa bệnh từ xa(dohisHệ thốngTạo)
+    private String registrationId;  // Đăng ký khámid
+    private String nameId;      // Bệnh nhânid
+    private String name;        // Tên bệnh nhân
+	private String gender;      // Giới tính
+	private String card;		// Số CMND/CCCD
+	private String hospital;	// đăng kýVui lòngBệnh viện
+	private String hospitalId;	// đăng kýVui lòngBệnh viện
+	private String department;	// đăng kýVui lòngKhoa
+	private String departmentId;	// đăng kýVui lòngKhoa
+	private String medic;		// đăng kýVui lòngBác sĩ
+	private String medicId;		// đăng kýVui lòngBác sĩ
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime diagnosisTime; // 诊疗时间
-    private String status;		// 状态
-    private String medicationStatus;	// 发药收费状态（0：代收费 1：已收费待发药 2：已发药）
-    private String applicationResults;	// 申请结果
-    private String recipientName;		// 收件人姓名
-    private String recipientPhone;		// 收件人电话
-    private String province;		// 收件人省
-    private String market;		// 收件人市
-    private String distinguish;		// 收件人区县
-    private String recipientAddress;	// 收件人地址
-    private String conferenceId;		// 会议号
-    private String cardNo;		// his就诊卡号
-    private String orderNo;		// 费用订单号
-    private String payFee;		// 费用
+    private LocalDateTime diagnosisTime; // khámtrị liệuThời gian
+    private String status;		// Trạng thái
+    private String medicationStatus;	// phát thuốcTrạng thái thu phí(0: thayThu phí 1: ĐãThu phíchờphát thuốc 2: Đãphát thuốc)
+    private String applicationResults;	// đăng kýVui lòngKết quả
+    private String recipientName;		// người nhậnTên
+    private String recipientPhone;		// người nhậnSố điện thoại
+    private String province;		// người nhậnTỉnh
+    private String market;		// người nhậnThành phố
+    private String distinguish;		// người nhậnQuận县
+    private String recipientAddress;	// người nhậnĐịa chỉ
+    private String conferenceId;		// sẽ议số
+    private String cardNo;		// hiskhám bệnhthẻsố
+    private String orderNo;		// Chi phí订đơnsố
+    private String payFee;		// Chi phí
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -64,7 +64,7 @@ public class RemoteDiagnosisTreatment extends DataEntity<RemoteDiagnosisTreatmen
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -74,7 +74,7 @@ public class RemoteDiagnosisTreatment extends DataEntity<RemoteDiagnosisTreatmen
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

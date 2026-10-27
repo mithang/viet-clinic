@@ -4,21 +4,21 @@
 		<el-table :data="newList" border highlight-current-row @row-click="RowClickSurchargeTable">
 			<el-table-column prop="drugStuffName" :label="nameTitle">
 			</el-table-column>
-			<el-table-column prop="drug.type.name" :label="药品类型" v-if="type===1">
+			<el-table-column prop="drug.type.name" :label="Loại thuốc" v-if="type===1">
 			</el-table-column>
-			<el-table-column prop="stuff.type.name" :label="材料类型" v-if="type===2">
+			<el-table-column prop="stuff.type.name" :label="Loại vật tư" v-if="type===2">
 			</el-table-column>
-			<el-table-column prop="drug.price" label="零售" width="100" v-if="addType === 1">
+			<el-table-column prop="drug.price" label="Bán lẻ" width="100" v-if="addType === 1">
 			</el-table-column>
-			<el-table-column prop="drug.pack.name" label="单位" width="80" v-if="addType === 1">
+			<el-table-column prop="drug.pack.name" label="Đơn vị" width="80" v-if="addType === 1">
 			</el-table-column>
-			<el-table-column prop="supplierStock.batchNo" label="批号" width="80">
+			<el-table-column prop="supplierStock.batchNo" label="Số lô" width="80">
 			</el-table-column>
-			<el-table-column prop="supplierStock.norms" label="规格" width="80">
+			<el-table-column prop="supplierStock.norms" label="Quy cách" width="80">
 			</el-table-column>
-			<el-table-column prop="occupyStock" label="占用库存" width="80">
+			<el-table-column prop="occupyStock" label="Chiếm dụng tồn kho" width="80">
 			</el-table-column>
-			<el-table-column prop="surplusStock" label="可用库存" width="80">
+			<el-table-column prop="surplusStock" label="Tồn kho khả dụng" width="80">
 			</el-table-column>
 		</el-table>
 		<el-input  slot="reference" v-model="searchName" :placeholder="drugStuffPlaceholder">
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-	// 药品、材料动态库存选择
+	// Thuốc、材料动态库存选择
 
 	import {
 		listPage
@@ -56,7 +56,7 @@
 		},
 		computed: {
 			nameTitle() {
-				return this.type === '1' ? '药品名称' : '材料名称';
+				return this.type === '1' ? 'Tên thuốc' : 'Tên vật tư';
 			}
 		},
 		watch: {

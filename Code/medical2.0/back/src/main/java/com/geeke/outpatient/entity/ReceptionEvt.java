@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 完成接诊保存数据组装实体
+ * hoàn thành tiếp nhậnLưuDữ liệulắp rápthực thể
  * @author helong
  * @date 2022/8/22 16:00
  */
@@ -12,31 +12,31 @@ public class ReceptionEvt implements Serializable
 {
     private static final long serialVersionUID = -4774843195581832448L;
     /**
-     * 完成接诊数据ID(普通接诊必传)
+     * hoàn thành tiếp nhậnDữ liệuID(Tiếp nhận thông thường必truyền)
      */
     private String id;
     /**
-     * 登记信息
+     * Thông tin đăng ký
      */
     private Registration registration;
     /**
-     * 基础信息（即患者信息）
+     * cơ bảnThông tin(tức làThông tin bệnh nhân)
      */
     private Patient patient;
     /**
-     * 病例填写信息
+     * Điền ca bệnhThông tin
      */
     private MedicalRecord medicalRecord;
     /**
-     * 开具处方信息（包含处方主子明细）
+     * kêĐơn thuốcThông tin(bao gồmĐơn thuốcchínhconChi tiết)
      */
     private List<RecipelInfoEvt> recipelInfoEvtList;
     /**
-     * 接诊类型:0-普通接诊  1-快速接诊  2-零售收费
+     * tiếp nhậnLoại:0-Tiếp nhận thông thường  1-Tiếp nhận nhanh  2-Thu phí bán lẻ
      */
     private int type = 0;
     /**
-     * 删除的附件id列表
+     * Xóa của tệp đính kèmidDanh sách
      */
     private List<String> deleteFileIdList;
 

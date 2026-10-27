@@ -5,14 +5,14 @@
       <el-row :span='24'>
         <el-col :span='10'>
           {{ dialogProps.title }}
-          <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+          <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
         </el-col>
         <el-col :span='14'>
           <el-tabs v-model='tabIndex'>
-            <el-tab-pane label='基本信息' name='1'></el-tab-pane>
+            <el-tab-pane label='Thông tin cơ bản' name='1'></el-tab-pane>
             <el-tab-pane label='约束条件' name='2'></el-tab-pane>
             <el-tab-pane label='存储配置' name='3'></el-tab-pane>
-            <el-tab-pane label='Java配置' name='4'></el-tab-pane>
+            <el-tab-pane label='JavaCấu hình' name='4'></el-tab-pane>
             <el-tab-pane label='列表配置' name='5'></el-tab-pane>
             <el-tab-pane label='编辑配置' name='6'></el-tab-pane>
           </el-tabs>
@@ -22,11 +22,11 @@
 
     <el-form :model='bizFormModel' :rules='formRules'
       ref='genTableForm' label-width='120px' label-position='right' class='edit-form'>
-    <!-- 主表单  开始-->
+    <!-- Biểu mẫu chính  Bắt đầu-->
       <div v-show='tabIndex==="1"'>
       <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='名称' prop='name'>
+          <el-form-item label='Tên' prop='name'>
              <el-input v-if='dialogProps.action === "view" || dialogProps.action === "edit"' :disabled=true v-model='bizFormModel.name'></el-input>
              <el-select v-else v-model='bizFormModel' value-key='name' @change='onTableChange' filterable clearable placeholder='请选择名称'>
                <el-option v-for='st in st_List' :key='st.name' :label='st.name + " : " + st.comments' :value='st'></el-option>
@@ -34,19 +34,19 @@
           </el-form-item>
         </el-col>
         <el-col :span='24/2'>
-          <el-form-item label='说明' prop='comments'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.comments'  :maxlength='500'  :placeholder='dialogProps.action === "view"? "" : "请输入说明"'  ></el-input>
+          <el-form-item label='Giải thích' prop='comments'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.comments'  :maxlength='500'  :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập giải thích"'  ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='实体类名称' prop='className'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.className'  :maxlength='100'  :placeholder='dialogProps.action === "view"? "" : "请输入实体类名称"'  ></el-input>
+          <el-form-item label='Tên lớp thực thể' prop='className'>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.className'  :maxlength='100'  :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên lớp thực thể"'  ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='24/2'>
-          <el-form-item label='关联父表' prop='parentTable.id'>
+          <el-form-item label='Bảng cha liên kết' prop='parentTable.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled=true v-model='bizFormModel.parentTable.name'></el-input>
             <el-select v-else v-model='bizFormModel.parentTable' value-key='id' filterable clearable placeholder='请选择关联父表' @clear='bizFormModel.parentTable={"id": null,"name": null}'>
                <el-option v-for='parentTable in parentTable_List' :key='parentTable.id' :label='parentTable.name + " : " + parentTable.comments' :value='parentTable'></el-option>
@@ -56,7 +56,7 @@
       </el-row>
       <el-row v-show='bizFormModel.parentTable && bizFormModel.parentTable.name'>
         <el-col :span='24/2'>
-          <el-form-item label='父表外键' prop='parentTableFk'>
+          <el-form-item label='Khóa ngoại bảng cha' prop='parentTableFk'>
             <el-input v-if='dialogProps.action === "view"' :disabled=true v-model='bizFormModel.parentTableFk'></el-input>
             <el-select v-else v-model='bizFormModel.parentTableFk' @change='onFkChange' value-key='name' filterable clearable placeholder='请选择父表外键'>
                <el-option v-for='parentTableFk in parentTableFk_List' :key='parentTableFk.name' :label='parentTableFk.name + " : " + parentTableFk.comments' :value='parentTableFk.name'></el-option>
@@ -64,7 +64,7 @@
           </el-form-item>
         </el-col>
         <el-col :span='24/2'>
-          <el-form-item label='是关联表' prop='isAssociation'>
+          <el-form-item label='là bảng liên kết' prop='isAssociation'>
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isAssociation' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
         </el-col>
@@ -78,31 +78,31 @@
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item label='筛选条件' prop='filter'>
+          <el-form-item label='Điều kiện lọc' prop='filter'>
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.filter' type='textarea'
               :maxlength='2000' :placeholder='dialogProps.action === "view"? "" : "请输入筛选条件"'  ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       </div>
-               <!-- 主表单  结束-->
+               <!-- Biểu mẫu chính  Kết thúc-->
 
-    <!--子表：   约束字段 开始-->
+    <!--Bảng con：   Trường ràng buộc Bắt đầu-->
       <div v-show='tabIndex==="2"'>
       <el-row>
         <el-col>
     <el-table ref='genTable' :data='bizFormModel.constraintList' border @current-change='(currentRow, oldCurrentRow) => {constraintCurrentRow = currentRow}'>
-      <el-table-column prop='name' label='名称' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>名称</template>
+      <el-table-column prop='name' label='Tên' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === constraintCurrentRow' :prop="`constraintList.${$index}.name`" :rules='formRules.constraint_name' label-width=0>
-            <el-input v-model='row.name'  :maxlength='200' clearable placeholder='请输入名称'></el-input>
+            <el-input v-model='row.name'  :maxlength='200' clearable placeholder='Vui lòng nhập tên'></el-input>
           </el-form-item>
           <span v-else>{{row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column prop='comments' label='描述' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>描述</template>
+      <el-table-column prop='comments' label='Mô tả' min-width='200px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Mô tả</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === constraintCurrentRow' :prop="`constraintList.${$index}.comments`" :rules='formRules.constraint_comments' label-width=0>
             <el-input v-model='row.comments'  :maxlength='500' clearable placeholder='请输入描述'></el-input>
@@ -110,8 +110,8 @@
           <span v-else>{{row.comments}}</span>
         </template>
       </el-table-column>
-      <el-table-column prop='constraintColumn' label='约束字段' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>约束字段</template>
+      <el-table-column prop='constraintColumn' label='Trường ràng buộc' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Trường ràng buộc</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === constraintCurrentRow' :prop="`constraintList.${$index}.constraintColumn`" :rules='formRules.constraint_constraintColumn' label-width=0>
             <StringMultiSelect v-model='row.constraintColumn' :opts='constraintColumn_Constraint_List' valKey='name' label='name' placeholder='请选择约束字段'></StringMultiSelect>
@@ -119,9 +119,9 @@
           <span v-else>{{row.constraintColumn}}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if='dialogProps.action !== "view"' label='操作' header-align='center' align='center' width='60px'>
+      <el-table-column v-if='dialogProps.action !== "view"' label='Thao tác' header-align='center' align='center' width='60px'>
         <template slot-scope='scope'>
-          <el-tooltip class='item' effect='light' content='删除' placement='top-start'>
+          <el-tooltip class='item' effect='light' content='Xóa' placement='top-start'>
             <i class='el-icon-delete' style='color:#F56C6C;cursor:pointer;'
               @click='onDeleteRow(scope.$index, bizFormModel.constraintList)'></i>
           </el-tooltip>
@@ -129,47 +129,47 @@
       </el-table-column>
     </el-table>
     <el-button v-if='dialogProps.action !== "view"' type='primary'
-      @click='onAddConstraintRow(bizFormModel.constraintList)'>添加</el-button>
+      @click='onAddConstraintRow(bizFormModel.constraintList)'>Thêm</el-button>
         </el-col>
       </el-row>
       </div>
-      <!--子表：   约束字段 结束-->
-    <!--子表：   业务表字段 开始-->
+      <!--Bảng con：   Trường ràng buộc Kết thúc-->
+    <!--Bảng con：   Trường bảng nghiệp vụ Bắt đầu-->
       <div v-show='tabIndex>"2"'>
       <el-row>
         <el-col>
     <el-table ref='genTable' :data='bizFormModel.genTableColumnList' border @current-change='(currentRow, oldCurrentRow) => {genTableColumnCurrentRow = currentRow}'>
-      <el-table-column prop='name' label='字段名' min-width='180px' header-align='center' fixed>
+      <el-table-column prop='name' label='Tên trường' min-width='180px' header-align='center' fixed>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.name`" :rules='formRules.genTableColumn_name' label-width=0>
-            <el-input v-model='row.name'  :maxlength='2000' clearable placeholder='请输入字段名'></el-input>
+            <el-input v-model='row.name'  :maxlength='2000' clearable placeholder='Vui lòng nhập tên trường'></el-input>
           </el-form-item>
           <span v-else>{{row.name}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="3"' key='comments' prop='comments' label='说明' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>说明</template>
+        <el-table-column v-if='tabIndex==="3"' key='comments' prop='comments' label='Giải thích' min-width='200px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Giải thích</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.comments`" :rules='formRules.genTableColumn_comments' label-width=0>
-            <el-input v-model='row.comments'  :maxlength='500' clearable placeholder='请输入说明'></el-input>
+            <el-input v-model='row.comments'  :maxlength='500' clearable placeholder='Vui lòng nhập giải thích'></el-input>
           </el-form-item>
           <span v-else>{{row.comments}}</span>
         </template>
       </el-table-column>
       <el-table-column v-if='tabIndex==="3"' key='jdbcType' prop='jdbcType' label='物理类型' min-width='160px' header-align='center'></el-table-column>
-      <el-table-column v-if='tabIndex==="4"' key='javaType.value' prop='javaType.value' label='JAVA类型' min-width='100px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>JAVA类型</template>
+      <el-table-column v-if='tabIndex==="4"' key='javaType.value' prop='javaType.value' label='JAVALoại' min-width='100px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>JAVALoại</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.javaType`" :rules='formRules.genTableColumn_javaType' label-width=0>
-            <el-select v-model='row.javaType' value-key='value' @change='onJavaTypeChange' filterable clearable placeholder='请选择JAVA类型' @focus='setCurrentFocus(row)'>
+            <el-select v-model='row.javaType' value-key='value' @change='onJavaTypeChange' filterable clearable placeholder='Vui lòng chọnJAVALoại' @focus='setCurrentFocus(row)'>
               <el-option v-for='javaType in javaType_GenTableColumn_List' :key='javaType.value' :label='javaType.name' :value='javaType'></el-option>
             </el-select>
           </el-form-item>
           <span v-else>{{row.javaType.name}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="4"' key='customType.id' prop='customType.id' label='自定义类型' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>自定义类型</template>
+        <el-table-column v-if='tabIndex==="4"' key='customType.id' prop='customType.id' label='Loại tùy chỉnh' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Loại tùy chỉnh</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.customType`" :rules='formRules.genTableColumn_customType' label-width=0>
             <el-select v-model='row.customType' value-key='id' filterable clearable placeholder='请选择自定义类型' @focus='setCurrentFocus(row)'>
@@ -179,17 +179,17 @@
           <span v-else>{{row.customType.name}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="4"' key='javaField' prop='javaField' label='属性名' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>属性名</template>
+        <el-table-column v-if='tabIndex==="4"' key='javaField' prop='javaField' label='Tên thuộc tính' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên thuộc tính</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.javaField`" :rules='formRules.genTableColumn_javaField' label-width=0>
-            <el-input v-model='row.javaField'  :maxlength='1024' clearable placeholder='请输入属性名'></el-input>
+            <el-input v-model='row.javaField'  :maxlength='1024' clearable placeholder='Vui lòng nhập tên thuộc tính'></el-input>
           </el-form-item>
           <span v-else>{{row.javaField}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="4"' key='defVal' prop='defVal' label='默认值' min-width='160px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>默认值</template>
+        <el-table-column v-if='tabIndex==="4"' key='defVal' prop='defVal' label='Giá trị mặc định' min-width='160px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Giá trị mặc định</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.defVal`" :rules='formRules.genTableColumn_defVal' label-width=0>
             <el-input v-model='row.defVal'  :maxlength='2000' clearable placeholder='请输入默认值'></el-input>
@@ -197,8 +197,8 @@
           <span v-else>{{row.defVal}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="3"' key='isPk' prop='isPk' label='主键' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>主键</template>
+        <el-table-column v-if='tabIndex==="3"' key='isPk' prop='isPk' label='Khóa chính' min-width='60px' header-align='center' align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Khóa chính</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isPk`" :rules='formRules.genTableColumn_isPk' label-width=0>
             <el-switch v-model='row.isPk' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -206,8 +206,8 @@
             <li v-if='dialogProps.action === "view" && row.isPk === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="3"' key='isNull'  prop='isNull' label='可空' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>可空</template>
+        <el-table-column v-if='tabIndex==="3"' key='isNull'  prop='isNull' label='Có thể trống' min-width='60px' header-align='center' align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Có thể trống</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isNull`" :rules='formRules.genTableColumn_isNull' label-width=0>
             <el-switch v-model='row.isNull' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -215,8 +215,8 @@
             <li v-if='dialogProps.action === "view" && row.isNull === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="3"' key='isInsert' prop='isInsert' label='可插' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>可插</template>
+        <el-table-column v-if='tabIndex==="3"' key='isInsert' prop='isInsert' label='Có thể chèn' min-width='60px' header-align='center' align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Có thể chèn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isInsert`" :rules='formRules.genTableColumn_isInsert' label-width=0>
             <el-switch v-model='row.isInsert' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -224,8 +224,8 @@
             <li v-if='dialogProps.action === "view" && row.isInsert === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="6"' key='isEdit' prop='isEdit' label='可编' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>可编</template>
+        <el-table-column v-if='tabIndex==="6"' key='isEdit' prop='isEdit' label='Có thể sửa' min-width='60px' header-align='center' align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Có thể sửa</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isEdit`" :rules='formRules.genTableColumn_isEdit' label-width=0>
             <el-switch v-model='row.isEdit' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -233,8 +233,8 @@
             <li v-if='dialogProps.action === "view" && row.isEdit === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="5"' key='isList' prop='isList' label='列显' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>列显</template>
+        <el-table-column v-if='tabIndex==="5"' key='isList' prop='isList' label='Hiển thị cột' min-width='60px' header-align='center' align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Hiển thị cột</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isList`" :rules='formRules.genTableColumn_isList' label-width=0>
             <el-switch v-model='row.isList' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -242,17 +242,17 @@
             <li v-if='dialogProps.action === "view" && row.isList === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="5"' key='width' prop='width' label='列宽' min-width='80px' header-align='center' align='right'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>列宽</template>
+        <el-table-column v-if='tabIndex==="5"' key='width' prop='width' label='Độ rộng cột' min-width='80px' header-align='center' align='right'>
+        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Độ rộng cột</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.width`" :rules='formRules.genTableColumn_width' label-width=0>
-            <el-input-number v-model='row.width' controls-position='right' :controls='false' style='width:100%;' placeholder='请输入列宽'></el-input-number>
+            <el-input-number v-model='row.width' controls-position='right' :controls='false' style='width:100%;' placeholder='Vui lòng nhập độ rộng cột'></el-input-number>
           </el-form-item>
           <span v-else>{{row.width}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="5"' key='isQuery' prop='isQuery' label='查询' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>查询</template>
+        <el-table-column v-if='tabIndex==="5"' key='isQuery' prop='isQuery' label='Truy vấn' min-width='60px' header-align='center' align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Truy vấn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isQuery`" :rules='formRules.genTableColumn_isQuery' label-width=0>
             <el-switch v-model='row.isQuery' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -260,8 +260,8 @@
             <li v-if='dialogProps.action === "view" && row.isQuery === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="5"' key='queryType.value' prop='queryType.value' label='查询方式' min-width='120px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>查询方式</template>
+        <el-table-column v-if='tabIndex==="5"' key='queryType.value' prop='queryType.value' label='Cách truy vấn' min-width='120px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Cách truy vấn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.queryType`" :rules='formRules.genTableColumn_queryType' label-width=0>
             <el-select v-model='row.queryType' value-key='value' filterable clearable placeholder='请选择查询方式' @focus='setCurrentFocus(row)'>
@@ -271,8 +271,8 @@
           <span v-else>{{row.queryType.name}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="5"' key='queryVal' prop='queryVal' label='查询条件' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>查询条件</template>
+        <el-table-column v-if='tabIndex==="5"' key='queryVal' prop='queryVal' label='Điều kiện truy vấn' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Điều kiện truy vấn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.queryVal`" :rules='formRules.genTableColumn_queryVal' label-width=0>
             <el-input v-model='row.queryVal'  :maxlength='2000' clearable placeholder='请输入查询条件'></el-input>
@@ -280,8 +280,8 @@
           <span v-else>{{row.queryVal}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="6"' key='showType.value' prop='showType.value' label='控件' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>控件</template>
+        <el-table-column v-if='tabIndex==="6"' key='showType.value' prop='showType.value' label='Điều khiển' min-width='180px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Điều khiển</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.showType`" :rules='formRules.genTableColumn_showType' label-width=0>
             <el-select v-model='row.showType' value-key='value' filterable clearable placeholder='请选择控件' @focus='setCurrentFocus(row)'>
@@ -291,8 +291,8 @@
           <span v-else>{{row.showType.name}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="6"' key='interaction' prop='interaction' label='联动变量' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>联动变量</template>
+        <el-table-column v-if='tabIndex==="6"' key='interaction' prop='interaction' label='Biến liên kết' min-width='200px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Biến liên kết</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.interaction`" :rules='formRules.genTableColumn_interaction' label-width=0>
             <StringMultiSelect v-model='row.interaction' :opts='interaction_GenTableColumn_List' valKey='name' label='comments' placeholder='请选择联动变量'></StringMultiSelect>
@@ -300,8 +300,8 @@
           <span v-else>{{row.interaction}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="6"' key='interactionVal' prop='interactionVal' label='联动值' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>联动值</template>
+        <el-table-column v-if='tabIndex==="6"' key='interactionVal' prop='interactionVal' label='Giá trị liên kết' min-width='200px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Giá trị liên kết</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.interactionVal`" :rules='formRules.genTableColumn_interactionVal' label-width=0>
             <el-input v-model='row.interactionVal'  :maxlength='2000' clearable placeholder='请输入联动值'></el-input>
@@ -309,8 +309,8 @@
           <span v-else>{{row.interactionVal}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="6"' key='parameters' prop='parameters' label='联动参数' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>联动参数</template>
+        <el-table-column v-if='tabIndex==="6"' key='parameters' prop='parameters' label='Tham số liên kết' min-width='200px' header-align='center'>
+        <template slot='header' slot-scope='{row,$index}'>Tham số liên kết</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.parameters`" :rules='formRules.genTableColumn_parameters' label-width=0>
             <el-input v-model='row.parameters'  :maxlength='2000' clearable placeholder='请输入联动参数'></el-input>
@@ -318,8 +318,8 @@
           <span v-else>{{row.parameters}}</span>
         </template>
       </el-table-column>
-        <el-table-column v-if='tabIndex==="5"' key='sort' prop='sort' label='排序' min-width='80px' header-align='center' align='right'>
-        <template slot='header' slot-scope='{row,$index}'>排序</template>
+        <el-table-column v-if='tabIndex==="5"' key='sort' prop='sort' label='Sắp xếp' min-width='80px' header-align='center' align='right'>
+        <template slot='header' slot-scope='{row,$index}'>Sắp xếp</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.sort`" :rules='formRules.genTableColumn_sort' label-width=0>
             <el-input-number v-model='row.sort' controls-position='right' :controls='false' style='width:100%;' placeholder='请输入排序'></el-input-number>
@@ -327,9 +327,9 @@
           <span v-else>{{row.sort}}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if='dialogProps.action !== "view"' label='操作' header-align='center' align='center' width='60px'>
+      <el-table-column v-if='dialogProps.action !== "view"' label='Thao tác' header-align='center' align='center' width='60px'>
         <template slot-scope='scope'>
-          <el-tooltip class='item' effect='light' content='删除' placement='top-start'>
+          <el-tooltip class='item' effect='light' content='Xóa' placement='top-start'>
             <i class='el-icon-delete' style='color:#F56C6C;cursor:pointer;'
               @click='onDeleteRow(scope.$index, bizFormModel.genTableColumnList)'></i>
           </el-tooltip>
@@ -337,21 +337,21 @@
       </el-table-column>
     </el-table>
     <el-button v-if='dialogProps.action !== "view"' type='primary'
-      @click='onAddGenTableColumnRow(bizFormModel.genTableColumnList)'>添加</el-button>
+      @click='onAddGenTableColumnRow(bizFormModel.genTableColumnList)'>Thêm</el-button>
       <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onRefreshColumn()'>刷新</el-button>
         </el-col>
       </el-row>
       </div>
-      <!--子表：   业务表字段 结束-->
+      <!--Bảng con：   Trường bảng nghiệp vụ Kết thúc-->
     </el-form>
 
-    <!-- 按钮  开始-->
+    <!-- Nút  Bắt đầu-->
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary'  @click='onSubmit("genTableForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary'  @click='onSubmit("genTableForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
-    <!-- 按钮 结束-->
+    <!-- Nút Kết thúc-->
   </el-dialog>
 </template>
 
@@ -383,15 +383,15 @@ export default {
       tabIndex: '1',
       bizFormModel: this.initFormModel(),
           st_List: [],  // 数据库表列表
-          parentTable_List: [],  // 关联父表
-          parentTableFk_List: [],  // 父表外键
+          parentTable_List: [],  // Bảng cha liên kết
+          parentTableFk_List: [],  // Khóa ngoại bảng cha
     orderColumns_List: [],        // 排序字段列表
-    constraintColumn_Constraint_List: [],    // 约束字段
-    javaType_GenTableColumn_List: [],    // JAVA类型
-    customType_GenTableColumn_List: [],    // 自定义类型
-    queryType_GenTableColumn_List: [],    // 查询方式
-    showType_GenTableColumn_List: [],    // 控件
-    interaction_GenTableColumn_List: [],    // 联动变量
+    constraintColumn_Constraint_List: [],    // Trường ràng buộc
+    javaType_GenTableColumn_List: [],    // JAVALoại
+    customType_GenTableColumn_List: [],    // Loại tùy chỉnh
+    queryType_GenTableColumn_List: [],    // Cách truy vấn
+    showType_GenTableColumn_List: [],    // Điều khiển
+    interaction_GenTableColumn_List: [],    // Biến liên kết
     flag:false,
        dialogProps: {
         visible: false,
@@ -400,40 +400,40 @@ export default {
 
       },
       formRules: {
-        // 主表验证
+        // Xác thực bảng chính
         'name': [
-            { required: true, message: '请输入名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên', trigger: 'blur' }
         ],
         'className': [
-            { required: true, message: '请输入实体类名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên lớp thực thể', trigger: 'blur' }
         ],
-        // 子表验证 约束字段
+        // Xác thực bảng con Trường ràng buộc
         'constraint_name': [
-            { required: true, message: '请输入名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên', trigger: 'blur' }
         ],
-        // 子表验证 业务表字段
+        // Xác thực bảng con Trường bảng nghiệp vụ
         'genTableColumn_name': [
-            { required: true, message: '请输入字段名', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên trường', trigger: 'blur' }
         ],
         'genTableColumn_jdbcType': [
             { required: true, message: '请输入物理类型', trigger: 'blur' }
         ],
         'genTableColumn_javaType': [
-            { required: true, message: '请输入JAVA类型', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhậpJAVALoại', trigger: 'blur' }
         ],
         'genTableColumn_javaField': [
-            { required: true, message: '请输入属性名', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên thuộc tính', trigger: 'blur' }
         ],
         'genTableColumn_width': [
-            { required: true, message: '请输入列宽', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập độ rộng cột', trigger: 'blur' }
         ],
       },
-    constraintCurrentRow: {},     // 子表 约束字段 当前选择行
-    genTableColumnCurrentRow: {},     // 子表 业务表字段 当前选择行
+    constraintCurrentRow: {},     // Bảng con Trường ràng buộc Dòng đang chọn
+    genTableColumnCurrentRow: {},     // Bảng con Trường bảng nghiệp vụ Dòng đang chọn
     }
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -473,56 +473,56 @@ export default {
     },
     onAddConstraintRow(tableData) {
         tableData.push({
-            'genTable': {     // 父表 归属表编号
+            'genTable': {     // Bảng cha 归属表编号
               'id': validatenull(parent) || validatenull(parent.genTable) ? null : parent.genTable.id,
               'name': validatenull(parent) || validatenull(parent.genTable) ? null : parent.genTable.name,
             },
-            'name': '',   // 名称
-            'comments': '',   // 描述
-            'constraintColumn': '',   // 约束字段
-            'remarks': '',   // 备注信息
+            'name': '',   // Tên
+            'comments': '',   // Mô tả
+            'constraintColumn': '',   // Trường ràng buộc
+            'remarks': '',   // Thông tin ghi chú
         })
     },
     onAddGenTableColumnRow(tableData) {
         tableData.push({
-            'genTable': {     // 父表 表编号
+            'genTable': {     // Bảng cha 表编号
               'id': validatenull(parent) || validatenull(parent.genTable) ? null : parent.genTable.id,
               'name': validatenull(parent) || validatenull(parent.genTable) ? null : parent.genTable.name,
             },
-            'name': '',   // 字段名
-            'comments': '',   // 说明
+            'name': '',   // Tên trường
+            'comments': '',   // Giải thích
             'jdbcType': '',   // 物理类型
-            'javaType': {     // JAVA类型
+            'javaType': {     // JAVALoại
               'value': '',
               'name': '',
             },
-            'customType': {     // 自定义类型
+            'customType': {     // Loại tùy chỉnh
               'id': null,
               'name': '',
             },
-            'javaField': '',   // 属性名
-            'defVal': '',   // 默认值
-            'isPk': '',   // 主键
-            'isNull': '',   // 可空
-            'isInsert': '',   // 可插
-            'isEdit': '',   // 可编
-            'isList': '',   // 列显
-            'width': 0,    // 列宽
-            'isQuery': '',   // 查询
-            'queryType': {     // 查询方式
+            'javaField': '',   // Tên thuộc tính
+            'defVal': '',   // Giá trị mặc định
+            'isPk': '',   // Khóa chính
+            'isNull': '',   // Có thể trống
+            'isInsert': '',   // Có thể chèn
+            'isEdit': '',   // Có thể sửa
+            'isList': '',   // Hiển thị cột
+            'width': 0,    // Độ rộng cột
+            'isQuery': '',   // Truy vấn
+            'queryType': {     // Cách truy vấn
               'value': '',
               'name': '',
             },
-            'queryVal': '',   // 查询条件
-            'showType': {     // 控件
+            'queryVal': '',   // Điều kiện truy vấn
+            'showType': {     // Điều khiển
               'value': '',
               'name': '',
             },
-            'interaction': '',   // 联动变量
-            'parameters': '',   // 联动参数
+            'interaction': '',   // Biến liên kết
+            'parameters': '',   // Tham số liên kết
             'settings': '',   // 其它设置（扩展字段JSON）
-            'sort': 0,    // 排序
-            'remarks': '',   // 备注信息
+            'sort': 0,    // Sắp xếp
+            'remarks': '',   // Thông tin ghi chú
         })
     },
     onDeleteRow(index, tableData) {
@@ -538,30 +538,30 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改业务表'
+      this.dialogProps.title = 'Sửa bảng nghiệp vụ'
       this.initOptions(this.bizFormModel)
     },
     initFormModel(parent) {
       return {
-        'name': '',   // 名称
-        'comments': '',   // 说明
-        'className': '',   // 实体类名称
-        'parentTable': {     // 关联父表
+        'name': '',   // Tên
+        'comments': '',   // Giải thích
+        'className': '',   // Tên lớp thực thể
+        'parentTable': {     // Bảng cha liên kết
           'id': null,
           'name': null,
         },
-        'parentTableFk': '',   // 父表外键
-        'isAssociation': '',   // 是关联表
-        'filter': '',   // 筛选条件
+        'parentTableFk': '',   // Khóa ngoại bảng cha
+        'isAssociation': '',   // là bảng liên kết
+        'filter': '',   // Điều kiện lọc
         'orderColumns': '',
-        'remarks': '',   // 备注信息
+        'remarks': '',   // Thông tin ghi chú
 
-        constraintList: [],       // 子表列表
-        genTableColumnList: [],       // 子表列表
+        constraintList: [],       // Danh sách bảng con
+        genTableColumnList: [],       // Danh sách bảng con
       }
     },
     initOptions() {
-      // 主表
+      // Bảng chính
       let st_search = {
         params: []
       }
@@ -585,7 +585,7 @@ export default {
       }
 
 
-      // 子表  业务表字段
+      // Bảng con  Trường bảng nghiệp vụ
       This = this.genTableColumnCurrentRow
       getDictItemsByCode('javaType').then((data) => {
         this.javaType_GenTableColumn_List = data
@@ -658,7 +658,7 @@ export default {
           if(item.name === newValue && item.javaType.value !== 'Custom') {
             item.javaType = {value: 'Custom', name:'Custom'}
             item.javaField = item.simpleJavaField + '.id|name'
-            item.showType = {value: 'Select', name: '下拉列表选择器'}
+            item.showType = {value: 'Select', name: 'Bộ chọn danh sách thả xuống'}
           }
         })
       }
@@ -670,7 +670,7 @@ export default {
         } else {
           this.genTableColumnCurrentRow.javaField = this.genTableColumnCurrentRow.simpleJavaField + '.id|name'
         }
-        this.genTableColumnCurrentRow.showType = {value: 'Select', name: '下拉列表选择器'}
+        this.genTableColumnCurrentRow.showType = {value: 'Select', name: 'Bộ chọn danh sách thả xuống'}
       }else {
         this.genTableColumnCurrentRow.javaField = this.genTableColumnCurrentRow.simpleJavaField
         this.genTableColumnCurrentRow.showType = {value: 'SingleInput', name: '单行文本框'}
@@ -726,7 +726,7 @@ export default {
     },
     openEditGenTableDialog(genTable) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改业务表'
+      this.dialogProps.title = 'Sửa bảng nghiệp vụ'
       this.tabIndex = "1"
       this.bizFormModel = genTable
       this.initOptions()
@@ -734,7 +734,7 @@ export default {
     },
     openAddGenTableDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加业务表'
+      this.dialogProps.title = 'Thêm bảng nghiệp vụ'
       this.tabIndex = "1"
       this.bizFormModel = this.initFormModel()
       this.initOptions()
@@ -742,7 +742,7 @@ export default {
     },
     openCopyGenTableDialog(genTable) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '添加业务表'
+      this.dialogProps.title = 'Thêm bảng nghiệp vụ'
       this.tabIndex = "1"
       this.bizFormModel = genTable
       this.initOptions()

@@ -7,13 +7,13 @@ import com.geeke.utils.constants.ErrorEnum;
 
 /**
  * @author: lys
- * @description: 后台服务返回值处理工具类
+ * @description: saumáydịch vụTrả vềGiá trịXử lýLớp công cụ
  * @date: 2010/10/24 10:12
  */
 public class ResultUtil {
 
     /**
-     * 返回一个returnData为空对象的成功消息的json
+     * Trả vềmộtCáireturnData là trốngĐối tượng của Thành côngthông báo của json
      *
      * @return
      */
@@ -22,9 +22,9 @@ public class ResultUtil {
     }
 
     /**
-     * 返回一个返回码为100的json
+     * Trả về một mã trả về là100 của json
      *
-     * @param returnData json里的主要内容
+     * @param returnData jsontrong của chínhcầnnội dung
      * @return
      */
     public static JSONObject successJson(Object returnData) {
@@ -32,7 +32,7 @@ public class ResultUtil {
     }
 
     /**
-     * 草稿保存成功时返回信息
+     * bản nhápLưuThành công giờTrả vềThông tin
      * @param returnData
      * @return
      */
@@ -41,7 +41,7 @@ public class ResultUtil {
     }
 
     /**
-     * 返回一个返回码为100的json
+     * Trả về một mã trả về là100 của json
      * @param msg
      * @param returnData
      * @return
@@ -55,9 +55,9 @@ public class ResultUtil {
         return resultJson;
     }
     /**
-     * 返回一个返回码为100的json
-     * @param msg 信息
-     * @param returnData json里的主要内容
+     * Trả về một mã trả về là100 của json
+     * @param msg Thông tin
+     * @param returnData jsontrong của chínhcầnnội dung
      * @return
      */
     public static JSONObject successJson(String msg, Object returnData) {
@@ -70,9 +70,9 @@ public class ResultUtil {
     } 
     
     /**
-     * 返回警告信息JSON
+     * Trả vềcảnh báoThông tinJSON
      *
-     * @param errorEnum 错误码的errorEnum
+     * @param errorEnum Của mã lỗierrorEnum
      * @return
      */
     public static JSONObject warningJson(ErrorEnum errorEnum) {
@@ -84,9 +84,9 @@ public class ResultUtil {
     }    
 
     /**
-     * 返回警告信息JSON
-     * @param errorEnum 错误码的errorEnum
-     * @param msg 自定义的信息
+     * Trả vềcảnh báoThông tinJSON
+     * @param errorEnum Của mã lỗierrorEnum
+     * @param msg tùy chỉnh của Thông tin
      * @return
      */
     public static JSONObject warningJson(ErrorEnum errorEnum, String msg) {
@@ -98,9 +98,9 @@ public class ResultUtil {
     }     
     
     /**
-     * 返回错误信息JSON
+     * Trả về thông tin lỗiJSON
      *
-     * @param errorEnum 错误码的errorEnum
+     * @param errorEnum Của mã lỗierrorEnum
      * @return
      */
     public static JSONObject errorJson(ErrorEnum errorEnum) {
@@ -112,9 +112,9 @@ public class ResultUtil {
     }
     
     /**
-     * 返回错误信息JSON
-     * @param errorEnum 错误码的errorEnum
-     * @param msg 自定义的信息
+     * Trả về thông tin lỗiJSON
+     * @param errorEnum Của mã lỗierrorEnum
+     * @param msg tùy chỉnh của Thông tin
      * @return
      */
     public static JSONObject errorJson(ErrorEnum errorEnum, String msg) {
@@ -125,26 +125,26 @@ public class ResultUtil {
         return resultJson;
     }
 
-    // ==================== R<T> 泛型响应桥接方法 ====================
-    // 新代码建议直接使用 R.ok() / R.warning() / R.error()
-    // 这些方法作为过渡期的兼容桥接
+    // ==================== R<T> genericphản hồi桥tiếpPhương thức ====================
+    // Code mới nên dùng trực tiếp R.ok() / R.warning() / R.error()
+    // này些Phương thứclàm là qua渡kỳ của 兼容桥tiếp
 
     /**
-     * 成功响应（泛型版）
+     * Thành côngphản hồi(Bản generic)
      */
     public static <T> R<T> rOk(T data) {
         return R.ok(data);
     }
 
     /**
-     * 警告响应（泛型版）
+     * cảnh báophản hồi(Bản generic)
      */
     public static <T> R<T> rWarning(ErrorEnum errorEnum) {
         return R.warning(errorEnum);
     }
 
     /**
-     * 错误响应（泛型版）
+     * Lỗiphản hồi(Bản generic)
      */
     public static <T> R<T> rError(ErrorEnum errorEnum) {
         return R.error(errorEnum);

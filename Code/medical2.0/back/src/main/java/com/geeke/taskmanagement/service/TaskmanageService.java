@@ -47,7 +47,7 @@ public class TaskmanageService {
         task.setUpdatedBy(SessionUtils.getUserJson().getString("name"));
         task.setUpdatedTime(new Date());
         task.setDelFlag("0");
-//        //保存上传文件
+//        //Lưu tệp đã tải lên
 //        List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, task.getID());
 //        if(sysFiles!=null&&sysFiles.size()>0){
 //            task.setTaskaccessory(sysFiles.get(0).getId());
@@ -83,19 +83,19 @@ public class TaskmanageService {
                 task.setCompanyId(SessionUtils.getUser().getCompany().getId());
                 task.setCreatedBy(SessionUtils.getUserJson().getString("name"));
                 task.setCreatedTime(new Date());
-                task.setTaskstatus("1");//已发布
+                task.setTaskstatus("1");//Đãphátphát hành
                 task.setUpdatedBy(SessionUtils.getUserJson().getString("name"));
                 task.setUpdatedTime(new Date());
                 task.setDelFlag("0");
-                int cutor=savetaskexecutor(task);//新增执行人
-                int fee=savefeedbacktable(task);//新增反馈
+                int cutor=savetaskexecutor(task);//Thêm người thực hiện
+                int fee=savefeedbacktable(task);//Thêm mớiphản hồi
 
-                //保存上传文件
+                //Lưu tệp đã tải lên
                 List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, task.getID());
                 if(sysFiles!=null&&sysFiles.size()>0){
                     task.setTaskaccessory(sysFiles.get(0).getId());
                 }
-                // 根据附件ID删除附件信息
+                // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
                 if (null != deleteIds && deleteIds.length > 0) {
                     sysFileService.delete(deleteIds);
                 }
@@ -103,12 +103,12 @@ public class TaskmanageService {
                 return task;
             }else {
                 taskmanagement byId = this.taskmangementDao.getById(counId);
-                //保存上传文件
+                //Lưu tệp đã tải lên
                 List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, byId.getID());
                 if(sysFiles!=null&&sysFiles.size()>0){
                     task.setTaskaccessory(sysFiles.get(0).getId());
                 }
-                // 根据附件ID删除附件信息
+                // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
                 if (null != deleteIds && deleteIds.length > 0) {
                     sysFileService.delete(deleteIds);
                 }
@@ -136,14 +136,14 @@ public class TaskmanageService {
     }
 
     /*
-    获取反馈情况
+    Lấyphản hồitình hình
      */
     public List<feedbacktable> getfeedbacktable(gettaskrcvo rcvo){
         return taskmangementDao.getfeedbacktable(rcvo);
     }
 
     /*
-    新增反馈
+    Thêm mớiphản hồi
      */
     @Transactional(readOnly = false)
     public int savefeedbacktable(taskmanagement task){
@@ -167,7 +167,7 @@ public class TaskmanageService {
     }
 
     /*
-    任务审核
+    tác vụxét duyệt
      */
     public int updateaudit(taskmanagement task){
         task.setUpdatedBy(SessionUtils.getUser().getUpdateBy());
@@ -179,7 +179,7 @@ public class TaskmanageService {
 
 
     /**
-     * 获取文档目录的树形结构
+     * Lấyvăn bản档danh mục của câyhìnhcấu trúc
      */
 
     public List<Sysusertreeentity> getusertree(gettaskrcvo gettaskrcvo) {
@@ -193,7 +193,7 @@ public class TaskmanageService {
     }
 
     /**
-     * 递归建立树形结构 （算法）
+     * Đệ quy xây dựng cấu trúc cây (thuật toán)
      * @param lists
      * @param pid
      */
@@ -215,33 +215,33 @@ public class TaskmanageService {
 
         if(task.getID()!=null&&!"".equals(task.getID())){
             if("0".equals(countId)){
-                //保存上传文件
+                //Lưu tệp đã tải lên
                 if(null!=fileIdUploads && fileIdUploads.length>0){
                     List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, task.getID());
                     if(sysFiles!=null&&sysFiles.size()>0){
                         task.setTaskaccessory(sysFiles.get(0).getId());
                     }
                 }
-                // 根据附件ID删除附件信息
+                // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
                 if (null != deleteIds && deleteIds.length > 0) {
                     sysFileService.delete(deleteIds);
                 }
 
                 task.setUpdatedBy(SessionUtils.getUserJson().getString("name"));
                 task.setUpdatedTime(new Date());
-                int cutor=updatetaskexecutor(task);//新增执行人
+                int cutor=updatetaskexecutor(task);//Thêm người thực hiện
                 taskmangementDao.update(task);
                 return task;
             }else {
                 taskmanagement byId = this.taskmangementDao.getById(countId);
-                //保存上传文件
+                //Lưu tệp đã tải lên
                 if(null!=fileIdUploads && fileIdUploads.length>0){
                     List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, byId.getID());
                     if(sysFiles!=null&&sysFiles.size()>0){
                         task.setTaskaccessory(sysFiles.get(0).getId());
                     }
                 }
-                // 根据附件ID删除附件信息
+                // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
                 if (null != deleteIds && deleteIds.length > 0) {
                     sysFileService.delete(deleteIds);
                 }
@@ -251,38 +251,38 @@ public class TaskmanageService {
        }else {
            if(Objects.equals("0",countId)){
                task.setID(IdGen.uuid());
-               //保存上传文件
+               //Lưu tệp đã tải lên
                if(null!=fileIdUploads && fileIdUploads.length>0){
                    List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, task.getID());
                    if(sysFiles!=null&&sysFiles.size()>0){
                        task.setTaskaccessory(sysFiles.get(0).getId());
                    }
                }
-               // 根据附件ID删除附件信息
+               // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
                if (null != deleteIds && deleteIds.length > 0) {
                    sysFileService.delete(deleteIds);
                }
                task.setCompanyId(SessionUtils.getUser().getCompany().getId());
                task.setCreatedBy(SessionUtils.getUserJson().getString("name"));
                task.setCreatedTime(new Date());
-             //  task.setTaskstatus("0");//待执行
+             //  task.setTaskstatus("0");//chờhành nghề dòng
                task.setUpdatedBy(SessionUtils.getUserJson().getString("name"));
                task.setUpdatedTime(new Date());
                task.setDelFlag("0");
-               task.setTaskstatus("0");  //暂时保存
-               int cutor=savetaskexecutor(task);//新增执行人
+               task.setTaskstatus("0");  //tạm giờLưu
+               int cutor=savetaskexecutor(task);//Thêm người thực hiện
                taskmangementDao.insertask(task);
                return task;
            }else {
                taskmanagement byId = this.taskmangementDao.getById(countId);
-               //保存上传文件
+               //Lưu tệp đã tải lên
                if(null!=fileIdUploads && fileIdUploads.length>0){
                    List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, byId.getID());
                    if(sysFiles!=null&&sysFiles.size()>0){
                        task.setTaskaccessory(sysFiles.get(0).getId());
                    }
                }
-               // 根据附件ID删除附件信息
+               // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
                if (null != deleteIds && deleteIds.length > 0) {
                    sysFileService.delete(deleteIds);
                }
@@ -295,15 +295,15 @@ public class TaskmanageService {
     }
 
     private int updatetaskexecutor(taskmanagement task) {
-        //先删除绑定的诊所
+        //trướcXóaliên kếtchỉ định của Phòng khám
         taskexecutorDao.delete(task);
 
-        //删除完后重新添加
-        return savetaskexecutor(task);//新增执行人
+        //XóaxongsauLạiThêm
+        return savetaskexecutor(task);//Thêm người thực hiện
     }
 
     /**
-     * 任务修改保存后直接发布
+     * tác vụSửaLưusautrực tiếpphátphát hành
      * @param taskmanagement
      * @return
      */
@@ -311,7 +311,7 @@ public class TaskmanageService {
     public taskmanagement release(taskmanagement taskmanagement) {
         int i =this.taskmangementDao.release(taskmanagement);
         if(i>0){
-            //任务发布
+            //tác vụphátphát hành
             List<taskexecutor> list = taskexecutorDao.list(taskmanagement.getID());
 
             List<String> list1 = new ArrayList<>();

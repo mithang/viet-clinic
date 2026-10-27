@@ -2,7 +2,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/gen/genTableColumn')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getGenTableColumnById = baseApi.getById
 export const listGenTableColumnPage = baseApi.listPage
 export const listGenTableColumnAll = baseApi.listAll

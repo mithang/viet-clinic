@@ -1,25 +1,25 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <noticeSend-form ref='noticeSendForm' :permission='permission' @save-finished='loadData'></noticeSend-form>
     <el-col :span='24'>
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <el-container class='query-form-container'>
         <el-main>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="right" label-width='100px' ref='queryForm' :inline-message='true'>
                   <el-col :span="6">
-              <el-form-item label='标题' prop='title'>
-                <el-input v-model='queryModel.title' :clearable='true' placeholder='请输入标题'></el-input>
+              <el-form-item label='Tiêu đề' prop='title'>
+                <el-input v-model='queryModel.title' :clearable='true' placeholder='Vui lòng nhập tiêu đề'></el-input>
               </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label-width="20px">
-              <el-button type='primary' icon='el-icon-search' @click='onSearch()' :plain='true'>搜索</el-button>
-              <el-button type='info' icon='el-icon-refresh-left' @click='$refs.queryForm.resetFields()' :plain='true'>重置</el-button>
-              <el-button type='info' icon='el-icon-d-arrow-right' @click='onMoreCodition()' :plain='true'>更多</el-button>
+              <el-button type='primary' icon='el-icon-search' @click='onSearch()' :plain='true'>Tìm kiếm</el-button>
+              <el-button type='info' icon='el-icon-refresh-left' @click='$refs.queryForm.resetFields()' :plain='true'>Đặt lại</el-button>
+              <el-button type='info' icon='el-icon-d-arrow-right' @click='onMoreCodition()' :plain='true'>Thêm</el-button>
                 </el-form-item>
               </el-col>
             </el-form>
@@ -27,13 +27,13 @@
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </el-main>
         <el-aside align="right" width="90px">
-          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateEntity("noticeSendForm")'>添加</el-button>
+          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateEntity("noticeSendForm")'>Thêm</el-button>
         </el-aside>
       </el-container>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
       <el-container class="data-container">
         <el-main>
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>        
@@ -46,23 +46,23 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='oprColumnWidth + "px"'>        
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"'>        
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='noticeSendList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view'
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
                     @click='onViewEntity(scope.$index, scope.row, "noticeSendForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                     @click='onEditEntity(scope.$index, scope.row, "noticeSendForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document'
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyEntity(scope.$index, scope.row, "noticeSendForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete'
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
                     @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info' 
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -70,8 +70,8 @@
     	  </div>	          
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -86,7 +86,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->       	</el-main>
+      <!-- Thanh phân trang     Kết thúc -->       	</el-main>
       </el-container>
     </el-col>
   </el-row>
@@ -124,12 +124,12 @@ export default {
         'title': 'like',
       },
       queryModel: {
-        'title': '',   // 标题
+        'title': '',   // Tiêu đề
       },
       noticeSendTotal: 0,
       noticeSendList: [],
 
-      oprColumnWidth: 140,  // 操作列宽
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '723817798886907905',
       schemeId: '723817798886907925'
     }
@@ -139,14 +139,14 @@ export default {
       if(this.moreCodition) {
         this.search.params = this.search.params.concat(this.compositeCondition())
       } else {
-        // 查询参数: 标题
+        // Tham số truy vấn: Tiêu đề
         this.search.params.push({
           columnName: 'title',
           queryType: 'like',
           value: this.queryModel.title
         })
       }
-      // 数据权限: 公告发送记录 notice_send
+      // Quyền dữ liệu: Bản ghi gửi thông báo notice_send
       this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
     },
     handleListResponse(responseData) {

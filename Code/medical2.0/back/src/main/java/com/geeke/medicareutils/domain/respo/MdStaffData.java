@@ -5,21 +5,21 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 执业人员信息
+ * nhân viên hành nghềThông tin
  */
 @Data
 public class MdStaffData {
-    private String psnCertType;//人员证件类型
-    private String certno;//证件号码
-    private String pracPsnNo;//执业人员编号
-    private String pracPsnCode;//执业人员代码
-    private String pracPsnName;//执业人员姓名
-    private String pracPsnType;//执业人员分类
-    private String pracPsnCert;//执业人员资格证书编码
-    private String pracCertNo;//执业证书编号
-    private String hiDrFlag;//医保医师标志
-    private LocalDateTime begntime;//开始时间
-    private LocalDateTime endtime;//结束时间
-    private String chgRea;//变更原因
+    private String psnCertType;//Loại giấy tờ nhân viên
+    private String certno;//Số giấy tờ
+    private String pracPsnNo;//hành nghềnghiệp vụMã nhân viên
+    private String pracPsnCode;//Mã nhân viên hành nghề
+    private String pracPsnName;//hành nghềnghiệp vụTên nhân viên
+    private String pracPsnType;//nhân viên hành nghề phútLớp
+    private String pracPsnCert;//Chứng chỉ hành nghề của nhân viên hành nghềMã
+    private String pracCertNo;//hành nghềnghiệp vụchứng书mã số
+    private String hiDrFlag;//BHYTBác sĩcờ
+    private LocalDateTime begntime;//Thời gian bắt đầu
+    private LocalDateTime endtime;//Thời gian kết thúc
+    private String chgRea;//thay đổigốcdo
 
 }

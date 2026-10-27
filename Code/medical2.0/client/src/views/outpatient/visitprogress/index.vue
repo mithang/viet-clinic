@@ -10,35 +10,35 @@
       v-model="TimeInterval"
       type="datetimerange"
       :picker-options="pickerOptions"
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
+      range-separator="đến"
+      start-placeholder="Ngày bắt đầu"
+      end-placeholder="Ngày kết thúc"
       align="right">
     </el-date-picker>
   </div>
     </el-form-item>
       
   <el-form-item label="查询患者">
-    <el-input v-model="formInline.values" placeholder="请输入姓名/手机号/身份证"></el-input>
+    <el-input v-model="formInline.values" placeholder="Vui lòng nhập họ tên/Số điện thoại di động/CMND/CCCD"></el-input>
   </el-form-item>
-  <el-form-item label="就诊状态">
-    <el-select v-model="formInline.status" placeholder="就诊状态">
-      <el-option label="全部" value="qb"></el-option>
-      <el-option label="待就诊" value="registrationStatus_0"></el-option>
-      <el-option label="已就诊" value="registrationStatus_1"></el-option>
-      <el-option label="已取消" value="registrationStatus_2"></el-option>
-      <el-option label="待签到" value="registrationStatus_3"></el-option>
-      <el-option label="已失效" value="registrationStatus_4"></el-option>
+  <el-form-item label="Trạng thái khám">
+    <el-select v-model="formInline.status" placeholder="Trạng thái khám">
+      <el-option label="Tất cả" value="qb"></el-option>
+      <el-option label="Chờ khám" value="registrationStatus_0"></el-option>
+      <el-option label="Đã khám" value="registrationStatus_1"></el-option>
+      <el-option label="Đã hủy" value="registrationStatus_2"></el-option>
+      <el-option label="Chờ check-in" value="registrationStatus_3"></el-option>
+      <el-option label="Đã hết hiệu lực" value="registrationStatus_4"></el-option>
     </el-select>
   </el-form-item>
   <el-form-item>
-    <el-button type="primary" @click="onSubmit">查询</el-button>
+    <el-button type="primary" @click="onSubmit">Truy vấn</el-button>
     <el-button
       type="info"
       icon="el-icon-refresh-left"
       @click="reset"
       :plain="true"
-    >重置</el-button>
+    >Đặt lại</el-button>
   </el-form-item>
 </el-form>
   </el-col>
@@ -47,23 +47,23 @@
     :data="tableData"
     style="width: 100%">
     <el-table-column
-             label="序号"
+             label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
     <el-table-column
       prop="jzzt"
-      label="就诊状态"
+      label="Trạng thái khám"
       >
     </el-table-column>
     <!-- <el-table-column
       prop="xm"
-      label="患者"
+      label="Bệnh nhân"
       >
     </el-table-column> -->
 <el-table-column
-      label="患者">
+      label="Bệnh nhân">
       <template slot-scope="scope">
         <!-- <el-popover trigger="hover" placement="top" >
           <span><a>{{ scope.row.xm }}</a><a style="margin-left:10px;">{{ scope.row.xb }}</a><a style="margin-left:10px;">{{ scope.row.sr }}</a><a style="margin-left:10px;">{{ scope.row.phone }}</a></span>
@@ -85,12 +85,12 @@
 
     <el-table-column
       prop="ks"
-      label="科室"
+      label="Khoa"
       >
     </el-table-column>
     <el-table-column
       prop="djsj"
-      label="登记时间"
+      label="Thời gian đăng ký"
       >
     </el-table-column>
     <el-table-column
@@ -173,12 +173,12 @@ import moment from "moment";
       patientTotal: 0,
       patientList: [],
 
-      //时间选择
+      //Chọn thời gian
       TimeInterval:[this.addCreateDate(), moment(new Date()).format("YYYY-MM-DD HH:mm:ss")],
 
       pickerOptions: {
           shortcuts: [{
-            text: '最近一周',
+            text: 'Tuần gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -186,7 +186,7 @@ import moment from "moment";
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近一个月',
+            text: 'Tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -194,7 +194,7 @@ import moment from "moment";
               picker.$emit('pick', [start, end]);
             }
           }, {
-            text: '最近三个月',
+            text: '3 tháng gần nhất',
             onClick(picker) {
               const end = new Date();
               const start = new Date();
@@ -259,22 +259,22 @@ selectvisiprogresslist(this.visitprogresspara).then((responseData)=>{
     responseData.data.rows.forEach((item)=>{
       switch(item.jzzt.trim()){
         case "registrationStatus_0":
-          item.jzzt="待就诊"
+          item.jzzt="Chờ khám"
           break;
         case "registrationStatus_1":
-          item.jzzt="已就诊"
+          item.jzzt="Đã khám"
           break;
         case "registrationStatus_2":
-          item.jzzt="已取消"
+          item.jzzt="Đã hủy"
           break;
         case "registrationStatus_3":
-          item.jzzt="待签到"
+          item.jzzt="Chờ check-in"
           break;
         case "registrationStatus_4":
-          item.jzzt="已失效"
+          item.jzzt="Đã hết hiệu lực"
           break;
         case "registrationStatus_5":
-          item.jzzt="待分诊"
+          item.jzzt="Chờ phân loại khám"
           break;
       };
       switch(item.jzlx){
@@ -282,7 +282,7 @@ selectvisiprogresslist(this.visitprogresspara).then((responseData)=>{
           item.jzlx="初诊"
           break;
           case "treatType_1":
-          item.jzlx="复诊"
+          item.jzlx="Tái khám"
           break;
       };
           let birthday = item.sr;

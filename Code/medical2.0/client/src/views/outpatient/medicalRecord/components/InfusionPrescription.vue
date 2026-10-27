@@ -27,7 +27,7 @@
           :value="{ name:item.name, value: item.value }"
         >
         </el-option> </el-select
-      >天 <el-input v-model="InfoModel.drippingSpeed" :disabled='IsOnlyRead' style="width: 10%"></el-input>滴/分钟
+      >ngày <el-input v-model="InfoModel.drippingSpeed" :disabled='IsOnlyRead' style="width: 10%"></el-input>giọt/Phút
       <el-table
         :data="InfoModel.infusionList"
         :span-method="ObjectSpanMethod"
@@ -39,7 +39,7 @@
             {{ GroupNumber }}
           </template>
         </el-table-column>
-        <el-table-column prop="goodsName" label="名称">
+        <el-table-column prop="goodsName" label="Tên">
           <template slot-scope="scope">
             {{ scope.row.goodsName ? scope.row.goodsName : scope.row.drugStuffId.name }}
           </template>
@@ -57,31 +57,31 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="singleDosage" label="单次用量" width="100">
+        <el-table-column prop="singleDosage" label="Liều dùng mỗi lần" width="100">
           <template slot-scope="scope">
             <el-input v-model="scope.row.singleDosage" @input="GetInfusionFee(scope.$index, scope.row)" :disabled='IsOnlyRead'>
               <template slot="append">{{ scope.row.preparationUnit ? scope.row.preparationUnit.name : scope.row.drugStuffId.drug.preparationUnit.name }}</template>
             </el-input>
           </template>
         </el-table-column>
-        <el-table-column prop="total" label="总量" width="100">
+        <el-table-column prop="total" label="Tổng số lượng" width="100">
           <template slot-scope="scope">
             <el-input v-model="scope.row.total" disabled>
               <template slot="append">{{GetInfusionUnit(scope.$index, scope.row)}}</template>
             </el-input>
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="单价" width="100" align="center">
+        <el-table-column prop="price" label="Đơn giá" width="100" align="center">
           <template slot-scope="scope">
             {{ GetInfusionPrice(scope.$index, scope.row) + "/" + GetInfusionUnit(scope.$index, scope.row)}}
           </template>
         </el-table-column>
-        <el-table-column prop="allFee" label="合计" width="100" align="center">
+        <el-table-column prop="allFee" label="Tổng cộng" width="100" align="center">
           <template slot-scope="scope">
             {{ scope.row.allFee }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" v-if="!IsOnlyRead">
+        <el-table-column label="Thao tác" align="center" v-if="!IsOnlyRead">
           <template slot-scope="scope">
             <i
               class="el-icon-circle-close"
@@ -97,15 +97,15 @@
           highlight-current-row
           @row-click="RowClickInfusionPrescriptionTable"
         >
-          <el-table-column prop="goodsName" label="药品名称"> </el-table-column>
-          <el-table-column prop="gg" label="规格" width="100">
+          <el-table-column prop="goodsName" label="Tên thuốc"> </el-table-column>
+          <el-table-column prop="gg" label="Quy cách" width="100">
             <template slot-scope="scope">
                   {{scope.row.dosis}}{{scope.row.dosisUnit.name}} * {{scope.row.preparation}}{{scope.row.preparationUnit.name}}/{{scope.row.pack.name}}
             </template>
           </el-table-column>
-          <el-table-column prop="factory.name" label="厂家" width="100">
+          <el-table-column prop="factory.name" label="Nhà sản xuất" width="100">
           </el-table-column>
-          <el-table-column label="单位" width="80">
+          <el-table-column label="Đơn vị" width="80">
             <template slot-scope="scope">
               {{
                 scope.row.isUnpackSell === '1'
@@ -114,14 +114,14 @@
               }}
             </template>
           </el-table-column>
-          <el-table-column label="零售价" width="80">
+          <el-table-column label="Giá bán lẻ" width="80">
             <template slot-scope="scope">
               {{
                 scope.row.isUnpackSell === '1' ? (scope.row.retailPrice + "/" + scope.row.preparationUnit.name) : (scope.row.price + "/" + scope.row.pack.name)
               }}
             </template>
           </el-table-column>
-          <el-table-column prop="stockText" label="库存" width="100">
+          <el-table-column prop="stockText" label="Tồn kho" width="100">
           </el-table-column>
         </el-table>
         <el-input
@@ -131,7 +131,7 @@
           slot="reference"
           v-model="SearchInfusionName"
           @input='GetInfusion'
-          placeholder="输入药品名称或拼音码"
+          placeholder="Nhập tên thuốc hoặc mã pinyin"
         ></el-input>
       </el-popover>
     </div>
@@ -186,7 +186,7 @@ export default {
     this.GetInfusion();
   },
   methods: {
-     //根据是否零售计算总量与价格
+     //Tính tổng lượng và giá theo bán lẻ hay không
     GetInfusionFee(index, row) {
       if (row) {
         row.singleDosage = row.singleDosage ? row.singleDosage : 0
@@ -217,7 +217,7 @@ export default {
       }
       this.$emit('GetInfusionFee')
     },
-    //根据是否零售与新增还是查看获取单位
+    //Lấy đơn vị theo bán lẻ hay thêm mới/xem
     GetInfusionUnit(index, row) {
       if(row.preparationUnit) {
         if (row.isUnpackSell === '1') {
@@ -233,7 +233,7 @@ export default {
         }
       }
     },
-     //根据是否零售与新增还是查看获取价格
+     //Lấy giá theo bán lẻ hay thêm mới/xem
     GetInfusionPrice (index, row) {
       if(row.preparationUnit) {
         if (row.isUnpackSell === '1') {
@@ -276,20 +276,20 @@ export default {
       listAllStock(SearchModel).then((responseData) => {
         if (responseData.code === 100) {
           responseData.data.forEach(element => {
-            let isUnpackSell = element.isUnpackSell;    //允许拆零销售
-            let stockNumber = element.stockNumber;      //库存数量
-            let packName = element.pack.name;           //包装（单位）
-            let preparation = element.preparation;      //制剂
-            let preparationUnit = element.preparationUnit.name;  //制剂单位
-            let price = element.price;                  //售价
-            let retailPrice = element.retailPrice;      //拆开后零售价
+            let isUnpackSell = element.isUnpackSell;    //Cho phép bán lẻ tách hộp
+            let stockNumber = element.stockNumber;      //Số lượng tồn kho
+            let packName = element.pack.name;           //Đóng gói（Đơn vị）
+            let preparation = element.preparation;      //Chế phẩm
+            let preparationUnit = element.preparationUnit.name;  //Đơn vị bào chế
+            let price = element.price;                  //Giá bán
+            let retailPrice = element.retailPrice;      //Giá bán lẻ sau khi tách hộp
             
             let stockText = "";
             if(isUnpackSell === '1')
             {
-              //向下取整
+              //Làm tròn xuống
               let p1 = Math.floor(stockNumber/preparation);
-              //取余
+              //Lấy phần dư
               let p2 = stockNumber%preparation;
               if(p1 > 0)
               {

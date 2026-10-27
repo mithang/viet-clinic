@@ -3,30 +3,30 @@
       @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view"' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view"' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
     <el-form :model='bizFormModel' :rules='formRules' ref='addTodayWorkForm' label-width='120px' label-position='right' class='edit-form'>
       <div class="tab-item">
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='标题' prop='name' >
-              <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入设备名称"' ></el-input>
+            <el-form-item label='Tiêu đề' prop='name' >
+              <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên thiết bị"' ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span='24/1'>
-            <el-form-item label='全天' prop='allDay' >
+            <el-form-item label='Cả ngày' prop='allDay' >
               <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.allDay' active-color='#13ce66' inactive-color='#dbdfe6' active-value='0' inactive-value='1'></el-switch>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span='24/1'>
-            <el-form-item label='开始' prop='fromDate'>
+            <el-form-item label='Bắt đầu' prop='fromDate'>
                <el-date-picker :disabled='dialogProps.action === "view"' v-model="bizFormModel.fromDate" type="datetime" placeholder="选择开始日期" align="right" default-time="10:00:00"></el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span='24/1'>
-            <el-form-item label='结束' prop='toDate' >
+            <el-form-item label='Kết thúc' prop='toDate' >
                <el-date-picker :disabled='dialogProps.action === "view"' v-model="bizFormModel.toDate" type="datetime" placeholder="选择结束日期" align="right" default-time="10:00:00"></el-date-picker>
             </el-form-item>
           </el-col>
@@ -34,18 +34,18 @@
        
         <el-row>
           <el-col>
-            <el-form-item label='备注信息' prop='remarks' >
+            <el-form-item label='Thông tin ghi chú' prop='remarks' >
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea' autosize
-                  :rows="3" :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "请输入备注信息"'  clearable></el-input>
+                  :rows="3" :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"'  clearable></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("addTodayWorkForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("addTodayWorkForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -73,7 +73,7 @@
         },
         formRules: {
           'name': [
-            { required: true, message: '请输入设备名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên thiết bị', trigger: 'blur' }
           ],
         }
       }
@@ -114,8 +114,8 @@
       initFormModel(This) {
         return {
           'name': '',   // 设备名称
-          'remarks': '',   // 备注信息
-          'allDay': '0', // 是否全天  0是 1否
+          'remarks': '',   // Thông tin ghi chú
+          'allDay': '0', // 是否全天  0Có 1Không
           'fromDate': null,
           'toDade': null
         }

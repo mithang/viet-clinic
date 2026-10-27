@@ -2,7 +2,7 @@
 package com.geeke.common.persistence;
 
 /**
- * DAO支持类实现
+ * DAOLớp hỗ trợ triển khai
  * @author lys
  * @version 2014-05-16
  */

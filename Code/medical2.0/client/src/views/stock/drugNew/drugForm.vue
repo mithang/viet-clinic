@@ -13,7 +13,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -29,31 +29,31 @@
       class="edit-form"
     >
       <div class="tab-item" v-show="tabIndex === '1'">
-        <div class="specifications">药品信息</div>
+        <div class="specifications">Thông tin thuốc</div>
         <div>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="药品名称" prop="goodsName">
+              <el-form-item label="Tên thuốc" prop="goodsName">
                 <el-input
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.goodsName"
                   @input="pinyinInput"
                   :maxlength="128"
                   :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入药品名称'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên thuốc'
                 "
                   autofocus
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="别名" prop="brandName">
+              <el-form-item label="Bí danh" prop="brandName">
                 <el-input
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.brandName"
                   :maxlength="128"
                   :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入别名'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập bí danh'
                 "
                 ></el-input>
               </el-form-item>
@@ -61,17 +61,17 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="拼音码" prop="pinyinCode">
+              <el-form-item label="Mã pinyin" prop="pinyinCode">
                 <el-input
                   disabled
                   v-model="bizFormModel.pinyinCode"
                   :maxlength="64"
-                  placeholder="请输入拼音码"
+                  placeholder="Vui lòng nhập mã pinyin"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="药品类型" prop="type.value">
+              <el-form-item label="Loại thuốc" prop="type.value">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -84,7 +84,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择药品类型"
+                  placeholder="Vui lòng chọn loại thuốc"
                   @clear="
                   bizFormModel.type = {
                     value: null,
@@ -105,19 +105,19 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="药品来源" prop="source">
+              <el-form-item label="Nguồn gốc thuốc" prop="source">
                 <el-input
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.source"
                   :maxlength="128"
                   :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入药品来源'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập nguồn gốc thuốc'
                 "
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="性质" prop="nature.value">
+              <el-form-item label="Tính chất" prop="nature.value">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -130,7 +130,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择性质"
+                  placeholder="Vui lòng chọn tính chất"
                   @clear="
                   bizFormModel.nature = {
                     value: null,
@@ -150,7 +150,7 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="生产厂家" prop="factory.id">
+              <el-form-item label="Nhà sản xuất" prop="factory.id">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -163,7 +163,7 @@
                   value-key="id"
                   filterable
                   clearable
-                  placeholder="请选择生产厂家"
+                  placeholder="Vui lòng chọn nhà sản xuất"
                   @clear="
                   bizFormModel.factory = {
                     id: null,
@@ -181,13 +181,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="国药准字" prop="standardCode">
+              <el-form-item label="Số đăng ký thuốc quốc gia" prop="standardCode">
                 <el-input
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.standardCode"
                   :maxlength="64"
                   :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入国药准字'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số chuẩn thuốc quốc gia'
                 "
                 ></el-input>
               </el-form-item>
@@ -195,25 +195,25 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="本位码" prop="bitCode">
+              <el-form-item label="Mã chuẩn" prop="bitCode">
                 <el-input
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.bitCode"
                   :maxlength="64"
                   :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入本位码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã chuẩn'
                 "
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="条形码" prop="barCode">
+              <el-form-item label="Mã vạch" prop="barCode">
                 <el-input
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.barCode"
                   :maxlength="64"
                   :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入条形码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã vạch'
                 "
                 ></el-input>
               </el-form-item>
@@ -221,24 +221,24 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="医保编码" prop="insuranceCode">
+              <el-form-item label="Mã bảo hiểm y tế" prop="insuranceCode">
                 <el-input
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.insuranceCode"
                   :maxlength="64"
                   :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入医保编码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã bảo hiểm y tế'
                 "
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="药品编码" prop="code">
+              <el-form-item label="Mã thuốc" prop="code">
                 <el-input
                   disabled
                   v-model="bizFormModel.code"
                   :maxlength="64"
-                  placeholder="保存后自动生成"
+                  placeholder="Tự động tạo sau khi lưu"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -246,7 +246,7 @@
         </div>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label='是否启用' prop='status'>
+            <el-form-item label='Có kích hoạt không' prop='status'>
               <el-switch :disabled="(dialogProps.action === 'view' && updateType==='0') " v-model='value'
                          active-color='#13ce66' inactive-color='#dbdfe6' active-value='1'
                          inactive-value='0'></el-switch>
@@ -255,20 +255,20 @@
         </el-row>
 
         <el-divider class="line"></el-divider>
-        <!-- 规格 -->
-        <div class="specifications">规格信息 &nbsp;&nbsp;<span style="color:#C0C0C0;">(例：2.5g*12片/袋)</span></div>
+        <!-- Quy cách -->
+        <div class="specifications">Thông tin quy cách &nbsp;&nbsp;<span style="color:#C0C0C0;">(ví dụ：2.5g*12片/túi)</span></div>
         <div class="specifications-box">
-          <!-- 剂量 -->
+          <!-- Liều lượng -->
           <div class="dose-box">
             <div class="dose-count">
-              <el-form-item label="剂量" prop="dosis" style="display:flex;align-item:center">
+              <el-form-item label="Liều lượng" prop="dosis" style="display:flex;align-item:center">
                 <el-input
                   style="width:100px"
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.dosis"
                   :maxlength="45"
                   :placeholder="
-                    dialogProps.action === 'view' ? '' : '请输入剂量'
+                    dialogProps.action === 'view' ? '' : 'Vui lòng nhập liều lượng'
                   "
                 ></el-input>
               </el-form-item>
@@ -287,7 +287,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="单位"
+                  placeholder="Đơn vị"
                   @clear="
                     bizFormModel.dosisUnit = {
                       value: null,
@@ -308,14 +308,14 @@
           <div style="margin: 0 20px 10px">*</div>
           <div class="dose-box">
             <div class="dose-count">
-              <el-form-item label="制剂" prop="preparation" label-width="50px" style="display:flex;align-item:center">
+              <el-form-item label="Chế phẩm" prop="preparation" label-width="50px" style="display:flex;align-item:center">
                 <el-input
                   style="width:100px"
                   :disabled="dialogProps.action === 'view' "
                   v-model="bizFormModel.preparation"
                   :maxlength="45"
                   :placeholder="
-                    dialogProps.action === 'view' ? '' : '请输入制剂'
+                    dialogProps.action === 'view' ? '' : 'Vui lòng nhập bào chế'
                   "
                 ></el-input>
               </el-form-item>
@@ -334,7 +334,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="单位"
+                  placeholder="Đơn vị"
                   @clear="
                     bizFormModel.preparationUnit = {
                       value: null,
@@ -355,7 +355,7 @@
           <div style="margin: 0 20px 20px">/</div>
           <div class="dose-box">
             <div class="dose-count">
-              <el-form-item label="包装" prop="pack.value" style="display:flex;align-item:center">
+              <el-form-item label="Đóng gói" prop="pack.value" style="display:flex;align-item:center">
                 <el-input
                   style="width:100px"
                   v-if="dialogProps.action === 'view'"
@@ -369,7 +369,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="单位"
+                  placeholder="Đơn vị"
                   style="width:100px"
                   @clear="
                     bizFormModel.pack = {
@@ -403,27 +403,27 @@
         </div>
 
         <el-divider class="line"></el-divider>
-        <div class="specifications">销售信息</div>
+        <div class="specifications">Thông tin bán hàng</div>
         <div class="specifications-box2">
           <el-row>
             <el-col :span="24 / 3">
               <el-form-item
                 class="price"
-                label="售价"
+                label="Giá bán"
                 prop="price"
                 :rules="
                 bizFormModel.isUnpackSell === '1'
                   ? [
                       {
                         required: false,
-                        message: '请输入售价',
+                        message: 'Vui lòng nhập giá bán',
                         trigger: 'blur',
                       },
                     ]
                   : [
                       {
                         required: true,
-                        message: '请输入售价',
+                        message: 'Vui lòng nhập giá bán',
                         trigger: 'blur',
                       },
                     ]
@@ -441,7 +441,7 @@
                 <el-input
                   :type="type"
                   v-else
-                  placeholder="请输入售价"
+                  placeholder="Vui lòng nhập giá bán"
                   v-model="bizFormModel.price"
                   @focus="
                   (e) => {
@@ -476,7 +476,7 @@
 
             </el-col>
             <el-col :span="24 / 6">
-              <el-form-item style="margin-letf:-1000px" label="允许拆零销售" prop="isUnpackSell">
+              <el-form-item style="margin-letf:-1000px" label="Cho phép bán lẻ tách hộp" prop="isUnpackSell">
                 <el-switch
                   :disabled="(dialogProps.action === 'view' && updateType==='0') "
                   v-model="bizFormModel.isUnpackSell"
@@ -490,7 +490,7 @@
             <el-col :span="24 / 3">
               <el-form-item
                 class="price"
-                label="拆零售价"
+                label="Giá bán lẻ tách hộp"
                 prop="retailPrice"
                 :rules="
                 bizFormModel.isUnpackSell === '1'
@@ -498,7 +498,7 @@
                   : [
                       {
                         required: false,
-                        message: '请输入拆零售价',
+                        message: 'Vui lòng nhập giá bán lẻ tách hộp',
                         trigger: 'blur',
                       },
                     ]
@@ -507,7 +507,7 @@
                 <el-input
                   v-if="dialogProps.action === 'view' && updateType==='0'"
                   type="number"
-                  placeholder="请输入折零售价"
+                  placeholder="Vui lòng nhập giá bán lẻ đã chiết khấu"
                   :disabled="true"
                   v-model="bizFormModel.retailPrice"
                 >
@@ -518,7 +518,7 @@
                 <el-input
                   v-else
                   type="number"
-                  placeholder="请输入折零售价"
+                  placeholder="Vui lòng nhập giá bán lẻ đã chiết khấu"
                   style="width:175px"
                   @focus="
                   (e) => {
@@ -549,11 +549,11 @@
           </el-row>
         </div>
         <el-divider class="line"></el-divider>
-        <div class="specifications">功效说明</div>
+        <div class="specifications">Giải thích công dụng</div>
         <div class="specifications-box2">
           <el-row class="info">
             <el-col :span="5">
-              <el-form-item :label="bizFormModel.type.value==='medicalType_1'?'煎法':'用法'">
+              <el-form-item :label="bizFormModel.type.value==='medicalType_1'?'Cách sắc thuốc':'Cách dùng'">
                 <el-input
                   v-if="dialogProps.action === 'view'&&bizFormModel.type.value==='medicalType_1' && updateType==='0'"
                   :disabled="true"
@@ -571,7 +571,7 @@
                   filterable
 
                   clearable
-                  placeholder="请选择"
+                  placeholder="Vui lòng chọn"
                   @clear="
                   bizFormModel.chineseMedicineUse = {
                     value: null,
@@ -593,7 +593,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择"
+                  placeholder="Vui lòng chọn"
                   @clear="
                   bizFormModel.westernMedicineUse = {
                     value: null,
@@ -613,7 +613,7 @@
             <el-col :span="4">
               <el-form-item
                 class="price"
-                label="单次用量"
+                label="Liều dùng mỗi lần"
                 prop="singleDosage"
               >
                 <div>
@@ -630,7 +630,7 @@
                   <el-input
                     v-else
 
-                    placeholder="请输入"
+                    placeholder="Vui lòng nhập"
                     v-model="bizFormModel.singleDosage"
                     style="width:80px;float:left;"
                     @focus="
@@ -661,7 +661,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="5" v-if="bizFormModel.type.value!=='medicalType_1'">
-              <el-form-item label="频次">
+              <el-form-item label="Tần suất">
                 <el-input
                   v-if="dialogProps.action === 'view'&&updateType==='0'"
                   :disabled="true"
@@ -674,7 +674,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择"
+                  placeholder="Vui lòng chọn"
                   @clear="
                   bizFormModel.frequency = {
                     value: null,
@@ -692,7 +692,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="5" v-if="bizFormModel.type.value!=='medicalType_1'">
-              <el-form-item label="天数">
+              <el-form-item label="Số ngày">
                 <el-input
                   v-if="dialogProps.action === 'view'&&updateType==='0'"
                   :disabled="true"
@@ -705,7 +705,7 @@
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择"
+                  placeholder="Vui lòng chọn"
                   @clear="
                   bizFormModel.days = {
                     value: null,
@@ -725,7 +725,7 @@
             <el-col :span="5">
               <el-form-item
                 class="price"
-                label="总量上限"
+                label="Giới hạn tổng lượng"
                 prop="total"
               >
                 <el-input
@@ -740,7 +740,7 @@
                 </el-input>
                 <el-input
                   v-else
-                  placeholder="请输入"
+                  placeholder="Vui lòng nhập"
 
                   v-model="bizFormModel.total"
                   style="width:90px"
@@ -771,28 +771,28 @@
           </el-row>
         </div>
         <el-divider class="line"></el-divider>
-        <div class="specifications">其他信息</div>
+        <div class="specifications">Thông tin khác</div>
         <div class="appendUnit">
           <el-row>
             <el-col :span="24 / 3">
-              <el-form-item label="有效期预警" prop="indate">
+              <el-form-item label="Cảnh báo hạn sử dụng" prop="indate">
                 <el-input
                   :disabled="(dialogProps.action === 'view'&&updateType==='0') "
                   v-model="bizFormModel.indate"
                   :maxlength="64"
-                  placeholder="请输入预警天数"
+                  placeholder="Vui lòng nhập số ngày cảnh báo"
                 >
-                  <template slot="append">天</template>
+                  <template slot="append">ngày</template>
                 </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 3">
-              <el-form-item label="库存下限" prop="inventoryFloor">
+              <el-form-item label="Ngưỡng tồn kho tối thiểu" prop="inventoryFloor">
                 <el-input
                   :disabled="(dialogProps.action === 'view'&&updateType==='0') "
                   v-model="bizFormModel.inventoryFloor"
                   :maxlength="64"
-                  placeholder="请输入库存下限"
+                  placeholder="Vui lòng nhập ngưỡng tồn kho tối thiểu"
                 >
                   <template slot="append">{{ bizFormModel.pack.name }}</template>
                 </el-input>
@@ -800,12 +800,12 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 3">
-              <el-form-item label="库存上限" prop="inventoryLimit">
+              <el-form-item label="Ngưỡng tồn kho tối đa" prop="inventoryLimit">
                 <el-input
                   :disabled="(dialogProps.action === 'view'&&updateType==='0') "
                   v-model="bizFormModel.inventoryLimit"
                   :maxlength="64"
-                  placeholder="请输入库存上限"
+                  placeholder="Vui lòng nhập ngưỡng tồn kho tối đa"
                 >
                   <template style="padding:0 8px" slot="append">{{ bizFormModel.pack.name }}</template>
                 </el-input>
@@ -815,12 +815,12 @@
           </el-row>
           <el-row>
             <el-col :span="24 / 3">
-              <el-form-item label="货位号" prop="locationNumber">
+              <el-form-item label="Số vị trí kho" prop="locationNumber">
                 <el-input
                   :disabled="(dialogProps.action === 'view'&&updateType==='0') "
                   v-model="bizFormModel.locationNumber"
                   :maxlength="64"
-                  placeholder="请输入货位号"
+                  placeholder="Vui lòng nhập số vị trí kho"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -831,11 +831,11 @@
     </el-form>
     <span slot='footer' class='dialog-footer'>
       <el-button v-if='updateType==="1"||dialogProps.action === "add"' :disabled="flag" type='primary' :plain='true'
-                 @click='onSubmit("drugForm")'>保 存</el-button>
+                 @click='onSubmit("drugForm")'>Lưu</el-button>
       <el-button v-if='dialogProps.action === "add"' :disabled="flag" type='primary' :plain='true'
-                 @click='onGoSubmit("drugForm")'>保 存 继 续</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+                 @click='onGoSubmit("drugForm")'>Lưu và tiếp tục</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
   </el-dialog>
 </template>
@@ -862,12 +862,12 @@
       return {
         bizFormModel: this.initFormModel(),
         tabIndex: "1",
-        type_List: [], // 药品类型
-        nature_List: [], // 性质
-        factory_List: [], // 生产厂家
-        dosisUnit_List: [], // 剂量单位
-        preparationUnit_List: [], // 制剂单位
-        pack_List: [], // 包装
+        type_List: [], // Loại thuốc
+        nature_List: [], // Tính chất
+        factory_List: [], // Nhà sản xuất
+        dosisUnit_List: [], // Đơn vị liều lượng
+        preparationUnit_List: [], // Đơn vị bào chế
+        pack_List: [], // Đóng gói
         value: '1',
         flag: false,
         dialogProps: {
@@ -877,26 +877,26 @@
         },
         formRules: {
           goodsName: [
-            {required: true, message: "请输入药品名称", trigger: "blur"},
+            {required: true, message: "Vui lòng nhập tên thuốc", trigger: "blur"},
           ],
           "type.value": [
-            {required: true, message: "请选择药品类型", trigger: "change"},
+            {required: true, message: "Vui lòng chọn loại thuốc", trigger: "change"},
           ],
           standardCode: [
-            {required: false, message: "请输入国药准字", trigger: "blur"},
+            {required: false, message: "Vui lòng nhập số chuẩn thuốc quốc gia", trigger: "blur"},
           ],
           "preparationUnit.value": [
-            {required: true, message: "请选择制剂单位", trigger: "change"},
+            {required: true, message: "Vui lòng chọn đơn vị bào chế", trigger: "change"},
           ],
           "pack.value": [
-            {required: true, message: "请选择包装", trigger: "change"},
+            {required: true, message: "Vui lòng chọn đóng gói", trigger: "change"},
           ],
-          price: [{required: true, message: "请输入售价", trigger: "blur"}],
+          price: [{required: true, message: "Vui lòng nhập giá bán", trigger: "blur"}],
           retailPrice: [
-            {required: true, message: "请输入折后零售价", trigger: "blur"},
+            {required: true, message: "Vui lòng nhập giá bán lẻ sau chiết khấu", trigger: "blur"},
           ],
           preparation: [
-            {required: true, message: "请输入制剂数量", trigger: "blur"},
+            {required: true, message: "Vui lòng nhập số lượng bào chế", trigger: "blur"},
           ],
         },
         FrequencyOption: [],
@@ -904,12 +904,12 @@
         DayNumOption: [],
         ChineseUseTimeOption: [],
         isSpecial: false,
-        updateType: '0', //修改显示
-        // 基本参数传入
+        updateType: '0', //Sửa hiển thị
+        // Truyền tham số cơ bản
       };
     },
     props: {
-      // 权限
+      // Quyền
       permission: {
         type: Object,
       },
@@ -919,7 +919,7 @@
       myFunction(){
         this.bizFormModel.price = BigNumber(this.bizFormModel.price).toFormat(4)
       },
-      //动态修改拆零价格
+      //Sửa động giá bán lẻ tách hộp
       getPrice() {
         if (this.bizFormModel.isUnpackSell === '1' && this.bizFormModel.preparation !== '') {
           this.bizFormModel.retailPrice = ((this.bizFormModel.price - 0) / (this.bizFormModel.preparation - 0)).toFixed(4)
@@ -929,7 +929,7 @@
 
       onSubmit(formName) {
         /*if (this.bizFormModel.company.id !== this.currentUser.company.id) {
-          this.$message.error('无法修改机构药品信息，请联系机构修改药品基础信息')
+          this.$message.error('Không thể sửa thông tin thuốc của cơ sở，Vui lòng liên hệ cơ sở để sửa thông tin thuốc cơ bản')
           return
         }*/
         if (this.bizFormModel.type.value !== 'medicalType_1') {
@@ -942,7 +942,7 @@
                 .toNumber()
             );
             if (total > this.bizFormModel.total) {
-              this.$message.error('总量上限小于功效说明计算总量')
+              this.$message.error('Giới hạn tổng lượng nhỏ hơn tổng lượng tính theo hướng dẫn công dụng')
               return
             }
           }
@@ -957,7 +957,7 @@
           }
         });
       },
-      //保存继续
+      //Lưu và tiếp tục
       onGoSubmit(formName) {
         if (this.bizFormModel.type.value !== 'medicalType_1') {
           if (this.bizFormModel.days.value && this.bizFormModel.frequency.value && this.bizFormModel.singleDosage && this.bizFormModel.total !== 0) {
@@ -969,7 +969,7 @@
                 .toNumber()
             );
             if (total > this.bizFormModel.total) {
-              this.$message.error('总量上限小于功效说明计算总量')
+              this.$message.error('Giới hạn tổng lượng nhỏ hơn tổng lượng tính theo hướng dẫn công dụng')
               return
             }
           }
@@ -1046,7 +1046,7 @@
       },
       switchEdit() {
         this.dialogProps.action = "edit";
-        this.dialogProps.title = "修改药品信息";
+        this.dialogProps.title = "Sửa thông tin thuốc";
         this.initOptions(this.bizFormModel);
       },
       onDialogClose() {
@@ -1060,56 +1060,56 @@
       },
       initFormModel(This) {
         return {
-          id:"", // 药品id
-          goodsName: "", // 药品名称
+          id:"", // Thuốcid
+          goodsName: "", // Tên thuốc
           company: {
-            // 诊所id
+            // Phòng khámid
             id: currentUser.company.id,
             name: null,
           },
-          brandName: "", // 商品名称
+          brandName: "", // Tên hàng hóa
           type: {
-            // 药品类型
+            // Loại thuốc
             value: null,
             name: null,
           },
-          code: "", // 药品编码
-          source: "", // 药品来源
+          code: "", // Mã thuốc
+          source: "", // Nguồn gốc thuốc
           nature: {
-            // 性质
+            // Tính chất
             value: null,
             name: null,
           },
           factory: {
-            // 生产厂家
+            // Nhà sản xuất
             id: null,
             name: null,
           },
-          standardCode: "", // 国药准字
-          bitCode: "", // 本位码
-          barCode: "", // 条形码
-          insuranceCode: "", // 医保编码
-          remarks: "", // 备注信息
-          dosis: "", // 剂量
+          standardCode: "", // Số đăng ký thuốc quốc gia
+          bitCode: "", // Mã chuẩn
+          barCode: "", // Mã vạch
+          insuranceCode: "", // Mã bảo hiểm y tế
+          remarks: "", // Thông tin ghi chú
+          dosis: "", // Liều lượng
           dosisUnit: {
-            // 剂量单位
+            // Đơn vị liều lượng
             value: null,
             name: null,
           },
-          preparation: "", // 制剂
+          preparation: "", // Chế phẩm
           preparationUnit: {
-            // 制剂单位
+            // Đơn vị bào chế
             value: null,
             name: null,
           },
           pack: {
-            // 包装
+            // Đóng gói
             value: null,
             name: null,
           },
-          price: 0, // 售价
-          isUnpackSell: "1", // 允许拆零销售
-          retailPrice: 0, // 拆开后零售价
+          price: 0, // Giá bán
+          isUnpackSell: "1", // Cho phép bán lẻ tách hộp
+          retailPrice: 0, // Giá bán lẻ sau khi tách hộp
           chineseMedicineUse: {
             name: null,
             value: null
@@ -1141,7 +1141,7 @@
           params: [],
           type: "1"
         };
-        // 字段对应表上filter条件
+        // Trên bảng tương ứng của trườngfilterĐiều kiện
         factory_search.params.push.apply(factory_search.params, [
           {
             columnName: "company_id",
@@ -1154,7 +1154,7 @@
             value: '1',
           },
         ]);
-        // 数据权限: 生产厂家manufacture_factory
+        // Quyền dữ liệu: Nhà sản xuấtmanufacture_factory
         this.pushDataPermissions(
           factory_search.params,
           this.$route.meta.routerId,
@@ -1183,7 +1183,7 @@
           }
         });
       },
-      //输入框拼音码
+      //Mã pinyin của ô nhập
       pinyinInput(value) {
         this.bizFormModel.pinyinCode = pinyin.getCamelChars(value)
 
@@ -1224,7 +1224,7 @@
       },
       openViewDrugDialog(drug) {
         this.dialogProps.action = "view";
-        this.dialogProps.title = "查看药品信息";
+        this.dialogProps.title = "Xem thông tin thuốc";
         this.bizFormModel = {...this.initFormModel(), ...drug};
         this.updateType = '0'
         this.initOptions(this.bizFormModel);
@@ -1234,7 +1234,7 @@
       },
       openEditDrugDialog(drug) {
         this.dialogProps.action = "edit";
-        this.dialogProps.title = "修改药品信息";
+        this.dialogProps.title = "Sửa thông tin thuốc";
         this.bizFormModel = {...this.initFormModel(), ...drug};
         this.initOptions(this.bizFormModel);
         this.value = this.bizFormModel.status
@@ -1244,7 +1244,7 @@
       },
       openAddDrugDialog() {
         this.dialogProps.action = "add";
-        this.dialogProps.title = "添加药品信息";
+        this.dialogProps.title = "Thêm thông tin thuốc";
         this.bizFormModel = this.initFormModel();
         this.initOptions(this.bizFormModel);
         this.tabIndex = "1";
@@ -1252,7 +1252,7 @@
       },
       openCopyDrugDialog(drug) {
         this.dialogProps.action = "add";
-        this.dialogProps.title = "添加药品信息";
+        this.dialogProps.title = "Thêm thông tin thuốc";
         this.bizFormModel = {...this.initFormModel(), ...drug};
         this.initOptions(this.bizFormModel);
         this.tabIndex = "1";
@@ -1266,23 +1266,23 @@
           this.bizFormModel.retailPrice = "";
         }
       },
-      // 售价
+      // Giá bán
       "bizFormModel.price"(newValue, oldValue) {
         if (newValue < 0) {
           this.$message({
             type: "error",
-            message: "价格不可小于0元",
+            message: "Giá không được nhỏ hơn0VNĐ",
           });
           return;
         }
       },
-      //折后价
+      //Giá sau chiết khấu
       "bizFormModel.retailPrice"(newValue, oldValue) {
         if (this.bizFormModel.isUnpackSell === "1") {
           if (newValue < 0) {
             this.$message({
               type: "error",
-              message: "价格不可小于0元",
+              message: "Giá không được nhỏ hơn0VNĐ",
             });
             return;
           }
@@ -1290,7 +1290,7 @@
         }
       },
       // "bizFormModel.type.value": function (newValue, oldValue) {
-      //   // 中药
+      //   // Thuốc đông y
       //   if (newValue === "medicalType_1") {
       //     this.bizFormModel.dosis = 1;
       //     this.bizFormModel.isUnpackSell = "0";
@@ -1305,7 +1305,7 @@
       //   }
       // },
 
-      //监听药品类型
+      //Theo dõi loại thuốc
       "bizFormModel.type.value"(newValue, oldValue) {
         if (newValue === "medicalType_0") {
           this.formRules.standardCode[0].required = true

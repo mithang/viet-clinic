@@ -10,7 +10,7 @@ import com.geeke.cure.entity.InspectionCheckDetail;
 import java.util.List;
 
 /**
- * 检验检查详情DAO接口
+ * Chi tiết xét nghiệm và kiểm traDAOGiao diện
  * @author rys
  * @version 2022-10-19
  */

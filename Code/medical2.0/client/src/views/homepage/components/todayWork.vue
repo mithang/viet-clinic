@@ -1,9 +1,9 @@
 <template>
     <el-card class="index-module-card">
       <add-today-work ref='addTodayWorkForm' ></add-today-work>
-      <!-- 标题 -->
+      <!-- Tiêu đề -->
       <div slot="header" class="card-title-box">
-        <span class="el-card-title">我的日程</span>
+        <span class="el-card-title">Lịch trình của tôi</span>
         <i v-show="!isPanelSetIcon" class="el-icon-close" style="float: right; padding: 3px 0" @click="deletePanelItem"></i>
         <span class="choice-month-btn">
           <span>{{headOptions.date }}{{'(' + headOptions.ncWeek + ')'}}</span>
@@ -12,27 +12,27 @@
 
       <div class="common">
         <el-radio-group v-model="dateType" @change="dateTypeChange">
-          <el-radio-button label="1">月</el-radio-button>
-          <el-radio-button label="2">周</el-radio-button>
+          <el-radio-button label="1">tháng</el-radio-button>
+          <el-radio-button label="2">tuần</el-radio-button>
         </el-radio-group>
 
-        <!-- 月 -->
+        <!-- tháng -->
         <span  v-if="dateType === 1">
           <el-date-picker v-model="value" type="month" :clearable="false"></el-date-picker>
           <el-button-group>
             <el-button plain @click="handleMonth('on')" icon="el-icon-arrow-left">上月</el-button>
-            <el-button plain @click="getToday">今天</el-button>
+            <el-button plain @click="getToday">Hôm nay</el-button>
             <el-button plain @click="handleMonth('next')">下月<i class="el-icon-arrow-right el-icon--right"></i></el-button>
           </el-button-group>
         </span>
       
-        <!-- 周 -->
+        <!-- tuần -->
         <span  v-else>
-          <el-date-picker v-model="value" type="week" format="yyyy 第 WW 周" @change="weekChange" :clearable="false"></el-date-picker>
+          <el-date-picker v-model="value" type="week" format="yyyy thứ WW tuần" @change="weekChange" :clearable="false"></el-date-picker>
           <el-button-group>
-            <el-button plain icon="el-icon-arrow-left" @click="handleOnWeek('on')">上周</el-button>
-            <el-button plain @click="getToday">今天</el-button>
-            <el-button plain @click="handleOnWeek('next')">下周<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+            <el-button plain icon="el-icon-arrow-left" @click="handleOnWeek('on')">Tuần trước</el-button>
+            <el-button plain @click="getToday">Hôm nay</el-button>
+            <el-button plain @click="handleOnWeek('next')">Tuần sau<i class="el-icon-arrow-right el-icon--right"></i></el-button>
           </el-button-group>
         </span>
         <i class="el-icon-s-fold" @click="fadeShow"></i>
@@ -45,7 +45,7 @@
             <template slot="dateCell" slot-scope="{ date, data }">
               <div @click="calendarOnClick(data)" :class="['date-content', data.isSelected ? 'is-selected' : '']">
                 <div>
-                  <span v-if="systemTime === data.day">今天</span>
+                  <span v-if="systemTime === data.day">Hôm nay</span>
                   <span v-else :class="[isWeek(date) ? 'restRed' : '' , 'isrest']">{{ getDay(date, data) }}</span>
                   <!-- <span v-if="isWeek(date)" class="rest">休</span> -->
                   <span>{{ data.isSelected ? '✔️' : ''}}</span>
@@ -67,7 +67,7 @@
             <div>{{headOptions.IMonthCn }}{{headOptions.IDayCn}}</div>
             <div class="schedule">
               <div class="schedule_Header common">
-                <div>我的日程</div>
+                <div>Lịch trình của tôi</div>
                 <el-button circle icon="el-icon-plus" @click="schedule"></el-button>
               </div>
               <el-empty description="暂无日程" v-if="popoverList.length <= 0"></el-empty>
@@ -113,12 +113,12 @@ export default {
       dataList: [
         { date:'2022-03-09',
           list: [
-            { closable: false, type: 'warning' ,name: '陆家嘴2号楼221合同到期预警'},
-            { closable: true, type: 'success' ,name: '陆家嘴2号楼221合同到期预警'},
-            { closable: false, type: 'error' ,name: '陆家嘴2号楼221合同到期预警'},
-            { closable: true, type: 'success' ,name: '合同到期预警-xxx'},
-            { closable: false, type: 'info' ,name: '陆家嘴2号楼221合同到期预警'},
-            { closable: true, type: 'success' ,name: '陆家嘴2号楼221合同到期预警'},
+            { closable: false, type: 'warning' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: true, type: 'success' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: false, type: 'error' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: true, type: 'success' ,name: 'Cảnh báo hợp đồng sắp hết hạn-xxx'},
+            { closable: false, type: 'info' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: true, type: 'success' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
           ],
         },
         { date:'2022-03-14',
@@ -148,7 +148,7 @@ export default {
     }
   },
   mounted () {
-    this.systemTime = this.fun() // 获取yyyy-mm-dd格式的当前日期
+    this.systemTime = this.fun() // Lấyyyyy-mm-dd格式的当前日期
     this.headOptions = this.solarlunarDay(new Date())
     this.calendarOnClick(this.systemTime)
   },
@@ -179,15 +179,15 @@ export default {
     // 查看更多，获取当前日期所有日程
     getAll() {
       this.popoverList = [
-        { closable: true, type: 'success', name: '合同到期预警-xxx', },
-        { closable: false, type: 'warning', name: 'LS/12/1210待抄表'},
-        { closable: false, type: 'info', name: 'GM/14/1410待抄表'},
-        { closable: true, type: 'success', name: '陆家嘴2号楼221合同到期预警'},
-        { closable: true, type: 'success', name: 'LS/12/1210待抄表'},
-        { closable: false, type: 'error', name: 'LS/12/1210待抄表'},
+        { closable: true, type: 'success', name: 'Cảnh báo hợp đồng sắp hết hạn-xxx', },
+        { closable: false, type: 'warning', name: 'LS/12/1210Chờ ghi số'},
+        { closable: false, type: 'info', name: 'GM/14/1410Chờ ghi số'},
+        { closable: true, type: 'success', name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+        { closable: true, type: 'success', name: 'LS/12/1210Chờ ghi số'},
+        { closable: false, type: 'error', name: 'LS/12/1210Chờ ghi số'},
       ]
     },
-    // 删除面板项发送事件
+    // Sự kiện gửi khi xóa mục bảng
     deletePanelItem () {
       this.$emit('deletePanelItemEvent', this.panelId)
     },
@@ -206,9 +206,9 @@ export default {
         } 
       })
     },
-    // 跳转today
+    // Chuyển đếntoday
     getToday() {
-      if (this.dateType === '2') { // 周
+      if (this.dateType === '2') { // tuần
         let weeks = this.GetMonday(new Date())
         weeks = new Date(Date.parse(weeks))
         this.weekChange(weeks) // 跳转至当前日所在周
@@ -226,7 +226,7 @@ export default {
     getLastMonth(Time,type) {
       let year = Time.getFullYear();   // 当前年：四位数字
       let month = Time.getMonth() + 1;     // 当前月：0-11
-      if (type === 'on' ) {// 如果是1，上一个月就是去年的12月
+      if (type === 'on' ) {// Nếu là1，上一个月就是去年的12tháng
         if (month === 1) {
           year -= 1;
           month = 12;
@@ -234,7 +234,7 @@ export default {
           month -= 1
         }
       } 
-      if (type === 'next' ) {// 如果是12上一个月就是去年的12月
+      if (type === 'next' ) {// Nếu là12上一个月就是去年的12tháng
         if (month === 12) {
           year += 1;
           month = 1;
@@ -246,11 +246,11 @@ export default {
       let lastYearMonth = year + '-' + month;
       return lastYearMonth;
     },
-    // 切换 月/周 显示
+    // Chuyển đổi tháng/tuần Hiển thị
     dateTypeChange(val) {
-      if (val === '1') { // 月
+      if (val === '1') { // tháng
         this.range = null
-      } else { // 周
+      } else { // tuần
         const weeks = this.GetMonday(this.value)
         this.value = new Date(Date.parse(weeks))
         this.weekChange(this.value)
@@ -260,16 +260,16 @@ export default {
     weekChange(val) {
       let timeStamp = val.getTime(); // 标准时间转为时间戳，毫秒级别
       this.range = []
-      this.range[0] = this.fun(timeStamp ); // 开始时间
-      this.range[1] = this.fun(timeStamp + (24 * 60 * 60 * 1000) * 6) // 结束时间
+      this.range[0] = this.fun(timeStamp ); // Thời gian bắt đầu
+      this.range[1] = this.fun(timeStamp + (24 * 60 * 60 * 1000) * 6) // Thời gian kết thúc
     },
     // 切换上下周
     handleOnWeek(val) {
       let weeks = this.GetMonday(this.value)
       weeks = new Date(weeks).getTime()
-      if (val === 'on') { // 上周
+      if (val === 'on') { // Tuần trước
         weeks = this.fun(weeks - (24 * 60 * 60 * 1000) * 7)
-      } else if (val === 'next'){ // 下周
+      } else if (val === 'next'){ // Tuần sau
         weeks = this.fun(weeks + (24 * 60 * 60 * 1000) * 7)
       }
       this.value = new Date(Date.parse(weeks))
@@ -279,7 +279,7 @@ export default {
     GetMonday(dd) {
       const week = dd.getDay(); // 获取时间的星期数
       const minus = week ? week - 1 : 6;
-      dd.setDate(dd.getDate() - minus); // 获取minus天前的日期
+      dd.setDate(dd.getDate() - minus); // Lấyminus天前的日期
       const res = dd.toISOString().slice(0,10)
       return res
     },

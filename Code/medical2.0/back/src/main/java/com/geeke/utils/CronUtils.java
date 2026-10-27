@@ -6,27 +6,27 @@ import java.util.Date;
 import org.quartz.CronExpression;
 
 /**
- * cron表达式工具类
+ * cronbiểu thứcLớp công cụ
  *
  * @author shenzy
  *
  */
 public class CronUtils {
     /**
-     * 返回一个布尔值代表一个给定的Cron表达式的有效性
+     * Trả vềmộtCáiphát hành尔Giá trịthaybảngmộtCáichochỉ định của Cronbiểu thức của Hiệu lựctính
      *
-     * @param cronExpression Cron表达式
-     * @return boolean 表达式是否有效
+     * @param cronExpression CronBiểu thức
+     * @return boolean biểu thứcCó hay khôngHiệu lực
      */
     public static boolean isValid(String cronExpression) {
         return CronExpression.isValidExpression(cronExpression);
     }
 
     /**
-     * 返回一个字符串值,表示该消息无效Cron表达式给出有效性
+     * Trả vềmộtCáichuỗiGiá trị,Cho biết thông báo này không hợp lệCronbiểu thứcchoraHiệu lựctính
      *
-     * @param cronExpression Cron表达式
-     * @return String 无效时返回表达式错误描述,如果有效返回null
+     * @param cronExpression CronBiểu thức
+     * @return String không hợp lệ giờTrả vềbiểu thứcLỗiMô tả,NếuHiệu lựcTrả vềnull
      */
     public static String getInvalidMessage(String cronExpression) {
         try {
@@ -39,10 +39,10 @@ public class CronUtils {
     }
 
     /**
-     * 返回下一个执行时间根据给定的Cron表达式
+     * Trả vềdướimộtCáihành nghề dòngThời gianTheochochỉ định của CronBiểu thức
      *
-     * @param cronExpression Cron表达式
-     * @return Date 下次Cron表达式执行时间
+     * @param cronExpression CronBiểu thức
+     * @return Date dưới lầnCronbiểu thứchành nghề dòngThời gian
      */
     public static Date getNextExecution(String cronExpression) {
         try {

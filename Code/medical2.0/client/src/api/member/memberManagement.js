@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/member/memberManagement')
 
-// 标准CRUD接口
+// Tiêu chuẩnCRUDGiao diện
 export const getMemberManagementById = baseApi.getById
 export const listMemberManagementPage = baseApi.listPage
 export const listMemberManagementAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertMemberManagement = baseApi.bulkInsert
 export const bulkUpdateMemberManagement = baseApi.bulkUpdate
 export const bulkDeleteMemberManagement = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const getByPatientId = (id) =>
     request({
         url: '/member/memberManagement/getByPatientId/' + id,

@@ -7,17 +7,17 @@ import org.hibernate.validator.constraints.Length;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.geeke.common.persistence.DataEntity;
 /**
- * 公司编码规则Entity
+ * Quy tắc mã công tyEntity
  * @author lys
  * @version 2021-05-17
  */
 public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 
 	private static final long serialVersionUID = 443292628418674688L;
-	private String companyId;      // 公司 
-	private CodeRule sysRule;      // 系统编号规则 
-	private String code;		// 编码
-	private String ruleDef;		// 规则
+	private String companyId;      // Công ty 
+	private CodeRule sysRule;      // Hệ thốngmã sốquy tắc 
+	private String code;		// Mã
+	private String ruleDef;		// quy tắc
 
 	
 	public CompanyCodeRule() {
@@ -36,7 +36,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 		this.companyId = companyId;
 	}
 
-	@NotNull(message="系统编号规则不能为空")
+	@NotNull(message="Hệ thốngmã sốquy tắcKhông thể là trống")
     public CodeRule getSysRule() {
         return sysRule;
     }
@@ -45,7 +45,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
         this.sysRule = sysRule;
     }
     
-	@Length(min=1, max=20, message="编码长度必须介于 1 和 20 之间")
+	@Length(min=1, max=20, message="Độ dài mã phải nằm trong khoảng 1 đến 20 ")
 	public String getCode() {
 		return code;
 	}
@@ -54,7 +54,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 	}
 	
 	
-	@Length(min=1, max=512, message="规则长度必须介于 1 和 512 之间")
+	@Length(min=1, max=512, message="quy tắcĐộ dài phải nằm trong khoảng 1 đến 512 ")
 	public String getRuleDef() {
 		return ruleDef;
 	}
@@ -63,7 +63,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 	}
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -72,7 +72,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -82,7 +82,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 诊所版本Service
+ * Phiên bản phòng khámService
  * @author txl
  * @version 2022-05-23
  */
@@ -62,11 +62,11 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
 
     public int deleteClinic(ClinicVersion entity) {
         String roleId = entity.getRoleId();
-        //删除诊所
+        //XóaPhòng khám
         int num = this.delete(entity);
         if(num>0)
         {
-            //删除权限和角色
+            //XóaQuyền và Vai trò
             Role delete = new Role(roleId);
             roleService.delete(delete);
             removePermisson(roleId);

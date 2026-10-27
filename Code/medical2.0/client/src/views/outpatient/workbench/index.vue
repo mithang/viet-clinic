@@ -5,17 +5,17 @@
         <el-card class="box-card" shadow="always">
           <workbench-form ref='workbenchForm' @typeclick="typeclickload"></workbench-form>
           <div class="card-header">
-            <span class="cartitle">待就诊</span>
+            <span class="cartitle">Chờ khám</span>
             <div>
-              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('djz')">忽略全部</el-button>
+              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('djz')">Bỏ qua tất cả</el-button>
               <el-badge :value="Totalsums<10?Totalsums:'10+'" class="badgeitem" v-show="Totalsums>0" @click.native="onCreatePatient('djz')"></el-badge>
             </div>
           </div>
           <div v-for="(item,index) in TobeseenList.slice(0, 3)" :key="index" class="text">
-            <a @click="skiptobeseen(item.patientId.id,'djz')" class="cara1">{{ index + 1 }}. {{ item.patientId.name }} / {{ item.patientId.gender.name }} / {{ item.patientId.age}}岁</a>
+            <a @click="skiptobeseen(item.patientId.id,'djz')" class="cara1">{{ index + 1 }}. {{ item.patientId.name }} / {{ item.patientId.gender.name }} / {{ item.patientId.age}}tuổi</a>
             <span class="cara2">
-              <a @click="skiptobeseen(item.patientId.id,'djz')">就诊</a>
-              <a @click="btnoverlook(item.id,'djz')" style="margin-left:5px;">忽略</a>
+              <a @click="skiptobeseen(item.patientId.id,'djz')">Khám bệnh</a>
+              <a @click="btnoverlook(item.id,'djz')" style="margin-left:5px;">Bỏ qua</a>
             </span>
           </div>
         </el-card>
@@ -24,17 +24,17 @@
         <el-card class="box-card" shadow="always">
           <workbench-form ref='workbenchForm' @typeclick="typeclickload"></workbench-form>
           <div class="card-header">
-            <span class="cartitle">待收费</span>
+            <span class="cartitle">Chờ thu phí</span>
             <div>
-              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dsf')">忽略全部</el-button>
+              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dsf')">Bỏ qua tất cả</el-button>
               <el-badge :value="Patientchargesum<10?Patientchargesum:'10+'" class="badgeitem" @click.native="onCreatePatient('dsf')"></el-badge>
             </div>
           </div>
           <div v-for="(item,index) in PatientchargeList.slice(0, 3)" :key="index" class="text">
             <a @click="skiptobeseen(item.patient.id,'dsf')" class="cara1">{{ item.displaycontent }}</a>
             <span class="cara2">
-              <a @click="skiptobeseen(item.patient.id,'dsf')">查看</a>
-              <a @click="btnoverlook(item.id,'dsf')" style="margin-left:5px;">忽略</a>
+              <a @click="skiptobeseen(item.patient.id,'dsf')">Xem</a>
+              <a @click="btnoverlook(item.id,'dsf')" style="margin-left:5px;">Bỏ qua</a>
             </span>
           </div>
         </el-card>
@@ -43,17 +43,17 @@
         <el-card class="box-card" shadow="always">
           <workbench-form ref='workbenchForm' @typeclick="typeclickload"></workbench-form>
           <div class="card-header">
-            <span class="cartitle">待发药</span>
+            <span class="cartitle">Chờ phát thuốc</span>
             <div>
-              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dfy')">忽略全部</el-button>
+              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dfy')">Bỏ qua tất cả</el-button>
               <el-badge :value="dispensingsum<10?dispensingsum:'10+'" class="badgeitem" @click.native="onCreatePatient('dfy')"></el-badge>
             </div>
           </div>
           <div v-for="(item,index) in listdispensingcounts.slice(0, 3)" :key="index" class="text">
             <a @click="skiptobeseen(item.patient.id,'dfy')" class="cara1">{{ item.displaycontent }}</a>
             <span class="cara2">
-              <a @click="skiptobeseen(item.patient.id,'dfy')">查看</a>
-              <a @click="btnoverlook(item.id,'dfy')" style="margin-left:5px;">忽略</a>
+              <a @click="skiptobeseen(item.patient.id,'dfy')">Xem</a>
+              <a @click="btnoverlook(item.id,'dfy')" style="margin-left:5px;">Bỏ qua</a>
             </span>
           </div>
         </el-card>
@@ -62,17 +62,17 @@
         <el-card class="box-card" shadow="always">
           <workbench-form ref='workbenchForm' @typeclick="typeclickload"></workbench-form>
           <div class="card-header">
-            <span class="cartitle">待治疗</span>
+            <span class="cartitle">Chờ điều trị</span>
             <div>
-              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dzl')">忽略全部</el-button>
+              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dzl')">Bỏ qua tất cả</el-button>
               <el-badge :value="patientcuresum<10?patientcuresum:'10+'" class="badgeitem" @click.native="onCreatePatient('dzl')"></el-badge>
             </div>
           </div>
           <div v-for="(item,index) in patientcurecounts.slice(0, 3)" :key="index" class="text">
             <a @click="skiptobeseen(item.patient.id,'dzl')" class="cara1">{{ item.displaycontent }}</a>
             <span class="cara2">
-              <a @click="skiptobeseen(item.patient.id,'dzl')">就诊</a>
-              <a @click="btnoverlook(item.id,'dzl')" style="margin-left:5px;">忽略</a>
+              <a @click="skiptobeseen(item.patient.id,'dzl')">Khám bệnh</a>
+              <a @click="btnoverlook(item.id,'dzl')" style="margin-left:5px;">Bỏ qua</a>
             </span>
           </div>
         </el-card>
@@ -81,17 +81,17 @@
         <el-card class="box-card" shadow="always">
           <workbench-form ref='workbenchForm' @typeclick="typeclickload"></workbench-form>
           <div class="card-header">
-            <span class="cartitle">待输液</span>
+            <span class="cartitle">Chờ truyền dịch</span>
             <div>
-              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dsy')">忽略全部</el-button>
+              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('dsy')">Bỏ qua tất cả</el-button>
               <el-badge :value="patientdsylistsums<10?patientdsylistsums:'10+'" class="badgeitem" @click.native="onCreatePatient('dsy')"></el-badge>
             </div>
           </div>
           <div v-for="(item,index) in patientdsylistcounts.slice(0, 3)" :key="index" class="text">
             <a @click="skiptobeseen(item.patient.id,'dsy')" class="cara1">{{ item.displaycontent }}</a>
             <span class="cara2">
-              <a @click="skiptobeseen(item.patient.id,'dsy')">就诊</a>
-              <a @click="btnoverlook(item.id,'dsy')" style="margin-left:5px;">忽略</a>
+              <a @click="skiptobeseen(item.patient.id,'dsy')">Khám bệnh</a>
+              <a @click="btnoverlook(item.id,'dsy')" style="margin-left:5px;">Bỏ qua</a>
             </span>
           </div>
         </el-card>
@@ -100,17 +100,17 @@
         <el-card class="box-card" shadow="always">
           <workbench-form ref='workbenchForm' @typeclick="typeclickload"></workbench-form>
           <div class="card-header">
-            <span class="cartitle">待检验检查</span>
+            <span class="cartitle">Chờ xét nghiệm/kiểm tra</span>
             <div>
-              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('djyjc')">忽略全部</el-button>
+              <el-button style="padding: 3px 0" type="text" @click="btnoverlookidlist('djyjc')">Bỏ qua tất cả</el-button>
               <el-badge :value="jyjctotal<10?jyjctotal:'10+'" class="badgeitem" @click.native="onCreatePatient('djyjc')"></el-badge>
             </div>
           </div>
           <div v-for="(item,index) in jyjclistcounts.slice(0, 3)" :key="index" class="text">
             <a @click="skiptobeseen(item.patient.id,'djyjc')" class="cara1">{{ item.patient.name }} / {{ item.patient.age }} / {{ item.name }}</a>
             <span class="cara2">
-              <a @click="skiptobeseen(item.patient.id,'djyjc')">就诊</a>
-              <a @click="btnoverlook(item.registration.id,'djyjc')" style="margin-left:5px;">忽略</a>
+              <a @click="skiptobeseen(item.patient.id,'djyjc')">Khám bệnh</a>
+              <a @click="btnoverlook(item.registration.id,'djyjc')" style="margin-left:5px;">Bỏ qua</a>
             </span>
           </div>
         </el-card>
@@ -145,7 +145,7 @@ export default {
 
   data() {
     return {
-      // 待就诊
+      // Chờ khám
       TobeseenList: [],
       Totalsums: 0,
       SearchPreModel: {
@@ -155,7 +155,7 @@ export default {
         order: "",
       },
 
-      // 待发药
+      // Chờ phát thuốc
       PageRegistration: {
         columnName: "",
         limit: 10,
@@ -175,7 +175,7 @@ export default {
       listdispensingcounts: [],
       dispensingsum: 0,
 
-      // 待收费
+      // Chờ thu phí
       patientQueryCondition: {
         columnName: "",
         limit: 10,
@@ -194,7 +194,7 @@ export default {
       PatientchargeList: [],
       Patientchargesum: 0,
 
-      // 待治疗
+      // Chờ điều trị
       patientcure: {
         columnName: "",
         limit: 10,
@@ -215,7 +215,7 @@ export default {
       patientcurecounts: [],
       patientcuresum: 0,
 
-      // 待输液
+      // Chờ truyền dịch
       patientdsylist: {
         columnName: "",
         limit: 10,
@@ -236,7 +236,7 @@ export default {
       patientdsylistcounts: [],
       patientdsylistsums: 0,
 
-      // 待检验检查
+      // Chờ xét nghiệm/kiểm tra
       searchjyjc: {
         params: [
           { columnName: 'company_id', queryType: '=', value: currentUser.company.id },
@@ -251,7 +251,7 @@ export default {
       jyjclistcounts: [],
       jyjctotal: 0,
 
-      // 处方审查
+      // Thẩm tra đơn thuốc
       reviewTotal: 0,
       reviewList: [],
       reviewSearch: {
@@ -312,7 +312,7 @@ export default {
 
     // ========== 加载方法 ==========
 
-    // 待就诊
+    // Chờ khám
     loadDjz() {
       this.Totalsums = 0;
       this.TobeseenList = [];
@@ -346,7 +346,7 @@ export default {
       });
     },
 
-    // 待发药
+    // Chờ phát thuốc
     loadDfy() {
       this.dispensingsum = 0;
       this.listdispensingcounts = [];
@@ -384,7 +384,7 @@ export default {
       });
     },
 
-    // 待收费
+    // Chờ thu phí
     loadDsf() {
       this.Patientchargesum = 0;
       this.PatientchargeList = [];
@@ -423,7 +423,7 @@ export default {
       });
     },
 
-    // 待治疗
+    // Chờ điều trị
     loadDzl() {
       this.patientcuresum = 0;
       this.patientcurecounts = [];
@@ -461,11 +461,11 @@ export default {
         }
         return responseData;
       }).catch((error) => {
-        this.$message.error(error.message || '加载失败');
+        this.$message.error(error.message || 'Tải thất bại');
       });
     },
 
-    // 待输液
+    // Chờ truyền dịch
     loadDsy() {
       this.patientdsylistsums = 0;
       this.patientdsylistcounts = [];
@@ -502,11 +502,11 @@ export default {
         }
         return responseData;
       }).catch((error) => {
-        this.$message.error(error.message || '加载失败');
+        this.$message.error(error.message || 'Tải thất bại');
       });
     },
 
-    // 待检验检查
+    // Chờ xét nghiệm/kiểm tra
     loadDjyjc() {
       this.jyjctotal = 0;
       this.jyjclistcounts = [];
@@ -544,7 +544,7 @@ export default {
           loadingInstance.close();
         }, 500);
       }).catch((error) => {
-        console.error('加载失败:', error);
+        console.error('Tải thất bại:', error);
         loadingInstance.close();
       });
     },
@@ -565,7 +565,7 @@ export default {
       });
     },
 
-    // ========== 忽略全部 ==========
+    // ========== Bỏ qua tất cả ==========
     btnoverlookidlist(type) {
       const config = this.getTypeConfig(type);
       if (config && config.ignore) {
@@ -573,7 +573,7 @@ export default {
       }
     },
 
-    // 忽略全部 - 待就诊
+    // Bỏ qua tất cả - Chờ khám
     ignoreDjz() {
       this.SearchPreModel.companyId = this.Company.id;
       this.SearchPreModel.doctorid = this.UserId;
@@ -585,7 +585,7 @@ export default {
       });
     },
 
-    // 忽略全部 - 待收费
+    // Bỏ qua tất cả - Chờ thu phí
     ignoreDsf() {
       this.patientQueryCondition.overlook = "0";
       this.patientQueryCondition.limit = 10;
@@ -602,7 +602,7 @@ export default {
       });
     },
 
-    // 忽略全部 - 待发药
+    // Bỏ qua tất cả - Chờ phát thuốc
     ignoreDfy() {
       this.PageRegistration.overlook = "0";
       this.PageRegistration.columnName = "return_date";
@@ -615,7 +615,7 @@ export default {
       });
     },
 
-    // 忽略全部 - 待治疗
+    // Bỏ qua tất cả - Chờ điều trị
     ignoreDzl() {
       this.patientcure.overlook = "0";
       this.patientcure.limit = 10;
@@ -633,7 +633,7 @@ export default {
       });
     },
 
-    // 忽略全部 - 待输液
+    // Bỏ qua tất cả - Chờ truyền dịch
     ignoreDsy() {
       this.patientdsylist.overlook = "0";
       this.patientdsylist.limit = 10;
@@ -650,7 +650,7 @@ export default {
       });
     },
 
-    // 忽略全部 - 待检验检查
+    // Bỏ qua tất cả - Chờ xét nghiệm/kiểm tra
     ignoreDjyjc() {
       this.searchjyjc.companyId = this.Company.id;
       this.searchjyjc.status = "0";
@@ -661,7 +661,7 @@ export default {
       });
     },
 
-    // ========== 跳转 ==========
+    // ========== Chuyển đến ==========
     skiptobeseen(itemid, type) {
       const routeMap = {
         djz: '/medicalOutpatientRecord',
@@ -682,7 +682,7 @@ export default {
       this.$refs.workbenchForm.openAddworkbenchDialog(types);
     },
 
-    // ========== 处方审查 ==========
+    // ========== Thẩm tra đơn thuốc ==========
     initReviewList() {
       this.reviewSearch.params = [
         { columnName: 'recipelInfo.company_id', queryType: '=', value: currentUser.company.id },
@@ -717,7 +717,7 @@ export default {
       data.forEach((item) => {
         this.updateNotShowById(item.recipelInfoId, "all");
       });
-      this.showMessage({ type: 'success', msg: '操作成功' });
+      this.showMessage({ type: 'success', msg: 'Thao tác thành công' });
     },
 
     onOpenAll() {
@@ -740,7 +740,7 @@ export default {
         if (responseData.code === 100) {
           this.initReviewList();
           if ("all" !== type) {
-            this.showMessage({ type: 'success', msg: '操作成功' });
+            this.showMessage({ type: 'success', msg: 'Thao tác thành công' });
           }
         }
       });

@@ -8,7 +8,7 @@ import com.geeke.common.persistence.DataEntity;
 
 import java.util.Date;
 /**
- * 排班主表信息Entity
+ * xếp lịchBảng chínhThông tinEntity
  * @author txl
  * @version 2022-07-20
  */
@@ -16,16 +16,16 @@ import java.util.Date;
 public class Scheduling extends DataEntity<Scheduling> {
 
     private static final long serialVersionUID = 1014474470772900019L;
-    /** 诊所标识 */
+    /** Định danh phòng khám */
     private String companyid;
-    /** 用户标识 */
+    /** Định danh người dùng */
     private String userid ;
-    /** 排班日期 */
+    /** xếp lịchNgày */
     private Date schedulingtime ;
-    /** 排班时间配置表主键 */
+    /** Khóa chính của bảng cấu hình thời gian xếp lịch */
     private String  timeid ;
 
-    /** 是否启用（0：是；1：否） */
+    /** Có bật không(0:  có ; 1:  không ) */
     private String isLocked ;
 
 
@@ -37,15 +37,15 @@ public class Scheduling extends DataEntity<Scheduling> {
     public Scheduling(String id){
         super(id);
     }
-    /** 诊所标识 */
+    /** Định danh phòng khám */
     public String getCompanyid() {
         return companyid;
     }
-    /** 诊所标识 */
+    /** Định danh phòng khám */
     public void setCompanyid(String companyid) {
         this.companyid = companyid;
     }
-    /** 用户标识 */
+    /** Định danh người dùng */
     public String getUserid() {
         return userid;
     }
@@ -53,7 +53,7 @@ public class Scheduling extends DataEntity<Scheduling> {
     public void setUserid(String userid) {
         this.userid = userid;
     }
-    /** 排班日期 */
+    /** xếp lịchNgày */
     @JsonFormat(pattern = "yyyy-MM-dd")
     public Date getSchedulingtime(){
         return this.schedulingtime;
@@ -61,19 +61,19 @@ public class Scheduling extends DataEntity<Scheduling> {
     public void setSchedulingtime(Date schedulingtime){
         this.schedulingtime=schedulingtime;
     }
-    /** 排班时间配置表主键 */
+    /** Khóa chính của bảng cấu hình thời gian xếp lịch */
     public String  getTimeid(){
         return this.timeid;
     }
-    /** 排班时间配置表主键 */
+    /** Khóa chính của bảng cấu hình thời gian xếp lịch */
     public void setTimeid(String timeid){
         this.timeid=timeid;
     }
-    /** 是否启用（0：是；1：否） */
+    /** Có bật không(0:  có ; 1:  không ) */
     public String getIsLocked(){
         return this.isLocked;
     }
-    /** 是否启用（0：是；1：否） */
+    /** Có bật không(0:  có ; 1:  không ) */
     public void setIsLocked(String isLocked){
         this.isLocked=isLocked;
     }

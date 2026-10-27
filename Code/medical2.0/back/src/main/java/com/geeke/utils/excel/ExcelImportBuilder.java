@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * Excel导入构建器 - 基于 EasyExcel，注解驱动
+ * ExcelNhậpxây dựngthiết bị - Dựa trên EasyExcel, annotation驱动
  *
- * <p>使用示例:</p>
+ * <p>Ví dụ sử dụng:</p>
  * <pre>{@code
  * ExcelImportResult<Drug> result = new ExcelImportBuilder<>(Drug.class, inputStream)
  *     .dictTypeService(dictTypeService)
@@ -27,7 +27,7 @@ import java.util.*;
  *     .read();
  * }</pre>
  *
- * @param <T> 实体类型
+ * @param <T> Loại thực thể
  */
 public class ExcelImportBuilder<T> implements Closeable {
 
@@ -38,7 +38,7 @@ public class ExcelImportBuilder<T> implements Closeable {
     private DictTypeService dictTypeService;
     private int skipRows = 0;
 
-    // 列号 -> 映射信息
+    // Cộtsố -> ánh xạThông tin
     private final Map<Integer, ColumnMapping> columnMapping = new LinkedHashMap<>();
 
     public ExcelImportBuilder(Class<T> entityClass, InputStream inputStream) {
@@ -58,12 +58,12 @@ public class ExcelImportBuilder<T> implements Closeable {
     }
 
     /**
-     * 读取并解析Excel
+     * đọcvàphân tíchExcel
      */
     public ExcelImportResult<T> read() {
         ExcelImportResult<T> result = new ExcelImportResult<>();
 
-        // 使用 EasyExcel 逐行读取
+        // Sử dụng EasyExcel từng dòngđọc
         EasyExcel.read(inputStream, new ReadListener<Map<Integer, String>>() {
             private int currentRow = 0;
 
@@ -84,14 +84,14 @@ public class ExcelImportBuilder<T> implements Closeable {
                         String cellValue = rowData.get(colIdx);
                         String label = mapping.getLabel();
 
-                        // 必填校验
+                        // bắt buộcKiểm tra
                         if (mapping.annotation.required() && isBlank(cellValue)) {
-                            result.addError(new ImportError(rowNum, label, "不能为空"));
+                            result.addError(new ImportError(rowNum, label, "Không được để trống"));
                             hasError = true;
                             continue;
                         }
 
-                        // 跳过空值
+                        // Bỏ quatrốngGiá trị
                         if (isBlank(cellValue)) {
                             if (!mapping.annotation.defaultValue().isEmpty()) {
                                 mapping.setValue(entity, mapping.annotation.defaultValue());
@@ -99,21 +99,21 @@ public class ExcelImportBuilder<T> implements Closeable {
                             continue;
                         }
 
-                        // 长度校验
+                        // độ dàiKiểm tra
                         if (mapping.annotation.maxLength() > 0 && cellValue.length() > mapping.annotation.maxLength()) {
                             result.addError(new ImportError(rowNum, label,
-                                    "长度不能超过" + mapping.annotation.maxLength() + "个字符"));
+                                    "độ dàiKhông thểvượtqua" + mapping.annotation.maxLength() + "Cáichữký tự"));
                             hasError = true;
                             continue;
                         }
 
-                        // 设置字段值
+                        // ĐặtTrườngGiá trị
                         try {
                             Object value = convertValue(cellValue, mapping);
                             mapping.setValue(entity, value);
                         } catch (Exception e) {
                             result.addError(new ImportError(rowNum, label,
-                                    "格式不正确：" + e.getMessage()));
+                                    "định dạngkhôngđúng: " + e.getMessage()));
                             hasError = true;
                         }
                     }
@@ -122,14 +122,14 @@ public class ExcelImportBuilder<T> implements Closeable {
                         result.addSuccess(entity);
                     }
                 } catch (Exception e) {
-                    logger.warn("解析第{}行失败", rowNum, e);
-                    result.addError(new ImportError(rowNum, null, "解析失败：" + e.getMessage()));
+                    logger.warn("phân tíchDòng {} dòng thất bại", rowNum, e);
+                    result.addError(new ImportError(rowNum, null, "phân tíchThất bại: " + e.getMessage()));
                 }
             }
 
             @Override
             public void doAfterAllAnalysed(AnalysisContext context) {
-                // 读取完成
+                // đọchoàn thành
             }
         }).sheet().doRead();
 
@@ -137,7 +137,7 @@ public class ExcelImportBuilder<T> implements Closeable {
     }
 
     /**
-     * 初始化列映射（扫描 @ExcelImportField 注解，支持字段和getter）
+     * Khởi tạoCộtánh xạ(quét @ExcelImportField annotation, hỗ trợTrường và getter)
      */
     private void initColumnMapping() {
         List<Class<?>> classChain = new ArrayList<>();
@@ -148,7 +148,7 @@ public class ExcelImportBuilder<T> implements Closeable {
         }
 
         for (Class<?> c : classChain) {
-            // 扫描字段
+            // quétTrường
             for (Field field : c.getDeclaredFields()) {
                 ExcelImportField annotation = field.getAnnotation(ExcelImportField.class);
                 if (annotation != null) {
@@ -157,7 +157,7 @@ public class ExcelImportBuilder<T> implements Closeable {
                 }
             }
 
-            // 扫描getter方法
+            // quétgetterPhương pháp
             for (Method method : c.getDeclaredMethods()) {
                 ExcelImportField annotation = method.getAnnotation(ExcelImportField.class);
                 if (annotation != null && isGetter(method)) {
@@ -193,14 +193,14 @@ public class ExcelImportBuilder<T> implements Closeable {
         Class<?> fieldType = mapping.getFieldType();
         String dictTypeId = mapping.annotation.dictTypeId();
 
-        // 字典项处理
+        // mục từ điểnXử lý
         if (!dictTypeId.isEmpty() && fieldType == DictItem.class) {
             if (dictTypeService == null) {
-                throw new IllegalStateException("使用字典解析时必须设置 dictTypeService");
+                throw new IllegalStateException("sử dụngtừ điểnphân tích giờPhảiĐặt dictTypeService");
             }
             String dictValue = dictTypeService.getValue(cellValue, dictTypeId);
             if (dictValue == null) {
-                throw new IllegalArgumentException("字典项[" + cellValue + "]不存在");
+                throw new IllegalArgumentException("Mục từ điển[" + cellValue + "]Không tồn tại");
             }
             DictItem dictItem = new DictItem();
             dictItem.setName(cellValue);
@@ -208,7 +208,7 @@ public class ExcelImportBuilder<T> implements Closeable {
             return dictItem;
         }
 
-        // 基本类型转换
+        // cơ bảnLoạichuyển đổi
         if (fieldType == String.class) {
             return cellValue;
         } else if (fieldType == Integer.class || fieldType == int.class) {
@@ -235,7 +235,7 @@ public class ExcelImportBuilder<T> implements Closeable {
         if (inputStream != null) inputStream.close();
     }
 
-    // ---- 内部类 ----
+    // ---- trongbộLớp ----
 
     private static abstract class ColumnMapping {
         final ExcelImportField annotation;
@@ -243,7 +243,7 @@ public class ExcelImportBuilder<T> implements Closeable {
         abstract Class<?> getFieldType();
         abstract void setValue(Object entity, Object value) throws Exception;
         String getLabel() {
-            return annotation.label().isEmpty() ? "列" + annotation.columnIndex() : annotation.label();
+            return annotation.label().isEmpty() ? "Cột" + annotation.columnIndex() : annotation.label();
         }
     }
 

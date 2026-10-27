@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 出库单Controller
+ * Phiếu xuất khoController
  *
  * @author txl
  * @version 2023-07-14/
@@ -41,7 +41,7 @@ public class SupplierOutboundController extends CrudController<SupplierOutboundS
     public ResponseEntity<JSONObject> saveEvt(@RequestBody OutboundEvt entity) {
         String id = supplierOutboundService.save(entity).getId();
         if("true".equals(medicareConfigProperties.getCheck())){
-            //开启医保接口 出库
+            //mởBHYTgiao diện Xuất kho
              mdInventoryService.updateInventoryList_3502A(entity);
         }
         return ResponseEntity.ok(ResultUtil.successJson(id));

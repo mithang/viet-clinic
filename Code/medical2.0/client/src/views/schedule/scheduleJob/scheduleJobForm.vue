@@ -3,29 +3,29 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='编辑' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
+      <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
     <el-form :model='bizFormModel' :rules='formRules' 
       ref='scheduleJobForm' label-width='120px' label-position='right' class='edit-form'>    
 
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='任务名称' prop='name' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入任务名称"' autofocus></el-input>
+          <el-form-item label='Tên nhiệm vụ' prop='name' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.name' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên nhiệm vụ"' autofocus></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='任务编号' prop='code' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.code' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入任务编号"' ></el-input>
+          <el-form-item label='Mã nhiệm vụ' prop='code' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.code' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập mã nhiệm vụ"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='任务表达式' prop='cron' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.cron' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "请输入任务表达式"' >
+          <el-form-item label='Biểu thức nhiệm vụ' prop='cron' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.cron' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập biểu thức nhiệm vụ"' >
               <template slot="append">
                 <el-button type="primary" @click="handleShowCron">
                   生成表达式
@@ -38,23 +38,23 @@
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='任务状态' prop='status' >
+          <el-form-item label='Trạng thái nhiệm vụ' prop='status' >
             <el-input disabled  v-model='bizFormModel.status' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入任务状态"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='是否禁用' prop='isLock' >
+          <el-form-item label='Có bị vô hiệu hóa không' prop='isLock' >
             <el-switch :disabled='dialogProps.action === "view"' v-model='bizFormModel.isLock' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
           </el-form-item>
         </el-col>
       </el-row>
                     <el-row>
                 <el-col>
-                    <el-form-item label='备注' prop='remarks' >
+                    <el-form-item label='Ghi chú' prop='remarks' >
                         <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.remarks' type='textarea'
-                                  :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入备注"'  clearable></el-input>
+                                  :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập ghi chú"'  clearable></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -66,10 +66,10 @@
           <el-dropdown-item><el-button  type='text' :plain='true' @click='restartTask("scheduleJobForm")'>保存并启动</el-button></el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-       <el-button v-if='dialogProps.action === "edit"' type='primary' :plain='true' @click='endTask("scheduleJobForm")'>暂 停</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("scheduleJobForm")'>保 存</el-button>
-      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>取 消</el-button>
-      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>关 闭</el-button>
+       <el-button v-if='dialogProps.action === "edit"' type='primary' :plain='true' @click='endTask("scheduleJobForm")'>Tạm dừng</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("scheduleJobForm")'>Lưu</el-button>
+      <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
+      <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
     <el-dialog title="Cron表达式生成器" width="80%" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
       <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
@@ -104,19 +104,19 @@ export default {
       expression: "",
       formRules: {
         'name': [
-            { required: true, message: '请输入任务名称', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tên nhiệm vụ', trigger: 'blur' }
         ],
         'code': [
-            { required: true, message: '请输入任务编号', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập mã nhiệm vụ', trigger: 'blur' }
         ],
         'cron': [
-            { required: true, message: '请输入任务表达式', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập biểu thức nhiệm vụ', trigger: 'blur' }
         ],
       }
     }    
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object
     }
@@ -248,7 +248,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改定时任务管理'
+      this.dialogProps.title = 'Sửa quản lý nhiệm vụ định kỳ'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -261,12 +261,12 @@ export default {
     },
     initFormModel(This) {
       return {
-        'name': '',   // 任务名称
-        'code': '',   // 任务编号
-        'cron': '',   // 任务表达式
-        'status': '',   // 任务状态
-        'isLock': '',   // 是否禁用
-        'remarks': '',   // 备注
+        'name': '',   // Tên nhiệm vụ
+        'code': '',   // Mã nhiệm vụ
+        'cron': '',   // Biểu thức nhiệm vụ
+        'status': '',   // Trạng thái nhiệm vụ
+        'isLock': '',   // Có bị vô hiệu hóa không
+        'remarks': '',   // Ghi chú
 
       }
     },
@@ -281,21 +281,21 @@ export default {
     },
     openEditScheduleJobDialog(scheduleJob) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改定时任务管理'
+      this.dialogProps.title = 'Sửa quản lý nhiệm vụ định kỳ'
       this.bizFormModel = scheduleJob
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
     },
     openAddScheduleJobDialog() {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加定时任务管理'
+      this.dialogProps.title = 'Thêm quản lý nhiệm vụ định kỳ'
       this.bizFormModel = this.initFormModel()
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
     },
     openCopyScheduleJobDialog(scheduleJob) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加定时任务管理'
+      this.dialogProps.title = 'Thêm quản lý nhiệm vụ định kỳ'
       this.bizFormModel = scheduleJob
       this.initOptions(this.bizFormModel)
       this.bizFormModel.id = null

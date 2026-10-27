@@ -30,7 +30,7 @@ import java.util.List;
 
 
 /**
- * 处方信息审查Controller
+ * Đơn thuốcThông tinxem xétController
  * @author lc
  */
 @RestController
@@ -69,20 +69,20 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     @Override
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody RecipelInfoReview entity) {
-        //获取完整的处方、病历、挂号信息
+        //Lấyxongnguyên của Đơn thuốc, bệnh án, Thông tin đăng ký khám
         RecipelInfo recipelInfo = recipelInfoService.get(entity.getRecipelInfo().getId());
         MedicalRecord medicalRecord = medicalRecordService.get(entity.getMedicalRecord().getId());
         Registration registration = registrationService.get(entity.getRecipelInfo().getRegistration().getId());
         if(recipelInfo.getIsPre() && entity.getReviewResult().equals(1) && medicareConfigProperties.getCheck().equals("true") ){
-            //电子处方审核
+            //điện tửĐơn thuốcxét duyệt
             recipelInfo.setRegistration(registration);
             entity.setRecipelInfo(recipelInfo);
             entity.setMedicalRecord(medicalRecord);
-            //上传预核验
+            //Tải lênkiểm tra trước
             JSONObject jsonObject = mdMedicationOrderService.validateElectronicPrescriptionUpload_Ld7801(entity);
-            //签名电子处方
+            //chữ kýđiện tửĐơn thuốc
             JSONObject signResult = mdMedicationOrderService.signElectronicPrescriptionWithInsurance_Ld7802(entity, SessionUtils.getUserJson().getString("id"));
-            //电子处方上传
+            //Tải lên đơn thuốc điện tử
             JSONObject uploadResult = mdMedicationOrderService.uploadElectronicPrescription_Ld7101(entity,SessionUtils.getUserJson().getString("id"));
         }
         String id = recipelInfoReviewService.save(entity).getId();
@@ -94,7 +94,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
         if (CollectionUtil.isNotEmpty(entitys)) {
             entitys.forEach(recipelInfoReviewService::save);
         }
-        return ResponseEntity.ok(ResultUtil.successJson("操作成功"));
+        return ResponseEntity.ok(ResultUtil.successJson("thao tácThành công"));
     }
 
 
@@ -127,7 +127,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
 
 
     /**
-     * 医保电子处方取药查询
+     * BHYTđiện tửĐơn thuốclấy thuốcTruy vấn
      * @param entity
      * @return
      */
@@ -139,7 +139,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     }
 
     /**
-     * 医保审核查询
+     * BHYTxét duyệtTruy vấn
      * @param entity
      * @return
      */
@@ -151,7 +151,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     }
 
     /**
-     * 处方信息查询
+     * Đơn thuốcThông tinTruy vấn
      * @param entity
      * @return
      */
@@ -164,7 +164,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
 
 
     /**
-     * 电子处方撤销
+     * Hủy đơn thuốc điện tử
      * @param
      * @return
      */
@@ -174,7 +174,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
          recipelInfoReview.setReviewerId(SessionUtils.getUserJson().getString("id"));
          recipelInfoReview.setReviewStatus(2);
          recipelInfoReviewService.save(recipelInfoReview);
-        return ResponseEntity.ok(ResultUtil.successJson("撤销成功！"));
+        return ResponseEntity.ok(ResultUtil.successJson("hủyThành công!"));
 
     }
 

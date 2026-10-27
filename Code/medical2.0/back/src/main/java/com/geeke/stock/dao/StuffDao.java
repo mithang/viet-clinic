@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 材料信息DAO接口
+ * Thông tin vật tưDAOGiao diện
  * @author txl
  * @version 2022-06-22
  */

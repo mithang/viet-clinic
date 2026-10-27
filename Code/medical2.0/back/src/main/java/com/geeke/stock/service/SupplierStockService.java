@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * 供应商库存Service
+ * Tồn kho nhà cung cấpService
  *
  * @author txl
  * @version 2022-06-09
@@ -40,7 +40,7 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class SupplierStockService extends CrudService<SupplierStockDao, SupplierStock> {
 
-    /** 供应商库存为机构共享数据：允许同机构下诊所访问机构诊所的数据（与列表 #{institution} SQL 一致） */
+    /** Tồn kho nhà cung cấp là Cơ sởTổng hưởngDữ liệu: Cho phép phòng khám thuộc cùng cơ sở truy cập dữ liệu phòng khám của cơ sở(Với danh sách #{institution} SQL Nhất quán) */
     @Override
     protected boolean isInstitutionShared() {
         return true;
@@ -92,17 +92,17 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
     public void updateStock(DispensingEvt dispensingEvt) {
 
         Company company = SessionUtils.getUser().getCompany();
-        //正在进行盘点时不能进行发药操作
+        //Đang tiến hành kiểm kê giờKhông thểtiến hành dòngphát thuốcthao tác
         List<InventoryVerification> inventoryVerifications =
                 inventoryVerificationService.getByCompanyId(company.getId());
         if ("0".equals(dispensingEvt.getDispensingType())) {
             if (!CollectionUtils.isEmpty(inventoryVerifications)) {
-                throw new ServiceException("正在进行盘点，无法进行发药操作!");
+                throw new ServiceException("Đang tiến hành kiểm kê, không thể tiến hành dòngphát thuốcthao tác!");
 
             }
         } else {
             if (!CollectionUtils.isEmpty(inventoryVerifications)) {
-                throw new ServiceException("正在进行盘点，无法进行退药操作!");
+                throw new ServiceException("Đang tiến hành kiểm kê, không thể tiến hành dòngTrả thuốcthao tác!");
 
             }
         }
@@ -110,23 +110,23 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         Registration registration = registrationService.get(registrationId);
         if ("0".equals(dispensingEvt.getDispensingType())) {
 
-            //发药
+            //Phát thuốc
             for (String recipelInfoId : dispensingEvt.getRecipelInfoIdList()) {
-                //进行动态库存实占
+                //tiến hành dòngđộngTồn khochiếm dụng thực tế
                 medicinalStorageControlService.okOccupyStock(registrationId, recipelInfoId);
             }
 
 
-            //更新处方状态
+            //Cập nhật trạng thái đơn thuốc
             List<String> recipelInfoIdList = dispensingEvt.getRecipelInfoIdList();
             if (CollectionUtils.isEmpty(recipelInfoIdList)) {
-                throw new ServiceException("发药的处方信息不能为空");
+                throw new ServiceException("phát thuốc của Đơn thuốcThông tinKhông thể là trống");
             }
 
             for (String recipelInfoId : recipelInfoIdList) {
                 RecipelInfo recipelInfo = this.recipelInfoService.get(recipelInfoId);
                 if (recipelInfo == null || !"0".equals(recipelInfo.getIsDispension())) {
-                    throw new ServiceException("处方信息校验失败，不存在或已发药过");
+                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc Đãphát thuốcqua");
                 }
                 recipelInfo.setIsDispension("1");
                 recipelInfo.setDispensionDate(new Date());
@@ -137,7 +137,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
             registration.setDispensingDate(new Date());
         } else {
-            //退药
+            //Trả thuốc
             List<Parameter> parameters = SearchParamsBuilder.create()
                     .eq("registration_id", registrationId)
                     .in("recipel_info_id", dispensingEvt.getRecipelInfoIdList())
@@ -145,38 +145,38 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             List<Dispensing> dispensingList = dispensingService.listAll(parameters, "");
             if (null != dispensingList && !dispensingList.isEmpty()) {
             }
-            //更新处方状态
+            //Cập nhật trạng thái đơn thuốc
             List<String> recipelInfoIdList = dispensingEvt.getRecipelInfoIdList();
             if (CollectionUtils.isEmpty(recipelInfoIdList)) {
-                throw new ServiceException("发药的处方信息不能为空");
+                throw new ServiceException("phát thuốc của Đơn thuốcThông tinKhông thể là trống");
             }
             for (String recipelInfoId : recipelInfoIdList) {
                 RecipelInfo recipelInfo = this.recipelInfoService.get(recipelInfoId);
                 if (recipelInfo == null || !"1".equals(recipelInfo.getIsDispension())) {
-                    throw new ServiceException("处方信息校验失败，不存在或已退药过");
+                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc ĐãTrả thuốcqua");
                 }
                 if (BizConstants.RECIPEL_TYPE_INFUSION.equals(recipelInfo.getRecipelType().getValue())) {
                     List<RecipelDetail> recipelDetails = recipelDetailService.getByRecipelInfoId(recipelInfo.getId());
                     for (RecipelDetail recipelDetail :
                             recipelDetails) {
                         if (recipelDetail.getExecutions() != null) {
-                            throw new ServiceException("输液处方已执行，无法退费！");
+                            throw new ServiceException("Truyền dịchĐơn thuốcĐãhành nghề dòng, Không thể hoàn phí!");
                         }
                     }
                 }
-                //退药暂不退费
+                //Trả thuốctạmkhônghoàn phí
                 medicinalStorageControlService.drugRepercussion(recipelInfo);
 
                 recipelInfo.setIsDispension("2");
                 recipelInfo.setDispensionStatus(-1);
                 recipelInfo.setRetreatChargeDate(new Date());
                 this.recipelInfoService.save(recipelInfo);
-                //修改发药信息表
+                //Sửaphát thuốcThông tinbảng
                 dispensingService.updateDelFlag(recipelInfoId);
             }
             registration.setReturnDate(new Date());
         }
-        //修改发药状态
+        //Sửaphát thuốcTrạng thái
         registration.setDispensingStatus(dispensingEvt.getDispensingStatus());
         //registration.setDispensingDate(new Date());
         registrationService.save(registration);
@@ -188,7 +188,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
     @Transactional(readOnly = false)
     public void saves(StorageEvt storageEvt) {
-        // 新增药品或材料库存时，如果为是初始化库存则先初始化库存总控制记录数据
+        // Thêm mớiThuốc hoặc Vật tưTồn kho giờ, Nếu là khởi tạo tồn kho thì khởi tạo trước dữ liệu bản ghi kiểm soát tổng tồn kho
         for (SupplierStock entity : storageEvt.getSupplierStockList()) {
             String companyID = entity.getCompany().getId();
             String drugID = entity.getDrug().getId();
@@ -214,10 +214,10 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         }
     }
 
-    //村入库单和库存
+    //村phiếu nhập kho và Tồn kho
     @Transactional(readOnly = false)
     public void savesTo(StorageEvt storageEvt) {
-        //先保存入库单
+        //trướcLưuphiếu nhập kho
         SupplierStorage supplierStorage = storageEvt.getSupplierStorage();
         supplierStorage.setInitial(supplierStorage.getNumber());
         SupplierStorage save = supplierStorageService.save(supplierStorage);
@@ -225,15 +225,15 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             for (SupplierStock entity : storageEvt.getSupplierStockList()) {
 
 
-                //将入库单号存入每个入库表中
+                //Lưu số phiếu nhập kho vào từng bảng nhập kho
                 entity.setSupplierStorage(save);
                 entity.setInitial(entity.getNumber());
                 entity.setCancellation("0");
                 String id = supplierStockService.save(entity).getId();
-                //存入成功后将该物品的库存存入到对应的数据库中
+                //Sau khi lưu thành công, lưu tồn kho của mặt hàng đó vào cơ sở dữ liệu tương ứng
 //                if(id!=null){
 //                    if(entity.getDrug().getId()!=null){
-//                        //则获取对应的药品库存
+//                        //thìLấytương ứng của ThuốcTồn kho
 //                        drugService.updateInventory_3502(entity.getNumber(),entity.getDrug().getId());
 //                    }else if (entity.getStuff().getId()!=null){
 //                        stuffService.updateInventory_3502(entity.getNumber(),entity.getStuff().getId());
@@ -241,14 +241,14 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 //                }
             }
 
-            //动态库存控制
+            //độngTồn khokiểm soát
             this.medicinalStorageControlService.addStorageStock(save);
         }
     }
 
 
     /*
-     * 获取入库药品的平均进价*/
+     * Lấynhập khoThuốc của Trung bìnhgiá nhập*/
     @Transactional
     public BigDecimal getByDrugId(String drugOrStuffId) {
         BigDecimal byDrugOrStuffId = this.dao.getByDrugId(drugOrStuffId);
@@ -274,7 +274,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
     public Page<SupplierStock> getDrugIndateWarning(List<Parameter> parameters, int offset, int limit, String
             orderby) {
-        // 移除前端 company_id（防止越权），统一以会话登录租户作为隔离边界
+        // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
         Parameter.extractAndRemoveCompanyId(parameters);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
@@ -323,13 +323,13 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
     }
 
     /**
-     * 入库待审核
+     * nhập khoChờ xét duyệt
      *
      * @param storageEvt
      */
     @Transactional
     public void savesToAudit(StorageEvt storageEvt) {
-        //先保存入库单
+        //trướcLưuphiếu nhập kho
         SupplierStorage supplierStorage = storageEvt.getSupplierStorage();
         supplierStorage.setInitial(supplierStorage.getNumber());
         SupplierStorage save = supplierStorageService.save(supplierStorage);
@@ -338,7 +338,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         if (null != storageEvt.getSupplierStockList() && !storageEvt.getSupplierStockList().isEmpty()) {
             for (SupplierStock entity : storageEvt.getSupplierStockList()) {
 
-                //将入库单号存入每个入库表中
+                //Lưu số phiếu nhập kho vào từng bảng nhập kho
                 entity.setSupplierStorage(save);
                 entity.setInitial(entity.getNumber());
                 entity.setCancellation("0");
@@ -350,7 +350,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
     }
 
     /**
-     * 审核通过并入库
+     * xét duyệtQuavànhập kho
      *
      * @param storageEvt
      */
@@ -364,7 +364,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                 storage.setExamine(examine);
                 storage.setExamineDate(new Date());
                 supplierStorageService.save(storage);
-                //动态库存控制
+                //độngTồn khokiểm soát
                 this.medicinalStorageControlService.addStorageStock(storage);
             }
         });

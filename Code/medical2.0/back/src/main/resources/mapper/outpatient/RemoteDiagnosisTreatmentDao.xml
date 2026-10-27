@@ -167,14 +167,14 @@
         WHERE id = #{id}
     </update>
 
-    <!-- 远程诊疗处方收费 -->
+    <!-- khám chữa bệnh từ xaĐơn thuốcThu phí -->
     <update id="chargeState">
         UPDATE recipel_info SET
         charge_status = 1
         WHERE id = #{id}
     </update>
 
-    <!-- 远程诊疗收费状态修改 -->
+    <!-- khám chữa bệnh từ xaTrạng thái thu phíSửa -->
     <update id="chargeEdit">
         UPDATE remote_diagnosis SET
         medication_status = 1

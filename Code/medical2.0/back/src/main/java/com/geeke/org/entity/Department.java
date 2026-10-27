@@ -9,17 +9,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.TreeEntity;
 /**
- * 部门管理Entity
+ * Quản lý phòng banEntity
  * @author lys
  * @version 2021-07-13
  */
 public class Department extends TreeEntity<Department> {
 
 	private static final long serialVersionUID = 1L;
-	private Company company;      // 公司 
-	private String code;		// 编码
-	private User director;      // 总监 
-	private User manager;      // 经理 
+	private Company company;      // Công ty 
+	private String code;		// Mã
+	private User director;      // tổnggiám sát 
+	private User manager;      // qualý 
 
 	
 	public Department() {
@@ -35,7 +35,7 @@ public class Department extends TreeEntity<Department> {
 		this.company = company;
 	}
 
-	@NotNull(message="公司不能为空")
+	@NotNull(message="Công ty không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -44,7 +44,7 @@ public class Department extends TreeEntity<Department> {
         this.company = company;
     }
     
-	@Length(min=1, max=10, message="编码长度必须介于 1 和 10 之间")
+	@Length(min=1, max=10, message="Độ dài mã phải nằm trong khoảng 1 đến 10 ")
 	public String getCode() {
 		return code;
 	}
@@ -73,7 +73,7 @@ public class Department extends TreeEntity<Department> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -82,7 +82,7 @@ public class Department extends TreeEntity<Department> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -92,7 +92,7 @@ public class Department extends TreeEntity<Department> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

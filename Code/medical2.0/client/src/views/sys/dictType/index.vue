@@ -1,28 +1,28 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <dictType-form ref='dictTypeForm' :permission='permission' @save-finished='loadData'></dictType-form>
     <div class="page-container">
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
               <el-col :span="6">
-                <el-form-item label='字典类型名' prop='name' label-width="90px">
-                  <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入字典类型名'></el-input>
+                <el-form-item label='Tên loại từ điển' prop='name' label-width="90px">
+                  <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên loại từ điển'></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-button-group>
-                  <el-tooltip  effect="light" content="搜索" placement="top-start">
+                  <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                     <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                   </el-tooltip>
-                    <el-tooltip  effect="light" content="重置" placement="top-start">
+                    <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                     <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                   </el-tooltip>
-                  <el-tooltip  effect="light" content="更多" placement="top-start">
+                  <el-tooltip  effect="light" content="Thêm" placement="top-start">
                     <el-button type="primary" icon="el-icon-d-arrow-right" @click='onMoreCodition()' :plain='true'></el-button>
                   </el-tooltip>
                 </el-button-group> 
@@ -31,17 +31,17 @@
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
       </div>
-      <!--  搜索栏  结束 -->
-      <!-- 工具栏 开始 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
+      <!-- Thanh công cụ Bắt đầu -->
       <div class="page-container-header-end">
         <div>
-          <el-button type='primary' :plain='true' @click='checkFile'>导入</el-button>
+          <el-button type='primary' :plain='true' @click='checkFile'>Nhập</el-button>
           <input type="file" id="fileinput" style="display: none;" @change="uploadExcel"/>
-          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateEntity("dictTypeForm")'>添加</el-button>
+          <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateEntity("dictTypeForm")'>Thêm</el-button>
         </div>
       </div>
-      <!-- 工具栏 结束 -->
-      <!-- 表格栏  开始 -->
+      <!-- Thanh công cụ Kết thúc -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
@@ -54,25 +54,25 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType)}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='oprColumnWidth + "px"'>
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"'>
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='dictTypeList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view'
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
                     @click='onViewEntity(scope.$index, scope.row, "dictTypeForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit'
+                  <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit'
                     @click='onEditEntity(scope.$index, scope.row, "dictTypeForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document'
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyEntity(scope.$index, scope.row, "dictTypeForm")'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete'
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
                     @click='onDeleteEntity(scope.$index, scope.row, deleteDictType)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info'
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon type='info' content='导出' placement='top-start' icon-name='el-icon-download'
+                  <OperationIcon type='info' content='Xuất' placement='top-start' icon-name='el-icon-download'
                                  @click='onExportExcel(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
@@ -80,8 +80,8 @@
     	  </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -96,7 +96,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </div>
   </el-row>
 </template>
@@ -125,7 +125,7 @@ export default {
   },
   data() {
     return {
-      // listViewMixin 配置
+      // listViewMixin Cấu hình
       listApi: listDictTypePage,
       getApi: getDictTypeById,
       deleteApi: deleteDictType,
@@ -133,13 +133,13 @@ export default {
       permissionPrefix: 'dictType',
 
       queryModel: {
-        'name': '',   // 字典类型名
+        'name': '',   // Tên loại từ điển
       },
       dictTypeTotal: 0,
       dictTypeList: [],
 
 
-      oprColumnWidth: 165,  // 操作列宽
+      oprColumnWidth: 165,  // Độ rộng cột thao tác
       tableId: '4002',
       schemeId: '6003'
     }
@@ -153,14 +153,14 @@ export default {
       if(this.moreCodition) {
         this.search.params = this.search.params.concat(this.compositeCondition())
       }else{
-        // 查询参数: 字典类型名
+        // Tham số truy vấn: Tên loại từ điển
         this.search.params.push({
           columnName: 'name',
           queryType: 'like',
           value: this.queryModel.name
         })
       }
-      // 数据权限: 字典类型sys_dict_type
+      // Quyền dữ liệu: Loại từ điểnsys_dict_type
       this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
     },
     handleListResponse(responseData) {
@@ -203,7 +203,7 @@ export default {
       importDictType(row).then(responseData => {
         if(responseData.code === 100) {
           this.$message({
-            message: '导入成功',
+            message: 'Nhập dữ liệu thành công',
             type: 'info'
           });
           this.loadData()

@@ -1,8 +1,8 @@
 <template>
   <el-card class="index-module-card">
-    <!-- 标题 -->
+    <!-- Tiêu đề -->
     <div slot="header">
-      <span class="el-card-title">常用流程</span>
+      <span class="el-card-title">Quy trình thường dùng</span>
       <i
         v-show="!isPanelSetIcon"
         class="el-icon-close"
@@ -23,19 +23,19 @@
       </div>
       <div class="apply-item">
         <el-avatar class="avatar-icon" :size="50"> user </el-avatar>
-        <span class="apply-title">测试实施流程</span>
+        <span class="apply-title">Quy trình triển khai kiểm thử</span>
       </div>
       <div class="apply-item">
         <el-avatar class="avatar-icon" :size="50"> user </el-avatar>
-        <span class="apply-title">测试实施流程</span>
+        <span class="apply-title">Quy trình triển khai kiểm thử</span>
       </div>
       <div class="apply-item">
         <el-avatar class="avatar-icon" :size="50"> user </el-avatar>
-        <span class="apply-title">测试实施流程</span>
+        <span class="apply-title">Quy trình triển khai kiểm thử</span>
       </div>
       <div class="apply-item">
         <el-avatar class="avatar-icon" :size="50"> user </el-avatar>
-        <span class="apply-title">测试实施流程</span>
+        <span class="apply-title">Quy trình triển khai kiểm thử</span>
       </div>
     </div>
   </el-card>
@@ -59,7 +59,7 @@ export default {
     }
   },
   methods: {
-    // 删除面板项发送事件
+    // Sự kiện gửi khi xóa mục bảng
     deletePanelItem () {
       this.$emit('deletePanelItemEvent', this.panelId)
     }

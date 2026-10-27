@@ -3,21 +3,21 @@
     <el-card class="page-container">
        <el-row>
         <el-col style="text-align:right;margin-bottom:10px">
-          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>导出</el-button>
+          <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>Xuất</el-button>
         </el-col>
       </el-row>
-      <!--  搜索栏  开始 -->
+      <!--  Thanh tìm kiếm  Bắt đầu -->
       <div class='query-form-container'>
           <el-row class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
                       <el-col :span="8">
-              <el-form-item label='发药日期' prop='time'>
+              <el-form-item label='Ngày phát thuốc' prop='time'>
                 <el-date-picker
                 v-model="queryModel.dateRange"
                 type="datetimerange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
+                range-separator="đến"
+                start-placeholder="Ngày bắt đầu"
+                end-placeholder="Ngày kết thúc"
                 :default-time="['00:00:00', '23:59:59']"
                 format="yyyy-MM-dd HH:mm:ss"
               >
@@ -25,22 +25,22 @@
               </el-form-item>
             </el-col>
               <el-col :span="4">
-                <el-form-item label='药品名称' prop='name'>
+                <el-form-item label='Tên thuốc' prop='name'>
                   <el-input
                     style="width:320px;"
                     v-model="queryModel.name"
-                    placeholder="请输入药品名称或者拼音码"
+                    placeholder="Vui lòng nhập tên thuốc hoặc mã pinyin"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="4">
-              <el-form-item label='药品类型' prop='type'>
+              <el-form-item label='Loại thuốc' prop='type'>
                 <el-select
                   v-model="queryModel.type"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请输入药品名称或拼音码"
+                  placeholder="Vui lòng nhập tên thuốc hoặc mã pinyin"
                   class="typeClass"
                 >
                   <el-option
@@ -59,20 +59,20 @@
             <el-col :span="24" style="text-align:right;padding-right:5px">
               <!-- <div class="bg_btn">
                 <el-button type="primary" @click="onSearch"
-                  >查询</el-button
+                  >Truy vấn</el-button
                 >
-                <el-button @click="resetCondition()">重置</el-button>
+                <el-button @click="resetCondition()">Đặt lại</el-button>
               </div> -->
-                <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>搜索</el-button>
-                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>重置</el-button>
+                <el-button type="primary" icon="el-icon-search" @click='onSearch' :plain='true'>Tìm kiếm</el-button>
+                <el-button type="info" icon="el-icon-refresh-left" @click='resetCondition' :plain='true'>Đặt lại</el-button>
 
 
             </el-col>
           </el-row>
         </div>
-      <!--  搜索栏  结束 -->
+      <!--  Thanh tìm kiếm  Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <div @mouseleave="moveTableOutside">
@@ -94,81 +94,81 @@
              <!-- show-summary -->
             <!-- :summary-method='getTotal' -->
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
             </el-table-column>
-              <el-table-column prop="type" label="药品分类">
+              <el-table-column prop="type" label="Phân loại thuốc">
               </el-table-column>
-              <el-table-column prop="name" label="药品名称" > </el-table-column>
-              <el-table-column prop="dosis" label="规格">
+              <el-table-column prop="name" label="Tên thuốc" > </el-table-column>
+              <el-table-column prop="dosis" label="Quy cách">
                 <template slot-scope="scope">
                   <template>
                     {{scope.row.dosis}}{{scope.row.dosisUnit}}*{{scope.row.preparation}}{{scope.row.preparationUnit}}/{{scope.row.pack}}
                   </template>
                 </template>
                  </el-table-column>
-              <el-table-column prop="total" label="数量" >
+              <el-table-column prop="total" label="Số lượng" >
                 <template slot-scope="scope">
                   {{Math.floor(scope.row.total/scope.row.preparation) >= 0 ? Math.floor(scope.row.total/scope.row.preparation)+(scope.row.pack)+((scope.row.total%scope.row.preparation > 0) ? (scope.row.total%scope.row.preparation) + scope.row.preparationUnit:""):scope.row.total+scope.row.preparationUnit}}
                 </template>
                  </el-table-column>
-              <el-table-column prop="allFee" label="总价" >
+              <el-table-column prop="allFee" label="Tổng giá" >
                 <template slot-scope="scope">
                   <!-- <span style="display:inline-block;width:100%;text-align:right"> -->
-                    {{bigNum(scope.row.allFee)}}元
+                    {{bigNum(scope.row.allFee)}}VNĐ
                   <!-- </span> -->
                 </template>
                  </el-table-column>
 
-              <!-- <el-table-column prop="bid" label="进价单价(元)" width="90">
+              <!-- <el-table-column prop="bid" label="Đơn giá nhập(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right">
                     {{bigNum(scope.row.bid)}}
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="bidTotal" label="进价总价(元)" width="90">
+              <el-table-column prop="bidTotal" label="Tổng giá nhập(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span>
                     {{bigNum(scope.row.bidTotal)}}
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="price" label="销售单价(元)" width="90">
+              <el-table-column prop="price" label="Đơn giá bán(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span>
                     {{bigNum(scope.row.price)}}
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="priceTotal" label="销售总价(元)" width="90">
+              <el-table-column prop="priceTotal" label="Tổng giá bán(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span>
                     {{bigNum(scope.row.priceTotal)}}
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="profit" label="利润(元)" width="90">
+              <el-table-column prop="profit" label="Lợi nhuận(VNĐ)" width="90">
                 <template slot-scope="scope">
                   <span>
                     {{bigNum(scope.row.profit)}}
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="factory" label="生产厂家">
+              <el-table-column prop="factory" label="Nhà sản xuất">
               </el-table-column>
-              <el-table-column prop="batchNo" label="生产批号">
+              <el-table-column prop="batchNo" label="Số lô sản xuất">
               </el-table-column>
-              <el-table-column prop="dispensingDate" label="发药日期">
+              <el-table-column prop="dispensingDate" label="Ngày phát thuốc">
               </el-table-column> -->
             </el-table>
           </div>
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span="24">
           <el-pagination
@@ -184,7 +184,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->
+      <!-- Thanh phân trang     Kết thúc -->
     </el-card>
   </el-row>
 </template>
@@ -239,12 +239,12 @@ export default {
       let arr = []
       columns.forEach((column, index) => {
           if (index === 0) {
-            arr[index] = '合计';
+            arr[index] = 'Tổng cộng';
           }else{
             arr[index] = ''
           }
       })
-      arr[5] = this.amountTotal && this.amountTotal.allFee ? new BigNumber(Number(this.amountTotal.allFee)).toFormat(2)+'元' : ''
+      arr[5] = this.amountTotal && this.amountTotal.allFee ? new BigNumber(Number(this.amountTotal.allFee)).toFormat(2)+'VNĐ' : ''
       return arr
     },
     appendSearchParams() {

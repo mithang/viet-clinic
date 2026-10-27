@@ -54,12 +54,12 @@ public class HosCollectDataController {
     private  final HisDrugService hisDrugService;
 
     private  final HisMaterialService hisMaterialService;
-    //生产厂家
+    //Nhà sản xuất
     private final ManufactureFactoryService manufactureService;
 
     private final HisInstitutionService hisInstitutionService;
 
-    //所有诊所
+    //tất cảPhòng khám
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
         List<Company> companies = companyService.listAll(searchParams.getParams(), searchParams.getOrder());
@@ -67,7 +67,7 @@ public class HosCollectDataController {
     }
 
     /**
-     * 获取院版药品列表
+     * Lấybản việnThuốcDanh sách
      * @param searchParams
      * @return
      */
@@ -78,7 +78,7 @@ public class HosCollectDataController {
     }
 
     /**
-     * 获取院版材料列表
+     * Lấybản việnVật tưDanh sách
      * @param searchParams
      * @return
      */
@@ -99,7 +99,7 @@ public class HosCollectDataController {
     }
 
     /**
-     * 获取院版诊疗项目列表
+     * Lấybản việnhạng mục khám chữa bệnhDanh sách
      * @param searchParams
      * @return
      */
@@ -154,7 +154,7 @@ public class HosCollectDataController {
         return ids;
     }
 
-    //同步插入院版生产厂家
+    //đồng bộchènnhập việnbảnNhà sản xuất
     private  ManufactureFactory getManufactureFactory(HisDrugs drug) {
         ManufactureFactory manufactureFactory = new ManufactureFactory();
         Company company = new Company();
@@ -183,13 +183,13 @@ public class HosCollectDataController {
             final int index = i;
             executor.submit(() -> {
                 JSONObject dataObject = dataArray.getJSONObject(index);
-                // 遍历有序的 fieldMapping 中的每个映射，并将字段名转换
+                // duyệtcóthứ tự của  fieldMapping TrongmỗiCáiánh xạ, vàSẽ Tên trườngchuyển đổi
                 for (Map.Entry<String, Object> entry : fieldMapping.entrySet()) {
                     String oldFieldName = entry.getKey();
                     String newFieldName = (String) entry.getValue();
                     if (dataObject.containsKey(oldFieldName)) {
-                        Object value = dataObject.remove(oldFieldName); // 移除旧字段名
-                        dataObject.put(newFieldName, value); // 添加新字段名
+                        Object value = dataObject.remove(oldFieldName); // loại bỏcũTên trường
+                        dataObject.put(newFieldName, value); // ThêmmớiTên trường
                     }
                 }
                 String code = dataObject.getString("code");
@@ -197,7 +197,7 @@ public class HosCollectDataController {
                     dataObject.put("syncNum",1);
                 }
                 synchronized (processedDataArray) {
-                    processedDataArray.add(dataObject); // 将处理后的数据添加到结果列表
+                    processedDataArray.add(dataObject); // Sẽ Xử lýsau của Dữ liệuThêmĐếnKết quảDanh sách
                 }
             });
         }
@@ -205,7 +205,7 @@ public class HosCollectDataController {
         try {
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            logger.error("数据采集线程中断", e);
+            logger.error("Dữ liệulấy集luồng trong 断", e);
             Thread.currentThread().interrupt();
         }
         JSONObject result = new JSONObject();

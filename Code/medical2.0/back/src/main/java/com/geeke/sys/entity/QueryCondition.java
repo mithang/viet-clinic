@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 查询条件Entity
+ * Điều kiện truy vấnEntity
  * @author lys
  * @version 2021-07-05
  */
@@ -18,10 +18,10 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 
 	private static final long serialVersionUID = 1L;
 	@JsonSerialize(using= ToStringSerializer.class)
-	private Long userId;		// 用户Id
+	private Long userId;		// Người dùngId
 	@JsonSerialize(using= ToStringSerializer.class)
-	private Long routerId;		// 路由Id
-	private String conditions;		// 条件
+	private Long routerId;		// Định tuyếnId
+	private String conditions;		// Điều kiện
 
 	
 	public QueryCondition() {
@@ -33,7 +33,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	}
 	
 
-	@NotNull(message="用户Id不能为空")
+	@NotNull(message="Người dùngIdKhông được để trống")
 	public Long getUserId() {
 		return userId;
 	}
@@ -42,7 +42,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	}
 	
 	
-	@NotNull(message="路由Id不能为空")
+	@NotNull(message="Định tuyếnIdKhông được để trống")
 	public Long getRouterId() {
 		return routerId;
 	}
@@ -51,7 +51,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	}
 	
 	
-	@Length(min=1, max=4000, message="条件长度必须介于 1 和 4000 之间")
+	@Length(min=1, max=4000, message="Điều kiệnĐộ dài phải nằm trong khoảng 1 đến 4000 ")
 	public String getConditions() {
 		return conditions;
 	}
@@ -64,7 +64,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -73,7 +73,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -83,7 +83,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

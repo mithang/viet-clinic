@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 
 
 /**
- * Service基类
+ * ServiceLớp cơ sở
  * @author lys
  * @version 2014-05-16
  */
@@ -40,7 +40,7 @@ public abstract class TreeService<D extends TreeDao<T>, T extends TreeEntity<T>>
 		@SuppressWarnings("unchecked")
 		Class<T> entityClass = Reflections.getClassGenricType(getClass(), 1);
 		
-		// 如果没有设置父节点，则代表为跟节点，有则获取父节点实体
+		// NếuKhông cóĐặtchaNút, thìthaybảng là theoNút, cóthìLấychaNútthực thể
 		if (entity.getParent() == null || StringUtils.isBlank(entity.getParent().getId())){
 			T parentEntity = null;
 			try {
@@ -51,24 +51,24 @@ public abstract class TreeService<D extends TreeDao<T>, T extends TreeEntity<T>>
 			parentEntity.setIds("0.");
 			parentEntity.setId("0");
 			entity.setParent(parentEntity);
-		} else if(entity.getParent().getId().equals("0")) {	// 根节点对象
+		} else if(entity.getParent().getId().equals("0")) {	// gốcNútĐối tượng
 			entity.getParent().setIds("0.");
-		} else {	// 根节点对象
+		} else {	// gốcNútĐối tượng
 			entity.setParent(super.get(entity.getParent().getId()));
 		}
 
 		
-		// 获取修改前的parentIds，用于更新子节点的parentIds，如果是新增模式下，忽略它的ids
+		// LấySửatrước của parentIds, dùng đểCập nhậtconNút của parentIds, Nếu có Thêm mới模kiểudưới, bỏ quanó của ids
 		String oldIds = null;
 		if (StringUtils.isNotBlank(entity.getId())) {
 			oldIds = entity.getIds();
 		}
 		
 	
-		// 保存或更新实体
+		// Lưu hoặc Cập nhậtthực thể
 		String id = super.save(entity).getId();
 		
-		// 修改
+		// Sửa
 		if(StringUtils.isNotBlank(oldIds)) {
 	    	List<Parameter> parms = Lists.newArrayList();
 	    	parms.add(new Parameter("ids", "right_like", oldIds));
@@ -84,7 +84,7 @@ public abstract class TreeService<D extends TreeDao<T>, T extends TreeEntity<T>>
 	}
 	
 	/**
-	 * 查询数表数据
+	 * Truy vấnsốbảngDữ liệu
 	 * @param entity
 	 * @return
 	 */
@@ -96,9 +96,9 @@ public abstract class TreeService<D extends TreeDao<T>, T extends TreeEntity<T>>
 	}
 	
     /**
-     * 两层循环实现建树
-     * @param list 传入的树节点列表
-     * 把list数据通过 id，和parentId够造成一个树
+     * haivòng lặp theo tầngTriển khaixây dựngcây
+     * @param list truyền vào của câyNútDanh sách
+     * ĐưalistDữ liệuQua id,  và parentIdđủgây ramộtCáicây
      * @return
      */
     private List<T> bulid(List<T> list) {

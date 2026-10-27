@@ -53,7 +53,7 @@
         type: String | Number,
         required: true
       },
-      // 仅在嵌入式报表有效
+      // Chỉ có hiệu lực trong báo cáo nhúng
       dashboardId: {
         type: String,
         default: () => {
@@ -72,23 +72,23 @@
     },
     mounted() {
       this.$nextTick(() => {
-        // 获取看板 仅在嵌入式报表有效
+        // 获取看板 Chỉ có hiệu lực trong báo cáo nhúng
         if(this.dashboardId) {
           this.getDashboard(this.dashboardId)
         }
 
-        // 将混入组件内的对象的 addViewFilter 方法拿出来并执行
+        // của đối tượng trong thành phần mixin addViewFilter lấy phương thức ra và thực hiện
         this.$on('addEmbeddedViewFilter', function(param) {
           // this.addViewFilter(param)
           this.addViewFilterFun(param)
         })
-        // 将混入组件内的对象的 removeViewFilter 方法拿出来并执行
+        // của đối tượng trong thành phần mixin removeViewFilter lấy phương thức ra và thực hiện
         this.$on('removeEmbeddedViewFilter', function(componentId) {
           // this.removeViewFilter(componentId)
           this.removeViewFilterFun(componentId)
         })
 
-        // 在 PanelViewShow 使用
+        // tại PanelViewShow Sử dụng
         bus.$on('setComponentData', (data) => {
           this.setComponentData(data)
         })
@@ -145,13 +145,13 @@
           }
           // this.$store.dispatch('panel/setPanelInfo', data)
           this.setPanelInfo(data)
-          // 刷新联动信息
+          // Làm mới thông tin liên kết
           getPanelAllLinkageInfo(dashboardId).then(rsp => {
             // this.$store.commit('report/setNowPanelTrackInfo', rsp.data)
             this.setNowPanelTrackInfo(rsp.data)
           })
 
-          // 刷新跳转信息
+          // Làm mới thông tin chuyển hướng
           queryPanelJumpInfo(dashboardId).then(rsp => {
             // this.$store.commit('report/setNowPanelJumpInfo', rsp.data)
             this.setNowPanelJumpInfo(rsp.data)

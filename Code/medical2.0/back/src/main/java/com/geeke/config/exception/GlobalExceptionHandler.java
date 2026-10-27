@@ -22,7 +22,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 统一异常拦截
+ * thống nhấtngoại lệchặn
  * @author: hxy
  * @date: 2017/10/24 10:31
  */
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
-     * 构建统一错误响应
+     * xây dựngthống nhấtLỗiphản hồi
      */
     private JSONObject buildErrorResponse(String code, String msg, String msgType) {
         JSONObject json = new JSONObject();
@@ -44,63 +44,63 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 通用异常拦截 — 不向客户端暴露堆栈信息
+     * Chungngoại lệchặn — khônghướng tớiKhách hàngđầuhiển thị stackThông tin
      */
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<JSONObject> defaultErrorHandler(HttpServletRequest req, Exception e) {
-        logger.error("请求异常: {} {}", req.getMethod(), req.getRequestURI(), e);
+        logger.error("Vui lòngyêu cầungoại lệ: {} {}", req.getMethod(), req.getRequestURI(), e);
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), ErrorEnum.E_400.getErrorMsg(), Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
 
     /**
-     * 业务逻辑异常拦截 — 返回具体业务错误信息给前端
-     * 用于 Service 层抛出的业务校验异常
+     * Chặn ngoại lệ logic nghiệp vụ — Trả vềcụ thểnghiệp vụThông tin lỗichotrướcđầu
+     * dùng để Service tầngném ra của nghiệp vụKiểm trangoại lệ
      */
     @ExceptionHandler(com.geeke.common.service.ServiceException.class)
     public ResponseEntity<JSONObject> serviceExceptionHandler(com.geeke.common.service.ServiceException e) {
-        logger.warn("业务异常: {}", e.getMessage());
+        logger.warn("nghiệp vụngoại lệ: {}", e.getMessage());
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), e.getMessage(), Constants.MSG_TYPE_WARNING);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
     /**
-     * RuntimeException 拦截 — 返回错误信息，不暴露堆栈
+     * RuntimeException chặn — Trả về thông tin lỗi, khônghiển thị stack
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<JSONObject> runtimeExceptionHandler(RuntimeException e) {
-        logger.error("运行时异常: {}", e.getMessage(), e);
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "系统内部错误", Constants.MSG_TYPE_ERROR);
+        logger.error("运 dòng giờngoại lệ: {}", e.getMessage(), e);
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Hệ thốngtrongbộLỗi", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
 
     /**
-     * @Valid 参数校验失败拦截
-     * 当 @RequestBody 上的实体字段不满足 @NotNull 等约束时触发
+     * @Valid Tham sốKiểm traThất bạichặn
+     * khi @RequestBody trên của thực thểTrườngkhông满đủ @NotNull  v.v. ràng buộc giờkích hoạt
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<JSONObject> validationExceptionHandler(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .reduce((a, b) -> a + "; " + b)
-                .orElse("参数校验失败");
-        logger.warn("参数校验失败: {}", message);
+                .orElse("Tham sốKiểm traThất bại");
+        logger.warn("Tham sốKiểm traThất bại: {}", message);
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), message, Constants.MSG_TYPE_WARNING);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
     /**
-     * GET/POST请求方法错误的拦截器
+     * GET/POSTVui lòngyêu cầuPhương thứcLỗi của interceptor
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<JSONObject> httpRequestMethodHandler(HttpRequestMethodNotSupportedException e) {
-        logger.warn("请求方法不支持: {}", e.getMessage());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "请求方法不支持: " + e.getMethod(), Constants.MSG_TYPE_ERROR);
+        logger.warn("Vui lòngyêu cầuPhương thứckhônghỗ trợ: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Vui lòngyêu cầuPhương thứckhônghỗ trợ: " + e.getMethod(), Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(result);
     }
 
     /**
-     * 权限不足报错拦截
+     * Quyềnkhông đủbáo lỗichặn
      */
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<JSONObject> unauthorizedExceptionHandler() {
@@ -108,37 +108,37 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 请求体JSON格式错误拦截
+     * Vui lòngthân yêu cầuJSONđịnh dạngLỗichặn
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<JSONObject> httpMessageNotReadableHandler(HttpMessageNotReadableException e) {
-        logger.warn("请求体格式错误: {}", e.getMessage());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "请求体格式错误，请检查JSON格式", Constants.MSG_TYPE_ERROR);
+        logger.warn("Định dạng thân yêu cầu sai: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Định dạng thân yêu cầu sai, Vui lòng kiểm traJSONĐịnh dạng", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
     /**
-     * 缺少请求参数拦截
+     * thiếuVui lòngyêu cầuTham sốchặn
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<JSONObject> missingParamHandler(MissingServletRequestParameterException e) {
-        logger.warn("缺少请求参数: {}", e.getMessage());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "缺少必填参数: " + e.getParameterName(), Constants.MSG_TYPE_ERROR);
+        logger.warn("thiếuVui lòngyêu cầuTham số: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "thiếubắt buộcTham số: " + e.getParameterName(), Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
     /**
-     * 404路径不存在拦截
+     * 404đường dẫnKhông tồn tạichặn
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<JSONObject> noHandlerFoundHandler(NoHandlerFoundException e) {
-        logger.warn("路径不存在: {} {}", e.getHttpMethod(), e.getRequestURL());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "请求路径不存在", Constants.MSG_TYPE_ERROR);
+        logger.warn("đường dẫnKhông tồn tại: {} {}", e.getHttpMethod(), e.getRequestURL());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Vui lòngyêu cầuđường dẫnKhông tồn tại", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
     }
 
     /**
-     * 未登录报错拦截
+     * ChưaĐăng nhậpbáo lỗichặn
      */
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<JSONObject> unauthenticatedException() {

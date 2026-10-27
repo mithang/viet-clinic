@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="header-content">
-        <!-- 可选：隐藏汉堡按钮（因为不再需要侧边栏） -->
+        <!-- Có thể chọn：隐藏汉堡按钮（因为不再需要侧边栏） -->
         <div class="hamburger-container" v-if="false">
           <svg
             t="1492500959545"
@@ -112,7 +112,7 @@
 
             <!-- 超出折叠：更多子菜单 -->
             <el-submenu index="more" v-if="handleRouters.length > limitNumber">
-              <template slot="title">更多</template>
+              <template slot="title">Thêm</template>
               <!-- 更多里的一级菜单 -->
               <el-submenu
                 class="header-sub-menu"
@@ -198,7 +198,7 @@
                     :value="stuffIndateWarningTotal"
                   ></el-badge>
                   <span style="position:absolute;margin-top:20px;font-size:10px;text-align:center;color:#171616;margin-left:-30px">
-                    材料预警
+                    Cảnh báo vật tư
                   </span>
                 </el-button>
               </el-popover>
@@ -234,7 +234,7 @@
                     :value="drugIndateWarningTotal"
                   ></el-badge>
                   <span style="position:absolute;margin-top:20px;font-size:10px;text-align:center;color:#171616;margin-left:-30px">
-                    药品预警
+                    Cảnh báo thuốc
                   </span>
                 </el-button>
               </el-popover>
@@ -272,7 +272,7 @@
             </a>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="personalInfo"
-              ><svg-icon iconClass="profileInfo" /> 个人信息</el-dropdown-item
+              ><svg-icon iconClass="profileInfo" /> Thông tin cá nhân</el-dropdown-item
               >
               <el-dropdown-item command="layoutSet"
               ><svg-icon iconClass="layout" /> 布局设置</el-dropdown-item
@@ -339,11 +339,11 @@ export default {
       currentUser: window.currentUser,
       sizeKey: 0,
       currentActive: "",
-      // ❌ 删除 menuKey，不再强制重新渲染菜单
+      // ❌ Xóa menuKey，不再强制重新渲染菜单
       companys: getLocalCompanys(),
       company: window.currentUser.company,
       userHeader:'',
-      // ✅ 添加：缓存处理后的路由，避免重复计算
+      // ✅ Thêm：缓存处理后的路由，避免重复计算
       cachedHandleRouters: [],
     };
   },
@@ -390,11 +390,11 @@ export default {
         this.sizeKey += 1;
       }
     },
-    // ❌ 删除：$route 监听器不再强制刷新 menuKey
+    // ❌ Xóa：$route 监听器不再强制刷新 menuKey
     // $route(val, old) {
     //   this.menuKey += 1;
     // },
-    // ✅ 添加：监听 routers 变化，更新缓存
+    // ✅ Thêm：监听 routers 变化，更新缓存
     routers: {
       immediate: true,
       handler(newVal) {
@@ -457,7 +457,7 @@ export default {
     },
   },
   methods: {
-    // ✅ 新增：更新缓存的路由数据
+    // ✅ Thêm mới：更新缓存的路由数据
     updateCachedRouters() {
       let routers = [];
       this.routers.forEach((item, index) => {
@@ -469,7 +469,7 @@ export default {
       return routers;
     },
     tableTwoPopoverClick () {},
-    // 新增：获取指定父路由的子路由
+    // Thêm mới：获取指定父路由的子路由
     getChildRouters(parentId) {
       let childRouters = [];
       this.routers.forEach((item) => {
@@ -479,13 +479,13 @@ export default {
       });
       return childRouters;
     },
-    // 新增：子菜单点击事件
+    // Thêm mới：子菜单点击事件
     handleSubMenuClick(subModule) {
       if (subModule.url) {
         this.$router.push({ path: subModule.url });
       }
     },
-    // 新增：菜单悬浮事件（优化体验）
+    // Thêm mới：菜单悬浮事件（优化体验）
     handleMenuMouseEnter() {
       this.$refs.menuUl && this.$refs.menuUl.updatePopper();
     },
@@ -724,17 +724,17 @@ export default {
       }
     },
     doLogOut() {
-      this.$confirm("确定要退出系统吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
+      this.$confirm("确定要退出系统吗?", "Nhắc nhở", {
+        confirmButtonText: "Xác nhận",
+        cancelButtonText: "Hủy",
         type: "warning",
       })
         .then(() => {
           // 先清除本地数据
           clearLocalData();
-          // 直接跳转到登录页，不调用API避免token失效时的错误
+          // 直接跳转到登录页，不调用APITránhtoken失效时的错误
           this.$router.replace("/login");
-          // 使用setTimeout确保路由跳转完成后再刷新
+          // Sử dụngsetTimeout确保路由跳转完成后再刷新
           setTimeout(() => {
             window.location.reload();
           }, 100);
@@ -1012,7 +1012,7 @@ export default {
       }
     }
 
-    // popper-class 样式
+    // popper-class Kiểu
     ::v-deep .top-submenu {
       background-color: #fff !important;
 
@@ -1051,7 +1051,7 @@ export default {
     }
   }
 }
-// 隐藏汉堡按钮（可选）
+// 隐藏汉堡按钮（Có thể chọn）
 .hamburger {
   display: none !important;
 }

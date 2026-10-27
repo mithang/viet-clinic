@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 处方详情DAO接口
+ * Chi tiết đơn thuốcDAOGiao diện
  * @author txl
  * @version 2022-06-07
  */
@@ -21,9 +21,9 @@ public interface RecipelDetailDao extends CrudDao<RecipelDetail> {
     List<RecipelDetail> getByRecipelInfoId(@Param("recipelInfoId") String recipelInfoId);
 
     /**
-     * 批量查询多个处方的明细
-     * @param recipelInfoIds 处方ID列表
-     * @return 处方明细列表
+     * hàng loạtTruy vấnnhiềuCáiĐơn thuốc của Chi tiết
+     * @param recipelInfoIds Đơn thuốcIDDanh sách
+     * @return Đơn thuốcChi tiếtDanh sách
      */
     List<RecipelDetail> getByRecipelInfoIds(@Param("recipelInfoIds") List<String> recipelInfoIds);
 

@@ -1,27 +1,27 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <memberSet-form ref='memberSetForm' :permission='permission' @save-finished='loadData'></memberSet-form>
     <div class="page-container">
-        <!--  搜索栏  开始 -->
+        <!--  Thanh tìm kiếm  Bắt đầu -->
         <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='100px' ref='queryForm' :inline-message='true'>
                       <el-col :span="5">
-              <el-form-item label='会员卡名称' prop='name'>
-                <el-input v-model='queryModel.name' :clearable='true' placeholder='请输入会员卡名称'></el-input>
+              <el-form-item label='Tên thẻ thành viên' prop='name'>
+                <el-input v-model='queryModel.name' :clearable='true' placeholder='Vui lòng nhập tên thẻ thành viên'></el-input>
               </el-form-item>
             </el-col>
               <el-col :span="4">
-             <el-form-item label="类型" prop="memberType">
+             <el-form-item label="Loại" prop="memberType">
                 <el-select
                   v-model="queryModel.memberType"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择类型"
+                  placeholder="Vui lòng chọn loại"
                 >
                   <el-option
                     v-for="item in memberType"
@@ -33,13 +33,13 @@
               </el-form-item>
               </el-col>
               <el-col :span="5">
-             <el-form-item label="是否启用" prop="status">
+             <el-form-item label="Có kích hoạt không" prop="status">
                 <el-select
                   v-model="queryModel.status"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择是否启用"
+                  placeholder="Vui lòng chọn có kích hoạt không"
                 >
                   <el-option
                     v-for="item in status"
@@ -72,13 +72,13 @@
              
               <!-- <el-col :span="6">
                 <el-button-group>
-                  <el-tooltip  effect="light" content="搜索" placement="top-start">
+                  <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                     <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                   </el-tooltip>
-                   <el-tooltip  effect="light" content="重置" placement="top-start">
+                   <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                     <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                   </el-tooltip>
-                  <el-tooltip  effect="light" content="更多" placement="top-start">
+                  <el-tooltip  effect="light" content="Thêm" placement="top-start">
                     <el-button type="primary" icon="el-icon-d-arrow-right" @click='onMoreCodition()' :plain='true'></el-button>
                   </el-tooltip>
                 </el-button-group>
@@ -90,7 +90,7 @@
                           type="primary"
                           icon="el-icon-plus"                   
                           @click="onCreateMemberSet()"
-                          >添加</el-button
+                          >Thêm</el-button
                         >
                     </el-button-group>
                   </el-col>
@@ -100,36 +100,36 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
             </el-col>
             </el-form>
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </div>
-        <!--  搜索栏  结束 -->
+        <!--  Thanh tìm kiếm  Kết thúc -->
 
-        <!-- 工具栏 开始 -->
+        <!-- Thanh công cụ Bắt đầu -->
         <!-- <div class="page-container-header-end">
           <div>
-            <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateMemberSet()'>添加</el-button>
+            <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateMemberSet()'>Thêm</el-button>
           </div>
         </div> -->
-        <!-- 工具栏 结束 -->
+        <!-- Thanh công cụ Kết thúc -->
 
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
             
             <el-table class='drag_table' ref="tableRef" height="calc(100vh - 240px)" :data='memberSetList' border @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>                
                <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -145,28 +145,28 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='oprColumnWidth + "px"' :key="'operate'">        
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"' :key="'operate'">        
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='memberSetList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <!-- <OperationIcon v-show='permission.view' type='info' content='查看' placement='top-start' icon-name='el-icon-view' 
+                  <!-- <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
                     @click='onViewMemberSet(scope.$index, scope.row)'></OperationIcon> -->
                    <center> 
-                    <el-button type="text" v-show='permission.view' @click='onViewEntity(scope.$index, scope.row, "memberSetForm")'>详情</el-button>
-                    <el-button v-if="scope.row.amount===scope.row.number" style="color:red" type="text" v-show='permission.view' @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'>删除</el-button>
+                    <el-button type="text" v-show='permission.view' @click='onViewEntity(scope.$index, scope.row, "memberSetForm")'>Chi tiết</el-button>
+                    <el-button v-if="scope.row.amount===scope.row.number" style="color:red" type="text" v-show='permission.view' @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'>Xóa</el-button>
                   </center>
                     
-                  <!-- <OperationIcon v-show='permission.edit' type='primary' content='编辑' placement='top-start' icon-name='el-icon-edit' 
+                  <!-- <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit' 
                     @click='onEditMemberSet(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.add' type='primary' content='复制' placement='top-start' icon-name='el-icon-document' 
+                  <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document' 
                     @click='onCopyMemberSet(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.remove' type='danger' content='删除' placement='top-start' icon-name='el-icon-delete' 
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete' 
                     @click='onDeleteMemberSet(scope.$index, scope.row)'></OperationIcon>
-                  <OperationIcon v-show='permission.view' type='info' content='历史记录' placement='top-start' icon-name='el-icon-info' 
+                  <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon> -->
                 </template>
               </el-table-column>
@@ -174,8 +174,8 @@
     	  </div>	          
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -190,7 +190,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->     </div>
+      <!-- Thanh phân trang     Kết thúc -->     </div>
   </el-row>
 </template>
 
@@ -228,7 +228,7 @@ export default {
         'name': 'like',
       },
       queryModel: {
-        'name': '',   // 会员卡名称
+        'name': '',   // Tên thẻ thành viên
         status:'',
         valid:'',
         memberType:{}
@@ -237,34 +237,34 @@ export default {
       memberSetList: [],
         
       
-      oprColumnWidth: 140,  // 操作列宽
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1222698883343517159',
       schemeId: '1222698883343517177',
       status:[{
-        name:'是',
+        name:'Có',
         value:"0",
       },{
-        name:'否',
+        name:'Không',
         value:'1',
       }],
       valid:[
         {
-          name:'是',
+          name:'Có',
           value:'0'
         },
         {
-          name:'否',
+          name:'Không',
           value:'1'
         }
       ],
-      memberType:[],//会员卡类型
+      memberType:[],//Loại thẻ thành viên
     }
   },
   methods: {
-    //重置
+    //Đặt lại
      reset(){
       this.queryModel={
-         'name': '',   // 会员卡名称
+         'name': '',   // Tên thẻ thành viên
         status:'',
         valid:'',
         memberType:{}
@@ -272,7 +272,7 @@ export default {
       this.onSearch()
     },
 
-     //获取会员卡类型
+     //Lấy loại thẻ thành viên
     initOptions(){
       getDictItemsByCode(DICT_CODE.MEMBER_TYPE).then((data) => {
         this.memberType = data;
@@ -321,8 +321,8 @@ export default {
   updated(){
      if(this.$refs.tableRef){
        this.$nextTick(() => {
-            // tableRef是el-table绑定的ref属性值
-            this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+            // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+            this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
         })
     }
   },

@@ -198,7 +198,7 @@ export default {
     this.connectWebSocket()
     let setting = getLocalSysSetting()
     this.sysLogo =   require('@/assets/images/projectLogo.png');
-    this.changeWebTitle(setting ? setting.sysAbbrname : '云诊所')
+    this.changeWebTitle(setting ? setting.sysAbbrname : 'Phòng khám đám mây')
     this.doGetCurrentUsername();
     if(this.$store.getters.toPath){
       let routers = getLocalRouters()
@@ -294,7 +294,7 @@ export default {
           });
           message += "</ul></div>";
           this.$notify({
-            title: total+'条：未读消息通知',
+            title: total+'dòng：未读消息通知',
             duration: Number(total) * 1500,
             position: 'bottom-right',
             dangerouslyUseHTMLString: true,
@@ -564,7 +564,7 @@ export default {
   // 固定定位模式
   &.is-fixed {
     position: fixed;
-    top: 56px; // header 高度
+    top: 56px; // header chiều cao
     left: 0;
     right: 0;
     z-index: 100;
@@ -716,7 +716,7 @@ export default {
   min-width: 1120px;
   overflow: hidden;
 
-  // 当 tab 固定时，给 body-container 添加顶部间距
+  // khi tab 固定时，给 body-container 添加顶部间距
   .layout-container.fixed-header & {
     padding-top: 37px; // tab 栏高度
   }

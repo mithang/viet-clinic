@@ -16,7 +16,7 @@ import com.geeke.utils.FreeMarkers;
 import com.google.common.collect.Maps;
 
 /**
- * 业务编号Service
+ * nghiệp vụmã sốService
  * @author lys
  * @version 2021-04-30
  */
@@ -35,9 +35,9 @@ public class SequenceService {
 	
 	
 	/**
-	 * 获取编号
-	 * @param ruleCode    规则代码
-	 * @param bizObject	     业务对象
+	 * Lấymã số
+	 * @param ruleCode    Mã quy tắc
+	 * @param bizObject	     Đối tượng nghiệp vụ
 	 * @return
 	 */
 	@Transactional(readOnly = false)
@@ -46,20 +46,20 @@ public class SequenceService {
 	}
 	
 	/**
-	 * 获取编号
-	 * @param companyId	       公司Id  公司Id为空时，使用统一的序号
-	 * @param ruleCode    规则代码
-	 * @param bizObject	     业务对象
+	 * Lấymã số
+	 * @param companyId	       Công tyId  Công tyId là trống giờ, sử dụngthống nhất của số thứ tự
+	 * @param ruleCode    Mã quy tắc
+	 * @param bizObject	     Đối tượng nghiệp vụ
 	 * @return
 	 */
 	// @Transactional(/*readOnly = false*/)
 	public String generate(String companyId, String ruleCode, Object bizObject) {
 		String ruleDef = null;
-		// 公司id不为空，使用获取公司的编号规则表达式
+		// Công tyidkhông là trống, sử dụngLấycông ty của Biểu thức quy tắc đánh số
 		if(StringUtils.isNotBlank(companyId)) {
 			companyCodeRuleDao.getRuleDefByCode(companyId, ruleCode);
 		}
-		// 公司Id为空，或公司编号规则不存在，获取系统统一的规则表达式
+		// Công tyId là trống,  hoặc công tymã sốquy tắcKhông tồn tại, LấyHệ thốngthống nhất của quy tắcbiểu thức
 		if(ruleDef == null) {
 			ruleDef = codeRuleDao.getRuleDefByCode(ruleCode);
 		}
@@ -72,15 +72,15 @@ public class SequenceService {
 	}
 	
 	/**
-	 * 生成编号
-	 * @param companyId			 公司Id
-	 * @param ruleCode    规则代码
-	 * @param templateString	规则表达式
-	 * @param bizObject			业务对象
+	 * Tạomã số
+	 * @param companyId			 Công tyId
+	 * @param ruleCode    Mã quy tắc
+	 * @param templateString	quy tắcbiểu thức
+	 * @param bizObject			Đối tượng nghiệp vụ
 	 * @return
 	 */
 	private String doGenerate(String companyId, String ruleCode, String templateString, Object bizObject) {
-		// 公司Id为空时，使用统一的序号（companyId为0）
+		// Công tyId là trống giờ, sử dụngthống nhất của số thứ tự(companyId là 0)
 		String theCompanyId = StringUtils.isBlank(companyId) ? "0" : companyId;
 		
 		Map<String, Object> model = Maps.newHashMap();
@@ -111,7 +111,7 @@ public class SequenceService {
 			sequence.preInsert();
 			sequenceDao.insert(sequence);
 			
-			sequence = sequenceDao.getByPrefix(companyId, ruleCode, prefix);	// 增加数据库锁
+			sequence = sequenceDao.getByPrefix(companyId, ruleCode, prefix);	// tăngDữ liệukhokhóa
 		}
 		return sequence;
 	}

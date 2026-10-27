@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
 
 /**
- * 用户管理DAO接口
+ * Quản lý người dùngDAOGiao diện
  * @author lys
  * @version 2021-08-25
  */

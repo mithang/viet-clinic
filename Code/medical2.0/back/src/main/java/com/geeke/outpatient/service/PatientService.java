@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 患者信息Service
+ * Thông tin bệnh nhânService
  * @author txl
  * @version 2022-06-23
  */
@@ -45,47 +45,47 @@ public class PatientService extends CrudService<PatientDao, Patient>{
     @Transactional(readOnly = false)
     public Patient save(Patient patient) {
         Map<String, String> colMaps = Maps.newHashMap();
-        // 患者联系方式已存在
+        // Thông tin liên hệ của bệnh nhân đã tồn tại
         colMaps.clear();
         colMaps.put("phone", "phone");
         
 //        if(exists(dao, patient, colMaps)) {
-//            throw new ServiceException("患者联系方式已存在");
+//            throw new ServiceException("Thông tin liên hệ của bệnh nhân đã tồn tại");
 //        }
        if(patient.getId()==null){
-           //判断电话号码是否存在
+           //Kiểm traSố điện thoạisốCó tồn tại không
            if(!Objects.equals(patient.getPhone(),"") && patient.getPhone()!=null){
                if(patientDao.countPatientByPhone(patient.getPhone(),patient.getCompany().getId(),null).size()>0){
-                   throw new ServiceException("患者联系方式已存在");
+                   throw new ServiceException("Thông tin liên hệ của bệnh nhân đã tồn tại");
 
                }
            }
 
-           //判断身份证是否存在
+           //Kiểm traCMND/CCCDCó tồn tại không
            if(!Objects.equals(patient.getCard(),"") && patient.getCard()!=null){
                List<Patient> patientByCard = patientDao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);
                if(!CollectionUtils.isEmpty(patientByCard)){
-                       throw new ServiceException("患者身份证号已存在");
+                       throw new ServiceException("Bệnh nhânsố CMND/CCCDĐã tồn tại");
                }
            }
        }
 
        if(patient.getId()!=null){
-           //判断电话号码是否存在
+           //Kiểm traSố điện thoạisốCó tồn tại không
            if(!Objects.equals(patient.getPhone(),"") && patient.getPhone()!=null){
                List<Patient> patients = patientDao.countPatientByPhone(patient.getPhone(), patient.getCompany().getId(),patient.getId());
                if(patients.size()>0&&!Objects.equals(patients.get(0).getPhone(),patient.getPhone())){
-                   throw new ServiceException("患者联系方式已存在");
+                   throw new ServiceException("Thông tin liên hệ của bệnh nhân đã tồn tại");
 
                }
            }
 
-           //判断身份证是否存在
+           //Kiểm traCMND/CCCDCó tồn tại không
            if(!Objects.equals(patient.getCard(),"") && patient.getCard()!=null){
                List<Patient> patientByCard = patientDao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),patient.getId());
                if(!CollectionUtils.isEmpty(patientByCard)){
                    if(Objects.equals(patientByCard.get(0).getCard(),patient.getCard())) {
-                       throw new ServiceException("患者身份证号已存在");
+                       throw new ServiceException("Bệnh nhânsố CMND/CCCDĐã tồn tại");
                    }
                }
            }
@@ -99,10 +99,10 @@ public class PatientService extends CrudService<PatientDao, Patient>{
     public Patient wxSave(Patient patient) {
 
 
-        //根据用户身份证号获取是否有该用户
+        //Lấy thông tin có người dùng đó không theo số CMND/CCCD của người dùng
         List<Patient> patientByCard = this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);
 
-        //如果存在该用户，但是没有绑定openid的话就进行绑定操作
+        //NếuTồn tạiđóNgười dùng, nhưng có Không cóliên kếtchỉ địnhopenid của nóithìtiến hành dòngliên kếtchỉ địnhthao tác
         if(!ObjectUtils.isEmpty(patientByCard.get(0)) && patientByCard.get(0).getOpenId()==null || Objects.equals(patientByCard.get(0).getOpenId(),"") && !ObjectUtils.isEmpty(patientByCard.get(0))){
             patient.setId(patientByCard.get(0).getId());
             patient.setUpdateDate(new Date());
@@ -110,14 +110,14 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             return patient;
         }else if(!ObjectUtils.isEmpty(patientByCard.get(0)) && !ObjectUtils.isEmpty(patientByCard.get(0).getOpenId())){
             if(Objects.equals(patient.getOpenId(),patientByCard.get(0).getOpenId())){
-                throw new ServiceException("该患者身份证号已绑定！");
+                throw new ServiceException("đóBệnh nhânsố CMND/CCCDĐãliên kếtchỉ định!");
             }else {
-                throw new ServiceException("该患者身份证号已绑定其他微信账号，不能重复绑定！");
+                throw new ServiceException("Số CMND/CCCD của bệnh nhân này đã liên kết với tài khoản WeChat khác, Không thểtrùng lặpliên kếtchỉ định!");
             }
         }else {
             patient.setId(IdGen.uuid());
-            patient.setCreateBy("微信");
-            patient.setUpdateBy("微信");
+            patient.setCreateBy("WeChat");
+            patient.setUpdateBy("WeChat");
             patient.setCreateDate(new Date());
             patient.setUpdateDate(new Date());
             this.dao.wxInsert(patient);
@@ -155,7 +155,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         return patients;
     }
 
-    /* 根据患者姓名身份证查询患者信息 */
+    /* Tra cứu thông tin bệnh nhân theo họ tên và CMND/CCCD của bệnh nhân */
     public Patient inquire(Patient patient) {
         Patient patients = this.dao.inquire(patient);
         return patients;

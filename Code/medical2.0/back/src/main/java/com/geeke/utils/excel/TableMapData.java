@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @作者 lc
- * @创建时间 2022年11月16日 10:31
+ * @làmngười lc
+ * @Thời gian tạo 2022Năm11Tháng16Ngày 10:31
  */
 public class TableMapData {
 
@@ -20,8 +20,8 @@ public class TableMapData {
 
     /**
      * excel
-     * key 为excel字段用headersIndex的值
-     * value 是excel 合并的单元格4个数据，第5个是合并单元格名字
+     * key  là excelTrườngdùngheadersIndex của Giá trị
+     * value  có excel hợpvà của đơn đồngô4CáiDữ liệu, Dòng 5Cái có hợpvàđơn đồngôtênchữ
      *
      */
     public Map<String,List<String>> mergeCells = null;

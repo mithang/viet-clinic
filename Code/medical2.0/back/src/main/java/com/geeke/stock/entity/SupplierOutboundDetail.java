@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 /**
- * 出库单Entity
+ * Phiếu xuất khoEntity
  * @author txl
  * @version 2022-06-02/
  */
@@ -19,18 +19,18 @@ import java.text.DecimalFormat;
 public class SupplierOutboundDetail extends DataEntity<SupplierOutboundDetail> {
 
 	private static final long serialVersionUID = -2281869736391969854L;
-	private Company company;      // 诊所id
-	private Supplier supplier;      // 供应商id
-	private SupplierOutbound supplierOutbound;      // 出库单id
-	private Drug drug;      // 药品名称
-	private Stuff stuff;      // 材料名称
-	private  Integer currentStock;//当前库存
-	private BigDecimal number;		// 出库数量
-	private MedicinalStorageControl medicinalStorage;  //动态库存明细
-	private  String remark;//备注
+	private Company company;      // Phòng khámid
+	private Supplier supplier;      // Nhà cung cấpid
+	private SupplierOutbound supplierOutbound;      // Phiếu xuất khoid
+	private Drug drug;      // Tên thuốc
+	private Stuff stuff;      // Tên vật tư
+	private  Integer currentStock;//Tồn kho hiện tại
+	private BigDecimal number;		// Xuất khoSố lượng
+	private MedicinalStorageControl medicinalStorage;  //độngTồn khoChi tiết
+	private  String remark;//Ghi chú
 	private SupplierStock supplierStock;
-	//医保字段
-	private  String cnt;//医报数量
+	//Trường BHYT
+	private  String cnt;//ybáoSố lượng
 	private  String drugTracCodg;
 
 	public Company getCompany() {
@@ -114,7 +114,7 @@ public class SupplierOutboundDetail extends DataEntity<SupplierOutboundDetail> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -123,7 +123,7 @@ public class SupplierOutboundDetail extends DataEntity<SupplierOutboundDetail> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -133,7 +133,7 @@ public class SupplierOutboundDetail extends DataEntity<SupplierOutboundDetail> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

@@ -9,7 +9,7 @@ import com.geeke.taskmanagement.entity.article;
 import java.util.List;
 
 /**
- * 文章管理数据DAO接口
+ * bài viếtQuản lýDữ liệuDAOGiao diện
  * @author txl
  * @version 2023-02-09
  */

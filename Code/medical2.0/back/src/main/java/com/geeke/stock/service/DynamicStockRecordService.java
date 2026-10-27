@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 动态库存台账记录及控制处理
+ * độngTồn khomáysổ sáchBản ghivàkiểm soátXử lý
  * @author helong
  * @date 2022/8/17 14:01
  */
@@ -13,38 +13,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class DynamicStockRecordService
 {
     /**
-     * 预占用
-     * 目前包含功能：病例填写-完成接诊、病例填写-快速接诊、病例填写-完成接诊后编辑保存
+     * trướcchiếm dụng
+     * Hiện tại bao gồm chức năng: Điền ca bệnh-hoàn thành tiếp nhận, Điền ca bệnh-Tiếp nhận nhanh, Điền ca bệnh-Chỉnh sửa sau khi hoàn thành tiếp nhậnLưu
      */
     public void preparedOccupy() {
-        //先释放再重新占用
+        //trướcgiải phónglạiLạichiếm dụng
 
     }
 
     /**
-     * 实际占用
-     * 目前包含功能：发药完成
+     * thực tếchiếm dụng
+     * Hiện tại bao gồm chức năng: phát thuốchoàn thành
      */
     public void actualOccupy() {
-        //先释放再重新占用
+        //trướcgiải phónglạiLạichiếm dụng
 
-        //再实际占用
+        //lạithực tếchiếm dụng
     }
 
     /**
-     * 退药库存操作
-     * 药房实际库存增加，可用库存暂时先不增加，等退费后可用库存再增加
+     * Trả thuốcTồn khothao tác
+     * thuốc房thực tếTồn khotăng, khả dụngTồn khotạm giờtrướckhôngtăng,  v.v. hoàn phísaukhả dụngTồn kholạităng
      */
     public void backMedicine() {
-        //直接把实际占用的库存还回去
+        //trực tiếpĐưathực tếchiếm dụng của Tồn khocòntrả lạiđi
     }
 
     /**
-     * 退费
+     * Hoàn phí
      */
     public void backCost() {
-        //取消预占用
+        //lấyhủytrướcchiếm dụng
 
-        //如果是退药则可用库存增加
+        //Nếu có Trả thuốcthìkhả dụngTồn khotăng
     }
 }

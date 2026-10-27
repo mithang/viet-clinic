@@ -17,7 +17,7 @@ const monthList = [
 ]
 
 /**
- * 当前时间，年，月，日
+ * Thời gian hiện tại，năm，tháng，ngày
  * @param {* 实例化时间 } date
  */
 const getNewDate = (date) => {

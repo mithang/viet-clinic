@@ -22,7 +22,7 @@ import java.util.List;
 
 
 /**
- * 出库单明细Service
+ * Xuất khođơnChi tiếtService
  *
  * @author txl
  * @version 2022-06-02/
@@ -51,7 +51,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     private MedicinalStorageControlService medicinalStorageControlService;
 
     /**
-     * 保存出库单明细
+     * LưuXuất khođơnChi tiết
      *
      * @param supplierOutboundDetails
      * @return
@@ -61,39 +61,39 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         List<SupplierOutboundDetail> exist = supplierOutboundDetailDao.getByOutboundId(outboundId);
 
         SupplierOutbound outbound = supplierOutboundService.get(outboundId);
-        if (outbound == null) throw new ServiceException("出库单不存在");
+        if (outbound == null) throw new ServiceException("Phiếu xuất kho không tồn tại");
 
-        //更新已有明细，找出需要删除的明细
+        //Cập nhậtĐãcóChi tiết, tìm raCầnXóa của Chi tiết
         List<SupplierOutboundDetail> willDeleteDetail = new ArrayList<>();
         for (SupplierOutboundDetail d : exist) {
             int found = supplierOutboundDetails.indexOf(d);
             if (found < 0) {
-                willDeleteDetail.add(d);//即将删除
+                willDeleteDetail.add(d);//tức làSẽ Xóa
             } else {
-                //更新
+                //Cập nhật
                 updateSupplierOutboundDetail(d);
             }
         }
 
-        //删除需要删除的
+        //XóaCầnXóa của 
         for (SupplierOutboundDetail d : willDeleteDetail) {
             deleteSupplierOutboundDetail(d.getId());
         }
 
-        //添加
+        //Thêm
         for (SupplierOutboundDetail d : supplierOutboundDetails) {
             d.setSupplierOutbound(outbound);
             if (!StringUtils.isNullOrEmpty(d.getId())) continue;
 
-            //锁定库存
+            //khóachỉ địnhTồn kho
             MedicinalStorageControl medicinalStorageControl = d.getMedicinalStorage();
             MedicinalStorageControl queryStorageControl = medicinalStorageControlService.get(d.getMedicinalStorage().getId());
             if (queryStorageControl == null) {
-                throw new ServiceException("动态库存记录不存在");
+                throw new ServiceException("độngTồn khoBản ghiKhông tồn tại");
             }
 
             if (queryStorageControl.getSurplusStock().compareTo(d.getNumber()) < 0) {
-                throw new ServiceException("可用库存不够");
+                throw new ServiceException("khả dụngTồn khokhôngđủ");
             }
             medicinalStorageControl.setOccupyStock(queryStorageControl.getOccupyStock().add(d.getNumber()));
             medicinalStorageControlService.save(queryStorageControl);
@@ -103,7 +103,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
-     * 删除出库明细，释放冻结库存
+     * XóaXuất khoChi tiết, giải phóngđóng băngTồn kho
      *
      * @param detailId
      */
@@ -111,7 +111,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     public void deleteSupplierOutboundDetail(String detailId) {
         SupplierOutboundDetail detail = supplierOutboundDetailDao.get(detailId);
         if (detail == null) {
-            throw new ServiceException("出库单明细不存在");
+            throw new ServiceException("Xuất khođơnChi tiếtKhông tồn tại");
         }
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
@@ -122,7 +122,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
-     * 撤消所有出库单明细，释放库存
+     * hủy bỏtất cảXuất khođơnChi tiết, giải phóngTồn kho
      *
      * @param outboundId
      */
@@ -137,20 +137,20 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
-     * 修改出库旱明细，修正冻结库存数量
+     * SửaXuất kho旱Chi tiết, sửađóng băngSố lượng tồn kho
      *
      * @param detail
      */
     @Transactional(readOnly = false)
     public void updateSupplierOutboundDetail(SupplierOutboundDetail detail) {
         SupplierOutboundDetail old = supplierOutboundDetailDao.get(detail.getId());
-        if (old == null) throw new ServiceException("出库单明细不存在");
+        if (old == null) throw new ServiceException("Xuất khođơnChi tiếtKhông tồn tại");
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId());//old.getMedicinalStorage();
-        BigDecimal addNumber = detail.getNumber().subtract(old.getNumber());//增加冻结的数量
+        BigDecimal addNumber = detail.getNumber().subtract(old.getNumber());//tăngđóng băng của Số lượng
         if (addNumber.compareTo(BigDecimal.ZERO) > 0) {
             if (addNumber.compareTo(medicinalStorageControl.getSurplusStock()) > 0) {
-                throw new ServiceException("可用库存不够");
+                throw new ServiceException("khả dụngTồn khokhôngđủ");
             }
             medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().add(addNumber));
             medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().subtract(addNumber));
@@ -162,7 +162,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
-     * 撤消出库单
+     * hủy bỏXuất khođơn
      *
      * @param outboundId
      */

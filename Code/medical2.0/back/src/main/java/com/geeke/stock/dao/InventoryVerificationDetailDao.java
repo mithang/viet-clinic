@@ -10,8 +10,8 @@ import com.geeke.common.persistence.CrudDao;
 import java.util.List;
 
 /**
- * 库存盘点详情DAO接口
- * @author 超级管理员
+ * Chi tiết kiểm kê tồn khoDAOGiao diện
+ * @author Quản trị viên cấp cao
  * @version 2022-11-02
  */
 @Mapper

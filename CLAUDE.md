@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-oh-cloudclinic (云诊所) is a full-stack medical clinic management system. The source lives under `Code/medical2.0/` with a Spring Boot backend (`back/`) and Vue 2 frontend (`client/`).
+oh-cloudclinic (Phòng khám đám mây) is a full-stack medical clinic management system. The source lives under `Code/medical2.0/` with a Spring Boot backend (`back/`) and Vue 2 frontend (`client/`).
 
 ## Build & Run Commands
 

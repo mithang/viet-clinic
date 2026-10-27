@@ -24,10 +24,10 @@
    * <search-select :optionSize="8" v-model="value" option-label="label" option-value="value" :options="options"></search-select>
    * Attributes：
    * optionSize：初始下拉选项的条数
-   * option-label：选项的标签，若不设置则默认与 value 相同 （必填）
+   * option-label：选项的标签，若不设置则默认与 value 相同 （Bắt buộc）
    * option-value：选项的值
    * options：下拉选项数组
-   * 当 值绑定为对象时，必须指定 value-key 唯一标识，且只需设置 option-label 属性，无需设置 option-value 属性
+   * khi 值绑定为对象时，必须指定 value-key 唯一标识，且只需设置 option-label Thuộc tính，无需设置 option-value Thuộc tính
    * 其他属性同 el-select 官方属性
    * 特性后续优化
    */

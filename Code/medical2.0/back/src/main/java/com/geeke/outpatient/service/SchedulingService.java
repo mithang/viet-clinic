@@ -23,7 +23,7 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
         List<SchedulingDTO> buserlist= schedulingDao.getpbuserlist(pageRequest);
         if (Objects.nonNull(buserlist)){
             for (SchedulingDTO buser : buserlist ){
-                //String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+                //String[] weekDays = {"Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"};
 
                     List<WeekdayDTO> weeks = new ArrayList<>();
                     if (buser.getPbsl() > 0) {
@@ -98,7 +98,7 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
         List<SchedulingDTO> buserlist= schedulingDao.getpbuserlist(pageRequest);
         if (Objects.nonNull(buserlist)){
             for (SchedulingDTO buser : buserlist ){
-                //String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+                //String[] weekDays = {"Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"};
 
                 WeekdayDTO week=new WeekdayDTO();
                 List<String> dates=new ArrayList<>();
@@ -117,9 +117,9 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
 
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(list.getSchedulingtime());
-                        //这个是你要转成后的时间的格式
+                        //nàyCái có bạncầnchuyểnthànhsau của Thời gian của định dạng
                         SimpleDateFormat sdff=new SimpleDateFormat("yyyy-MM-dd");
-                        // 时间戳转换成时间
+                        // Thời giandấuchuyển đổithànhThời gian
                         String datetieme = sdff.format(list.getSchedulingtime());
                         int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
                         switch (w) {
@@ -169,7 +169,7 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
         List<SchedulingDTO> buserlist= schedulingDao.getpbuserlist(pageRequest);
         if (Objects.nonNull(buserlist)){
             for (SchedulingDTO buser : buserlist ){
-                //String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+                //String[] weekDays = {"Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"};
 
                 List<Integer> house=new ArrayList<>();
                 if (buser.getPbsl() > 0) {

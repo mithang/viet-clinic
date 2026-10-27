@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 
 /**
  * @author: lys
- * @description: 自定义Realm
+ * @description: Tùy chỉnhRealm
  * @date: 2019/10/24 10:06
  */
 public class UserRealm extends AuthorizingRealm {
@@ -39,10 +39,10 @@ public class UserRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        //查询用户的权限
+        //Truy vấnNgười dùng của Quyền
     	List<String> permissions = SessionUtils.getUserPermission();
-        logger.debug("permission的值为: {}", permissions);
-        //为当前用户设置角色和权限
+        logger.debug("permission của Giá trị là : {}", permissions);
+        // là Hiện tạiNgười dùngĐặtVai trò và Quyền
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         authorizationInfo.addStringPermissions(permissions);        
         
@@ -50,51 +50,51 @@ public class UserRealm extends AuthorizingRealm {
     }
 
     /**
-     * 密码哈希迭代次数 — 提升至10000次以增强安全性（原为6次）
-     * 与 ShiroConfiguration 中的 HashedCredentialsMatcher 保持一致
+     * Mật khẩubămlặp lầnsố — đề xuất升đến10000 lầnbằngtăng强an toàntính(gốc là 6 lần)
+     *  và  ShiroConfiguration Trong HashedCredentialsMatcher Giữ nhất quán
      */
     private static final int PASSWORD_HASH_ITERATIONS = 10000;
 
     /**
-     * 旧版密码哈希迭代次数 — 用于渐进式密码迁移
-     * 登录时先用新迭代次数验证，失败后回退到旧迭代次数验证；
-     * 旧迭代次数验证成功后，用新迭代次数重新哈希密码并更新数据库。
+     * cũbảnMật khẩubămlặp lầnsố — dùng để渐tiến hànhkiểuMật khẩuchuyển đổi
+     * Đăng nhập giờtrướcdùngmớilặp lầnsốXác thực, Thất bạisautrả lạitrảĐếnlần lặp cũ lầnsốXác thực; 
+     * lần lặp cũ lầnsốXác thựcThành côngsau, Băm lại mật khẩu với số lần lặp mới và cập nhật cơ sở dữ liệu. 
      */
     private static final int LEGACY_PASSWORD_HASH_ITERATIONS = 6;
 
     /**
-     * 验证当前登录的Subject
-     * LoginController.login()方法中执行Subject.login()时 执行此方法
+     * Xác thựcHiện tạiĐăng nhập của Subject
+     * LoginController.login()Phương thức trong hành nghề dòngSubject.login() giờ hành nghề dòngnàyPhương thức
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         String loginName = (String) authcToken.getPrincipal();
-        // 获取用户密码
+        // LấyNgười dùngMật khẩu
         String password = new String((char[]) authcToken.getCredentials());
 
         User user = this.getUserByLoginName(loginName);
         if (user == null) {
-            //没找到帐号
+            //没tìmĐến帐số
             throw new UnknownAccountException();
         }
 
-        // 验证密码 — 先用新迭代次数验证，失败后回退到旧迭代次数
+        // Xác thựcMật khẩu — trướcdùngmớilặp lầnsốXác thực, Thất bạisautrả lạitrảĐếnlần lặp cũ lầnsố
         boolean passwordMatched = false;
         Md5Hash md5New = new Md5Hash(password, user.getId(), PASSWORD_HASH_ITERATIONS);
         if (md5New.toHex().equals(user.getLoginPassword())) {
             passwordMatched = true;
         } else {
-            // 回退到旧迭代次数验证（兼容迁移期）
+            // trả lạitrảĐếnlần lặp cũ lầnsốXác thực(Giai đoạn chuyển đổi tương thích)
             Md5Hash md5Legacy = new Md5Hash(password, user.getId(), LEGACY_PASSWORD_HASH_ITERATIONS);
             if (md5Legacy.toHex().equals(user.getLoginPassword())) {
                 passwordMatched = true;
-                // 用新迭代次数重新哈希并更新数据库
+                // Băm lại với số lần lặp mới và cập nhật cơ sở dữ liệu
                 try {
                     user.setLoginPassword(md5New.toHex());
                     userService.updatePassword(user.getId(), md5New.toHex());
-                    logger.info("用户 {} 密码已自动迁移到新的哈希迭代次数", loginName);
+                    logger.info("Người dùng {} Mật khẩu đã tự động chuyển sang số lần lặp băm mới", loginName);
                 } catch (Exception e) {
-                    logger.warn("用户 {} 密码自动迁移失败: {}", loginName, e.getMessage());
+                    logger.warn("Người dùng {} Mật khẩutự độngchuyển đổiThất bại: {}", loginName, e.getMessage());
                 }
             }
         }
@@ -103,28 +103,28 @@ public class UserRealm extends AuthorizingRealm {
             throw new UnknownAccountException();
         }
 
-        // 用户账号被禁用
+        // Người dùngTài khoảnbịVô hiệu hóa
         if(user.getIsLocked() != 0) {
         	throw new DisabledAccountException();
         }
 
-        //交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以自定义实现
+        //giaochoAuthenticatingRealmSử dụngCredentialsMatchertiến hành dòngMật khẩukhớp, Nếu thấy cách của người khác không tốt thì có thể tự triển khai
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 user.getLoginName(),
                 password,
                 getName()
         );
 
-        //session中不需要保存密码
+        //session trong khôngCầnLưuMật khẩu
         user.setLoginPassword("");
 
-        // 设置超级用户、系统管理员用户信息
+        // ĐặtvượtcấpNgười dùng, Hệ thốngQuản lýnhân viênNgười dùngThông tin
         if("1000".equals(user.getId()) || "1001".equals(user.getId())) {
-        	user.getCompany().setIds("0.");    // 设置公司的全编号
+        	user.getCompany().setIds("0.");    // Đặtcông ty của toàn bộmã số
 
         }
 
-        //将用户信息放入session中
+        //Sẽ Người dùngThông tinđặt入session trong 
         SessionUtils.setUser(user);
         return authenticationInfo;
     }
@@ -135,7 +135,7 @@ public class UserRealm extends AuthorizingRealm {
     	        .build();
         List<User> list = userService.listAll(parms, null);
         if (list == null || list.size() < 1) {
-            logger.info("{} 用户账号不存在", loginName);
+            logger.info("{} Người dùngTài khoảnKhông tồn tại", loginName);
             return null;
         }
         return list.get(0);

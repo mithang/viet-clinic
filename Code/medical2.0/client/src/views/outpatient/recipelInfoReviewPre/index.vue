@@ -1,7 +1,7 @@
 <template>
   <el-row v-loading='loading'>
     <div class="page-container">
-      <!--页签   开始-->
+      <!--Tab   Bắt đầu-->
       <el-tabs v-model="activeName" >
         <el-tab-pane label="处方审核" name="first">
           <reviewPre></reviewPre>

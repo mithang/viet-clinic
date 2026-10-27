@@ -29,7 +29,7 @@
             content:this.value,
             editorOption: {
               theme: "snow",
-              placeholder: "请输入",
+              placeholder: "Vui lòng nhập",
               modules: {
                 toolbar: {
                   container: toolbarOptions,
@@ -51,7 +51,7 @@
         }
       },
       mounted(){
-        document.getElementsByClassName('ql-editor')[0].dataset.placeholder = '请输入';
+        document.getElementsByClassName('ql-editor')[0].dataset.placeholder = 'Vui lòng nhập';
         for(let item of titleConfig){
           let tip = document.querySelector('.quill-editor '+ item.Choice);
           if (!tip) continue;
@@ -78,16 +78,16 @@
     height: 300px;
   }
   .ql-snow .ql-tooltip[data-mode=link]::before {
-    content: "请输入链接地址:";
+    content: "Vui lòng nhập địa chỉ liên kết:";
   }
   .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
     border-right: 0px;
-    content: '保存';
+    content: 'Lưu';
     padding-right: 0px;
   }
 
   .ql-snow .ql-tooltip[data-mode=video]::before {
-    content: "请输入视频地址:";
+    content: "Vui lòng nhập địa chỉ video:";
   }
 
   .ql-snow .ql-picker.ql-size .ql-picker-label::before,
@@ -109,44 +109,44 @@
 
   .ql-snow .ql-picker.ql-header .ql-picker-label::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item::before {
-    content: '文本';
+    content: 'Văn bản';
   }
   .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
-    content: '标题1';
+    content: 'Tiêu đề1';
   }
   .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
-    content: '标题2';
+    content: 'Tiêu đề2';
   }
   .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
-    content: '标题3';
+    content: 'Tiêu đề3';
   }
   .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
-    content: '标题4';
+    content: 'Tiêu đề4';
   }
   .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
-    content: '标题5';
+    content: 'Tiêu đề5';
   }
   .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="6"]::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
-    content: '标题6';
+    content: 'Tiêu đề6';
   }
 
   .ql-snow .ql-picker.ql-font .ql-picker-label::before,
   .ql-snow .ql-picker.ql-font .ql-picker-item::before {
-    content: '标准字体';
+    content: 'Phông chữ chuẩn';
   }
   .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=serif]::before,
   .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=serif]::before {
-    content: '衬线字体';
+    content: 'Phông chữ serif';
   }
   .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=monospace]::before,
   .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=monospace]::before {
-    content: '等宽字体';
+    content: 'Phông chữ đẳng rộng';
   }
   #disabledMsg.el-button.is-disabled, .el-button.is-disabled:focus, .el-button.is-disabled:hover{
     color: #bfd9d8;

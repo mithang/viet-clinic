@@ -11,7 +11,7 @@ import com.geeke.utils.IdGen;
 
 /**
  * @author: lys
- * @description: uidgenerator 配置
+ * @description: uidgenerator Cấu hình
  * @date: 2020/07/10 10:10
  */
 @Configuration
@@ -22,14 +22,14 @@ public class UidConfiguration {
     @Bean
     public UidGenerator uidGenerator(WorkerIdAssigner workerIdAssigner) {
     	DefaultUidGenerator generator = new CachedUidGenerator();
-    	generator.setTimeBits(29);  // 28位最多可支持约8.7年
-    	generator.setWorkerBits(21); // 22位最多可支持420万次重启
-    	generator.setSeqBits(13);   // 13位可支持每秒8192个并发
+    	generator.setTimeBits(29);  // 28vịTối đacó thểhỗ trợ约8.7Năm
+    	generator.setWorkerBits(21); // 22vịTối đacó thểhỗ trợ420万 lầnkhởi động lại
+    	generator.setSeqBits(13);   // 13bit có thể hỗ trợ mỗi giây8192Cáivàphát
     	generator.setEpochStr("2020-07-23");
     	   	
     	generator.setWorkerIdAssigner(workerIdAssigner);
     	
-    	// 设置id产生器
+    	// Cài đặtidsảnsinhthiết bị
         IdGen.setUidGenerator(generator);
     	return generator;
     }

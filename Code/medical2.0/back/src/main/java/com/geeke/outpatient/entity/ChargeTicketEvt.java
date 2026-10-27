@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 处方详情Entity
+ * Chi tiết đơn thuốcEntity
  * @author txl
  * @version 2022-06-07
  */
@@ -13,32 +13,32 @@ import java.io.Serializable;
 public class ChargeTicketEvt implements Serializable {
 
 	private static final long serialVersionUID = 1014474470772900060L;
-	//诊所名称
+	//Phòng khámTên
 	private String clinicName;
-	//姓名
+	//Họ tên
 	private String name;
-	//性别
+	//Giới tính
 	private String gender;
-	//年龄
+	//Tuổi
 	private String age;
-	//收费单号
+	//Số phiếu thu phí
 	private String code;
-	//收费类别
+	//Thu phíLớploại
     private String type;
-	//收费项目
+	//Hạng mục thu phí
 	private String project;
-	//收费人
+	//Người thu phí
     private String people;
-    //就诊日期
+    //Ngày khám bệnh
     private String date;
-	//就诊科室
+	//khám bệnhKhoa
 	private String office;
-	//收费金额
+	//Thu phíSố tiền
 	private String fee;
-	//支付方式金额
+	//phương thức thanh toánSố tiền
 	private String feeType;
-	//温馨提示
+	//Lời nhắc thân thiện
 	private String tip;
-	//挂号序号
+	//Đăng ký khámsố thứ tự
 	private String num;
 }

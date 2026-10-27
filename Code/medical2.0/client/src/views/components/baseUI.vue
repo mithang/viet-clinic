@@ -1,6 +1,6 @@
 <template>
   <div  style="text-align:left" >
-    list和form窗口的基础组件类，统一处理异常错误信息。
+    listvàformLớp thành phần cơ sở của cửa sổ，统一处理异常错误信息。
   </div>
 </template>
 <script>
@@ -31,14 +31,14 @@ export default {
     getAttrValue(entity, attr, javaType) {
       let pos = attr.indexOf('.')
       if(pos === -1) {
-        if(javaType === "java.math.BigDecimal") {  // 金额类型，保留两位小数，千分位
+        if(javaType === "java.math.BigDecimal") {  // 金额类型，保留两位小数，Phân tách hàng nghìn
           return  (entity[attr] || 0).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
         }
         return entity[attr]
       }
       return this.getAttrValue(entity[attr.substr(0, pos)], attr.substr(pos + 1), javaType)
     },
-    // 构造更多的组合查询条件 格式 （ （ groupOne）  groupLogic （ groupTwo ））
+    // 构造更多的组合查询条件 Định dạng （ （ groupOne）  groupLogic （ groupTwo ））
     compositeCondition(moreParm, isFirst) {
       moreParm = moreParm || this.moreParm  // this.moreParm 是主界面的组合挑选条件
       let firstLogic = isFirst ? '' : 'AND'
@@ -126,18 +126,18 @@ export default {
     },
     outputError(error) {
       this.resetLoad()
-      // 会话过期已由 request.js 拦截器统一提示并跳转（全局去重），此处不再弹窗
+      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng（全局去重），此处不再弹窗
       if (error && error.code === 20011) {
         return
       }
       console.error(error.response ? error.response : error.message)
-      this.$alert('出错了，请按F12查看浏览器日志。', '提示', {
+      this.$alert('Đã xảy ra lỗi，Vui lòng nhấnF12Xem nhật ký trình duyệt。', 'Nhắc nhở', {
         type: 'error'
       })
     },
     showMessage(msgData) {
-      // 会话过期已由 request.js 拦截器统一提示并跳转（全局去重），
-      // 此处只做收尾（关闭对话框），不再弹窗、不再重复跳转
+      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng（全局去重），
+      // 此处只做收尾（Đóng hộp thoại），不再弹窗、不再重复跳转
       if (msgData && msgData.code === 20011) {
         if (this.dialogProps) {
           this.dialogProps.visible = false
@@ -147,13 +147,13 @@ export default {
       let tip = ''
       if(msgData.type === 'error' && msgData.data) {
         console.error(msgData.data)
-        tip = '， 请按F12查看浏览器日志。'
+        tip = '， Vui lòng nhấnF12Xem nhật ký trình duyệt。'
       }
 
       if (msgData.type === 'warning' || msgData.type === 'error') {
         if(!this.isAlert) {
           this.isAlert = true
-          this.$alert(msgData.msg + tip, msgData.type === 'warning' ? '警告' : '错误', {
+          this.$alert(msgData.msg + tip, msgData.type === 'warning' ? '警告' : 'Lỗi', {
             type: msgData.type,
             callback: action => {
               if(this.loadcount <= 0) {

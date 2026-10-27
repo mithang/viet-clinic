@@ -17,7 +17,7 @@ body {
       text-align: center;
   }
   
-  /* 修复 ResizeObserver 错误 */
+  /* 修复 ResizeObserver Lỗi */
   .el-table__body-wrapper {
     overflow: auto;
   }
@@ -34,9 +34,9 @@ body {
     overflow: hidden;
   }
   
-  /* 禁用 ResizeObserver 错误提示 */
+  /* Vô hiệu hóa ResizeObserver 错误提示 */
   .el-table {
-    /* 避免在调整列宽时触发过多的 ResizeObserver 事件 */
+    /* 避免在调整列宽时触发过多的 ResizeObserver sự kiện */
     --el-table-resize-observer-disabled: true;
   }
 }
@@ -53,7 +53,7 @@ body {
   height: 8px;      //x轴高度
 
 }
-//滚动条的滑块
+//Thanh trượt của thanh cuộn
 ::-webkit-scrollbar-thumb {
   background-color: #eaecf1;
   border-radius: 3px;
@@ -65,7 +65,7 @@ body {
   width: 10px;
   height: 10px;
 }
-//滚动条的滑块
+//Thanh trượt của thanh cuộn
 .el-table__body-wrapper::-webkit-scrollbar-thumb {
   background-color: #eaecf1;
   border-radius: 3px;
@@ -89,7 +89,7 @@ body .el-table colgroup.gutter {
   display: table-header-group !important;
 }
 
-/* 分页 */
+/* Phân trang */
 .el-pagination {
   float: right;
   margin-top: 10px;
@@ -178,7 +178,7 @@ body .el-table colgroup.gutter {
   }
 }
 
-/* 编辑form */
+/* Sửaform */
 .edit-form {
   .el-date-editor.el-input { width: 100%; }
 
@@ -261,7 +261,7 @@ body .el-table colgroup.gutter {
     padding: 0 12px !important;
   }
   
-  /* 调整操作列内容的垂直对齐 - 使用 flex 布局确保按钮垂直居中 */
+  /* 调整操作列内容的垂直对齐 - Sử dụng flex 布局确保按钮垂直居中 */
   .el-table__fixed-body-wrapper .el-table__row .el-table__cell {
     vertical-align: middle !important;
     padding: 8px !important;
@@ -300,7 +300,7 @@ body .el-table colgroup.gutter {
     vertical-align: middle !important;
   }
   
-  /* 修复固定列表头对齐 */
+  /* Khắc phục căn chỉnh tiêu đề danh sách cố định */
   .el-table__fixed-header-wrapper .el-table__header th {
     vertical-align: middle !important;
   }
@@ -310,7 +310,7 @@ body .el-table colgroup.gutter {
   color: #606266!important;
 }
 
-/* 编辑框中 计数器的InputNumber的文本左对齐，宽度100% */
+/* 编辑框中 计数器的InputNumber的文本左对齐，Chiều rộng100% */
 .el-input-number {
   width: 100% !important;
   .el-input__inner {
@@ -336,7 +336,7 @@ body .el-table colgroup.gutter {
     color: #606266;
 }
 
-/* 查询条件 */
+/* Điều kiện truy vấn */
 .query-form-container {
   background: #fff;
   padding: 0 0px 10px 0px;
@@ -350,7 +350,7 @@ body .el-table colgroup.gutter {
   }
 }
 
-// 新增
+// Thêm mới
 .page-container {
   padding: 18px;
   background: #fff;

@@ -9,7 +9,7 @@ import java.util.Base64;
 public class SMUtil {
 
     /**
-     * 加密
+     * Mã hóa
      *
      * @param data
      * @param appId
@@ -17,16 +17,16 @@ public class SMUtil {
      * @return
      */
     public static String encrypt(String data, String appId, String appSecret) {
-        // 用 appId 加密 appSecret 获取新秘钥
+        // dùng appId Mã hóa appSecret Lấymới秘钥
         byte[] appSecretEncData = EasyGmUtils.sm4Encrypt(appId.substring(0, 16).getBytes(StandardCharsets.UTF_8), appSecret.getBytes(StandardCharsets.UTF_8));
-        // 新秘钥串
+        // mới秘钥串
         byte[] secKey = Hex.toHexString(appSecretEncData).toUpperCase().substring(0, 16).getBytes(StandardCharsets.UTF_8);
-        // 加密数据
+        // Mã hóaDữ liệu
         return Hex.toHexString(EasyGmUtils.sm4Encrypt(secKey, data.getBytes(StandardCharsets.UTF_8))).toUpperCase();
     }
 
     /**
-     * 解密
+     * Giải mã
      *
      * @param data
      * @param appId
@@ -40,7 +40,7 @@ public class SMUtil {
     }
 
     /**
-     * 签名
+     * chữ ký
      *
      * @param jsonObject
      * @param appSecret
@@ -48,7 +48,7 @@ public class SMUtil {
      * @return
      */
     public static String sign(JSONObject jsonObject, String appSecret, String privateKey) {
-        // 获取签名串
+        // Lấychữ ký串
         byte[] signText = SignUtil.getSignText(jsonObject, appSecret).getBytes(StandardCharsets.UTF_8);
         byte[] userId = appSecret.getBytes(StandardCharsets.UTF_8);
         byte[] prvkey = Base64.getDecoder().decode(privateKey);
@@ -56,7 +56,7 @@ public class SMUtil {
     }
 
     /**
-     * 验签
+     * Xác minh chữ ký
      *
      * @param jsonObject
      * @param appSecret
@@ -65,7 +65,7 @@ public class SMUtil {
      * @return
      */
     public static Boolean verify(JSONObject jsonObject, String appSecret, String publicKey, String responseSign) {
-        // 验签
+        // Xác minh chữ ký
         byte[] msg = SignUtil.getSignText(jsonObject, appSecret).getBytes(StandardCharsets.UTF_8);
         byte[] userIdDecode = appSecret.getBytes(StandardCharsets.UTF_8);
         byte[] pubkey = Base64.getDecoder().decode(publicKey);
@@ -74,7 +74,7 @@ public class SMUtil {
     }
 
     /**
-     * 签名
+     * chữ ký
      *
      * @param jsonString
      * @param appSecret
@@ -87,7 +87,7 @@ public class SMUtil {
     }
 
     /**
-     * 验签
+     * Xác minh chữ ký
      *
      * @param jsonString
      * @param appSecret

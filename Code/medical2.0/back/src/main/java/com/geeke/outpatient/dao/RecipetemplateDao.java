@@ -9,7 +9,7 @@ import com.geeke.outpatient.entity.Recipetemplate;
 import java.util.List;
 
 /**
- * 模板处方DAO接口
+ * Đơn thuốc mẫuDAOGiao diện
  * @author rys
  * @version 2022-10-08
  */

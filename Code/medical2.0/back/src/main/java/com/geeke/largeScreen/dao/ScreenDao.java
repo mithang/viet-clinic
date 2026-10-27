@@ -4,26 +4,26 @@ import com.geeke.largeScreen.entity.Basics;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 数据大屏DAO接口
+ * Màn hình dữ liệu lớnDAOGiao diện
  * @author zhanghan
  * @version 2023-09-05
  */
 @Mapper
 public interface ScreenDao {
 
-    /** 新增任务 */
+    /** Thêm tác vụ mới */
     public String getQuest(String parentId);
 
-    /** 今日挂号人数 */
+    /** Số người đăng ký khám hôm nay */
     public String getRegister(String parentId);
 
-    /** 今日接诊数 */
+    /** Số lượt tiếp nhận hôm nay */
     public String getReceivePatients(String parentId);
 
-    /** 今日收入 */
+    /** Thu nhập hôm nay */
     public String getIncome(String parentId);
 
-    /** 今日新增签约数 */
+    /** Số lượt ký mới hôm nay */
     public String getSigning(String parentId);
 
 }

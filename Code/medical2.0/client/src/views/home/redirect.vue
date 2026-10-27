@@ -9,7 +9,7 @@ export default {
     const { params, query } = this.$route
     const { to } = query
 
-    // 如果有 to 参数，跳转到指定路径
+    // 如果有 to Tham số，跳转到指定路径
     if (to) {
       this.$router.replace({
         path: to,

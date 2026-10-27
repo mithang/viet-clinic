@@ -11,7 +11,7 @@ import com.geeke.stock.entity.MedicinalStockRecord;
 import com.geeke.stock.entity.MedicinalStorageControl;
 
 /**
- * 库存操作记录DAO接口
+ * Bản ghi thao tác tồn khoDAOGiao diện
  * @author hl
  * @version 2022-09-26
  */

@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 药品信息Service
+ * Thông tin thuốcService
  *
  * @author txl
  * @version 2022-06-07
@@ -53,7 +53,7 @@ import java.util.Objects;
 public class DrugService extends CrudService<DrugDao, Drug>  {
     private static final Logger logger = LoggerFactory.getLogger(DrugService.class);
 
-    /** 药品为机构共享字典：允许同机构下诊所访问机构诊所的数据（与列表 #{institution} SQL 一致） */
+    /** Thuốc là Cơ sởtừ điển dùng chung: Cho phép phòng khám thuộc cùng cơ sở truy cập dữ liệu phòng khám của cơ sở(Với danh sách #{institution} SQL Nhất quán) */
     @Override
     protected boolean isInstitutionShared() {
         return true;
@@ -80,17 +80,17 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     @Override
     @Transactional(readOnly = false)
     public Drug save(Drug drug) {
-        // 判断药品是否重复
+        // Kiểm traThuốcCó hay khôngtrùng lặp
         int repeat = this.repeat(drug);
         if (repeat!=0){
             throw new ServiceException("药品信息重复");
 
         }
-        // 新增时, 处理自动编号字段
+        // Khi thêm mới, Xử lý trường tự động đánh số
         if (StringUtils.isBlank(drug.getId())){
             String sn = sequenceService.generate(SessionUtils.getUser().getCompanyId(), "medical_code", drug);
             drug.setCode(sn);
-            //添加药品gg字段
+            //ThêmThuốcggTrường
         }
         String ypgg = drug.getDosis() + drug.getDosisUnit().getName()+ "*" + drug.getPreparation() + drug.getPreparationUnit().getName()+"/" + drug.getPack().getName();
         drug.setYpgg(ypgg);
@@ -113,7 +113,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     }
 
     /**
-     * 入库时查询自己诊所所有药品信息 2025.4.2
+     * nhập kho giờTruy vấnbản thânPhòng khámtất cảThông tin thuốc 2025.4.2
      * @param parameters
      * @param orderby
      * @return
@@ -147,7 +147,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
 
     /**
      * 2025.4.2 @update
-     * 获取本诊所下所有库存
+     * LấynàyPhòng khámdướitất cảTồn kho
      * @return
      */
     public Page<Drug> getDrugNew(List<Parameter> params, int offset, int limit, String orderby) {
@@ -156,9 +156,9 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             () -> this.dao.count(pageRequest),
             () -> {
                 List<Drug> list = this.dao.listPages(pageRequest);
-                //获取到当前药品后去库存明细中获取其进价并算出其成本合计
+                //Sau khi lấy được thuốc hiện tại, lấy giá nhập từ chi tiết tồn kho và tính tổng chi phí
                 for (Drug drug : list) {
-                    //根据动态库存获取成本合计
+                    //Lấy tổng chi phí theo tồn kho động
                     BigDecimal totalCost = medicinalStorageControlService.getByDrugOrStuffId(drug.getId());
                     if (!Objects.isNull(drug.getStock()) && !Objects.isNull(drug.getStock().getStorageStock())) {
                         BigDecimal inventory =
@@ -179,7 +179,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     }
 
     /**
-     * 获取租户所有库存 诊所共用
+     * Lấytenanttất cảTồn kho Phòng khámTổng dùng
      * @param params
      * @param offset
      * @param limit
@@ -192,9 +192,9 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             () -> this.dao.count(pageRequest),
             () -> {
                 List<Drug> list = this.dao.listPages(pageRequest);
-                //获取到当前药品后去库存明细中获取其进价并算出其成本合计
+                //Sau khi lấy được thuốc hiện tại, lấy giá nhập từ chi tiết tồn kho và tính tổng chi phí
                 for (Drug drug : list) {
-                    //根据动态库存获取成本合计
+                    //Lấy tổng chi phí theo tồn kho động
                     BigDecimal totalCost = medicinalStorageControlService.getByDrugOrStuffId(drug.getId());
                     if (!Objects.isNull(drug.getStock()) && !Objects.isNull(drug.getStock().getStorageStock())) {
                         BigDecimal inventory =
@@ -235,7 +235,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     }
 
     public List<Drug> inventory(List<Parameter> parameters, String orderby) {
-        // 移除前端 company_id（防止越权），统一以会话登录租户作为隔离边界
+        // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
         Parameter.extractAndRemoveCompanyId(parameters);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
@@ -256,17 +256,17 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         Company company = new Company();
         company.setId(companyId);
 
-        // 判断文件格式
+        // Kiểm traTệpđịnh dạng
         String fileName = file.getOriginalFilename();
         if (!fileName.matches("^.+\\.(?i)(xls)$") && !fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            throw new Exception("上传文件格式不正确");
+            throw new Exception("Tải lênTệpđịnh dạngkhôngđúng");
         }
 
         int chengGong = 0;
         int siBai = 0;
         StringBuilder mistake = new StringBuilder();
 
-        // Step 1: 使用 ExcelImportBuilder 读取并校验 Excel 数据
+        // Step 1: Sử dụng ExcelImportBuilder đọcvàKiểm tra Excel Dữ liệu
         ExcelImportResult<Drug> result;
         try (InputStream is = file.getInputStream()) {
             result = new ExcelImportBuilder<>(Drug.class, is)
@@ -275,7 +275,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                     .read();
         }
 
-        // Step 2: 重新打开工作簿，读取生产厂家名称（列6）和备注（列20）
+        // Step 2: Lạimởcông việclàm簿, đọcTên nhà sản xuất(Cột6) và Ghi chú(Cột20)
         List<String> manufacturerNames = new ArrayList<>();
         List<String> remarksList = new ArrayList<>();
         try (InputStream is2 = file.getInputStream(); XSSFWorkbook workbook = new XSSFWorkbook(is2)) {
@@ -297,7 +297,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             }
         }
 
-        // Step 3: 处理校验失败的行（ExcelImportBuilder 发现的字段级错误）
+        // Step 3: Xử lýKiểm traThất bại của  dòng(ExcelImportBuilder pháthiện của TrườngcấpLỗi)
         java.util.Map<Integer, java.util.List<ImportError>> errorsByRow = new java.util.LinkedHashMap<>();
         for (ImportError err : result.getErrors()) {
             errorsByRow.computeIfAbsent(err.getRowNum(), k -> new java.util.ArrayList<>()).add(err);
@@ -305,31 +305,31 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         for (java.util.Map.Entry<Integer, java.util.List<ImportError>> entry : errorsByRow.entrySet()) {
             siBai++;
             StringBuilder rowMsg = new StringBuilder();
-            rowMsg.append("表格第").append(entry.getKey()).append("行");
+            rowMsg.append("Bảng dòng ").append(entry.getKey()).append(" dòng");
             for (ImportError err : entry.getValue()) {
                 if (err.getFieldName() != null) {
                     rowMsg.append("[").append(err.getFieldName()).append("]");
                 }
             }
-            rowMsg.append("数据校验失败：");
+            rowMsg.append("Dữ liệuKiểm traThất bại: ");
             for (ImportError err : entry.getValue()) {
-                rowMsg.append(err.getMessage()).append("；");
+                rowMsg.append(err.getMessage()).append("; ");
             }
-            rowMsg.append("请核对后重新导入\n");
+            rowMsg.append("Vui lòng đối chiếu rồi nhập lại\n");
             mistake.append(rowMsg);
         }
 
-        // Step 4: 处理校验通过的行，逐行保存
+        // Step 4: Xử lýKiểm traQua của  dòng, từng dòngLưu
         List<Drug> dataList = result.getDataList();
         for (int i = 0; i < dataList.size(); i++) {
             Drug drug = dataList.get(i);
-            int rowNum = i + 3; // Excel 行号（跳过2行表头，行号从1开始）
+            int rowNum = i + 3; // Excel Số dòng(Bỏ qua2 dòngbảngtiêu đề, Số dòngTừ 1Bắt đầu)
             String drugName = drug.getGoodsName();
             try {
-                // 设置诊所
+                // ĐặtPhòng khám
                 drug.setCompany(company);
 
-                // 处理生产厂家（列6）：按名称查找，不存在则创建
+                // Xử lýNhà sản xuất(Cột6): theoTêntìm kiếm, Không tồn tạithìtạo
                 if (i < manufacturerNames.size() && StringUtils.isNotBlank(manufacturerNames.get(i))) {
                     String mfgName = manufacturerNames.get(i);
                     ManufactureFactory manufactureFactory = new ManufactureFactory();
@@ -346,19 +346,19 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                     drug.setFactory(manufactureFactory);
                 }
 
-                // 处理备注（列20）
+                // Xử lýGhi chú(Cột20)
                 if (i < remarksList.size() && remarksList.get(i) != null) {
                     drug.setRemarks(remarksList.get(i));
                 }
 
-                // 处理是否拆零销售："是" -> "1", 其他 -> "0"
+                // Xử lýCó bán lẻ không: "是" -> "1", Khác -> "0"
                 if ("是".equals(drug.getIsUnpackSell())) {
                     drug.setIsUnpackSell("1");
                 } else {
                     drug.setIsUnpackSell("0");
                 }
 
-                // 处理状态："是" -> "1", 其他 -> "0"
+                // Xử lýTrạng thái: "是" -> "1", Khác -> "0"
                 if ("是".equals(drug.getStatus())) {
                     drug.setStatus("1");
                 } else {
@@ -368,13 +368,13 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 this.save(drug).getId();
                 chengGong++;
             } catch (Exception e) {
-                logger.warn("导入第{}行失败", rowNum, e);
+                logger.warn("NhậpDòng {} dòng thất bại", rowNum, e);
                 String a = "";
                 if (e.getMessage() != null) {
-                    a = e.getMessage().equals("药品信息重复") ? "药品信息重复," : "";
+                    a = e.getMessage().equals("药品信息重复") ? "Thông tin thuốctrùng lặp," : "";
                 }
                 siBai++;
-                mistake.append("表格第").append(rowNum).append("行[").append(drugName).append("]药品信息异常，").append(a).append("请核对后重新导入\n");
+                mistake.append("Bảng dòng ").append(rowNum).append(" dòng[").append(drugName).append("]Thông tin thuốcngoại lệ, ").append(a).append("Vui lòng đối chiếu rồi nhập lại\n");
             }
         }
 
@@ -385,7 +385,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         return error;
     }
 
-    // 药品新增查重
+    // ThuốcThêm mớitratrọng
     public int repeat(Drug drug) {
 
         String companyId = com.geeke.sys.utils.SessionUtils.getUserJson().getString("companyId");
@@ -393,7 +393,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         drug.setCompany(company);
         List<Drug> drugList = this.dao.repeat(drug);
 
-        //如果新增则为0，修改条数是1但是ID不一样则不重复
+        //NếuThêm mớithì là 0, Sửasố dòng có 1nhưng có IDNếu khác nhau thì không trùng lặp
         if (drugList.size() == 1 && drugList.get(0).getId().equals(drug.getId())) {
             return 0;
         } else {
@@ -402,7 +402,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
 
     }
 
-    // 药品名称获取数据
+    // ThuốcTênLấyDữ liệu
     public String getId(String name,String company) {
         String drugs = this.dao.getId(name,company);
         return drugs;
@@ -415,9 +415,9 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             () -> dao.count(pageRequest),
             () -> {
                 List<Drug> list = dao.listPages(pageRequest);
-                //获取到当前药品后去库存明细中获取其进价并算出其成本合计
+                //Sau khi lấy được thuốc hiện tại, lấy giá nhập từ chi tiết tồn kho và tính tổng chi phí
                 for (Drug drug : list) {
-                    //根据动态库存获取成本合计
+                    //Lấy tổng chi phí theo tồn kho động
                     BigDecimal totalCost = medicinalStorageControlService.getByDrugOrStuffId(drug.getId());
                     if (!Objects.isNull(drug.getStock()) && !Objects.isNull(drug.getStock().getStorageStock())) {
                         BigDecimal inventory =
@@ -484,7 +484,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
 
 
     /**
-     * 根据名称和零售价查询药品导入
+     * TheoTên và bán lẻgiáTruy vấnThuốcNhập
      * @param name
      * @param retailPrice
      * @return

@@ -1,7 +1,7 @@
 <template>
   <div class="drawer-container" v-loading="drawerLoading" element-loading-text="主题更新中">
     <div>
-      <h3 class="drawer-title">主题风格</h3>
+      <h3 class="drawer-title">Phong cách chủ đề</h3>
       <div class="drawer-item">
         <el-row class="drawer-style" :gutter="10">
           <el-col :span="6" v-for="(item,index) in styles" :key="index">
@@ -17,7 +17,7 @@
         </el-row>
       </div>
       <div class="drawer-item">
-        <span>系统主题</span>
+        <span>Chủ đề hệ thống</span>
         <el-select style="width: 170px" v-model="currentTheme" size="mini" placeholder="主题选择" @change="(val) => {handleThemeChange(val)}">
           <el-option
             v-for="(item, index) in sysThemeList"
@@ -27,7 +27,7 @@
           </el-option>
         </el-select>
       </div>
-      <h3 class="drawer-title">自定义</h3>
+      <h3 class="drawer-title">Tùy chỉnh</h3>
       <div class="drawer-item">
         <span>导航栏</span>
         <el-color-picker color-format="rgb" v-model="currentHeaderColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
@@ -37,11 +37,11 @@
         <el-color-picker color-format="rgb" v-model="currentSidebarColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item">
-        <span>背景色（建议淡浅色系）</span>
+        <span>Màu nền（建议淡浅色系）</span>
         <el-color-picker color-format="rgb" v-model="currentBackgroundColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item">
-        <span>主题色</span>
+        <span>Màu chủ đề</span>
         <theme-picker ref="themePicker" class="color-picker" />
       </div>
       <div class="drawer-item">
@@ -57,12 +57,12 @@
         <el-switch v-model="isFixedHeader" @change="handleSetting('fixedHeader', isFixedHeader)" class="drawer-switch" />
       </div>
       <div class="drawer-item">
-        <span>是否显示logo</span>
+        <span>Có hiển thị khônglogo</span>
         <el-switch v-model="isShowLogo" class="drawer-switch" @change="handleSetting('showLogo', isShowLogo)"/>
       </div>
 
       <div class="drawer-footer" style="text-align: center; padding: 10px 0">
-        <el-button size="mini" type="primary" plain icon="el-icon-document-checked" @click="handleLayoutSave">保存设置</el-button>
+        <el-button size="mini" type="primary" plain icon="el-icon-document-checked" @click="handleLayoutSave">Lưu cài đặt</el-button>
         <el-button v-show='isCustomerTheme()' size="mini" plain icon="el-icon-refresh-right" @click="handleLayoutReset">重置设置</el-button>
       </div>
 
@@ -87,14 +87,14 @@
     },
     data() {
       return {
-        isFirstOpen: true,  // 首次文件标识
+        isFirstOpen: true,  // Mã tệp lần đầu
         drawerLoading: false,
         search: {
           params: [],
           offset: 0,
           limit: 10,
-          columnName: '',       // 排序字段名
-          order: ''             // 排序
+          columnName: '',       // Tên trường sắp xếp
+          order: ''             // Sắp xếp
         },
         sysThemeList: [],
         isThemeDefault: false,
@@ -192,7 +192,7 @@
         resetSetting: 'settings/resetSetting',
         showPanel: 'settings/showPanel',
       }),
-      //根据id来判断保存主题得按钮是否显示
+      //Theoid来判断保存主题得按钮是否显示
       getLoginId(){
           this.loginId = getLocalCurrentUser().id;
       },
@@ -215,7 +215,7 @@
             const personalTheme = getLocalPersonalTheme()
             personalTheme.theme = JSON.stringify(personalTheme.theme);
             if (personalTheme.id) {
-              personalTheme.name = '自定义'
+              personalTheme.name = 'Tùy chỉnh'
               this.sysThemeList.unshift(personalTheme)
               this.currentTheme = personalTheme.id
             } else {
@@ -286,7 +286,7 @@
           setLocalPersonalTheme(personalTheme)
           this.$message({
             type: 'success',
-            message: '保存成功'
+            message: 'Lưu thành công'
           })
 
           this.getThemeList()
@@ -294,7 +294,7 @@
         } else {
           this.$message({
             type: 'error',
-            message: '出错'
+            message: 'Xảy ra lỗi'
           })
           this.drawerLoading = false
         }
@@ -320,7 +320,7 @@
         } else {
           this.$message({
             type: 'error',
-            message: '出错'
+            message: 'Xảy ra lỗi'
           })
           this.layoutLoading().close()
         }
@@ -339,11 +339,11 @@
             "showTagsView":this.settings.showTagsView,
             "datetime":new Date().getTime()
         }
-          this.$prompt('请输入主题名称', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
+          this.$prompt('Vui lòng nhập tên chủ đề', 'Nhắc nhở', {
+              confirmButtonText: 'Xác nhận',
+              cancelButtonText: 'Hủy',
               inputPattern: /^(a-z|A-Z|0-9)*[^$%^&*;:,<>?()\""\']{1,128}$/,
-              inputErrorMessage: '请输入主题名称'
+              inputErrorMessage: 'Vui lòng nhập tên chủ đề'
           }).then(({ value }) => {
               const dateTheme={
                   name:value,
@@ -353,7 +353,7 @@
                   if(responseData.code === 100){
                       this.$message({
                           type: 'success',
-                          message: '保存成功'
+                          message: 'Lưu thành công'
                       });
                       this.showPanel(false);
                   }else {

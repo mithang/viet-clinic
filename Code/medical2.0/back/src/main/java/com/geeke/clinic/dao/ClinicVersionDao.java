@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 /**
- * 诊所版本DAO接口
+ * Phiên bản phòng khámDAOGiao diện
  * @author txl
  * @version 2022-05-23
  */

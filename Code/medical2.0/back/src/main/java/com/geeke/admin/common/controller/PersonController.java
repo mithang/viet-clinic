@@ -44,7 +44,7 @@ public class PersonController extends CrudController<UserService, User> {
     @PutMapping("/me")
     public ResponseEntity<JSONObject> updateCurrentUser(@RequestBody User userDetail) {
         if(medicareConfigProperties.getIsDemo().equals("true")){
-            throw new ServiceException("演示系统不允许修改密码！");
+            throw new ServiceException("demoHệ thốngkhôngcho phépSửaMật khẩu!");
         }
     	String id = this.service.updatePersonAndPass(userDetail);
         return ResponseEntity.ok(ResultUtil.successJson(id));

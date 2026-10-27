@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title='数据权限' :visible.sync='visible' :close-on-click-modal='false' :append-to-body='true' :lock-scroll='true' v-loading='loading' width='80%'>
+  <el-dialog title='Quyền dữ liệu' :visible.sync='visible' :close-on-click-modal='false' :append-to-body='true' :lock-scroll='true' v-loading='loading' width='80%'>
     <el-form ref='metaForm' :model="metaFormModel" label-width='1px' label-position='right' class='edit-form'>
       <el-row v-for='(metaData, idxMeta) in metaFormModel.metaDatas' :key='idxMeta'>
         <el-card  shadow='hover'>
@@ -14,8 +14,8 @@
       </el-row>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-button type='primary' :plain=true @click='onOk()'>确 定</el-button> 
-      <el-button :plain=true @click='onDialogClose()'>取 消</el-button>
+      <el-button type='primary' :plain=true @click='onOk()'>Xác nhận</el-button> 
+      <el-button :plain=true @click='onDialogClose()'>Hủy</el-button>
     </span>    
   </el-dialog>
 </template>
@@ -39,7 +39,7 @@ export default {
     }    
   },
   props: {
-    //接受外部v-model传入的值
+    //Nhận từ bên ngoàiv-modelgiá trị truyền vào
     value: {
       type: Array,
       required: true

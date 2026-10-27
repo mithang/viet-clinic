@@ -9,16 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.geeke.common.persistence.DataEntity;
 import com.geeke.org.entity.Company;
 /**
- * 字典项Entity
+ * Mục từ điểnEntity
  * @author lys
  * @version 2021-12-07
  */
 public class DictItem extends DataEntity<DictItem> {
 
 	private static final long serialVersionUID = 4005L;
-	private Company company;      // 所属租户
-	private DictType dictType;      // 字典类型表ID
-	private String value;		// 值
+	private Company company;      // thuộc vềtenant
+	private DictType dictType;      // Bảng loại từ điểnID
+	private String value;		// Giá trị
 
 	
 	public DictItem() {
@@ -41,7 +41,7 @@ public class DictItem extends DataEntity<DictItem> {
 		this.company = company;
 	}
 
-	@NotNull(message="字典类型表ID不能为空")
+	@NotNull(message="Bảng loại từ điểnIDKhông được để trống")
     public DictType getDictType() {
         return dictType;
     }
@@ -50,7 +50,7 @@ public class DictItem extends DataEntity<DictItem> {
         this.dictType = dictType;
     }
     
-	@Length(min=1, max=128, message="值长度必须介于 1 和 128 之间")
+	@Length(min=1, max=128, message="Giá trịĐộ dài phải nằm trong khoảng 1 đến 128 ")
 	public String getValue() {
 		return value;
 	}
@@ -63,7 +63,7 @@ public class DictItem extends DataEntity<DictItem> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -72,7 +72,7 @@ public class DictItem extends DataEntity<DictItem> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -82,7 +82,7 @@ public class DictItem extends DataEntity<DictItem> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

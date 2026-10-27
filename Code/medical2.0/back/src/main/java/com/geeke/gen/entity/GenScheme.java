@@ -7,23 +7,23 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 /**
- * 代码方案管理Entity
+ * mãphương ánQuản lýEntity
  * @author lys
  * @version 2021-08-26
  */
 public class GenScheme extends DataEntity<GenScheme> {
 
 	private static final long serialVersionUID = 1L;
-	private DictItem category;      // 模板分类 
-	private String packageName;		// 包路径
-	private String moduleName;		// 模块名
-	private String subModuleName;		// 子模块名
-	private String functionName;		// 功能名
-	private String functionNameSimple;		// 功能名简写
-	private String functionAuthor;		// 作者
-	private String dialogWidth;		// 编辑宽度
-	private Integer colCounts;		// 编辑列数
-	private GenTable genTable;      // 业务表 
+	private DictItem category;      // mẫu phútLớp 
+	private String packageName;		// góiđường dẫn
+	private String moduleName;		// mô-đuntên
+	private String subModuleName;		// conmô-đuntên
+	private String functionName;		// chức năngtên
+	private String functionNameSimple;		// chức năngtênviết tắt
+	private String functionAuthor;		// làmngười
+	private String dialogWidth;		// chỉnh sửarộngđộ
+	private Integer colCounts;		// chỉnh sửaCộtsố
+	private GenTable genTable;      // Bảng nghiệp vụ 
 
 	
 	public GenScheme() {
@@ -35,7 +35,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 
-	@NotNull(message="模板分类不能为空")
+	@NotNull(message="mẫu phútLớpKhông thể là trống")
     public DictItem getCategory() {
         return category;
     }
@@ -44,7 +44,7 @@ public class GenScheme extends DataEntity<GenScheme> {
         this.category = category;
     }
     
-	@Length(min=1, max=500, message="包路径长度必须介于 1 和 500 之间")
+	@Length(min=1, max=500, message="góiđường dẫnĐộ dài phải nằm trong khoảng 1 đến 500 ")
 	public String getPackageName() {
 		return packageName;
 	}
@@ -53,7 +53,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=30, message="模块名长度必须介于 1 和 30 之间")
+	@Length(min=1, max=30, message="mô-đuntênĐộ dài phải nằm trong khoảng 1 đến 30 ")
 	public String getModuleName() {
 		return moduleName;
 	}
@@ -62,7 +62,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=0, max=30, message="子模块名长度必须介于 0 和 30 之间")
+	@Length(min=0, max=30, message="conmô-đuntênĐộ dài phải nằm trong khoảng 0 đến 30 ")
 	public String getSubModuleName() {
 		return subModuleName;
 	}
@@ -71,7 +71,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=500, message="功能名长度必须介于 1 和 500 之间")
+	@Length(min=1, max=500, message="chức năngtênĐộ dài phải nằm trong khoảng 1 đến 500 ")
 	public String getFunctionName() {
 		return functionName;
 	}
@@ -80,7 +80,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=100, message="功能名简写长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="chức năngtênviết tắtĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getFunctionNameSimple() {
 		return functionNameSimple;
 	}
@@ -89,7 +89,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=0, max=100, message="作者长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="làmngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getFunctionAuthor() {
 		return functionAuthor;
 	}
@@ -98,7 +98,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=20, message="编辑宽度长度必须介于 1 和 20 之间")
+	@Length(min=1, max=20, message="chỉnh sửarộngđộĐộ dài phải nằm trong khoảng 1 đến 20 ")
 	public String getDialogWidth() {
 		return dialogWidth;
 	}
@@ -107,7 +107,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@NotNull(message="编辑列数不能为空")
+	@NotNull(message="chỉnh sửaCộtsốKhông thể là trống")
 	public Integer getColCounts() {
 		return colCounts;
 	}
@@ -116,7 +116,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@NotNull(message="业务表不能为空")
+	@NotNull(message="nghiệp vụbảngKhông thể là trống")
     public GenTable getGenTable() {
         return genTable;
     }
@@ -129,7 +129,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -138,7 +138,7 @@ public class GenScheme extends DataEntity<GenScheme> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -148,7 +148,7 @@ public class GenScheme extends DataEntity<GenScheme> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

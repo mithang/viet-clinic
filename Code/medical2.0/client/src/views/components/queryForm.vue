@@ -7,29 +7,29 @@
       <el-row :gutter='5'>
         <el-col>
           <el-button-group>
-            <el-tooltip  effect="light" content="搜索" placement="top-start">
+            <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
               <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
             </el-tooltip>
-            <el-tooltip  effect="light" content="简要" placement="top-start">
+            <el-tooltip  effect="light" content="Tóm tắt" placement="top-start">
               <el-button type='primary' icon='el-icon-d-arrow-left' @click='onMoreCodition()' :plain='true'></el-button>
             </el-tooltip>
           </el-button-group> 
-            <!-- <el-button type='primary' icon='el-icon-search' @click='onSearch()' :plain='true'>搜索</el-button>
-            <el-button type='info' icon='el-icon-d-arrow-left' @click='onMoreCodition()' :plain='true'>简要</el-button> -->
+            <!-- <el-button type='primary' icon='el-icon-search' @click='onSearch()' :plain='true'>Tìm kiếm</el-button>
+            <el-button type='info' icon='el-icon-d-arrow-left' @click='onMoreCodition()' :plain='true'>Tóm tắt</el-button> -->
         </el-col>
       </el-row>
       <el-row :gutter='5'>
         <el-col>
           <el-button-group>
-            <el-tooltip  effect="light" content="重置" placement="top-start">
+            <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
               <el-button type="primary" icon='el-icon-refresh-left' @click='onResetCondition()' :plain='true'></el-button>
             </el-tooltip>
-            <el-tooltip  effect="light" content="保存" placement="top-start">
+            <el-tooltip  effect="light" content="Lưu" placement="top-start">
               <el-button type="primary" icon='el-icon-tickets' @click='onSaveCondition' :plain='true'></el-button>
             </el-tooltip>
           </el-button-group> 
-            <!-- <el-button icon='el-icon-refresh-left' @click='onResetCondition()' :plain='true'>重置</el-button>
-            <el-button icon='el-icon-tickets' @click='onSaveCondition' :plain='true'>保存</el-button> -->
+            <!-- <el-button icon='el-icon-refresh-left' @click='onResetCondition()' :plain='true'>Đặt lại</el-button>
+            <el-button icon='el-icon-tickets' @click='onSaveCondition' :plain='true'>Lưu</el-button> -->
         </el-col>
       </el-row>
       <el-row :gutter='5'>
@@ -54,8 +54,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="onDoSaveCondition">确 定</el-button>
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onDoSaveCondition">Xác nhận</el-button>
+        <el-button @click="dialogVisible = false">Hủy</el-button>
       </span>
     </el-dialog>
   </el-container>
@@ -99,7 +99,7 @@ export default {
     schemeId: {
       type: String
     },
-    // 不作为条件的字段
+    // Trường không làm điều kiện
     exclude: {
       type: String,
       default: () => {return null}
@@ -125,8 +125,8 @@ export default {
         params: [{columnName: 'user_id', queryType: '=', value: currentUser.id},
           {columnName: 'router_id', queryType: '=', value: this.routerId}
         ],
-        columnName: 'name',       // 排序字段名
-        order: ''             // 排序
+        columnName: 'name',       // Tên trường sắp xếp
+        order: ''             // Sắp xếp
       }).then(responseData => {
         if(responseData.code === 100) {
           this.conditionList = responseData.data
@@ -159,7 +159,7 @@ export default {
         if(responseData.code === 100) {
           let arr = this.conditionList.filter(item => item.id !== condition.id)
           this.conditionList = arr
-          this.showMessage({type: 'success', msg: '删除成功'})
+          this.showMessage({type: 'success', msg: 'Xóa thành công'})
         } else {
           this.showMessage(responseData)
         }
@@ -196,8 +196,8 @@ export default {
                 params: [{columnName: 'user_id', queryType: '=', value: currentUser.id},
                   {columnName: 'router_id', queryType: '=', value: this.routerId}
                 ],
-                columnName: 'name',       // 排序字段名
-                order: ''             // 排序
+                columnName: 'name',       // Tên trường sắp xếp
+                order: ''             // Sắp xếp
               }).then(responseData => {
                 if(responseData.code === 100) {
                   this.conditionList = responseData.data
@@ -205,7 +205,7 @@ export default {
               })
 
               this.dialogVisible = false
-              this.showMessage({type: 'success', msg: '保存成功'})
+              this.showMessage({type: 'success', msg: 'Lưu thành công'})
             } else {
               this.showMessage(responseData)
             }

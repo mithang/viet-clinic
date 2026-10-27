@@ -25,7 +25,7 @@ import com.geeke.sys.utils.SessionUtils;
 import com.google.common.collect.Lists;
 
 /**
- * 表列头管理Service
+ * bảngCộttiêu đềQuản lýService
  * 
  * @author lys
  * @version 2019/2/2
@@ -36,7 +36,7 @@ public class ColumnViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ColumnViewService.class);
 	
-	final private static String OPERATE_COLUMN_NAME = "operate_column";	// 固定的列，用于存放操作列的用户自定义列宽
+	final private static String OPERATE_COLUMN_NAME = "operate_column";	// 固chỉ định của Cột, dùng đểlưuđặtthao tácCột của Người dùngtùy chỉnhCộtrộng
 	
 	@Autowired
 	private ColumnViewDao dao;
@@ -48,7 +48,7 @@ public class ColumnViewService {
 	private GenSchemeDao genSchemeDao;
 
 	/**
-	 * 获取显示列表
+	 * Lấyhiển thịDanh sách
 	 * @param routerId
 	 * @param tableId
 	 * @return
@@ -59,10 +59,10 @@ public class ColumnViewService {
 	}
 	
 	/**
-	 * 获取显示列表
+	 * Lấyhiển thịDanh sách
 	 * @param routerId
 	 * @param tableId
-	 * @param isAll	显示全部列	
+	 * @param isAll	hiển thịTất cảCột	
 	 * @return
 	 */
 	@Transactional(readOnly = false)
@@ -70,7 +70,7 @@ public class ColumnViewService {
 		String userId = SessionUtils.getUserJson().getString("id");
 		List<ColumnView> list = Lists.newArrayList();
 
-		// 排除不在列表中显示的字段
+		// Loại trừ trường không hiển thị trong danh sách
 		String[] strings = {"del_flag", "ids"};
 		List<Parameter> Params = SearchParamsBuilder.create()
 				.eq("gen_table_id", tableId)
@@ -84,38 +84,38 @@ public class ColumnViewService {
 
 		for (GenTableColumn cc : columns) {
 			GenTableColumnEx col = (GenTableColumnEx)cc;
-			col.setSort(col.getSort() * 1000);// 业务表设置时，顺序放大10倍；表顺序时需要放大10000倍。因此需要补充1000倍。
+			col.setSort(col.getSort() * 1000);// nghiệp vụbảngĐặt giờ, thứ tựđặtlớn10lần; bảngthứ tự giờCầnđặtlớn10000lần. donàyCầnbổ sung1000lần. 
 			if ("Select".equals(col.getShowType().getValue())
 					|| "SelectTree".equals(col.getShowType().getValue()) 
 					|| "StringMultiSelect".equals(col.getShowType().getValue())) {
 				if ("Custom".equals(col.getJavaType().getValue())) {
 					GenScheme scheme = genSchemeDao.get(col.getCustomType().getId());
-					String tId = scheme.getGenTable().getId(); // 自定义类型的表ID
+					String tId = scheme.getGenTable().getId(); // tùy chỉnhLoại của bảngID
 					String[][] fieldAttrs = col.getJavaFieldAttrs();
 					for (int index = 0; index < fieldAttrs.length; index++) {
 						String[] attr = fieldAttrs[index];
 						GenTableColumnEx c = this.getCustomerColumn(tId, attr[1]);
-						c.setSort(col.getSort() + index); // 显示顺序按照主表字段的显示顺序 +
-															// 1，2，3
+						c.setSort(col.getSort() + index); // Thứ tự hiển thị theo thứ tự hiển thị của trường bảng chính +
+															// 1, 2, 3
 						ColumnView column = this.mapForm(c);
 						column.setProp(col.getSimpleJavaField() + "." + attr[0]);
-						// 只有一个属性值的时候，直接使用主表上字段名称作为列头；否则格式为主表字段名.子表的字段名
+						// chỉ có mộtCáithuộc tínhGiá trị của  giờchờ, Trực tiếp dùng tên trường trên bảng chính làm tiêu đề cột; Nếu khôngđịnh dạng là Bảng chínhTên trường.conbảng của Tên trường
 						if(fieldAttrs.length == 1) {
-							column.setMiniWidth(cc.getWidth());   // 只有一个属性时，列宽使用当前业务表的配置列宽；否则使用原列宽
+							column.setMiniWidth(cc.getWidth());   // chỉ có mộtCáithuộc tính giờ, Độ rộng cột dùng độ rộng cột cấu hình của bảng nghiệp vụ hiện tại; Nếu khôngsử dụnggốcCộtrộng
 							column.setLabel(col.getComments());
 						} else {
 							column.setLabel(col.getComments() + "."
 									+ column.getLabel());
 						}
-						if (!"1".equals(col.getIsList())) { // 对象设置不显示时，所有属性不显示
+						if (!"1".equals(col.getIsList())) { // Đối tượngĐặtkhônghiển thị giờ, Tất cả các thuộc tính đều không hiển thị
 							column.setDisplay(false);
 						}
 						column.setTableId(tableId);
 						column.setRouterId(routerId);
 						column.setUserId(userId);
 						if("name".equals(c.getName())) {
-							column.setMiniWidth(cc.getWidth());   // 属性表字段为name时，使用当前表配置的列宽
-							// 字典项的名称列，单元格居中
+							column.setMiniWidth(cc.getWidth());   // thuộc tínhbảngTrường là name giờ, sử dụngHiện tạibảngcấu hình của Cộtrộng
+							// mục từ điển của TênCột, đơn đồngô居 trong 
 							if("6006".equals(scheme.getId())) {
 								column.setAlign("center");
 							}
@@ -129,23 +129,23 @@ public class ColumnViewService {
 						GenTableColumnEx c = this.getCustomerColumn(columns,	attr[0]);
 						ColumnView column = this.mapForm(c);
 						column.setProp(col.getSimpleJavaField() + "." + attr[0]);
-						// 只有一个属性值的时候，直接使用主表上字段名称作为列头；否则格式为主表字段名.子表的字段名
+						// chỉ có mộtCáithuộc tínhGiá trị của  giờchờ, Trực tiếp dùng tên trường trên bảng chính làm tiêu đề cột; Nếu khôngđịnh dạng là Bảng chínhTên trường.conbảng của Tên trường
 						if(fieldAttrs.length == 1) {
-							column.setMiniWidth(cc.getWidth());   // 只有一个属性时，列宽使用当前业务表的配置列宽；否则使用原列宽
+							column.setMiniWidth(cc.getWidth());   // chỉ có mộtCáithuộc tính giờ, Độ rộng cột dùng độ rộng cột cấu hình của bảng nghiệp vụ hiện tại; Nếu khôngsử dụnggốcCộtrộng
 							column.setLabel(col.getComments());
 						} else {
 							column.setLabel(col.getComments() + "."
 									+ column.getLabel());
 						}
-						if (!"1".equals(col.getIsList())) { // 对象设置不显示时，所有属性不显示
+						if (!"1".equals(col.getIsList())) { // Đối tượngĐặtkhônghiển thị giờ, Tất cả các thuộc tính đều không hiển thị
 							column.setDisplay(false);
 						}
 						column.setTableId(tableId);
 						column.setRouterId(routerId);
 						column.setUserId(userId);
-						column.setSort(col.getSort() + index + 1 ); // 显示顺序按照主表字段的显示顺序 +1，2，3	
+						column.setSort(col.getSort() + index + 1 ); // Thứ tự hiển thị theo thứ tự hiển thị của trường bảng chính +1, 2, 3	
 						if("name".equals(c.getName())) {
-							column.setMiniWidth(cc.getWidth());   // 属性表字段为name时，使用当前表配置的列宽
+							column.setMiniWidth(cc.getWidth());   // thuộc tínhbảngTrường là name giờ, sử dụngHiện tạibảngcấu hình của Cộtrộng
 						}
 						list.add(column);
 					}
@@ -166,9 +166,9 @@ public class ColumnViewService {
 			}
 		}
 				
-		List<ColumnView> lv = dao.list(userId, routerId, tableId); // 用户个性化配置信息
+		List<ColumnView> lv = dao.list(userId, routerId, tableId); // Người dùngCáitínhhóacấu hìnhThông tin
 		for (ColumnView cv : lv) {
-			if(OPERATE_COLUMN_NAME.equals(cv.getProp())) {  // 操作列的属性
+			if(OPERATE_COLUMN_NAME.equals(cv.getProp())) {  // thao tácCột của thuộc tính
 				ColumnView operateColumn = new ColumnView();
 				operateColumn.setId(cv.getId());
 				operateColumn.setSort(list.size() * 100000);
@@ -193,16 +193,16 @@ public class ColumnViewService {
 					break;
 				}
 			}
-			if (!found) { // 字段已经不存在
+			if (!found) { // TrườngĐãKhông tồn tại
 				this.delete(cv.getId());
 			}
 		}
 		Collections.sort(list);
-		List<ColumnView> adds = Lists.newArrayList();			// 新增列
-		List<ColumnView> updates = Lists.newArrayList();		// 更新列
+		List<ColumnView> adds = Lists.newArrayList();			// Thêm mớiCột
+		List<ColumnView> updates = Lists.newArrayList();		// Cập nhậtCột
 		for (int i = 0; i < list.size(); i++) {
 			ColumnView cv = list.get(i);
-			// 重置显示顺序
+			// trọngđặthiển thịthứ tự
 			cv.setSort((i + 1) * 10000);
 
 			if(isAll) {
@@ -227,7 +227,7 @@ public class ColumnViewService {
 	}
 
 	/**
-	 * 保存数据（插入或更新）
+	 * LưuDữ liệu(Chèn hoặc cập nhật)
 	 * 
 	 * @param cv
 	 */
@@ -247,7 +247,7 @@ public class ColumnViewService {
 	}
 
 	/**
-	 * 还原显示默认列
+	 * khôi phụchiển thịMặc địnhCột
 	 * 
 	 * @param routerId
 	 * @param tableId
@@ -259,7 +259,7 @@ public class ColumnViewService {
 	}
 
 	/**
-	 * 删除已经不存在的列
+	 * XóaĐãKhông tồn tại của Cột
 	 * 
 	 * @param id
 	 */

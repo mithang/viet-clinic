@@ -17,7 +17,7 @@ import com.geeke.common.controller.SearchParams;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 生产厂家Controller
+ * Nhà sản xuấtController
  * @author txl
  * @version 2022-06-22
  */

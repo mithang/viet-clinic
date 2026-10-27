@@ -26,7 +26,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Lists;
 
 /**
- * 字典类型Service
+ * Loại từ điểnService
  * @author lys
  * @version 2021-12-07
  */
@@ -39,11 +39,11 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
     private DictItemDao dictItemDao;
 
     /**
-     * 重写分页查询：系统级字典对所有租户可见，业务级字典按租户隔离
+     * viết lạiTruy vấn phân trang: Hệ thốngTừ điển cấp này hiển thị cho tất cả tenant, Từ điển cấp nghiệp vụ cách ly theo tenant
      */
     @Override
     public Page<DictType> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
-        // 字典已优化为全局共享，不再按租户隔离
+        // Từ điển đã được tối ưu thành dùng chung toàn cục, Không còn cách ly theo tenant
         PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
         int total = dao.count(pageRequest);
         List<DictType> list = total > 0 ? dao.listPage(pageRequest) : java.util.Collections.emptyList();
@@ -51,7 +51,7 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
     }
 
     /**
-     * 重写列表查询：字典全局共享，所有租户可见
+     * viết lạiDanh sáchTruy vấn: Từ điển dùng chung toàn cục, Tất cả tenant đều thấy được
      */
     @Override
     public List<DictType> listAll(List<Parameter> parameters, String orderby) {
@@ -64,7 +64,7 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
     public DictType get(String id) {
         DictType dictType = super.get(id);
 
-        /*获取子表列表   字典项*/
+        /*Lấy danh sách bảng con   Mục từ điển*/
         SearchParamsBuilder builder = SearchParamsBuilder.create()
                 .eq("dict_type_id", dictType.getId());
         PageRequest pageRequest = new PageRequest(builder.build());
@@ -72,7 +72,7 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         return dictType;
     }
 
-    /** 根据字典name获取字典value */
+    /** Theo từ điểnnameLấy từ điểnvalue */
     public String getValue(String name, String id) {
         DictItem value = dictItemDao.getValue(name, id);
         return value.getValue();
@@ -85,14 +85,14 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         @CacheEvict(value = "dict:itemsByCode", allEntries = true)
     })
     public DictType save(DictType dictType) {
-        // 系统级字典的 company_id 应该为 NULL
+        // Hệ thốngcấptừ điển của  company_id Nên là  NULL
         if ("1".equals(dictType.getIsSystem())) {
             dictType.setCompany(null);
         }
         DictType dictTypeTemp = super.save(dictType);
         if (StringUtils.isNoneBlank(dictTypeTemp.getId())) {
 
-            /* 保存子表数据     字典项 */
+            /* LưuconbảngDữ liệu     Mục từ điển */
             saveDictItemList(dictTypeTemp);
         }
         return dictTypeTemp;
@@ -100,21 +100,21 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
 
     @Transactional(readOnly = false)
     public DictType importJson(DictType dictType) {
-        // 没有记录的情况下，先添加，然后再通过更新
+        // Không cóBản ghi của tình hìnhdưới, trướcThêm, nhưngsaulạiQuaCập nhật
         if(get(dictType.getId()) == null ){
-        	// 添加
+        	// Thêm
         	dictType.preInsert();
         	doInsert(dictType);
         	this.saveAction(this.createAction(ActionConstants.ACTION_CREATED, dictType));
         }
         
-        // 更新
+        // Cập nhật
         DictType dictTypeTemp = this.save(dictType);
         return dictTypeTemp;
     }
 
     /**
-     * 删除
+     * Xóa
      * @param entity
      */
     @Override
@@ -124,7 +124,7 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         @CacheEvict(value = "dict:itemsByCode", allEntries = true)
     })
     public int delete(DictType dictType) {
-        /* 处理子表     字典项 */
+        /* Xử lý bảng con     Mục từ điển */
         List<Parameter> params = SearchParamsBuilder.create()
                 .eq("dict_type_id", dictType.getId())
                 .build();
@@ -142,9 +142,9 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
 
 
     /**
-     * 生成操作日志
-     * @param actionTypeId  操作类型Id
-     * @param entity        操作的实体对象
+     * Tạo nhật ký thao tác
+     * @param actionTypeId  Loại thao tácId
+     * @param entity        Đối tượng thực thể được thao tác
      * @return
      */
     @Override
@@ -153,7 +153,7 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         if(action == null) {
             return null;
         }
-        // 删除时记录把保存的数据保存到回收站
+        // Khi xóa, ghi lại và lưu dữ liệu đã lưu vào thùng rác
         if(ActionConstants.ACTION_DELETED.equals(actionTypeId)) {   
             for(DictItem child: entity.getDictItemList()) {
                 ActionRecycle recycle = new ActionRecycle();
@@ -166,15 +166,15 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         return action;
     }
     
-    /* 保存子表数据     字典项 */
+    /* LưuconbảngDữ liệu     Mục từ điển */
     private void saveDictItemList(DictType dictType) {
         SearchParamsBuilder builder = SearchParamsBuilder.create()
                 .eq("dict_type_id", dictType.getId());
         PageRequest pageRequest = new PageRequest(builder.build());
         List<DictItem> list_DictItem = dictItemDao.listAll(pageRequest);
-        List<DictItem> deletes = Lists.newArrayList(); // 删除列表
-        List<DictItem> inserts = Lists.newArrayList(); // 添加列表
-        List<DictItem> updates = Lists.newArrayList(); // 更新列表
+        List<DictItem> deletes = Lists.newArrayList(); // Danh sách xóa
+        List<DictItem> inserts = Lists.newArrayList(); // Danh sách thêm
+        List<DictItem> updates = Lists.newArrayList(); // Danh sách cập nhật
         for(DictItem dictItemSaved: list_DictItem) {
             boolean found = false;
             for (DictItem dictItem : dictType.getDictItemList()){

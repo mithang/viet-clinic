@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.org.entity.AdministrativeDivision;
 
 /**
- * 行政区域划分DAO接口
+ * Phân chia khu vực hành chínhDAOGiao diện
  * @author txl
  * @version 2022-06-21
  */

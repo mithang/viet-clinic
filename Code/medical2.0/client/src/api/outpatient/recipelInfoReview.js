@@ -36,31 +36,31 @@ export const getPrescriptionStatistics = (param) =>
   })
 
 
-//处方撤销
+//Thu hồi đơn thuốc
 export const cancelElectronicPrescription = (recipelInfoReview, undoRea) =>
   request({
     url: '/outpatient/review/pre/revoke',
     method: 'post',
-    data: recipelInfoReview,  // 请求体
+    data: recipelInfoReview,  // Nội dung yêu cầu
     params: {
-      undoRea: undoRea       // 查询参数
+      undoRea: undoRea       // Tham số truy vấn
     }
   });
 
-//取药查询
+//Truy vấn lấy thuốc
 export const getMdMedicineInfo = (recipelInfoReview) =>
   request({
     url: '/outpatient/review/pre/getMdMedicineInfo',
     method: 'post',
-    data: recipelInfoReview,  // 请求体
+    data: recipelInfoReview,  // Nội dung yêu cầu
   });
 
-//审核查询
+//Truy vấn xét duyệt
 export const getMdExamineInfo = (recipelInfoReview) =>
   request({
     url: '/outpatient/review/pre/getMdExamineInfo',
     method: 'post',
-    data: recipelInfoReview,  // 请求体
+    data: recipelInfoReview,  // Nội dung yêu cầu
   });
 
 /*export const bulkInsertRecipelInfoReview = (RecipelInfoReviews) =>

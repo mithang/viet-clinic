@@ -9,20 +9,20 @@ import com.geeke.sys.entity.Action;
 import com.geeke.sys.entity.ActionRecycle;
 
 /**
- * 日志直接写入数据库类
+ * Ngàynhật kýtrực tiếpghiDữ liệukhoLớp
  * @author lys
  * version: 2021/11/16
  */
 public class DbActionSaver  implements IActionSaver {
 
 	/**
-	 * 操作日志持久对象
+	 * Nhật ký thao tácbền vữngĐối tượng
 	 */
 	@Autowired
 	protected ActionDao actionDao;
 	
 	/**
-	 * 操作回收站持久对象
+	 * thao tácThùng rácbền vữngĐối tượng
 	 */
 	@Autowired
 	protected ActionRecycleDao actionRecycleDao;

@@ -2,7 +2,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/sys/action')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getActionById = baseApi.getById
 export const listActionPage = baseApi.listPage
 export const listActionAll = baseApi.listAll

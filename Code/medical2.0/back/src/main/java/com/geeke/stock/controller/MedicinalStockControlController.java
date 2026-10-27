@@ -15,7 +15,7 @@ import com.geeke.utils.ResultUtil;
 
 
 /**
- * 药品/材料库存总控制Controller
+ * Thuốc/Kiểm soát tổng tồn kho vật tưController
  * @author hl
  * @version 2022-09-26
  */

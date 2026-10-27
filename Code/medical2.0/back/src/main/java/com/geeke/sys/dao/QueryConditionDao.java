@@ -7,7 +7,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.QueryCondition;
 
 /**
- * 查询条件DAO接口
+ * Điều kiện truy vấnDAOGiao diện
  * @author lys
  * @version 2021-07-05
  */

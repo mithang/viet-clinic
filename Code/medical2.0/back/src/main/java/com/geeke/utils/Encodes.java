@@ -13,11 +13,11 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
- * 封装各种格式的编码解码工具类.
- * 1.Commons-Codec的 hex/base64 编码
- * 2.自制的base62 编码
- * 3.Commons-Lang的xml/html escape
- * 4.JDK提供的URLEncoder
+ * đóng góiđủ loạiđịnh dạng của MãGiải mãLớp công cụ.
+ * 1.Commons-Codec của  hex/base64 Mã
+ * 2.tự制 của base62 Mã
+ * 3.Commons-Lang của xml/html escape
+ * 4.JDKcung cấp của URLEncoder
  * @author calvin
  * @version 2013-01-15
  */
@@ -27,14 +27,14 @@ public class Encodes {
 	private static final char[] BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
 
 	/**
-	 * Hex编码.
+	 * HexMã.
 	 */
 	public static String encodeHex(byte[] input) {
 		return new String(Hex.encodeHex(input));
 	}
 
 	/**
-	 * Hex解码.
+	 * HexGiải mã.
 	 */
 	public static byte[] decodeHex(String input) {
 		try {
@@ -45,14 +45,14 @@ public class Encodes {
 	}
 
 	/**
-	 * Base64编码.
+	 * Base64Mã.
 	 */
 	public static String encodeBase64(byte[] input) {
 		return new String(Base64.encodeBase64(input));
 	}
 	
 	/**
-	 * Base64编码.
+	 * Base64Mã.
 	 */
 	public static String encodeBase64(String input) {
 		try {
@@ -63,21 +63,21 @@ public class Encodes {
 	}
 
 //	/**
-//	 * Base64编码, URL安全(将Base64中的URL非法字符'+'和'/'转为'-'和'_', 见RFC3548).
+//	 * Base64Mã, URLan toàn(Sẽ Base64TrongURLkhông phảiphương phápchữký tự'+' và '/'chuyển là '-' và '_', 见RFC3548).
 //	 */
 //	public static String encodeUrlSafeBase64(byte[] input) {
 //		return Base64.encodeBase64URLSafe(input);
 //	}
 
 	/**
-	 * Base64解码.
+	 * Base64Giải mã.
 	 */
 	public static byte[] decodeBase64(String input) {
 		return Base64.decodeBase64(input.getBytes());
 	}
 	
 	/**
-	 * Base64解码.
+	 * Base64Giải mã.
 	 */
 	public static String decodeBase64String(String input) {
 		try {
@@ -88,7 +88,7 @@ public class Encodes {
 	}
 
 	/**
-	 * Base62编码。
+	 * Base62Mã. 
 	 */
 	public static String encodeBase62(byte[] input) {
 		char[] chars = new char[input.length];
@@ -99,35 +99,35 @@ public class Encodes {
 	}
 
 	/**
-	 * Html 转码.
+	 * Html chuyểnmã.
 	 */
 	public static String escapeHtml(String html) {
 		return StringEscapeUtils.escapeHtml4(html);
 	}
 
 	/**
-	 * Html 解码.
+	 * Html Giải mã.
 	 */
 	public static String unescapeHtml(String htmlEscaped) {
 		return StringEscapeUtils.unescapeHtml4(htmlEscaped);
 	}
 
 	/**
-	 * Xml 转码.
+	 * Xml chuyểnmã.
 	 */
 	public static String escapeXml(String xml) {
 		return StringEscapeUtils.escapeXml10(xml);
 	}
 
 	/**
-	 * Xml 解码.
+	 * Xml Giải mã.
 	 */
 	public static String unescapeXml(String xmlEscaped) {
 		return StringEscapeUtils.unescapeXml(xmlEscaped);
 	}
 
 	/**
-	 * URL 编码, Encode默认为UTF-8. 
+	 * URL Mã, EncodeMặc định là UTF-8. 
 	 */
 	public static String urlEncode(String part) {
 		try {
@@ -138,7 +138,7 @@ public class Encodes {
 	}
 
 	/**
-	 * URL 解码, Encode默认为UTF-8. 
+	 * URL Giải mã, EncodeMặc định là UTF-8. 
 	 */
 	public static String urlDecode(String part) {
 

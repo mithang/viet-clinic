@@ -13,10 +13,10 @@ public class RecipelStastics
 
     }
 
-    //本次明细的id
+    //này lầnChi tiết của id
     private String id;
-    //本次明细属于什么类型
+    //này lầnChi tiếtthuộctạigìLoại
     private String stuffType;
-    //本次明细占用数目
+    //này lầnChi tiếtchiếm dụngsốmục
     private int occupy;
 }

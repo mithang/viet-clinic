@@ -35,7 +35,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
- * 院版科室发药
+ * bản việnKhoaphát thuốc
  */
 @RestController
 @RequestMapping("/hosdata/HosDepartmentStorage")
@@ -52,7 +52,7 @@ public class HosDepartmentStorageController {
 
 
     /**
-     * 查询发药信息时就同步药品信息
+     * Truy vấnphát thuốcThông tin giờthìđồng bộThông tin thuốc
      * @param searchParams
      * @return
      */
@@ -61,7 +61,7 @@ public class HosDepartmentStorageController {
         List<Parameter> params = searchParams.getNewParams();
         List<Parameter> newParams = new ArrayList<>();
         params.forEach(item ->{
-            // 限定本科室
+            // giới hạnchỉ địnhnàyKhoa
             if(item.getColumnName().equals("kscode") &&item.getValue().equals("")){
                 item.setValue(SessionUtils.getUserJson().getString("companyId"));
             }
@@ -94,13 +94,13 @@ public class HosDepartmentStorageController {
                 }
             }
             if(!hisDrugs.isEmpty()){
-                //插入未同步的药品信息
+                //chènChưađồng bộ của Thông tin thuốc
                 hosCollectDataController.getStrings(hisDrugs.stream()
                         .collect(Collectors.collectingAndThen(
-                                Collectors.groupingBy(HisDrugs::getCode), // 根据code分组
-                                map -> map.values().stream()            // 取出每个code对应的值（即对象列表）
-                                        .map(list -> list.get(0))           // 从每个列表中取第一个元素作为代表
-                                        .collect(Collectors.toList())      // 收集到一个新的列表
+                                Collectors.groupingBy(HisDrugs::getCode), // Theocode phútnhóm
+                                map -> map.values().stream()            // lấyramỗiCáicodetương ứng của Giá trị(tức làĐối tượngDanh sách)
+                                        .map(list -> list.get(0))           // Lấy phần tử đầu tiên từ mỗi danh sách làm đại diện
+                                        .collect(Collectors.toList())      // 收集ĐếnmộtCáimới của Danh sách
                         )));
 
             }
@@ -111,7 +111,7 @@ public class HosDepartmentStorageController {
 
 
     /**
-     * 审核入库本诊所院版发药列表
+     * xét duyệtnhập khonàyPhòng khámbản việnphát thuốcDanh sách
      * @param hisDrugsStorages
      * @return
      */
@@ -120,55 +120,55 @@ public class HosDepartmentStorageController {
         StorageEvt storageEvt = new StorageEvt();
         SupplierStorage supplierStorage = new SupplierStorage();
         List<SupplierStock> supplierStockList = new ArrayList<>();
-        int totalNumber = 0; // 初始化总数为0
+        int totalNumber = 0; // Khởi tạotổng số là 0
         for (int i = 0; i < hisDrugsStorages.size(); i++){
             Drug drug = drugService.getByCode(hisDrugsStorages.get(i).getYpdm(),SessionUtils.getUserJson().getString("companyId"));
             SupplierStock supplierStock = new SupplierStock();
-            //生产批次
+            //sinhsảnLô
             supplierStock.setBatchNo(hisDrugsStorages.get(i).getPc());
-            //药品信息
+            //Thông tin thuốc
             supplierStock.setDrug(drug);
-            //材料默认为null
+            //Vật tưMặc định là null
             supplierStock.setStuff(new Stuff());
-            //数量判断院版是最小单位还是标准单位
+            //Kiểm tra số lượng theo bản viện là đơn vị nhỏ nhất hay đơn vị chuẩn
             if(Integer.parseInt(hisDrugsStorages.get(i).getCkzhyz()) > 1){
-                //标准单位
+                //tiêu chuẩnĐơn vị
                 supplierStock.setNumber(hisDrugsStorages.get(i).getSl() * Integer.parseInt( (drug.getPreparation().substring(0,drug.getPreparation().indexOf(".")))));
                 supplierStock.setLeastBid(hisDrugsStorages.get(i).getPfj().divide(new BigDecimal(Integer.parseInt(hisDrugsStorages.get(i).getCkzhyz())),2,BigDecimal.ROUND_HALF_UP));
             }else {
                 supplierStock.setNumber(hisDrugsStorages.get(i).getSl());
                 supplierStock.setLeastBid(hisDrugsStorages.get(i).getPfj());
             }
-            //诊所id
+            //Phòng khámid
             Company company = new Company();
             company.setId(SessionUtils.getUserJson().getString("companyId"));
             supplierStock.setCompany(company);
             supplierStorage.setCompany(company);
-            //生产日期
+            //Ngày sản xuất
             if(hisDrugsStorages.get(i).getScrq() == null){
-                //院版为空则设置为当前时间避免报错
+                //Nếu bản viện trống thì đặt thành thời gian hiện tại để tránh lỗi
                 supplierStock.setProduceDate(new Date());
             }else{
                 supplierStock.setProduceDate(hisDrugsStorages.get(i).getScrq());
             }
 
-            //有效期
+            //Thời hạn hiệu lực
             supplierStock.setEndDate(hisDrugsStorages.get(i).getYxq());
             Supplier supplier = new Supplier();
-            //TODO 默认设置暂且写死为院版供应商，后续根据需求优化
+            //TODO Mặc địnhĐặttạmvàviếtchết là bản việnNhà cung cấp, sautiếp tụcTheocầnyêu cầuTối ưu hóa
             supplier.setId(BizConstants.DEFAULT_SUPPLIER_ID);
             supplierStock.setSupplierId(supplier);
             supplierStorage.setSupplier(supplier);
-            //进价
+            //Giá nhập
             supplierStock.setBid(hisDrugsStorages.get(i).getPfj());
             supplierStockList.add(supplierStock);
-            //发票号
+            //Số hóa đơn
             supplierStorage.setInvoiceNumber(hisDrugsStorages.get(i).getFPh());
             totalNumber += supplierStock.getNumber();
         }
-        //开始添加库存信息
-        supplierStorage.setNumber(totalNumber); // 将累加的结果赋值给supplierStorage
-        //药品 2
+        //Bắt đầuThêmTồn khoThông tin
+        supplierStorage.setNumber(totalNumber); // Sẽ 累thêm của Kết quảgánGiá trịchosupplierStorage
+        //Thuốc 2
         supplierStorage.setBreed(2);
         supplierStorage.setExamineDate(new Date());
         DictItem dictItem = new DictItem();
@@ -184,7 +184,7 @@ public class HosDepartmentStorageController {
 
         supplierStockService.saves(storageEvt);
         supplierStockService.savesTo(storageEvt);
-        // 回调院版接口修改已入库状态
+        // callbackbản việngiao diệnSửaĐãnhập khoTrạng thái
         hisDrugsStorages.forEach(item-> httpUtil.UpdateHosData(ApiUrl.HOS_UPDATE_DRUGS_STORAGE_STATUS, item.getCrkmxId()));
         return ResponseEntity.ok(ResultUtil.successJson());
     }

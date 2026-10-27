@@ -51,7 +51,7 @@ public class MyTaskController {
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestParam("entity") String strTask,
-                                           @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // 文件: 用户图片
+                                           @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                            @RequestParam(value = "deleteIds", required = false) String strDeleteIds) throws IOException {
         MyTask myTask = JSONObject.parseObject(strTask, MyTask.class);
         // MultipartFile[] multipartFiles = JSONObject.parseObject(fileIdUploads, MultipartFile[].class);

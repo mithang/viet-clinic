@@ -2,23 +2,23 @@ package com.geeke.hosdata.constant;
 
 
 /**
- * 院版访问路径
+ * bản việntruy cậpđường dẫn
  */
 public class ApiUrl {
-    //分页药品路径
+    // phúttrangThuốcđường dẫn
     public static final String HOS_GET_MEDICINE_PAGE = "/api/BaseData/GetMedicinePage";
-    //全部药品路径
+    //Tất cảThuốcđường dẫn
     public static final String HOS_GET_MEDICINE_LIST = "/api/BaseData/GetMedicineList";
-    //收费诊疗项目
+    //Thu phíhạng mục khám chữa bệnh
     public static final String HOS_GET_CHARGE_ITEM_PAGE = "/api/BaseData/GetChargeItemPage";
-    //收费大类
+    //Thu phílớnLớp
     public static final String HOS_GET_CHARGE_ITEM = "/api/BaseData/GetChargeCategory";
-    //分页材料路径
+    // phúttrangVật tưđường dẫn
     public static final String HOS_GET_MATERIAL_ITEM_PAGE = "/api/BaseData/GetMaterialItemPage";
     public static  final String HOS_GET_TOKEN ="/api/Auth/GetAppFrienAuthToken" ;
-    //药库发药
+    //thuốckhophát thuốc
     public   static final String HOS_GET_DRUGS_STORAGE_PAGE = "/api/DrugStorage/GetDepartmentDrugsPage";
-    //入库后回调审核状态
+    //nhập khosaucallbackTrạng thái xét duyệt
     public static final String HOS_UPDATE_DRUGS_STORAGE_STATUS = "/api/DrugStorage/UpdateMedicationStatus";
 
 

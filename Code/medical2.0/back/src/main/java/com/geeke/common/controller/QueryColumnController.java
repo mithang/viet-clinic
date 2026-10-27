@@ -23,7 +23,7 @@ import com.geeke.sys.controller.BaseController;
 import com.geeke.utils.ResultUtil;
 
 /**
- * 查询条件的业务字段Controller
+ * Điều kiện truy vấn của nghiệp vụTrườngController
  * @author lys
  * @version 2020-8-17
  */

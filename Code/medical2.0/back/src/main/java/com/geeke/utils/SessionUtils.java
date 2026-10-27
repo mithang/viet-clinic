@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * 用户工具类
+ * Người dùngLớp công cụ
  * @author lys
  * @version 2018-12-05
  */
@@ -17,8 +17,8 @@ public class SessionUtils extends com.geeke.sys.utils.SessionUtils {
 	private static final Logger logger = LoggerFactory.getLogger(SessionUtils.class);
 
 	/**
-	 * 获取当前用户
-	 * @return 取不到返回 new User()
+	 * Lấy người dùng hiện tại
+	 * @return Không lấy được thì trả về new User()
 	 */
 	public static User getUser(){
 		JSONObject userJson = getUserJson();
@@ -30,41 +30,41 @@ public class SessionUtils extends com.geeke.sys.utils.SessionUtils {
 	
 	
     /**
-	 * 设置当前用户
-	 * @return 取不到返回 new User()
+	 * ĐặtHiện tạiNgười dùng
+	 * @return Không lấy được thì trả về new User()
 	 */
 	public static void setUser(User user){
 		setUserJson((JSONObject)JSONObject.toJSON(user));
 	}
 
 	/**
-	 * 设置当前用户所登录的诊所
-	 * @return 取不到返回 new User()
+	 * Đặt phòng khám mà người dùng hiện tại đang đăng nhập
+	 * @return Không lấy được thì trả về new User()
 	 */
 	public static void setLoginTenantId(String tenantId){
 		try {
 			SecurityUtils.getSubject().getSession().setAttribute("tenantID", tenantId);
 		} catch (Exception e) {
-			logger.debug("Session 已过期或不存在", e);
+			logger.debug("Session Đã hết hạn hoặc không tồn tại", e);
 		}
 	}
 
 	/**
-	 * 设置当前用户所登录的诊所
-	 * @return 取不到返回 new User()
+	 * Đặt phòng khám mà người dùng hiện tại đang đăng nhập
+	 * @return Không lấy được thì trả về new User()
 	 */
 	public static void setLoginTenant(Company company){
 		try {
 			JSONObject com = (JSONObject) JSONObject.toJSON(company);
 			SecurityUtils.getSubject().getSession().setAttribute("tenant", com);
 		} catch (Exception e) {
-			logger.debug("Session 已过期或不存在", e);
+			logger.debug("Session Đã hết hạn hoặc không tồn tại", e);
 		}
 	}
 
 	/**
-	 * 获取当前用户所登录的诊所
-	 * @return 取不到返回 null
+	 * Lấy người dùng hiện tạinơiĐăng nhập của Phòng khám
+	 * @return Không lấy được thì trả về null
 	 */
 	public static String getLoginTenantId(){
 		try {
@@ -72,7 +72,7 @@ public class SessionUtils extends com.geeke.sys.utils.SessionUtils {
 			if (attr == null) {
 				return null;
 			}
-			// 直接返回字符串，避免String.valueOf(null)返回"null"字符串的问题
+			// trực tiếpTrả vềchuỗi, TránhString.valueOf(null)Quay lại"null"chuỗi của vấn đề
 			return attr.toString();
 		} catch (Exception e) {
 			return null;
@@ -80,8 +80,8 @@ public class SessionUtils extends com.geeke.sys.utils.SessionUtils {
 	}
 
 	/**
-	 * 设置当前用户所登录的诊所
-	 * @return 取不到返回 new User()
+	 * Đặt phòng khám mà người dùng hiện tại đang đăng nhập
+	 * @return Không lấy được thì trả về new User()
 	 */
 	public static Company getLoginTenant(){
 		try {

@@ -20,28 +20,28 @@ import com.geeke.sys.controller.BaseController;
 import com.geeke.utils.ResultUtil;
 
 /**
- * Controller基类 - 提供标准CRUD接口
- * @param <S> Service类型
- * @param <T> 实体类型
+ * ControllerLớp cơ sở - cung cấptiêu chuẩnCRUDGiao diện
+ * @param <S> ServiceLoại
+ * @param <T> Loại thực thể
  */
 public abstract class CrudController<S extends CrudService<?, T>, T extends DataEntity<T>> extends BaseController {
 
     /**
-     * 子类必须声明此字段并添加 @Autowired 注解，以明确指定要注入的 Service。
-     * 例如：@Autowired protected SupplierService service;
-     * 不要在基类使用 @Autowired，否则多个 CrudService 子类会导致歧义。
+     * conLớpPhảikhai báonàyTrườngvàThêm @Autowired annotation, Để chỉ định rõ cần inject của  Service. 
+     * Ví dụ: @Autowired protected SupplierService service;
+     * khôngcầntạiLớp cơ sởsử dụng @Autowired, Nếu khôngnhiềuCái CrudService conLớpSẽ gây mơ hồ. 
      */
     protected S service;
 
     /**
-     * 获取Service实例 - 子类可以通过覆盖此方法来提供自己的Service
+     * LấyServiceinstance - Lớp con có thể cung cấp cách riêng của mình bằng cách ghi đè phương thức nàyService
      */
     protected S getService() {
         return service;
     }
 
     /**
-     * 根据ID获取实体
+     * TheoIDLấythực thể
      */
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
@@ -50,7 +50,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * 分页查询
+     * Truy vấn phân trang
      */
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
@@ -60,7 +60,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * 查询全部数据
+     * Truy vấnTất cảDữ liệu
      */
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
@@ -69,40 +69,40 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * 保存前钩子 — 子类可覆盖以添加预处理逻辑（如文件处理、参数补充）
-     * 返回true继续保存，返回false中止保存
+     * Lưutrướchookcon — conLớpcó thểghi đèbằngThêmtrướcXử lýlogic(Như TệpXử lý, Tham sốbổ sung)
+     * Quay lạitruetiếp tụcLưu, Quay lạifalse trong dừngLưu
      */
     protected boolean beforeSave(T entity) {
         return true;
     }
 
     /**
-     * 保存后钩子 — 子类可覆盖以添加后置逻辑（如发送通知、同步数据）
+     * Lưusauhookcon — Lớp con có thể ghi đè để thêm logic hậu xử lý(Như phátgửi通biết, đồng bộDữ liệu)
      */
     protected void afterSave(T entity) {
     }
 
     /**
-     * 删除前钩子 — 子类可覆盖以添加删除前校验
-     * 返回true继续删除，返回false中止删除
+     * Xóatrướchookcon — conLớpcó thểghi đèbằngThêmXóatrướcKiểm tra
+     * Quay lạitruetiếp tụcXóa, Quay lạifalse trong dừngXóa
      */
     protected boolean beforeDelete(T entity) {
         return true;
     }
 
     /**
-     * 删除后钩子 — 子类可覆盖以添加后置逻辑
+     * Xóasauhookcon — Lớp con có thể ghi đè để thêm logic hậu xử lý
      */
     protected void afterDelete(T entity) {
     }
 
     /**
-     * 保存实体（新增或更新）
+     * Lưuthực thể(Thêm mới hoặc Cập nhật)
      */
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@Valid @RequestBody T entity) {
         if (!beforeSave(entity)) {
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "保存前校验未通过"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
         }
         String id = getService().save(entity).getId();
         afterSave(entity);
@@ -110,7 +110,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * 删除实体
+     * Xóathực thể
      */
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody T entity) {
@@ -118,7 +118,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
         }
         if (!beforeDelete(entity)) {
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "删除前校验未通过"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "XóatrướcKiểm traChưaQua"));
         }
         int rows = getService().delete(entity);
         afterDelete(entity);
@@ -126,7 +126,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * 批量新增
+     * hàng loạtThêm mới
      */
     @PostMapping(value = "bulkInsert")
     public ResponseEntity<JSONObject> bulkInsert(@RequestBody List<T> entitys) {
@@ -135,7 +135,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * 批量更新
+     * hàng loạtCập nhật
      */
     @PostMapping(value = "bulkUpdate")
     public ResponseEntity<JSONObject> bulkUpdate(@RequestBody List<T> entitys) {
@@ -144,7 +144,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * 批量删除
+     * Xóa hàng loạt
      */
     @PostMapping(value = "bulkDelete")
     public ResponseEntity<JSONObject> bulkDelete(@RequestBody List<T> entitys) {

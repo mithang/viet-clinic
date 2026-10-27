@@ -1,6 +1,6 @@
 server:
   tomcat:
-    max-http-post-size: 104857600  # 100MB，防止恶意大请求体攻击
+    max-http-post-size: 104857600  # 100MB, phòngdừng恶ýlớnVui lòngthân yêu cầu攻击
 spring:
   profiles:
     active: demo
@@ -22,26 +22,26 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
   main:
-    allow-bean-definition-overriding: true    #当遇到同样名字的时候，是否允许覆盖注册
+    allow-bean-definition-overriding: true    #khi遇Đếncùngnhưtênchữ của  giờchờ, Có hay khôngCho phép ghi đè đăng ký
     allow-circular-references: true
   cache:
     type: none
-  #院版配置（开源版请根据实际环境配置）
+  #bản việncấu hình(mởnguồnbảnVui lòngTheoCấu hình môi trường thực tế)
   hosconfig:
     hos-token-url: ${HOS_TOKEN_URL:}
     hos-data-server-url: ${HOS_DATA_SERVER_URL:}
     app-id: ${HOS_APP_ID:}
     organize-id: ${HOS_ORGANIZE_ID:}
-  #医保配置
+  #Cấu hình BHYT
   medicare:
-    check: false #开启医保配置
-    province:     #医保省份
-    url:          #接口地址
-    #web-url: http://prescription-service:8101/api/YibaoWeb    #部署地址采用医保中间件访问与docker中服务名称部署相对应
-    web-url: http://127.0.0.1:8101/api/YibaoWeb    #中间件地址
-    isDemo: false #是否演示环境
-    #电子处方
-    web-port: 7020  #前端端口号用于访问打印处方单
+    check: false #mởCấu hình BHYT
+    province:     #Tỉnh BHYT
+    url:          #giao diệnĐịa chỉ
+    #web-url: http://prescription-service:8101/api/YibaoWeb    #bộ署Địa chỉlấydùngBHYT trong giữatruy cập tệp và docker trong dịch vụTênbộ署tươngtương ứng
+    web-url: http://127.0.0.1:8101/api/YibaoWeb    # trong giữatệpĐịa chỉ
+    isDemo: false #Có hay khôngdemomôi trường
+    #Đơn thuốc điện tử
+    web-port: 7020  #Số cổng frontend dùng để truy cập in ấnĐơn thuốcđơn
 logging:
   level:
     com.geeke.gen.dao.*: debug
@@ -50,7 +50,7 @@ logging:
     org.camunda: debug
     com.geeke.gen: debug
     com.geeke.stock.dao.*: debug
-# mybatis-plus配置
+# mybatis-plusCấu hình
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
   configuration:
@@ -68,11 +68,11 @@ mybatis-plus:
     map-underscore-to-camel-case: true
 
 genConfigure:
-  dbName: mysql                          #数据库类型:  mysql/oracle/mssql
+  dbName: mysql                          #Dữ liệukhoLoại:  mysql/oracle/mssql
 
 app:
   cache:
-    type: none  # 可选 redis、none、ehcache
+    type: none  # Tùy chọn redis, none, ehcache
 
 
 

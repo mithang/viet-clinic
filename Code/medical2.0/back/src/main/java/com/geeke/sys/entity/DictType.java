@@ -9,18 +9,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.geeke.common.persistence.DataEntity;
 import com.geeke.org.entity.Company;
 /**
- * 字典类型Entity
+ * Loại từ điểnEntity
  * @author lys
  * @version 2021-12-07
  */
 public class DictType extends DataEntity<DictType> {
 
 	private static final long serialVersionUID = 4002L;
-	private Company company;      // 所属租户
-	private String code;		// 字典类型编码
-	private String isSystem;		// 系统级
+	private Company company;      // thuộc vềtenant
+	private String code;		// Loại từ điểnMã
+	private String isSystem;		// Hệ thốngcấp
 
-	private List<DictItem> dictItemList = Lists.newArrayList();		// 子表列表
+	private List<DictItem> dictItemList = Lists.newArrayList();		// Danh sách bảng con
 	
 	public DictType() {
 		super();
@@ -38,7 +38,7 @@ public class DictType extends DataEntity<DictType> {
 		this.company = company;
 	}
 
-	@Length(min=1, max=64, message="字典类型编码长度必须介于 1 和 64 之间")
+	@Length(min=1, max=64, message="Độ dài mã loại từ điển phải nằm trong khoảng 1 đến 64 ")
 	public String getCode() {
 		return code;
 	}
@@ -47,7 +47,7 @@ public class DictType extends DataEntity<DictType> {
 	}
 	
 	
-	@Length(min=1, max=1, message="系统级长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message="Hệ thốngcấpĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getIsSystem() {
 		return isSystem;
 	}
@@ -67,7 +67,7 @@ public class DictType extends DataEntity<DictType> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -76,7 +76,7 @@ public class DictType extends DataEntity<DictType> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -86,7 +86,7 @@ public class DictType extends DataEntity<DictType> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

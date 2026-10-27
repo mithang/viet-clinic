@@ -3,14 +3,14 @@ import Router from 'vue-router'
 import LoginView from '@/views/login/index'
 import { getLocalToken, getLocalRouters } from '@/utils/auth'
 import { routerTree, handleFamily } from '@/utils/routerTree'
-// Element UI 已通过 CDN 加载
+// Element UI Đã qua CDN Đang tải
 const ELEMENT = window.ELEMENT
 
 
 const _import = require('./_import_' + process.env.NODE_ENV)
 Vue.use(VueRouter)
 
-//按需加载
+//Tải theo nhu cầu
 /**
  * 有时候我们想把某个路由下的所有组件都打包在同个异步 chunk 中。
  * 只需要 给 chunk 命名，提供 require.ensure 第三个参数作为 chunk 的名称。

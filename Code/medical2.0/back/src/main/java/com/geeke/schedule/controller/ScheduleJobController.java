@@ -9,7 +9,7 @@ import com.geeke.schedule.entity.ScheduleJob;
 import com.geeke.schedule.service.ScheduleJobService;
 
 /**
- * 定时任务管理Controller
+ * Quản lý tác vụ định kỳController
  * @author shenzy
  * @version 2021-10-28
  */

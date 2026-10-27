@@ -7,24 +7,24 @@ import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 /**
- * 业务表管理Entity
+ * Quản lý bảng nghiệp vụEntity
  * @author lys
  * @version 2021-08-26
  */
 public class GenTable extends DataEntity<GenTable> {
 
 	private static final long serialVersionUID = 1L;
-	private String comments;		// 说明
-	private String source;		// 来源
-	private String className;		// 实体类名称
-	private GenTable parentTable;      // 关联父表 
-	private String parentTableFk;		// 父表外键
-	private String isAssociation;		// 是关联表
-	private String filter;		// 筛选条件
-	private String orderColumns;	// 排序字段
+	private String comments;		// Giải thích
+	private String source;		// Nguồn
+	private String className;		// thực thểLớpTên
+	private GenTable parentTable;      // liên kếtchabảng 
+	private String parentTableFk;		// chabảngngoàikhóa
+	private String isAssociation;		//  có liên kếtbảng
+	private String filter;		// lọcĐiều kiện
+	private String orderColumns;	// sắp xếpTrường
 
-	private List<Constraint> constraintList = Lists.newArrayList();		// 子表列表
-	private List<GenTableColumn> genTableColumnList = Lists.newArrayList();		// 子表列表
+	private List<Constraint> constraintList = Lists.newArrayList();		// Danh sách bảng con
+	private List<GenTableColumn> genTableColumnList = Lists.newArrayList();		// Danh sách bảng con
 	
 	public GenTable() {
 		super();
@@ -35,7 +35,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 
-	@Length(min=0, max=500, message="说明长度必须介于 0 和 500 之间")
+	@Length(min=0, max=500, message="Giải thíchĐộ dài phải nằm trong khoảng 0 đến 500 ")
 	public String getComments() {
 		return comments;
 	}
@@ -44,7 +44,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
-	@Length(min=0, max=128, message="来源长度必须介于 0 和 128 之间")
+	@Length(min=0, max=128, message="đếnnguồnĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getSource() {
 		return source;
 	}
@@ -53,7 +53,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
-	@Length(min=1, max=100, message="实体类名称长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="thực thểLớpTênĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getClassName() {
 		return className;
 	}
@@ -70,7 +70,7 @@ public class GenTable extends DataEntity<GenTable> {
         this.parentTable = parentTable;
     }
     
-	@Length(min=0, max=100, message="父表外键长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="chabảngngoàikhóaĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getParentTableFk() {
 		return parentTableFk;
 	}
@@ -79,7 +79,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
-	@Length(min=1, max=1, message="是关联表长度必须介于 1 和 1 之间")
+	@Length(min=1, max=1, message=" có liên kếtbảngĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getIsAssociation() {
 		return isAssociation;
 	}
@@ -88,7 +88,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="筛选条件长度必须介于 0 和 2000 之间")
+	@Length(min=0, max=2000, message="lọcĐiều kiệnĐộ dài phải nằm trong khoảng 0 đến 2000 ")
 	public String getFilter() {
 		return filter;
 	}
@@ -121,7 +121,7 @@ public class GenTable extends DataEntity<GenTable> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -130,7 +130,7 @@ public class GenTable extends DataEntity<GenTable> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -140,7 +140,7 @@ public class GenTable extends DataEntity<GenTable> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

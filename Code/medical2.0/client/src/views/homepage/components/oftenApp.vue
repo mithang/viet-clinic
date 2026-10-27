@@ -1,7 +1,7 @@
 <template>
   <el-card class="index-module-card" v-loading="isCardLoading" :style="styleObject">
     <div slot="header">
-      <span class="el-card-title">常用应用</span>
+      <span class="el-card-title">Ứng dụng thường dùng</span>
       <!-- <i style="margin-left: 10px;" class="app-config el-icon-setting"></i> -->
       <i style="margin-left: 10px;" v-show="!isPanelSetIcon" class="card-close el-icon-close" @click="deletePanelItem"></i>
       <i style="margin-left: 10px;" v-show="isPanelSetIcon" class="card-setting iconfont icon-setting"></i>
@@ -18,7 +18,7 @@
             </el-col>
           </el-carousel-item>
         </el-carousel>
-        <div class="no-data" v-if="appLists.length === 0">暂无数据</div>
+        <div class="no-data" v-if="appLists.length === 0">Chưa có dữ liệu</div>
       </el-row>
     </div>
   </el-card>
@@ -117,7 +117,7 @@ export default {
     handleAppClick(menuId) {
       this.getMenus(menuId)
     },
-    // 删除面板项发送事件
+    // Sự kiện gửi khi xóa mục bảng
     deletePanelItem () {
       this.$emit('deletePanelItemEvent', this.panelId)
     }

@@ -2,7 +2,7 @@
   <div class="ChineseMedicine">
     <p>{{ChineseMedicine.goodsName ? ChineseMedicine.goodsName : ChineseMedicine.drugStuffId.name }}</p>
     <div>
-      <el-input v-model="ChineseMedicine.singleDosage" @input="GetChineseFee" :disabled='IsOnlyRead' style="width: 100%" placeholder="数量">
+      <el-input v-model="ChineseMedicine.singleDosage" @input="GetChineseFee" :disabled='IsOnlyRead' style="width: 100%" placeholder="Số lượng">
         
         <span slot="suffix" style="font-size: 16px" >{{ ChineseMedicine.preparationUnit ? ChineseMedicine.preparationUnit.name : ChineseMedicine.drugStuffId.drug.preparationUnit.name }}</span>
         <el-select
@@ -10,7 +10,7 @@
           slot="append"
           :disabled='IsOnlyRead'
           style="width: 120px"
-          placeholder="煎法"
+          placeholder="Cách sắc thuốc"
         >
           <el-option
             v-for="item in ChineseUseTimeOption"
@@ -40,9 +40,9 @@ export default {
     },
   data() {
     return {
-      //数量
+      //Số lượng
       singleDosage: "",
-      //单位
+      //Đơn vị
       Unit: "",
       UnitOption: [],
       chineseMedicineUse: "",
@@ -57,7 +57,7 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
-$borderColor: rgb(219, 219, 219); //灰色边框下划线
+$borderColor: rgb(219, 219, 219); //Gạch chân viền xám
 .ChineseMedicine {
   width: calc(100% - 2px);
   height: 100%;

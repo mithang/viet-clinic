@@ -2,10 +2,10 @@
   <div>
     <el-row style="margin-bottom: 10px">
       <el-col :span="21">
-        <div style="font-weight: 600;">属性定义</div>
+        <div style="font-weight: 600;">Định nghĩa thuộc tính</div>
       </el-col>
       <el-col :span="2">
-        <el-button type='primary' :disabled="action === 'view'" @click="pushCustomTeam">新增分组</el-button>
+        <el-button type='primary' :disabled="action === 'view'" @click="pushCustomTeam">Thêm nhóm mới</el-button>
       </el-col>
     </el-row>
     <el-collapse ref="collapseTrigger">
@@ -22,8 +22,8 @@
           <span style="margin-left: 30px;">{{panel.name ? panel.name : '默认分组'}}</span>
         </template>
         <el-table   class='drag_table'   row-key="id" ref="dragTable" :data='panel.propertys' border highlight-current-row :row-class-name="tableRowClassName">
-          <el-table-column prop='name' label='字段名称'  header-align='center'>
-            <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>字段名称</template>
+          <el-table-column prop='name' label='Tên trường'  header-align='center'>
+            <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên trường</template>
             <template slot-scope='{row,$index}'>
               <el-form-item :data-num='dataNum' :ref="`PRO_${dataNum}_propertys_${$index}_name`" :prop='`PRO_${dataNum}_propertys_${$index}_name`' :rules="[{ required: true, validator: inputValidator, val: row.name,  message: '请输入字段名称', trigger: 'blur'}]"  v-if='action !== "view" '  label-width=0>
                 <el-input v-model="row.name" />
@@ -31,24 +31,24 @@
               <span v-else >{{row.name}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="dictId" label="属性"  header-align='center'>
-            <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>属性</template>
+          <el-table-column prop="dictId" label="Thuộc tính"  header-align='center'>
+            <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Thuộc tính</template>
             <template slot-scope='{row,$index}'>
               <el-form-item :data-num='dataNum' label-width=0 v-if='action !== "view" ' :ref="`PRO_${dataNum}_propertys_${$index}_dictId`" :prop='`PRO_${dataNum}_propertys_${$index}_dictId`' :rules="[{ required: true, validator: inputValidator, val: row.dictId,  message: '请选择属性集', trigger: ['blur', 'change']}]">
-                <el-select v-model="row.dictId" value-key='id' filterable clearable placeholder='请选择属性类型' @change="changeDictId(row)">
+                <el-select v-model="row.dictId" value-key='id' filterable clearable placeholder='Vui lòng chọn loại thuộc tính' @change="changeDictId(row)">
                   <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled"/>
                 </el-select>
               </el-form-item>
               <span v-else>{{getCheckedName(row.dictId, options)}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="bo" label="业务对象" width="100" header-align='center'>
+          <el-table-column prop="bo" label="Đối tượng nghiệp vụ" width="100" header-align='center'>
             <template slot-scope='{row,$index}'>
-              <el-form-item :data-num='dataNum' label-width=0  v-if='action !== "view" ' :ref="`PRO_${dataNum}_propertys_${$index}_bo`" :prop='`PRO_${dataNum}_propertys_${$index}_bo`' :rules="{required: (row.dictId === '8606' || row.dictId === '8406' || row.dictId === '8405') ? true : false, validator: inputValidator, val: row.bo, message:'请选择业务对象',trigger: ['blur', 'change']}">
-                <el-select v-model="row.bo" value-key='id' v-if="row.dictId === '8406'" filterable @change="(val) => getDictChildren(val,row)" clearable placeholder='请选择业务对象' >
+              <el-form-item :data-num='dataNum' label-width=0  v-if='action !== "view" ' :ref="`PRO_${dataNum}_propertys_${$index}_bo`" :prop='`PRO_${dataNum}_propertys_${$index}_bo`' :rules="{required: (row.dictId === '8606' || row.dictId === '8406' || row.dictId === '8405') ? true : false, validator: inputValidator, val: row.bo, message:'Vui lòng chọn đối tượng nghiệp vụ',trigger: ['blur', 'change']}">
+                <el-select v-model="row.bo" value-key='id' v-if="row.dictId === '8406'" filterable @change="(val) => getDictChildren(val,row)" clearable placeholder='Vui lòng chọn đối tượng nghiệp vụ' >
                   <el-option v-for="item in businessOptions" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled"/>
                 </el-select>
-                <el-select v-model="row.bo" value-key='id' v-else-if="row.dictId === '8606'" filterable clearable placeholder='请选择属性类型' >
+                <el-select v-model="row.bo" value-key='id' v-else-if="row.dictId === '8606'" filterable clearable placeholder='Vui lòng chọn loại thuộc tính' >
                   <el-option v-for="item in propertySetS" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled"/>
                 </el-select>
                 <el-input v-model="row.bo" v-else-if="row.dictId === '8405'" />
@@ -67,25 +67,25 @@
               <li v-else-if='row.isRequired === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
             </template>
           </el-table-column>
-          <el-table-column prop="defaultValue" label="默认值"  header-align='center' >
+          <el-table-column prop="defaultValue" label="Giá trị mặc định"  header-align='center' >
             <template slot-scope='{row,$index}'>
-              <template v-if="row.dictId === '8406'"> <!-- 字典 -->
+              <template v-if="row.dictId === '8406'"> <!-- Từ điển -->
                 <el-form-item :data-num='dataNum' v-if='action !== "view" ' label-width=0>
-                  <el-select :loading="defLoading" v-model="row.defaultValue" value-key='id' filterable clearable placeholder='请选择属性类型' @focus="checkChange(row)" >
+                  <el-select :loading="defLoading" v-model="row.defaultValue" value-key='id' filterable clearable placeholder='Vui lòng chọn loại thuộc tính' @focus="checkChange(row)" >
                     <el-option v-for="item in defValOptions" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled"/>
                   </el-select>
                 </el-form-item>
                 <span v-else>{{getCheckedName(row.defaultValue,defValOptions)}}</span>
               </template>
 
-              <template v-else-if=" row.dictId === '8402' || row.dictId === '8403'">     <!--  8402整数  "8403" 数值 -->
+              <template v-else-if=" row.dictId === '8402' || row.dictId === '8403'">     <!--  8402Số nguyên  "8403" Giá trị số -->
                 <el-form-item :data-num='dataNum'  v-if='action !== "view" ' label-width=0>
                   <number-input  v-model='row.defaultValue' :precision="row.dictId === '8402'? 0 : 4"></number-input>
                 </el-form-item>
                 <span v-else>{{row.defaultValue}}</span>
               </template>
 
-              <template v-else-if="row.dictId === '8404'">     <!--  8404 金额 -->
+              <template v-else-if="row.dictId === '8404'">     <!--  8404 Số tiền -->
                 <el-form-item :data-num='dataNum'  v-if='action !== "view" ' label-width=0>
                   <number-input  v-model='row.defaultValue' :precision="2"></number-input>
                 </el-form-item>
@@ -100,20 +100,20 @@
               </template>
             </template>
           </el-table-column>
-          <el-table-column prop='remarks' label='说明'  header-align='center'>
+          <el-table-column prop='remarks' label='Giải thích'  header-align='center'>
             <template slot-scope='{row,$index}'>
               <el-form-item :data-num='dataNum' v-if='action !== "view" ' label-width=0>
-                <el-input v-model='row.remarks' :maxlength='128' clearable placeholder='请输入说明'></el-input>
+                <el-input v-model='row.remarks' :maxlength='128' clearable placeholder='Vui lòng nhập giải thích'></el-input>
               </el-form-item>
               <span v-else>{{row.remarks}}</span>
             </template>
           </el-table-column>
-          <el-table-column label='操作' min-width="40px" v-if="action !== 'view'" >
+          <el-table-column label='Thao tác' min-width="40px" v-if="action !== 'view'" >
             <template slot='header' slot-scope="scope">
               <el-button circle icon="el-icon-plus" :disabled="action === 'view'" @click="pushPropertyData(panel, bizindex)"></el-button>
             </template>
             <template slot-scope='scope'>
-              <OperationIcon type='danger' content='删除' placement='top-start' icon-name='el-icon-delete'
+              <OperationIcon type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
                              @click='onDelete(scope.$index, scope.row, panel.propertys)'></OperationIcon>
             </template>
           </el-table-column>
@@ -138,7 +138,7 @@
       value:{
         type:String
       },
-      //操作类型--编辑、查看等
+      //Loại thao tác--Sửa、Xem v.v.
       action: {
         type: String,
         default: () => { return "add"}
@@ -177,7 +177,7 @@
       let inputValidator= (rule, value, callback) => {
         if(rule.required) {
           if(!rule.val) {
-            let msg = rule.message | '不能为空！'
+            let msg = rule.message | 'Không được để trống！'
             return callback(new Error(msg))
           }
         }
@@ -191,7 +191,7 @@
          tableKey: 1,
          checkRowData:null, // 选中行数据
          options:[],        //字典值
-         businessOptions: [], //所有字典项
+         businessOptions: [], //Tất cả mục từ điển
          propertySetS:[],        //属性集集合
          defValOptions: [],   //选择属性的字典
          dictIdvalid: false,
@@ -200,7 +200,7 @@
        }
      },
       mounted() {
-        // 初始值
+        // Giá trị ban đầu
         if(this.value) {
           this.propertyPanels = JSON.parse(this.value)
         }
@@ -226,7 +226,7 @@
         // 创建拖拽实例
         let dragTable = Sortable.create(ele, {
           animation: 100, //动画
-          disabled: false, // 拖拽不可用? false 启用（刚刚渲染表格的时候起作用，后面不起作用）
+          disabled: false, // 拖拽不可用? false Kích hoạt（刚刚渲染表格的时候起作用，后面不起作用）
           handle: ".el-table__row", //指定拖拽目标，点击此目标才可拖拽元素(此例中设置操作按钮拖拽)
           filter: ".disabled", //指定不可拖动的类名（el-table中可通过row-class-name设置行的class）
           dragClass: "dragClass", //设置拖拽样式类名
@@ -249,7 +249,7 @@
       nameBlur() {
         this.$refs.collapseTrigger.setActiveNames = this.collClick
       },
-      onDelete(index,row,list){     //删除
+      onDelete(index,row,list){     //Xóa
         list.splice(index,1);
       },
       getCheckedName(id,arr){
@@ -300,7 +300,7 @@
             this.options = res.data;
           }
         });
-        listDictTypeAll({params: []}).then(result =>{  //所有字典项
+        listDictTypeAll({params: []}).then(result =>{  //Tất cả mục từ điển
           if(result.code === 100){
             this.businessOptions = result.data
           }
@@ -312,11 +312,11 @@
         });
 
       },
-      changeDictId(row) {  // {属性集  8606}  {字典项  8406}  {枚举  8405}
+      changeDictId(row) {  // {Tập thuộc tính  8606}  {Mục từ điển  8406}  {Enum  8405}
         row.bo = "";
         row.defaultValue = null;
       },
-      pushCustomTeam(){       //新增分组
+      pushCustomTeam(){       //Thêm nhóm mới
         this.propertyPanels.push({'id':uuid.v1(),'name':'','isTeam': '1','propertys': []},)
       },
       deletePropertyData(index,row,list) { // 删除分组

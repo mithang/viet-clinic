@@ -9,16 +9,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.geeke.common.persistence.DataEntity;
 /**
- * 文件附件Entity
+ * Tệptệp đính kèmEntity
  * @author lys
  * @version 2021-04-28
  */
 public class Attachment extends DataEntity<Attachment> {
 
 	private static final long serialVersionUID = 1L;
-	private String bizId;		// 业务标识
-	private String type;		// 文件类型
-	private byte[] fileContent;		// 文件内容
+	private String bizId;		// nghiệp vụđịnh danh
+	private String type;		// Loại tệp
+	private byte[] fileContent;		// Tệpnội dung
 
 	
 	public Attachment() {
@@ -41,7 +41,7 @@ public class Attachment extends DataEntity<Attachment> {
 		this.fileContent = fContent;
 	}
 
-	@Length(min=1, max=20, message="业务标识长度必须介于 1 和 20 之间")
+	@Length(min=1, max=20, message="nghiệp vụđịnh danhĐộ dài phải nằm trong khoảng 1 đến 20 ")
 	public String getBizId() {
 		return bizId;
 	}
@@ -50,7 +50,7 @@ public class Attachment extends DataEntity<Attachment> {
 	}
 	
 	
-	@Length(min=0, max=20, message="文件类型长度必须介于 0 和 20 之间")
+	@Length(min=0, max=20, message="Độ dài loại tệp phải nằm trong khoảng 0 đến 20 ")
 	public String getType() {
 		return type;
 	}
@@ -71,7 +71,7 @@ public class Attachment extends DataEntity<Attachment> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -80,7 +80,7 @@ public class Attachment extends DataEntity<Attachment> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -90,7 +90,7 @@ public class Attachment extends DataEntity<Attachment> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

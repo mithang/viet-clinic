@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Mybatis的mapper文件中的sql语句被修改后, 只能重启服务器才能被加载, 非常耗时,所以就写了一个自动加载的类,
- * 配置后检查xml文件更改,如果发生变化,重新加载xml里面的内容.
+ * Mybatis của mapperTệpTrongsqlcâu lệnhbịSửasau, Chỉ có thể được tải khi khởi động lại server, không phảithường耗 giờ,vì vậythìviếtrồimộtCáitự độngtải của Lớp,
+ * cấu hìnhsauKiểm traxmlTệphơnsửa,Nếuphátthay đổi,Lạitảixmlbên trong của nội dung.
  */
 //@Service
 //@Lazy(false)
@@ -56,20 +56,20 @@ public class MapperLoader implements DisposableBean, InitializingBean, Applicati
 		try {
 			service = Executors.newScheduledThreadPool(1);
 			
-			// 获取xml所在包
+			// Lấyxmlnơigói
 			MapperScannerConfigurer config = context.getBean(MapperScannerConfigurer.class);
 			Field field = config.getClass().getDeclaredField("basePackage");
 			field.setAccessible(true);
 			basePackage = (String) field.get(config);
 			
-			// 触发文件监听事件
+			// kích hoạtTệpgiám sát听việctệp
 			scanner = new Scanner();
 			scanner.scan();
 
 			service.scheduleAtFixedRate(new Task(), 5, 5, TimeUnit.SECONDS);
 
 		} catch (Exception e1) {
-			logger.error("MapperLoader初始化失败", e1);
+			logger.error("MapperLoaderKhởi tạoThất bại", e1);
 		}
 
 	}
@@ -79,12 +79,12 @@ public class MapperLoader implements DisposableBean, InitializingBean, Applicati
 		public void run() {
 			try {
 				if (scanner.isChanged()) {
-					logger.info("*Mapper.xml文件改变,重新加载.");
+					logger.info("*Mapper.xmlTệpthay đổi,Lạitải.");
 					scanner.reloadXML();
-					logger.info("加载完毕.");
+					logger.info("tảixong.");
 				}
 			} catch (Exception e) {
-				logger.error("Mapper.xml重新加载失败", e);
+				logger.error("Mapper.xmlLạitảiThất bại", e);
 			}
 		}
 
@@ -113,9 +113,9 @@ public class MapperLoader implements DisposableBean, InitializingBean, Applicati
 		public void reloadXML() throws Exception {
 			SqlSessionFactory factory = context.getBean(SqlSessionFactory.class);
 			Configuration configuration = factory.getConfiguration();
-			// 移除加载项
+			// Loại bỏ mục đã tải
 			removeConfig(configuration);
-			// 重新扫描加载
+			// Lạiquéttải
 			for (String basePackage : basePackages) {
 				Resource[] resources = getResource(basePackage, XML_RESOURCE_PATTERN);
 				if (resources != null) {

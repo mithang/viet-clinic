@@ -22,7 +22,7 @@ import com.geeke.utils.ResultUtil;
 import com.google.common.collect.Lists;
 
 /**
- * 公司编码规则Controller
+ * Quy tắc mã công tyController
  * @author lys
  * @version 2021-05-17
  */

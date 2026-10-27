@@ -12,7 +12,7 @@
       <OperationIcon
         v-show="dialogProps.action === 'view' && permission.edit"
         type="primary"
-        text="编辑"
+        text="Sửa"
         placement="top-start"
         icon-name="el-icon-edit"
         @click="switchEdit"
@@ -31,26 +31,26 @@
       <div class="tab-item" v-show="tabIndex === '1'">
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="厂家名称" prop="name">
+            <el-form-item label="Tên nhà sản xuất" prop="name">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.name"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入厂家名称'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập tên nhà sản xuất'
                 "
                 autofocus
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="联系人" prop="people">
+            <el-form-item label="Người liên hệ" prop="people">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.people"
                 :maxlength="45"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入联系人'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập người liên hệ'
                 "
               ></el-input>
             </el-form-item>
@@ -58,17 +58,17 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="电话" prop="phone">
+            <el-form-item label="Điện thoại" prop="phone">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.phone"
                 :maxlength="45"
-                :placeholder="dialogProps.action === 'view' ? '' : '请输入电话'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập số điện thoại'"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="是否启用" prop="status">
+            <el-form-item label="Có kích hoạt không" prop="status">
               <el-switch
                 :disabled="dialogProps.action === 'view'"
                 v-model="value"
@@ -82,7 +82,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="所在地区" prop="">
+            <el-form-item label="Khu vực" prop="">
               <v-distpicker
                 :disabled="dialogProps.action === 'view'"
                 :province="province"
@@ -102,14 +102,14 @@
                   v-model="bizFormModel.type"
                   label="1"
                   border
-                  >药品厂家</el-radio
+                  >Hãng thuốc</el-radio
                 >
                 <el-radio
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.type"
                   label="2"
                   border
-                  >材料厂家</el-radio
+                  >Hãng vật tư</el-radio
                 >
               </div>
             </el-form-item>
@@ -117,13 +117,13 @@
         </el-row>
         <el-row>
           <el-col>
-            <el-form-item label="地址" prop="address">
+            <el-form-item label="Địa chỉ" prop="address">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.address"
                 type="textarea"
                 :maxlength="128"
-                :placeholder="dialogProps.action === 'view' ? '' : '请输入地址'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Vui lòng nhập địa chỉ'"
                 clearable
               ></el-input>
             </el-form-item>
@@ -138,19 +138,19 @@
         type="primary"
         :plain="true"
         @click="onSubmit('manufactureFactoryForm')"
-        >保 存</el-button
+        >Lưu</el-button
       >
       <el-button
         v-if="dialogProps.action !== 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >取 消</el-button
+        >Hủy</el-button
       >
       <el-button
         v-if="dialogProps.action === 'view'"
         :plain="true"
         @click="onDialogClose()"
-        >关 闭</el-button
+        >Đóng</el-button
       >
     </span>
   </el-dialog>
@@ -172,27 +172,27 @@ export default {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: "1",
-      //省市区三级联动
+      //Liên kết ba cấp tỉnh/thành phố/quận/huyện
       province: "",
       city: "",
       area: "",
       value: "1",
-      flag: false, //防止重复提交
+      flag: false, //Ngăn gửi trùng lặp
       dialogProps: {
         visible: false,
         action: "",
         title: "",
       },
       formRules: {
-        name: [{ required: true, message: "请输入厂家名称", trigger: "blur" }],
+        name: [{ required: true, message: "Vui lòng nhập tên nhà sản xuất", trigger: "blur" }],
         type: [
-          { required: true, message: "请选择供应商类型", trigger: "change" },
+          { required: true, message: "Vui lòng chọn loại nhà cung cấp", trigger: "change" },
         ],
       },
     };
   },
   props: {
-    // 权限
+    // Quyền
     permission: {
       type: Object,
     },
@@ -233,7 +233,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = "edit";
-      this.dialogProps.title = "修改生产厂家";
+      this.dialogProps.title = "Sửa nhà sản xuất";
       this.initOptions(this.bizFormModel);
     },
     onDialogClose() {
@@ -247,22 +247,22 @@ export default {
     initFormModel(This) {
       return {
         company: {
-          // 诊所id
+          // Phòng khámid
           id: currentUser.company.id,
           name: null,
         },
-        name: "", // 厂家名称
-        people: "", // 联系人
-        phone: "", // 电话
-        province: "", // 省
-        city: "", // 市
-        area: "", // 区
-        address: "", // 地址
-        remarks: "", // 备注信息
+        name: "", // Tên nhà sản xuất
+        people: "", // Người liên hệ
+        phone: "", // Điện thoại
+        province: "", // Tỉnh/Thành phố
+        city: "", // Thành phố
+        area: "", // Quận/Huyện
+        address: "", // Địa chỉ
+        remarks: "", // Thông tin ghi chú
       };
     },
     initOptions(This) {},
-    // 获取到省市区三级联动的值
+    // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện
     onChangeProvince(data) {
       this.province = data.value;
     },
@@ -298,7 +298,7 @@ export default {
         "openEditManufactureFactoryDialog",
         function (manufactureFactory) {
           this.dialogProps.action = "edit";
-          this.dialogProps.title = "修改生产厂家";
+          this.dialogProps.title = "Sửa nhà sản xuất";
           this.bizFormModel = {
             ...this.initFormModel(),
             ...manufactureFactory,
@@ -314,7 +314,7 @@ export default {
       );
       this.$on("openAddManufactureFactoryDialog", function () {
         this.dialogProps.action = "add";
-        this.dialogProps.title = "添加生产厂家";
+        this.dialogProps.title = "Thêm nhà sản xuất";
         this.bizFormModel = this.initFormModel();
         this.initOptions(this.bizFormModel);
         this.tabIndex = "1";
@@ -327,14 +327,14 @@ export default {
         "openCopyManufactureFactoryDialog",
         function (manufactureFactory) {
           this.dialogProps.action = "add";
-          this.dialogProps.title = "添加生产厂家";
+          this.dialogProps.title = "Thêm nhà sản xuất";
           this.bizFormModel = {
             ...this.initFormModel(),
             ...manufactureFactory,
           };
           this.initOptions(this.bizFormModel);
           this.tabIndex = "1";
-          this.bizFormModel.id = null; //把id设置为空，添加一个新的
+          this.bizFormModel.id = null; //ĐặtidĐặt thành trống，Thêm mới một
           this.dialogProps.visible = true;
         }
       );

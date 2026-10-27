@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/outpatient/recipelDetail')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getRecipelDetailById = baseApi.getById
 export const listRecipelDetailPage = baseApi.listPage
 export const listRecipelDetailAll = baseApi.listAll
@@ -13,7 +13,7 @@ export const bulkInsertRecipelDetail = baseApi.bulkInsert
 export const bulkUpdateRecipelDetail = baseApi.bulkUpdate
 export const bulkDeleteRecipelDetail = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const getByRecipelInfoId = (recipelInfoId) =>
     request({
         url: '/outpatient/recipelDetail/getByRecipelInfoId/' + recipelInfoId,

@@ -13,7 +13,7 @@ import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
 /**
- * 定时任务管理Service
+ * Quản lý tác vụ định kỳService
  * @author shenzy
  * @version 2021-10-28
  */
@@ -28,7 +28,7 @@ public class ScheduleJobService extends CrudService<ScheduleJobDao, ScheduleJob>
     public ScheduleJob save(ScheduleJob entity) {
         String cron = entity.getCron();
         if (StringUtils.isEmpty(cron)|| ! CronUtils.isValid(cron)){
-            throw new ServiceException("cron表达式参数异常");
+            throw new ServiceException("cronbiểu thứcTham sốngoại lệ");
         }
         return super.save(entity);
     }

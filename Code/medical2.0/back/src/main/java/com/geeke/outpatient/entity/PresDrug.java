@@ -9,14 +9,14 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 医疗目录表
+ * Bảng danh mục y tế
  * @TableName pres_drug
  */
 @TableName(value ="pres_drug")
 @Data
 public class PresDrug implements Serializable {
     /**
-     * 医疗目录编码
+     * Mã danh mục y tế
      */
     @TableId
     private String Id;
@@ -25,98 +25,98 @@ public class PresDrug implements Serializable {
     private String medlistcodg;
 
     /**
-     * 国家药品编号
+     * quốc giaThuốcmã số
      */
     private String natdrugno;
 
     /**
-     * 通用名
+     * Tên chung
      */
     private String genname;
 
     /**
-     * 商品名
+     * Tên hàng hóa
      */
     private String prodname;
 
     /**
-     * 注册名
+     * đăng kýtên
      */
     private String regname;
 
     /**
-     * 目录类别 (101-西药, 102-中药, 103-自制剂, 104-民族药)
+     * danh mụcLớploại (101-Thuốc tây, 102-Thuốc đông y, 103-tựbào chế, 104-Dân tộcthuốc)
      */
     private String listtype;
 
     /**
-     * 目录类别名称
+     * danh mụcLớpTên khácgọi là
      */
     private String listtypename;
 
     /**
-     * 规格名称
+     * Quy cáchTên
      */
     private String specname;
 
     /**
-     * 生产厂家
+     * Nhà sản xuất
      */
     private String prdrname;
 
     /**
-     * 批准文号
+     * Số phê duyệt
      */
     private String aprvno;
 
     /**
-     * 剂型名称
+     * liềukiểuTên
      */
     private String dosformname;
 
     /**
-     * 最小包装单位
+     * Nhỏ nhấtĐơn vị đóng gói
      */
     private String minpacunt;
 
     /**
-     * 最小包装数量
+     * Nhỏ nhấtSố lượng đóng gói
      */
     private String minpaccnt;
 
     /**
-     * 最小制剂单位
+     * Nhỏ nhấtĐơn vị bào chế
      */
     private String minprepunt;
 
     /**
-     * 统筹区编号
+     * Mã vùng điều phối
      */
     private String poolareano;
 
     /**
-     * 统筹区名称
+     * 统筹QuậnTên
      */
     private String poolareaname;
 
     /**
-     * 是否双通道标志 (0 - 否, 1 - 是)
+     * Có hay không双通道cờ (0 -  không , 1 -  có )
      */
     private String dualchnlflag;
 
     /**
-     * 开始时间 (格式：yyyy-MM-dd HH:mm:ss)
+     * Thời gian bắt đầu (Định dạng: yyyy-MM-dd HH:mm:ss)
      */
     private Date begntime;
 
     /**
-     * 结束时间 (格式：yyyy-MM-dd HH:mm:ss)
+     * Thời gian kết thúc (Định dạng: yyyy-MM-dd HH:mm:ss)
      */
     private Date endtime;
 
 
     /**
-     * 结束时间 (格式：yyyy-MM-dd HH:mm:ss)
+     * Thời gian kết thúc (Định dạng: yyyy-MM-dd HH:mm:ss)
      */
     private Float drugprice;
 

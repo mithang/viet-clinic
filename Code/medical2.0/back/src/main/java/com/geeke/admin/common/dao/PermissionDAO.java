@@ -13,7 +13,7 @@ import java.util.Map;
 
 
 /**
- * 权限管理DAO接口
+ * QuyềnQuản lýDAOGiao diện
  * 
  * @author lys
  * @date 2019/7/26
@@ -22,16 +22,16 @@ import java.util.Map;
 public interface PermissionDAO {
 
 	/**
-	 * 根据用户id得到资源权限
+	 * Theo người dùngidLấy quyền tài nguyên
 	 * 
 	 * @param userId
-	 *            用户Id
+	 *            Người dùngId
 	 * @return
 	 */
 	//List<Resource> listResourceByUserId(String userId);
 	
 	/**
-	 * 根据路由id得到资源权限，不含禁用的
+	 * Theotuyến đườngidLấy quyền tài nguyên, Không bao gồm mục bị vô hiệu hóa
 	 * @param userId
 	 * @param routerId
 	 * @return
@@ -40,21 +40,21 @@ public interface PermissionDAO {
 	
 	
 	/**
-	 * 获取用户有权限的路由，不含禁用的
+	 * Lấy tuyến đường mà người dùng có quyền, Không bao gồm mục bị vô hiệu hóa
 	 * @param userId
 	 * @return
 	 */
 	List<Router> listRouterPermission(@Param("userId")String userId,@Param("companyId")String companyId);
 
 	/**
-	 * 获取用户有权限的路由，不含禁用的
+	 * Lấy tuyến đường mà người dùng có quyền, Không bao gồm mục bị vô hiệu hóa
 	 * @param roleId
 	 * @return
 	 */
 	List<Router> listRouterPermissionByRoleId(@Param("roleId")String roleId);
 	
 	/**
-	 * 根据用户id得到资源权限，不含禁用的
+	 * Theo người dùngidLấy quyền tài nguyên, Không bao gồm mục bị vô hiệu hóa
 	 * @param userId
 	 * @return
 	 */
@@ -62,7 +62,7 @@ public interface PermissionDAO {
 	
 	
 	/**
-	 * 根据角色id得到资源权限
+	 * Theo vai tròidLấy quyền tài nguyên
 	 * @param roleId
 	 * @return
 	 */
@@ -70,13 +70,13 @@ public interface PermissionDAO {
 	
 	
     /**
-     * 根据角色id删除路由权限
+     * Theo vai tròidXóatuyến đườngQuyền
      * @param roleId
      */
     void removeRouterByRoleId(String roleId);
 	
 	/**
-	 * 根据角色id删除资源权限
+	 * Theo vai tròidXóatài nguyênQuyền
 	 * @param roleId
 	 * @return
 	 */
@@ -84,7 +84,7 @@ public interface PermissionDAO {
     
 
     /**
-     * 保存路由权限
+     * Lưutuyến đườngQuyền
      * @param roleId
      * @param routerIds
      * @return
@@ -93,7 +93,7 @@ public interface PermissionDAO {
 	
 
 	/**
-	 * 保存资源权限
+	 * Lưutài nguyênQuyền
 	 * @param roleId
 	 * @param resourceIds
 	 * @return
@@ -102,7 +102,7 @@ public interface PermissionDAO {
 
 	
 	/**
-	 * 根据角色id得到数据权限
+	 * Theo vai tròidđượcĐếnDữ liệuQuyền
 	 * @param roleId
 	 * @return
 	 */
@@ -110,7 +110,7 @@ public interface PermissionDAO {
 	
 	
 	/**
-	 * 删除角色数据权限
+	 * XóaVai tròDữ liệuQuyền
 	 * @param roleId
 	 * @return
 	 */
@@ -121,7 +121,7 @@ public interface PermissionDAO {
 	
 	
 	/**
-	 * 根据用户id得到数据权限
+	 * Theo người dùngidđượcĐếnDữ liệuQuyền
 	 * @param userId
 	 * @return
 	 */
@@ -129,7 +129,7 @@ public interface PermissionDAO {
 	
 	
 	/**
-	 * 获取路由的默认资源
+	 * Lấytuyến đường của Mặc địnhtài nguyên
 	 * @param roleId
 	 * @return
 	 */

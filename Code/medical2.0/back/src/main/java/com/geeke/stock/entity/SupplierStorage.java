@@ -13,27 +13,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 入库单Entity
+ * Phiếu nhập khoEntity
  * @author txl
  * @version 2022-06-02
  */
 public class SupplierStorage extends DataEntity<SupplierStorage> {
 
 	private static final long serialVersionUID = 1007238052174135324L;
-	private Company company;      // 诊所id 
-	private Supplier supplier;      // 供应商id 
-	private String code;		// 入库单
-	private Integer breed;		// 品种
-	private Integer number;		// 数量
-	private BigDecimal allBid;		// 总进价
-	private BigDecimal allRetailPrice;		// 总零售价
-	private Date cancelDate;		// 作废日期
-	private DictItem examine;      // 审核状态 
-	private Date examineDate;		// 审批时间
-	private String withGoodsNo;		// 随货单
-	private String invoiceNumber;		// 发票号
-	private int initial;     //初始库存
-	private String type;    //入库类型
+	private Company company;      // Phòng khámid 
+	private Supplier supplier;      // Nhà cung cấpid 
+	private String code;		// Phiếu nhập kho
+	private Integer breed;		// Chủng loại
+	private Integer number;		// Số lượng
+	private BigDecimal allBid;		// Tổng giá nhập
+	private BigDecimal allRetailPrice;		// Tổng giá bán lẻ
+	private Date cancelDate;		// hủyNgày
+	private DictItem examine;      // Trạng thái xét duyệt 
+	private Date examineDate;		// phê duyệtThời gian
+	private String withGoodsNo;		// 随hàngđơn
+	private String invoiceNumber;		// Số hóa đơn
+	private int initial;     //Tồn kho ban đầu
+	private String type;    //nhập khoLoại
 	
 	public SupplierStorage() {
 		super();
@@ -52,7 +52,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
         this.company = company;
     }
     
-	@NotNull(message="供应商id不能为空")
+	@NotNull(message="Nhà cung cấpidKhông được để trống")
     public Supplier getSupplier() {
         return supplier;
     }
@@ -61,7 +61,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
         this.supplier = supplier;
     }
     
-	@Length(min=0, max=64, message="入库单长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="phiếu nhập khoĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getCode() {
 		return code;
 	}
@@ -128,7 +128,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
 	}
 	
 	
-	@Length(min=0, max=64, message="随货单长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="随hàngđơnĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getWithGoodsNo() {
 		return withGoodsNo;
 	}
@@ -137,7 +137,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
 	}
 	
 	
-	@Length(min=0, max=64, message="发票号长度必须介于 0 和 64 之间")
+	@Length(min=0, max=64, message="phátphiếusốĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getInvoiceNumber() {
 		return invoiceNumber;
 	}
@@ -162,7 +162,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
 	}
 
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -171,7 +171,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -181,7 +181,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

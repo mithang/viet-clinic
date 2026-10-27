@@ -1,7 +1,7 @@
 package com.geeke.config.exception;
 
 /**
- * 服务层异常类
+ * dịch vụtầngngoại lệLớp
  *
  * @author hxy
  * @date 2017/11/15

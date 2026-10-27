@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 入库单Service
+ * Phiếu nhập khoService
  * @author txl
  * @version 2022-06-02
  */
@@ -47,7 +47,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     @Override
     @Transactional(readOnly = false)
     public SupplierStorage save(SupplierStorage supplierStorage) {
-        // 新增时, 处理自动编号字段
+        // Khi thêm mới, Xử lý trường tự động đánh số
         supplierStorage.setCreateDate(new Date());
         if (StringUtils.isBlank(supplierStorage.getId())){
             String oldCode = supplierStorageDao.getCode(supplierStorage.getCompany().getId());
@@ -59,23 +59,23 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
 
     @Transactional(readOnly = false)
     public void cancel(String id) {
-        //作废之前先去判断该药品或者材料是否被使用
+        //Trước khi hủy, kiểm tra trước thuốc hoặc vật tư đó có đang được sử dụng không
         SupplierStorage supplierStorage = this.get(id);
-        // 入库单状态->作废
+        // phiếu nhập khoTrạng thái->hủy
         DictItem dictItem = new DictItem();
         dictItem.setValue(BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED);
         supplierStorage.setExamine(dictItem);
         supplierStorage.setExamineDate(new Date());
         this.save(supplierStorage);
-        //作废后需要将对应的明细表作废掉
+        //hủysauCầnSẽ tương ứng của Chi tiếtbảnghủyrơi
         List<SupplierStock> byStorageId = supplierStockService.getByStorageId(id);
 
         supplierStockService.cancellation(byStorageId);
 
-        //调用动态库存控制
+        //gọiđộngTồn khokiểm soát
         this.medicinalStorageControlService.invalidStorageStock(supplierStorage);
 
-        // 作废减库存 - 已迁移至动态库存控制机制
+        // hủytrừTồn kho - Đãchuyển đổiđếnđộngTồn khokiểm soát机制
     }
 
 

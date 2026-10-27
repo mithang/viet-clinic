@@ -8,7 +8,7 @@ import com.geeke.sys.entity.CodeRule;
 import com.geeke.sys.service.CodeRuleService;
 
 /**
- * 系统编码规则Controller
+ * Quy tắc mã hệ thốngController
  * @author lys
  * @version 2021-05-17
  */

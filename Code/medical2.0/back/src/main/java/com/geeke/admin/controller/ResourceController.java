@@ -9,7 +9,7 @@ import com.geeke.admin.service.ResourceService;
 import com.geeke.common.controller.CrudController;
 
 /**
- * 资源管理Controller
+ * Quản lý tài nguyênController
  * @author lys
  * @version 2021-11-18
  */

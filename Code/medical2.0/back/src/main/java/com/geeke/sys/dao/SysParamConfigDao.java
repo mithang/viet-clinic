@@ -6,7 +6,7 @@ import com.geeke.sys.entity.SysParamConfig;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 系统配置DAO接口
+ * Hệ thốngcấu hìnhDAOGiao diện
  * @author lc
  */
 @Mapper

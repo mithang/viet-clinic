@@ -2,30 +2,30 @@
 
 ------
 
-Geeke-Client是基于vue+element开发的Geeke项目的前端应用，包含了如下功能特点：
+Geeke-ClientLà dựa trênvue+elementPhát triển của GeekeHạng mục của Ứng dụng frontend，GóiBao gồm như sauChức năngĐặc điểm：
 
-> * Vue+Element，轻巧、高性能、易于上手。
-> * 后台Web应用无状态，使用JWT管理身份认证。
-> * 动态路由，按需加载。
+> * Vue+Element，Nhẹ、Hiệu năng cao、Dễ sử dụng。
+> * BackendWebỨng dụngKhôngTrạng thái，Sử dụngJWTQuản lý xác thực danh tính。
+> * Định tuyến động，Tải theo nhu cầu。
 
 
-## 使用方法
+## Cách sử dụng
 
-### 修改配置文件
+### Sửa file cấu hình
 
-config\dev.env.js和prod.env.js，修改BASE_API为 【back】服务 的地址。
+config\dev.env.jsvàprod.env.js，SửaBASE_API là  【back】Dịch vụ  của Địa chỉ。
 
-### 运行
+### Chạy
 
- - 安装依赖包：npm（建议使用cnpm） install
- - npm run dev，通过http://localhost:3000 访问
- - npm run build，完成后打开dist\index.html访问
- - 默认用户：system，口令：123456
+ - Cài đặt gói phụ thuộc：npm（Khuyên dùngDùngcnpm） install
+ - npm run dev，Quahttp://localhost:3000 Truy cập
+ - npm run build，Sau khi hoàn thành, mởdist\index.htmlTruy cập
+ - Người dùng mặc định：system，Mật khẩu：123456
 
-### 注意事项
+### Lưu ý
 
-**如需添加模块，则需要：**
+**Nếu cần thêm module，thì cần：**
 
- 1. 在路由管理中定义模块内容，路由代码表示前端源码路径中views下的文件夹名称，如添加商品管理，路由代码设置为product，则需要在views文件夹下创建product文件夹，然后创建index.vue；扩展属性中的requiresAuth表示访问该路由是需要在前端先验证token是否存在，cssClass为首页左侧路由菜单的图标样式（element-ui的Icon图标样式），nameFullPath为导航面包屑的完整路径。
- 2. 在资源管理中定义模块的功能，资源的url需要和Web服务Controller中定义的API Url一致，资源权限中冒号后边的内容和Http Method的对应关系：get->read、put->update、post->create、delete->delete
+ 1. Định nghĩa nội dung module trong quản lý định tuyến，Định tuyếnMãBảngThể hiệnFrontendMã nguồnĐường dẫnTrongviewsDưới của TệpThư mụcTên，Ví dụ thêm quản lý hàng hóa，Đặt mã định tuyến thànhproduct，Thì cần tạiviewsTệpThư mụcDướiTạoproductThư mục，sau đó tạoindex.vue；Thuộc tính mở rộngrequiresAuthBảngThể hiện访问ĐóĐịnh tuyếnLà cần kiểm chứng ở frontend trướctokenCó tồn tại không，cssClasslà kiểu biểu tượng cho menu định tuyến bên trái trang chủ（element-ui của IconKiểu biểu tượng），nameFullPathlà đường dẫn đầy đủ của breadcrumb điều hướng。
+ 2. Định nghĩa chức năng của module trong quản lý tài nguyên，Tài nguyên của urlCần vàWebDịch vụControllerĐịnh nghĩa trong của API UrlNhất quán，Tài nguyênQuyềnSau dấu hai chấm trong của Nội dung vàHttp Method của Tương ứngQuan hệ：get->read、put->update、post->create、delete->delete
  

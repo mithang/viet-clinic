@@ -21,7 +21,7 @@ public class BlmbService {
     private BlmbDao blmbdao;
 
     /**
-     * 添加病历模板数据
+     * Thêmbệnh ánmẫuDữ liệu
      * @param blmb
      * @return
      */

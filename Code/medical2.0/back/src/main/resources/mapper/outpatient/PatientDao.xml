@@ -468,7 +468,7 @@
         WHERE id = #{id}
     </update>
 
-    <!--根据患者姓名身份证查询患者信息-->
+    <!--Tra cứu thông tin bệnh nhân theo họ tên và CMND/CCCD của bệnh nhân-->
     <select id="inquire" resultType="com.geeke.outpatient.entity.Patient">
         SELECT
         <include refid="patientColumns"/>

@@ -12,7 +12,7 @@ import com.geeke.org.entity.Department;
 import com.google.common.collect.Maps;
 
 /**
- * 部门管理Service
+ * Quản lý phòng banService
  * @author lys
  * @version 2021-07-13
  */
@@ -31,7 +31,7 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
         colMaps.put("code", "code");
         
         if(exists(dao, department, colMaps)) {
-            throw new ServiceException("同一个公司下已存在相同的部门编码");
+            throw new ServiceException("Trong cùng một công ty đã tồn tại mã phòng ban giống hệt");
         }
 
         Department departmentTemp = super.save(department);

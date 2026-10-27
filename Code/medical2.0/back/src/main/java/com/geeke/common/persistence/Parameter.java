@@ -3,7 +3,7 @@ package com.geeke.common.persistence;
 import java.util.HashMap;
 
 /**
- * 查询参数类
+ * Tham số truy vấnLớp
  * @author lys
  * @version 2013-8-23
  */
@@ -12,8 +12,8 @@ public class Parameter extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * 构造类，例：new Parameter(id, ids)
-	 * @param values 参数值
+	 * xây dựngLớp, ví dụ: new Parameter(id, ids)
+	 * @param values Tham sốGiá trị
 	 */
 	public Parameter(Object... values) {
 		if (values != null){
@@ -24,8 +24,8 @@ public class Parameter extends HashMap<String, Object> {
 	}
 	
 	/**
-	 * 构造类，例：new Parameter(new Object[][]{{"id", id}, {"ids", ids}})
-	 * @param parameters 参数二维数组
+	 * xây dựngLớp, ví dụ: new Parameter(new Object[][]{{"id", id}, {"ids", ids}})
+	 * @param parameters Tham số二维mảng
 	 */
 	public Parameter(Object[][] parameters) {
 		if (parameters != null){

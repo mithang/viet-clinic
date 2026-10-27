@@ -9,7 +9,7 @@ import com.geeke.member.entity.MemberItem;
 import com.geeke.member.service.MemberItemService;
 
 /**
- * 会员卡详情Controller
+ * Chi tiết thẻ hội viênController
  * @author rys
  * @version 2022-10-25
  */

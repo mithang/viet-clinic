@@ -9,7 +9,7 @@ import com.geeke.collect.entity.SysCollect;
 import java.util.List;
 
 /**
- * 收藏夹DAO接口
+ * Mục yêu thíchDAOGiao diện
  *
  * @author szy
  * @version 2021-07-28

@@ -11,21 +11,21 @@ import java.math.BigDecimal;
 
 public class CostItemPackage extends DataEntity<CostItemPackage> {
     private static final long serialVersionUID = 998465736089977638L;
-    private Company company;      // 诊所id
-    private String itemCode;		// 项目编码
-    private String itemName;		// 项目名称
-    private DictItem itemType;      // 项目类别
-    private DictItem unit;      // 单位
-    private BigDecimal costPrice;		// 成本价
-    private BigDecimal salePrice;		// 销售价
-    private String isUse;		// 状态
-    private String  isPackage;  //是否为打包项目
-    private String isDeduct;		// 是否执行划扣
-    private int quantity;    //子项目数量
-    private String costItemId; //诊疗项目id
+    private Company company;      // Phòng khámid
+    private String itemCode;		// hạng mụcMã
+    private String itemName;		// hạng mụcTên
+    private DictItem itemType;      // Loại hạng mục
+    private DictItem unit;      // Đơn vị
+    private BigDecimal costPrice;		// Giá vốn
+    private BigDecimal salePrice;		// bán hànggiá
+    private String isUse;		// Trạng thái
+    private String  isPackage;  //Có hay không là đánhgóihạng mục
+    private String isDeduct;		// Có thực hiện khấu trừ không
+    private int quantity;    //hạng mục conSố lượng
+    private String costItemId; //Hạng mục khám chữa bệnhid
     private String costItemPkgId; //套餐id
-    private String referenceValue;  //参考值
-    private String referenceUnit;  //参考单位
+    private String referenceValue;  //tham khảoGiá trị
+    private String referenceUnit;  //tham khảoĐơn vị
 
     public CostItemPackage() {
         super();
@@ -36,7 +36,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
 
-    @NotNull(message="诊所id不能为空")
+    @NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -45,7 +45,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
         this.company = company;
     }
 
-    @Length(min=0, max=64, message="项目编码长度必须介于 0 和 64 之间")
+    @Length(min=0, max=64, message="hạng mụcĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
     public String getItemCode() {
         return itemCode;
     }
@@ -54,7 +54,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
 
-    @Length(min=1, max=64, message="项目名称长度必须介于 1 和 64 之间")
+    @Length(min=1, max=64, message="hạng mụcTênĐộ dài phải nằm trong khoảng 1 đến 64 ")
     public String getItemName() {
         return itemName;
     }
@@ -95,7 +95,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
 
-    @Length(min=0, max=2, message="状态长度必须介于 0 和 2 之间")
+    @Length(min=0, max=2, message="Độ dài trạng thái phải nằm trong khoảng 0 đến 2 ")
     public String getIsUse() {
         return isUse;
     }
@@ -104,7 +104,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
 
-    @Length(min=0, max=2, message="是否执行划扣长度必须介于 0 和 2 之间")
+    @Length(min=0, max=2, message="Độ dài có thực hiện khấu trừ phải nằm trong khoảng 0 đến 2 ")
     public String getIsDeduct() {
         return isDeduct;
     }
@@ -112,7 +112,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
         this.isDeduct = isDeduct;
     }
 
-    @NotNull(message="诊疗项目id不能为空")
+    @NotNull(message="Hạng mục khám chữa bệnhidKhông được để trống")
     public String getCostItemId() {
         return costItemId;
     }
@@ -121,7 +121,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
         this.costItemId = costItemId;
     }
 
-    @NotNull(message="套餐id不能为空")
+    @NotNull(message="套餐idKhông được để trống")
     public String getCostItemPkgId() {
         return costItemPkgId;
     }
@@ -161,7 +161,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
     /**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
      */
     @Override
     @JsonIgnore
@@ -170,7 +170,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
      */
     @Override
     @JsonIgnore
@@ -180,7 +180,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
 
 
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

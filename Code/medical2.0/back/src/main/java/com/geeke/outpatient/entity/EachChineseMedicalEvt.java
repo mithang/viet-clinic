@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 处方详情Entity
+ * Chi tiết đơn thuốcEntity
  * @author txl
  * @version 2022-06-07
  */
@@ -13,12 +13,12 @@ import java.io.Serializable;
 public class EachChineseMedicalEvt implements Serializable {
 
 	private static final long serialVersionUID = 1014474470772900087L;
-	//名称1
+	//Tên1
 	private String nameOne;
-	//名称2
+	//Tên2
 	private String nameTwo;
-	//名称3
+	//Tên3
 	private String nameThree;
-	//名称4
+	//Tên4
 	private String nameFour;
 }

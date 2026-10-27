@@ -4,25 +4,25 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * 操作日志DAO接口
- * @author lys	人工编写
+ * Nhật ký thao tácDAOGiao diện
+ * @author lys	Viết thủ công
  * @version 2019-12-12
  */
 @Mapper
 public interface RecycleDao {
 	
 	/**
-	 * 修改操作日志status为已还原状态
-	 * @param id  操作日志Id
+	 * SửaNhật ký thao tácstatus là Đãkhôi phụcTrạng thái
+	 * @param id  Nhật ký thao tácId
 	 * @return
 	 */
 	int updateActionStaus(@Param("id")String id);
 	
 	
 	/**
-	 * 恢复业务对象，把del_flag字段修改为0
-	 * @param tableName  业务表名
-	 * @param id		 业务对象Id
+	 * khôi phụcĐối tượng nghiệp vụ, Đưadel_flagTrườngSửa là 0
+	 * @param tableName  nghiệp vụbảngtên
+	 * @param id		 Đối tượng nghiệp vụId
 	 * @return
 	 */
 	int restore(@Param("tableName")String tableName, @Param("id")String id);

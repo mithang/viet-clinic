@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 
 /**
- * 医保进销存控制实现类
+ * BHYTtiến hành销lưukiểm soátTriển khaiLớp
  */
 @RequiredArgsConstructor
 @Service
@@ -24,27 +24,27 @@ public class MdInventoryServiceImpl implements MdInventoryService {
 
     private final DrugService drugService;
     /**
-     * 商品盘存上传  3501
+     * Tải lên kiểm kê hàng hóa  3501
      *
      * @return
      */
     @Override
     public JSONObject uploadInventory_3501() {
         JSONObject invinfo = new JSONObject();
-        invinfo.put("med_list_codg", ""); // 医疗目录编码
-        invinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        invinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        invinfo.put("rx_flag", ""); // 处方药标志
-        invinfo.put("invdate", ""); // 盘存日期
-        invinfo.put("inv_cnt", ""); // 库存数量
-        invinfo.put("manu_lotnum", ""); // 生产批号
-        invinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        invinfo.put("manu_date", ""); // 生产日期
-        invinfo.put("expy_end", ""); // 有效期止
-        invinfo.put("memo", ""); // 备注
-        invinfo.put("drugtracinfo", ""); // 溯源码节点信息
+        invinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        invinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        invinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        invinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        invinfo.put("invdate", ""); // Ngày kiểm kê
+        invinfo.put("inv_cnt", ""); // Số lượng tồn kho
+        invinfo.put("manu_lotnum", ""); // Số lô sản xuất
+        invinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        invinfo.put("manu_date", ""); // Ngày sản xuất
+        invinfo.put("expy_end", ""); // Hết hạn đến
+        invinfo.put("memo", ""); // Ghi chú
+        invinfo.put("drugtracinfo", ""); // Thông tin nút mã truy xuất
         JSONObject drugtracinfo = new JSONObject();
-        drugtracinfo.put("drug_trac_codg","");//药品追溯码
+        drugtracinfo.put("drug_trac_codg","");//Mã truy xuất thuốc
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("invinfo",jsonObject);
         jsonObject.put("drugtracinfo",drugtracinfo);
@@ -53,29 +53,29 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品盘存上传 3501A
-     * 参数多行构造
+     * Tải lên kiểm kê hàng hóa 3501A
+     * Tham sốnhiều dòngxây dựng
      * @return
      */
     @Override
     public JSONObject uploadInventoryList_3501A() {
         JSONArray array = new  JSONArray();
         JSONObject invinfo = new JSONObject();
-        invinfo.put("med_list_codg", ""); // 医疗目录编码
-        invinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        invinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        invinfo.put("rx_flag", ""); // 处方药标志
-        invinfo.put("invdate", ""); // 盘存日期
-        invinfo.put("inv_cnt", ""); // 库存数量
-        invinfo.put("manu_lotnum", ""); // 生产批号
-        invinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        invinfo.put("manu_date", ""); // 生产日期
-        invinfo.put("expy_end", ""); // 有效期止
-        invinfo.put("memo", ""); // 备注
-        invinfo.put("drugtracinfo", ""); // 溯源码节点信息
-        //明细追溯码
+        invinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        invinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        invinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        invinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        invinfo.put("invdate", ""); // Ngày kiểm kê
+        invinfo.put("inv_cnt", ""); // Số lượng tồn kho
+        invinfo.put("manu_lotnum", ""); // Số lô sản xuất
+        invinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        invinfo.put("manu_date", ""); // Ngày sản xuất
+        invinfo.put("expy_end", ""); // Hết hạn đến
+        invinfo.put("memo", ""); // Ghi chú
+        invinfo.put("drugtracinfo", ""); // Thông tin nút mã truy xuất
+        //Chi tiếttruy xuấtmã
         JSONObject drugtracinfo = new JSONObject();
-        drugtracinfo.put("drug_trac_codg","");//药品追溯码
+        drugtracinfo.put("drug_trac_codg","");//Mã truy xuất thuốc
         array.add(invinfo);
         JSONArray array1 = new JSONArray();
         array1.add(drugtracinfo);
@@ -88,7 +88,7 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品库存变更 3502
+     * hàng hóaTồn khothay đổi 3502
      *
      * @return
      */
@@ -96,37 +96,37 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     public JSONObject updateInventory_3502(StorageEvt storageEvt, String invChgType) {
         JSONObject invinfo = new JSONObject();
         SupplierStock supplierStock = storageEvt.getSupplierStockList().get(0);
-        //以下字段需根据实际业务补充
-        invinfo.put("med_list_codg", ""); // 医疗目录编码
-        invinfo.put("inv_chg_type", invChgType); // 库存变更类型
-        invinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        invinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        invinfo.put("fixmedins_bchno", supplierStock.getSupplierStorage().getCode()); // 定点医药机构批次流水号
-        invinfo.put("pric", supplierStock.getRetailPrice()); // 单价
-        invinfo.put("cnt", supplierStock.getCnt()); // 医保数量
+        //bằngdướiTrườngcầnTheothực tếnghiệp vụbổ sung
+        invinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        invinfo.put("inv_chg_type", invChgType); // Loại thay đổi tồn kho
+        invinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        invinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        invinfo.put("fixmedins_bchno", supplierStock.getSupplierStorage().getCode()); // Số thứ tự lô của cơ sở y tế được chỉ định
+        invinfo.put("pric", supplierStock.getRetailPrice()); // Đơn giá
+        invinfo.put("cnt", supplierStock.getCnt()); // Số lượng BHYT
         Drug drug = drugService.get(supplierStock.getDrug().getId());
-        invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // 处方药标志 0 否 1是
-        invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // 库存变更时间
-        invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // 库存变更经办人姓名
-        invinfo.put("memo", ""); // 备注
-        invinfo.put("trdn_flag", ""); // 拆零标志
-        // 存储该药品的追溯码数组
+        invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // Cờ thuốc kê đơn 0  không  1 có 
+        invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // Thời gian thay đổi tồn kho
+        invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // Tên người thực hiện thay đổi tồn kho
+        invinfo.put("memo", ""); // Ghi chú
+        invinfo.put("trdn_flag", ""); // Cờ bán lẻ
+        // Lưu mảng mã truy xuất của thuốc này
         JSONArray drugTracInfoArray = new JSONArray();
-        // 检查是否有多个追溯码，逗号分隔
+        // Kiểm tra có nhiều mã truy xuất không, Phân tách bằng dấu phẩy
         if (supplierStock.getDrugTracCodg().contains(",")) {
             Arrays.asList(supplierStock.getDrugTracCodg().split(",")).forEach(
                     drugTracCodg -> {
                         JSONObject drugtracinfo = new JSONObject();
-                        drugtracinfo.put("drug_trac_codg", drugTracCodg); // 药品追溯码
+                        drugtracinfo.put("drug_trac_codg", drugTracCodg); // Mã truy xuất thuốc
                         drugTracInfoArray.add(drugtracinfo);
                     }
             );
         } else {
             JSONObject drugtracinfo = new JSONObject();
-            drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // 药品追溯码
+            drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // Mã truy xuất thuốc
             drugTracInfoArray.add(drugtracinfo);
         }
-        // 将追溯码数组添加到 invinfo 对象中
+        // Thêm mảng mã truy xuất vào invinfo Trong đối tượng
         invinfo.put("drugtracinfo", drugTracInfoArray);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("invinfo", invinfo);
@@ -134,9 +134,9 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 3502A  诊所库存入库
+     * 3502A  Phòng khámTồn khonhập kho
      *
-     * @return result节点：retRslt 1：成功，0：失败  msgRslt：失败原因
+     * @return resultNút: retRslt 1: Thành công, 0: Thất bại  msgRslt: Lý do thất bại
      */
     @Override
     public JSONObject updateInventoryList_3502A(StorageEvt storageEvt, String invChgType) {
@@ -144,37 +144,37 @@ public class MdInventoryServiceImpl implements MdInventoryService {
         storageEvt.getSupplierStockList().forEach(supplierStock -> {
             Drug drug = drugService.get(supplierStock.getDrug().getId());
             JSONObject invinfo = new JSONObject();
-            invinfo.put("med_list_codg", ""); // 医疗目录编码
-            invinfo.put("inv_chg_type", invChgType); // 库存变更类型
-            invinfo.put("fixmedins_hist_id", drug.getCode()); // 定点医药机构目录编号
-            invinfo.put("fixmedins_hist_name", drug.getName()); // 定点医药机构目录名称
-            invinfo.put("fixmedins_bchno", supplierStock.getSupplierStorage().getCode()); // 定点医药机构批次流水号
-            invinfo.put("pric", supplierStock.getRetailPrice()); // 单价
-            invinfo.put("cnt", supplierStock.getCnt()); // 医保数量
-            invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // 处方药标志 0 否 1是
-            invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // 库存变更时间
-            invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // 库存变更经办人姓名
-            invinfo.put("memo", ""); // 备注
-            invinfo.put("trdn_flag", ""); // 拆零标志
-            // 存储该药品的追溯码数组
+            invinfo.put("med_list_codg", ""); // Mã danh mục y tế
+            invinfo.put("inv_chg_type", invChgType); // Loại thay đổi tồn kho
+            invinfo.put("fixmedins_hist_id", drug.getCode()); // Mã danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_hist_name", drug.getName()); // Tên danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_bchno", supplierStock.getSupplierStorage().getCode()); // Số thứ tự lô của cơ sở y tế được chỉ định
+            invinfo.put("pric", supplierStock.getRetailPrice()); // Đơn giá
+            invinfo.put("cnt", supplierStock.getCnt()); // Số lượng BHYT
+            invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // Cờ thuốc kê đơn 0  không  1 có 
+            invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // Thời gian thay đổi tồn kho
+            invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // Tên người thực hiện thay đổi tồn kho
+            invinfo.put("memo", ""); // Ghi chú
+            invinfo.put("trdn_flag", ""); // Cờ bán lẻ
+            // Lưu mảng mã truy xuất của thuốc này
             JSONArray drugTracInfoArray = new JSONArray();
-            // 检查是否有多个追溯码，逗号分隔
+            // Kiểm tra có nhiều mã truy xuất không, Phân tách bằng dấu phẩy
             if (supplierStock.getDrugTracCodg().contains(",")) {
                 Arrays.asList(supplierStock.getDrugTracCodg().split(",")).forEach(
                         drugTracCodg -> {
                             JSONObject drugtracinfo = new JSONObject();
-                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // 药品追溯码
+                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // Mã truy xuất thuốc
                             drugTracInfoArray.add(drugtracinfo);
                         }
                 );
             } else {
                 JSONObject drugtracinfo = new JSONObject();
-                drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // 药品追溯码
+                drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // Mã truy xuất thuốc
                 drugTracInfoArray.add(drugtracinfo);
             }
-            // 将追溯码数组添加到 invinfo 对象中
+            // Thêm mảng mã truy xuất vào invinfo Trong đối tượng
             invinfo.put("drugtracinfo", drugTracInfoArray);
-            // 将 invinfo 添加到主数组中
+            // Sẽ  invinfo Thêm vào mảng chính
             array.add(invinfo);
         });
         JSONObject jsonObject = new JSONObject();
@@ -183,7 +183,7 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 发药退药  3502A
+     * phát thuốcTrả thuốc  3502A
      * @param dispensingEvt
      * @return
      */
@@ -193,44 +193,44 @@ public class MdInventoryServiceImpl implements MdInventoryService {
         dispensingEvt.getDispensingDetailEvtList().forEach(detailEvt -> {
             JSONObject invinfo = new JSONObject();
             Drug drug = drugService.get(detailEvt.getId());
-            invinfo.put("med_list_codg", ""); // 医疗目录编码
+            invinfo.put("med_list_codg", ""); // Mã danh mục y tế
             if("0".equals(dispensingEvt.getDispensingStatus())){
-                //发药  出库
+                //Phát thuốc  Xuất kho
                 invinfo.put("inv_chg_type", "101");
             }else if("1".equals(dispensingEvt.getDispensingStatus())){
-                //退药  入库
+                //Trả thuốc  Nhập kho
                 invinfo.put("inv_chg_type", "102");
             }
-            invinfo.put("fixmedins_hist_id", drug.getCode()); // 定点医药机构目录编号
-            invinfo.put("fixmedins_hist_name", drug.getName()); // 定点医药机构目录名称
-            invinfo.put("fixmedins_bchno", dispensingEvt.getRegistrationId()); // 定点医药机构批次流水号
-            invinfo.put("pric",drug.getPrice()); // 单价
-            invinfo.put("cnt",""); // 数量
-            invinfo.put("rx_flag", ""); // 处方药标志
-            invinfo.put("inv_chg_time", ""); // 库存变更时间
-            invinfo.put("inv_chg_opter_name", ""); // 库存变更经办人姓名
-            invinfo.put("memo", ""); // 备注
-            invinfo.put("trdn_flag", ""); // 拆零标志
-            invinfo.put("drugtracinfo", ""); // 溯源码节点信息
-            // 存储该药品的追溯码数组
+            invinfo.put("fixmedins_hist_id", drug.getCode()); // Mã danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_hist_name", drug.getName()); // Tên danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_bchno", dispensingEvt.getRegistrationId()); // Số thứ tự lô của cơ sở y tế được chỉ định
+            invinfo.put("pric",drug.getPrice()); // Đơn giá
+            invinfo.put("cnt",""); // Số lượng
+            invinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+            invinfo.put("inv_chg_time", ""); // Thời gian thay đổi tồn kho
+            invinfo.put("inv_chg_opter_name", ""); // Tên người thực hiện thay đổi tồn kho
+            invinfo.put("memo", ""); // Ghi chú
+            invinfo.put("trdn_flag", ""); // Cờ bán lẻ
+            invinfo.put("drugtracinfo", ""); // Thông tin nút mã truy xuất
+            // Lưu mảng mã truy xuất của thuốc này
             JSONArray drugTracInfoArray = new JSONArray();
-            // 检查是否有多个追溯码，逗号分隔
+            // Kiểm tra có nhiều mã truy xuất không, Phân tách bằng dấu phẩy
             if (detailEvt.getDrugTracCodg().contains(",")) {
                 Arrays.asList(detailEvt.getDrugTracCodg().split(",")).forEach(
                         drugTracCodg -> {
                             JSONObject drugtracinfo = new JSONObject();
-                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // 药品追溯码
+                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // Mã truy xuất thuốc
                             drugTracInfoArray.add(drugtracinfo);
                         }
                 );
             } else {
                 JSONObject drugtracinfo = new JSONObject();
-                drugtracinfo.put("drug_trac_codg", detailEvt.getDrugTracCodg()); // 药品追溯码
+                drugtracinfo.put("drug_trac_codg", detailEvt.getDrugTracCodg()); // Mã truy xuất thuốc
                 drugTracInfoArray.add(drugtracinfo);
             }
-            // 将追溯码数组添加到 invinfo 对象中
+            // Thêm mảng mã truy xuất vào invinfo Trong đối tượng
             invinfo.put("drugtracinfo", drugTracInfoArray);
-            // 将 invinfo 添加到主数组中
+            // Sẽ  invinfo Thêm vào mảng chính
             array.add(invinfo);
         });
         JSONObject jsonObject = new JSONObject();
@@ -239,9 +239,9 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 出库 3502A
+     * Xuất kho 3502A
      *
-     * @param outboundEvt 出库单
+     * @param outboundEvt Phiếu xuất kho
      * @return
      */
     @Override
@@ -250,37 +250,37 @@ public class MdInventoryServiceImpl implements MdInventoryService {
         outboundEvt.getSupplierOutboundDetailList().forEach(supplierStock -> {
             Drug drug = drugService.get(supplierStock.getDrug().getId());
             JSONObject invinfo = new JSONObject();
-            invinfo.put("med_list_codg", ""); // 医疗目录编码
-            invinfo.put("inv_chg_type", "101"); // 库存变更类型
-            invinfo.put("fixmedins_hist_id", drug.getCode()); // 定点医药机构目录编号
-            invinfo.put("fixmedins_hist_name", drug.getName()); // 定点医药机构目录名称
-            invinfo.put("fixmedins_bchno", supplierStock.getMedicinalStorage().getId()); // 定点医药机构批次流水号
-            invinfo.put("pric", drug.getPrice()); // 单价
-            invinfo.put("cnt", supplierStock.getCnt()); // 医保数量
-            invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // 处方药标志 0 否 1是
-            invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // 库存变更时间
-            invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // 库存变更经办人姓名
-            invinfo.put("memo", ""); // 备注
-            invinfo.put("trdn_flag", ""); // 拆零标志
-            // 存储该药品的追溯码数组
+            invinfo.put("med_list_codg", ""); // Mã danh mục y tế
+            invinfo.put("inv_chg_type", "101"); // Loại thay đổi tồn kho
+            invinfo.put("fixmedins_hist_id", drug.getCode()); // Mã danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_hist_name", drug.getName()); // Tên danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_bchno", supplierStock.getMedicinalStorage().getId()); // Số thứ tự lô của cơ sở y tế được chỉ định
+            invinfo.put("pric", drug.getPrice()); // Đơn giá
+            invinfo.put("cnt", supplierStock.getCnt()); // Số lượng BHYT
+            invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // Cờ thuốc kê đơn 0  không  1 có 
+            invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // Thời gian thay đổi tồn kho
+            invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // Tên người thực hiện thay đổi tồn kho
+            invinfo.put("memo", ""); // Ghi chú
+            invinfo.put("trdn_flag", ""); // Cờ bán lẻ
+            // Lưu mảng mã truy xuất của thuốc này
             JSONArray drugTracInfoArray = new JSONArray();
-            // 检查是否有多个追溯码，逗号分隔
+            // Kiểm tra có nhiều mã truy xuất không, Phân tách bằng dấu phẩy
             if (supplierStock.getDrugTracCodg().contains(",")) {
                 Arrays.asList(supplierStock.getDrugTracCodg().split(",")).forEach(
                         drugTracCodg -> {
                             JSONObject drugtracinfo = new JSONObject();
-                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // 药品追溯码
+                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // Mã truy xuất thuốc
                             drugTracInfoArray.add(drugtracinfo);
                         }
                 );
             } else {
                 JSONObject drugtracinfo = new JSONObject();
-                drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // 药品追溯码
+                drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // Mã truy xuất thuốc
                 drugTracInfoArray.add(drugtracinfo);
             }
-            // 将追溯码数组添加到 invinfo 对象中
+            // Thêm mảng mã truy xuất vào invinfo Trong đối tượng
             invinfo.put("drugtracinfo", drugTracInfoArray);
-            // 将 invinfo 添加到主数组中
+            // Sẽ  invinfo Thêm vào mảng chính
             array.add(invinfo);
         });
         JSONObject jsonObject = new JSONObject();
@@ -289,7 +289,7 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 零售出库 3502A
+     * bán lẻXuất kho 3502A
      *
      * @param recipelInfoEvt@return
      */
@@ -299,37 +299,37 @@ public class MdInventoryServiceImpl implements MdInventoryService {
         recipelInfoEvt.getRecipelDetailEvtList().forEach(supplierStock -> {
             Drug drug = drugService.get(supplierStock.getDrugStuffId().getDrug().getId());
             JSONObject invinfo = new JSONObject();
-            invinfo.put("med_list_codg", ""); // 医疗目录编码
-            invinfo.put("inv_chg_type", "101"); // 库存变更类型
-            invinfo.put("fixmedins_hist_id", drug.getCode()); // 定点医药机构目录编号
-            invinfo.put("fixmedins_hist_name", drug.getName()); // 定点医药机构目录名称
-            invinfo.put("fixmedins_bchno", recipelInfoEvt.getRecipelInfo().getId()); // 定点医药机构批次流水号
-            invinfo.put("pric", drug.getPrice()); // 单价
-            invinfo.put("cnt", supplierStock.getTotal()); // 医保数量
-            invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // 处方药标志 0 否 1是
-            invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // 库存变更时间
-            invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // 库存变更经办人姓名
-            invinfo.put("memo", ""); // 备注
-            invinfo.put("trdn_flag", ""); // 拆零标志
-            // 存储该药品的追溯码数组
+            invinfo.put("med_list_codg", ""); // Mã danh mục y tế
+            invinfo.put("inv_chg_type", "101"); // Loại thay đổi tồn kho
+            invinfo.put("fixmedins_hist_id", drug.getCode()); // Mã danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_hist_name", drug.getName()); // Tên danh mục của cơ sở y tế được chỉ định
+            invinfo.put("fixmedins_bchno", recipelInfoEvt.getRecipelInfo().getId()); // Số thứ tự lô của cơ sở y tế được chỉ định
+            invinfo.put("pric", drug.getPrice()); // Đơn giá
+            invinfo.put("cnt", supplierStock.getTotal()); // Số lượng BHYT
+            invinfo.put("rx_flag", drug.getRxFlag() == null ? "0" : drug.getRxFlag()); // Cờ thuốc kê đơn 0  không  1 có 
+            invinfo.put("inv_chg_time", supplierStock.getCreateDate()); // Thời gian thay đổi tồn kho
+            invinfo.put("inv_chg_opter_name", supplierStock.getCreateBy().substring(0, supplierStock.getCreateBy().indexOf("("))); // Tên người thực hiện thay đổi tồn kho
+            invinfo.put("memo", ""); // Ghi chú
+            invinfo.put("trdn_flag", ""); // Cờ bán lẻ
+            // Lưu mảng mã truy xuất của thuốc này
             JSONArray drugTracInfoArray = new JSONArray();
-            // 检查是否有多个追溯码，逗号分隔
+            // Kiểm tra có nhiều mã truy xuất không, Phân tách bằng dấu phẩy
             if (supplierStock.getDrugTracCodg().contains(",")) {
                 Arrays.asList(supplierStock.getDrugTracCodg().split(",")).forEach(
                         drugTracCodg -> {
                             JSONObject drugtracinfo = new JSONObject();
-                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // 药品追溯码
+                            drugtracinfo.put("drug_trac_codg", drugTracCodg); // Mã truy xuất thuốc
                             drugTracInfoArray.add(drugtracinfo);
                         }
                 );
             } else {
                 JSONObject drugtracinfo = new JSONObject();
-                drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // 药品追溯码
+                drugtracinfo.put("drug_trac_codg", supplierStock.getDrugTracCodg()); // Mã truy xuất thuốc
                 drugTracInfoArray.add(drugtracinfo);
             }
-            // 将追溯码数组添加到 invinfo 对象中
+            // Thêm mảng mã truy xuất vào invinfo Trong đối tượng
             invinfo.put("drugtracinfo", drugTracInfoArray);
-            // 将 invinfo 添加到主数组中
+            // Sẽ  invinfo Thêm vào mảng chính
             array.add(invinfo);
         });
         JSONObject jsonObject = new JSONObject();
@@ -338,68 +338,68 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品采购 3503
+     * Mua hàng hóa 3503
      *
-     * @return result节点：retRslt 1：成功，0：失败  msgRslt：失败原因
+     * @return resultNút: retRslt 1: Thành công, 0: Thất bại  msgRslt: Lý do thất bại
      */
     @Override
     public JSONObject createPurchaseOrder_3503() {
         JSONObject purcinfo = new JSONObject();
-        purcinfo.put("med_list_codg", ""); // 医疗目录编码
-        purcinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        purcinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        purcinfo.put("dynt_no", ""); // 随货单号
-        purcinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        purcinfo.put("spler_name", ""); // 供应商名称
-        purcinfo.put("spler_pmtno", ""); // 供应商许可证号
-        purcinfo.put("manu_lotnum", ""); // 生产批号
-        purcinfo.put("prodentp_name", ""); // 生产厂家名称
-        purcinfo.put("aprvno", ""); // 批准文号
-        purcinfo.put("manu_date", ""); // 生产日期
-        purcinfo.put("expy_end", ""); // 有效期止
-        purcinfo.put("finl_trns_pric", 0.0); // 最终成交单价
-        purcinfo.put("purc_retn_cnt", 0); // 采购/退货数量
-        purcinfo.put("purc_invo_codg", ""); // 采购发票编码
-        purcinfo.put("purc_invo_no", ""); // 采购发票号
-        purcinfo.put("rx_flag", ""); // 处方药标志
-        purcinfo.put("purc_retn_stoin_time", ""); // 采购/退货入库时间
-        purcinfo.put("purc_retn_opter_name", ""); // 采购/退货经办人姓名
-        purcinfo.put("prod_geay_flag", "0"); // 商品赠送标志
-        purcinfo.put("memo", ""); // 备注
+        purcinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        purcinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("dynt_no", ""); // Số phiếu kèm hàng
+        purcinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        purcinfo.put("spler_name", ""); // Tên nhà cung cấp
+        purcinfo.put("spler_pmtno", ""); // Số giấy phép nhà cung cấp
+        purcinfo.put("manu_lotnum", ""); // Số lô sản xuất
+        purcinfo.put("prodentp_name", ""); // Tên nhà sản xuất
+        purcinfo.put("aprvno", ""); // Số phê duyệt
+        purcinfo.put("manu_date", ""); // Ngày sản xuất
+        purcinfo.put("expy_end", ""); // Hết hạn đến
+        purcinfo.put("finl_trns_pric", 0.0); // Đơn giá giao dịch cuối cùng
+        purcinfo.put("purc_retn_cnt", 0); // Mua hàng/Số lượng trả hàng
+        purcinfo.put("purc_invo_codg", ""); // Mã hóa đơn mua hàng
+        purcinfo.put("purc_invo_no", ""); // Số hóa đơn mua hàng
+        purcinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        purcinfo.put("purc_retn_stoin_time", ""); // Mua hàng/Thời gian trả hàng nhập kho
+        purcinfo.put("purc_retn_opter_name", ""); // Mua hàng/Tên người thực hiện trả hàng
+        purcinfo.put("prod_geay_flag", "0"); // Cờ tặng kèm hàng hóa
+        purcinfo.put("memo", ""); // Ghi chú
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("purcinfo", purcinfo);
         return mdRequestUtil.getMedicareData("3503", jsonObject);
     }
 
     /**
-     * 商品采购 3503A
+     * Mua hàng hóa 3503A
      *
-     * @return result节点：retRslt 1：成功，0：失败  msgRslt：失败原因
+     * @return resultNút: retRslt 1: Thành công, 0: Thất bại  msgRslt: Lý do thất bại
      */
     @Override
     public JSONObject createPurchaseOrderList_3503A() {
         JSONObject purcinfo = new JSONObject();
-        purcinfo.put("med_list_codg", ""); // 医疗目录编码
-        purcinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        purcinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        purcinfo.put("dynt_no", ""); // 随货单号
-        purcinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        purcinfo.put("spler_name", ""); // 供应商名称
-        purcinfo.put("spler_pmtno", ""); // 供应商许可证号
-        purcinfo.put("manu_lotnum", ""); // 生产批号
-        purcinfo.put("prodentp_name", ""); // 生产厂家名称
-        purcinfo.put("aprvno", ""); // 批准文号
-        purcinfo.put("manu_date", ""); // 生产日期
-        purcinfo.put("expy_end", ""); // 有效期止
-        purcinfo.put("finl_trns_pric", 0.0); // 最终成交单价
-        purcinfo.put("purc_retn_cnt", 0); // 采购/退货数量
-        purcinfo.put("purc_invo_codg", ""); // 采购发票编码
-        purcinfo.put("purc_invo_no", ""); // 采购发票号
-        purcinfo.put("rx_flag", ""); // 处方药标志
-        purcinfo.put("purc_retn_stoin_time", ""); // 采购/退货入库时间
-        purcinfo.put("purc_retn_opter_name", ""); // 采购/退货经办人姓名
-        purcinfo.put("prod_geay_flag", "0"); // 商品赠送标志
-        purcinfo.put("memo", ""); // 备注
+        purcinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        purcinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("dynt_no", ""); // Số phiếu kèm hàng
+        purcinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        purcinfo.put("spler_name", ""); // Tên nhà cung cấp
+        purcinfo.put("spler_pmtno", ""); // Số giấy phép nhà cung cấp
+        purcinfo.put("manu_lotnum", ""); // Số lô sản xuất
+        purcinfo.put("prodentp_name", ""); // Tên nhà sản xuất
+        purcinfo.put("aprvno", ""); // Số phê duyệt
+        purcinfo.put("manu_date", ""); // Ngày sản xuất
+        purcinfo.put("expy_end", ""); // Hết hạn đến
+        purcinfo.put("finl_trns_pric", 0.0); // Đơn giá giao dịch cuối cùng
+        purcinfo.put("purc_retn_cnt", 0); // Mua hàng/Số lượng trả hàng
+        purcinfo.put("purc_invo_codg", ""); // Mã hóa đơn mua hàng
+        purcinfo.put("purc_invo_no", ""); // Số hóa đơn mua hàng
+        purcinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        purcinfo.put("purc_retn_stoin_time", ""); // Mua hàng/Thời gian trả hàng nhập kho
+        purcinfo.put("purc_retn_opter_name", ""); // Mua hàng/Tên người thực hiện trả hàng
+        purcinfo.put("prod_geay_flag", "0"); // Cờ tặng kèm hàng hóa
+        purcinfo.put("memo", ""); // Ghi chú
         JSONArray array = new JSONArray();
         array.add(purcinfo);
         JSONObject jsonObject = new JSONObject();
@@ -408,60 +408,60 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品采购退货 3504
+     * Trả hàng mua hàng hóa 3504
      *
-     * @return result节点：retRslt 1：成功，0：失败  msgRslt：失败原因
+     * @return resultNút: retRslt 1: Thành công, 0: Thất bại  msgRslt: Lý do thất bại
      */
     @Override
     public JSONObject createPurchaseReturnOrder_3504() {
         JSONObject purcinfo = new JSONObject();
-        purcinfo.put("med_list_codg", ""); // 医疗目录编码
-        purcinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        purcinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        purcinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        purcinfo.put("spler_name", ""); // 供应商名称
-        purcinfo.put("spler_pmtno", ""); // 供应商许可证号
-        purcinfo.put("manu_date", ""); // 生产日期 (格式: yyyy-MM-dd)
-        purcinfo.put("expy_end", ""); // 有效期止 (格式: yyyy-MM-dd)
-        purcinfo.put("finl_trns_pric", 0.0); // 最终成交单价
-        purcinfo.put("purc_retn_cnt", 0); // 采购/退货数量
-        purcinfo.put("purc_invo_codg", ""); // 采购发票编码
-        purcinfo.put("purc_invo_no", ""); // 采购发票号
-        purcinfo.put("rx_flag", ""); // 处方药标志
-        purcinfo.put("purc_retn_stoin_time", ""); // 采购/退货入库时间 (格式: yyyy-MM-dd HH:mm:ss)
-        purcinfo.put("purc_retn_opter_name", ""); // 采购/退货经办人姓名
-        purcinfo.put("memo", ""); // 备注
-        purcinfo.put("medins_prod_purc_no", ""); // 商品采购流水号
+        purcinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        purcinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        purcinfo.put("spler_name", ""); // Tên nhà cung cấp
+        purcinfo.put("spler_pmtno", ""); // Số giấy phép nhà cung cấp
+        purcinfo.put("manu_date", ""); // Ngày sản xuất (Định dạng: yyyy-MM-dd)
+        purcinfo.put("expy_end", ""); // Hết hạn đến (Định dạng: yyyy-MM-dd)
+        purcinfo.put("finl_trns_pric", 0.0); // Đơn giá giao dịch cuối cùng
+        purcinfo.put("purc_retn_cnt", 0); // Mua hàng/Số lượng trả hàng
+        purcinfo.put("purc_invo_codg", ""); // Mã hóa đơn mua hàng
+        purcinfo.put("purc_invo_no", ""); // Số hóa đơn mua hàng
+        purcinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        purcinfo.put("purc_retn_stoin_time", ""); // Mua hàng/Thời gian trả hàng nhập kho (Định dạng: yyyy-MM-dd HH:mm:ss)
+        purcinfo.put("purc_retn_opter_name", ""); // Mua hàng/Tên người thực hiện trả hàng
+        purcinfo.put("memo", ""); // Ghi chú
+        purcinfo.put("medins_prod_purc_no", ""); // Mua hàng hóasố thứ tự
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("purcinfo", purcinfo);
         return mdRequestUtil.getMedicareData("3504", jsonObject);
     }
 
     /**
-     * 商品采购退货 3504A
+     * Trả hàng mua hàng hóa 3504A
      *
-     * @return 输出节点 purcinfoErrDetail
+     * @return XuấtNút purcinfoErrDetail
      */
     @Override
     public JSONObject createPurchaseReturnOrderList_3504A() {
         JSONObject purcinfo = new JSONObject();
-        purcinfo.put("med_list_codg", ""); // 医疗目录编码
-        purcinfo.put("fixmedins_hist_id", ""); // 定点医药机构目录编号
-        purcinfo.put("fixmedins_hist_name", ""); // 定点医药机构目录名称
-        purcinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        purcinfo.put("spler_name", ""); // 供应商名称
-        purcinfo.put("spler_pmtno", ""); // 供应商许可证号
-        purcinfo.put("manu_date", ""); // 生产日期 (格式: yyyy-MM-dd)
-        purcinfo.put("expy_end", ""); // 有效期止 (格式: yyyy-MM-dd)
-        purcinfo.put("finl_trns_pric", 0.0); // 最终成交单价
-        purcinfo.put("purc_retn_cnt", 0); // 采购/退货数量
-        purcinfo.put("purc_invo_codg", ""); // 采购发票编码
-        purcinfo.put("purc_invo_no", ""); // 采购发票号
-        purcinfo.put("rx_flag", ""); // 处方药标志
-        purcinfo.put("purc_retn_stoin_time", ""); // 采购/退货入库时间 (格式: yyyy-MM-dd HH:mm:ss)
-        purcinfo.put("purc_retn_opter_name", ""); // 采购/退货经办人姓名
-        purcinfo.put("memo", ""); // 备注
-        purcinfo.put("medins_prod_purc_no", ""); // 商品采购流水号
+        purcinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        purcinfo.put("fixmedins_hist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("fixmedins_hist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        purcinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        purcinfo.put("spler_name", ""); // Tên nhà cung cấp
+        purcinfo.put("spler_pmtno", ""); // Số giấy phép nhà cung cấp
+        purcinfo.put("manu_date", ""); // Ngày sản xuất (Định dạng: yyyy-MM-dd)
+        purcinfo.put("expy_end", ""); // Hết hạn đến (Định dạng: yyyy-MM-dd)
+        purcinfo.put("finl_trns_pric", 0.0); // Đơn giá giao dịch cuối cùng
+        purcinfo.put("purc_retn_cnt", 0); // Mua hàng/Số lượng trả hàng
+        purcinfo.put("purc_invo_codg", ""); // Mã hóa đơn mua hàng
+        purcinfo.put("purc_invo_no", ""); // Số hóa đơn mua hàng
+        purcinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        purcinfo.put("purc_retn_stoin_time", ""); // Mua hàng/Thời gian trả hàng nhập kho (Định dạng: yyyy-MM-dd HH:mm:ss)
+        purcinfo.put("purc_retn_opter_name", ""); // Mua hàng/Tên người thực hiện trả hàng
+        purcinfo.put("memo", ""); // Ghi chú
+        purcinfo.put("medins_prod_purc_no", ""); // Mua hàng hóasố thứ tự
         JSONArray array = new JSONArray();
         array.add(purcinfo);
         JSONObject jsonObject = new JSONObject();
@@ -470,7 +470,7 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品销售 3505
+     * Bán hàng hóa 3505
      *
      * @return
      */
@@ -478,47 +478,47 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     public JSONObject createSaleOrder_3505() {
         JSONObject selinfo = new JSONObject();
 
-        selinfo.put("med_list_codg", "");          // 医疗目录编码
-        selinfo.put("fixmedins_hilist_id", "");    // 定点医药机构目录编号
-        selinfo.put("fixmedins_hilist_name", "");  // 定点医药机构目录名称
-        selinfo.put("fixmedins_bchno", "");        // 定点医药机构批次流水号
-        selinfo.put("prsc_dr_cert_type", "");      // 开方医师证件类型
-        selinfo.put("prsc_dr_certno", "");         // 开方医师证件号码
-        selinfo.put("prsc_dr_name", "");            // 开方医师姓名
-        selinfo.put("phar_cert_type", "");         // 药师证件类型
-        selinfo.put("phar_certno", "");            // 药师证件号码
-        selinfo.put("phar_name", "");               // 药师姓名
-        selinfo.put("phar_prac_cert_no", "");      // 药师执业资格证号
-        selinfo.put("hi_feesetl_type", "");        // 医保费用结算类型
-        selinfo.put("setl_id", "");                 // 结算 ID
-        selinfo.put("mdtrt_sn", "");                // 就医流水号
-        selinfo.put("psn_no", "");                  // 人员编号
-        selinfo.put("psn_cert_type", "");          // 人员证件类型
-        selinfo.put("certno", "");                  // 证件号码
-        selinfo.put("psn_name", "");                // 人员姓名
-        selinfo.put("manu_lotnum", "");            // 生产批号
-        selinfo.put("manu_date", "");              // 生产日期
-        selinfo.put("expy_end", "");                // 有效期止
-        selinfo.put("rx_flag", "");                 // 处方药标志
-        selinfo.put("trdn_flag", "");               // 拆零标志
-        selinfo.put("finl_trns_pric", 0.0);        // 最终成交单价
-        selinfo.put("rxno", "");                    // 处方号
-        selinfo.put("rx_circ_flag", "");           // 外购处方标志
-        selinfo.put("rtal_docno", "");              // 零售单据号
-        selinfo.put("stoout_no", "");               // 销售出库单据号
-        selinfo.put("bchno", "");                   // 批次号
-        selinfo.put("drug_trac_codg", "");         // 药品追溯码
-        selinfo.put("drug_prod_barc", "");         // 药品条形码
-        selinfo.put("shelf_posi", "");              // 货架位
-        selinfo.put("sel_retn_cnt", 0);             // 销售/退货数量
-        selinfo.put("sel_retn_time", "");           // 销售/退货时间
-        selinfo.put("sel_retn_opter_name", "");     // 销售/退货经办人姓名
-        selinfo.put("memo", "");// 备注
-        selinfo.put("MDTRT_SETL_TYPE", "");        // 就诊结算类型
-        selinfo.put("drugtracinfo", "");            // 溯源码节点信息
+        selinfo.put("med_list_codg", "");          // Mã danh mục y tế
+        selinfo.put("fixmedins_hilist_id", "");    // Mã danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_hilist_name", "");  // Tên danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_bchno", "");        // Số thứ tự lô của cơ sở y tế được chỉ định
+        selinfo.put("prsc_dr_cert_type", "");      // Loại giấy tờ của bác sĩ kê đơn
+        selinfo.put("prsc_dr_certno", "");         // Số giấy tờ của bác sĩ kê đơn
+        selinfo.put("prsc_dr_name", "");            // Tên bác sĩ kê đơn
+        selinfo.put("phar_cert_type", "");         // Loại giấy tờ của dược sĩ
+        selinfo.put("phar_certno", "");            // Số giấy tờ của dược sĩ
+        selinfo.put("phar_name", "");               // Tên dược sĩ
+        selinfo.put("phar_prac_cert_no", "");      // Số chứng chỉ hành nghề của dược sĩ
+        selinfo.put("hi_feesetl_type", "");        // Loại quyết toán chi phí BHYT
+        selinfo.put("setl_id", "");                 // Quyết toán ID
+        selinfo.put("mdtrt_sn", "");                // Số thứ tự khám bệnh
+        selinfo.put("psn_no", "");                  // Mã nhân viên
+        selinfo.put("psn_cert_type", "");          // Loại giấy tờ nhân viên
+        selinfo.put("certno", "");                  // Số giấy tờ
+        selinfo.put("psn_name", "");                // Tên nhân viên
+        selinfo.put("manu_lotnum", "");            // Số lô sản xuất
+        selinfo.put("manu_date", "");              // Ngày sản xuất
+        selinfo.put("expy_end", "");                // Hết hạn đến
+        selinfo.put("rx_flag", "");                 // Cờ thuốc kê đơn
+        selinfo.put("trdn_flag", "");               // Cờ bán lẻ
+        selinfo.put("finl_trns_pric", 0.0);        // Đơn giá giao dịch cuối cùng
+        selinfo.put("rxno", "");                    // Số đơn thuốc
+        selinfo.put("rx_circ_flag", "");           // ngoài购Đơn thuốccờ
+        selinfo.put("rtal_docno", "");              // bán lẻđơndữ liệusố
+        selinfo.put("stoout_no", "");               // bán hàngXuất khođơndữ liệusố
+        selinfo.put("bchno", "");                   // Số lô
+        selinfo.put("drug_trac_codg", "");         // Mã truy xuất thuốc
+        selinfo.put("drug_prod_barc", "");         // Thuốcmã vạch
+        selinfo.put("shelf_posi", "");              // hàng架vị
+        selinfo.put("sel_retn_cnt", 0);             // Bán hàng/Số lượng trả hàng
+        selinfo.put("sel_retn_time", "");           // Bán hàng/Thời gian trả hàng
+        selinfo.put("sel_retn_opter_name", "");     // Bán hàng/Tên người thực hiện trả hàng
+        selinfo.put("memo", "");// Ghi chú
+        selinfo.put("MDTRT_SETL_TYPE", "");        // khám bệnhQuyết toánLoại
+        selinfo.put("drugtracinfo", "");            // Thông tin nút mã truy xuất
 
         JSONObject drugtracinfo = new JSONObject();
-        drugtracinfo.put("drug_trac_codg","");//药品追溯码
+        drugtracinfo.put("drug_trac_codg","");//Mã truy xuất thuốc
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("selinfo", selinfo);
@@ -527,7 +527,7 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品销售 3505A
+     * Bán hàng hóa 3505A
      *
      * @return
      */
@@ -535,48 +535,48 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     public JSONObject createSaleOrderList_3505A() {
         JSONObject selinfo = new JSONObject();
         JSONArray array = new JSONArray();
-        selinfo.put("med_list_codg", "");          // 医疗目录编码
-        selinfo.put("fixmedins_hilist_id", "");    // 定点医药机构目录编号
-        selinfo.put("fixmedins_hilist_name", "");  // 定点医药机构目录名称
-        selinfo.put("fixmedins_bchno", "");        // 定点医药机构批次流水号
-        selinfo.put("prsc_dr_cert_type", "");      // 开方医师证件类型
-        selinfo.put("prsc_dr_certno", "");         // 开方医师证件号码
-        selinfo.put("prsc_dr_name", "");            // 开方医师姓名
-        selinfo.put("phar_cert_type", "");         // 药师证件类型
-        selinfo.put("phar_certno", "");            // 药师证件号码
-        selinfo.put("phar_name", "");               // 药师姓名
-        selinfo.put("phar_prac_cert_no", "");      // 药师执业资格证号
-        selinfo.put("hi_feesetl_type", "");        // 医保费用结算类型
-        selinfo.put("setl_id", "");                 // 结算 ID
-        selinfo.put("mdtrt_sn", "");                // 就医流水号
-        selinfo.put("psn_no", "");                  // 人员编号
-        selinfo.put("psn_cert_type", "");          // 人员证件类型
-        selinfo.put("certno", "");                  // 证件号码
-        selinfo.put("psn_name", "");                // 人员姓名
-        selinfo.put("manu_lotnum", "");            // 生产批号
-        selinfo.put("manu_date", "");              // 生产日期
-        selinfo.put("expy_end", "");                // 有效期止
-        selinfo.put("rx_flag", "");                 // 处方药标志
-        selinfo.put("trdn_flag", "");               // 拆零标志
-        selinfo.put("finl_trns_pric", 0.0);        // 最终成交单价
-        selinfo.put("rxno", "");                    // 处方号
-        selinfo.put("rx_circ_flag", "");           // 外购处方标志
-        selinfo.put("rtal_docno", "");              // 零售单据号
-        selinfo.put("stoout_no", "");               // 销售出库单据号
-        selinfo.put("bchno", "");                   // 批次号
-        selinfo.put("drug_trac_codg", "");         // 药品追溯码
-        selinfo.put("drug_prod_barc", "");         // 药品条形码
-        selinfo.put("shelf_posi", "");              // 货架位
-        selinfo.put("sel_retn_cnt", 0);             // 销售/退货数量
-        selinfo.put("sel_retn_time", "");           // 销售/退货时间
-        selinfo.put("sel_retn_opter_name", "");     // 销售/退货经办人姓名
-        selinfo.put("memo", "");// 备注
-        selinfo.put("MDTRT_SETL_TYPE", "");        // 就诊结算类型
-        selinfo.put("drugtracinfo", "");            // 溯源码节点信息
+        selinfo.put("med_list_codg", "");          // Mã danh mục y tế
+        selinfo.put("fixmedins_hilist_id", "");    // Mã danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_hilist_name", "");  // Tên danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_bchno", "");        // Số thứ tự lô của cơ sở y tế được chỉ định
+        selinfo.put("prsc_dr_cert_type", "");      // Loại giấy tờ của bác sĩ kê đơn
+        selinfo.put("prsc_dr_certno", "");         // Số giấy tờ của bác sĩ kê đơn
+        selinfo.put("prsc_dr_name", "");            // Tên bác sĩ kê đơn
+        selinfo.put("phar_cert_type", "");         // Loại giấy tờ của dược sĩ
+        selinfo.put("phar_certno", "");            // Số giấy tờ của dược sĩ
+        selinfo.put("phar_name", "");               // Tên dược sĩ
+        selinfo.put("phar_prac_cert_no", "");      // Số chứng chỉ hành nghề của dược sĩ
+        selinfo.put("hi_feesetl_type", "");        // Loại quyết toán chi phí BHYT
+        selinfo.put("setl_id", "");                 // Quyết toán ID
+        selinfo.put("mdtrt_sn", "");                // Số thứ tự khám bệnh
+        selinfo.put("psn_no", "");                  // Mã nhân viên
+        selinfo.put("psn_cert_type", "");          // Loại giấy tờ nhân viên
+        selinfo.put("certno", "");                  // Số giấy tờ
+        selinfo.put("psn_name", "");                // Tên nhân viên
+        selinfo.put("manu_lotnum", "");            // Số lô sản xuất
+        selinfo.put("manu_date", "");              // Ngày sản xuất
+        selinfo.put("expy_end", "");                // Hết hạn đến
+        selinfo.put("rx_flag", "");                 // Cờ thuốc kê đơn
+        selinfo.put("trdn_flag", "");               // Cờ bán lẻ
+        selinfo.put("finl_trns_pric", 0.0);        // Đơn giá giao dịch cuối cùng
+        selinfo.put("rxno", "");                    // Số đơn thuốc
+        selinfo.put("rx_circ_flag", "");           // ngoài购Đơn thuốccờ
+        selinfo.put("rtal_docno", "");              // bán lẻđơndữ liệusố
+        selinfo.put("stoout_no", "");               // bán hàngXuất khođơndữ liệusố
+        selinfo.put("bchno", "");                   // Số lô
+        selinfo.put("drug_trac_codg", "");         // Mã truy xuất thuốc
+        selinfo.put("drug_prod_barc", "");         // Thuốcmã vạch
+        selinfo.put("shelf_posi", "");              // hàng架vị
+        selinfo.put("sel_retn_cnt", 0);             // Bán hàng/Số lượng trả hàng
+        selinfo.put("sel_retn_time", "");           // Bán hàng/Thời gian trả hàng
+        selinfo.put("sel_retn_opter_name", "");     // Bán hàng/Tên người thực hiện trả hàng
+        selinfo.put("memo", "");// Ghi chú
+        selinfo.put("MDTRT_SETL_TYPE", "");        // khám bệnhQuyết toánLoại
+        selinfo.put("drugtracinfo", "");            // Thông tin nút mã truy xuất
         array.add(selinfo);
 
         JSONObject drugtracinfo = new JSONObject();
-        drugtracinfo.put("drug_trac_codg","");//药品追溯码
+        drugtracinfo.put("drug_trac_codg","");//Mã truy xuất thuốc
         JSONArray array1 = new JSONArray();
         array1.add(drugtracinfo);
 
@@ -588,37 +588,37 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 销售退货 3506
+     * Trả hàng bán 3506
      *
      * @return
      */
     @Override
     public JSONObject createSaleReturnOrder_3506() {
         JSONObject selinfo = new JSONObject();
-        selinfo.put("med_list_codg", ""); // 医疗目录编码
-        selinfo.put("fixmedins_hilist_id", ""); // 定点医药机构目录编号
-        selinfo.put("fixmedins_hilist_name", ""); // 定点医药机构目录名称
-        selinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        selinfo.put("setl_id", ""); // 结算 ID
-        selinfo.put("psn_no", ""); // 人员编号
-        selinfo.put("psn_cert_type", ""); // 人员证件类型
-        selinfo.put("certno", ""); // 证件号码
-        selinfo.put("psn_name", ""); // 人员姓名
-        selinfo.put("manu_lotnum", ""); // 生产批号
-        selinfo.put("manu_date", ""); // 生产日期
-        selinfo.put("expy_end", ""); // 有效期止
-        selinfo.put("rx_flag", ""); // 处方药标志
-        selinfo.put("trdn_flag", ""); // 拆零标志
-        selinfo.put("finl_trns_pric", ""); // 最终成交单价
-        selinfo.put("sel_retn_cnt", ""); // 销售/退货数量
-        selinfo.put("sel_retn_time", ""); // 销售/退货时间
-        selinfo.put("sel_retn_opter_name", ""); // 销售/退货经办人姓名
-        selinfo.put("memo", ""); // 备注
-        selinfo.put("medins_prod_sel_no", ""); // 商品销售流水号
-        selinfo.put("mdtrt_sn", ""); // 就医流水号
-        selinfo.put("drugtracinfo", ""); // 溯源码节点信息
+        selinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        selinfo.put("fixmedins_hilist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_hilist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        selinfo.put("setl_id", ""); // Quyết toán ID
+        selinfo.put("psn_no", ""); // Mã nhân viên
+        selinfo.put("psn_cert_type", ""); // Loại giấy tờ nhân viên
+        selinfo.put("certno", ""); // Số giấy tờ
+        selinfo.put("psn_name", ""); // Tên nhân viên
+        selinfo.put("manu_lotnum", ""); // Số lô sản xuất
+        selinfo.put("manu_date", ""); // Ngày sản xuất
+        selinfo.put("expy_end", ""); // Hết hạn đến
+        selinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        selinfo.put("trdn_flag", ""); // Cờ bán lẻ
+        selinfo.put("finl_trns_pric", ""); // Đơn giá giao dịch cuối cùng
+        selinfo.put("sel_retn_cnt", ""); // Bán hàng/Số lượng trả hàng
+        selinfo.put("sel_retn_time", ""); // Bán hàng/Thời gian trả hàng
+        selinfo.put("sel_retn_opter_name", ""); // Bán hàng/Tên người thực hiện trả hàng
+        selinfo.put("memo", ""); // Ghi chú
+        selinfo.put("medins_prod_sel_no", ""); // Bán hàng hóasố thứ tự
+        selinfo.put("mdtrt_sn", ""); // Số thứ tự khám bệnh
+        selinfo.put("drugtracinfo", ""); // Thông tin nút mã truy xuất
         JSONObject drugtracinfo = new JSONObject();
-        drugtracinfo.put("drug_trac_codg","");//药品追溯码
+        drugtracinfo.put("drug_trac_codg","");//Mã truy xuất thuốc
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("selinfo", selinfo);
         jsonObject.put("drugtracinfo",drugtracinfo);
@@ -626,7 +626,7 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 销售退货 3506A
+     * Trả hàng bán 3506A
      *
      * @return
      */
@@ -634,31 +634,31 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     public JSONObject createSaleReturnOrderList_3506A() {
         JSONObject selinfo = new JSONObject();
         JSONArray array  = new JSONArray();
-        selinfo.put("med_list_codg", ""); // 医疗目录编码
-        selinfo.put("fixmedins_hilist_id", ""); // 定点医药机构目录编号
-        selinfo.put("fixmedins_hilist_name", ""); // 定点医药机构目录名称
-        selinfo.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        selinfo.put("setl_id", ""); // 结算 ID
-        selinfo.put("psn_no", ""); // 人员编号
-        selinfo.put("psn_cert_type", ""); // 人员证件类型
-        selinfo.put("certno", ""); // 证件号码
-        selinfo.put("psn_name", ""); // 人员姓名
-        selinfo.put("manu_lotnum", ""); // 生产批号
-        selinfo.put("manu_date", ""); // 生产日期
-        selinfo.put("expy_end", ""); // 有效期止
-        selinfo.put("rx_flag", ""); // 处方药标志
-        selinfo.put("trdn_flag", ""); // 拆零标志
-        selinfo.put("finl_trns_pric", ""); // 最终成交单价
-        selinfo.put("sel_retn_cnt", ""); // 销售/退货数量
-        selinfo.put("sel_retn_time", ""); // 销售/退货时间
-        selinfo.put("sel_retn_opter_name", ""); // 销售/退货经办人姓名
-        selinfo.put("memo", ""); // 备注
-        selinfo.put("medins_prod_sel_no", ""); // 商品销售流水号
-        selinfo.put("mdtrt_sn", ""); // 就医流水号
-        selinfo.put("drugtracinfo", ""); // 溯源码节点信息
+        selinfo.put("med_list_codg", ""); // Mã danh mục y tế
+        selinfo.put("fixmedins_hilist_id", ""); // Mã danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_hilist_name", ""); // Tên danh mục của cơ sở y tế được chỉ định
+        selinfo.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        selinfo.put("setl_id", ""); // Quyết toán ID
+        selinfo.put("psn_no", ""); // Mã nhân viên
+        selinfo.put("psn_cert_type", ""); // Loại giấy tờ nhân viên
+        selinfo.put("certno", ""); // Số giấy tờ
+        selinfo.put("psn_name", ""); // Tên nhân viên
+        selinfo.put("manu_lotnum", ""); // Số lô sản xuất
+        selinfo.put("manu_date", ""); // Ngày sản xuất
+        selinfo.put("expy_end", ""); // Hết hạn đến
+        selinfo.put("rx_flag", ""); // Cờ thuốc kê đơn
+        selinfo.put("trdn_flag", ""); // Cờ bán lẻ
+        selinfo.put("finl_trns_pric", ""); // Đơn giá giao dịch cuối cùng
+        selinfo.put("sel_retn_cnt", ""); // Bán hàng/Số lượng trả hàng
+        selinfo.put("sel_retn_time", ""); // Bán hàng/Thời gian trả hàng
+        selinfo.put("sel_retn_opter_name", ""); // Bán hàng/Tên người thực hiện trả hàng
+        selinfo.put("memo", ""); // Ghi chú
+        selinfo.put("medins_prod_sel_no", ""); // Bán hàng hóasố thứ tự
+        selinfo.put("mdtrt_sn", ""); // Số thứ tự khám bệnh
+        selinfo.put("drugtracinfo", ""); // Thông tin nút mã truy xuất
         array.add(selinfo);
         JSONObject drugtracinfo = new JSONObject();
-        drugtracinfo.put("drug_trac_codg","");//药品追溯码
+        drugtracinfo.put("drug_trac_codg","");//Mã truy xuất thuốc
         JSONArray array1 = new JSONArray();
         array1.add(drugtracinfo);
         JSONObject jsonObject = new JSONObject();
@@ -668,8 +668,8 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品信息删除 3507
-     * 通过此交易删除某一批次商品信息
+     * Xóa thông tin hàng hóa 3507
+     * Xóa thông tin một lô hàng hóa nào đó qua giao dịch này
      *
      * @return
      */
@@ -684,8 +684,8 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品信息删除 3507A
-     * 通过此交易删除某一批次商品信息
+     * Xóa thông tin hàng hóa 3507A
+     * Xóa thông tin một lô hàng hóa nào đó qua giao dịch này
      *
      * @return
      */
@@ -703,221 +703,221 @@ public class MdInventoryServiceImpl implements MdInventoryService {
     }
 
     /**
-     * 商品库存信息查询 3508
+     * hàng hóaTồn khoThông tinTruy vấn 3508
      *
      * @return
      */
     @Override
     public JSONObject getInventoryInfo_3508() {
         JSONObject data = new JSONObject();
-        data.put("fixmedins_code", ""); // 定点医药机构编号
-        data.put("medins_list_codg", ""); // 医药机构目录编码
-        data.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        data.put("begndate", ""); // 开始日期
-        data.put("enddate", ""); // 结束日期
-        data.put("medins_prod_inv_no", ""); // 定点医药机构商品库存流水号
-        data.put("med_list_codg", ""); // 医疗目录编码
-        data.put("medins_list_name", ""); // 医药机构目录名称
-        data.put("rx_flag", ""); // 处方药标志
-        data.put("list_sp_item_flag", ""); // 目录特项标志
-        data.put("trdn_flag", ""); // 拆零标志
-        data.put("invdate", ""); // 库存日期
-        data.put("manu_lotnum", ""); // 生产批号
-        data.put("manu_date", ""); // 生产日期
-        data.put("expy_end", ""); // 有效期止
-        data.put("memo", ""); // 备注
-        data.put("vali_flag", ""); // 有效标志
-        data.put("rid", ""); // 数据唯一记录号
-        data.put("crter_id", ""); // 创建人 ID
-        data.put("crter_name", ""); // 创建人姓名
-        data.put("crte_optins_no", ""); // 创建机构编号
-        data.put("opter_id", ""); // 经办人 ID
-        data.put("opter_name", ""); // 经办人姓名
-        data.put("optins_no", ""); // 经办机构编号
-        data.put("poolarea_no", ""); // 统筹区编号
+        data.put("fixmedins_code", ""); // Mã cơ sở y tế được chỉ định
+        data.put("medins_list_codg", ""); // Mã danh mục của cơ sở y tế
+        data.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        data.put("begndate", ""); // Ngày bắt đầu
+        data.put("enddate", ""); // Ngày kết thúc
+        data.put("medins_prod_inv_no", ""); // y dược được chỉ địnhCơ sởhàng hóaTồn khosố thứ tự
+        data.put("med_list_codg", ""); // Mã danh mục y tế
+        data.put("medins_list_name", ""); // Tên danh mục của cơ sở y tế
+        data.put("rx_flag", ""); // Cờ thuốc kê đơn
+        data.put("list_sp_item_flag", ""); // Cờ hạng mục đặc biệt trong danh mục
+        data.put("trdn_flag", ""); // Cờ bán lẻ
+        data.put("invdate", ""); // Tồn khoNgày
+        data.put("manu_lotnum", ""); // Số lô sản xuất
+        data.put("manu_date", ""); // Ngày sản xuất
+        data.put("expy_end", ""); // Hết hạn đến
+        data.put("memo", ""); // Ghi chú
+        data.put("vali_flag", ""); // Cờ hiệu lực
+        data.put("rid", ""); // Số bản ghi duy nhất của dữ liệu
+        data.put("crter_id", ""); // Người tạo ID
+        data.put("crter_name", ""); // Tên người tạo
+        data.put("crte_optins_no", ""); // Mã cơ sở tạo
+        data.put("opter_id", ""); // Người thực hiện ID
+        data.put("opter_name", ""); // Tên người thực hiện
+        data.put("optins_no", ""); // Mã cơ sở thực hiện
+        data.put("poolarea_no", ""); // Mã vùng điều phối
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", data);
         return mdRequestUtil.getMedicareData("3508", jsonObject);
     }
 
     /**
-     * 库存变更记录查询 3509
+     * Tồn khothay đổiBản ghiTruy vấn 3509
      *
      * @return
      */
     @Override
     public JSONObject getInventoryChangeRecords_3509() {
         JSONObject data = new JSONObject();
-        data.put("fixmedins_code", ""); // 定点医药机构编号
-        data.put("medins_list_codg", ""); // 医药机构目录编码
-        data.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        data.put("begndate", ""); // 开始日期
-        data.put("enddate", ""); // 结束日期
-        data.put("medins_prod_inv_chg_no", ""); // 定点医药机构商品库存变更流水号
-        data.put("med_list_codg", ""); // 医疗目录编码
-        data.put("inv_chg_type", ""); // 库存变更类型
-        data.put("medins_list_name", ""); // 医药机构目录名称
-        data.put("rx_flag", ""); // 处方药标志
-        data.put("list_sp_item_flag", ""); // 目录特项标志
-        data.put("trdn_flag", ""); // 拆零标志
-        data.put("inv_chg_time", ""); // 库存变更时间
-        data.put("inv_chg_opter_name", ""); // 库存变更经办人姓名
-        data.put("memo", ""); // 备注
-        data.put("vali_flag", ""); // 有效标志
-        data.put("rid", ""); // 数据唯一记录号
-        data.put("crter_id", ""); // 创建人 ID
-        data.put("crter_name", ""); // 创建人姓名
-        data.put("crte_optins_no", ""); // 创建机构编号
-        data.put("opter_id", ""); // 经办人 ID
-        data.put("opter_name", ""); // 经办人姓名
-        data.put("optins_no", ""); // 经办机构编号
-        data.put("poolarea_no", ""); // 统筹区编号
+        data.put("fixmedins_code", ""); // Mã cơ sở y tế được chỉ định
+        data.put("medins_list_codg", ""); // Mã danh mục của cơ sở y tế
+        data.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        data.put("begndate", ""); // Ngày bắt đầu
+        data.put("enddate", ""); // Ngày kết thúc
+        data.put("medins_prod_inv_chg_no", ""); // y dược được chỉ địnhCơ sởhàng hóaTồn khothay đổisố thứ tự
+        data.put("med_list_codg", ""); // Mã danh mục y tế
+        data.put("inv_chg_type", ""); // Loại thay đổi tồn kho
+        data.put("medins_list_name", ""); // Tên danh mục của cơ sở y tế
+        data.put("rx_flag", ""); // Cờ thuốc kê đơn
+        data.put("list_sp_item_flag", ""); // Cờ hạng mục đặc biệt trong danh mục
+        data.put("trdn_flag", ""); // Cờ bán lẻ
+        data.put("inv_chg_time", ""); // Thời gian thay đổi tồn kho
+        data.put("inv_chg_opter_name", ""); // Tên người thực hiện thay đổi tồn kho
+        data.put("memo", ""); // Ghi chú
+        data.put("vali_flag", ""); // Cờ hiệu lực
+        data.put("rid", ""); // Số bản ghi duy nhất của dữ liệu
+        data.put("crter_id", ""); // Người tạo ID
+        data.put("crter_name", ""); // Tên người tạo
+        data.put("crte_optins_no", ""); // Mã cơ sở tạo
+        data.put("opter_id", ""); // Người thực hiện ID
+        data.put("opter_name", ""); // Tên người thực hiện
+        data.put("optins_no", ""); // Mã cơ sở thực hiện
+        data.put("poolarea_no", ""); // Mã vùng điều phối
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", data);
         return mdRequestUtil.getMedicareData("3509", jsonObject);
     }
 
     /**
-     * 采购记录查询 3510
+     * Mua hàngBản ghiTruy vấn 3510
      *
      * @return
      */
     @Override
     public JSONObject getProcurementRecords_3510() {
         JSONObject data = new JSONObject();
-        data.put("fixmedins_code", ""); // 定点医药机构编号
-        data.put("medins_list_codg", ""); // 医药机构目录编码
-        data.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        data.put("begndate", ""); // 开始日期
-        data.put("enddate", ""); // 结束日期
-        data.put("medins_prod_purc_no", ""); // 定点医药机构商品采购流水号
-        data.put("med_list_codg", ""); // 医疗目录编码
-        data.put("medins_list_name", ""); // 医药机构目录名称
-        data.put("dynt_no", ""); // 随货单号
-        data.put("spler_name", ""); // 供货商名称
-        data.put("spler_pmtno", ""); // 供应商许可证号
-        data.put("manu_lotnum", ""); // 生产批号
-        data.put("prodentp_name", ""); // 生产企业名称
-        data.put("aprvno", ""); // 批准文号
-        data.put("manu_date", ""); // 生产日期
-        data.put("expy_end", ""); // 有效期止
-        data.put("purc_invo_codg", ""); // 采购发票编码
-        data.put("purc_invo_no", ""); // 采购发票号
-        data.put("rx_flag", ""); // 处方药标志
-        data.put("list_sp_item_flag", ""); // 目录特项标志
-        data.put("purc_retn_stoin_time", ""); // 采购/退货入库时间
-        data.put("purc_retn_opter_name", ""); // 采购/退货经办人姓名
-        data.put("prod_geay_flag", ""); // 商品赠送标志
-        data.put("prod_retn_flag", ""); // 商品退货标志
-        data.put("memo", ""); // 备注
-        data.put("vali_flag", ""); // 有效标志
-        data.put("rid", ""); // 数据唯一记录号
-        data.put("crter_id", ""); // 创建人 ID
-        data.put("crter_name", ""); // 创建人姓名
-        data.put("crte_optins_no", ""); // 创建机构编号
-        data.put("opter_id", ""); // 经办人 ID
-        data.put("opter_name", ""); // 经办人姓名
-        data.put("optins_no", ""); // 经办机构编号
-        data.put("poolarea_no", ""); // 统筹区编号
+        data.put("fixmedins_code", ""); // Mã cơ sở y tế được chỉ định
+        data.put("medins_list_codg", ""); // Mã danh mục của cơ sở y tế
+        data.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        data.put("begndate", ""); // Ngày bắt đầu
+        data.put("enddate", ""); // Ngày kết thúc
+        data.put("medins_prod_purc_no", ""); // y dược được chỉ địnhCơ sởMua hàng hóasố thứ tự
+        data.put("med_list_codg", ""); // Mã danh mục y tế
+        data.put("medins_list_name", ""); // Tên danh mục của cơ sở y tế
+        data.put("dynt_no", ""); // Số phiếu kèm hàng
+        data.put("spler_name", ""); // 供hàng商Tên
+        data.put("spler_pmtno", ""); // Số giấy phép nhà cung cấp
+        data.put("manu_lotnum", ""); // Số lô sản xuất
+        data.put("prodentp_name", ""); // sinhsảndoanh nghiệpnghiệp vụTên
+        data.put("aprvno", ""); // Số phê duyệt
+        data.put("manu_date", ""); // Ngày sản xuất
+        data.put("expy_end", ""); // Hết hạn đến
+        data.put("purc_invo_codg", ""); // Mã hóa đơn mua hàng
+        data.put("purc_invo_no", ""); // Số hóa đơn mua hàng
+        data.put("rx_flag", ""); // Cờ thuốc kê đơn
+        data.put("list_sp_item_flag", ""); // Cờ hạng mục đặc biệt trong danh mục
+        data.put("purc_retn_stoin_time", ""); // Mua hàng/Thời gian trả hàng nhập kho
+        data.put("purc_retn_opter_name", ""); // Mua hàng/Tên người thực hiện trả hàng
+        data.put("prod_geay_flag", ""); // Cờ tặng kèm hàng hóa
+        data.put("prod_retn_flag", ""); // hàng hóatrảhàngcờ
+        data.put("memo", ""); // Ghi chú
+        data.put("vali_flag", ""); // Cờ hiệu lực
+        data.put("rid", ""); // Số bản ghi duy nhất của dữ liệu
+        data.put("crter_id", ""); // Người tạo ID
+        data.put("crter_name", ""); // Tên người tạo
+        data.put("crte_optins_no", ""); // Mã cơ sở tạo
+        data.put("opter_id", ""); // Người thực hiện ID
+        data.put("opter_name", ""); // Tên người thực hiện
+        data.put("optins_no", ""); // Mã cơ sở thực hiện
+        data.put("poolarea_no", ""); // Mã vùng điều phối
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", data);
         return mdRequestUtil.getMedicareData("3510", jsonObject);
     }
 
     /**
-     * 销售记录查询 3511
+     * bán hàngBản ghiTruy vấn 3511
      *
      * @return
      */
     @Override
     public JSONObject getSalesRecords_3511() {
         JSONObject data = new JSONObject();
-        data.put("fixmedins_code", ""); // 定点医药机构编号
-        data.put("medins_list_cod", ""); // 医药机构目录编码
-        data.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        data.put("begndate", ""); // 开始日期
-        data.put("enddate", ""); // 结束日期
-        data.put("medins_prod_sel_no", ""); // 定点医药机构商品销售流水号
-        data.put("med_list_codg", ""); // 医疗目录编码
-        data.put("medins_list_name", ""); // 医药机构目录名称
-        data.put("prsc_dr_cert_type", ""); // 开单医师证件类型
-        data.put("prsc_dr_certno", ""); // 开单医师证件号码
-        data.put("bilg_dr_name", ""); // 开单医师姓名
-        data.put("phar_cert_type", ""); // 药师证件类型
-        data.put("phar_certno", ""); // 药师证件号码
-        data.put("phar_name", ""); // 药师姓名
-        data.put("phar_prac_cert_no", ""); // 药师执业资格证号
-        data.put("hi_feesetl_type", ""); // 医保费用结算类型
-        data.put("setl_id", ""); // 结算 ID
-        data.put("psn_no", ""); // 人员编号
-        data.put("psn_cert_type", ""); // 人员证件类型
-        data.put("certno", ""); // 证件号码
-        data.put("psn_name", ""); // 人员姓名
-        data.put("manu_lotnum", ""); // 生产批号
-        data.put("manu_date", ""); // 生产日期
-        data.put("expy_end", ""); // 有效期止
-        data.put("elec_supn_codg", ""); // 电子监管编码
-        data.put("rx_flag", ""); // 处方药标志
-        data.put("list_sp_item_flag", ""); // 目录特项标志
-        data.put("trdn_flag", ""); // 拆零标志
-        data.put("sel_retn_time", ""); // 销售/退货时间
-        data.put("sel_retn_opter_name", ""); // 销售/退货经办人姓名
-        data.put("memo", ""); // 备注
-        data.put("vali_flag", ""); // 有效标志
-        data.put("rid", ""); // 数据唯一记录号
-        data.put("crter_id", ""); // 创建人 ID
-        data.put("crter_name", ""); // 创建人姓名
-        data.put("crte_optins_no", ""); // 创建机构编号
-        data.put("opter_id", ""); // 经办人 ID
-        data.put("opter_name", ""); // 经办人姓名
-        data.put("optins_no", ""); // 经办机构编号
-        data.put("poolarea_no", ""); // 统筹区编号
+        data.put("fixmedins_code", ""); // Mã cơ sở y tế được chỉ định
+        data.put("medins_list_cod", ""); // Mã danh mục của cơ sở y tế
+        data.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        data.put("begndate", ""); // Ngày bắt đầu
+        data.put("enddate", ""); // Ngày kết thúc
+        data.put("medins_prod_sel_no", ""); // y dược được chỉ địnhCơ sởBán hàng hóasố thứ tự
+        data.put("med_list_codg", ""); // Mã danh mục y tế
+        data.put("medins_list_name", ""); // Tên danh mục của cơ sở y tế
+        data.put("prsc_dr_cert_type", ""); // lập đơnBác sĩLoại giấy tờ
+        data.put("prsc_dr_certno", ""); // lập đơnBác sĩgiấy tờsố
+        data.put("bilg_dr_name", ""); // lập đơnBác sĩTên
+        data.put("phar_cert_type", ""); // Loại giấy tờ của dược sĩ
+        data.put("phar_certno", ""); // Số giấy tờ của dược sĩ
+        data.put("phar_name", ""); // Tên dược sĩ
+        data.put("phar_prac_cert_no", ""); // Số chứng chỉ hành nghề của dược sĩ
+        data.put("hi_feesetl_type", ""); // Loại quyết toán chi phí BHYT
+        data.put("setl_id", ""); // Quyết toán ID
+        data.put("psn_no", ""); // Mã nhân viên
+        data.put("psn_cert_type", ""); // Loại giấy tờ nhân viên
+        data.put("certno", ""); // Số giấy tờ
+        data.put("psn_name", ""); // Tên nhân viên
+        data.put("manu_lotnum", ""); // Số lô sản xuất
+        data.put("manu_date", ""); // Ngày sản xuất
+        data.put("expy_end", ""); // Hết hạn đến
+        data.put("elec_supn_codg", ""); // điện tửgiám sátquản lýMã
+        data.put("rx_flag", ""); // Cờ thuốc kê đơn
+        data.put("list_sp_item_flag", ""); // Cờ hạng mục đặc biệt trong danh mục
+        data.put("trdn_flag", ""); // Cờ bán lẻ
+        data.put("sel_retn_time", ""); // Bán hàng/Thời gian trả hàng
+        data.put("sel_retn_opter_name", ""); // Bán hàng/Tên người thực hiện trả hàng
+        data.put("memo", ""); // Ghi chú
+        data.put("vali_flag", ""); // Cờ hiệu lực
+        data.put("rid", ""); // Số bản ghi duy nhất của dữ liệu
+        data.put("crter_id", ""); // Người tạo ID
+        data.put("crter_name", ""); // Tên người tạo
+        data.put("crte_optins_no", ""); // Mã cơ sở tạo
+        data.put("opter_id", ""); // Người thực hiện ID
+        data.put("opter_name", ""); // Tên người thực hiện
+        data.put("optins_no", ""); // Mã cơ sở thực hiện
+        data.put("poolarea_no", ""); // Mã vùng điều phối
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", data);
         return mdRequestUtil.getMedicareData("3511", jsonObject);
     }
 
     /**
-     * 入库药品追溯信息查询   3512
+     * nhập khoThuốctruy xuấtThông tinTruy vấn   3512
      *
      * @return
      */
     @Override
     public JSONObject getInboundDetails_3512() {
         JSONObject data = new JSONObject();
-        data.put("fixmedins_code", ""); // 定点医药机构编号
-        data.put("medins_list_codg", ""); // 医药机构目录编码
-        data.put("fixmedins_bchno", ""); // 定点医药机构批次流水号
-        data.put("begndate", ""); // 开始日期，格式: yyyy-MM-dd
-        data.put("enddate", ""); // 结束日期，格式: yyyy-MM-dd
-        data.put("med_list_codg", ""); // 医疗目录编码
-        data.put("drug_trac_codg", ""); // 药品追溯码
+        data.put("fixmedins_code", ""); // Mã cơ sở y tế được chỉ định
+        data.put("medins_list_codg", ""); // Mã danh mục của cơ sở y tế
+        data.put("fixmedins_bchno", ""); // Số thứ tự lô của cơ sở y tế được chỉ định
+        data.put("begndate", ""); // Ngày bắt đầu, Định dạng: yyyy-MM-dd
+        data.put("enddate", ""); // Ngày kết thúc, Định dạng: yyyy-MM-dd
+        data.put("med_list_codg", ""); // Mã danh mục y tế
+        data.put("drug_trac_codg", ""); // Mã truy xuất thuốc
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", data);
         return mdRequestUtil.getMedicareData("3512", jsonObject);
     }
 
     /**
-     * 销售药品追溯信息查询   3513
+     * bán hàngThuốctruy xuấtThông tinTruy vấn   3513
      *
      * @return
      */
     @Override
     public JSONObject getSalesDetails_3513() {
         JSONObject data = new JSONObject();
-        data.put("fixmedins_code", "");  // 定点医药机构编号 (必填)
-        data.put("medins_list_codg", ""); // 医药机构目录编码 (选填)
-        data.put("fixmedins_bchno", "");  // 定点医药机构批次流水号 (选填)
-        data.put("begndate", "");          // 开始日期 (选填)
-        data.put("enddate", "");            // 结束日期 (选填)
-        data.put("med_list_codg", "");     // 医疗目录编码 (选填)
-        data.put("mdtrt_id", "");           // 就诊 ID (选填)
-        data.put("psn_no", "");             // 人员编号 (选填)
-        data.put("psn_cert_type", "");      // 人员证件类型 (必填)
-        data.put("certno", "");             // 证件号码 (选填)
-        data.put("psn_name", "");           // 人员姓名 (选填)
-        data.put("drug_trac_codg", "");     // 药品追溯码 (选填)
-        data.put("sel_retn_opter_name", ""); // 销售/退货经办人姓名 (选填)
+        data.put("fixmedins_code", "");  // Mã cơ sở y tế được chỉ định (Bắt buộc)
+        data.put("medins_list_codg", ""); // Mã danh mục của cơ sở y tế (Tùy chọn điền)
+        data.put("fixmedins_bchno", "");  // Số thứ tự lô của cơ sở y tế được chỉ định (Tùy chọn điền)
+        data.put("begndate", "");          // Ngày bắt đầu (Tùy chọn điền)
+        data.put("enddate", "");            // Ngày kết thúc (Tùy chọn điền)
+        data.put("med_list_codg", "");     // Mã danh mục y tế (Tùy chọn điền)
+        data.put("mdtrt_id", "");           // Khám bệnh ID (Tùy chọn điền)
+        data.put("psn_no", "");             // Mã nhân viên (Tùy chọn điền)
+        data.put("psn_cert_type", "");      // Loại giấy tờ nhân viên (Bắt buộc)
+        data.put("certno", "");             // Số giấy tờ (Tùy chọn điền)
+        data.put("psn_name", "");           // Tên nhân viên (Tùy chọn điền)
+        data.put("drug_trac_codg", "");     // Mã truy xuất thuốc (Tùy chọn điền)
+        data.put("sel_retn_opter_name", ""); // Bán hàng/Tên người thực hiện trả hàng (Tùy chọn điền)
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", data);
         return mdRequestUtil.getMedicareData("3513", jsonObject);

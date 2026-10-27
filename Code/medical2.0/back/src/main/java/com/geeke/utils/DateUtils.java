@@ -8,7 +8,7 @@ import java.util.Date;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 /**
- * 日期工具类, 继承org.apache.commons.lang.time.DateUtils类
+ * Lớp tiện ích ngày tháng, kế thừaorg.apache.commons.lang.time.DateUtilsLớp
  * @author
  * @version 2014-4-15
  */
@@ -20,21 +20,21 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		"yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
 
 	/**
-	 * 得到当前日期字符串 格式（yyyy-MM-dd）
+	 * Lấy chuỗi ngày hiện tại Định dạng(yyyy-MM-dd)
 	 */
 	public static String getDate() {
 		return getDate("yyyy-MM-dd");
 	}
 	
 	/**
-	 * 得到当前日期字符串 格式（yyyy-MM-dd） pattern可以为："yyyy-MM-dd" "HH:mm:ss" "E"
+	 * Lấy chuỗi ngày hiện tại Định dạng(yyyy-MM-dd) patternCó thể là : "yyyy-MM-dd" "HH:mm:ss" "E"
 	 */
 	public static String getDate(String pattern) {
 		return DateFormatUtils.format(new Date(), pattern);
 	}
 	
 	/**
-	 * 得到日期字符串 默认格式（yyyy-MM-dd） pattern可以为："yyyy-MM-dd" "HH:mm:ss" "E"
+	 * đượcĐếnNgàychuỗi Mặc địnhđịnh dạng(yyyy-MM-dd) patternCó thể là : "yyyy-MM-dd" "HH:mm:ss" "E"
 	 */
 	public static String formatDate(Date date, Object... pattern) {
 		String formatDate = null;
@@ -47,56 +47,56 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 得到日期时间字符串，转换格式（yyyy-MM-dd HH:mm:ss）
+	 * đượcĐếnNgàyThời gianchuỗi, chuyển đổiđịnh dạng(yyyy-MM-dd HH:mm:ss)
 	 */
 	public static String formatDateTime(Date date) {
 		return formatDate(date, "yyyy-MM-dd HH:mm:ss");
 	}
 
 	/**
-	 * 得到当前时间字符串 格式（HH:mm:ss）
+	 * đượcĐếnHiện tạiThời gianchuỗi Định dạng(HH:mm:ss)
 	 */
 	public static String getTime() {
 		return formatDate(new Date(), "HH:mm:ss");
 	}
 
 	/**
-	 * 得到当前日期和时间字符串 格式（yyyy-MM-dd HH:mm:ss）
+	 * đượcĐếnHiện tạiNgày và Thời gianchuỗi Định dạng(yyyy-MM-dd HH:mm:ss)
 	 */
 	public static String getDateTime() {
 		return formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
 	}
 
 	/**
-	 * 得到当前年份字符串 格式（yyyy）
+	 * đượcĐếnHiện tạiNămphầnchuỗi Định dạng(yyyy)
 	 */
 	public static String getYear() {
 		return formatDate(new Date(), "yyyy");
 	}
 
 	/**
-	 * 得到当前月份字符串 格式（MM）
+	 * đượcĐếnHiện tạiThángphầnchuỗi Định dạng(MM)
 	 */
 	public static String getMonth() {
 		return formatDate(new Date(), "MM");
 	}
 
 	/**
-	 * 得到当天字符串 格式（dd）
+	 * đượcĐếnkhi ngàychuỗi Định dạng(dd)
 	 */
 	public static String getDay() {
 		return formatDate(new Date(), "dd");
 	}
 
 	/**
-	 * 得到当前星期字符串 格式（E）星期几
+	 * đượcĐếnHiện tạithứchuỗi Định dạng(E)thứ几
 	 */
 	public static String getWeek() {
 		return formatDate(new Date(), "E");
 	}
 	
 	/**
-	 * 日期型字符串转化为日期 格式
+	 * NgàyChuyển đổi chuỗi kiểu là Ngày Định dạng
 	 * { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", 
 	 *   "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm",
 	 *   "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm" }
@@ -113,7 +113,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取过去的天数
+	 * Lấytrước đây của  ngàysố
 	 * @param date
 	 * @return
 	 */
@@ -123,7 +123,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取过去的小时
+	 * Lấytrước đây của nhỏ giờ
 	 * @param date
 	 * @return
 	 */
@@ -133,7 +133,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 获取过去的分钟
+	 * Lấytrước đây của  phútphút
 	 * @param date
 	 * @return
 	 */
@@ -143,7 +143,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 转换为时间（天,时:分:秒.毫秒）
+	 * Chuyển đổi thành thời gian( ngày, giờ: phút:giây.Mili giây)
 	 * @param timeMillis
 	 * @return
 	 */
@@ -157,7 +157,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
 	/**
-	 * 判断两个日期是否是同年
+	 * Kiểm tra hai ngày có cùng năm không
 	 * @param before
 	 * @param after
 	 * @return
@@ -174,7 +174,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 判断两个日期是否是同年
+	 * Kiểm tra hai ngày có cùng năm không
 	 * @param before
 	 * @param after
 	 * @return
@@ -184,7 +184,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 判断两个日期是否是同年同月
+	 * Kiểm tra hai ngày có cùng năm khôngcùngTháng
 	 * @param before
 	 * @param after
 	 * @return
@@ -202,7 +202,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 判断两个日期是否是同月
+	 * Kiểm trahaiCáiNgàyCó hay không có cùngTháng
 	 * @param before
 	 * @param after
 	 * @return
@@ -212,7 +212,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取两个日期之间的天数
+	 * Lấy số ngày giữa hai ngày
 	 * 
 	 * @param before
 	 * @param after
@@ -223,7 +223,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取两个日期之间的天数
+	 * Lấy số ngày giữa hai ngày
 	 *
 	 * @param before
 	 * @param after
@@ -234,7 +234,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取两个日期间的毫秒数
+	 * Lấy số mili giây giữa hai ngày
 	 * @param before
 	 * @param after
 	 * @return
@@ -246,7 +246,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取两个日期之间的月数
+	 * Lấy số tháng giữa hai ngày
 	 *
 	 * @param before
 	 * @param after
@@ -254,41 +254,41 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 */
 	public static double getDistanceMonths(Date before, Date after) {
         double month = 0;
-		// 获取开始时间当月的最后一天
+		// LấyThời gian bắt đầukhiTháng của cuối cùng một ngày
 		Date endDay = getEndDayOfMonth(before);
-		// 获取结束时间当月的第一天
+		// LấyThời gian kết thúckhiTháng của Dòng một ngày
 		Date startDay = getStartDayOfMonth(after);
-		// 开始日期和结束日期在同一月内
+		// Ngày bắt đầu và Ngày kết thúctạicùngmộtThángtrong
 		if (isSameMonth(before, after)) {
             month = getDistanceSameMonth(before, after);
 			return month;
 		} else {
-			// 获取开始时间----开始时间最后一天之间的月数
+			// LấyThời gian bắt đầu----Thời gian bắt đầucuối cùng một ngàygiữa của Số tháng
 			double startMonth = getDistanceSameMonth(before, endDay);
 
-			// 获取结束时间----结束时间第一天之间的月数
+			// LấyThời gian kết thúc----Thời gian kết thúcDòng một ngàygiữa của Số tháng
 			double endMonth = getDistanceSameMonth(startDay, after);
 
-			// 获取开始时间当月第一天,月数 + 1（整月计算，开始时间）
+			// LấyThời gian bắt đầukhiThángDòng một ngày,Số tháng + 1(nguyênThángTính, Thời gian bắt đầu)
 			Date startDayOfMonth = getStartDayOfMonth(before);
 			Calendar startDayMonth = Calendar.getInstance();
 			startDayMonth.setTime(startDayOfMonth);
 			startDayMonth.add(Calendar.MONTH, 1);
 
-			// 获取结束时间当月最后一天，月数 - 1（整月计算，结束时间）
+			// LấyThời gian kết thúckhiThángcuối cùng một ngày, Số tháng - 1(nguyênThángTính, Thời gian kết thúc)
 			Date endDayOfMonth = getEndDayOfMonth(after);
 			Calendar endDayMonth = Calendar.getInstance();
 			endDayMonth.setTime(endDayOfMonth);
 			endDayMonth.add(Calendar.MONTH, -1);
 
-			// 获取两个日期间的月数（取整）
+			// LấyhaiCáiNgàygiữa của Số tháng(Làm tròn)
 			int distanceMonth = getDistance(startDayMonth.getTime(), endDayMonth.getTime(), Calendar.MONTH);
 			month = startMonth + endMonth + distanceMonth;
 			return month;
 		}
 	}
 	/**
-	 * 获取两个日期之间的月数
+	 * Lấy số tháng giữa hai ngày
 	 *
 	 * @param before
 	 * @param after
@@ -299,7 +299,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取两个日期之间的年数
+	 * Lấy số năm giữa hai ngày
 	 * 
 	 * @param before
 	 * @param after
@@ -307,37 +307,37 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	 */
 	public static double getDistanceYears(Date before, Date after) {
 		double year = 0;
-		// 获取开始时间当年的最后一天
+		// LấyThời gian bắt đầukhiNăm của cuối cùng một ngày
 		Date endDay = getEndDayOfYear(before);
-		// 获取结束时间当年的第一天
+		// LấyThời gian kết thúckhiNăm của Dòng một ngày
 		Date startDay = getStartDayOfYear(after);
-		// 开始日期和结束日期在同一年内
+		// Ngày bắt đầu và Ngày kết thúctạicùngmộtNămtrong
 		if (isSameYear(before, after)) {
 			year = getDistanceSameYear(before, after);
 			return year;
-		} else { // 跨年计算
-			// 获取开始时间----开始时间最后一天之间的年数
+		} else { // vượtNămTính
+			// LấyThời gian bắt đầu----Thời gian bắt đầucuối cùng một ngàygiữa của Nămsố
 			double startYear = getDistanceSameYear(before, endDay);
 
-			// 获取结束时间----结束时间第一天之间的年数
+			// LấyThời gian kết thúc----Thời gian kết thúcDòng một ngàygiữa của Nămsố
 			double endYear = getDistanceSameYear(startDay, after);
 
-			// 获取开始时间第一天,年数 + 1（整年计算，开始时间）
+			// LấyThời gian bắt đầuDòng một ngày,Nămsố + 1(nguyênNămTính, Thời gian bắt đầu)
 			Date startDayOfYear = getStartDayOfYear(before);
 			Calendar startDayYear = Calendar.getInstance();
 			startDayYear.setTime(startDayOfYear);
 
-			// 获取结束时间最后一天，年数 - 1（整年计算，结束时间）
+			// LấyThời gian kết thúccuối cùng một ngày, Nămsố - 1(nguyênNămTính, Thời gian kết thúc)
 			Date endDayOfYear = getEndDayOfYear(after);
 			Calendar endDayYear = Calendar.getInstance();
 			endDayYear.setTime(endDayOfYear);
 
 			int distanceYear = 0;
-			// 两个日期为相邻年，不需要中间跨年计算
+			// haiCáiNgày là tương邻Năm, khôngCần trong giữavượtNămTính
 			if (endDayYear.get(Calendar.YEAR) - startDayYear.get(Calendar.YEAR) > 1) {
 				startDayYear.add(Calendar.YEAR, 1);
 				endDayYear.add(Calendar.YEAR, -1);
-				// 获取两个日期间的年数数（取整）
+				// LấyhaiCáiNgàygiữa của Nămsốsố(Làm tròn)
 				distanceYear = getDistance(startDayYear.getTime(), endDayYear.getTime(), Calendar.YEAR);
 			}
 			year = startYear + endYear + distanceYear;
@@ -346,7 +346,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取两个日期之间的年数
+	 * Lấy số năm giữa hai ngày
 	 *
 	 * @param before
 	 * @param after
@@ -357,37 +357,37 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取同年中两个日期间的年数
+	 * LấycùngNăm trong haiCáiNgàygiữa của Nămsố
 	 * @param before
 	 * @param after
 	 * @return
 	 */
 	public static double getDistanceSameYear(Date before, Date after) {
-		// 获取两个日期间的毫秒数
+		// Lấy số mili giây giữa hai ngày
 		long millis = getDistanceMillis(before, after);
-		// 获取当年的年天数
+		// LấykhiNăm của Năm ngàysố
 		double daysYear = getDaysOfTheYear(before);
-		// 结束时间---》结束时间第一天年数
+		// Thời gian kết thúc---》Thời gian kết thúcDòng một ngàyNămsố
 		return (double)millis / MILLIS_PER_DAY / daysYear;
 	}
 
 	/**
-	 * 获取同月中两个日期间的月数
+	 * LấycùngTháng trong haiCáiNgàygiữa của Số tháng
 	 * @param before
 	 * @param after
 	 * @return
 	 */
 	public static double getDistanceSameMonth(Date before, Date after) {
-		// 获取两个日期间的毫秒数
+		// Lấy số mili giây giữa hai ngày
 		long millis = getDistanceMillis(before, after);
-		// 获取当月的月天数
+		// LấykhiTháng của Tháng ngàysố
 		double daysMonth = getDaysOfTheMonth(before);
-		// 结束时间---》结束时间当月第一天月数
+		// Thời gian kết thúc---》Thời gian kết thúckhiThángDòng một ngàySố tháng
 		return (double)millis / MILLIS_PER_DAY / daysMonth;
 	}
 
 	/**
-	 * 获取日期的凌晨日期和时间
+	 * Lấy ngày và giờ rạng sáng của ngày
 	 * 
 	 * @param date
 	 * @return
@@ -400,7 +400,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期的凌晨日期和时间
+	 * Lấy ngày và giờ rạng sáng của ngày
 	 *
 	 * @param calendar
 	 * @return
@@ -410,7 +410,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 获取日期当天的午夜日期和时间
+	 * Lấy ngày và giờ nửa đêm trong ngày của ngày
 	 *
 	 * @param date
 	 * @return
@@ -423,7 +423,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期当天的午夜日期和时间
+	 * Lấy ngày và giờ nửa đêm trong ngày của ngày
 	 *
 	 * @param calendar
 	 * @return
@@ -433,7 +433,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 获取日期当月的起始日期和时间
+	 * Lấy ngày và giờ bắt đầu trong tháng của ngày
 	 * 
 	 * @param date
 	 * @return
@@ -447,7 +447,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期当月的起始日期和时间
+	 * Lấy ngày và giờ bắt đầu trong tháng của ngày
 	 *
 	 * @param calendar
 	 * @return
@@ -457,7 +457,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期当月的结束日期和时间
+	 * Lấy ngày và giờ kết thúc trong tháng của ngày
 	 * 
 	 * @param date
 	 * @return
@@ -472,7 +472,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期当月的结束日期和时间
+	 * Lấy ngày và giờ kết thúc trong tháng của ngày
 	 *
 	 * @param calendar
 	 * @return
@@ -482,7 +482,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期下个月的开始日期和时间
+	 * Lấy ngày và giờ bắt đầu của tháng sau của ngày
 	 *
 	 * @param date
 	 * @return
@@ -497,7 +497,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期下个月的开始日期和时间
+	 * Lấy ngày và giờ bắt đầu của tháng sau của ngày
 	 *
 	 * @param calendar
 	 * @return
@@ -507,7 +507,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期上个月的结束日期和时间
+	 * Lấy ngày và giờ kết thúc của tháng trước của ngày
 	 *
 	 * @param date
 	 * @return
@@ -523,7 +523,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期上个月的结束日期和时间
+	 * Lấy ngày và giờ kết thúc của tháng trước của ngày
 	 *
 	 * @param calendar
 	 * @return
@@ -533,7 +533,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 判断当前日期是否为当月第一天
+	 * Kiểm tra ngày hiện tại có phải ngày đầu tháng không
 	 *
 	 * @param date
 	 * @return
@@ -545,7 +545,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 判断当前日期是否为当月第一天
+	 * Kiểm tra ngày hiện tại có phải ngày đầu tháng không
 	 *
 	 * @param calendar
 	 * @return
@@ -555,7 +555,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 判断当前日期是否为当月最后一天
+	 * Kiểm tra ngày hiện tại có phải ngày cuối tháng không
 	 *
 	 * @param date
 	 * @return
@@ -567,7 +567,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 判断当前日期是否为当月最后一天
+	 * Kiểm tra ngày hiện tại có phải ngày cuối tháng không
 	 *
 	 * @param calendar
 	 * @return
@@ -577,21 +577,21 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期当年的起始日期和时间
+	 * Lấy ngày và giờ bắt đầu trong năm của ngày
 	 * @param date
 	 * @return
 	 */
 	public static Date getStartDayOfYear(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		// 注意月份要减1
+		// chú ýThángphần cần trừ1
 		calendar.set(calendar.get(Calendar.YEAR),0,1);
 		setMinTimeOfDay(calendar);
 		return calendar.getTime();
 	}
 
 	/**
-	 * 获取日期当年的起始日期和时间
+	 * Lấy ngày và giờ bắt đầu trong năm của ngày
 	 * @param calendar
 	 * @return
 	 */
@@ -600,7 +600,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 获取日期当年的结束日期和时间
+	 * Lấy ngày và giờ kết thúc trong năm của ngày
 	 * 
 	 * @param date
 	 * @return
@@ -608,14 +608,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	public static Date getEndDayOfYear(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		// 注意月份要减1
+		// chú ýThángphần cần trừ1
 		calendar.set(calendar.get(Calendar.YEAR),11,31);
 		setMaxTimeOfDay(calendar);
 		return calendar.getTime();
 	}
 
 	/**
-	 * 获取日期当年的结束日期和时间
+	 * Lấy ngày và giờ kết thúc trong năm của ngày
 	 *
 	 * @param calendar
 	 * @return
@@ -625,7 +625,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 获取日期所在全年的天数
+	 * Lấy số ngày trong cả năm chứa ngày đó
 	 * 
 	 * @param date
 	 * @return
@@ -637,7 +637,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期所在全年的天数
+	 * Lấy số ngày trong cả năm chứa ngày đó
 	 *
 	 * @param calendar
 	 * @return
@@ -647,7 +647,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
-	 * 获取日期所在全月的天数
+	 * Lấy số ngày trong cả tháng chứa ngày đó
 	 * 
 	 * @param date
 	 * @return
@@ -659,7 +659,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取日期所在全月的天数
+	 * Lấy số ngày trong cả tháng chứa ngày đó
 	 *
 	 * @param calendar
 	 * @return
@@ -669,10 +669,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取两个日期间的年数、月数（取整）
+	 * LấyhaiCáiNgàygiữa của Nămsố, Số tháng(Làm tròn)
 	 * @param before
 	 * @param after
-	 * @param dateField (YEAR：1，MONTH：2)
+	 * @param dateField (YEAR: 1, MONTH: 2)
 	 * @return
 	 */
 	public static int getDistance(Date before, Date after, int dateField) {
@@ -681,13 +681,13 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		Calendar calAfter = Calendar.getInstance();
 		calAfter.setTime(after);
 
-		// dateField (1：（计算两日期间的年数），2：（计算两日期间的月数）)
+		// dateField (1: (TínhhaiNgàygiữa của Nămsố), 2: (TínhhaiNgàygiữa của Số tháng))
 		if (dateField == Calendar.YEAR) {
-			// 结束日期：当年最后一天，需+1进行计算
+			// Ngày kết thúc: khiNămcuối cùng một ngày, cần+1tiến hành dòngTính
 			return calAfter.get(Calendar.YEAR) - calBefore.get(Calendar.YEAR) + 1;
 		} else if (dateField == Calendar.MONTH) {
 			int beforeMonth = calBefore.get(Calendar.YEAR) * 12 + calBefore.get(Calendar.MONTH);
-			// 结束日期：当月最后一天，需+1进行计算
+			// Ngày kết thúc: khiThángcuối cùng một ngày, cần+1tiến hành dòngTính
 			int afterMonth = calAfter.get(Calendar.YEAR) * 12 + calAfter.get(Calendar.MONTH) + 1;
 
 			return afterMonth - beforeMonth;
@@ -696,7 +696,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return 0;
 	}
 	/**
-	 * 返回小日期
+	 * Trả vềnhỏNgày
 	 * @param date1
 	 * @param date2
 	 * @return
@@ -706,7 +706,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 返回大日期
+	 * Trả vềlớnNgày
 	 * @param date1
 	 * @param date2
 	 * @return
@@ -717,7 +717,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	
 	
 	/**
-	 * 设置日期的开始时间
+	 * ĐặtNgày của Thời gian bắt đầu
 	 * @param calendar
 	 */
 	private static void setMinTimeOfDay(Calendar calendar) {
@@ -728,7 +728,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 设置日期的结束时间
+	 * ĐặtNgày của Thời gian kết thúc
 	 * @param calendar
 	 */
 	private static void setMaxTimeOfDay(Calendar calendar) {

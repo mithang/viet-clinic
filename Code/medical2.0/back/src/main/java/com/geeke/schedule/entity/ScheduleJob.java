@@ -6,17 +6,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 定时任务管理Entity
+ * Quản lý tác vụ định kỳEntity
  * @author shenzy
  * @version 2021-10-28
  */
 public class ScheduleJob extends DataEntity<ScheduleJob> {
 
 	private static final long serialVersionUID = 683898740740005891L;
-	private String code;		// 任务编号
-	private String cron;		// 任务表达式
-	private String status;		// 任务状态
-	private String isLock;		// 是否禁用
+	private String code;		// tác vụmã số
+	private String cron;		// tác vụbiểu thức
+	private String status;		// tác vụTrạng thái
+	private String isLock;		// Có hay khôngVô hiệu hóa
 
 	
 	public ScheduleJob() {
@@ -28,7 +28,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 
-	@Length(min=1, max=100, message="任务编号长度必须介于 1 和 100 之间")
+	@Length(min=1, max=100, message="tác vụmã sốĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getCode() {
 		return code;
 	}
@@ -37,7 +37,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 	
-	@Length(min=1, max=30, message="任务表达式长度必须介于 1 和 30 之间")
+	@Length(min=1, max=30, message="tác vụbiểu thứcĐộ dài phải nằm trong khoảng 1 đến 30 ")
 	public String getCron() {
 		return cron;
 	}
@@ -46,7 +46,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 	
-	@Length(min=0, max=100, message="任务状态长度必须介于 0 和 100 之间")
+	@Length(min=0, max=100, message="tác vụĐộ dài trạng thái phải nằm trong khoảng 0 đến 100 ")
 	public String getStatus() {
 		return status;
 	}
@@ -55,7 +55,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 	
-	@Length(min=0, max=1, message="是否禁用长度必须介于 0 和 1 之间")
+	@Length(min=0, max=1, message="Có hay khôngVô hiệu hóaĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsLock() {
 		return isLock;
 	}
@@ -68,7 +68,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	
 	
 	/**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -77,7 +77,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -87,7 +87,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

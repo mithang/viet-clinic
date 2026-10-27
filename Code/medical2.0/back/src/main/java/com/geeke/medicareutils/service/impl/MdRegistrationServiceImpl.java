@@ -53,33 +53,33 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
 
 
     /**
-     * 门诊挂号  2201
+     * ngoại trúĐăng ký khám  2201
      * @param registration
      * @return
      */
     @Override
     public String getRegistrationInfo_2201(Registration registration) {
         Map<String,Object> data = new HashMap<>();
-        //获取患者医保信息
+        //LấyThông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne( new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId,registration.getPatientId().getId()));
-        //挂号医生信息
+        //Đăng ký khámBác sĩThông tin
         User doctor = registration.getDoctor();
-        //挂号科室信息
+        //Đăng ký khámThông tin khoa
         ClinicOffice clinicOffice = registration.getClinicOffice();
-        //请求信息构造
+        //Vui lòngyêu cầuThông tinxây dựng
         data.put("psn_no",patientMdData.getPsnNo());
         //
         data.put("insutype",patientMdData.getInsutype());
         data.put("begntime",registration.getCreateDate());
-        //就诊凭证类型
+        //Loại giấy tờ khám bệnh
         data.put("mdtrt_cert_type",registration.getCardType());
-        // 就诊凭证编号
+        // khám bệnhchứng từmã số
         data.put("mdtrt_cert_no",registration.getMdtrtCertNo());
-        //门诊唯一流水号
+        //Số thứ tự duy nhất của khám ngoại trú
         data.put("ipt_otp_no",registration.getId());
-        //医师编码
+        //Bác sĩMã
         data.put("atddr_no",doctor.getUserExt().getPracPsnCode());
-        //医师姓名
+        //Bác sĩTên
         data.put("dr_name",doctor.getName());
         data.put("dept_code",clinicOffice.getCode());
         data.put("dept_name",clinicOffice.getName());
@@ -92,7 +92,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
 
     @Override
     public String revokeRegistrationInfo_2202(Registration registration) {
-        //获取患者医保信息
+        //LấyThông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne( new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId,registration.getPatientId().getId()));
         Map<String,Object> data = new HashMap<>();
         data.put("psn_no",patientMdData.getPsnNo());
@@ -105,35 +105,35 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 门诊就诊信息上传 2203
+     * Tải lên thông tin khám ngoại trú 2203
      * @param registration
      * @return
      */
     @Override
     public String upRegistrationInfo_2203(Registration registration) {
-        //单行就诊信息
+        //đơn dòngkhám bệnhThông tin
         JSONObject data = new JSONObject();
-        //诊断多行数据
+        //Chẩn đoánnhiều dòngDữ liệu
         JSONArray jsonArray = new JSONArray();
-        //患者医保信息
+        //Thông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
-        //患者科室信息
+        //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
-        //患者医生信息
+        //Thông tin bác sĩ của bệnh nhân
         User doctor = registration.getDoctor();
-        //人员病历信息
+        //Thông tin bệnh án của nhân viên
         List<MedicalRecord> record = medicalRecordService.getByOrder(registration.getId());
         MedicalRecord medicalRecord = record.get(0);
-        //就诊参数
+        //khám bệnhTham số
         data.put("mdtrt_id", registration.getMdtrtId());
         data.put("psn_no", patientMdData.getPsnNo());
         data.put("med_type", registration.getMedType().getValue());
         data.put("begntime", registration.getCreateDate());
-        //主要病情描述 TODO
+        //Mô tả chính về tình trạng bệnh TODO
         data.put("main_cond_dscr", "");
-        //病种编码    TODO
+        //Mã loại bệnh    TODO
         data.put("dise_code", "");
-        //病种名称 TODO
+        //Tên loại bệnh TODO
         data.put("dise_name", "");
         data.put("birctrl_type", "");
         data.put("bitctrl_matn_date", "");
@@ -141,17 +141,17 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         data.put("geso_val", "");
         data.put("expContent", "");
 
-        //诊断参数
+        //Chẩn đoánTham số
         JSONObject object = new JSONObject();
-        //诊断类别 1西医诊断 2中医主病诊断 3中医主证诊断 4手术操作 5.安病种付费病种 TODO 只允许一个诊断
+        //Loại chẩn đoán 1Chẩn đoán tây y 2 trong ychínhbệnhChẩn đoán 3 trong ychínhchứngChẩn đoán 4Phẫu thuậtthao tác 5.Loại bệnh thanh toán theo loại bệnh TODO chỉcho phépmộtCáiChẩn đoán
         if (Objects.nonNull(medicalRecord.getWesternDiagnose())) {
-            //西医
+            //Tâyy
             object.put("diag_type", "1");
             object.put("diag_name", medicalRecord.getWesternDiagnose());
 
         }
         if (Objects.nonNull(medicalRecord.getChinaDiagnose())) {
-            //中医
+            //Đông y
             object.put("diag_type", "2");
             object.put("diag_name", medicalRecord.getChinaDiagnose());
         }
@@ -160,7 +160,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         object.put("dise_dor_no", doctor.getUserExt().getPracPsnCode());
         object.put("dise_dor_name", doctor.getUserExt().getName());
         object.put("diag_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(medicalRecord.getCreateDate()));
-        //TODO 默认有效 1, 0无效
+        //TODO Mặc địnhHiệu lực 1, 0không hợp lệ
         object.put("vali_flag", "1");
         jsonArray.add(object);
         JSONObject jsonObject = new JSONObject();
@@ -171,24 +171,24 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
 
     /**
      * @param registration
-     * @return 门诊信息上传A 2203A
+     * @return ngoại trúThông tinTải lênA 2203A
      */
     @Override
     public String upRegistrationInfoList_2203A(Registration registration) {
-        // 创建外层 JSONObject
+        // tạongoàitầng JSONObject
         JSONObject jsonObject = new JSONObject();
 
-        //患者医保信息
+        //Thông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
-        //患者科室信息
+        //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
-        //患者医生信息
+        //Thông tin bác sĩ của bệnh nhân
         User doctor = registration.getDoctor();
-        //人员病历信息
+        //Thông tin bệnh án của nhân viên
         List<MedicalRecord> record = medicalRecordService.getByOrder(registration.getId());
         MedicalRecord medicalRecord = record.get(0);
 
-        // 创建 mdtrtinfo 对象
+        // Tạo mdtrtinfo Đối tượng
         JSONObject mdtrtinfo = new JSONObject();
         mdtrtinfo.put("mdtrt_id", registration.getMdtrtId());
         mdtrtinfo.put("psn_no", patientMdData.getPsnNo());
@@ -204,25 +204,25 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         mdtrtinfo.put("geso_val", 0);
         mdtrtinfo.put("expContent", "");
 
-        // 将 mdtrtinfo 添加到主对象
+        // Sẽ  mdtrtinfo ThêmĐếnchínhĐối tượng
         jsonObject.put("mdtrtinfo", mdtrtinfo);
 
-        // 创建 diseinfo 数组
+        // Tạo diseinfo Mảng
         JSONArray diseinfoArray = new JSONArray();
         JSONObject diseinfo = new JSONObject();
         if (Objects.nonNull(medicalRecord.getWesternDiagnose())) {
-            //西医
+            //Tâyy
             diseinfo.put("diag_type", "1");
             diseinfo.put("diag_name", medicalRecord.getWesternDiagnose());
 
         }
         if (Objects.nonNull(medicalRecord.getChinaDiagnose())) {
-            //中医
+            //Đông y
             diseinfo.put("diag_type", "2");
             diseinfo.put("diag_name", medicalRecord.getChinaDiagnose());
         }
         diseinfo.put("diag_srt_no", "1");
-        diseinfo.put("diag_code", medicalRecord.getDiagnosisCode()); //诊断代码
+        diseinfo.put("diag_code", medicalRecord.getDiagnosisCode()); //Mã chẩn đoán
         diseinfo.put("diag_name", medicalRecord.getDiagnose());
         diseinfo.put("diag_dept", clinicOffice.getName());
         diseinfo.put("dise_dor_no", doctor.getUserExt().getPracPsnCode());
@@ -230,16 +230,16 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         diseinfo.put("diag_time", medicalRecord.getCreateDate());
         diseinfo.put("vali_flag", "1");
 
-        // 将 diseinfo 对象添加到数组
+        // Sẽ  diseinfo Đối tượngThêmĐếnmảng
         diseinfoArray.add(diseinfo);
 
-        // 将 diseinfoArray 添加到主对象
+        // Sẽ  diseinfoArray ThêmĐếnchínhĐối tượng
         jsonObject.put("diseinfo", diseinfoArray);
         return mdRequestUtil.getMedicareData("2203A", jsonObject.toJSONString());
     }
 
     /**
-     * 门诊费用明细信息上传  2204
+     * ngoại trúChi phíChi tiếtThông tinTải lên  2204
      *
      * @param
      * @return
@@ -252,7 +252,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 门诊明细上传撤销 2205
+     * ngoại trúChi tiếtTải lênhủy 2205
      *
      * @param mdtrtId
      * @param chrgBchno
@@ -264,7 +264,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     public String revokeRegistrationMoneyInfo_2205(String mdtrtId, String chrgBchno, String psnNo, String expContent) {
         JSONObject data = new JSONObject();
         data.put("mdtrt_id", mdtrtId);
-        data.put("chrg_bchno", chrgBchno);//000则取消全部
+        data.put("chrg_bchno", chrgBchno);//000thìlấyhủyTất cả
         data.put("psn_no", psnNo);
         data.put("expContent", expContent);
         JSONObject jsonObject = new JSONObject();
@@ -273,10 +273,10 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 门诊预结算 2206
+     * ngoại trútrướcQuyết toán 2206
      *
-     * @param registration 挂号信息
-     * @param mdFeeDetail  收费信息
+     * @param registration Thông tin đăng ký khám
+     * @param mdFeeDetail  Thu phíThông tin
      * @return
      */
     @Override
@@ -285,19 +285,19 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         JSONObject jsonObject = new JSONObject();
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
         data.put("psn_no", patientMdData.getPsnNo());
-        //就诊凭证类型 TODO
+        //Loại giấy tờ khám bệnh TODO
         data.put("mdtrt_cert_type","");
-        //“01”时填写电子凭证 令牌，为“02”时填写身份证号，为“03”时填写社会保障卡卡号
+        //“01” thì điền chứng từ điện tử Token,  là “02” thì điền số CMND/CCCD,  là “03” thì điền số thẻ an sinh xã hội
         data.put("mdtrt_cert_no","");
-        //医疗类别
+        //Loại hình y tế
         data.put("med_type", registration.getMedType().getValue());
         data.put("medfee_sumamt", mdFeeDetail.getDetItemFeeSumamt());
-        data.put("psn_setlway","01");//01 按项目结算  20 按定额结算
+        data.put("psn_setlway","01");//01 theohạng mụcQuyết toán  20 theochỉ địnhsố tiềnQuyết toán
         data.put("mdtrt_id",registration.getMdtrtId());
         data.put("chrg_bchno",chrgBchno);
-        //个人账号使用标志 0否1是
+        //Cá nhânTài khoảnsử dụngcờ 0 không 1 có 
         data.put("acc_used_flag",acctUsedFlag);
-        //险种类型
+        //Loại hình bảo hiểm
         data.put("insutype",patientMdData.getInsutype());
         data.put("expContent","");
         jsonObject.put("data",data);
@@ -305,7 +305,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 门诊结算
+     * Quyết toán ngoại trú
      *
      * @param registration
      * @param mdFeeDetail
@@ -318,22 +318,22 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         JSONObject jsonObject = new JSONObject();
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
         data.put("psn_no", patientMdData.getPsnNo());
-        //就诊凭证类型 TODO
+        //Loại giấy tờ khám bệnh TODO
         data.put("mdtrt_cert_type","");
-        //“01”时填写电子凭证 令牌，为“02”时填写身份证号，为“03”时填写社会保障卡卡号
+        //“01” thì điền chứng từ điện tử Token,  là “02” thì điền số CMND/CCCD,  là “03” thì điền số thẻ an sinh xã hội
         data.put("mdtrt_cert_no","");
-        //医疗类别
+        //Loại hình y tế
         data.put("med_type", registration.getMedType().getValue());
 
         data.put("medfee_sumamt", mdFeeDetail.getDetItemFeeSumamt());
         data.put("psn_setlway","01");
         data.put("mdtrt_id",registration.getMdtrtId());
         data.put("chrg_bchno",chrgBchno);
-        //个人账号使用标志 0否1是
+        //Cá nhânTài khoảnsử dụngcờ 0 không 1 có 
         data.put("acc_used_flag",acctUsedFlag);
-        //险种类型
+        //Loại hình bảo hiểm
         data.put("insutype",patientMdData.getInsutype());
-        //TODO 发票号
+        //TODO Số hóa đơn
         data.put("invono","");
         data.put("fulamt_ownpay_amt", mdFeeDetail.getFulamtOwnpayAmt());
         data.put("overlmt_selfpay", mdFeeDetail.getOverlmtAmt());
@@ -345,7 +345,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 门诊结算撤销
+     * Hủy quyết toán ngoại trú
      *
      * @return
      */
@@ -362,7 +362,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
 
 
     /**
-     * 人员就诊信息
+     * nhân viênkhám bệnhThông tin
      *
      * @param registration
      * @param begntime
@@ -394,7 +394,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 结算信息查询
+     * Quyết toánThông tinTruy vấn
      *
      * @param psnNo
      * @param setlId
@@ -414,7 +414,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 费用明细查询
+     * Chi phíChi tiếtTruy vấn
      *
      * @param psnNo
      * @param setlId
@@ -433,9 +433,9 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 门急诊诊疗记录
+     * Khám chữa bệnh ngoại trú và cấp cứuBản ghi
      *
-     * @param registration 挂号信息
+     * @param registration Thông tin đăng ký khám
      * @return
      */
     @Override
@@ -444,79 +444,79 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         JSONObject caseinfo = new JSONObject();
         JSONObject diseinfo = new JSONObject();
         JSONObject rxinfo = new JSONObject();
-        //挂号
-        rgstinfo.put("mdtrt_sn", "");               // 就医流水号
-        rgstinfo.put("mdtrt_id", "");               // 就诊 ID
-        rgstinfo.put("psn_no", "");                 // 人员编号
-        rgstinfo.put("rgst_type_code", "");         // 挂号类别代码
-        rgstinfo.put("rgst_way_code", "");          // 挂号方式代码
-        rgstinfo.put("rgst_serv_fee", "");          // 挂号费/医事服务费
-        rgstinfo.put("ordr_way_code", "");          // 预约途径代码
-        rgstinfo.put("retnr_flag", "");             // 退号标志
-        rgstinfo.put("fstdiag_flag", "");           // 初诊标志
-        rgstinfo.put("mdtrt_flag", "");             // 就诊标志
-        rgstinfo.put("rgst_retnr_time", "");        // 挂号/退号时间
-        rgstinfo.put("medfee_paymtd_code", "");    // 医疗费用支付方式代码
-        rgstinfo.put("vali_flag", "");             // 有效标志
-        //病历信息
-        caseinfo.put("mdtrt_date", "");             // 就诊日期
-        caseinfo.put("chfcomp", "");                 // 主诉
-        caseinfo.put("attk_date_time", "");         // 发病日期时间
-        caseinfo.put("mdtrt_rea", "");               // 就诊原因
-        caseinfo.put("illhis", "");                  // 病史
-        caseinfo.put("algs", "");                    // 过敏史
-        caseinfo.put("aise_code", "");              // 过敏源代码
-        caseinfo.put("phex", "");                    // 查体
-        caseinfo.put("disa_info_code", "");         // 残疾情况代码
-        caseinfo.put("symp_name", "");              // 症状名称
-        caseinfo.put("symp_code", "");              // 症状代码
-        caseinfo.put("dspo_opnn", "");               // 处置意见
-        caseinfo.put("dept_code", "");               // 科室代码
-        caseinfo.put("dept_name", "");               // 科室名称
-        caseinfo.put("vali_flag", "");               // 有效标志
-        //诊断
-        diseinfo.put("tcm_diag_flag", "");        // 中医诊断标志
-        diseinfo.put("maindiag_flag", "");        // 主诊断标志
-        diseinfo.put("diag_code", "");            // 诊断代码
-        diseinfo.put("diag_name", "");            // 诊断名称
-        diseinfo.put("tcm_dise_code", "");        // 中医病名代码
-        diseinfo.put("tcm_dise_name", "");        // 中医病名名称
-        diseinfo.put("tcmsymp_code", "");         // 中医证候代码
-        diseinfo.put("tcmsymp", "");               // 中医证候
-        diseinfo.put("vali_flag", "");           // 有效标志
-        //处方
-        rxinfo.put("rxno", "");                          // 处方号
-        rxinfo.put("rx_prsc_time","");          // 处方开方时间
-        rxinfo.put("rx_type_code", "");                  // 处方类别代码
-        rxinfo.put("rx_item_type_code", "");             // 处方项目分类代码
-        rxinfo.put("rx_item_type_name", "");             // 处方项目分类名称
-        rxinfo.put("rx_detl_id", "");                    // 处方明细代码
-        rxinfo.put("rx_detl_name", "");                  // 处方明细名称
-        rxinfo.put("tcmdrug_type_name", "");             // 中药类别名称
-        rxinfo.put("tcmdrug_type_code", "");             // 中药类别代码
-        rxinfo.put("tcmherb_foote", "");                 // 草药脚注
-        rxinfo.put("medn_type_code", "");                // 药物类型代码
-        rxinfo.put("medn_type_name", "");                // 药物类型
-        rxinfo.put("drug_dosform", "");                  // 药品剂型代码
-        rxinfo.put("drug_dosform_name", "");             // 药品剂型名称
-        rxinfo.put("drug_spec", "");                      // 药品规格
-        rxinfo.put("drug_used_frqu", "");                // 药物使用-频率
-        rxinfo.put("drug_used_idose", 0.0);              // 药物使用-总剂量
-        rxinfo.put("drug_used_sdose", 0);                // 药物使用-次剂量
-        rxinfo.put("drug_used_dosunt", "");              // 药物使用-剂量单位
-        rxinfo.put("drug_used_way_code", "");            // 药物使用-途径代码
-        rxinfo.put("drug_medc_way", "");                 // 药物使用-途径
-        rxinfo.put("skintst_dicm", "");                  // 皮试判别
-        rxinfo.put("medc_begntime", "");         // 用药开始时间
-        rxinfo.put("medc_endtime", "");          // 用药停止时间
-        rxinfo.put("medc_days", 0);                       // 用药天数
-        rxinfo.put("main_medc_flag", "");                // 主要用药标志
-        rxinfo.put("urgt_flag", "");                      // 加急标志
-        rxinfo.put("unif_purc_drug", "");                // 统一采购药品
-        rxinfo.put("drug_purc_code", "");                // 药品采购代码
-        rxinfo.put("drug_mgt_plaf_code", "");            // 药品管理平台代码
-        rxinfo.put("bas_medn_flag", "");                 // 基本药物标志
-        rxinfo.put("vali_flag", "");                     // 有效标志
+        //Đăng ký khám
+        rgstinfo.put("mdtrt_sn", "");               // Số thứ tự khám bệnh
+        rgstinfo.put("mdtrt_id", "");               // Khám bệnh ID
+        rgstinfo.put("psn_no", "");                 // Mã nhân viên
+        rgstinfo.put("rgst_type_code", "");         // Đăng ký khámLớpmã loại
+        rgstinfo.put("rgst_way_code", "");          // Đăng ký khámcáchmã
+        rgstinfo.put("rgst_serv_fee", "");          // Phí đăng ký khám/yviệcdịch vụphí
+        rgstinfo.put("ordr_way_code", "");          // đặt lịchđườngmã
+        rgstinfo.put("retnr_flag", "");             // hủy số khámcờ
+        rgstinfo.put("fstdiag_flag", "");           // Khám lần đầucờ
+        rgstinfo.put("mdtrt_flag", "");             // khám bệnhcờ
+        rgstinfo.put("rgst_retnr_time", "");        // Đăng ký khám/hủy số khámThời gian
+        rgstinfo.put("medfee_paymtd_code", "");    // y tếChi phíphương thức thanh toánmã
+        rgstinfo.put("vali_flag", "");             // Cờ hiệu lực
+        //bệnh ánThông tin
+        caseinfo.put("mdtrt_date", "");             // Ngày khám bệnh
+        caseinfo.put("chfcomp", "");                 // Lý do khám chính
+        caseinfo.put("attk_date_time", "");         // Ngày phát bệnhThời gian
+        caseinfo.put("mdtrt_rea", "");               // khám bệnhgốcdo
+        caseinfo.put("illhis", "");                  // bệnh史
+        caseinfo.put("algs", "");                    // Tiền sử dị ứng
+        caseinfo.put("aise_code", "");              // qua敏nguồnmã
+        caseinfo.put("phex", "");                    // trathể
+        caseinfo.put("disa_info_code", "");         // 残疾tình hìnhmã
+        caseinfo.put("symp_name", "");              // triệu chứngTên
+        caseinfo.put("symp_code", "");              // triệu chứngmã
+        caseinfo.put("dspo_opnn", "");               // nơiđặtý kiến
+        caseinfo.put("dept_code", "");               // Mã khoa
+        caseinfo.put("dept_name", "");               // Tên khoa
+        caseinfo.put("vali_flag", "");               // Cờ hiệu lực
+        //Chẩn đoán
+        diseinfo.put("tcm_diag_flag", "");        //  trong yChẩn đoáncờ
+        diseinfo.put("maindiag_flag", "");        // Cờ chẩn đoán chính
+        diseinfo.put("diag_code", "");            // Mã chẩn đoán
+        diseinfo.put("diag_name", "");            // Tên chẩn đoán
+        diseinfo.put("tcm_dise_code", "");        // Mã tên bệnh Đông y
+        diseinfo.put("tcm_dise_name", "");        // Tên bệnh Đông yTên
+        diseinfo.put("tcmsymp_code", "");         // Mã chứng hậu Đông y
+        diseinfo.put("tcmsymp", "");               // Chứng hậu Đông y
+        diseinfo.put("vali_flag", "");           // Cờ hiệu lực
+        //Đơn thuốc
+        rxinfo.put("rxno", "");                          // Số đơn thuốc
+        rxinfo.put("rx_prsc_time","");          // Đơn thuốcThời gian kê đơn
+        rxinfo.put("rx_type_code", "");                  // Đơn thuốcLớpmã loại
+        rxinfo.put("rx_item_type_code", "");             // Đơn thuốchạng mục phútLớpmã
+        rxinfo.put("rx_item_type_name", "");             // Tên phân loại hạng mục đơn thuốc
+        rxinfo.put("rx_detl_id", "");                    // Đơn thuốcChi tiếtmã
+        rxinfo.put("rx_detl_name", "");                  // Đơn thuốcChi tiếtTên
+        rxinfo.put("tcmdrug_type_name", "");             // Tên loại thuốc Đông y
+        rxinfo.put("tcmdrug_type_code", "");             //  trong thuốcLớpmã loại
+        rxinfo.put("tcmherb_foote", "");                 // Chú thích cuối trang về thảo dược
+        rxinfo.put("medn_type_code", "");                // thuốcLoạimã
+        rxinfo.put("medn_type_name", "");                // thuốcLoại
+        rxinfo.put("drug_dosform", "");                  // Dạng bào chế của thuốcmã
+        rxinfo.put("drug_dosform_name", "");             // Dạng bào chế của thuốcTên
+        rxinfo.put("drug_spec", "");                      // Quy cách thuốc
+        rxinfo.put("drug_used_frqu", "");                // Sử dụng thuốc-tần suấttỷ lệ
+        rxinfo.put("drug_used_idose", 0.0);              // Sử dụng thuốc-tổngliềulượng
+        rxinfo.put("drug_used_sdose", 0);                // Sử dụng thuốc- lầnliềulượng
+        rxinfo.put("drug_used_dosunt", "");              // Sử dụng thuốc-Đơn vị liều lượng
+        rxinfo.put("drug_used_way_code", "");            // Sử dụng thuốc-đườngmã
+        rxinfo.put("drug_medc_way", "");                 // Sử dụng thuốc-đường
+        rxinfo.put("skintst_dicm", "");                  // Test da判loại
+        rxinfo.put("medc_begntime", "");         // dùngthuốcThời gian bắt đầu
+        rxinfo.put("medc_endtime", "");          // dùngthuốcdừngdừngThời gian
+        rxinfo.put("medc_days", 0);                       // Số ngày dùng thuốc
+        rxinfo.put("main_medc_flag", "");                // Cờ thuốc dùng chính
+        rxinfo.put("urgt_flag", "");                      // thêm急cờ
+        rxinfo.put("unif_purc_drug", "");                // thống nhấtMua hàngThuốc
+        rxinfo.put("drug_purc_code", "");                // ThuốcMua hàngmã
+        rxinfo.put("drug_mgt_plaf_code", "");            // ThuốcQuản lý平máymã
+        rxinfo.put("bas_medn_flag", "");                 // Cờ thuốc cơ bản
+        rxinfo.put("vali_flag", "");                     // Cờ hiệu lực
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("rgstinfo", rgstinfo);
         jsonObject.put("caseinfo", caseinfo);
@@ -527,24 +527,24 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 明细审核事前分析服务
+     * Chi tiếtxét duyệtviệctrước phútdịch vụ phân tích
      *
      * @param registration
      * @return
      */
     @Override
     public String analyzeDetailReviewPreCheck_3301(Registration registration) {
-        //患者医保信息
+        //Thông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
-        //患者科室信息
+        //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
-        //患者医生信息
+        //Thông tin bác sĩ của bệnh nhân
         User doctor = registration.getDoctor();
-        //人员病历信息
+        //Thông tin bệnh án của nhân viên
         List<MedicalRecord> record = medicalRecordService.getByOrder(registration.getId());
         MedicalRecord medicalRecord = record.get(0);
 
-        // 创建 data JSON 对象
+        // Tạo data JSON Đối tượng
         JSONObject data = new JSONObject();
 
         JSONArray patientDtos = new JSONArray();
@@ -662,7 +662,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 明细审核事中分析服务
+     * Chi tiếtxét duyệtviệc trong  phútdịch vụ phân tích
      *
      * @param registration 3102
      * @return
@@ -671,13 +671,13 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     public String analyzeDetailReviewDuringProcess_3102(Registration registration) {
         JSONObject jsonObject = new JSONObject();
         JSONObject patientDto = new JSONObject();
-        //患者医保信息
+        //Thông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
-        //患者科室信息
+        //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
-        //患者医生信息
+        //Thông tin bác sĩ của bệnh nhân
         User doctor = registration.getDoctor();
-        //人员病历信息
+        //Thông tin bệnh án của nhân viên
         List<MedicalRecord> record = medicalRecordService.getByOrder(registration.getId());
         MedicalRecord medicalRecord = record.get(0);
 
@@ -688,7 +688,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         patientDto.put("poolarea", "");
         patientDto.put("curr_mdtrt_id", "");
 
-        // 创建就诊信息 JSON 对象
+        // tạokhám bệnhThông tin JSON Đối tượng
         JSONObject encounterDto = new JSONObject();
         encounterDto.put("mdtrt_id", "");
         encounterDto.put("medins_id", "");
@@ -704,7 +704,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         encounterDto.put("dscg_main_dise_codg", "");
         encounterDto.put("dscg_main_dise_name", "");
 
-        // 创建诊断信息 JSON 数组
+        // tạoThông tin chẩn đoán JSON Mảng
         JSONArray diagnoseDtos = new JSONArray();
         JSONObject diagnoseDto = new JSONObject();
         diagnoseDto.put("dise_id", "");
@@ -725,7 +725,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         encounterDto.put("med_mdtrt_type", "");
         encounterDto.put("med_type", "");
 
-        // 创建医嘱信息 JSON 数组
+        // tạoY lệnhThông tin JSON Mảng
         JSONArray orderDtos = new JSONArray();
         JSONObject orderDto = new JSONObject();
         orderDto.put("rx_id", "");
@@ -778,13 +778,13 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         encounterDto.put("out_setl_flag", "");
         encounterDto.put("fsi_operation_dtos", "");
 
-        // 将就诊信息添加到患者信息中
+        // Sẽ khám bệnhThông tinThêmĐếnThông tin bệnh nhân trong 
         JSONArray encounterDtos = new JSONArray();
         encounterDtos.add(encounterDto);
         patientDto.put("fsi_encounter_dtos", encounterDtos);
         patientDto.put("fsi_his_data_dto", "");
 
-        // 将患者信息添加到 data 对象中
+        // Sẽ Thông tin bệnh nhânThêmĐến data Trong đối tượng
         JSONObject data = new JSONObject();
         JSONArray patientDtos = new JSONArray();
         patientDtos.add(patientDto);
@@ -797,7 +797,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     }
 
     /**
-     * 医药机构费用结算对总账
+     * y dượcCơ sởChi phíQuyết toánđối vớitổngsổ sách
      *
      * @return
      */
@@ -808,7 +808,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
 
 
     /**
-     * 医药机构费用结算对明细账
+     * Bảng chi tiết đối soát quyết toán chi phí của cơ sở y tế
      *
      * @return
      */

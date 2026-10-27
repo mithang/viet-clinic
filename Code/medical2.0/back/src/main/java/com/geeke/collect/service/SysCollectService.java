@@ -17,7 +17,7 @@ import com.geeke.collect.entity.SysCollect;
 
 
 /**
- * 收藏夹Service
+ * Mục yêu thíchService
  *
  * @author szy
  * @version 2021-07-28
@@ -34,7 +34,7 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
 
 
     /**
-     * 移动排序批量修改序号，返回用户最新信息
+     * di độngsắp xếphàng loạtSửasố thứ tự, Trả vềNgười dùngnhấtmớiThông tin
      *
      * @param sysCollectList
      * @param userId
@@ -50,23 +50,23 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
                 sysCollect.preUpdate();
                 sysCollect.setSort((long)(i+1));
             }
-            //批量更新
+            //hàng loạtCập nhật
             sysCollectDao.updateBatch(sysCollectList);
         }
         List<SysCollect> sysCollects = sysCollectDao.listAllByUserId(userId);
-        //返回最新的收藏数据
+        //Trả vềnhấtmới của yêu thíchDữ liệu
         return sysCollects != null ? sysCollects : new ArrayList<>();
     }
 
     /**
-     * 根据用户查询收藏列表
+     * Theo người dùngTruy vấnyêu thíchDanh sách
      *
      * @param sysCollect
      * @return
      */
     public List<SysCollect> listAllByUserId(String  userId) {
         if (StringUtils.isBlank(userId)) {
-            throw new ServiceException("参数用户id不能为空。");
+            throw new ServiceException("Tham sốNgười dùngidKhông được để trống. ");
         }
 
         List<SysCollect> sysCollectList = sysCollectDao.listAllByUserId(userId);

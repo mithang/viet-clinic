@@ -9,19 +9,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
 /**
- * 会员卡详情Entity
+ * Chi tiết thẻ hội viênEntity
  * @author rys
  * @version 2022-10-25
  */
 public class MemberItem extends DataEntity<MemberItem> {
 
 	private static final long serialVersionUID = 1222698883343517631L;
-	private Company company;      // 诊所id 
-	private MemberSet member;      // 会员卡id 
-	private CostItem costItem;      // 对应的项目id 
-	private Integer number;		// 赠送项目数量
-    private String name;    //暂存项目名称
-    private Integer useNumber;  //使用数量
+	private Company company;      // Phòng khámid 
+	private MemberSet member;      // Thẻ hội viênid 
+	private CostItem costItem;      // tương ứng của hạng mụcid 
+	private Integer number;		// 赠gửihạng mụcSố lượng
+    private String name;    //tạmlưuhạng mụcTên
+    private Integer useNumber;  //sử dụngSố lượng
 	
 	public MemberItem() {
 		super();
@@ -32,7 +32,7 @@ public class MemberItem extends DataEntity<MemberItem> {
 	}
 	
 
-	@NotNull(message="诊所id不能为空")
+	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
     }
@@ -41,7 +41,7 @@ public class MemberItem extends DataEntity<MemberItem> {
         this.company = company;
     }
     
-	@NotNull(message="会员卡id不能为空")
+	@NotNull(message="Thẻ hội viênidKhông được để trống")
     public MemberSet getMember() {
         return member;
     }
@@ -50,7 +50,7 @@ public class MemberItem extends DataEntity<MemberItem> {
         this.member = member;
     }
     
-	@NotNull(message="对应的项目id不能为空")
+	@NotNull(message="tương ứng của hạng mụcidKhông được để trống")
     public CostItem getCostItem() {
         return costItem;
     }
@@ -85,7 +85,7 @@ public class MemberItem extends DataEntity<MemberItem> {
     }
 
     /**
-     * 获取实体对应表名
+     * Lấy tên bảng tương ứng của thực thể
     */
     @Override
     @JsonIgnore
@@ -94,7 +94,7 @@ public class MemberItem extends DataEntity<MemberItem> {
     }
     
     /**
-     * 获取实体对应Id
+     * Lấy thực thể tương ứngId
     */
     @Override
     @JsonIgnore
@@ -104,7 +104,7 @@ public class MemberItem extends DataEntity<MemberItem> {
     
     
     /**
-     * 获取实体表中是否存在del_flag字段
+     * Kiểm tra thực thể có tồn tại trong bảng khôngdel_flagTrường
      */
     @JsonIgnore
     public boolean getBusTableHasDelFlag() {

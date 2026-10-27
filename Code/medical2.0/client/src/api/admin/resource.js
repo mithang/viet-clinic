@@ -2,7 +2,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/admin/resource')
 
-// 导出标准CRUD接口（保持向后兼容）
+// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
 export const getResourceById = baseApi.getById
 export const listResourcePage = baseApi.listPage
 export const listResourceAll = baseApi.listAll

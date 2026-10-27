@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/admin/user')
 
-// 标准CRUD接口
+// Tiêu chuẩnCRUDGiao diện
 export const getUserById = baseApi.getById
 export const listUserPage = baseApi.listPage
 export const listUserAll = baseApi.listAll
@@ -18,7 +18,7 @@ export const bulkInsertUser = baseApi.bulkInsert
 export const bulkUpdateUser = baseApi.bulkUpdate
 export const bulkDeleteUser = baseApi.bulkDelete
 
-// 自定义接口
+// Giao diện tùy chỉnh
 export const updateUser = (user) =>
     request({
         url: '/admin/user/update',

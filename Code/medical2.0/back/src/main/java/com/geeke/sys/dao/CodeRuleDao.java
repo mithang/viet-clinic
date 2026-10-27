@@ -9,7 +9,7 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.sys.entity.CodeRule;
 
 /**
- * 系统编码规则DAO接口
+ * Quy tắc mã hệ thốngDAOGiao diện
  * @author lys
  * @version 2021-05-17
  */
@@ -17,14 +17,14 @@ import com.geeke.sys.entity.CodeRule;
 public interface CodeRuleDao extends CrudDao<CodeRule> {
 	
 	/**
-	 * 不在公司的规则
+	 * không ởcông ty của quy tắc
 	 * @param companyId
 	 * @return
 	 */
 	public List<CodeRule> listNotInCompany(String companyId);
 	
 	/**
-	 * 获取编码规则
+	 * LấyMãquy tắc
 	 * @param code
 	 * @return
 	 */

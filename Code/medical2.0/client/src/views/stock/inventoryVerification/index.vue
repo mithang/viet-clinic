@@ -1,22 +1,22 @@
 <template>
   <el-row v-loading='loading'>
-    <!-- 历史记录  -->
+    <!-- Lịch sử  -->
     <History :bussObject='curentRow' ></History>
-    <!-- 编辑窗口  -->
+    <!-- Cửa sổ chỉnh sửa  -->
     <inventoryVerification-form ref='inventoryVerificationForm' :permission='permission' @save-finished='loadData'></inventoryVerification-form>
     <div class="page-container">
-        <!--  搜索栏  开始 -->
+        <!--  Thanh tìm kiếm  Bắt đầu -->
         <div class='query-form-container'>
           <el-row v-if='!moreCodition' class='search-row'>
             <el-form :model='queryModel' @submit.native.prevent label-position="left" label-width='70px' ref='queryForm' :inline-message='true'>
                 <el-col :span="24/3">
-                  <el-form-item   label="创建时间" prop="createDate">
+                  <el-form-item   label="Thời gian tạo" prop="createDate">
                      <el-date-picker
                         v-model="queryModel.createDate"
                         type="datetimerange"
                         align="right"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
+                        start-placeholder="Ngày bắt đầu"
+                        end-placeholder="Ngày kết thúc"
                         format="yyyy-MM-dd HH:mm:ss"
                         :default-time="['00:00:00', '23:59:59']">
                       </el-date-picker>
@@ -24,24 +24,24 @@
                </el-col>
 
                <el-col :span="24/3">
-                  <el-form-item   label="盘点单号" prop="code">
+                  <el-form-item   label="Số đơn kiểm kê" prop="code">
                 <el-input
                   v-model="queryModel.code"
                   :clearable="true"
-                  placeholder="请输入盘点单号"
+                  placeholder="Vui lòng nhập số đơn kiểm kê"
                  style="width:200px"
                 ></el-input>
               </el-form-item>
                </el-col>
                       <!-- <el-col :span="6">
                 <el-button-group>
-                  <el-tooltip  effect="light" content="搜索" placement="top-start">
+                  <el-tooltip  effect="light" content="Tìm kiếm" placement="top-start">
                     <el-button type="primary" icon="el-icon-search" @click='onSearch()' :plain='true'></el-button>
                   </el-tooltip>
-                   <el-tooltip  effect="light" content="重置" placement="top-start">
+                   <el-tooltip  effect="light" content="Đặt lại" placement="top-start">
                     <el-button type="primary" icon="el-icon-refresh-left" @click='$refs.queryForm.resetFields()' :plain='true'></el-button>
                   </el-tooltip>
-                  <el-tooltip  effect="light" content="更多" placement="top-start">
+                  <el-tooltip  effect="light" content="Thêm" placement="top-start">
                     <el-button type="primary" icon="el-icon-d-arrow-right" @click='onMoreCodition()' :plain='true'></el-button>
                   </el-tooltip>
                 </el-button-group>
@@ -53,25 +53,25 @@
                     icon="el-icon-search"
                     @click="onSearch()"
                     :plain="true"
-                  >搜索</el-button>
+                  >Tìm kiếm</el-button>
                 <el-button
                     type="info"
                     icon="el-icon-refresh-left"
                     @click="reset"
                     :plain="true"
-                  >重置</el-button>
+                  >Đặt lại</el-button>
             </el-col>
              
             </el-form>
           </el-row>
           <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </div>
-        <!--  搜索栏  结束 -->
+        <!--  Thanh tìm kiếm  Kết thúc -->
 
-        <!-- 工具栏 开始 -->
+        <!-- Thanh công cụ Bắt đầu -->
         <!-- <div class="page-container-header-end">
           <div>
-            <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateInventoryVerification()'>新增盘点</el-button>
+            <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateInventoryVerification()'>Thêm kiểm kê</el-button>
           </div>
         </div> -->
         <div>
@@ -108,15 +108,15 @@
                </el-col>
           </el-row>
         </div>
-        <!-- 工具栏 结束 -->
+        <!-- Thanh công cụ Kết thúc -->
         <br>
-      <!-- 表格栏  开始 -->
+      <!-- Thanh bảng  Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>        
             <el-table  style="margin: auto" class='drag_table' ref="tableRef" height="calc(100vh - 260px)" :data='inventoryVerificationList' border @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>                
               <el-table-column
-              label="序号"
+              label="Số thứ tự"
               type="index"
               :index="indexMethod"
               align="center">
@@ -128,10 +128,10 @@
                   </span>
                   <span v-if="columnViews[index].prop==='type'">
                     <span v-if="getAttrValue(row, columnViews[index].prop)==='0'">
-                      药品
+                      Thuốc
                     </span>
                     <span v-else>
-                       材料
+                       Vật tư
                     </span>
                   </span>
                   <span v-else-if="columnViews[index].prop==='status'">
@@ -145,17 +145,17 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
                 </template>
               </el-table-column>
-              <!--表行级操作按钮-->
-              <el-table-column label='操作' header-align='center' :width='120 + "px"' :key="'operate'">        
+              <!--Nút thao tác theo dòng-->
+              <el-table-column label='Thao tác' header-align='center' :width='120 + "px"' :key="'operate'">        
                 <template slot='header' slot-scope="scope">
-                  <span>操作</span>
+                  <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='inventoryVerificationList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                  <template slot-scope='scope'>
                  <center>
-                    <el-button type="text"    @click="onViewInventoryVerification(scope.row,scope.$index)">查看</el-button>
-                  <el-button type="text" v-if="scope.row.status==='0'"  @click="onDeleteInventoryVerification(scope.row,scope.$index)">删除</el-button>
+                    <el-button type="text"    @click="onViewInventoryVerification(scope.row,scope.$index)">Xem</el-button>
+                  <el-button type="text" v-if="scope.row.status==='0'"  @click="onDeleteInventoryVerification(scope.row,scope.$index)">Xóa</el-button>
                  </center>
                  </template>
               </el-table-column>
@@ -163,8 +163,8 @@
     	  </div>	          
         </el-col>
       </el-row>
-      <!-- 表格栏  结束 -->
-      <!-- 分页栏     开始 -->
+      <!-- Thanh bảng  Kết thúc -->
+      <!-- Thanh phân trang     Bắt đầu -->
       <el-row>
         <el-col :span='24'>
           <el-pagination
@@ -179,7 +179,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-      <!-- 分页栏     结束 -->     </div>
+      <!-- Thanh phân trang     Kết thúc -->     </div>
   </el-row>
 </template>
 
@@ -205,7 +205,7 @@ export default {
   },
   data() {
     return {
-      // listViewMixin 配置
+      // listViewMixin Cấu hình
       listApi: listInventoryVerificationPage,
       getApi: getInventoryVerificationById,
       deleteApi: deleteInventoryVerification,
@@ -215,13 +215,13 @@ export default {
       queryTypes: {
       },
       queryModel: {
-        code:'',  //盘点单号
-        createDate:'', // 创建时间
+        code:'',  //Số đơn kiểm kê
+        createDate:'', // Thời gian tạo
       },
       inventoryVerificationTotal: 0,
       inventoryVerificationList: [],
 
-      oprColumnWidth: 140,  // 操作列宽
+      oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1235640942656921602',
       schemeId: '1235640942656921612',
       check:false,   //新增条件
@@ -259,7 +259,7 @@ export default {
       this.inventoryVerificationTotal = responseData.data.total
       this.inventoryVerificationList = responseData.data.rows
     },
-    //搜索重置
+    //Đặt lại tìm kiếm
     reset(){
       this.queryModel={
         code:"",
@@ -303,16 +303,16 @@ export default {
       }).catch()
     },
     onDeleteInventoryVerification(row, index) {
-      this.$confirm('确定删除吗？', '确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
         type: 'warning'
       }).then(() => {
         this.setLoad()
         deleteInventoryVerification(row).then(responseData => {
           if(responseData.code === 100) {
             this.loadData()
-            this.showMessage({type: 'success', msg: '删除成功'})
+            this.showMessage({type: 'success', msg: 'Xóa thành công'})
           } else {
             this.showMessage(responseData)
           }
@@ -326,13 +326,13 @@ export default {
     }
   },
   watch: {
-    // tableData是el-table绑定的数据
+    // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
-          // 解决表格显示错位问题
+          // Khắc phục lỗi hiển thị lệch bảng
           handler () {
               this.$nextTick(() => {
-                  // tableRef是el-table绑定的ref属性值
-                  this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+                  // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+                  this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
               })
           },
           deep: true
@@ -341,8 +341,8 @@ export default {
   updated(){
     if(this.$refs.tableRef){
       this.$nextTick(() => {
-            // tableRef是el-table绑定的ref属性值
-            this.$refs.tableRef.doLayout()// 对 Table 进行重新布局
+            // tableRefCóel-tableĐã liên kếtrefGiá trị thuộc tính
+            this.$refs.tableRef.doLayout()// Đối với Table Thực hiện bố cục lại
         })
     }
   },
@@ -353,18 +353,18 @@ export default {
 </script>
 <style lang="scss" >
  .drag_table {
- // 设置表格header的高度
+ // Cài đặt bảngheaderChiều cao của
  ::v-deep th {
    height: 44px;
  }
 ::v-deep th.gutter:last-of-type {
   height: 0 !important;
 }
- // 设置表格body的高度
+ // Cài đặt bảngbodyChiều cao của
  ::v-deep.el-table__body-wrapper {
-  //解决数据展示超出body高度不滚动bug
+  //Khắc phục hiển thị dữ liệu vượt quábodychiều cao không cuộn đượcbug
   overflow-y: auto;
-   // 减去的是表格header的高度
+   // Phần trừ đi là bảngheaderChiều cao của
    height: calc(100% - 44px) !important;
  }
 
