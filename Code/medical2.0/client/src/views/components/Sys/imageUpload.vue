@@ -18,7 +18,7 @@
     :http-request="httpRequest"
     :file-list="fileList"
     list-type="picture">
-    <el-button size="mini">选择图片</el-button>
+    <el-button size="mini">Chọn hình ảnh</el-button>
   </el-upload>
 </template>
 
@@ -62,7 +62,7 @@
     },
     methods: {
       handleExceed(files, fileList) {
-        this.$message.warning(`限制只能选择1tệp`)
+        this.$message.warning(`Giới hạn chỉ được chọn 1 tệp`)
       },
       submit() {
         this.$refs.imageUpload.submit()

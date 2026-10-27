@@ -552,7 +552,7 @@
     },
     openViewReviewDialog(review) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看处方审查'
+      this.dialogProps.title = 'Xem kiểm duyệt đơn thuốc'
       this.bizFormModel = review
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

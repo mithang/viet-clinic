@@ -209,7 +209,7 @@ export default {
     },
     openViewMemberItemDialog(memberItem) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看会员卡详情'
+      this.dialogProps.title = 'Xem chi tiết thẻ hội viên'
       this.bizFormModel = {...this.initFormModel(), ...memberItem}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

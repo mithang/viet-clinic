@@ -241,7 +241,7 @@ export default {
     },
     openViewDispensingDialog(dispensing) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看发药明细'
+      this.dialogProps.title = 'Xem chi tiết phát thuốc'
       this.bizFormModel = {...this.initFormModel(), ...dispensing}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

@@ -25,7 +25,7 @@
             type="textarea"
             :rows="3"
             :disabled="dialogProps.audit || articleForm.auditstatus!=='0'"
-            placeholder="请填写摘要"
+            placeholder="Vui lòng điền tóm tắt"
             v-model="articleForm.abstracts"
           >
           </el-input>
@@ -112,7 +112,7 @@
         type="primary"
         :plain="true"
         @click="updateForm('articlesForm')"
-        >修 改</el-button
+        >Sửa</el-button
       >
 
       <el-button :plain="true" type="primary" @click="onDialogClose()"
@@ -252,7 +252,7 @@ export default {
             this.articleForm.auditstatus !== "0" &&
             this.articleForm.auditstatus !== "2"
           ) {
-            this.showMessage("已审核不能进行修改");
+            this.showMessage("Đã kiểm duyệt nên không thể sửa");
           } else {
             if (this.articleForm.userid === currentUser.id) {
               this.articleForm.auditstatus = "0"; //修改审核状态重新调整为0
@@ -262,7 +262,7 @@ export default {
                 }
               });
             } else {
-              this.showMessage("非本人发布文章不能进行修改");
+              this.showMessage("Bài viết không phải do bạn đăng nên không thể sửa");
             }
           }
         }

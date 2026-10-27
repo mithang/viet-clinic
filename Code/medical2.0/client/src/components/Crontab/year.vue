@@ -2,13 +2,13 @@
 	<el-form size="small">
 		<el-form-item>
 			<el-radio :label="1" v-model='radioValue'>
-				不填，Ký tự đại diện được phép[, - * /]
+				Không điền，Ký tự đại diện được phép[, - * /]
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio :label="2" v-model='radioValue'>
-				每年
+				Mỗi năm
 			</el-radio>
 		</el-form-item>
 
@@ -23,8 +23,8 @@
 		<el-form-item>
 			<el-radio :label="4" v-model='radioValue'>
 				Từ
-				<el-input-number v-model='average01' :min='fullYear' /> 年开始，mỗi
-				<el-input-number v-model='average02' :min='fullYear' /> 年执行一次
+				<el-input-number v-model='average01' :min='fullYear' /> năm bắt đầu，mỗi
+				<el-input-number v-model='average02' :min='fullYear' /> năm thực hiện một lần
 			</el-radio>
 
 		</el-form-item>

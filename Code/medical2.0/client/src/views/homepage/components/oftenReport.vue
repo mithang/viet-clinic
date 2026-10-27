@@ -6,7 +6,7 @@
       <i style="margin-left: 10px;" v-show="isPanelSetIcon" class="card-setting iconfont icon-setting"></i>
       <el-radio-group v-model="currentType" size="mini" class="card-radio-group" @change="handleTypeChange">
         <el-radio-button label="MY_REPORT">Báo cáo của tôi</el-radio-button>
-        <el-radio-button label="MY_STORE">收藏报表</el-radio-button>
+        <el-radio-button label="MY_STORE">Báo cáo đã lưu</el-radio-button>
       </el-radio-group>
     </div>
     <div class="often-body" style="position: relative; min-height: 210px;">

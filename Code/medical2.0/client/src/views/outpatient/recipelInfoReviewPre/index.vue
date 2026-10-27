@@ -3,7 +3,7 @@
     <div class="page-container">
       <!--Tab   Bắt đầu-->
       <el-tabs v-model="activeName" >
-        <el-tab-pane label="处方审核" name="first">
+        <el-tab-pane label="Kiểm duyệt đơn thuốc" name="first">
           <reviewPre></reviewPre>
         </el-tab-pane>
       </el-tabs>

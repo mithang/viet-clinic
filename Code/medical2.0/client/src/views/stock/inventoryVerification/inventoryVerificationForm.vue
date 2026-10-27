@@ -5,10 +5,10 @@
       {{ dialogProps.title }}
       <!-- <OperationIcon v-show='dialogProps.action == "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon> -->
       <div style="float:right;margin-right:200px;margin-top:-3px">
-          <el-button type="primary" @click="exportExcel" icon='el-icon-upload2'>导 出</el-button>
+          <el-button type="primary" @click="exportExcel" icon='el-icon-upload2'>Xuất</el-button>
           <el-button type="primary" v-if="this.inventoryVerifications.status==='0'" @click="save">Lưu</el-button>
           <el-button type="primary" v-if="this.inventoryVerifications.status==='0'" @click="accomplish">Hoàn thành kiểm kê</el-button>
-            <el-button @click="goBack">返 回</el-button>
+            <el-button @click="goBack">Quay lại</el-button>
       </div>
     </div>
     <div v-if="inventoryVerifications.type==='0'">
@@ -714,7 +714,7 @@ export default {
           this.$emit('save-finished')
             this.dialogProps.visible=false
         }else{
-          this.$message.error("完成盘点失败，请联系后台管理员!")
+          this.$message.error("Hoàn thành kiểm kê thất bại, vui lòng liên hệ quản trị viên hệ thống!")
         }
       }).catch((error)=>{
         this.outputError()
@@ -734,7 +734,7 @@ export default {
           return true
         }
         let str = JSON.stringify(arr).replace(/,/g, ', ')
-        this.$message.warning("Thuốc"+str+"存在库存占用，请等待门诊发药完成后在进行盘点")
+        this.$message.warning("Thuốc"+str+"đang bị chiếm tồn kho, vui lòng đợi sau khi phòng khám phát thuốc xong rồi mới kiểm kê")
         return false
       },
     //Lưu
@@ -747,7 +747,7 @@ export default {
             this.dialogProps.visible=false
         }else{
 
-          this.$$message.error("Lưu thất bại，数据异常，请重新尝试或联系管理员!")
+          this.$$message.error("Lưu thất bại，dữ liệu bất thường, vui lòng thử lại hoặc liên hệ quản trị viên!")
         }
       }).catch((error)=>{
         this.outputError(error)

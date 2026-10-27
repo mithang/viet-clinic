@@ -8,13 +8,13 @@
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="2">
-				不指定
+				Không chỉ định
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="3">
-				周期从星期
+				Chu kỳ từ thứ
 				<el-input-number v-model='cycle01' :min="1" :max="7" /> -
 				<el-input-number v-model='cycle02' :min="1" :max="7" />
 			</el-radio>
@@ -23,14 +23,14 @@
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="4">
 				thứ
-				<el-input-number v-model='average01' :min="1" :max="4" /> 周的星期
+				<el-input-number v-model='average01' :min="1" :max="4" /> tuần thứ
 				<el-input-number v-model='average02' :min="1" :max="7" />
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="5">
-				本月最后一个星期
+				Tuần cuối cùng của tháng
 				<el-input-number v-model='weekday' :min="1" :max="7" />
 			</el-radio>
 		</el-form-item>
@@ -58,7 +58,7 @@ export default {
 			average01: 1,
 			average02: 1,
 			checkboxList: [],
-			weekList: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+			weekList: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'],
 			checkNum: this.$options.propsData.check
 		}
 	},

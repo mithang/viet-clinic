@@ -14,7 +14,7 @@
           <template @click.stop="collClick" >
             <i class="el-icon-remove-outline" @click.stop="deletePropertyData(bizindex, panel, propertyPanels)"></i>
             <el-form-item :data-num='dataNum' :ref="`PRO_${dataNum}_propertyPanels_${bizindex}_name`" style="margin-top: 16px" v-if='action !== "view" && panel.isTeam !== "0"' :prop='`PRO_${dataNum}_propertyPanels_${bizindex}_name`' :rules="[{ required: true, validator: inputValidator, val: panel.name,  message: ' ', trigger: 'blur'}]" >
-              <el-input v-model="panel.name" @focus="nameFocus" @blur="nameBlur"  placeholder="请输入内组名"/>
+              <el-input v-model="panel.name" @focus="nameFocus" @blur="nameBlur"  placeholder="Vui lòng nhập tên nhóm nội bộ"/>
             </el-form-item>
           </template>
         </template>

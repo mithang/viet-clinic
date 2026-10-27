@@ -281,14 +281,14 @@
                 this.fly = true
                 this.$message({
                   type: 'success',
-                  message: '收藏成功'
+                  message: 'Lưu thành công'
                 })
               }
             }).catch(error => {
               this.isClick = true
               this.$message({
                 type: 'error',
-                message: '收藏失败'
+                message: 'Lưu thất bại'
               })
             })
 
@@ -374,7 +374,7 @@
               this.fly = false
               this.$message({
                 type: 'info',
-                message: '取消收藏'
+                message: 'Hủy lưu'
               })
             }
           }).catch(error => {

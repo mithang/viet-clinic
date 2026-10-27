@@ -89,7 +89,7 @@ export default {
     exportExcel() {
       if (!this.exportApi) return
       this.exportApi(this.search).then((res) => {
-        downloadBlob(res, '报表导出.xlsx')
+        downloadBlob(res, 'Báo cáo xuất.xlsx')
       }).catch((error) => {
         this.outputError(error)
       })

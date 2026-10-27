@@ -4,7 +4,7 @@
 <el-row>
   <el-col :span="24">
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
-    <el-form-item label="选择查询时间">
+    <el-form-item label="Chọn thời gian tra cứu">
   <div class="block">
     <el-date-picker
       v-model="TimeInterval"
@@ -18,7 +18,7 @@
   </div>
     </el-form-item>
       
-  <el-form-item label="查询患者">
+  <el-form-item label="Tra cứu bệnh nhân">
     <el-input v-model="formInline.values" placeholder="Vui lòng nhập họ tên/Số điện thoại di động/CMND/CCCD"></el-input>
   </el-form-item>
   <el-form-item label="Trạng thái khám">

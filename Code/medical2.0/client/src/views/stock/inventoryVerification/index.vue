@@ -84,7 +84,7 @@
                           type="primary"
                           icon="el-icon-plus"                   
                           @click="onCreateInventoryVerification('0')"
-                          >新增药品盘点</el-button
+                          >Thêm kiểm kê thuốc mới</el-button
                         >
                        
                     </el-button-group>
@@ -97,14 +97,14 @@
                           type="primary"
                           icon="el-icon-plus"                   
                           @click="onCreateInventoryVerification('1')"
-                          >新增材料盘点</el-button
+                          >Thêm kiểm kê vật tư mới</el-button
                         >
                        
                     </el-button-group>
                   
                   </el-col>
                   <el-col :span="6" style="text-align:right;padding-right:5px;float:right;">
-                  <el-checkbox v-model="check">是否包含库存为零</el-checkbox>
+                  <el-checkbox v-model="check">Có bao gồm tồn kho bằng 0 không</el-checkbox>
                </el-col>
           </el-row>
         </div>
@@ -136,10 +136,10 @@
                   </span>
                   <span v-else-if="columnViews[index].prop==='status'">
                     <span v-if="getAttrValue(row, columnViews[index].prop)==='0'" style="color:#FF9966">
-                        正在盘点
+                        Đang kiểm kê
                     </span>
                     <span v-else style="color:#99CC66">
-                      盘点完成
+                      Đã kiểm kê xong
                     </span>
                   </span>
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
@@ -281,7 +281,7 @@ export default {
       })
       }
       if(flag===1){
-        this.$message.warning("当前存在盘点任务，请完成上次盘点！")
+        this.$message.warning("Hiện đang có nhiệm vụ kiểm kê, vui lòng hoàn thành lần kiểm kê trước!")
         return
       }
       let type='0'
@@ -294,7 +294,7 @@ export default {
       //执行新增盘点
       saveInventoryVerification(type,variety).then(res=>{
         if(res.code === 100){
-          this.$message.success("新增盘点成功")
+          this.$message.success("Thêm kiểm kê mới thành công")
           this.check=false
           this.loadData()
         }else{

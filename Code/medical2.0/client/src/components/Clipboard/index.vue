@@ -49,7 +49,7 @@
           input.remove()
           this.$message({
             type: 'success',
-            message: '复制成功！'
+            message: 'Sao chép thành công!'
           })
         }
       }

@@ -19,10 +19,10 @@
             </div>
           </el-form-item>
           <el-form-item label="Tên" style="margin-right: 3px;">
-            <el-input v-model="formInline.patientName" placeholder="请输入患者名称"></el-input>
+            <el-input v-model="formInline.patientName" placeholder="Vui lòng nhập tên bệnh nhân"></el-input>
           </el-form-item>
           <el-form-item label="Số CMND/CCCD" style="margin-right: 3px;">
-            <el-input v-model="formInline.certificate" placeholder="请输入患者身份证号"></el-input>
+            <el-input v-model="formInline.certificate" placeholder="Vui lòng nhập số CMND/CCCD của bệnh nhân"></el-input>
           </el-form-item>
           <el-form-item style="margin-right: 3px;">
             <el-button type="primary" @click="onSubmit">Truy vấn</el-button>
@@ -54,9 +54,9 @@
           <el-table-column align="center" prop="occupation" label="Nghề nghiệp"></el-table-column>
           <el-table-column align="center" prop="address" label="Địa chỉ chi tiết"></el-table-column>
           <el-table-column align="center" prop="visitDate" label="Ngày khám"></el-table-column>
-          <el-table-column align="center" prop="initialVisit" label="初/Tái khám">
+          <el-table-column align="center" prop="initialVisit" label="Khám lần đầu/Tái khám">
             <template slot-scope="scope">
-              <span>{{ scope.row.initialVisit === "registrationSource_0" ? '初诊' : 'Tái khám' }}</span>
+              <span>{{ scope.row.initialVisit === "registrationSource_0" ? 'Khám lần đầu' : 'Tái khám' }}</span>
             </template>
           </el-table-column>
           <el-table-column align="center" prop="bloodPressure" label="Huyết áp"></el-table-column>
@@ -199,7 +199,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="初/Tái khám:" prop="initialVisit">
+            <el-form-item label="Khám lần đầu/Tái khám:" prop="initialVisit">
               <el-select v-model="editUserForm.initialVisit" placeholder="Vui lòng chọn">
                 <el-option
                   v-for="item in initialVisit"
@@ -352,15 +352,15 @@
         },
         gender: [{ // Giới tính
           value: 'gender_0',
-          label: '男'
+          label: 'Nam'
         }, {
           value: 'gender_1',
-          label: '女'
+          label: 'Nữ'
         }, {
         }],
         initialVisit: [{ // Giới tính
           value: 'registrationSource_0',
-          label: '初诊'
+          label: 'Khám lần đầu'
         }, {
           value: 'registrationSource_1',
           label: 'Tái khám'
@@ -460,12 +460,12 @@
       },*/
       stateFormat(row, column) {
         if (row.sex === "gender_0") {
-          return '男'
+          return 'Nam'
         } else {
-          return '女'
+          return 'Nữ'
         }
         if (row.initialVisit === "registrationSource_0") {
-          return '初诊'
+          return 'Khám lần đầu'
         } else {
           return 'Tái khám'
         }
@@ -612,7 +612,7 @@
           if(!valid) return;//校验没通过，Quay lại
           //可以发起修改用户的网络请求
           await update(this.editUserForm).then(response => {
-            this.$message.success('修改用户成功！');
+            this.$message.success('Sửa người dùng thành công!');
             // 隐藏修改用户的对话框
             this.editDialogVisible = false;
             //重新获取用户列表数据

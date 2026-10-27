@@ -19,7 +19,7 @@
               <el-row>
         <el-col :span='24/1'>
           <el-form-item label='Mã phiên bản' prop='code' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.code' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "请输入版本编码"' autofocus></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.code' :maxlength='50' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập mã phiên bản"' autofocus></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -34,7 +34,7 @@
               <el-row>
         <el-col :span='24/1'>
           <el-form-item label='Mô tả phiên bản' prop='description' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.description' :maxlength='200' :placeholder='dialogProps.action === "view"? "" : "请输入版本描述"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.description' :maxlength='200' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập mô tả phiên bản"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -154,7 +154,7 @@ export default {
     },
     openViewClinicVersionDialog(clinicVersion) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看诊所版本'
+      this.dialogProps.title = 'Xem phiên bản phòng khám'
       this.bizFormModel = {...this.initFormModel(), ...clinicVersion}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

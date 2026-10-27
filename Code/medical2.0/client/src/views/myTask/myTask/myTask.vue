@@ -97,7 +97,7 @@
                 v-model="bizFormModel.category"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入科室大类'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập nhóm khoa lớn'
                 "
               ></el-input>
             </el-form-item>

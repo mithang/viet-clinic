@@ -25,7 +25,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Bệnh án' prop='medical.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.medical.patient_tell'></el-input>
-            <el-select v-else v-model='bizFormModel.medical' value-key='id' filterable clearable placeholder='请选择病例'
+            <el-select v-else v-model='bizFormModel.medical' value-key='id' filterable clearable placeholder='Vui lòng chọn bệnh án'
               @clear='bizFormModel.medical={
                 "id": null,
                                 "patient_tell": null,
@@ -316,7 +316,7 @@ export default {
     },
     openViewTollInfoDialog(tollInfo) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看收费管理'
+      this.dialogProps.title = 'Xem quản lý thu phí'
       this.bizFormModel = {...this.initFormModel(), ...tollInfo}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

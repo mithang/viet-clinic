@@ -65,7 +65,7 @@
     </el-col> -->
   </el-form-item>
 
-  <el-form-item label="任务执行人" width="80%">
+  <el-form-item label="Người thực hiện nhiệm vụ" width="80%">
     <!-- <el-select v-model="ruleForm.taskregion" placeholder="Vui lòng chọn người thực hiện nhiệm vụ">
       <el-option label="Quản trị viên phòng khám" value="1247793999298339926"></el-option>
       <el-option label="执行人二" value="beijing"></el-option>
@@ -95,7 +95,7 @@
 <span slot='footer' class='dialog-footer'>
       <el-button :disabled="flag" type='primary' :plain='true' @click="save('addtaskForm')">Lưu</el-button>
   
-      <el-button :disabled="flag" type='primary' :plain='true' @click="submitForm('addtaskForm')">发 布</el-button>
+      <el-button :disabled="flag" type='primary' :plain='true' @click="submitForm('addtaskForm')">Phát hành</el-button>
       
       <el-button :plain='true' type="primary" @click='onDialogClose()'>Hủy</el-button>
     </span> 
@@ -585,7 +585,7 @@ this.ruleForm.taskregion=[];
         }
         this.Getcliniclist(1)
         this.dialogProps.action = 'add'
-        this.dialogProps.title = '新增任务信息'
+        this.dialogProps.title = 'Thêm thông tin nhiệm vụ mới'
         this.tabIndex = '1'
         this.dialogProps.visible = true
         this.province = ''
@@ -627,7 +627,7 @@ this.ruleForm.taskregion=[];
           taskregion: arr,
         }
         this.dialogProps.action = 'update'
-        this.dialogProps.title = '修改任务信息'
+        this.dialogProps.title = 'Sửa thông tin nhiệm vụ'
         this.tabIndex = '1'
         this.dialogProps.visible = true
       },

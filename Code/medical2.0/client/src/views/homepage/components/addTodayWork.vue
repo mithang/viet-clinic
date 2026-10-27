@@ -22,12 +22,12 @@
         <el-row>
           <el-col :span='24/1'>
             <el-form-item label='Bắt đầu' prop='fromDate'>
-               <el-date-picker :disabled='dialogProps.action === "view"' v-model="bizFormModel.fromDate" type="datetime" placeholder="选择开始日期" align="right" default-time="10:00:00"></el-date-picker>
+               <el-date-picker :disabled='dialogProps.action === "view"' v-model="bizFormModel.fromDate" type="datetime" placeholder="Chọn ngày bắt đầu" align="right" default-time="10:00:00"></el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span='24/1'>
             <el-form-item label='Kết thúc' prop='toDate' >
-               <el-date-picker :disabled='dialogProps.action === "view"' v-model="bizFormModel.toDate" type="datetime" placeholder="选择结束日期" align="right" default-time="10:00:00"></el-date-picker>
+               <el-date-picker :disabled='dialogProps.action === "view"' v-model="bizFormModel.toDate" type="datetime" placeholder="Chọn ngày kết thúc" align="right" default-time="10:00:00"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -100,7 +100,7 @@
       },
       switchEdit() {
         this.dialogProps.action = 'edit'
-        this.dialogProps.title = '修改日程'
+        this.dialogProps.title = 'Sửa lịch trình'
         this.initOptions(this.bizFormModel)
       },
       onDialogClose() {
@@ -124,7 +124,7 @@
       },
       openAddGroupDeviceDialog(parent, type) {
         this.dialogProps.action = 'add'
-        this.dialogProps.title = '添加日程'
+        this.dialogProps.title = 'Thêm lịch trình'
         this.bizFormModel = this.initFormModel(parent)
         this.initOptions(this.bizFormModel)
         this.dialogProps.visible = true

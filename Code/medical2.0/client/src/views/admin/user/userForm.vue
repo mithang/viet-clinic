@@ -47,10 +47,10 @@
           <!-- <el-col :span="24 / 2">
             <el-form-item label="Giới tính" prop="userExt.sex">
               <el-radio v-model="bizFormModel.userExt.sex" label="1"
-                >男</el-radio
+                >Nam</el-radio
               >
               <el-radio v-model="bizFormModel.userExt.sex" label="2"
-                >女</el-radio
+                >Nữ</el-radio
               >
             </el-form-item>
           </el-col> -->
@@ -95,7 +95,7 @@
                 v-model="bizFormModel.userExt.pracPsnCode"
                 :maxlength="11"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入执业编码'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập mã hành nghề'
                 "
               ></el-input>
             </el-form-item>
@@ -188,28 +188,28 @@
                 placeholder="Chức danh bảo hiểm y tế"
               >
                 <!-- 医生相关的选项 -->
-                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="主任医师" value="231"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="副主任医师" value="232"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="主诊医师" value="233"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="医师" value="234"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="医士" value="235"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Bác sĩ trưởng khoa" value="231"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Phó bác sĩ trưởng khoa" value="232"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Bác sĩ điều trị chính" value="233"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Bác sĩ" value="234"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Y sĩ" value="235"></el-option>
 
                 <!-- 药师相关的选项 -->
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="执业药师" value="1"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="主管药师" value="2.3"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="主任药师" value="2.1"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="副主任药师" value="2.2"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="药师" value="2.4"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="药士" value="2.5"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ hành nghề" value="1"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ phụ trách" value="2.3"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ trưởng" value="2.1"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Phó dược sĩ trưởng" value="2.2"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ" value="2.4"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược tá" value="2.5"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col>
-            <el-form-item label="类别" prop="userExt.jobType">
+            <el-form-item label="Loại" prop="userExt.jobType">
               <el-radio v-model="bizFormModel.userExt.jobType" label="Bác sĩ">Bác sĩ</el-radio>
-              <el-radio v-model="bizFormModel.userExt.jobType" label="药师">药师</el-radio>
+              <el-radio v-model="bizFormModel.userExt.jobType" label="药师">Dược sĩ</el-radio>
               <el-radio v-model="bizFormModel.userExt.jobType" label="Điều dưỡng">Điều dưỡng</el-radio>
               <el-radio v-model="bizFormModel.userExt.jobType" label="Khác">Khác</el-radio>
             </el-form-item>
@@ -244,7 +244,7 @@
         <el-row>
           <el-col :span="24 / 2">
             <el-form-item
-              label="本诊所开始执业时间"
+              label="Thời gian bắt đầu hành nghề tại phòng khám này"
               prop="userExt.startWorkTime"
             >
               <el-date-picker
@@ -258,7 +258,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="本诊所结束执业时间" prop="userExt.endWorkTime">
+            <el-form-item label="Thời gian kết thúc hành nghề tại phòng khám này" prop="userExt.endWorkTime">
               <el-date-picker
                 v-model="bizFormModel.userExt.endWorkTime"
                 type="date"
@@ -381,7 +381,7 @@
                 type="textarea"
                 :maxlength="255"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入介绍信息'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập thông tin giới thiệu'
                 "
                 clearable
               ></el-input>
@@ -927,7 +927,7 @@ export default {
           this.bizFormModel = this.initFormModel()
         }
         this.dialogProps.action = "view";
-        this.dialogProps.title = "查看用户";
+        this.dialogProps.title = "Xem người dùng";
         this.bizFormModel = { ...this.bizFormModel, ...user };
         this.tabIndex = "1";
         this.initOptions(this.bizFormModel);

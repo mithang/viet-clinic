@@ -62,7 +62,7 @@
 
     <div class="popup-main">
       <div class="popup-result">
-        <p class="title">时间表达式</p>
+        <p class="title">Biểu thức thời gian</p>
         <table>
           <thead>
             <th v-for="item of tabTitles" width="40" :key="item">{{item}}</th>

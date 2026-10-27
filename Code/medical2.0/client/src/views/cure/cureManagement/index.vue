@@ -330,8 +330,8 @@
                       v-model="patientInfoForm.gender.name"
                       style="width: 100%"
                     >
-                      <el-option label="男" value="男"></el-option>
-                      <el-option label="女" value="女"></el-option>
+                      <el-option label="Nam" value="男"></el-option>
+                      <el-option label="Nữ" value="女"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
@@ -783,11 +783,11 @@ export default {
       genderList: [
         {
           value: "gender_0",
-          name: "男",
+          name: "Nam",
         },
         {
           value: "gender_1",
-          name: "女",
+          name: "Nữ",
         },
       ],
       /*Danh sách đơn thuốc chờ thu phí*/

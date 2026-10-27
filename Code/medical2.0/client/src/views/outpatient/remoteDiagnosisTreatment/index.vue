@@ -22,7 +22,7 @@
             </el-col>
             <el-col :span="4">
               <el-form-item label='Khoa' prop='department'>
-                <el-input v-model='queryModel.department' :clearable='true' placeholder='请输入科室'></el-input>
+                <el-input v-model='queryModel.department' :clearable='true' placeholder='Vui lòng nhập khoa'></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
@@ -116,7 +116,7 @@
               <el-table-column prop="card" label="Số giấy tờ"></el-table-column>
               <el-table-column prop="department" label="Khoa/phòng đề nghị"></el-table-column>
               <el-table-column prop="medic" label="Bác sĩ đề nghị"></el-table-column>
-              <el-table-column prop="diagnosisTime" label="诊疗时间"></el-table-column>
+              <el-table-column prop="diagnosisTime" label="Thời gian khám chữa bệnh"></el-table-column>
               <el-table-column prop="createDate" label="Thời gian tạo"></el-table-column>
               <el-table-column prop="status" label="Trạng thái">
                 <template slot-scope='scope'>
@@ -511,7 +511,7 @@
         })
           .then((response) => {
             if (response.data.BusData.code === 20000) {
-              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，请重新发送申请！")
+              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，vui lòng gửi lại yêu cầu!")
             }else if (response.data.BusData.code === 10000){
 
             }
@@ -540,9 +540,9 @@
         })
           .then((response) => {
             if (response.data.BusData.code === 40004) {
-              this.$message.warning("机构信息及关键申请信息不可为空！")
+              this.$message.warning("Thông tin cơ sở và thông tin yêu cầu quan trọng không được để trống!")
             } else if(response.data.BusData.code === 20000){
-              this.$message.warning("音视频会议接口返回异常：会议房间已过期，请使用其他房间号！")
+              this.$message.warning("Giao diện họp âm thanh/hình ảnh trả về bất thường: phòng họp đã hết hạn, vui lòng dùng số phòng khác!")
 
             } else if (response.data.BusData.code === 10000) {
               this.conferenceReturn = response.data.BusData
@@ -561,7 +561,7 @@
                 child.postMessage(i, "*");
               }, 3000);
 
-              this.$message.success("会议加入成功！")
+              this.$message.success("Tham gia cuộc họp thành công!")
               /*setTimeout(() =>{
                 window.postMessage(i,a,i)
               },2000)*/
@@ -574,7 +574,7 @@
 
       // 撤销申请
       cancel(index, row){
-        this.$confirm('确定撤销申请吗？', 'Xác nhận', {
+        this.$confirm('Bạn có chắc muốn hủy yêu cầu không?', 'Xác nhận', {
           confirmButtonText: 'Xác nhận',
           cancelButtonText: 'Hủy',
           type: 'warning'

@@ -9,7 +9,7 @@
                 :highlight-current-row="isHighLight === 'store'"
                 :cell-style="() => ({borderBottom: 'none'})"
                 @row-click='onStoreClick'>
-        <el-table-column show-overflow-tooltip label='我的收藏' prop='name'>
+        <el-table-column show-overflow-tooltip label='Bộ sưu tập của tôi' prop='name'>
           <template slot-scope="scope">
             <div class="item">
               <div class="item-content">

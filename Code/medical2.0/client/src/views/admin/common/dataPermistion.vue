@@ -5,7 +5,7 @@
         <el-card  shadow='hover'>
           <div slot='header' class='clearfix'>
             <span>
-              元数据：{{metaData.name}}
+              Dữ liệu meta：{{metaData.name}}
             </span>
           </div>
           <ConditionPanel ref='conditionPanel' v-model='metaData.dataRules' :tableId='metaData.id' :schemeId='metaData.schemeId' :routerId='metaData.routerId'></ConditionPanel>

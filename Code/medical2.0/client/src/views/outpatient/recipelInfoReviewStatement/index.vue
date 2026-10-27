@@ -33,39 +33,39 @@
           <el-card class="box-card" shadow="always">
           <el-row>
             <el-col :span="24/4">
-              <el-form-item label='处方总数：' prop='statistical'>
+              <el-form-item label='Tổng số đơn thuốc：' prop='statistical'>
                 {{prescriptionStatistics.total}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='已发药数：' prop='statistical'>
+              <el-form-item label='Số đơn đã phát thuốc：' prop='statistical'>
                 {{prescriptionStatistics.dispensedMedicine}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='未发药数：' prop='statistical'>
+              <el-form-item label='Số đơn chưa phát thuốc：' prop='statistical'>
                 {{prescriptionStatistics.undispensedMedicine}}
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24/4">
-              <el-form-item label='已点评数：' prop='statistical'>
+              <el-form-item label='Số đơn đã đánh giá：' prop='statistical'>
                 {{prescriptionStatistics.alreadyReviewed}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='合格数：' prop='statistical'>
+              <el-form-item label='Số đơn đạt：' prop='statistical'>
                 {{prescriptionStatistics.good}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='不合格数：' prop='statistical'>
+              <el-form-item label='Số đơn không đạt：' prop='statistical'>
                 {{prescriptionStatistics.bad}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='合格率：' prop='statistical'>
+              <el-form-item label='Tỷ lệ đạt：' prop='statistical'>
                 {{prescriptionStatistics.rate}}%
               </el-form-item>
             </el-col>
@@ -110,17 +110,17 @@
                   align="center">
                 </el-table-column>
                 <el-table-column
-                  label='点评处方'
+                  label='Đơn thuốc đánh giá'
                   prop='comment'
                   align="center">
                 </el-table-column>
                 <el-table-column
-                  label='合格处方'
+                  label='Đơn thuốc đạt'
                   prop='rational'
                   align="center">
                 </el-table-column>
                 <el-table-column
-                  label='不合格处方'
+                  label='Đơn thuốc không đạt'
                   prop='belowStandard'
                   align="center">
                   <template slot-scope="scope">

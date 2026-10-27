@@ -38,7 +38,7 @@ export function downloadBlob(response, defaultFilename) {
   const headers = response.headers
   // content-disposition 可能在不同位置
   const disposition = headers['content-disposition'] || headers
-  const filename = parseFilename(typeof disposition === 'string' ? disposition : '') || defaultFilename || '下载文件'
+  const filename = parseFilename(typeof disposition === 'string' ? disposition : '') || defaultFilename || 'Tải tệp xuống'
 
   const blob = new Blob([response.data], { type: 'application/octet-stream' })
   const url = window.URL.createObjectURL(blob)

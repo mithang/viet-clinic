@@ -39,7 +39,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Tên thuốc' prop='drug.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.drug.goodsName'></el-input>
-            <el-select v-else v-model='bizFormModel.drug' value-key='id' filterable clearable placeholder='请选择药品名称' 
+            <el-select v-else v-model='bizFormModel.drug' value-key='id' filterable clearable placeholder='Vui lòng chọn tên thuốc' 
               @clear='bizFormModel.drug={
                 "id": null,
                                 "goodsName": null,
@@ -51,7 +51,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Phiếu nhập khoid' prop='supplierStorage.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.supplierStorage.code'></el-input>
-            <el-select v-else v-model='bizFormModel.supplierStorage' value-key='id' filterable clearable placeholder='请选择入库单id' 
+            <el-select v-else v-model='bizFormModel.supplierStorage' value-key='id' filterable clearable placeholder='Vui lòng chọn phiếu nhập khoid' 
               @clear='bizFormModel.supplierStorage={
                 "id": null,
                                 "code": null,
@@ -65,7 +65,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Tên vật tư' prop='stuff.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.stuff.name'></el-input>
-            <el-select v-else v-model='bizFormModel.stuff' value-key='id' filterable clearable placeholder='请选择材料名称' 
+            <el-select v-else v-model='bizFormModel.stuff' value-key='id' filterable clearable placeholder='Vui lòng chọn tên vật tư' 
               @clear='bizFormModel.stuff={
                 "id": null,
                                 "name": null,
@@ -84,7 +84,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Nhà sản xuất' prop='factory.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.factory.name'></el-input>
-            <el-select v-else v-model='bizFormModel.factory' value-key='id' filterable clearable placeholder='请选择厂家' 
+            <el-select v-else v-model='bizFormModel.factory' value-key='id' filterable clearable placeholder='Vui lòng chọn nhà sản xuất' 
               @clear='bizFormModel.factory={
                 "id": null,
                                 "name": null,
@@ -102,7 +102,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Ngày sản xuất' prop='produceDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.produceDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入生产日期"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.produceDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập ngày sản xuất"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -351,7 +351,7 @@ export default {
     },
     openViewSupplierStockDialog(supplierStock) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看供应商库存'
+      this.dialogProps.title = 'Xem tồn kho nhà cung cấp'
       this.bizFormModel = {...this.initFormModel(), ...supplierStock}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

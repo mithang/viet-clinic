@@ -258,7 +258,7 @@ export default {
      * Xóa thực thể
      */
     onDeleteEntity(index, row, deleteApi) {
-      this.$confirm('确认删除?', 'Nhắc nhở', {
+      this.$confirm('Xác nhận xóa?', 'Nhắc nhở', {
         confirmButtonText: 'Xác nhận',
         cancelButtonText: 'Hủy',
         type: 'warning'

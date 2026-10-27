@@ -24,7 +24,7 @@
             </el-table-column>
             <el-table-column
               prop="company.name"
-              label="执行诊所"
+              label="Phòng khám thực hiện"
               align="center"
               width="width">
             </el-table-column>

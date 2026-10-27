@@ -25,8 +25,8 @@
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='租户编码' prop='code' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.code' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入租户编码"' ></el-input>
+          <el-form-item label='Mã thuê bao' prop='code' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.code' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập mã thuê bao"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>

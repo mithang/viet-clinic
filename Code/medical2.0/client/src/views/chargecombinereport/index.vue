@@ -144,9 +144,9 @@
           </el-table-column>
           <el-table-column prop="prop" label="Số tiền ưu đãi" width="width">
           </el-table-column>
-          <el-table-column prop="prop" label="现金支付" width="width">
+          <el-table-column prop="prop" label="Thanh toán tiền mặt" width="width">
           </el-table-column>
-          <el-table-column prop="prop" label="微信支付" width="width">
+          <el-table-column prop="prop" label="Thanh toán WeChat" width="width">
           </el-table-column>
           <el-table-column prop="prop" label="Thanh toán Alipay" width="width">
           </el-table-column>

@@ -74,7 +74,7 @@ router.beforeEach((to, from, next) => {
         next('/login')
       }else{
         router.app.$store.dispatch('menus/SetToPath',to.path );
-        ELEMENT.Message({message:"您还没有登录，请先登录",type: 'warning', duration: 2 * 1000});
+        ELEMENT.Message({message:"Bạn chưa đăng nhập, vui lòng đăng nhập trước",type: 'warning', duration: 2 * 1000});
         next('/login')
       }
     }

@@ -34,7 +34,7 @@
       </el-row>
       <el-row :gutter='5'>
         <el-col>
-          <el-select style="width: 190px" v-model="conditionSelected" value-key='id' clearable placeholder='我的查询' @change='onChange'>
+          <el-select style="width: 190px" v-model="conditionSelected" value-key='id' clearable placeholder='Tra cứu của tôi' @change='onChange'>
             <el-option v-for="item in conditionList" :key="item.id" :label="item.name" :value="item">
               <span style="float: left">{{ item.name }}</span>
               <span style="padding:0 0 0 30px; float: right; color: #8492a6; font-size: 13px">
@@ -47,7 +47,7 @@
     </el-aside>
 
     <!-- 保存查询的名称对话框 -->
-    <el-dialog :title='conditionSelected ? "更新查询标题" : "输入查询标题"' :visible.sync='dialogVisible' width='350px'>
+    <el-dialog :title='conditionSelected ? "Cập nhật tiêu đề tra cứu" : "Nhập tiêu đề tra cứu"' :visible.sync='dialogVisible' width='350px'>
       <el-form :model='nameModel' ref='nameForm' label-width='0px' label-position='right' class='edit-form' :rules='formRules'>
         <el-form-item prop='name'>
           <el-input v-model='nameModel.name'></el-input>

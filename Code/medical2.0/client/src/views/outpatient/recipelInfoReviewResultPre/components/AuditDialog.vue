@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" title="电子处方审核查询" width="60%"
+  <el-dialog :visible.sync="dialogVisible" title="Tra cứu kiểm duyệt đơn thuốc điện tử" width="60%"
              :close-on-click-modal="false"  @close="closeDialog"
   ><el-form :model="formData" ref="auditForm" label-width="120px">
     <el-row gutter={20}>
@@ -9,12 +9,12 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="医保医师姓名">
+        <el-form-item label="Tên bác sĩ bảo hiểm y tế">
           <el-input v-model="formData.pharName" readonly></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="医保医师代码">
+        <el-form-item label="Mã bác sĩ bảo hiểm y tế">
           <el-input v-model="formData.pharCode" readonly></el-input>
         </el-form-item>
       </el-col>
@@ -22,17 +22,17 @@
 
     <el-row gutter={20}>
       <el-col :span="8">
-        <el-form-item label="处方审核状态">
+        <el-form-item label="Trạng thái kiểm duyệt đơn thuốc">
           <el-input v-model="formData.rxChkStasCodg" readonly></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="处方审核意见">
+        <el-form-item label="Ý kiến kiểm duyệt đơn thuốc">
           <el-input v-model="formData.rxChkOpnn" readonly></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="处方审核时间">
+        <el-form-item label="Thời gian kiểm duyệt đơn thuốc">
           <el-input v-model="formData.rxChkTime" readonly></el-input>
         </el-form-item>
       </el-col>

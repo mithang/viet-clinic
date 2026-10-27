@@ -79,7 +79,7 @@
             @click="chargeClick"
             >{{ chargeStatusActiveName === "2" ? "Hoàn phí" : "Thu phí" }}</el-button
           >
-          <el-button v-if="chargeStatusActiveName === '2'">开票</el-button>
+          <el-button v-if="chargeStatusActiveName === '2'">Xuất hóa đơn</el-button>
         </div>
       </div>
       <div class="patientinfo_form">
@@ -488,11 +488,11 @@ export default {
       genderList: [
         {
           id: 1,
-          name: "男",
+          name: "Nam",
         },
         {
           id: 1,
-          name: "女",
+          name: "Nữ",
         },
       ],
       /*Danh sách đơn thuốc chờ thu phí*/

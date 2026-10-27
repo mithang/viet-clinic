@@ -41,7 +41,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tên mô-đun con' prop='subModuleName'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.subModuleName' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "请输入子模块名"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.subModuleName' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên mô-đun con"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -58,7 +58,7 @@
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Tác giả' prop='functionAuthor'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.functionAuthor' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入作者"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.functionAuthor' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tác giả"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -102,7 +102,7 @@
       <el-dropdown v-if='dialogProps.action !== "view"' split-button type='warning' @click='generate("genSchemeForm", false)'>
         Tạo mã
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item><el-button  type='text' :plain='true' @click='generate("genSchemeForm", true)'>覆盖文件</el-button></el-dropdown-item>
+          <el-dropdown-item><el-button  type='text' :plain='true' @click='generate("genSchemeForm", true)'>Ghi đè tệp</el-button></el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("genSchemeForm")'>Lưu</el-button>
@@ -282,7 +282,7 @@ export default {
     },
     openViewGenSchemeDialog(genScheme) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看代码方案'
+      this.dialogProps.title = 'Xem phương án mã'
       this.bizFormModel = genScheme
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

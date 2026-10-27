@@ -37,7 +37,7 @@
               <el-row>
         <el-col :span='24/2'>
            <el-form-item label='Mã tín dụng' prop='creditCode' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.creditCode' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入信用代码"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.creditCode' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập mã tín dụng"' ></el-input>
           </el-form-item>
         </el-col>
          <el-col :span='24/2'>
@@ -61,7 +61,7 @@
       </el-row>
       <el-row>
         <el-col :span="24/1">
-        <el-form-item label='供应商分类' prop='type'>
+        <el-form-item label='Phân loại nhà cung cấp' prop='type'>
           <div>
             <el-radio :disabled='dialogProps.action === "view"' v-model="bizFormModel.type" label="1" border>Nhà cung cấp thuốc</el-radio>
           <el-radio :disabled='dialogProps.action === "view"' v-model="bizFormModel.type" label="2" border>Nhà cung cấp vật tư</el-radio>
@@ -226,7 +226,7 @@ export default {
      },
     openViewSupplierDialog(supplier) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看供应商管理'
+      this.dialogProps.title = 'Xem quản lý nhà cung cấp'
       this.bizFormModel = {...this.initFormModel(), ...supplier}
       this.initOptions(this.bizFormModel)
       this.value = this.bizFormModel.status

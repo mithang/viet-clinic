@@ -33,7 +33,7 @@ export default {
     // 显示的内容
     content: {
       type: String,
-      default: () => {return '请设置提示信息'}
+      default: () => {return 'Vui lòng đặt thông tin nhắc nhở'}
     },
     // Tooltip 的出现位置
     placement: {

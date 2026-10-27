@@ -23,7 +23,7 @@
         <el-col :span='24/1'>
           <el-form-item label='Loại đối tượng' prop='objectType.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='actionModel.objectType.comments'></el-input>
-            <el-select v-else v-model='actionModel.objectType' value-key='id' filterable clearable placeholder='请选择对象类型'>
+            <el-select v-else v-model='actionModel.objectType' value-key='id' filterable clearable placeholder='Vui lòng chọn loại đối tượng'>
              <el-option v-for='objectType in objectType_List' :key='objectType.id' :label='objectType.comments' :value='objectType'></el-option>
             </el-select>
           </el-form-item>
@@ -254,7 +254,7 @@ export default {
     },
     openViewActionDialog(action) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看操作日志'
+      this.dialogProps.title = 'Xem nhật ký thao tác'
       this.actionModel = action
       this.dialogProps.visible = true
     },

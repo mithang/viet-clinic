@@ -256,7 +256,7 @@
 
         <el-divider class="line"></el-divider>
         <!-- Quy cách -->
-        <div class="specifications">Thông tin quy cách &nbsp;&nbsp;<span style="color:#C0C0C0;">(ví dụ：2.5g*12片/túi)</span></div>
+        <div class="specifications">Thông tin quy cách &nbsp;&nbsp;<span style="color:#C0C0C0;">(ví dụ：2.5g*12 viên/túi)</span></div>
         <div class="specifications-box">
           <!-- Liều lượng -->
           <div class="dose-box">

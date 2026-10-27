@@ -51,7 +51,7 @@
             </el-table-column>
     <el-table-column
       prop="pszt"
-      label="皮试状态">
+      label="Trạng thái thử phản ứng da">
     </el-table-column>
     <el-table-column
       prop="hzxm"
@@ -59,7 +59,7 @@
     </el-table-column>
     <el-table-column
       prop="gmqk"
-      label="过敏情况">
+      label="Tình trạng dị ứng">
     </el-table-column>
     <el-table-column
       prop="kdsj"

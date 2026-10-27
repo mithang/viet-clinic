@@ -27,7 +27,7 @@
         <div class="login-body">
           <h1 class="form-title">
             <!-- <img :src="sysData.loginLogo" alt="" /> -->
-            诊所管理系统
+            Hệ thống Quản lý Phòng khám
           </h1>
           <el-alert
             class="login-error"

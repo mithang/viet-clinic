@@ -1,19 +1,19 @@
 <template>
   <el-card class="index-module-card" v-loading="isCardLoading" :style="styleObject">
     <div slot="header">
-      <span class="el-card-title">个人工作台</span>
+      <span class="el-card-title">Bàn làm việc cá nhân</span>
       <i style="margin-left: 10px;" v-show="!isPanelSetIcon" class="card-close el-icon-close" @click="deletePanelItem"></i>
       <i style="margin-left: 10px;" v-show="isPanelSetIcon" class="card-setting iconfont icon-setting"></i>
       <el-radio-group v-model="currentType" size="mini" class="card-radio-group" @change="handleTypeChange">
-        <el-radio-button label="MY_TASK">我的待办</el-radio-button>
-        <el-radio-button label="MY_PROCESS">我要申请</el-radio-button>
-        <el-radio-button label="MY_APPLIED">我的申请</el-radio-button>
-        <el-radio-button label="MY_APPROVED">我已审批</el-radio-button>
+        <el-radio-button label="MY_TASK">Việc cần làm của tôi</el-radio-button>
+        <el-radio-button label="MY_PROCESS">Tôi muốn đăng ký</el-radio-button>
+        <el-radio-button label="MY_APPLIED">Đơn của tôi</el-radio-button>
+        <el-radio-button label="MY_APPROVED">Tôi đã phê duyệt</el-radio-button>
       </el-radio-group>
     </div>
     <div class="often-body" style="position: relative; min-height: 210px;">
-      <div v-if="currentType === 'MY_TASK'" class="empty-placeholder">暂无待办</div>
-      <div v-if="currentType === 'MY_PROCESS'" class="empty-placeholder">暂无申请</div>
+      <div v-if="currentType === 'MY_TASK'" class="empty-placeholder">Chưa có việc cần làm</div>
+      <div v-if="currentType === 'MY_PROCESS'" class="empty-placeholder">Chưa có đơn</div>
       <div v-if="currentType === 'MY_APPLIED'" class="empty-placeholder">Chưa có bản ghi</div>
       <div v-if="currentType === 'MY_APPROVED'" class="empty-placeholder">Chưa có bản ghi</div>
     </div>

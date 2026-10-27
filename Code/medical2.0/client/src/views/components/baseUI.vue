@@ -1,6 +1,6 @@
 <template>
   <div  style="text-align:left" >
-    listvàformLớp thành phần cơ sở của cửa sổ，统一处理异常错误信息。
+    listvàformLớp thành phần cơ sở của cửa sổ，Xử lý thống nhất thông tin lỗi bất thường。
   </div>
 </template>
 <script>
@@ -153,7 +153,7 @@ export default {
       if (msgData.type === 'warning' || msgData.type === 'error') {
         if(!this.isAlert) {
           this.isAlert = true
-          this.$alert(msgData.msg + tip, msgData.type === 'warning' ? '警告' : 'Lỗi', {
+          this.$alert(msgData.msg + tip, msgData.type === 'warning' ? 'Cảnh báo' : 'Lỗi', {
             type: msgData.type,
             callback: action => {
               if(this.loadcount <= 0) {

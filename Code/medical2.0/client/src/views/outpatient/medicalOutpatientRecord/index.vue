@@ -4043,7 +4043,7 @@
                 );
               });
           } else {
-            this.$message.error("请填写模板名称或者诊断说明！");
+            this.$message.error("Vui lòng điền tên mẫu hoặc mô tả chẩn đoán!");
             return false;
           }
         });
@@ -4786,7 +4786,7 @@
             this.resetLoad();
           })
           .catch((error) => {
-            //this.$message.error("Dữ liệu hệ thống bất thường，请确认数据是否有误或联系管理员解决！")
+            //this.$message.error("Dữ liệu hệ thống bất thường, vui lòng xác nhận dữ liệu có sai sót hay không hoặc liên hệ quản trị viên để xử lý!")
           });
       },
 
@@ -4851,7 +4851,7 @@
       //编辑保存
       save(type) {
         if (this.savelock) {
-          this.$message.error("保存中，请稍后");
+          this.$message.error("Đang lưu, vui lòng đợi");
           return;
         }
         let FormCheck = true;
@@ -4870,12 +4870,12 @@
         }
 
         if (this.beyondInventoryType) {
-          this.$message.error("存在药品数量超出可用库存总量,Vui lòng điền lại!");
+          this.$message.error("Có số lượng thuốc vượt quá tổng tồn kho khả dụng,Vui lòng điền lại!");
           return;
         }
 
         if (this.beyondStuffInventoryType) {
-          this.$message.error("存在材料数量超出可用库存总量，Vui lòng điền lại!");
+          this.$message.error("Có số lượng vật tư vượt quá tổng tồn kho khả dụng，Vui lòng điền lại!");
           return;
         }
 
@@ -5124,27 +5124,27 @@
           return;
         }
         if (flag1) {
-          this.$message.error("请填写输液天数");
+          this.$message.error("Vui lòng điền số ngày truyền dịch");
           return;
         }
         if (flag2) {
-          this.$message.error("请填写输液频次");
+          this.$message.error("Vui lòng điền tần suất truyền dịch");
           return;
         }
         if (flagChinese1) {
-          this.$message.error("请填写中药剂量");
+          this.$message.error("Vui lòng điền liều thuốc Đông y");
           return;
         }
         if (flagChinese2) {
-          this.$message.error("请填写中药药品数量");
+          this.$message.error("Vui lòng điền số lượng thuốc Đông y");
           return;
         }
         if (treatment) {
-          this.$message.error("请填写诊疗处方的项目数量");
+          this.$message.error("Vui lòng điền số lượng hạng mục của đơn khám chữa bệnh");
           return;
         }
         if (chargeflag) {
-          this.$message.error("请填写附加费的项目数量");
+          this.$message.error("Vui lòng điền số lượng hạng mục phụ phí");
           return;
         }
 
@@ -5238,7 +5238,7 @@
           } else if (responseData.code === "50001") {
             this.$message.warning(responseData.msg);
           } else {
-            this.$message.error("更新失败！");
+            this.$message.error("Cập nhật thất bại!");
           }
           this.savelock = false;
         });
@@ -5279,7 +5279,7 @@
           now = Date.parse(now);
           newDate = Date.parse(newDate);
           if (this.timeOut) {
-            this.$message.error("超过一天的数据无法编辑");
+            this.$message.error("Dữ liệu quá một ngày không thể chỉnh sửa");
             return;
           }
           this.isReadOnly = false;
@@ -5300,7 +5300,7 @@
           //   }
           // }
         } else {
-          this.$message.error("未选择用户");
+          this.$message.error("Chưa chọn người dùng");
         }
         //Chuyển đổi tải tệp đính kèm lên
         this.changeMedicalFile("edit", "");
@@ -5826,7 +5826,7 @@
         this.changeMedicalFile("add");
       },
       open(item, index) {
-        this.$confirm("当前患者还未完成接诊是否确定切换?", "Nhắc nhở", {
+        this.$confirm("Bệnh nhân hiện tại chưa hoàn thành tiếp nhận, bạn có chắc muốn chuyển không?", "Nhắc nhở", {
           confirmButtonText: "Xác nhận",
           cancelButtonText: "Hủy",
           type: "warning",
@@ -6587,7 +6587,7 @@
               .toNumber()
           );
           if (total > row.drug.total) {
-            this.$message.error("该药品设置的总量上限要小于默认功效说明计算总量");
+            this.$message.error("Tổng lượng tối đa đã đặt cho thuốc này phải nhỏ hơn tổng lượng tính theo hướng dẫn công dụng mặc định");
             return;
           }
         }
@@ -7929,7 +7929,7 @@
             this.GetPreparePatientList();
             this.GetAlreadyPatientList();
           } else {
-            this.$message.error("完成接诊失败！");
+            this.$message.error("Hoàn thành tiếp nhận thất bại!");
           }
         });
       },
@@ -7938,18 +7938,18 @@
           !this.medicalClickTabsValue.content ||
           !this.medicalClickTabsValue.content.recipelInfo.id
         ) {
-          this.$message.error("未选择处方");
+          this.$message.error("Chưa chọn đơn thuốc");
           return;
         }
         let id = this.medicalClickTabsValue.content.recipelInfo.id;
 
         invalidStatus(id).then((responseData) => {
           if (responseData.code === 100) {
-            this.$message.success("处方作废成功！");
+            this.$message.success("Hủy đơn thuốc thành công!");
             this.cancellation = true;
             this.AlreadyPatientDeletilQuery();
           } else {
-            this.$message.error("处方作废失败！");
+            this.$message.error("Hủy đơn thuốc thất bại!");
           }
         });
       },
@@ -8048,7 +8048,7 @@
       },
       //病历历史调用
       onMedicalHistory() {
-        this.$message.warning("开发中。。。");
+        this.$message.warning("Đang phát triển...");
       },
       blmbonSizeChange(val) {
         this.blmbcurrentPage = 1;

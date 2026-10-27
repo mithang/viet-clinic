@@ -12,7 +12,7 @@
               <el-row>
         <el-col :span='24/4'>
           <el-form-item label='Mã mẫu' prop='code' >
-            <el-input :disabled='true' v-model='bizFormModel.code' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "模板编号自动生成"' ></el-input>
+            <el-input :disabled='true' v-model='bizFormModel.code' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Mã mẫu tự động tạo"' ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='24/4'>
@@ -2527,7 +2527,7 @@ export default {
                     .toNumber()
               );
               if(total>row.total){
-                this.$message.error('该药品设置的总量上限小于默认功效说明计算总量')
+                this.$message.error('Tổng lượng tối đa đã đặt cho thuốc này nhỏ hơn tổng lượng tính theo hướng dẫn công dụng mặc định')
                 return
               }
       }
@@ -3252,7 +3252,7 @@ export default {
     },
     openViewRecipetemplateDialog(recipetemplate, company) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看模板处方'
+      this.dialogProps.title = 'Xem đơn thuốc mẫu'
       this.bizFormModel = {...this.initFormModel(), ...recipetemplate}
       this.clinic=company
       this.initOptions(this.bizFormModel)
@@ -3307,7 +3307,7 @@ export default {
     },
     openCopyRecipetemplateDialog(recipetemplate) {
       this.dialogProps.action = 'add'
-      this.dialogProps.title = '添加模板处方'
+      this.dialogProps.title = 'Thêm đơn thuốc mẫu'
       this.bizFormModel = {...this.initFormModel(), ...recipetemplate}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

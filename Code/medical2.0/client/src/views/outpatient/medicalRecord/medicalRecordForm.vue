@@ -42,14 +42,14 @@
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Bệnh sử hiện tại' prop='nowHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.nowHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入现病史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.nowHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập bệnh sử hiện tại"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tiền sử bệnh' prop='beforeHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.beforeHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入既往史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.beforeHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -61,91 +61,91 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tiền sử cá nhân' prop='personalHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.personalHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入个人史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.personalHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập bệnh sử cá nhân"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Tiền sử dị ứng' prop='allergyHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.allergyHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入过敏史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.allergyHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử dị ứng"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tiền sử bệnh' prop='diseaseHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.diseaseHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入疾病史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.diseaseHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử bệnh"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Tiền sử hôn nhân/mang thai' prop='pregnancyHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.pregnancyHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入婚孕史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.pregnancyHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử hôn nhân/thai sản"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tiền sử bệnh truyền nhiễm' prop='infectiousHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.infectiousHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入传染病史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.infectiousHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử bệnh truyền nhiễm"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Tiền sử kinh nguyệt' prop='lunariaHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.lunariaHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入月经史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.lunariaHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử kinh nguyệt"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tiền sử gia đình' prop='familyHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.familyHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入家族史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.familyHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử gia đình"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Tiền sử phẫu thuật' prop='surgeryHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.surgeryHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入手术史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.surgeryHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử phẫu thuật"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tiền sử truyền máu' prop='transfusionHistory' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.transfusionHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入输血史"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.transfusionHistory' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tiền sử truyền máu"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Khám thực thể' prop='physiqueCheck' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.physiqueCheck' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入体格检查"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.physiqueCheck' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập khám thực thể"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Xét nghiệm bổ sung' prop='assistCheck' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.assistCheck' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入辅助检查"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.assistCheck' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập xét nghiệm bổ sung"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Chẩn đoán cấp cứu' prop='emergencyDiagnose' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.emergencyDiagnose' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入急诊诊断"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.emergencyDiagnose' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập chẩn đoán cấp cứu"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Hiệu quả cấp cứu' prop='emergencyEffect' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.emergencyEffect' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入急诊效果"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.emergencyEffect' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập kết quả cấp cứu"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Xét nghiệm khác' prop='otherCheck' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.otherCheck' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "请输入其他检查"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.otherCheck' :maxlength='128' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập các xét nghiệm khác"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian chẩn đoán' prop='diagnoseDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.diagnoseDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入诊断时间"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.diagnoseDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian chẩn đoán"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -358,7 +358,7 @@ export default {
     },
     openViewMedicalRecordDialog(medicalRecord) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看病历填写'
+      this.dialogProps.title = 'Xem điền bệnh án'
       this.bizFormModel = {...this.initFormModel(), ...medicalRecord}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

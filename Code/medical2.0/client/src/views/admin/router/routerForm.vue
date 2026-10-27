@@ -12,7 +12,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Cấp cha' prop='parent.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.parent.name'></el-input>
-            <el-cascader v-else v-model='bizFormModel.parent.id' :options='parent_List' :key='key_parent' ref='parentCascader' @change='onParentChange' :props='{value: "id", label: "name", checkStrictly: true, emitPath: false}' filterable clearable placeholder='请选择父级' />
+            <el-cascader v-else v-model='bizFormModel.parent.id' :options='parent_List' :key='key_parent' ref='parentCascader' @change='onParentChange' :props='{value: "id", label: "name", checkStrictly: true, emitPath: false}' filterable clearable placeholder='Vui lòng chọn cấp cha' />
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -47,7 +47,7 @@
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='显示序号' prop='sort' >
+          <el-form-item label='Số thứ tự hiển thị' prop='sort' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.sort'></el-input>
             <el-input-number v-else v-model='bizFormModel.sort' controls-position='right'></el-input-number>
           </el-form-item>
@@ -200,7 +200,7 @@ export default {
     },
     openViewRouterDialog(router) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看路由'
+      this.dialogProps.title = 'Xem tuyến đường'
       this.bizFormModel = router
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

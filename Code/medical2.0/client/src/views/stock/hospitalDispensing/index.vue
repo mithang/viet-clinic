@@ -121,7 +121,7 @@ export default {
       },
       zstbztOptions: [
         { label: 'Đồng bộ', value: '1' },
-        { label: '未同步', value: '2' }
+        { label: 'Chưa đồng bộ', value: '2' }
       ],
       search: {
         params: [],
@@ -167,15 +167,15 @@ export default {
         },
         {
           prop: 'ckdw',
-          label: '出库单位',
+          label: 'Đơn vị xuất kho',
         },
         {
           prop: 'pfj',
-          label: '批发价',
+          label: 'Giá bán sỉ',
         },
         {
           prop: 'ypdm',
-          label: '药品代码',
+          label: 'Mã thuốc',
         },
         {
           prop: 'fph',
@@ -183,7 +183,7 @@ export default {
         },
         {
           prop: 'zstbzt',
-          label: '同步状态',
+          label: 'Trạng thái đồng bộ',
         },
       ],
       dispensingTime: '',
@@ -329,7 +329,7 @@ export default {
       }
     },
     onSynchronous() {
-      this.$confirm('确定同步吗？', 'Xác nhận', {
+      this.$confirm('Bạn có chắc đồng bộ không?', 'Xác nhận', {
         confirmButtonText: 'Xác nhận',
         cancelButtonText: 'Hủy',
         type: 'warning'

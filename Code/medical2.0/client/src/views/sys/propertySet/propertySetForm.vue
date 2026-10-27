@@ -128,7 +128,7 @@ export default {
     },
     openViewPropertySetDialog(propertySet) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看属性集'
+      this.dialogProps.title = 'Xem tập thuộc tính'
       this.bizFormModel = propertySet
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

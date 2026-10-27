@@ -144,7 +144,7 @@
       },
 /*      beforeName(newName,oldName){
           if(newName === "all"){
-            this.$confirm('全部消息已读, 是否继续?', 'Nhắc nhở', {
+            this.$confirm('Tất cả tin nhắn đã đọc, có tiếp tục không?', 'Nhắc nhở', {
               confirmButtonText: 'Xác nhận',
               cancelButtonText: 'Hủy',
               type: 'warning'
@@ -154,7 +154,7 @@
                       if(result.code===100){
                         this.$store.dispatch('notices/SetNoticeTotal',0);
                         this.unreadList = [];
-                        this.$message.success("全部已读");
+                        this.$message.success("Đã đọc tất cả");
                       }
                 })
               }

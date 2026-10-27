@@ -1,7 +1,7 @@
 <template>
-  <div class="drawer-container" v-loading="drawerLoading" element-loading-text="更新中">
+  <div class="drawer-container" v-loading="drawerLoading" element-loading-text="Đang cập nhật">
     <div>
-      <h3 class="drawer-title">系统设置</h3>
+      <h3 class="drawer-title">Cài đặt hệ thống</h3>
       <div class="drawer-item">
         <span>Tên hệ thống</span>
         <el-input v-if="sysData" v-model="sysData.sysName" style="width: 170px" placeholder="Tên hệ thống"></el-input>
@@ -29,7 +29,7 @@
         </el-popover>
       </div>
       <div class="drawer-item img-item" :class="fileList1.length > 0? 'hasImage' : ''" style="padding-top: 12px">
-        <i class="tip">Khuyến nghị：174*32，cấp số nhân，png，用于登录页</i>
+        <i class="tip">Khuyến nghị：174*32，cấp số nhân，png，Dùng cho trang đăng nhập</i>
         <span>Hạng mụclogo（<512K）</span>
         <el-popover
           class="img-tip"
@@ -66,7 +66,7 @@
           :file-list="fileList2"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList3.length > 0? 'hasImage' : ''">
-        <i class="tip">Khuyến nghị：170*30，cấp số nhân，png，用于系统主页</i>
+        <i class="tip">Khuyến nghị：170*30，cấp số nhân，png，Dùng cho trang chủ hệ thống</i>
         <span>Trang chủ hệ thốnglogo（<512K）</span>
         <el-popover
           class="img-tip"
@@ -84,8 +84,8 @@
           :file-list="fileList3"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList4.length > 0? 'hasImage' : ''">
-        <i class="tip">Khuyến nghị：16*16，cấp số nhân，ico，用于网页顶部</i>
-        <span>网站图标ICO</span>
+        <i class="tip">Khuyến nghị：16*16，cấp số nhân，ico，Dùng cho đầu trang web</i>
+        <span>Biểu tượng trang webICO</span>
         <el-popover
           class="img-tip"
           placement="left"
@@ -101,7 +101,7 @@
           :on-remove="(file, fileList) => handleRemove(file, fileList, 'fileList4', 'faviconIndex')"
           :file-list="fileList4"></image-upload>
       </div>
-      <h3 class="drawer-title">登录页</h3>
+      <h3 class="drawer-title">Trang đăng nhập</h3>
       <div class="drawer-item">
         <el-row class="drawer-style" :gutter="10">
           <el-col :span="6" v-for="(item, index) in loginLayouts" :key="index">
@@ -127,8 +127,8 @@
           popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item img-item" :class="fileList5.length > 0? 'hasImage' : ''">
-        <i class="tip">jpg/png，用于登录页背景图</i>
-        <span>背景图（<512K）</span>
+        <i class="tip">jpg/png，Dùng làm ảnh nền trang đăng nhập</i>
+        <span>Ảnh nền（<512K）</span>
         <el-popover
           class="img-tip"
           placement="left"
@@ -146,7 +146,7 @@
       </div>
       <div class="drawer-item img-item" :class="fileList6.length > 0? 'hasImage' : ''">
         <i class="tip">Khuyến nghị：690*500，cấp số nhân，jpg/png，Dùng cho hộp đăng nhập</i>
-        <span>登录框配图（<512K）</span>
+        <span>Ảnh minh họa khung đăng nhập（<512K）</span>
         <el-popover
           class="img-tip"
           placement="left"
@@ -286,7 +286,7 @@
         let str = file.name.substring(file.name.lastIndexOf('.') + 1)
         let isLt512 = file.size / 1024 < 512
         if (!isLt512) {
-          this.$message.warning('上传的图片不能超过512k')
+          this.$message.warning('Hình ảnh tải lên không được vượt quá 512k')
           file = null
           this[list].splice(fileList.length - 1, 1)
           return false

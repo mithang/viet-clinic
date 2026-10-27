@@ -3,7 +3,7 @@
               <i style="float: right; padding: 3px 0; position: relative; z-index: 1" class="el-icon-close" @click="closeTab"></i>
 
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="材料有效期" name="stuffIndate">
+        <el-tab-pane label="Hạn sử dụng của vật tư" name="stuffIndate">
           <el-table :data="stuffIndateList" :row-key="getRowKeys" @expand-change="expandSelect" :expand-row-keys="expands"  border v-loading="loading" highlight-current-row>
           <el-table-column align="center" prop="stuff.name" label="Tên vật tư">
           </el-table-column>

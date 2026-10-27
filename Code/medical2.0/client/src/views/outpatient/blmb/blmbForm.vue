@@ -14,7 +14,7 @@
                  ref="formLabelAlign">
           <el-col :span="24">
             <el-form-item>
-              <span class="bt">模板基本信息</span>
+              <span class="bt">Thông tin cơ bản của mẫu</span>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -43,7 +43,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item>
-              <span class="bt">模板内容</span>
+              <span class="bt">Nội dung mẫu</span>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -466,7 +466,7 @@
           };
         }
         this.dialogProps.action = 'add'
-        this.dialogProps.title = titles + '模板信息'
+        this.dialogProps.title = titles + 'Thông tin mẫu'
         this.tabIndex = '1'
         this.dialogProps.visible = true
         this.province = ''

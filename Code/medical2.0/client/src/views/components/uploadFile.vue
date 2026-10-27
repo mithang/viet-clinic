@@ -3,7 +3,7 @@
     <el-collapse v-model="activeNames" v-loading="loading">
       <el-collapse-item name="3">
         <template slot="title">
-          <span class="collapse-title">{{title}}<span style="color: #ccc">（展开查看更多）</span></span>
+          <span class="collapse-title">{{title}}<span style="color: #ccc">（Mở rộng để xem thêm）</span></span>
           <div class="collapse-btn">
 <!--            <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='!action'>Tải lên</el-button>-->
             <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='authority === "add" || authority === "edit"'>Tải lên</el-button>
@@ -162,7 +162,7 @@
       onPreviewFile(file) {
       },
       onExceedFile(file, fileList) {
-        this.$message.warning(`当前限制上传 7 tệp`);
+        this.$message.warning(`Hiện giới hạn tải lên 7 tệp`);
       },
       beforeRemoveFile(file, fileList) {
         let index = this.fileList.indexOf(file);
@@ -187,7 +187,7 @@
         window.open(process.env.KK_FILE_URL + encodeURIComponent(Base64.encode(url)));
       },
       onRemoveViewFile(index, row) {
-        this.$confirm(`Xác nhận xóa ${ row.name }吗？`, 'Xác nhận', {
+        this.$confirm(`Xác nhận xóa ${ row.name }?`, 'Xác nhận', {
           confirmButtonText: 'Xác nhận',
           cancelButtonText: 'Hủy'
         }).then(() => {

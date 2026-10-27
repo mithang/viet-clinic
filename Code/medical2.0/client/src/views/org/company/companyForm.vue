@@ -17,7 +17,7 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='全称' prop='fullName' >
+          <el-form-item label='Tên đầy đủ' prop='fullName' >
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.fullName' :maxlength='512' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên đầy đủ"' ></el-input>
           </el-form-item>
         </el-col>
@@ -112,7 +112,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian kích hoạt phòng khám' prop='startUseDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.startUseDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入诊所启用时间"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.startUseDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian đưa phòng khám vào hoạt động"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -324,7 +324,7 @@ export default {
     },
     openViewCompanyDialog(company) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看公司'
+      this.dialogProps.title = 'Xem công ty'
       this.bizFormModel = {...this.initFormModel(), ...company}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

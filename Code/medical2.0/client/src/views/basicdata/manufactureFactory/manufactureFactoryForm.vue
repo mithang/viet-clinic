@@ -95,7 +95,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="厂家分类" prop="type">
+            <el-form-item label="Phân loại nhà sản xuất" prop="type">
               <div>
                 <el-radio
                   :disabled="dialogProps.action === 'view'"
@@ -280,7 +280,7 @@ export default {
         "openViewManufactureFactoryDialog",
         function (manufactureFactory) {
           this.dialogProps.action = "view";
-          this.dialogProps.title = "查看生产厂家";
+          this.dialogProps.title = "Xem nhà sản xuất";
           this.bizFormModel = {
             ...this.initFormModel(),
             ...manufactureFactory,

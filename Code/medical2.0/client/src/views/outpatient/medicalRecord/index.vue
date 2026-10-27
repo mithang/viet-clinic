@@ -91,7 +91,7 @@
                     {{ item.company.name }} /
                     <span class="alreadytype">{{
                       item.status.value === "registrationStatus_4"
-                        ? "已接诊"
+                        ? "Đã tiếp nhận"
                         : item.status.name
                     }}</span>
                   </p>
@@ -154,7 +154,7 @@
         />
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" v-if="!IsOnlyRead" @click="UseRecord"
-            >调 用</el-button
+            >Gọi</el-button
           >
           <el-button @click="IsShowRecords = false">Đóng</el-button>
         </span>
@@ -193,8 +193,8 @@
               <el-col :span="6">
                 <el-form-item label="Giới tính" prop="gender">
                   <el-radio-group v-model="BasicInfoModel.gender.name">
-                    <el-radio label="男">男</el-radio>
-                    <el-radio label="女">女</el-radio>
+                    <el-radio label="男">Nam</el-radio>
+                    <el-radio label="女">Nữ</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>

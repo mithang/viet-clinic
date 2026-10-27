@@ -132,7 +132,7 @@ export default {
     },
     openEditCompanyCodeRuleDialog(companyCodeRule) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改公司编码规则'
+      this.dialogProps.title = 'Sửa quy tắc mã công ty'
       this.bizFormModel = companyCodeRule
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

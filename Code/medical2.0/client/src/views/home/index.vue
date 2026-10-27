@@ -44,16 +44,16 @@
           @contextmenu.prevent
         >
           <li @click.stop="refreshSelectedTag(selectedTag)">
-            <i class="el-icon-refresh"></i> 刷新页面
+            <i class="el-icon-refresh"></i> Làm mới trang
           </li>
           <li v-if="isClosable(selectedTag)" @click.stop="closeSelectedTag(selectedTag)">
-            <i class="el-icon-close"></i> 关闭标签
+            <i class="el-icon-close"></i> Đóng thẻ
           </li>
           <li @click.stop="closeOthersTags">
-            <i class="el-icon-circle-close"></i> 关闭其他
+            <i class="el-icon-circle-close"></i> Đóng các thẻ khác
           </li>
           <li @click.stop="closeAllTags">
-            <i class="el-icon-error"></i> 关闭全部
+            <i class="el-icon-error"></i> Đóng tất cả
           </li>
         </ul>
       </div>
@@ -294,7 +294,7 @@ export default {
           });
           message += "</ul></div>";
           this.$notify({
-            title: total+'dòng：未读消息通知',
+            title: total+'thông báo tin nhắn chưa đọc',
             duration: Number(total) * 1500,
             position: 'bottom-right',
             dangerouslyUseHTMLString: true,
@@ -349,7 +349,7 @@ export default {
           this.visitedViews.push({
             name: route.name,
             path: route.path,
-            title: route.meta && route.meta.name || route.name || '无标题',
+            title: route.meta && route.meta.name || route.name || 'Không có tiêu đề',
             meta: route.meta || {}
           })
         }

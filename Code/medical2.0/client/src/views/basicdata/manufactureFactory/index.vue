@@ -16,7 +16,7 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label='Loại hãng' prop='type'>
-                  <el-select v-model="queryModel.type" placeholder="请选择厂家类型">
+                  <el-select v-model="queryModel.type" placeholder="Vui lòng chọn loại nhà sản xuất">
                     <el-option
                       v-for="item in types"
                       :key="item.value"

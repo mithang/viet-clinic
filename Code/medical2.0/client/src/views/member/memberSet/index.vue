@@ -51,13 +51,13 @@
               </el-form-item>
               </el-col>
               <el-col :span="5">
-             <el-form-item label="是否有效" prop="valid">
+             <el-form-item label="Có hiệu lực không" prop="valid">
                 <el-select
                   v-model="queryModel.valid"
                   value-key="value"
                   filterable
                   clearable
-                  placeholder="请选择是否有效"
+                  placeholder="Vui lòng chọn có hiệu lực hay không"
                 >
                   <el-option
                     v-for="item in valid"

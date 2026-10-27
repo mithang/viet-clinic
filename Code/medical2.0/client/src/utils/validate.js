@@ -64,15 +64,15 @@ export function isvalidatemobile(phone) {
   if (!validatenull(phone)) {
     if (phone.length === 11) {
       if (isPhone.test(phone)) {
-        msg = '手机号码格式不正确'
+        msg = 'Định dạng số điện thoại không đúng'
       } else {
         result = false
       }
     } else {
-      msg = '手机号码长度不为11vị'
+      msg = 'Độ dài số điện thoại không phải 11 ký tự'
     }
   } else {
-    msg = '手机号码不能为空'
+    msg = 'Số điện thoại không được để trống'
   }
   list.push(result)
   list.push(msg)
@@ -133,11 +133,11 @@ export function validaChinese(str) {
     // 纬度,Phần nguyên là0-90Phần thập phân là0đến15vị
     const latreg = /^(\-|\+)?([1-8]?\d{1}\.\d{0,15}|90\.0{0,15}|[1-8]?\d{1}|90)$/
     if (LatitudeAndlongitude[0] && !longreg.test(LatitudeAndlongitude[0])) {
-      callback(new Error('经度整数范围正负0-180,Số thập phân0đến15vị!东经正,西经负。'))
+      callback(new Error('Phạm vi phần nguyên của kinh độ từ -180 đến 180, phần thập phân 0 đến 15 ký tự! Kinh Đông là dương, kinh Tây là âm.'))
     } else if (LatitudeAndlongitude[1] && !latreg.test(LatitudeAndlongitude[1])){
-      callback(new Error('纬度整数范围正负0-90,Số thập phân0đến15vị!北纬正,南纬负。'))
+      callback(new Error('Phạm vi phần nguyên của vĩ độ từ -90 đến 90, phần thập phân 0 đến 15 ký tự! Vĩ Bắc là dương, vĩ Nam là âm.'))
     } else if (LatitudeAndlongitude.length > 2 ){
-      callback(new Error('格式错误!经纬度格式如: 118.88 , 78.88'))
+      callback(new Error('Định dạng sai! Định dạng kinh/vĩ độ ví dụ: 118.88 , 78.88'))
     } else {
       callback()
     }

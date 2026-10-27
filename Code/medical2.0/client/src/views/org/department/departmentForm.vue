@@ -12,7 +12,7 @@
         <el-col :span='24/1'>
           <el-form-item label='Bộ phận cấp trên' prop='parent.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.parent.name'></el-input>
-            <el-cascader v-else v-model='bizFormModel.parent.id' :options='parent_List' :key='key_parent' ref='parentCascader' @change='onParentChange' :props='{value: "id", label: "name", checkStrictly: true, emitPath: false}' filterable clearable placeholder='请选择上级部门' />
+            <el-cascader v-else v-model='bizFormModel.parent.id' :options='parent_List' :key='key_parent' ref='parentCascader' @change='onParentChange' :props='{value: "id", label: "name", checkStrictly: true, emitPath: false}' filterable clearable placeholder='Vui lòng chọn phòng ban cấp trên' />
           </el-form-item>
         </el-col>
       </el-row>
@@ -42,7 +42,7 @@
         <el-col :span='24/1'>
           <el-form-item label='Giám đốc' prop='director.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.director.name'></el-input>
-            <el-select v-else v-model='bizFormModel.director' value-key='id' filterable clearable placeholder='请选择总监' @clear='bizFormModel.director={"id": null,"name": null,}'>
+            <el-select v-else v-model='bizFormModel.director' value-key='id' filterable clearable placeholder='Vui lòng chọn giám đốc' @clear='bizFormModel.director={"id": null,"name": null,}'>
              <el-option v-for='director in director_List' :key='director.id' :label='director.name' :value='director'></el-option>
             </el-select>
           </el-form-item>
@@ -52,7 +52,7 @@
         <el-col :span='24/1'>
           <el-form-item label='Quản lý' prop='manager.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.manager.name'></el-input>
-            <el-select v-else v-model='bizFormModel.manager' value-key='id' filterable clearable placeholder='请选择经理' @clear='bizFormModel.manager={"id": null,"name": null,}'>
+            <el-select v-else v-model='bizFormModel.manager' value-key='id' filterable clearable placeholder='Vui lòng chọn quản lý' @clear='bizFormModel.manager={"id": null,"name": null,}'>
              <el-option v-for='manager in manager_List' :key='manager.id' :label='manager.name' :value='manager'></el-option>
             </el-select>
           </el-form-item>
@@ -248,7 +248,7 @@ export default {
     },
     openViewDepartmentDialog(department) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看部门'
+      this.dialogProps.title = 'Xem phòng ban'
       this.bizFormModel = department
       this.dialogProps.visible = true
     },

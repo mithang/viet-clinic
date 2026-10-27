@@ -3,10 +3,10 @@
     <div class="page-container">
       <!--Tab   Bắt đầu-->
       <el-tabs v-model="activeName" @tab-click="onHandleClickTabs">
-        <el-tab-pane label="常规审查" name="first">
+        <el-tab-pane label="Rà soát thường quy" name="first">
           <review></review>
         </el-tab-pane>
-        <el-tab-pane label="随机抽取" name="second">
+        <el-tab-pane label="Lấy ngẫu nhiên" name="second">
           <random-review></random-review>
         </el-tab-pane>
       </el-tabs>

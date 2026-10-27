@@ -2,7 +2,7 @@
   <div>
     <el-card shadow="always">
       <div class="card-header">
-        <span class="card-title">不合格处方查询</span>
+        <span class="card-title">Tra cứu đơn thuốc không đạt</span>
         <div>
           <el-button style=" padding: 3px 0" type="text" @click="onClearAll">Bỏ qua tất cả</el-button>
           <el-badge :value="total<10?total:'10+'" class="badge" @click="onOpenAll"></el-badge>

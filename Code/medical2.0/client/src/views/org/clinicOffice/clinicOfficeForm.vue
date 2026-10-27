@@ -119,7 +119,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室负责人姓名" prop="dept_resper_name">
+            <el-form-item label="Tên người phụ trách khoa" prop="dept_resper_name">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.dept_resper_name"
@@ -133,7 +133,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室负责人电话" prop="dept_resper_tel">
+            <el-form-item label="Số điện thoại người phụ trách khoa" prop="dept_resper_tel">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.dept_resper_tel"
@@ -147,22 +147,22 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="科室成立日期" prop="dept_estbdat">
+            <el-form-item label="Ngày thành lập khoa" prop="dept_estbdat">
               <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.dept_estbdat'
                               type='datetime' value-format='yyyy-MM-dd HH:mm:ss'
-                              :placeholder='dialogProps.action === "view"? "" : "请输入科室成立日期"'></el-date-picker>
+                              :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập ngày thành lập khoa"'></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="批准床位数量" prop="aprv_bed_cnt">
+            <el-form-item label="Số giường được phê duyệt" prop="aprv_bed_cnt">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.aprv_bed_cnt"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入批准数量'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số lượng được phê duyệt'
                 "
               ></el-input>
             </el-form-item>
@@ -184,13 +184,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="医师人数" prop="dr_psncnt">
+            <el-form-item label="Số bác sĩ" prop="dr_psncnt">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.dr_psncnt"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入医师人数'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số bác sĩ'
                 "
               ></el-input>
             </el-form-item>
@@ -198,13 +198,13 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 1">
-            <el-form-item label="药师人数" prop="phar_psncnt">
+            <el-form-item label="Số dược sĩ" prop="phar_psncnt">
               <el-input
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.phar_psncnt"
                 :maxlength="128"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入药师人数'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số dược sĩ'
                 "
               ></el-input>
             </el-form-item>

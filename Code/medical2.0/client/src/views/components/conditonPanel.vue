@@ -3,7 +3,7 @@
     <el-row :key='"ConditionPanel" + idx' v-for='idx in [0, 1, 2]' :gutter='5'>
       <el-col :span='11'>
         <el-col :span='3'>
-          <span v-if='idx === 0' style='text-align: center;display:block;'>一组</span>
+          <span v-if='idx === 0' style='text-align: center;display:block;'>Nhóm 1</span>
           <el-select v-else v-model='groupOne[idx].logic' placeholder='Vui lòng chọn toán tử logic'>
               <el-option v-for='item in logics' :key='item.value' :label='item.label' :value='item.value'></el-option>
           </el-select>
@@ -68,7 +68,7 @@
     </el-col>
       <el-col :span='2'>
         <div v-if='idx === 1' style="margin-left:10px;margin-right:10px;">
-          <el-select v-model='groupLogic'  placeholder='请选择组间逻辑符'>
+          <el-select v-model='groupLogic'  placeholder='Vui lòng chọn toán tử logic giữa các nhóm'>
               <el-option v-for='lg in logics' :key='lg.value' :label='lg.label' :value='lg.value'></el-option>
           </el-select>
         </div>
@@ -76,7 +76,7 @@
       </el-col>
       <el-col :span='11'>
           <el-col :span='3'>
-            <span v-if='idx === 0' style='text-align: center;display:block;'>二组</span>
+            <span v-if='idx === 0' style='text-align: center;display:block;'>Nhóm 2</span>
             <el-select v-else v-model='groupTwo[idx].logic' placeholder='Vui lòng chọn toán tử logic'>
                 <el-option v-for='item in logics' :key='item.value' :label='item.label' :value='item.value'></el-option>
             </el-select>
@@ -162,7 +162,7 @@ export default {
       },  // 对象字段的值选择项
       columns: [],  // 字段列表
       logics: [
-        {value: 'AND', label: '且'},
+        {value: 'AND', label: 'Và'},
         {value: 'OR', label: 'hoặc'}
       ],
       groupOne: [
@@ -507,16 +507,16 @@ export default {
         } else if(column.showType.value === 'Select' || column.showType.value === 'SelectTree') {
           if(column.name === 'ids') {
             group[index].operations = [
-              {value: 'right_like', label: '含及下级'},
-              {value: 'not right_like', label: '不含及下级'}
+              {value: 'right_like', label: 'Bao gồm cả cấp dưới'},
+              {value: 'not right_like', label: 'Không bao gồm cấp dưới'}
             ]
             group[index].queryType = 'right_like'
           } else {
             group[index].operations = [
               {value: '=', label: 'Bằng'},
               {value: '<>', label: 'Không bằng'},
-              {value: 'in', label: '在列表'},
-              {value: 'not in', label: '不在列表'}
+              {value: 'in', label: 'Trong danh sách'},
+              {value: 'not in', label: 'Không trong danh sách'}
             ]
             group[index].queryType = '='
           }

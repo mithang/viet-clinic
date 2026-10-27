@@ -21,7 +21,7 @@
             <span style="font-size: 14px;font-weight: 300;">Nguồn：</span>
             <el-select
             v-model="drugSource"
-            placeholder="请选择药品来源"
+            placeholder="Vui lòng chọn nguồn thuốc"
             @change="onDrugSourcesChange"
             >
               <el-option

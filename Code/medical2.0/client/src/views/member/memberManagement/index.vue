@@ -15,8 +15,8 @@
               </el-form-item>
             </el-col>
               <el-col :span="6">
-              <el-form-item label='会员卡号' prop='card'>
-                <el-input v-model='queryModel.card' :clearable='true' placeholder='请输入卡号'></el-input>
+              <el-form-item label='Số thẻ hội viên' prop='card'>
+                <el-input v-model='queryModel.card' :clearable='true' placeholder='Vui lòng nhập số thẻ'></el-input>
               </el-form-item>
             </el-col>
              <el-col :span="6">
@@ -38,7 +38,7 @@
               </el-form-item>
               </el-col>
                <el-col :span="6">
-                      <el-form-item label='开卡日期' prop='updateDate'>
+                      <el-form-item label='Ngày mở thẻ' prop='updateDate'>
                        <el-date-picker
                         v-model="queryModel.updateDate"
                         type="datetimerange"
@@ -136,8 +136,8 @@
                     <li v-if='getAttrValue(row, columnViews[index].prop) === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
                   </span>
                   <span v-else-if="columnViews[index].prop==='gender'">
-                    <span v-if="memberManagementList[$index].gender==='gender_0'">男</span>
-                    <span v-else>女</span>
+                    <span v-if="memberManagementList[$index].gender==='gender_0'">Nam</span>
+                    <span v-else>Nữ</span>
                   </span>
                   <span v-else-if="columnViews[index].prop==='status'">
                     <span v-if="memberManagementList[$index].status==='0'">Chưa sử dụng</span>
@@ -308,7 +308,7 @@ export default {
       deleteMemberManagement(row).then((res)=>{
         if(res.code === 100){
             this.loadData()
-            this.showMessage({type: 'success', msg: '禁用成功'})
+            this.showMessage({type: 'success', msg: 'Vô hiệu hóa thành công'})
         }else{
            this.showMessage(res)
         }

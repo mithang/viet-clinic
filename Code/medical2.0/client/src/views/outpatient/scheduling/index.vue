@@ -49,12 +49,12 @@
                 <div style="float: right">
                   <el-button
                     @click="schedulingzlrdaysList(-(86400000))"
-                    >上一天</el-button
+                    >Ngày trước</el-button
                   >
                   <el-button @click="schedulingzlrdaysList()">Trong ngày</el-button>
                   <el-button
                     @click="schedulingzlrdaysList(+(86400000))"
-                    >下一天</el-button
+                    >Ngày sau</el-button
                   >
                 </div>
               </el-col>
@@ -84,7 +84,7 @@
                   label="Ngày"
                   width="100"
                 ></el-table-column>
-                <el-table-column prop="timename" label="时间段" width="180">
+                <el-table-column prop="timename" label="Khung giờ" width="180">
                   <template slot-scope="scope">
                     <span>
                       {{ scope.row.timename }} {{ scope.row.timestrea }} -
@@ -666,7 +666,7 @@ export default {
             //this.flag = false;
             if (responseData.code === 100) {
               if (responseData.data) {
-                this.$message.success("排班操作成功");
+                this.$message.success("Thao tác xếp lịch thành công");
               }
             } else {
               //this.showMessage(responseData)

@@ -21,13 +21,13 @@
             <el-col :span="4">
               <el-form-item label='Mã mẫu' prop='doce'>
                 <!-- <div style="margin-left:40px;">  -->
-                <el-input v-model='queryModel.code' :clearable='true' placeholder='请输入模板编号'></el-input>
+                <el-input v-model='queryModel.code' :clearable='true' placeholder='Vui lòng nhập mã mẫu'></el-input>
                 <!-- </div> -->
               </el-form-item>
             </el-col>
             <el-col :span="4">
               <el-form-item label='Loại đơn thuốc' prop='type'>
-                <el-select v-model="queryModel.type" placeholder="请选择处方类型">
+                <el-select v-model="queryModel.type" placeholder="Vui lòng chọn loại đơn thuốc">
                   <el-option
                     v-for="type in type_List"
                     :key="type.value"

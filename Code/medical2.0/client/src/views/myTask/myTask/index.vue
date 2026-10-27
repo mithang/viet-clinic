@@ -22,7 +22,7 @@
             </el-col> -->
             <el-col :span="5">
               <el-form-item label='Trạng thái nhiệm vụ' prop='isLocked'>
-                  <el-select v-model="queryModel.isLocked" placeholder="请选择任务状态">
+                  <el-select v-model="queryModel.isLocked" placeholder="Vui lòng chọn trạng thái nhiệm vụ">
                     <el-option
                       v-for="item in isLocked"
                       :key="item.value"
@@ -385,7 +385,7 @@ export default {
           this.resetLoad()
           this.flagsTask=false
       }).catch((error)=>{
-        this.$message.error("Thực hiện thất bại，请联系管理员处理!")
+        this.$message.error("Thực hiện thất bại，vui lòng liên hệ quản trị viên để xử lý!")
         this.flagsTask=false
         this.resetLoad()
       })

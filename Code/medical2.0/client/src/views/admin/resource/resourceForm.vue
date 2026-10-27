@@ -173,7 +173,7 @@ export default {
     },
     openViewResourceDialog(resource) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看资源'
+      this.dialogProps.title = 'Xem tài nguyên'
       this.bizFormModel = resource
       this.dialogProps.visible = true
     },

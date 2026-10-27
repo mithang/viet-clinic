@@ -23,9 +23,9 @@ export default {
   },
   'formatMoney'(v) {
     if (v > 100000000) {
-      return (v / 100000000).toFixed(2) + "亿";
+      return (v / 100000000).toFixed(2) + " trăm triệu";
     } else if (v > 10000) {
-      return (v / 10000).toFixed(2) + "万";
+      return (v / 10000).toFixed(2) + " vạn";
     }
     return v;
   },

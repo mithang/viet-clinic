@@ -1,5 +1,5 @@
 <template>
-  <div class="drawer-container" v-loading="drawerLoading" element-loading-text="主题更新中">
+  <div class="drawer-container" v-loading="drawerLoading" element-loading-text="Đang cập nhật chủ đề">
     <div>
       <h3 class="drawer-title">Phong cách chủ đề</h3>
       <div class="drawer-item">
@@ -18,7 +18,7 @@
       </div>
       <div class="drawer-item">
         <span>Chủ đề hệ thống</span>
-        <el-select style="width: 170px" v-model="currentTheme" size="mini" placeholder="主题选择" @change="(val) => {handleThemeChange(val)}">
+        <el-select style="width: 170px" v-model="currentTheme" size="mini" placeholder="Chọn chủ đề" @change="(val) => {handleThemeChange(val)}">
           <el-option
             v-for="(item, index) in sysThemeList"
             :key="index"
@@ -29,15 +29,15 @@
       </div>
       <h3 class="drawer-title">Tùy chỉnh</h3>
       <div class="drawer-item">
-        <span>导航栏</span>
+        <span>Thanh điều hướng</span>
         <el-color-picker color-format="rgb" v-model="currentHeaderColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item">
-        <span>侧边栏</span>
+        <span>Thanh bên</span>
         <el-color-picker color-format="rgb" v-model="currentSidebarColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item">
-        <span>Màu nền（建议淡浅色系）</span>
+        <span>Màu nền（Nên dùng tông màu nhạt）</span>
         <el-color-picker color-format="rgb" v-model="currentBackgroundColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item">
@@ -45,7 +45,7 @@
         <theme-picker ref="themePicker" class="color-picker" />
       </div>
       <div class="drawer-item">
-        <span>元素大小</span>
+        <span>Kích thước phần tử</span>
         <div class="drawer-radio">
           <el-radio-group v-model="currentSize" size="mini" @change="((size) => {handleSetSize('size', size)})">
             <el-radio-button v-for="(item, index) in sizes" :label="item.size" :key="index">{{item.name}}</el-radio-button>
@@ -53,7 +53,7 @@
         </div>
       </div>
       <div class="drawer-item">
-        <span>是否固定头部</span>
+        <span>Có cố định đầu trang không</span>
         <el-switch v-model="isFixedHeader" @change="handleSetting('fixedHeader', isFixedHeader)" class="drawer-switch" />
       </div>
       <div class="drawer-item">
@@ -63,11 +63,11 @@
 
       <div class="drawer-footer" style="text-align: center; padding: 10px 0">
         <el-button size="mini" type="primary" plain icon="el-icon-document-checked" @click="handleLayoutSave">Lưu cài đặt</el-button>
-        <el-button v-show='isCustomerTheme()' size="mini" plain icon="el-icon-refresh-right" @click="handleLayoutReset">重置设置</el-button>
+        <el-button v-show='isCustomerTheme()' size="mini" plain icon="el-icon-refresh-right" @click="handleLayoutReset">Đặt lại cài đặt</el-button>
       </div>
 
       <div v-if="loginId === '1001' || loginId==='1000'" style="text-align: center; margin-top: 15px" >
-        <el-button  size="medium"  type="primary" plain @click="saveTheTheme">保存为主题</el-button>
+        <el-button  size="medium"  type="primary" plain @click="saveTheTheme">Lưu thành chủ đề</el-button>
       </div>
     </div>
 

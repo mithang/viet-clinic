@@ -24,7 +24,7 @@
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Thuốc/vật tưid' prop='drugStuffId' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.drugStuffId' :maxlength='21' :placeholder='dialogProps.action === "view"? "" : "请输入药品材料id"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.drugStuffId' :maxlength='21' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thuốc/vật tưid"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -52,7 +52,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Cách dùng thuốc Tây y' prop='westernMedicineUse.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.westernMedicineUse.name'></el-input>
-            <el-select v-else v-model='bizFormModel.westernMedicineUse' value-key='value' filterable clearable placeholder='请选择西药用法' 
+            <el-select v-else v-model='bizFormModel.westernMedicineUse' value-key='value' filterable clearable placeholder='Vui lòng chọn cách dùng thuốc Tây' 
               @clear='bizFormModel.westernMedicineUse={
                 "value": null,
                                 "name": null,
@@ -92,7 +92,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Cách dùng thuốc Đông y' prop='chineseMedicineUse.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.chineseMedicineUse.name'></el-input>
-            <el-select v-else v-model='bizFormModel.chineseMedicineUse' value-key='value' filterable clearable placeholder='请选择中药用法' 
+            <el-select v-else v-model='bizFormModel.chineseMedicineUse' value-key='value' filterable clearable placeholder='Vui lòng chọn cách dùng thuốc Đông y' 
               @clear='bizFormModel.chineseMedicineUse={
                 "value": null,
                                 "name": null,
@@ -104,7 +104,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Cách dùng truyền dịch' prop='infuseUse.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.infuseUse.name'></el-input>
-            <el-select v-else v-model='bizFormModel.infuseUse' value-key='value' filterable clearable placeholder='请选择输液用法' 
+            <el-select v-else v-model='bizFormModel.infuseUse' value-key='value' filterable clearable placeholder='Vui lòng chọn cách dùng truyền dịch' 
               @clear='bizFormModel.infuseUse={
                 "value": null,
                                 "name": null,
@@ -117,13 +117,13 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Tốc độ truyền' prop='drippingSpeed' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.drippingSpeed' :maxlength='45' :placeholder='dialogProps.action === "view"? "" : "请输入滴速"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.drippingSpeed' :maxlength='45' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tốc độ truyền"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Test da' prop='skinTest.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.skinTest.name'></el-input>
-            <el-select v-else v-model='bizFormModel.skinTest' value-key='value' filterable clearable placeholder='请选择皮试' 
+            <el-select v-else v-model='bizFormModel.skinTest' value-key='value' filterable clearable placeholder='Vui lòng chọn thử phản ứng da' 
               @clear='bizFormModel.skinTest={
                 "value": null,
                                 "name": null,
@@ -309,7 +309,7 @@ export default {
     },
     openViewRecipelDetailDialog(recipelDetail) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看处方详情'
+      this.dialogProps.title = 'Xem chi tiết đơn thuốc'
       this.bizFormModel = {...this.initFormModel(), ...recipelDetail}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

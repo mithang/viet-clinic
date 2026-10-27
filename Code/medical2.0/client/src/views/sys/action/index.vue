@@ -20,13 +20,13 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label='操作时间' prop='createDate'>
+                <el-form-item label='Thời gian thao tác' prop='createDate'>
                   <data-range-picker v-model='queryModel.createDate' type='datetimerange'></data-range-picker>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label='操作者' prop='createBy'>
-                  <el-input v-model='queryModel.createBy' :clearable='true' placeholder='请输入操作者'></el-input>
+                <el-form-item label='Người thao tác' prop='createBy'>
+                  <el-input v-model='queryModel.createBy' :clearable='true' placeholder='Vui lòng nhập người thao tác'></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">

@@ -184,7 +184,7 @@
             width="150px"
             align="center"
             prop="bqrkxse"
-            label="本期入库销售额">
+            label="Doanh số nhập kho kỳ này">
           </el-table-column>
           <el-table-column
             width="150px"
@@ -202,7 +202,7 @@
             width="150px"
             align="center"
             prop="bqckxse"
-            label="本期出库销售额">
+            label="Doanh số xuất kho kỳ này">
           </el-table-column>
           <el-table-column
             width="150px"
@@ -220,7 +220,7 @@
             width="150px"
             align="center"
             prop="bqpdxse"
-            label="本期盘点销售额">
+            label="Doanh số kiểm kê kỳ này">
           </el-table-column>
           <el-table-column
             width="150px"
@@ -238,7 +238,7 @@
             width="150px"
             align="center"
             prop="qmxse"
-            label="期末销售额">
+            label="Doanh số cuối kỳ">
           </el-table-column>
 
         </el-table>

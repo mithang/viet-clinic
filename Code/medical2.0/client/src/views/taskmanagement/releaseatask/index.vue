@@ -44,7 +44,7 @@
     </el-select>
   </el-form-item>
     <el-form-item label="Tên nhiệm vụ" style="margin-right: 3px;">
-    <el-input v-model="formInline.taskname" placeholder="请输入任务名称关键词"></el-input>
+    <el-input v-model="formInline.taskname" placeholder="Vui lòng nhập từ khóa tên nhiệm vụ"></el-input>
   </el-form-item>
 
   <el-form-item style="margin-right: 3px;">
@@ -88,7 +88,7 @@
     </el-table-column> -->
     <el-table-column
       prop="taskname"
-      label="任务标题"
+      label="Tiêu đề nhiệm vụ"
       width="width">
     </el-table-column>
     <!-- <el-table-column
@@ -98,7 +98,7 @@
     </el-table-column> -->
     <el-table-column
       prop="taskdescribe"
-      label="任务内容"
+      label="Nội dung nhiệm vụ"
       width="width">
     </el-table-column>
     <el-table-column
@@ -263,7 +263,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         row.taskstatus = "1"
         release(row).then((res)=>{
           if(res.code===100){
-            this.$message.success("发布成功")
+            this.$message.success("Phát hành thành công")
             this.Getcliniclist()
           }
         }).catch((error)=>{

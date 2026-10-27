@@ -13,7 +13,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Bệnh án' prop='medicalRecord.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.medicalRecord.diagnose'></el-input>
-            <el-select v-else v-model='bizFormModel.medicalRecord' value-key='id' filterable clearable placeholder='请选择病历' 
+            <el-select v-else v-model='bizFormModel.medicalRecord' value-key='id' filterable clearable placeholder='Vui lòng chọn bệnh án' 
               @clear='bizFormModel.medicalRecord={
                 "id": null,
                                 "diagnose": null,
@@ -25,7 +25,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Loại đơn thuốc' prop='recipelType.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.recipelType.name'></el-input>
-            <el-select v-else v-model='bizFormModel.recipelType' value-key='value' filterable clearable placeholder='请选择处方类别' 
+            <el-select v-else v-model='bizFormModel.recipelType' value-key='value' filterable clearable placeholder='Vui lòng chọn nhóm đơn thuốc' 
               @clear='bizFormModel.recipelType={
                 "value": null,
                                 "name": null,
@@ -70,7 +70,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Tần suất uống' prop='takeFrequency.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.takeFrequency.name'></el-input>
-            <el-select v-else v-model='bizFormModel.takeFrequency' value-key='value' filterable clearable placeholder='请选择服用频次' 
+            <el-select v-else v-model='bizFormModel.takeFrequency' value-key='value' filterable clearable placeholder='Vui lòng chọn tần suất dùng thuốc' 
               @clear='bizFormModel.takeFrequency={
                 "value": null,
                                 "name": null,
@@ -83,7 +83,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Liều dùng mỗi lần' prop='singleDosage' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.singleDosage' :maxlength='11' :placeholder='dialogProps.action === "view"? "" : "请输入单次用量"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.singleDosage' :maxlength='11' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập liều dùng một lần"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -111,7 +111,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian thanh toán' prop='payDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.payDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入付款时间"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.payDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian thanh toán"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -123,7 +123,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian trả thuốc' prop='returnDrugDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnDrugDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入退药时间"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnDrugDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian trả thuốc"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -135,7 +135,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian hoàn phí' prop='returnFeeDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnFeeDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入退费时间"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnFeeDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian hoàn phí"' ></el-date-picker>             
           </el-form-item>
         </el-col>
     </el-row>
@@ -294,7 +294,7 @@ export default {
     },
     openViewRecipelInfoDialog(recipelInfo) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看处方信息'
+      this.dialogProps.title = 'Xem thông tin đơn thuốc'
       this.bizFormModel = {...this.initFormModel(), ...recipelInfo}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

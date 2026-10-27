@@ -19,7 +19,7 @@
     <div class="often-apply-box">
       <div class="apply-item">
         <el-avatar class="avatar-icon" :size="50"> user </el-avatar>
-        <span class="apply-title">请假流程</span>
+        <span class="apply-title">Quy trình xin nghỉ phép</span>
       </div>
       <div class="apply-item">
         <el-avatar class="avatar-icon" :size="50"> user </el-avatar>

@@ -43,7 +43,7 @@
       <!-- Thanh công cụ Bắt đầu -->
       <div class="page-container-header-end">
         <div>
-          <el-button v-show='permission.add' :plain='true' @click='onFastCreateResourc()'>快速添加</el-button>
+          <el-button v-show='permission.add' :plain='true' @click='onFastCreateResourc()'>Thêm nhanh</el-button>
           <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateResource()'>Thêm</el-button>
         </div>
       </div>

@@ -147,7 +147,7 @@ export default {
     },
     openViewRoleDialog(role) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看角色'
+      this.dialogProps.title = 'Xem vai trò'
       this.bizFormModel = role
       this.dialogProps.visible = true
     },

@@ -54,7 +54,7 @@
                             flex: 1;
                           "
                         >{{ patientQueryCondition.offset + index + 1 }}. {{
-                            item.patientId && item.patientId.name ? item.patientId.name : '未知'
+                            item.patientId && item.patientId.name ? item.patientId.name : 'Không xác định'
                           }}/ {{ item.patientId && item.patientId.gender && item.patientId.gender.name ? item.patientId.gender.name : '' }} /
                       {{ item.patientId && item.patientId.age ? item.patientId.age : '' }}tuổi</span
                         >
@@ -399,8 +399,8 @@
                       v-model="patientInfoForm.gender.name"
                       style="width: 100%"
                     >
-                      <el-option label="男" value="男"></el-option>
-                      <el-option label="女" value="女"></el-option>
+                      <el-option label="Nam" value="男"></el-option>
+                      <el-option label="Nữ" value="女"></el-option>
                     </el-select> -->
                     <span>{{ patientInfoForm.gender.name ? patientInfoForm.gender.name : "" }}</span>
                   </el-form-item>
@@ -1684,11 +1684,11 @@
         genderList: [
           {
             value: "gender_0",
-            name: "男",
+            name: "Nam",
           },
           {
             value: "gender_1",
-            name: "女",
+            name: "Nữ",
           },
         ],
         /*Danh sách đơn thuốc chờ thu phí*/
@@ -2378,7 +2378,7 @@
         await modifiedState(this.diagnosis).then(res => {
           if (res.code === 100) {
             this.addresseeDialogVisible = false
-            this.$message.success("收件人信息添加成功！")
+            this.$message.success("Thêm thông tin người nhận thành công!")
             // 发起订单锁定
             // this.lockedOrder();
           } else {

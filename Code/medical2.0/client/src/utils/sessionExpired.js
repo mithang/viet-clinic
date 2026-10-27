@@ -18,7 +18,7 @@ export function handleSessionExpired() {
     if (now - lastMessageTime > MESSAGE_DEDUPE_WINDOW) {
         lastMessageTime = now
         ELEMENT.Message({
-            message: 'Đăng nhập đã hết hạn，请重新登录',
+            message: 'Đăng nhập đã hết hạn，vui lòng đăng nhập lại',
             type: 'warning',
             duration: 2000
         })

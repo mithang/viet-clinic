@@ -13,7 +13,7 @@
         <el-col :span='24/1'>
           <el-form-item label='Mã khu vực cấp trên' prop='parten.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.parten.name'></el-input>
-            <el-select v-else v-model='bizFormModel.parten' value-key='id' filterable clearable placeholder='请选择上级区划代码' 
+            <el-select v-else v-model='bizFormModel.parten' value-key='id' filterable clearable placeholder='Vui lòng chọn mã phân vùng cấp trên' 
               @clear='bizFormModel.parten={
                 "id": null,
                                 "name": null,
@@ -146,7 +146,7 @@ export default {
     },
     openViewAdministrativeDivisionDialog(administrativeDivision) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看行政区域划分'
+      this.dialogProps.title = 'Xem phân vùng hành chính'
       this.bizFormModel = {...this.initFormModel(), ...administrativeDivision}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

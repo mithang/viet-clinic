@@ -104,8 +104,8 @@
                     <span v-else style="color:#99CC66">Đã điền</span>
                   </span>
                   <span  v-else-if="columnViews[index].prop==='sex'">
-                    <span v-if="getAttrValue(row, columnViews[index].prop)==='gender_1'">女</span>
-                    <span v-else>男</span>
+                    <span v-if="getAttrValue(row, columnViews[index].prop)==='gender_1'">Nữ</span>
+                    <span v-else>Nam</span>
                   </span>
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
 
@@ -700,7 +700,7 @@ export default {
     },
     handleExceed(file, fileList){
       // this.$message.warning(`Giới hạn chọn hiện tại 3 tệp，Lần này đã chọn ${file.length} tệp，Đã chọn tổng cộng ${file.length + fileList.length} tệp`);
-      this.$message.warning(`当前只支持上传单个文件`);
+      this.$message.warning(`Hiện chỉ hỗ trợ tải lên một tệp duy nhất`);
     },
     hanldeError(err, file, fileList){
     },
@@ -720,7 +720,7 @@ export default {
       if (!isLt2M) {
         this.$message.error(this.inter.sctpdx + " 20MB!");
       }else if(fileList.length>1){
-        this.$message.error("暂只支持上传一个文件");
+        this.$message.error("Hiện chỉ hỗ trợ tải lên một tệp");
         return false;
       }
        else {
@@ -736,12 +736,12 @@ export default {
        const whiteList = ["jpg", "jpeg", "png", "gif", "JPG", "JPEG","rar","zip","doc","docx","pdf", "xls", "xlsx", "ppt","txt"];
 
       if (whiteList.indexOf(fileSuffix) === -1) {
-        this.$message.error("文件格式不允许");
+        this.$message.error("Định dạng tệp không được phép");
         return false;
       }
       const isLt2M = file.size / 1024 / 1024 < 20;
       if (!isLt2M) {
-        this.$message.error(" 上传上传小于20MB的文件!");
+        this.$message.error(" Vui lòng tải lên tệp nhỏ hơn 20MB!");
         return false;
       }
      

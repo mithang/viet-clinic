@@ -10,11 +10,11 @@
         <el-col :span='14'>
           <el-tabs v-model='tabIndex'>
             <el-tab-pane label='Thông tin cơ bản' name='1'></el-tab-pane>
-            <el-tab-pane label='约束条件' name='2'></el-tab-pane>
-            <el-tab-pane label='存储配置' name='3'></el-tab-pane>
+            <el-tab-pane label='Điều kiện ràng buộc' name='2'></el-tab-pane>
+            <el-tab-pane label='Cấu hình lưu trữ' name='3'></el-tab-pane>
             <el-tab-pane label='JavaCấu hình' name='4'></el-tab-pane>
-            <el-tab-pane label='列表配置' name='5'></el-tab-pane>
-            <el-tab-pane label='编辑配置' name='6'></el-tab-pane>
+            <el-tab-pane label='Cấu hình danh sách' name='5'></el-tab-pane>
+            <el-tab-pane label='Cấu hình chỉnh sửa' name='6'></el-tab-pane>
           </el-tabs>
         </el-col>
       </el-row>
@@ -28,7 +28,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Tên' prop='name'>
              <el-input v-if='dialogProps.action === "view" || dialogProps.action === "edit"' :disabled=true v-model='bizFormModel.name'></el-input>
-             <el-select v-else v-model='bizFormModel' value-key='name' @change='onTableChange' filterable clearable placeholder='请选择名称'>
+             <el-select v-else v-model='bizFormModel' value-key='name' @change='onTableChange' filterable clearable placeholder='Vui lòng chọn tên'>
                <el-option v-for='st in st_List' :key='st.name' :label='st.name + " : " + st.comments' :value='st'></el-option>
             </el-select>
           </el-form-item>
@@ -48,7 +48,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Bảng cha liên kết' prop='parentTable.id'>
             <el-input v-if='dialogProps.action === "view"' :disabled=true v-model='bizFormModel.parentTable.name'></el-input>
-            <el-select v-else v-model='bizFormModel.parentTable' value-key='id' filterable clearable placeholder='请选择关联父表' @clear='bizFormModel.parentTable={"id": null,"name": null}'>
+            <el-select v-else v-model='bizFormModel.parentTable' value-key='id' filterable clearable placeholder='Vui lòng chọn bảng cha liên kết' @clear='bizFormModel.parentTable={"id": null,"name": null}'>
                <el-option v-for='parentTable in parentTable_List' :key='parentTable.id' :label='parentTable.name + " : " + parentTable.comments' :value='parentTable'></el-option>
             </el-select>
           </el-form-item>
@@ -58,7 +58,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Khóa ngoại bảng cha' prop='parentTableFk'>
             <el-input v-if='dialogProps.action === "view"' :disabled=true v-model='bizFormModel.parentTableFk'></el-input>
-            <el-select v-else v-model='bizFormModel.parentTableFk' @change='onFkChange' value-key='name' filterable clearable placeholder='请选择父表外键'>
+            <el-select v-else v-model='bizFormModel.parentTableFk' @change='onFkChange' value-key='name' filterable clearable placeholder='Vui lòng chọn khóa ngoại của bảng cha'>
                <el-option v-for='parentTableFk in parentTableFk_List' :key='parentTableFk.name' :label='parentTableFk.name + " : " + parentTableFk.comments' :value='parentTableFk.name'></el-option>
             </el-select>
           </el-form-item>
@@ -71,8 +71,8 @@
       </el-row>
       <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='排序字段' prop='orderColumns'>
-            <StringMultiSelect :disabled='dialogProps.action === "view"' v-model='bizFormModel.orderColumns' :opts='orderColumns_List' valKey='name' label='comments' placeholder='请选排序字段'></StringMultiSelect>
+          <el-form-item label='Trường sắp xếp' prop='orderColumns'>
+            <StringMultiSelect :disabled='dialogProps.action === "view"' v-model='bizFormModel.orderColumns' :opts='orderColumns_List' valKey='name' label='comments' placeholder='Vui lòng chọn trường sắp xếp'></StringMultiSelect>
           </el-form-item>
         </el-col>
       </el-row>
@@ -80,7 +80,7 @@
         <el-col>
           <el-form-item label='Điều kiện lọc' prop='filter'>
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.filter' type='textarea'
-              :maxlength='2000' :placeholder='dialogProps.action === "view"? "" : "请输入筛选条件"'  ></el-input>
+              :maxlength='2000' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập điều kiện lọc"'  ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -719,7 +719,7 @@ export default {
     },
     openViewGenTableDialog(genTable) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看业务表'
+      this.dialogProps.title = 'Xem bảng nghiệp vụ'
       this.tabIndex = "1"
       this.bizFormModel = genTable
       this.dialogProps.visible = true

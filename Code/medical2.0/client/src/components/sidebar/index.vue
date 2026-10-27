@@ -29,7 +29,7 @@
       <!-- 第一行：版权信息 -->
       <div v-if="!isCollapse">Copyright © 2025 湖北天天数链技术有限公司</div>
       <!-- 第二行：协议前缀 -->
-      <div v-if="!isCollapse" style="margin-top: 6px;">本系统软件源代码许可来源于</div>
+      <div v-if="!isCollapse" style="margin-top: 6px;">Mã nguồn của hệ thống này được cấp phép theo</div>
       <!-- 第三行：协议名称（单独占一行） -->
       <div v-if="!isCollapse" style="margin-top: 2px;">
         <a
@@ -41,7 +41,7 @@
             textDecoration: 'none',
             display: 'inline-block' // 确保单独一行的排版稳定性
           }">
-          《天天开源软件（社区版）许可协议》
+          《phần mềm mã nguồn mở 天天（bản cộng đồng）thỏa thuận cấp phép》
         </a>
       </div>
 

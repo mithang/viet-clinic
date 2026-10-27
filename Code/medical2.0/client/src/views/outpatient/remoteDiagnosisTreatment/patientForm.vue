@@ -49,7 +49,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
-            <el-form-item label="患者证件号" prop="card">
+            <el-form-item label="Số giấy tờ của bệnh nhân" prop="card">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.card"
@@ -57,7 +57,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="申请医院" prop="hospital">
+            <el-form-item label="Bệnh viện đề nghị" prop="hospital">
               <el-input
                 :disabled="true"
                 v-model="bizFormModel.hospital"
@@ -93,9 +93,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
-            <el-form-item label="申请结果" prop="applicationResults" v-if="dialogProps.action === 'view'">
+            <el-form-item label="Kết quả đề nghị" prop="applicationResults" v-if="dialogProps.action === 'view'">
               <el-input :disabled="true" v-if="bizFormModel.applicationResults === '0'" value="Qua"></el-input>
-              <el-input :disabled="true" v-if="bizFormModel.applicationResults === '1'" value="退回"></el-input>
+              <el-input :disabled="true" v-if="bizFormModel.applicationResults === '1'" value="Trả lại"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -621,7 +621,7 @@
       },
       openViewPatientDialog(patient) {
         this.dialogProps.action = 'edit'
-        this.dialogProps.title = '提交申请'
+        this.dialogProps.title = 'Gửi yêu cầu'
         this.bizFormModel = {...this.initFormModel(), ...patient}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
@@ -643,7 +643,7 @@
       },
       openCopyPatientDialog(patient) {
         this.dialogProps.action = 'view'
-        this.dialogProps.title = '查看详细信息'
+        this.dialogProps.title = 'Xem thông tin chi tiết'
         this.bizFormModel = {...this.initFormModel(this.user), ...patient}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'

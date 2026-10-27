@@ -1,6 +1,6 @@
 <template>
   <div  style="text-align:left" >
-    listLớp thành phần cơ sở của cửa sổ，处理列头拖动排序、导出数据的列头数据，以及列表显示个性化配置。
+    listLớp thành phần cơ sở của cửa sổ，Xử lý kéo thả sắp xếp tiêu đề cột、Dữ liệu tiêu đề cột của dữ liệu xuất，Và cấu hình hiển thị cá nhân hóa danh sách。
   </div>
 </template>
 <script>

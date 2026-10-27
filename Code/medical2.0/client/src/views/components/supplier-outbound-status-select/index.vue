@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="selectedStatus" filterable placeholder="请选状态" clearable>
+  <el-select v-model="selectedStatus" filterable placeholder="Vui lòng chọn trạng thái" clearable>
     <el-option v-for="t in typeList" :label="t.name" :value="t.id" :key="t.id">
     </el-option>
   </el-select>

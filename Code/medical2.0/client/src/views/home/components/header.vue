@@ -349,8 +349,8 @@ export default {
   },
   mounted() {
     if (this.routers.length <= 0) {
-      this.$alert("该账号暂未分配权限，请联系管理员！", "", {
-        confirmButtonText: "知道了",
+      this.$alert("Tài khoản này chưa được phân quyền, vui lòng liên hệ quản trị viên!", "", {
+        confirmButtonText: "Đã biết",
         type: "warning",
         callback: (action) => {},
       });
@@ -724,7 +724,7 @@ export default {
       }
     },
     doLogOut() {
-      this.$confirm("确定要退出系统吗?", "Nhắc nhở", {
+      this.$confirm("Bạn có chắc muốn thoát khỏi hệ thống không?", "Nhắc nhở", {
         confirmButtonText: "Xác nhận",
         cancelButtonText: "Hủy",
         type: "warning",

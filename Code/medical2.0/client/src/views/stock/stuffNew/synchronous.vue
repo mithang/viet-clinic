@@ -335,7 +335,7 @@ export default {
         },
         {
           prop: 'updateDate',
-          label: '更新日期',
+          label: 'Ngày cập nhật',
         },
       ],
       // 院版材料列表
@@ -354,7 +354,7 @@ export default {
         },
         {
           prop: 'dwjls',
-          label: '单位计量数',
+          label: 'Số lượng đơn vị đo',
         },
         {
           prop: 'dw',
@@ -840,7 +840,7 @@ export default {
       })
     },
     openSyncStuffDialog() {
-      this.dialogProps.title = "同步材料信息";
+      this.dialogProps.title = "Đồng bộ thông tin vật tư";
       this.dialogProps.visible = true;
       this.pageInit()
     },

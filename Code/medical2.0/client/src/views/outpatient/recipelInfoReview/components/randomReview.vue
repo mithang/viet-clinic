@@ -45,7 +45,7 @@
 
           <el-col :span="6">
             <el-form-item label='Số lượng kiểm tra ngẫu nhiên' prop='num'>
-              <el-input-number v-model="queryModel.num" :controls="false" :min="1" :max="100" label="描述文字" placeholder="请输入范围1-100的数字"></el-input-number>
+              <el-input-number v-model="queryModel.num" :controls="false" :min="1" :max="100" label="Văn bản mô tả" placeholder="Vui lòng nhập phạm vi1-100số"></el-input-number>
             </el-form-item>
           </el-col>
 

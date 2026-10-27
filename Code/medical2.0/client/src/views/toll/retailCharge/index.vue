@@ -1205,7 +1205,7 @@ export default {
                     let flag = false
                     let flag1 =false
                     if(!this.DrugList.length>0){
-                        this.$message.error("请选择药品")
+                        this.$message.error("Vui lòng chọn thuốc")
                         return
                     }
                     //Thực hiện kiểm tra số lượng trong bảng
@@ -1534,7 +1534,7 @@ export default {
                 }
             })
             if(flag){
-                this.$message.warning("该药品已添加，Vui lòng không thêm trùng lặp！")
+                this.$message.warning("Thuốc này đã được thêm, vui lòng không thêm trùng lặp!")
                 return;
             }
             row.number = null
@@ -1542,7 +1542,7 @@ export default {
             row.type = row.drug.pack
             row.drugTracCodg = null
             this.DrugList.push(JSON.parse(JSON.stringify(row)));
-            this.$message.success("添加药品成功")
+            this.$message.success("Thêm thuốc thành công")
         },
 
         //材料点击
@@ -1554,14 +1554,14 @@ export default {
                 }
             })
             if(flag){
-                this.$message.warning("该材料已添加，Vui lòng không thêm trùng lặp！")
+                this.$message.warning("Vật tư này đã được thêm, vui lòng không thêm trùng lặp!")
                 return;
             }
             row.number = null
             row.allFee = null
             row.type = row.stuff.packUnit
             this.StuffList.push(JSON.parse(JSON.stringify(row)));
-            this.$message.success("添加材料成功")
+            this.$message.success("Thêm vật tư thành công")
         }
     },
     watch:{

@@ -6,17 +6,17 @@
           <i class="el-icon-user-solid"></i>
         </div>
         <div class="user-details">
-          <div class="welcome-text">欢迎登录</div>
-          <div class="user-name">{{ currentUser.name || '未知用户' }}</div>
+          <div class="welcome-text">Chào mừng đăng nhập</div>
+          <div class="user-name">{{ currentUser.name || 'Người dùng không xác định' }}</div>
           <div class="clinic-info">
             <div class="info-item">
               <i class="el-icon-office-building"></i>
-              <span class="label">机构名称：</span>
+              <span class="label">Tên cơ sở：</span>
               <span class="value">{{ clinicName }}</span>
             </div>
             <div class="info-item">
               <i class="el-icon-postcard"></i>
-              <span class="label">机构编码：</span>
+              <span class="label">Mã cơ sở：</span>
               <span class="value">{{ institutionCode }}</span>
             </div>
           </div>
@@ -37,10 +37,10 @@ export default {
   },
   computed: {
     clinicName() {
-      return (this.currentUser.company && this.currentUser.company.name) || '未知诊所'
+      return (this.currentUser.company && this.currentUser.company.name) || 'Phòng khám không xác định'
     },
     institutionCode() {
-      return (this.currentUser.company && this.currentUser.company.fixmedinsCode) || '暂无编码'
+      return (this.currentUser.company && this.currentUser.company.fixmedinsCode) || 'Chưa có mã'
     }
   },
   beforeCreate() {

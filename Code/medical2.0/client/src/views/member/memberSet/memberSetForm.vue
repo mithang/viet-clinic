@@ -16,7 +16,7 @@
           </el-form-item>
         </el-col>
          <el-col :span='24/2'>
-          <el-form-item label='会员卡张数' prop='amount' >
+          <el-form-item label='Số thẻ hội viên' prop='amount' >
             <el-input :disabled='dialogProps.action === "view"' oninput="value=value.replace(/[^\d.]/g,'')"  v-model='bizFormModel.amount'></el-input>
           </el-form-item>
         </el-col>
@@ -42,7 +42,7 @@
         </el-col>
          <el-col :span='24/2'>
            
-          <el-form-item label='有效时间' prop='startDate' >
+          <el-form-item label='Thời gian hiệu lực' prop='startDate' >
             <!-- <el-date-picker :disabled='dialogProps.action == "view"' v-model='bizFormModel.startDate' type='date' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action == "view"? "" : "请输入开始时间"' ></el-date-picker>              -->
             <el-date-picker
             v-model="bizFormModel.startDate"
@@ -50,7 +50,7 @@
             style="width:290px"
             :disabled='dialogProps.action === "view"' 
             value-format='yyyy-MM-dd HH:mm:ss' 
-            :placeholder='dialogProps.action === "view"? "" : "请输入有效时间"'
+            :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian hiệu lực"'
             start-placeholder="Ngày bắt đầu"
             end-placeholder="Ngày kết thúc"
             :default-time="['00:00:00', '23:59:59']">
@@ -77,8 +77,8 @@
             <el-row>
         <el-col :span='24'>
           <div>
-            <span style="margin-left:55px;"><b>体验项目</b></span>
-             <el-button v-if="dialogProps.action !== 'view'" style="float:right;margin-top:-10px" type="primary" @click="addItem">添加体验项目</el-button>
+            <span style="margin-left:55px;"><b>Hạng mục trải nghiệm</b></span>
+             <el-button v-if="dialogProps.action !== 'view'" style="float:right;margin-top:-10px" type="primary" @click="addItem">Thêm hạng mục trải nghiệm</el-button>
           </div>
            </el-col>
       </el-row>
@@ -100,7 +100,7 @@
                   <el-select
                     v-model='memberData[scope.$index].name'
                   :disabled='dialogProps.action === "view"'
-                  :placeholder='dialogProps.action === "view"? "" : "请选择项目"'
+                  :placeholder='dialogProps.action === "view"? "" : "Vui lòng chọn hạng mục"'
                   @change="itemChange(scope.$index)"
                   >
                     <el-option
@@ -398,7 +398,7 @@ export default {
 
     openViewMemberSetDialog(memberSet) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看会员卡'
+      this.dialogProps.title = 'Xem thẻ hội viên'
       this.bizFormModel = {...this.initFormModel(), ...memberSet}
       this.initOptions(this.bizFormModel)
       this.bizFormModel.startDate = [this.bizFormModel.startDate, this.bizFormModel.endDate]

@@ -6,7 +6,7 @@
           v-model="condition.operName"
           prefix-icon="el-icon-search"
           style="width:250px;margin-right:8px;"
-          placeholder="请输入收费人姓名"
+          placeholder="Vui lòng nhập tên người thu phí"
         ></el-input>
         <div>Ngày thu phí：</div>
         <el-date-picker
@@ -55,17 +55,17 @@
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="优惠(VNĐ)"
+                label="Ưu đãi(VNĐ)"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="现金支付"
+                label="Thanh toán tiền mặt"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="微信支付"
+                label="Thanh toán WeChat"
                 width="width">
             </el-table-column>
             <el-table-column

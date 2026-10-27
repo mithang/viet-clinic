@@ -4,9 +4,9 @@
       <el-avatar :size="70" src="https://picsum.photos/200/200"></el-avatar>
       <span class="user-title">Quản trị viên cấp cao</span>
       <div class="btn-box">
-        <span @click="exitEdit" v-show="isPanelStyle" :class="{ exitBtn: isPanelStyle }">退出编辑</span>
+        <span @click="exitEdit" v-show="isPanelStyle" :class="{ exitBtn: isPanelStyle }">Thoát chỉnh sửa</span>
         <span @click="editDesktop" v-show="!isPanelStyle" class="edit-btn">
-          <i style="margin-right: 5px;" class="iconfont icon-edit"></i>管理我的桌面
+          <i style="margin-right: 5px;" class="iconfont icon-edit"></i>Quản lý màn hình của tôi
         </span>
       </div>
     </div>

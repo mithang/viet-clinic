@@ -408,7 +408,7 @@ export default {
     openViewbeforehandDialog(item) {
       this.arrlistcreat();
       this.dialogProps.action = "view";
-      this.dialogProps.title = "预诊";
+      this.dialogProps.title = "Khám sơ bộ";
 
       this.bizFormModel.registration.id = item.id;
       this.bizFormModel.registration.patientId.id = item.patientId.id;

@@ -28,7 +28,7 @@
             <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.cron' :maxlength='30' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập biểu thức nhiệm vụ"' >
               <template slot="append">
                 <el-button type="primary" @click="handleShowCron">
-                  生成表达式
+                  Tạo biểu thức
                   <i class="el-icon-time el-icon--right"></i>
                 </el-button>
               </template>
@@ -137,7 +137,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.bizFormModel.status==='已暂停') {
-            this.$message.warning("当前任务暂停状态不可重复暂停");
+            this.$message.warning("Nhiệm vụ đang tạm dừng, không thể tạm dừng lại");
             return  false;
           }
           this.setLoad()
@@ -163,7 +163,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.bizFormModel.status==='执行中') {
-              this.$message.warning("当前任务执行状态不可重复启动");
+              this.$message.warning("Nhiệm vụ đang chạy, không thể khởi động lại");
               return  false;
           }
           this.setLoad()
@@ -274,7 +274,7 @@ export default {
     },
     openViewScheduleJobDialog(scheduleJob) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看定时任务管理'
+      this.dialogProps.title = 'Xem quản lý nhiệm vụ định kỳ'
       this.bizFormModel = scheduleJob
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

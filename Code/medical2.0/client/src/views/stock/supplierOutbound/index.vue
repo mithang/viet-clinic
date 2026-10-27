@@ -319,7 +319,7 @@ import OperationIcon from '@/components/OperationIcon'
         this.$refs.uOutboundView.openDialog(outboundId);
       },
       onAudit(type, row) {
-        this.$confirm('确定审核通过吗？', 'Xác nhận', {
+        this.$confirm('Bạn có chắc duyệt đạt không?', 'Xác nhận', {
           confirmButtonText: 'Xác nhận',
           cancelButtonText: 'Hủy',
           type: 'warning'
@@ -341,7 +341,7 @@ import OperationIcon from '@/components/OperationIcon'
       },
       onCancel(index, row) {
         let that=this;
-        this.$confirm('确定撤销出库单吗？', 'Xác nhận', {
+        this.$confirm('Bạn có chắc hủy phiếu xuất kho không?', 'Xác nhận', {
           confirmButtonText: 'Xác nhận',
           cancelButtonText: 'Hủy',
           type: 'warning'

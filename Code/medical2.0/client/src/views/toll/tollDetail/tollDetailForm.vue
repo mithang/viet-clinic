@@ -25,7 +25,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Bảng thu phí chính' prop='tollId.id' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.tollId.name'></el-input>
-            <el-select v-else v-model='bizFormModel.tollId' value-key='id' filterable clearable placeholder='请选择收费主表' 
+            <el-select v-else v-model='bizFormModel.tollId' value-key='id' filterable clearable placeholder='Vui lòng chọn bảng thu phí chính' 
               @clear='bizFormModel.tollId={
                 "id": null,
                                 "name": null,
@@ -154,7 +154,7 @@ export default {
     },
     openViewTollDetailDialog(tollDetail) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看收费明细管理'
+      this.dialogProps.title = 'Xem quản lý chi tiết thu phí'
       this.bizFormModel = {...this.initFormModel(), ...tollDetail}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

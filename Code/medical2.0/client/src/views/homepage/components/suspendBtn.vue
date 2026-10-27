@@ -1,13 +1,13 @@
 <template>
   <div class="suspend-btn-container" v-drag :style="styleObject">
     <div class="suspend-btn">
-      <el-tooltip effect="dark" content="编辑我的桌面" placement="left">
+      <el-tooltip effect="dark" content="Chỉnh sửa màn hình của tôi" placement="left">
         <span class="opt-btn" @click.stop="handleConfig" :style="{color: isLight('theme')? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, .8)'}">
           <i class="el-icon-setting"></i>
         </span>
       </el-tooltip>
       <div class="border-h" :style="{backgroundColor: isLight('theme')? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, .8)'}"></div>
-      <el-tooltip effect="dark" content="回到顶部" placement="left">
+      <el-tooltip effect="dark" content="Về đầu trang" placement="left">
         <span class="opt-btn" @click.stop="handleToTop" :style="{color: isLight('theme')? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, .8)'}">
           <i class="el-icon-arrow-up"></i>
         </span>

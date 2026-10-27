@@ -336,8 +336,8 @@
                       v-model="patientInfoForm.gender.name"
                       style="width: 100%"
                     >
-                      <el-option label="男" value="男"></el-option>
-                      <el-option label="女" value="女"></el-option>
+                      <el-option label="Nam" value="男"></el-option>
+                      <el-option label="Nữ" value="女"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
@@ -1131,11 +1131,11 @@ export default {
       genderList: [
         {
           value: "gender_0",
-          name: "男",
+          name: "Nam",
         },
         {
           value: "gender_1",
-          name: "女",
+          name: "Nữ",
         },
       ],
       /*Danh sách đơn thuốc chờ thu phí*/
@@ -1403,7 +1403,7 @@ export default {
       selectdetailid(this.strc).then((responseData)=>{
         if(responseData.code===100){
           if(row[0].skinTest.value==="skinTest_0" && responseData.data[0].stresult==null){
-            this.$message.error("请先进行皮试再执行！")
+            this.$message.error("Vui lòng thử phản ứng da trước khi thực hiện!")
             return;
           }
           else{

@@ -139,7 +139,7 @@ export default {
     },
     openViewCodeRuleDialog(codeRule) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看系统编码规则'
+      this.dialogProps.title = 'Xem quy tắc mã hệ thống'
       this.bizFormModel = codeRule
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

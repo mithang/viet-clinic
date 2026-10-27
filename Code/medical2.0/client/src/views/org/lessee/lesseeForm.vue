@@ -26,7 +26,7 @@
               <el-row>
         <el-col :span='24/1'>
           <el-form-item label='Tên công ty' prop='company' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.company' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入公司名称"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.company' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên công ty"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>

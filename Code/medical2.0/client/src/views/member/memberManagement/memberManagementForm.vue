@@ -38,7 +38,7 @@
         </el-col>
                <el-col :span='24/2'>
           <el-form-item label='Điện thoại' prop='phone' >
-            <el-input :disabled='true' v-model='bizFormModel.phone' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入电话号"' ></el-input>
+            <el-input :disabled='true' v-model='bizFormModel.phone' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập số điện thoại"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -64,7 +64,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Số thẻ' prop='card' >
-            <el-input :disabled='true' v-model='bizFormModel.card' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "卡号保存后自动生成"' ></el-input>
+            <el-input :disabled='true' v-model='bizFormModel.card' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Số thẻ sẽ tự động tạo sau khi lưu"' ></el-input>
           </el-form-item>
         </el-col> 
       </el-row>
@@ -268,7 +268,7 @@ export default {
     },
     switchEdit() {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改会员卡管理'
+      this.dialogProps.title = 'Sửa quản lý thẻ hội viên'
       this.initOptions(this.bizFormModel)
     },
     onDialogClose() {
@@ -342,7 +342,7 @@ export default {
     },
     openViewMemberManagementDialog(memberManagement) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看会员'
+      this.dialogProps.title = 'Xem hội viên'
       this.bizFormModel = {...this.initFormModel(), ...memberManagement}
       this.initOptions(this.bizFormModel)
       this.getMember(this.bizFormModel.type)
@@ -353,7 +353,7 @@ export default {
     },
     openEditMemberManagementDialog(memberManagement) {
       this.dialogProps.action = 'edit'
-      this.dialogProps.title = '修改会员'
+      this.dialogProps.title = 'Sửa hội viên'
       this.bizFormModel = {...this.initFormModel(), ...memberManagement}
       this.initOptions(this.bizFormModel)
       this.getMember(this.bizFormModel.memberSet.type.value)

@@ -24,7 +24,7 @@
           </el-col>
           <el-col :span="6">
             <SearchItem label="Ghi chú">
-              <el-input v-model="otherInfo.remarks" placeholder="出库单备注"></el-input>
+              <el-input v-model="otherInfo.remarks" placeholder="Ghi chú phiếu xuất kho"></el-input>
             </SearchItem>
           </el-col>
         </el-row>

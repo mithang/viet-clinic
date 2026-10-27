@@ -158,7 +158,7 @@
                       type="primary"
                       icon="el-icon-plus"
                       @click="onCreateEntity('registrationForm')"
-                    >新增登记
+                    >Thêm đăng ký mới
                     </el-button
                     >
                   </el-button-group>
@@ -833,7 +833,7 @@
         if (this.types !== "") {
           this.$refs.ysForm.openViewysDialog(data, this.types);
         } else {
-          this.$message.warning("请先进行预诊！")
+          this.$message.warning("Vui lòng khám sơ bộ trước!")
         }
 
       },
@@ -843,7 +843,7 @@
         await getRegistrationId(row.id).then((res) => {
           if (res.data !== null) {
             this.applyForDialogVisible = false
-            this.$message.warning("该用户已申请远程诊疗，请前往远程诊疗管理界面查看!")
+            this.$message.warning("Người dùng này đã đề nghị khám từ xa, vui lòng vào giao diện quản lý khám từ xa để xem!")
             this.loadData();
           } else {
             this.applyForDialogVisible = true
@@ -1102,7 +1102,7 @@
         }
 
         if (flag) {
-          this.$message.warning("还未到预约时间,不能进行签到！")
+          this.$message.warning("Chưa đến giờ hẹn, không thể điểm danh!")
           return
         }
 

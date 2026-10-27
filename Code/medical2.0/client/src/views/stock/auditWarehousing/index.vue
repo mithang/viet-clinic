@@ -675,7 +675,7 @@ export default {
       this.selectStorage = [];
     },
     inStorage() {
-      this.$confirm("是否确定要入库的入库单", "Nhắc nhở", {
+      this.$confirm("Bạn có chắc muốn nhập kho phiếu nhập kho này không", "Nhắc nhở", {
           confirmButtonText: "Xác nhận",
           cancelButtonText: "Hủy",
           type: "warning",

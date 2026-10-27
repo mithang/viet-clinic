@@ -4,10 +4,10 @@
       <el-form-item label="Số đơn thuốc">
         <el-input v-model="formData.prescriptionCode" readonly></el-input>
       </el-form-item>
-      <el-form-item label="处方医生">
+      <el-form-item label="Bác sĩ kê đơn">
         <el-input v-model="formData.doctorName" readonly></el-input>
       </el-form-item>
-      <el-form-item label="处方日期">
+      <el-form-item label="Ngày kê đơn">
         <el-input v-model="formData.prescriptionDate" readonly></el-input>
       </el-form-item>
     </el-form>

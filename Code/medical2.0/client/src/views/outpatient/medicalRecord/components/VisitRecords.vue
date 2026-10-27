@@ -6,7 +6,7 @@
       </li>
       <li>Giới tính：{{ NowVisitInfo.info.gender.name }}</li>
       <li>Thời gian khám：{{ NowVisitInfo.medicalRecord.diagnoseDate }}</li>
-      <li>科室医生：{{ NowVisitInfo.medicalRecord.createBy }}</li>
+      <li>Bác sĩ khoa：{{ NowVisitInfo.medicalRecord.createBy }}</li>
     </ul>
     <div class="titleBox">
       <h4><el-checkbox v-model="checkedForm.record">Bệnh án</el-checkbox></h4>

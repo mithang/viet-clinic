@@ -624,7 +624,7 @@ this.selectpatientdjyjclist();
       }
       this.types = types;
       this.dialogProps.action = 'add'
-      this.dialogProps.title = titles + '全部信息'
+      this.dialogProps.title = titles + 'Tất cả thông tin'
       this.bizFormModel = this.initFormModel(this.user)
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

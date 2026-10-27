@@ -720,7 +720,7 @@ export default {
     },
     openViewPatientDialog(patient) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看患者信息'
+      this.dialogProps.title = 'Xem thông tin bệnh nhân'
       this.bizFormModel = {...this.initFormModel(), ...patient}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

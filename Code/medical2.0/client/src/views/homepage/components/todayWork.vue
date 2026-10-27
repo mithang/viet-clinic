@@ -20,9 +20,9 @@
         <span  v-if="dateType === 1">
           <el-date-picker v-model="value" type="month" :clearable="false"></el-date-picker>
           <el-button-group>
-            <el-button plain @click="handleMonth('on')" icon="el-icon-arrow-left">上月</el-button>
+            <el-button plain @click="handleMonth('on')" icon="el-icon-arrow-left">Tháng trước</el-button>
             <el-button plain @click="getToday">Hôm nay</el-button>
-            <el-button plain @click="handleMonth('next')">下月<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+            <el-button plain @click="handleMonth('next')">Tháng sau<i class="el-icon-arrow-right el-icon--right"></i></el-button>
           </el-button-group>
         </span>
       

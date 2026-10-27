@@ -309,7 +309,7 @@ export default {
     },
     openViewDictTypeDialog(dictType) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看字典类型管理'
+      this.dialogProps.title = 'Xem quản lý loại từ điển'
       this.bizFormModel = dictType
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'

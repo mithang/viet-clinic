@@ -91,7 +91,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian lập phiếu' prop='completeDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.completeDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入开单时间"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.completeDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian lập phiếu"' ></el-date-picker>             
           </el-form-item>
         </el-col>
     </el-row>

@@ -34,7 +34,7 @@
         border
         style="width: 100%"
       >
-        <el-table-column label="组号" width="50" align="center">
+        <el-table-column label="Số nhóm" width="50" align="center">
           <template>
             {{ GroupNumber }}
           </template>

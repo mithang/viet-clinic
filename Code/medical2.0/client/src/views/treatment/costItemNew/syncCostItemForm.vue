@@ -261,7 +261,7 @@ export default {
           prop: "dj",
         },
         {
-          label: "收费项目类型",
+          label: "Loại hạng mục thu phí",
           prop: "dllx",
         },
         {
@@ -722,7 +722,7 @@ export default {
     }
     this.$nextTick(() => {
       this.$on("openSyncCostItemDialog", () => {
-        this.dialogProps.title = "同步诊疗项目";
+        this.dialogProps.title = "Đồng bộ hạng mục khám chữa bệnh";
         this.dialogProps.visible = true;
         this.pageInit()
       });

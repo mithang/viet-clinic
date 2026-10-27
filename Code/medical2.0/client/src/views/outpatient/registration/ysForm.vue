@@ -39,9 +39,9 @@
       </el-row>
     </el-form>
     <div slot="footer">
-      <el-button @click="onDialogclose">关  闭</el-button>
+      <el-button @click="onDialogclose">Đóng</el-button>
       <el-button type="primary" @click="buttoninser"
-        >确  认</el-button
+        >Xác nhận</el-button
       >
     </div>
   </el-dialog>
@@ -189,7 +189,7 @@ export default {
     openViewysDialog(item, types) {
       this.arrlistcreat();
       this.dialogProps.action = "view";
-      this.dialogProps.title = "分诊";
+      this.dialogProps.title = "Phân khoa";
 
       this.insetModel.registration.id = item.id;
       this.insetModel.registration.patientId.id = item.patientId.id;

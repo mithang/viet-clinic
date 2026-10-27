@@ -11,7 +11,7 @@
     <el-input v-model="blmbcxrc.mbmc" placeholder="Vui lòng nhập tên mẫu"></el-input>
   </el-form-item>
    <el-form-item label="Người tạo" style="margin-right: 3px;">
-    <el-input v-model="blmbcxrc.cjr" placeholder="请输入创建人姓名"></el-input>
+    <el-input v-model="blmbcxrc.cjr" placeholder="Vui lòng nhập tên người tạo"></el-input>
   </el-form-item>
   <el-form-item label="Loại mẫu"  style="margin-right: 3px;">
   <el-select v-model="blmbcxrc.mblx" placeholder="Loại mẫu">

@@ -17,8 +17,8 @@
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="3">
 				Từ
-				<el-input-number v-model='average01' :min="0" :max="60" /> 小时开始，mỗi
-				<el-input-number v-model='average02' :min="0" :max="60" /> 小时执行一次
+				<el-input-number v-model='average01' :min="0" :max="60" /> giờ bắt đầu，mỗi
+				<el-input-number v-model='average02' :min="0" :max="60" /> giờ thực hiện một lần
 			</el-radio>
 		</el-form-item>
 

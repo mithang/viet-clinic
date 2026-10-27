@@ -129,7 +129,7 @@ export default {
     },
     openViewThemeDialog(theme) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看系统主题'
+      this.dialogProps.title = 'Xem chủ đề hệ thống'
       this.bizFormModel = theme
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true

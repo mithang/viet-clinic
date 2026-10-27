@@ -8,7 +8,7 @@
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="2">
-				不指定
+				Không chỉ định
 			</el-radio>
 		</el-form-item>
 
@@ -23,21 +23,21 @@
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="4">
 				Từ
-				<el-input-number v-model='average01' :min="0" :max="31" /> 号开始，mỗi
-				<el-input-number v-model='average02' :min="0" :max="31" /> 日执行一次
+				<el-input-number v-model='average01' :min="0" :max="31" /> ngày bắt đầu，mỗi
+				<el-input-number v-model='average02' :min="0" :max="31" /> ngày thực hiện một lần
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="5">
-				每月
-				<el-input-number v-model='workday' :min="0" :max="31" /> 号最近的那个工作日
+				Mỗi tháng
+				<el-input-number v-model='workday' :min="0" :max="31" /> ngày làm việc gần nhất trong tháng
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="6">
-				本月最后一天
+				Ngày cuối cùng của tháng
 			</el-radio>
 		</el-form-item>
 

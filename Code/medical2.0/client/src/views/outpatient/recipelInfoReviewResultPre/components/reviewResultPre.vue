@@ -19,7 +19,7 @@
             </el-form-item>
           </el-col>-->
           <el-col :span="6">
-            <el-form-item label='关键字' prop='patientName'>
+            <el-form-item label='Từ khóa' prop='patientName'>
               <el-input
                 v-model="queryModel.patientName"
                 placeholder="Họ tên/Số khám ngoại trú"
@@ -437,7 +437,7 @@ export default {
         this.$message.warning('Vui lòng chọn trước một bản ghi đơn thuốc');
         return;
       }else if(this.selectedRow.reviewStatus === 2){
-        this.$message.warning('已撤销处方！');
+        this.$message.warning('Đã hủy đơn thuốc!');
         return;
       }
       // 重置撤销原因

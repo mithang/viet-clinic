@@ -38,7 +38,7 @@ export default function () {
         const originalCluster = this.getThemeCluster(oldVal.replace('#', ''))
 
         const $message = this.$message({
-          message: '主题色切换',
+          message: 'Chuyển màu chủ đề',
           customClass: 'theme-message',
           type: 'success',
           duration: 0,

@@ -118,7 +118,7 @@
                       <el-button type="text" @click="onSynchronousDrug()">Đồng bộ</el-button>
                     </el-dropdown-item>
                     <el-dropdown-item>
-                      <el-button type="text" @click="onCreateEntity('drugForm')">自建</el-button>
+                      <el-button type="text" @click="onCreateEntity('drugForm')">Tự tạo</el-button>
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>

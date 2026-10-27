@@ -83,7 +83,7 @@
           </el-col>
         </el-row>
         <el-row>
-          医保配置参数
+          Thông số cấu hình bảo hiểm y tế
         </el-row>
         <el-row>
           <el-col :span='24/1'>
@@ -132,7 +132,7 @@
         <el-row>
           <!-- privateKey -->
           <el-col :span='24/1'>
-            <el-form-item label='机构私钥' prop='privateKey'>
+            <el-form-item label='Khóa riêng của cơ sở' prop='privateKey'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.privateKey' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>
@@ -141,7 +141,7 @@
         <el-row>
           <!-- publicKey -->
           <el-col :span='24/1'>
-            <el-form-item label='医保中心公钥' prop='publicKey'>
+            <el-form-item label='Khóa công khai của trung tâm bảo hiểm y tế' prop='publicKey'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.publicKey' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>
@@ -189,7 +189,7 @@
             <el-form-item label='Thời gian bắt đầu phòng khám' prop='startUseDate'>
               <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.startUseDate'
                               type='datetime' value-format='yyyy-MM-dd HH:mm:ss'
-                              :placeholder='dialogProps.action === "view"? "" : "请输入诊所开始时间"'></el-date-picker>
+                              :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian bắt đầu của phòng khám"'></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -390,7 +390,7 @@
       },
       openViewClinicDialog(clinic) {
         this.dialogProps.action = 'view'
-        this.dialogProps.title = '查看诊所'
+        this.dialogProps.title = 'Xem phòng khám'
         this.bizFormModel = {...this.initFormModel(), ...clinic}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'

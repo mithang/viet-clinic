@@ -34,7 +34,7 @@
          </el-col>
         <el-col :span='24/4'>
           <el-form-item label-width="0" prop='isEmail' >
-            <el-checkbox :disabled='dialogProps.action === "view"' border label="是否邮件消息" v-model='bizFormModel.isEmail' active-color='#13ce66' inactive-color='#dbdfe6' :true-label="'1'" :false-label="'0'"></el-checkbox>
+            <el-checkbox :disabled='dialogProps.action === "view"' border label="Có phải thông báo email không" v-model='bizFormModel.isEmail' active-color='#13ce66' inactive-color='#dbdfe6' :true-label="'1'" :false-label="'0'"></el-checkbox>
           </el-form-item>
         </el-col>
         <el-col :span='24/4'>
@@ -44,7 +44,7 @@
         </el-col>
          <el-col :span='24/4'>
               <el-form-item label-width="0" prop='isSms' >
-                <el-checkbox :disabled='dialogProps.action === "view"' border label="是否发送短信" v-model='bizFormModel.isSms' active-color='#13ce66' inactive-color='#dbdfe6' :true-label="'1'" :false-label="'0'"></el-checkbox>
+                <el-checkbox :disabled='dialogProps.action === "view"' border label="Có gửi SMS không" v-model='bizFormModel.isSms' active-color='#13ce66' inactive-color='#dbdfe6' :true-label="'1'" :false-label="'0'"></el-checkbox>
               </el-form-item>
           </el-col>
       </el-row>
@@ -267,7 +267,7 @@ export default {
     },
     openViewNoticeSendDialog(noticeSend) {
       this.dialogProps.action = 'view'
-      this.dialogProps.title = '查看消息发送公告'
+      this.dialogProps.title = 'Xem thông báo gửi tin nhắn'
       this.bizFormModel = noticeSend
       this.dialogProps.visible = true
       this.initOptions(this.bizFormModel)
