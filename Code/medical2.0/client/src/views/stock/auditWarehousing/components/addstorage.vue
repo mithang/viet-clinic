@@ -1348,12 +1348,12 @@
             // _this.dalen=arr.length;
             for (let i = 0; i < outdata.length; i++) {
               for (let j = 0; j < newList.length; j++) {
-                if (outdata[i].Tên thuốc/vật tư === newList[j].goodsName && outdata[i].Quy cách === newList[j].specification && outdata[i].Giá bán === newList[j].price) {
-                  newList[j].batchNumber = outdata[i].Số lô sản xuất;
-                  newList[j].producedDate = outdata[i].Ngày sản xuất;
-                  newList[j].expireDate = outdata[i].Ngày hết hạn;
-                  newList[j].quantity = outdata[i].Số lượng nhập kho;
-                  newList[j].inPrice = outdata[i].Giá nhập;
+                if (outdata[i].药品材料名称 === newList[j].goodsName && outdata[i].规格 === newList[j].specification && outdata[i].售价 === newList[j].price) {
+                  newList[j].batchNumber = outdata[i].生产批号;
+                  newList[j].producedDate = outdata[i].生产日期;
+                  newList[j].expireDate = outdata[i].过期日期;
+                  newList[j].quantity = outdata[i].入库数量;
+                  newList[j].inPrice = outdata[i].进价;
                   newList[j].outPrice = newList[j].price;
                   storageDetailTable.push(newList[j]);
                   dr += 1;
@@ -1362,7 +1362,7 @@
               }
               if (a !== 1){
                 wdr += 1;
-                cw += "Dòng thứ"+(i+1)+"dòng["+outdata[i].Tên thuốc/vật tư+"]Thông tin bất thường，Vui lòng kiểm tra rồi nhập lại\n";
+                cw += "Dòng thứ"+(i+1)+"dòng["+outdata[i].药品材料名称+"]Thông tin bất thường，Vui lòng kiểm tra rồi nhập lại\n";
               }
               a = 0;
             }

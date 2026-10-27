@@ -4,9 +4,9 @@
 		<el-table :data="newList" border highlight-current-row @row-click="RowClickSurchargeTable">
 			<el-table-column prop="drugStuffName" :label="nameTitle">
 			</el-table-column>
-			<el-table-column prop="drug.type.name" :label="Loại thuốc" v-if="type===1">
+			<el-table-column prop="drug.type.name" label="Loại thuốc" v-if="type===1">
 			</el-table-column>
-			<el-table-column prop="stuff.type.name" :label="Loại vật tư" v-if="type===2">
+			<el-table-column prop="stuff.type.name" label="Loại vật tư" v-if="type===2">
 			</el-table-column>
 			<el-table-column prop="drug.price" label="Bán lẻ" width="100" v-if="addType === 1">
 			</el-table-column>
