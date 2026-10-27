@@ -1,0 +1,17 @@
+# Build / deps
+node_modules/
+target/
+dist/
+*.class
+*.log
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+.idea/
+*.iml
+.DS_Store
+__MACOSX/
+# Local env
+.env

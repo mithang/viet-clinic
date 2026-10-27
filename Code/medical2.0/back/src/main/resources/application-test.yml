@@ -1,0 +1,47 @@
+server:
+  port: 9502
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/medical_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:your_password_here}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+jwtUtils:
+  id: jwt
+  secret: ${JWT_SECRET:your_jwt_secret_here}
+  ttlMillis: 3600000
+
+#启信宝
+qixin:
+  appkey: ${QIXIN_APPKEY:your_appkey_here}
+  secretKey: ${QIXIN_SECRET_KEY:your_secretkey_here}
+  host: https://api.qixin.com/
+  profile: APIService
+
+
+#企业微信
+weChat:
+  corpid: ${WECHAT_CORPID:your_corpid_here}
+  corpsecret: ${WECHAT_CORPSECRET:your_corpsecret_here}
+  agentid: ${WECHAT_AGENTID:your_agentid_here}
+
+# 报表集成
+report:
+  dataease:
+    username: ${REPORT_USERNAME:your_report_user}
+    password: ${REPORT_PASSWORD:your_report_password}
+    frontend:
+      host: localhost
+      port: 9528
+      useSSLLink: 0
+    backend:
+      host: localhost
+      port: 8081
+      useSSLLink: 0
+    rsa_public_key: ${REPORT_RSA_PUBLIC_KEY:your_rsa_public_key_here}

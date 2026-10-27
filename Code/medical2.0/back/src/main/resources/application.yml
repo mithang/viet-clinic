@@ -1,0 +1,79 @@
+server:
+  tomcat:
+    max-http-post-size: 104857600  # 100MB，防止恶意大请求体攻击
+spring:
+  profiles:
+    active: demo
+  application:
+    name: medical
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+  datasource:
+    maxActive: 20
+    initialSize: 5
+    minIdle: 5
+    maxWait: 6000
+    maxPoolPreparedStatementPerConnectionSize: 20
+    timeBetweenEvictionRunsMillis: 6000
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  main:
+    allow-bean-definition-overriding: true    #当遇到同样名字的时候，是否允许覆盖注册
+    allow-circular-references: true
+  cache:
+    type: none
+  #院版配置（开源版请根据实际环境配置）
+  hosconfig:
+    hos-token-url: ${HOS_TOKEN_URL:}
+    hos-data-server-url: ${HOS_DATA_SERVER_URL:}
+    app-id: ${HOS_APP_ID:}
+    organize-id: ${HOS_ORGANIZE_ID:}
+  #医保配置
+  medicare:
+    check: false #开启医保配置
+    province:     #医保省份
+    url:          #接口地址
+    #web-url: http://prescription-service:8101/api/YibaoWeb    #部署地址采用医保中间件访问与docker中服务名称部署相对应
+    web-url: http://127.0.0.1:8101/api/YibaoWeb    #中间件地址
+    isDemo: false #是否演示环境
+    #电子处方
+    web-port: 7020  #前端端口号用于访问打印处方单
+logging:
+  level:
+    com.geeke.gen.dao.*: debug
+    com.geeke.admin.dao.*: debug
+    com.geeke.sys.dao.*: debug
+    org.camunda: debug
+    com.geeke.gen: debug
+    com.geeke.stock.dao.*: debug
+# mybatis-plus配置
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
+  configuration:
+    auto-mapping-behavior: FULL
+    map-underscore-to-camel-case: true
+    default-executor-type: SIMPLE
+    local-cache-scope: SESSION
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+  mapper-locations: classpath:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+genConfigure:
+  dbName: mysql                          #数据库类型:  mysql/oracle/mssql
+
+app:
+  cache:
+    type: none  # 可选 redis、none、ehcache
+
+
+
+

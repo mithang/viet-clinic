@@ -1,0 +1,61 @@
+package com.geeke.stock.controller;
+
+import com.alibaba.fastjson.JSONObject;
+import com.geeke.common.controller.CrudController;
+import com.geeke.medicareutils.config.MedicareConfigProperties;
+import com.geeke.medicareutils.service.MdInventoryService;
+import com.geeke.stock.entity.OutboundEvt;
+import com.geeke.stock.entity.SupplierOutbound;
+import com.geeke.stock.service.SupplierOutboundService;
+import com.geeke.utils.ResultUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * 出库单Controller
+ *
+ * @author txl
+ * @version 2023-07-14/
+ */
+
+@RestController
+@RequestMapping(value = "/stock/supplierOutbound")
+public class SupplierOutboundController extends CrudController<SupplierOutboundService, SupplierOutbound> {
+
+    @Autowired
+    protected SupplierOutboundService supplierOutboundService;
+
+    @Autowired
+    private MedicareConfigProperties medicareConfigProperties;
+
+    @Autowired
+    private MdInventoryService mdInventoryService;
+
+    @Override
+    protected SupplierOutboundService getService() {
+        return supplierOutboundService;
+    }
+
+    @PostMapping(value = "saveEvt")
+    public ResponseEntity<JSONObject> saveEvt(@RequestBody OutboundEvt entity) {
+        String id = supplierOutboundService.save(entity).getId();
+        if("true".equals(medicareConfigProperties.getCheck())){
+            //开启医保接口 出库
+             mdInventoryService.updateInventoryList_3502A(entity);
+        }
+        return ResponseEntity.ok(ResultUtil.successJson(id));
+    }
+
+    @GetMapping("/cancel/{id}")
+    public ResponseEntity<JSONObject> cancel(@PathVariable("id") String id) {
+        supplierOutboundService.cancel(id);
+        return ResponseEntity.ok(ResultUtil.successJson());
+    }
+
+    @GetMapping("/examine/{id}")
+    public ResponseEntity<JSONObject> examine(@PathVariable("id") String id) {
+        supplierOutboundService.examine(id);
+        return ResponseEntity.ok(ResultUtil.successJson());
+    }
+}
