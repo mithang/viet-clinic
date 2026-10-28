@@ -3,7 +3,7 @@
     @open='onDialogOpen()' v-loading='loading'>
     <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
-      <!-- <OperationIcon v-show='dialogProps.action == "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon> -->
+      <OperationIcon v-show='dialogProps.action == "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
     </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 

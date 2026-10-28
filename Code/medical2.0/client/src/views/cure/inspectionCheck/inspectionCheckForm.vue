@@ -159,6 +159,15 @@ export default {
       });
     },
     doSave() {
+      // Form nhập patientId/registrationId/costItemId dạng chuỗi, nhưng
+      // mapper InspectionCheckDao insert/update đọc #{patient.id},
+      // #{registration.id}, #{costItem.id} nên lưu luôn lỗi 500
+      // "Column 'patient_id' cannot be null". Map chuỗi id sang object
+      // trước khi gửi (chỉ khi chuỗi có giá trị, để dialog Sửa giữ nguyên
+      // object đã load khi người dùng không sửa các ô id này).
+      if (this.bizFormModel.patientId) { this.bizFormModel.patient = { id: this.bizFormModel.patientId } }
+      if (this.bizFormModel.registrationId) { this.bizFormModel.registration = { id: this.bizFormModel.registrationId } }
+      if (this.bizFormModel.costItemId) { this.bizFormModel.costItem = { id: this.bizFormModel.costItemId } }
       this.setLoad()
       saveInspectionCheck(this.bizFormModel).then(responseData => {
         if(responseData.code === 100) {
@@ -238,6 +247,12 @@ export default {
         this.dialogProps.action = 'edit'
         this.dialogProps.title = 'Sửa xét nghiệm/kiểm tra'
         this.bizFormModel = {...this.initFormModel(), ...inspectionCheck}
+        // Dòng load từ API chỉ có patient/registration/costItem dạng object,
+        // còn các ô id bắt buộc (patientId/...) sẽ trống nếu không map lại,
+        // khiến validation chặn Sửa dù người dùng chỉ đổi một trường khác.
+        if (inspectionCheck.patient) { this.bizFormModel.patientId = inspectionCheck.patient.id }
+        if (inspectionCheck.registration) { this.bizFormModel.registrationId = inspectionCheck.registration.id }
+        if (inspectionCheck.costItem) { this.bizFormModel.costItemId = inspectionCheck.costItem.id }
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
         this.dialogProps.visible = true

@@ -87,7 +87,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             //mẫuĐơn thuốcThông tinSửa
             recipetemplateInfoService.updateInfo(recipetemplate.getRecipeTemplateInfo());
             //mẫuĐơn thuốcChi tiếtSửa
-            recipetemplateDetailService.updateDetail(recipetemplate.getRecipeTemplateDetail(),recipetemplate.getCompany());
+            recipetemplateDetailService.updateDetail(recipetemplate.getRecipeTemplateDetail(),recipetemplate.getCompany(),recipetemplate.getRecipeTemplateInfo());
         }
     }
 

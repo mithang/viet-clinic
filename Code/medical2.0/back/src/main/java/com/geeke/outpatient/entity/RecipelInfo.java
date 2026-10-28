@@ -242,7 +242,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=1, max=255, message="nhỏLớpnhỏLớp[Dữ liệu từ điển]Độ dài phải từ 1  và  255 Giữa")
+	@NotNull(message="nhỏLớpnhỏLớp[Dữ liệu từ điển]Không được để trống")
 	public DictItem getSmallType() {
 		return smallType;
 	}

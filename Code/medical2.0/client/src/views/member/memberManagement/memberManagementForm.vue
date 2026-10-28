@@ -1,10 +1,10 @@
 <template>
   <el-dialog :title='dialogProps.title' :visible.sync='dialogProps.visible' v-if="dialogProps.visible" :close-on-click-modal='false' width='50%' 
     @open='onDialogOpen()' v-loading='loading'>
-    <!-- <div slot='title' class='dialog-header'>
+    <div slot='title' class='dialog-header'>
       {{ dialogProps.title }}
       <OperationIcon v-show='dialogProps.action === "view" && permission.edit' type='primary' text='Sửa' placement='top-start' icon-name='el-icon-edit' @click='switchEdit'></OperationIcon>
-    </div> -->
+    </div>
 
     <el-form :model='bizFormModel' :rules='formRules' 
       ref='memberManagementForm' label-width='120px' label-position='right' class='edit-form'>  

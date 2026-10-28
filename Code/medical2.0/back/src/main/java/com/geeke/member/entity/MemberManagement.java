@@ -91,7 +91,12 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=1, max=100, message="thẻsốĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	// Số thẻ do MemberManagementService.save() tự sinh từ timestamp SAU khi
+	// @Valid chạy (form để trống, placeholder "tự sinh sau khi lưu"), nên
+	// min=1 cũ làm Tạo qua UI không bao giờ qua được @Valid. Đổi về min=0
+	// (vẫn giữ max=100): cho phép trống để service sinh, không đổi hành vi
+	// sinh card hay độ dài tối đa.
+	@Length(min=0, max=100, message="thẻsốĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getCard() {
 		return card;
 	}

@@ -70,7 +70,6 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Cờ đánh dấu chỉ số cao/thấpĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public int getSign() {
 		return sign;
 	}

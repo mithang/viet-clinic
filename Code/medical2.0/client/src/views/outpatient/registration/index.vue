@@ -293,6 +293,7 @@
                           <el-popconfirm title="确定退号吗？" @confirm="chargeClick(scope.row)">
                             <span slot="reference">退号</span>
                           </el-popconfirm>
+                          <span v-show="permission.remove" @click="onDeleteEntity(scope.$index, scope.row, deleteApi)">Xóa</span>
                           <span class="btn1" @click="openRegistration(scope.row.id)">In</span>
 
                         </p>

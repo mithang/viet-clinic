@@ -38,6 +38,15 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
 
         @Transactional(readOnly = false)
         public MemberManagement save(MemberManagement memberManagement){
+            // Sửa (id đã có) trước đây rơi vào cùng nhánh INSERT với Tạo nên
+            // luôn lỗi trùng khóa chính — form Sửa qua UI không bao giờ lưu
+            // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
+            // (giữ nguyên card, không sinh lại, không trừ số lượng thẻ lại).
+            if (StringUtils.isNotBlank(memberManagement.getId())) {
+                memberManagement.preUpdate();
+                this.dao.update(memberManagement);
+                return memberManagement;
+            }
             memberManagement.preInsert();
             String id = memberManagement.getId();
             String card = new Date().getTime() + "";

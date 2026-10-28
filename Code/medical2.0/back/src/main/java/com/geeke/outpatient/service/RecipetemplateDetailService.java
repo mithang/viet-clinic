@@ -167,6 +167,20 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         return drugStuffEvt;
     }
 
+    // Sửa mẫu không có chi tiết thuốc nào: bản cũ gọi get(0) vô điều kiện
+    // nên allSave luôn lỗi "Index: 0, Size: 0" dù tạo mẫu rỗng vẫn thành công.
+    // Bản này nhận thêm info để khi rỗng vẫn xóa được chi tiết cũ (nếu có).
+    @Transactional
+    public void updateDetail(List<RecipeTemplateDetail> recipeTemplateDetails, Company company, RecipeTemplateInfo info) {
+        if (CollectionUtils.isEmpty(recipeTemplateDetails)) {
+            if (info != null && StringUtils.isNotBlank(info.getId())) {
+                this.dao.deleteTemplateDetail(info.getId());
+            }
+            return;
+        }
+        updateDetail(recipeTemplateDetails, company);
+    }
+
     @Transactional
     public void updateDetail(List<RecipeTemplateDetail> recipeTemplateDetails, Company company) {
         RecipeTemplateInfo recipeTemplateInfoId=recipeTemplateDetails.get(0).getRecipeTemplateInfo();
