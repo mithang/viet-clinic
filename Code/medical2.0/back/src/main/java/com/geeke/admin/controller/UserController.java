@@ -98,7 +98,14 @@ public class UserController extends CrudController<UserService, User> {
 
             //Quản lý phòng khámnhân viênTruy vấnTất cảDữ liệu
             List<Parameter> params = searchParams.getParams();
-            params.set(0,new Parameter());
+            if (params == null) {
+                params = new java.util.ArrayList<>();
+            }
+            if (params.isEmpty()) {
+                params.add(new Parameter());
+            } else {
+                params.set(0,new Parameter());
+            }
             userPage = service.listPageForNoAdmin(params,
             searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         }

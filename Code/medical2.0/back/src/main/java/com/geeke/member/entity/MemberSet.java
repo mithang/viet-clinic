@@ -52,7 +52,7 @@ public class MemberSet extends DataEntity<MemberSet> {
         this.company = company;
     }
     
-	@Length(min=1, max=100, message="Hội viênthẻLoạiĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@NotNull(message="Hội viênthẻLoạiKhông được để trống")
 	public DictItem getType() {
 		return type;
 	}

@@ -313,7 +313,7 @@
                     content="Xóa"
                     placement="top-start"
                     icon-name="el-icon-delete"
-                    @click="onDeleteDrug(scope.$index, scope.row)"
+                    @click="onDeleteEntity(scope.$index, scope.row, deleteApi)"
                   ></OperationIcon> -->
                   <OperationIcon
                     v-show="permission.view"

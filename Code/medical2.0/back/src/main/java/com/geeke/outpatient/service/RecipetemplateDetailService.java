@@ -6,13 +6,13 @@ import com.geeke.org.entity.Company;
 import com.geeke.outpatient.dao.RecipeTemplateDetailDao;
 import com.geeke.outpatient.dao.RecipetemplateDao;
 import com.geeke.outpatient.entity.*;
+import com.geeke.stock.dao.DrugDao;
+import com.geeke.stock.dao.StuffDao;
 import com.geeke.stock.entity.Drug;
 import com.geeke.stock.entity.Stuff;
-import com.geeke.stock.service.DrugService;
-import com.geeke.stock.service.StuffService;
 import com.geeke.sys.utils.SessionUtils;
+import com.geeke.treatment.dao.CostItemDao;
 import com.geeke.treatment.entity.CostItem;
-import com.geeke.treatment.service.CostItemService;
 import com.geeke.utils.IdGen;
 import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,16 +42,28 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     @Autowired
     private RecipeTemplateDetailDao recipeTemplateDetailDao;
 
+    // Đọc trực tiếp qua DAO (không qua Service.get()): Service.get() chạy
+    // verifyTenantOwnership theo tenant của phiên và ném ServiceException
+    // khi thuốc/vật tư thuộc tenant khác; ngoại lệ đó đánh dấu transaction
+    // hiện tại là rollback-only nên dù bắt ở đây cả trang list vẫn lỗi 500
+    // "Transaction rolled back because it has been marked as rollback-only".
+    // DAO.get() không kiểm tra tenant; việc lọc vẫn do logic so sánh
+    // company dưới đây thực hiện (chi tiết không cùng phòng khám bị bỏ qua,
+    // không lộ dữ liệu của tenant khác).
     @Autowired
-    private DrugService drugService;
+    private DrugDao drugDao;
 
     @Autowired
-    private StuffService stuffService;
+    private StuffDao stuffDao;
 
     @Autowired
-    private CostItemService costItemService;
+    private CostItemDao costItemDao;
 
 
+    // Ghi: method này INSERT vào recipetemplate_detail nên phải là
+    // read-write (lớp đang readOnly=true); khi được gọi từ
+    // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
+    @Transactional(readOnly = false)
     public void allSave(List<RecipeTemplateDetail> recipeTemplateDetails){
         for (RecipeTemplateDetail recipeTemplateDetail:
         recipeTemplateDetails) {
@@ -98,7 +110,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         String detailCompanyId = recipeTemplateDetail.getCompany() != null ? recipeTemplateDetail.getCompany().getId() : null;
         if ("0".equals(stuffType) || "1".equals(stuffType) || "2".equals(stuffType)) {
             //Thuốc đông y, Thuốc tây, Đơn truyền dịch tra cứu thông tin thuốc
-            Drug drug = this.drugService.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
+            Drug drug = this.drugDao.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (drug == null) return null;
             // Phòng khámcấpcách ly: Bỏ quakhácPhòng khám của Thuốc
             if (detailCompanyId != null && drug.getCompany() != null && !detailCompanyId.equals(drug.getCompany().getId())) {
@@ -117,7 +129,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             drugStuffEvt.setDrug(drug);
         } else if ("3".equals(stuffType)) {
             //Truy vấn thông tin hạng mục khám chữa bệnh
-            CostItem costItem = this.costItemService.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
+            CostItem costItem = this.costItemDao.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (costItem == null) return null;
             if (detailCompanyId != null && costItem.getCompany() != null && !detailCompanyId.equals(costItem.getCompany().getId())) {
                 logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámhạng mục khám chữa bệnh, Đã bỏ qua: detailCompanyId={}, costItemCompanyId={}, itemName={}",
@@ -134,7 +146,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             drugStuffEvt.setPack(costItem.getUnit());
             drugStuffEvt.setCostItem(costItem);
         } else if ("4".equals(stuffType)) {
-            Stuff stuff = this.stuffService.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
+            Stuff stuff = this.stuffDao.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (stuff == null) return null;
             if (detailCompanyId != null && stuff.getCompany() != null && !detailCompanyId.equals(stuff.getCompany().getId())) {
                 logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámVật tư, Đã bỏ qua: detailCompanyId={}, stuffCompanyId={}, stuffName={}",

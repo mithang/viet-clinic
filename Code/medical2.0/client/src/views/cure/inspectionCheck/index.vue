@@ -72,11 +72,11 @@
         <!--  Thanh tìm kiếm  Kết thúc -->
 
         <!-- Thanh công cụ Bắt đầu -->
-        <!-- <div class="page-container-header-end">
+        <div class="page-container-header-end">
           <div>
             <el-button v-show='permission.add' type='primary' icon='el-icon-plus' :plain='true' @click='onCreateInspectionCheck()'>Thêm</el-button>
           </div>
-        </div> -->
+        </div>
         <!-- Thanh công cụ Kết thúc -->
 
       <!-- Thanh bảng  Bắt đầu -->
@@ -121,16 +121,16 @@
                 <template slot-scope='scope'>
                   <el-button type="text" v-if="scope.row.status==='0'"  @click="fill(scope.row,scope.$index,0)">填写报告</el-button>
                   <el-button type="text" v-if="scope.row.status==='1'"  @click="fill(scope.row,scope.$index,1)">Xem chi tiết</el-button>
-                  <!-- <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
+                  <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
                     @click='onViewInspectionCheck(scope.$index, scope.row)'></OperationIcon>
                   <OperationIcon v-show='permission.edit' type='primary' content='Sửa' placement='top-start' icon-name='el-icon-edit' 
                     @click='onEditInspectionCheck(scope.$index, scope.row)'></OperationIcon>
                   <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document' 
                     @click='onCopyInspectionCheck(scope.$index, scope.row)'></OperationIcon>
                   <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete' 
-                    @click='onDeleteInspectionCheck(scope.$index, scope.row)'></OperationIcon>
+                    @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
                   <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
-                    @click='onShowHistory(scope.$index, scope.row)'></OperationIcon> -->
+                    @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
               </el-table-column>
             </el-table>
@@ -599,6 +599,18 @@ export default {
       getInspectionCheckById(row.id).then(responseData => {
         if (responseData.code === 100) {
           this.$refs.inspectionCheckForm.openEditInspectionCheckDialog(responseData.data)
+        } else { this.showMessage(responseData) }
+        this.resetLoad()
+      }).catch(error => { this.outputError(error) })
+    },
+    // Copy icon in the row template calls this name; the form component already
+    // provides openCopyInspectionCheckDialog, but no index method existed, so
+    // Sao chép did nothing. Same get-by-id pattern as View/Edit above.
+    onCopyInspectionCheck(index, row) {
+      this.setLoad()
+      getInspectionCheckById(row.id).then(responseData => {
+        if (responseData.code === 100) {
+          this.$refs.inspectionCheckForm.openCopyInspectionCheckDialog(responseData.data)
         } else { this.showMessage(responseData) }
         this.resetLoad()
       }).catch(error => { this.outputError(error) })

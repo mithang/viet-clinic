@@ -46,7 +46,7 @@
         <!-- Thanh công cụ Bắt đầu -->
         <div class="page-container-header-end">
           <div>
-            <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click='onCreateLessee()'>Thêm</el-button>
+            <el-button v-show='permission.add' type='primary' icon='el-icon-plus'  @click="onCreateEntity('lesseeForm')">Thêm</el-button>
           </div>
         </div>
         <!-- Thanh công cụ Kết thúc -->
@@ -79,7 +79,7 @@
                   <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyEntity(scope.$index, scope.row, "lesseeForm")'></OperationIcon>
                   <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
-                    @click='onDeleteEntity(scope.$index, scope.row, deleteTenant)'></OperationIcon>
+                    @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
                   <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>

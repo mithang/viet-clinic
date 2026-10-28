@@ -11,12 +11,13 @@ import com.geeke.org.entity.Company;
 import com.geeke.outpatient.entity.RecipeTemplateDetail;
 import com.geeke.outpatient.entity.RecipeTemplateInfo;
 import com.geeke.outpatient.entity.Registration;
+import com.geeke.stock.dao.DrugDao;
+import com.geeke.stock.dao.StuffDao;
 import com.geeke.stock.entity.Drug;
 import com.geeke.stock.entity.Stuff;
 import com.geeke.stock.service.DrugService;
-import com.geeke.stock.service.StuffService;
+import com.geeke.treatment.dao.CostItemDao;
 import com.geeke.treatment.entity.CostItem;
-import com.geeke.treatment.service.CostItemService;
 import com.geeke.sys.utils.SessionUtils;
 import com.geeke.utils.IdGen;
 import org.springframework.stereotype.Service;
@@ -51,11 +52,22 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
     private RegistrationService registrationService;
     @Autowired
     private DrugService drugService;
+    // Đọc trực tiếp qua DAO trong isDetailBelongsToCompany (xem chú thích
+    // ở đó): Service.get() ném ServiceException khi thuốc/vật tư thuộc
+    // tenant khác và đánh dấu transaction lưu mẫu là rollback-only, làm
+    // cả lần lưu thất bại dù ý đồ chỉ là lọc bỏ chi tiết đó.
     @Autowired
-    private StuffService stuffService;
+    private DrugDao drugDao;
     @Autowired
-    private CostItemService costItemService;
+    private StuffDao stuffDao;
+    @Autowired
+    private CostItemDao costItemDao;
 
+    // Ghi: entry-point phải là read-write. Lớp này là readOnly=true và
+    // saveTemplate()/updateTemplate() được gọi nội bộ (this.*) nên
+    // @Transactional trên chính chúng bị proxy bỏ qua; chỉ annotation
+    // ở đây mới tạo transaction ghi cho toàn bộ chuỗi allSave.
+    @Transactional(readOnly = false)
     public void allSave(Recipetemplate recipetemplate){
         if(StringUtils.isBlank(recipetemplate.getId())){
             this.saveTemplate(recipetemplate);
@@ -158,6 +170,9 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         recipetemplate.setRecipeTemplateDetail(recipeTemplateDetails);
         return recipetemplate;
     }
+    // Cùng lý do như allSave: aiSave cũng tự gọi saveTemplate/updateTemplate
+    // và ghi DB, nên entry-point này phải là read-write.
+    @Transactional(readOnly = false)
     public String aiSave(Recipetemplate recipetemplate){
         Registration medicalRecord = registrationService.get(recipetemplate.getRegisterId());
         recipetemplate.setPatientId(medicalRecord.getPatientId().getId());
@@ -210,17 +225,20 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             return true;
         }
         // Kiểm traliên kết của Thuốc/Vật tư/hạng mục khám chữa bệnhCó hay khôngthuộctạiHiện tạiPhòng khám
+        // Đọc qua DAO (không qua Service.get()): xem chú thích ở trường
+        // drugDao/stuffDao/costItemDao — Service.get() sẽ ném ngoại lệ tenant
+        // và đánh dấu rollback-only cho transaction đang lưu mẫu.
         if (detail.getDrugStuffId() != null && detail.getDrugStuffId().getDrugStuffId() != null) {
             String stuffType = detail.getStuffType();
             String drugStuffId = detail.getDrugStuffId().getDrugStuffId();
             if ("0".equals(stuffType) || "1".equals(stuffType) || "2".equals(stuffType)) {
-                Drug drug = this.drugService.get(drugStuffId);
+                Drug drug = this.drugDao.get(drugStuffId);
                 return drug != null && drug.getCompany() != null && companyId.equals(drug.getCompany().getId());
             } else if ("3".equals(stuffType)) {
-                CostItem costItem = this.costItemService.get(drugStuffId);
+                CostItem costItem = this.costItemDao.get(drugStuffId);
                 return costItem != null && costItem.getCompany() != null && companyId.equals(costItem.getCompany().getId());
             } else if ("4".equals(stuffType)) {
-                Stuff stuff = this.stuffService.get(drugStuffId);
+                Stuff stuff = this.stuffDao.get(drugStuffId);
                 return stuff != null && stuff.getCompany() != null && companyId.equals(stuff.getCompany().getId());
             }
         }

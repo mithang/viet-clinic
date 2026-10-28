@@ -80,7 +80,9 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Giới tínhĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	// Giới tính là DictItem (không phải chuỗi): @Length cũ gây HV000030
+	// (không có validator Length cho DictItem). Trường này không bắt buộc
+	// (min=0 cũ) nên bỏ annotation, giữ nguyên các validation khác.
 	public DictItem getGender() {
 		return gender;
 	}
@@ -98,7 +100,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=1, max=100, message="Hội viênthẻLoạiĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@NotNull(message="Hội viênthẻLoạiKhông được để trống")
 	public DictItem getType() {
 		return type;
 	}

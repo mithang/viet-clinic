@@ -94,8 +94,8 @@
                     @click='onEditEntity(scope.$index, scope.row, "patientForm")'></OperationIcon>
                   <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyEntity(scope.$index, scope.row, "patientForm")'></OperationIcon>
-                  <!-- <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
-                    @click='onDeletePatient(scope.$index, scope.row)'></OperationIcon> -->
+                  <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
+                    @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
                   <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>

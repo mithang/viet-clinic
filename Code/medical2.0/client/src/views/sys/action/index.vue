@@ -86,7 +86,7 @@
                       <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                         @click='onCopyEntity(scope.$index, scope.row, "actionForm")'></OperationIcon>
                       <OperationIcon v-show='permission.remove' type='danger' content='隐藏' placement='top-start' icon-name='el-icon-delete'
-                        @click='onDeleteEntity(scope.$index, scope.row, deleteAction)'></OperationIcon>
+                        @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
                     </template>
                   </el-table-column>
                 </el-table>

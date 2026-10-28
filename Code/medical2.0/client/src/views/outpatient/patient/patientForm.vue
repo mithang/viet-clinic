@@ -359,7 +359,7 @@ export default {
     const isCnNewID = (rule, value, callback) => {
       const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
       const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
-      if (/^\d{17}\d|x$/i.test(value)) {
+      if (/^\d{17}[\dX]$/i.test(value)) {
         let sum = 0, idx;
         for (let i = 0; i < value.length - 1; i++) {
           // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
@@ -368,7 +368,10 @@ export default {
         // Tính modulo（Thuật toán cố định）
         idx = sum % 11;
         // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
-        if (arrValid[idx] === value.substr(17, 1).toUpperCase()) {
+        // arrValid holds numbers for digit check codes and 'X' for 10, so compare
+        // as strings: strict === on number vs string always failed for digit codes
+        // and only 'X' ever passed. The weighted-sum/mod-11 rule itself is unchanged.
+        if (String(arrValid[idx]) === value.substr(17, 1).toUpperCase()) {
           callback()
         } else {
           callback("Định dạng CMND/CCCD không đúng")
@@ -587,7 +590,7 @@ export default {
       if (this.bizFormModel.card) {
         const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
         const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
-        if (/^\d{17}\d|x$/i.test(this.bizFormModel.card)) {
+        if (/^\d{17}[\dX]$/i.test(this.bizFormModel.card)) {
           let sum = 0, idx;
           for (let i = 0; i < this.bizFormModel.card.length - 1; i++) {
             // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
@@ -596,7 +599,7 @@ export default {
           // Tính modulo（Thuật toán cố định）
           idx = sum % 11;
           // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
-          if (arrValid[idx] === this.bizFormModel.card.substr(17, 1).toUpperCase()) {
+          if (String(arrValid[idx]) === this.bizFormModel.card.substr(17, 1).toUpperCase()) {
             flagCard = true
           } else {
             flagCard = false

@@ -174,7 +174,7 @@
                   <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document' 
                     @click='onCopyMemberManagement(scope.$index, scope.row)'></OperationIcon>
                   <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete' 
-                    @click='onDeleteMemberManagement(scope.$index, scope.row)'></OperationIcon>
+                    @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
                   <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon> -->
                 </template>

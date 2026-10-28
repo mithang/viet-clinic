@@ -70,7 +70,7 @@
                   <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document' 
                     @click='onCopyRouter(scope.$index, scope.row)'></OperationIcon>
                   <OperationIcon v-show='permission.remove && (!(scope.row.children) || scope.row.children.length <=0)' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
-                    @click='onDeleteEntity(scope.$index, scope.row, deleteRouter)'></OperationIcon>
+                    @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
                   <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info' 
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>

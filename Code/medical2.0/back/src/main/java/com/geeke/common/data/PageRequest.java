@@ -20,7 +20,7 @@ public final class PageRequest implements java.io.Serializable {
 
 	/** ORDER BY danh sách trắngregex(biên dịch trước) */
 	private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
-			"^[a-z_`][a-z0-9_`.]*\\s+(asc|desc)(,\\s*[a-z_`][a-z0-9_`.]*\\s+(asc|desc))*$");
+			"^[a-z_`][a-z0-9_`.]*(\\s+(asc|desc))?(,\\s*[a-z_`][a-z0-9_`.]*(\\s+(asc|desc))?)*$");
 
 	private int offset;
 

@@ -641,23 +641,40 @@ export default {
           }
         } else {
           this.flag=false
-          // Xử lý định vị kiểm tra
-          let arr = [];
+          // Xử lý định vị kiểm tra + BẮT BUỘC báo lỗi nhìn thấy được.
+          // Trước đây nhánh này tra this.$refs[prop] nhưng không form-item nào
+          // mang ref theo tên prop (đặc biệt 'company.id' là required nhưng
+          // KHÔNG có field nào render trong dialog), nên lỗi đầu tiên đã
+          // return im lặng: không message, không request, nút Lưu như chết.
+          // Giờ mọi prop lỗi đều được nêu tên, và tab vẫn chuyển nếu có field.
+          const fieldLabels = {
+            'company.id': 'Công ty',
+            'department.id': 'Phòng ban',
+            'userExt.office': 'Khoa',
+            'userExt.jobType': 'Loại',
+            name: 'Họ tên',
+            phone: 'Số điện thoại di động',
+            loginName: 'Tên đăng nhập',
+            loginPassword: 'Mật khẩu',
+            loginPasswordConfirm: 'Xác nhận mật khẩu',
+            userRoleList: 'Vai trò người dùng',
+          };
           let numArr = [];
+          let failedLabels = [];
           for (let i in object) {
+            failedLabels.push(fieldLabels[i] || i);
             let dom = this.$refs[i];
-            if (!dom) {
-              this.tabIndex = 1;
-              return;
-            } else {
-              arr.push(dom);
-              if (Object.prototype.toString.call(arr) !== "[object Object]") {
-                arr.forEach((item) => {
-                  numArr.push(item.$el.dataset.num);
-                });
-                this.tabIndex = Math.min(...numArr);
-              }
+            if (dom && dom.$el && dom.$el.dataset && dom.$el.dataset.num) {
+              numArr.push(dom.$el.dataset.num);
             }
+          }
+          if (numArr.length > 0) {
+            this.tabIndex = Math.min(...numArr);
+          } else {
+            this.tabIndex = 1;
+          }
+          if (failedLabels.length > 0 && this.$message) {
+            this.$message.error('Vui lòng kiểm tra: ' + failedLabels.join(', '));
           }
           return false;
         }
@@ -833,7 +850,8 @@ export default {
       // Use the company selected for this form (parent row / record), not the
       // logged-in user's company — system (id 1001) has company_id 0, which
       // would return no clinic offices. Fall back to currentUser.company.
-      const formCompanyId = (This && This.company && This.company.id) ? This.company.id : currentUser.company.id;
+      const ownCompanyId = (typeof currentUser !== 'undefined' && currentUser && currentUser.company) ? currentUser.company.id : null;
+      const formCompanyId = (This && This.company && This.company.id) ? This.company.id : ownCompanyId;
       company_search.params.push.apply(company_search.params, [
         {
             columnName: "company_id",
@@ -855,11 +873,11 @@ export default {
         this.outputError(error);
       });
 
-      const company_id = This.company.id;
+      const company_id = (This && This.company && This.company.id) ? This.company.id : formCompanyId;
       this.key_department++;
       let department_search = {
         params: [
-          { columnName: "company_id", queryType: "=", value: This.company.id },
+          { columnName: "company_id", queryType: "=", value: company_id },
         ],
       };
       // // Trên bảng tương ứng của trườngfilterĐiều kiện
@@ -968,7 +986,19 @@ export default {
     openAddUserDialog(parent) {
       this.dialogProps.action = "add";
       this.dialogProps.title = "Thêm người dùng";
-      this.bizFormModel = this.initFormModel(parent);
+      // Non-system users have no visible company tree (it is v-show only for
+      // id 1001), so the parent company can arrive without an id; that id is
+      // what the unrendered 'company.id' required rule checks. Fall back to
+      // the logged-in user's own company -- the only company this user may
+      // create users in -- instead of leaving company.id null and failing
+      // validation silently. No-op when the parent company already has an id
+      // (system/testfull path, unchanged).
+      let addParent = parent;
+      const ownCompany = this.currentUser && this.currentUser.company;
+      if ((!parent || !parent.company || !parent.company.id) && ownCompany && ownCompany.id) {
+        addParent = { ...(parent || {}), company: ownCompany };
+      }
+      this.bizFormModel = this.initFormModel(addParent);
       this.initOptions(this.bizFormModel);
       this.tabIndex = "1";
       this.dialogProps.visible = true;

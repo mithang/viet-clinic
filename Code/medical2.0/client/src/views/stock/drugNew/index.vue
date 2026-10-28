@@ -317,14 +317,14 @@
                     icon-name="el-icon-document"
                     @click="onCopyEntity(scope.$index, scope.row, 'drugForm')"
                   ></OperationIcon>
-                  <!-- <OperationIcon
+                  <OperationIcon
                     v-show="permission.remove"
                     type="danger"
                     content="Xóa"
                     placement="top-start"
                     icon-name="el-icon-delete"
-                    @click="onDeleteDrug(scope.$index, scope.row)"
-                  ></OperationIcon> -->
+                    @click="onDeleteEntity(scope.$index, scope.row, deleteApi)"
+                  ></OperationIcon>
                   <OperationIcon
                     v-show="permission.view"
                     type="info"

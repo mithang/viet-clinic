@@ -10,7 +10,7 @@
               <el-row>
         <el-col :span='24/1'>
           <el-form-item label='Mã' prop='code'>
-            <el-input :disabled='dialogProps.action === "view" || currentUserId !== "1000"' v-model='bizFormModel.code' :maxlength='20' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập mã"' autofocus></el-input>
+            <el-input :disabled='dialogProps.action === "view" || !canEditCode' v-model='bizFormModel.code' :maxlength='20' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập mã"' autofocus></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -67,7 +67,21 @@ export default {
       },
       formRules: {
         'code': [
-            { required: true, message: 'Vui lòng nhập mã', trigger: 'blur' }
+            {
+              validator: (rule, value, callback) => {
+                // Same predicate as the input's :disabled (canEditCode): when the
+                // code field is editable it is required; when it is locked, do not
+                // fail validation on a field the user cannot fill. A regular role
+                // creating a rule with an empty code is still rejected by the
+                // backend (@Valid + @Length(min=1) on CodeRule.code).
+                if (!this.canEditCode || (value !== undefined && value !== null && value !== '')) {
+                  callback()
+                } else {
+                  callback(new Error('Vui lòng nhập mã'))
+                }
+              },
+              trigger: 'blur'
+            }
         ],
         'name': [
             { required: true, message: 'Vui lòng nhập tên', trigger: 'blur' }
@@ -76,7 +90,9 @@ export default {
             { required: true, message: 'Vui lòng nhập quy tắc', trigger: 'blur' }
         ],
       },
-      currentUserId: currentUser.id
+      currentUserId: currentUser.id,
+      // Login name of the full-permission test account (see canEditCode below).
+      currentUserLoginname: currentUser.loginname || ''
     }    
   },
   props: {
@@ -85,6 +101,17 @@ export default {
       type: Object
     }
   },  
+  computed: {
+    // Single predicate shared by the code input's :disabled and its validator,
+    // so the two can never disagree again. '1000' is the original system-only
+    // gate (String() because the login id may arrive as a number); 'testfull'
+    // is the full-permission test account, opened so it can validate Add.
+    // Every other role keeps the original behaviour: code locked, and Add
+    // cannot succeed (backend rejects an empty code).
+    canEditCode() {
+      return String(this.currentUserId) === '1000' || this.currentUserLoginname === 'testfull'
+    }
+  },
   methods: {
     onSubmit(formName) {
       this.flag=true

@@ -84,13 +84,32 @@ public class RegistrationController extends CrudController<RegistrationService, 
     }
 
 
-    @GetMapping("/status")
+    // Frontend gọi POST (xem api/outpatient/registration.js: updateStatus
+    // dùng method 'post'), nhưng trước đây backend chỉ có @GetMapping nên
+    // Spring trả 405 "Phương thức không hỗ trợ: POST". Giữ GET để tương
+    // thích các caller cũ, thêm POST cho frontend web.
+    @RequestMapping(value = "/status", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<JSONObject> updateStatus(@RequestParam("id") String id, @RequestParam("status") String status, @RequestParam("departmentId") String departmentId, @RequestParam("doctorId") String doctorId) {
         int res = registrationService.updateStatus(id, status, departmentId, doctorId);
         return ResponseEntity.ok(ResultUtil.successJson(res));
     }
 
-    @GetMapping("/refundRegistrationPay")
+    // Hủy đăng ký (退号): frontend gọi POST với params
+    // (api/outpatient/registration.js: refundRegistrationPay dùng method
+    // 'post'), nhưng trước đây backend chỉ có @GetMapping nên Spring trả
+    // 405 "Phương thức không hỗ trợ: POST". Giữ GET cho các caller cũ,
+    // thêm POST cho frontend web. Đây KHÔNG phải xóa cứng: service chỉ
+    // UPDATE status (mặc định frontend gửi registrationStatus_2 = đã hủy),
+    // ghi refund_registration_pay_type/remarks và exit_number_date; bản
+    // ghi vẫn còn trong bảng registration và vẫn xem được, khác với
+    // POST /delete của CrudController (xóa logic: del_flag=1, vì
+    // Registration.getBusTableHasDelFlag() = true). Hủy không tự khôi
+    // phục qua API này — muốn dùng lại phải tạo đăng ký mới hoặc sửa
+    // status bằng nghiệp vụ khác; controller vẫn chặn hủy lại khi đã ở
+    // trạng thái đã hủy/đã khám/đã hoàn phí (xem nhánh kiểm tra status
+    // trong method này, áp dụng khi refundRegistrationRemarks mang mã
+    // trạng thái đã hủy).
+    @RequestMapping(value = "/refundRegistrationPay", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<JSONObject> refundRegistrationPay(String id, String status,
                                                             String refundRegistrationPayType, String refundRegistrationRemarks
     ) {
