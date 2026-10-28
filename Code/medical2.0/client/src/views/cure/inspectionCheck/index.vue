@@ -580,6 +580,29 @@ export default {
       }
       this.loadData()
     },
+    // CRUD buttons in the template call these names; previously they did not
+    // exist, so View/Edit/Add did nothing. Delegate to the form component.
+    onCreateInspectionCheck() {
+      this.$refs.inspectionCheckForm.openAddInspectionCheckDialog()
+    },
+    onViewInspectionCheck(index, row) {
+      this.setLoad()
+      getInspectionCheckById(row.id).then(responseData => {
+        if (responseData.code === 100) {
+          this.$refs.inspectionCheckForm.openViewInspectionCheckDialog(responseData.data)
+        } else { this.showMessage(responseData) }
+        this.resetLoad()
+      }).catch(error => { this.outputError(error) })
+    },
+    onEditInspectionCheck(index, row) {
+      this.setLoad()
+      getInspectionCheckById(row.id).then(responseData => {
+        if (responseData.code === 100) {
+          this.$refs.inspectionCheckForm.openEditInspectionCheckDialog(responseData.data)
+        } else { this.showMessage(responseData) }
+        this.resetLoad()
+      }).catch(error => { this.outputError(error) })
+    },
     getFileList(fileList){
       this.bizFormModel.fileIdFile=[]
       this.bizFormModel.uploadFile=[]

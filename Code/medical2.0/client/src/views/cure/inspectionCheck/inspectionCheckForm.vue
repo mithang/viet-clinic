@@ -225,37 +225,32 @@ export default {
           }
         })
       })
-    }
-  },
-  watch: {
-  },
-  mounted: function() {
-    this.$nextTick(() => {
-      this.$on('openViewInspectionCheckDialog', function(inspectionCheck) {
+    },
+      openViewInspectionCheckDialog(inspectionCheck) {
         this.dialogProps.action = 'view'
         this.dialogProps.title = 'Xem xét nghiệm/kiểm tra'
         this.bizFormModel = {...this.initFormModel(), ...inspectionCheck}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
         this.dialogProps.visible = true
-      })
-      this.$on('openEditInspectionCheckDialog', function(inspectionCheck) {
+      },
+    openEditInspectionCheckDialog(inspectionCheck) {
         this.dialogProps.action = 'edit'
         this.dialogProps.title = 'Sửa xét nghiệm/kiểm tra'
         this.bizFormModel = {...this.initFormModel(), ...inspectionCheck}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
         this.dialogProps.visible = true
-      })
-      this.$on('openAddInspectionCheckDialog', function() {
+      },
+    openAddInspectionCheckDialog() {
         this.dialogProps.action = 'add'
         this.dialogProps.title = 'Thêm xét nghiệm/kiểm tra'
         this.bizFormModel = this.initFormModel()
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
         this.dialogProps.visible = true
-      })
-      this.$on('openCopyInspectionCheckDialog', function(inspectionCheck) {
+      },
+    openCopyInspectionCheckDialog(inspectionCheck) {
         this.dialogProps.action = 'add'
         this.dialogProps.title = 'Thêm xét nghiệm/kiểm tra'
         this.bizFormModel = {...this.initFormModel(), ...inspectionCheck}
@@ -263,8 +258,10 @@ export default {
         this.tabIndex = '1'
         this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
         this.dialogProps.visible = true
-      })
-    })
-  }  
+      },
+},
+  watch: {
+  },
+    
 }
 </script>

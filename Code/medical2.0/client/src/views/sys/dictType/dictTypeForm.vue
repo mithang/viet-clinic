@@ -318,6 +318,9 @@ export default {
     openEditDictTypeDialog(dictType) {
       this.dialogProps.action = 'edit'
       this.dialogProps.title = 'Sửa quản lý loại từ điển'
+      // sys_dict_type has no company column, so a loaded record carries no company
+      // while backend update validation requires it; fall back to the login company.
+      if (!dictType.company || !dictType.company.id) dictType.company = { id: currentUser.company.id, name: null }
       this.bizFormModel = dictType
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
@@ -332,6 +335,7 @@ export default {
       this.dialogProps.visible = true
     },
     openCopyDictTypeDialog(dictType) {
+      if (!dictType.company || !dictType.company.id) dictType.company = { id: currentUser.company.id, name: null }
       this.dialogProps.action = 'add'
       this.dialogProps.title = 'Thêm quản lý loại từ điển'
       this.bizFormModel = dictType

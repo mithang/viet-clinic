@@ -509,18 +509,44 @@ export default {
           { required: true, message: "请选择类别", trigger: "change" },
         ],
         name: [{ required: true, message: "Vui lòng nhập tên đăng nhập", trigger: "blur" }],
+        // In Add mode these three values are derived by createForme() (loginName = phone,
+        // password = last 6 digits of phone) and their inputs are not rendered (password
+        // inputs only render for edit + password change), so requiring them here made
+        // every Add fail validation silently (no rendered field to show the error on).
+        // They stay required in edit mode, where server-loaded values exist.
         loginName: [
-          { required: true, message: "Vui lòng nhập tên đăng nhập", trigger: "blur" },
+          {
+            validator: (rule, value, callback) => {
+              if (this.dialogProps.action === "add" || (value !== undefined && value !== null && value !== "")) {
+                callback();
+              } else {
+                callback(new Error("Vui lòng nhập tên đăng nhập"));
+              }
+            },
+            trigger: "blur",
+          },
         ],
         loginPassword: [
-          { required: true, message: "Vui lòng nhập mật khẩu", trigger: "blur" },
+          {
+            validator: (rule, value, callback) => {
+              if (this.dialogProps.action === "add" || (value !== undefined && value !== null && value !== "")) {
+                callback();
+              } else {
+                callback(new Error("Vui lòng nhập mật khẩu"));
+              }
+            },
+            trigger: "blur",
+          },
         ],
         // userHeader: [{ required: true, message: "Tải ảnh đại diện lên", trigger: "blur" }],
         loginPasswordConfirm: [
-          { required: true, message: "Vui lòng nhập mật khẩu xác nhận", trigger: "blur" },
           {
             validator: (rule, value, callback) => {
-              if (value !== this.bizFormModel.loginPassword) {
+              if (this.dialogProps.action === "add") {
+                callback();
+              } else if (value === undefined || value === null || value === "") {
+                callback(new Error("Vui lòng nhập mật khẩu xác nhận"));
+              } else if (value !== this.bizFormModel.loginPassword) {
                 callback(new Error("Hai lần nhập mật khẩu không khớp!"));
               } else {
                 callback();
@@ -804,12 +830,15 @@ export default {
       let company_search = {
         params: [],
       };
-      // Bảng có trường bị vô hiệu hóa
+      // Use the company selected for this form (parent row / record), not the
+      // logged-in user's company — system (id 1001) has company_id 0, which
+      // would return no clinic offices. Fall back to currentUser.company.
+      const formCompanyId = (This && This.company && This.company.id) ? This.company.id : currentUser.company.id;
       company_search.params.push.apply(company_search.params, [
         {
             columnName: "company_id",
             queryType: "=",
-            value: currentUser.company.id,
+            value: formCompanyId,
           },
         { columnName: "is_locked", queryType: "=", value: "0" },
       ]);
@@ -906,6 +935,57 @@ export default {
       });
       }
     },
+    async openViewUserDialog(user) {
+      if(user.userExt!==undefined){
+        this.photoId = user.userExt.photoId;
+        await this.getPhoto(user.userExt.photoId);
+      }else{
+        this.photoId = null
+        this.bizFormModel = this.initFormModel()
+      }
+      this.dialogProps.action = "view";
+      this.dialogProps.title = "Xem người dùng";
+      this.bizFormModel = { ...this.bizFormModel, ...user };
+      this.tabIndex = "1";
+      this.initOptions(this.bizFormModel);
+      this.dialogProps.visible = true;
+    },
+    async openEditUserDialog(user) {
+      if(user.userExt!==undefined){
+        this.photoId = user.userExt.photoId;
+        await this.getPhoto(user.userExt.photoId);
+      }else{
+        this.photoId = null
+        this.bizFormModel = this.initFormModel()
+      }
+      this.dialogProps.action = "edit";
+      this.dialogProps.title = "Sửa người dùng";
+      this.bizFormModel = { ...this.bizFormModel, ...user };
+      this.tabIndex = "1";
+      this.initOptions(this.bizFormModel);
+      this.dialogProps.visible = true;
+    },
+    openAddUserDialog(parent) {
+      this.dialogProps.action = "add";
+      this.dialogProps.title = "Thêm người dùng";
+      this.bizFormModel = this.initFormModel(parent);
+      this.initOptions(this.bizFormModel);
+      this.tabIndex = "1";
+      this.dialogProps.visible = true;
+    },
+    openCopyUserDialog(user) {
+      this.dialogProps.action = "copy";
+      this.dialogProps.title = "Thêm người dùng";
+      this.bizFormModel = user;
+      this.initOptions(this.bizFormModel);
+      this.tabIndex = "1";
+      this.bizFormModel.id = null;
+      for (let i = 0; i <= this.bizFormModel.userRoleList.length - 1; i++) {
+        this.bizFormModel.userRoleList[i].id = null;
+      }
+      this.bizFormModel.loginPasswordUpdate = true;
+      this.dialogProps.visible = true;
+    },
   },
   watch: {
     //监听输入框手机号位数
@@ -915,61 +995,6 @@ export default {
         this.byPhoneGetList(newValue);
       }
     },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.$on("openViewUserDialog", async function (user) {
-        if(user.userExt!==undefined){
-          this.photoId = user.userExt.photoId;
-          await this.getPhoto(user.userExt.photoId);
-        }else{
-          this.photoId = null
-          this.bizFormModel = this.initFormModel()
-        }
-        this.dialogProps.action = "view";
-        this.dialogProps.title = "Xem người dùng";
-        this.bizFormModel = { ...this.bizFormModel, ...user };
-        this.tabIndex = "1";
-        this.initOptions(this.bizFormModel);
-        this.dialogProps.visible = true;
-      });
-      this.$on("openEditUserDialog", async function (user) {
-        if(user.userExt!==undefined){
-          this.photoId = user.userExt.photoId;
-          await this.getPhoto(user.userExt.photoId);
-        }else{
-          this.photoId = null
-          this.bizFormModel = this.initFormModel()
-        }
-        this.dialogProps.action = "edit";
-        this.dialogProps.title = "Sửa người dùng";
-        this.bizFormModel = { ...this.bizFormModel, ...user };
-        this.tabIndex = "1";
-        this.initOptions(this.bizFormModel);
-        this.dialogProps.visible = true;
-      });
-      this.$on("openAddUserDialog", function (parent) {
-        this.dialogProps.action = "add";
-        this.dialogProps.title = "Thêm người dùng";
-        this.bizFormModel = this.initFormModel(parent);
-        this.initOptions(this.bizFormModel);
-        this.tabIndex = "1";
-        this.dialogProps.visible = true;
-      });
-      this.$on("openCopyUserDialog", function (user) {
-        this.dialogProps.action = "copy";
-        this.dialogProps.title = "Thêm người dùng";
-        this.bizFormModel = user;
-        this.initOptions(this.bizFormModel);
-        this.tabIndex = "1";
-        this.bizFormModel.id = null; //ĐặtidĐặt thành trống，Thêm mới một
-        for (let i = 0; i <= this.bizFormModel.userRoleList.length - 1; i++) {
-          this.bizFormModel.userRoleList[i].id = null;
-        }
-        this.bizFormModel.loginPasswordUpdate = true; // 允许修改密码
-        this.dialogProps.visible = true;
-      });
-    });
   },
 };
 </script>

@@ -261,6 +261,10 @@ export default {
     },
     initFormModel(This) {
       return {
+        'company': {     // Phòng khámid
+          'id': currentUser.company.id,
+          'name': null,
+        },
         'name': '',   // Tên nhiệm vụ
         'code': '',   // Mã nhiệm vụ
         'cron': '',   // Biểu thức nhiệm vụ
@@ -282,6 +286,9 @@ export default {
     openEditScheduleJobDialog(scheduleJob) {
       this.dialogProps.action = 'edit'
       this.dialogProps.title = 'Sửa quản lý nhiệm vụ định kỳ'
+      // schedule_job has no company column, so a loaded record carries no company
+      // while backend update validation requires it; fall back to the login company.
+      if (!scheduleJob.company || !scheduleJob.company.id) scheduleJob.company = { id: currentUser.company.id, name: null }
       this.bizFormModel = scheduleJob
       this.initOptions(this.bizFormModel)
       this.dialogProps.visible = true
@@ -296,6 +303,7 @@ export default {
     openCopyScheduleJobDialog(scheduleJob) {
       this.dialogProps.action = 'add'
       this.dialogProps.title = 'Thêm quản lý nhiệm vụ định kỳ'
+      if (!scheduleJob.company || !scheduleJob.company.id) scheduleJob.company = { id: currentUser.company.id, name: null }
       this.bizFormModel = scheduleJob
       this.initOptions(this.bizFormModel)
       this.bizFormModel.id = null

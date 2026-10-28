@@ -669,26 +669,7 @@ export default {
        this.bizFormModel.pinyinCode=pinyin.getCamelChars(value)
        
      },
-  },
-  watch: {
-    "bizFormModel.isPackage":function(newVal, oldVal){
-          if(newVal==="0"&&this.bizFormModel.itemType.value==="treatmentItemType_0"){
-            this.objectType="0"
-          }else{
-            this.objectType="1"
-          }
-    },
-    "bizFormModel.itemType":function(newVal, oldVal){
-       if(this.bizFormModel.isPackage==="0"&&newVal.value==="treatmentItemType_0"){
-            this.objectType="0"
-          }else{
-            this.objectType="1"
-          }
-    }
-  },
-  mounted: function () {
-    this.$nextTick(() => {
-      this.$on("openViewCostItemDialog", function (costItemDTO) {
+      openViewCostItemDialog(costItemDTO) {
         this.dialogProps.action = "view";
         this.subjectName=[]
         this.subproject=[]
@@ -719,8 +700,8 @@ export default {
        }
         this.tabIndex = "1";
         this.dialogProps.visible = true;
-      });
-      this.$on("openEditCostItemDialog", function (costItemDTO) {
+      },
+    openEditCostItemDialog(costItemDTO) {
         this.subjectName=[]
         this.subproject=[]
         this.itemName_List=[]
@@ -778,8 +759,8 @@ export default {
         this.tabIndex = "1";
         this.dialogProps.visible = true;
         
-      });
-      this.$on("openAddCostItemDialog", function (subprojects) {
+      },
+    openAddCostItemDialog(subprojects) {
         this.itemName_List=[]
         this.arr=[]
         this.dialogProps.action = "add";
@@ -794,8 +775,8 @@ export default {
         this.subjectName=[]
         this.sale=0
         this.cost=0
-      });
-      this.$on("openCopyCostItemDialog", function (costItemDTO) {
+      },
+    openCopyCostItemDialog(costItemDTO) {
         // this.dialogProps.action = "add";
         // this.dialogProps.title = "Thêm hạng mục khám chữa bệnh";
         // this.bizFormModel = { ...this.initFormModel(this.user), ...costItem };
@@ -861,9 +842,25 @@ export default {
         this.arr=this.subjectName
         this.tabIndex = "1";
         this.dialogProps.visible = true;
-      });
-    });
+      },
+},
+  watch: {
+    "bizFormModel.isPackage":function(newVal, oldVal){
+          if(newVal==="0"&&this.bizFormModel.itemType.value==="treatmentItemType_0"){
+            this.objectType="0"
+          }else{
+            this.objectType="1"
+          }
+    },
+    "bizFormModel.itemType":function(newVal, oldVal){
+       if(this.bizFormModel.isPackage==="0"&&newVal.value==="treatmentItemType_0"){
+            this.objectType="0"
+          }else{
+            this.objectType="1"
+          }
+    }
   },
+  
 };
 </script>
 <style >

@@ -6,7 +6,7 @@
       <!-- Cửa sổ chỉnh sửa  -->
       <user-form ref='userForm' :permission='permission' @save-finished='loadData'></user-form>
       <!-- Người không phải quản trị hệ thống không thấy được  -->
-      <div class="page-left-container" v-show='currentUser.id === 1001'>
+      <div class="page-left-container" v-show='Number(currentUser.id) === 1001'>
         <el-aside>
           <el-table ref='treeTable' :data='companys' row-key='id' :tree-props="{children: 'children', hasChildren: 'hasChildren'}" highlight-current-row :cell-style="function() {return {borderBottom: 'none'} }" @current-change='onLeftCurrentChange'>
             <el-table-column label='Công ty' prop='name'></el-table-column>
@@ -96,8 +96,12 @@
                     @click='onEditEntity(scope.$index, scope.row, "userForm")'></OperationIcon>
                   <OperationIcon v-show='permission.add' type='primary' content='Sao chép' placement='top-start' icon-name='el-icon-document'
                     @click='onCopyEntity(scope.$index, scope.row, "userForm")'></OperationIcon>
+                  <!-- Template identifiers resolve against the component instance, not module
+                    imports: deleteUser (import) evaluated to undefined here, so confirming delete
+                    silently did nothing (the mixin's empty catch swallowed the TypeError and no
+                    API request fired). deleteApi is the data property holding deleteUser. -->
                   <OperationIcon v-show='permission.remove' type='danger' content='Xóa' placement='top-start' icon-name='el-icon-delete'
-                    @click='onDeleteEntity(scope.$index, scope.row, deleteUser)'></OperationIcon>
+                    @click='onDeleteEntity(scope.$index, scope.row, deleteApi)'></OperationIcon>
                   <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon>
                 </template>
@@ -245,7 +249,7 @@ export default {
       try {
         let params = []
         /* Người không phải quản trị hệ thống，Chỉ truy vấn được dữ liệu của công ty mình */
-        if(currentUser.id !== 1001) {
+        if(Number(currentUser.id) !== 1001) {
           params.push({'columnName':'id', 'queryType': '=', 'value': currentUser.company.id})
         }
         this.pushDataPermissions(params, this.$route.meta.routerId, '41040096140492800')
@@ -258,6 +262,16 @@ export default {
         ])
         if(treeCompanyRespData.code === 100 && listPermissionRespData.code === 100) {
           this.companys = treeCompanyRespData.data
+          // Fallback: auto-select company so Create/Search are not blocked when the tree
+          // is hidden (non-system users) or setCurrentRow does not fire current-change.
+          // System (1001) uses the first tree node; others use their own company.
+          if (typeof this.currentCompany !== 'undefined' && (this.currentCompany === null || Object.keys(this.currentCompany).length === 0)) {
+            if (Number(currentUser.id) !== 1001 && currentUser.company && currentUser.company.id) {
+              this.currentCompany = currentUser.company
+            } else if (this.companys && this.companys.length > 0) {
+              this.currentCompany = this.companys[0]
+            }
+          }
           this.$nextTick(() => {
             if(this.companys && this.companys.length > 0 && this.$refs.treeTable){
               this.$refs.treeTable.setCurrentRow(this.companys[0])

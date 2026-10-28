@@ -261,6 +261,11 @@ export default {
     }
   },
   methods: {
+    // CRUD button in the template calls this name; previously it did not
+    // exist, so clicking Thêm did nothing. Delegate to the form component.
+    onCreateMemberSet() {
+      this.$refs.memberSetForm.openAddMemberSetDialog()
+    },
     //Đặt lại
      reset(){
       this.queryModel={

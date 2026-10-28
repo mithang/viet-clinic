@@ -272,13 +272,7 @@ export default {
     onChangeArea(data) {
       this.area = data.value;
     },
-  },
-  watch: {},
-  mounted() {
-    this.$nextTick(() => {
-      this.$on(
-        "openViewManufactureFactoryDialog",
-        function (manufactureFactory) {
+      openViewManufactureFactoryDialog(manufactureFactory) {
           this.dialogProps.action = "view";
           this.dialogProps.title = "Xem nhà sản xuất";
           this.bizFormModel = {
@@ -292,11 +286,8 @@ export default {
           this.province = this.bizFormModel.province;
           this.city = this.bizFormModel.city;
           this.area = this.bizFormModel.area;
-        }
-      );
-      this.$on(
-        "openEditManufactureFactoryDialog",
-        function (manufactureFactory) {
+        },
+    openEditManufactureFactoryDialog(manufactureFactory) {
           this.dialogProps.action = "edit";
           this.dialogProps.title = "Sửa nhà sản xuất";
           this.bizFormModel = {
@@ -310,9 +301,8 @@ export default {
           this.province = this.bizFormModel.province;
           this.city = this.bizFormModel.city;
           this.area = this.bizFormModel.area;
-        }
-      );
-      this.$on("openAddManufactureFactoryDialog", function () {
+        },
+    openAddManufactureFactoryDialog() {
         this.dialogProps.action = "add";
         this.dialogProps.title = "Thêm nhà sản xuất";
         this.bizFormModel = this.initFormModel();
@@ -322,10 +312,8 @@ export default {
         this.province = "";
         this.city = "";
         this.area = "";
-      });
-      this.$on(
-        "openCopyManufactureFactoryDialog",
-        function (manufactureFactory) {
+      },
+    openCopyManufactureFactoryDialog(manufactureFactory) {
           this.dialogProps.action = "add";
           this.dialogProps.title = "Thêm nhà sản xuất";
           this.bizFormModel = {
@@ -336,10 +324,10 @@ export default {
           this.tabIndex = "1";
           this.bizFormModel.id = null; //ĐặtidĐặt thành trống，Thêm mới một
           this.dialogProps.visible = true;
-        }
-      );
-    });
-  },
+        },
+},
+  watch: {},
+  
 };
 </script>
 <style lang="scss">
