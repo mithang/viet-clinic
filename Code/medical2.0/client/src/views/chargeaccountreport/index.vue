@@ -65,12 +65,12 @@
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="Thanh toán WeChat"
+                label="Thanh toán chuyển khoản"
                 width="width">
             </el-table-column>
             <el-table-column
                 prop="prop"
-                label="Thanh toán Alipay"
+                label="Thanh toán ví điện tử"
                 width="width">
             </el-table-column>
             <el-table-column

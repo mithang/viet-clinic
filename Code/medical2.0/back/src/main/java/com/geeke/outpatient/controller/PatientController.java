@@ -13,7 +13,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.outpatient.entity.Patient;
 import com.geeke.outpatient.service.PatientService;
 import com.geeke.common.controller.CrudController;
+import com.geeke.common.controller.SearchParams;
+import com.geeke.common.data.Page;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.constants.ErrorEnum;
+import org.springframework.http.HttpStatus;
 
 /**
  * Thông tin bệnh nhânController
@@ -33,6 +37,25 @@ public class PatientController extends CrudController<PatientService, Patient> {
     @Override
     protected PatientService getService() {
         return patientService;
+    }
+
+    /**
+     * Danh sách bệnh nhân có phân trang: chỉ tài khoản có quyền tài nguyên
+     * "patient:list" mới được gọi. Trước đây mọi token hợp lệ đều đọc được
+     * danh sách bệnh nhân, vì filter chỉ kiểm tra xác thực. Lọc theo tenant
+     * vẫn do service đảm nhiệm (ensureCompanyFilter: chỉ trả bệnh nhân thuộc
+     * phòng khám đang đăng nhập).
+     */
+    @Override
+    @PostMapping(value = {"list", ""})
+    public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasSessionPermission("patient:list")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        Page<Patient> result = getService().listPage(searchParams.getParams(), searchParams.getOffset(),
+                searchParams.getLimit(), searchParams.getOrderby());
+        return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     //WeChatLưu

@@ -111,7 +111,7 @@
               <el-button-group>
                 <el-dropdown v-show="permission.add">
                   <el-button type="primary">
-                     Thêm <i class="el-icon-arrow-down el-icon--right"></i>
+                     Thêm thuốc <i class="el-icon-arrow-down el-icon--right"></i>
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item>

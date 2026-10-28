@@ -462,7 +462,7 @@
                 "
                   @input="getPrice"
                   type="number"
-                  currency="CNY"
+                  currency="VND"
                   :precision="2"
                 >
                   <template slot="append">
@@ -536,7 +536,7 @@
                 "
                   v-model="bizFormModel.retailPrice"
                   :disabled="(bizFormModel.isUnpackSell === '0') "
-                  currency="CNY"
+                  currency="VND"
                   :precision="2"
                 >
                   <template slot="append">

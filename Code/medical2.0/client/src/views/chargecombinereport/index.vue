@@ -146,9 +146,9 @@
           </el-table-column>
           <el-table-column prop="prop" label="Thanh toán tiền mặt" width="width">
           </el-table-column>
-          <el-table-column prop="prop" label="Thanh toán WeChat" width="width">
+          <el-table-column prop="prop" label="Thanh toán chuyển khoản" width="width">
           </el-table-column>
-          <el-table-column prop="prop" label="Thanh toán Alipay" width="width">
+          <el-table-column prop="prop" label="Thanh toán ví điện tử" width="width">
           </el-table-column>
           <el-table-column prop="prop" label="Thanh toán bằng thẻ ngân hàng" width="width">
           </el-table-column>

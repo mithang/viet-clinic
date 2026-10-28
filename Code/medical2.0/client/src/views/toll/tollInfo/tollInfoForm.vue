@@ -39,13 +39,13 @@
         <el-col :span='24/2'>
           <el-form-item label='Số tiền phải thu (hoàn lại)' prop='amountReceivable' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.amountReceivable'></el-input>
-            <number-input v-else v-model="bizFormModel.amountReceivable" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.amountReceivable" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Số tiền thực thu' prop='amountReceived' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.amountReceived'></el-input>
-            <number-input v-else v-model="bizFormModel.amountReceived" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.amountReceived" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -53,7 +53,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Số tiền ưu đãi' prop='amountDiscounted' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.amountDiscounted'></el-input>
-            <number-input v-else v-model="bizFormModel.amountDiscounted" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.amountDiscounted" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>

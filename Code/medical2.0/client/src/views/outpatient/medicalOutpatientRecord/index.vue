@@ -257,7 +257,7 @@
                                style="width: 20px; height: 20px; vertical-align: middle;"/>
                         </el-popover>
                       </div>
-                      <span class="poverty-tag" v-if="poverty.length > 0">[贫]</span>
+                      <span class="poverty-tag" v-if="poverty.length > 0">[Hộ nghèo]</span>
                     </div>
                   </el-form-item>
                 </el-col>
@@ -293,6 +293,19 @@
                   <el-button @click="jzjlclick" type="primary" class="visit-record-btn">Hồ sơ khám</el-button>
                 </el-col>
               </el-row>
+              <el-alert
+                v-if="displayAllergyHistory"
+                title="Cảnh báo dị ứng"
+                type="error"
+                :closable="false"
+                show-icon
+                style="margin-top: 8px"
+              >
+                <div>
+                  Bệnh nhân có tiền sử dị ứng: <strong>{{ displayAllergyHistory }}</strong>
+                  — kiểm tra kỹ trước khi kê đơn.
+                </div>
+              </el-alert>
 
               <!-- <el-row :gutter="24">
                 <el-col :span="4">
@@ -317,7 +330,7 @@
                   </el-form-item>
                 </el-col>
               </el-row> -->
-                  <el-drawer title="就诊日志" :visible.sync="drawer" :direction="direction"
+                  <el-drawer title="Nhật ký khám" :visible.sync="drawer" :direction="direction"
                              :before-close="JZrecordclick">
                     <el-table :data="recordtableData" border style="width: 100%">
                       <el-table-column fixed prop="jzsj" label="Ngày" :show-overflow-tooltip="true"
@@ -363,7 +376,7 @@
                              style="margin-left: 16px">Lưu mẫu
                   </el-button>
                   <el-button v-show="blmbVisit" @click="blmbclick" type="primary"
-                             style="margin-left: 16px">病历模板
+                             style="margin-left: 16px">Mẫu bệnh án
                   </el-button>
                   <el-button v-show="blmbVisit" @click="HistoricalCases" type="primary"
                              style="margin-left: 16px">Bệnh án cũ
@@ -379,7 +392,7 @@
                         </el-button>
                       </div>
                       <div>
-                        <el-row style="margin-bottom: 15px;">选择病历类型</el-row>
+                        <el-row style="margin-bottom: 15px;">Chọn loại bệnh án</el-row>
                         <el-radio-group v-model="medicalType" @change="handleMedicalTypeChange" style="margin-bottom: 15px;">
                           <el-radio label="western">Tây y</el-radio>
                           <el-radio label="chinese">Đông y</el-radio>
@@ -394,7 +407,7 @@
                       </div>
                     </el-card>
                     <el-button :disabled="isReadOnly" slot="reference" type="text"><i
-                      class="el-icon-setting el-icon--right"></i>病历配置
+                      class="el-icon-setting el-icon--right"></i>Cấu hình bệnh án
                     </el-button>
                   </el-popover>
                 </div>
@@ -507,8 +520,8 @@
                     >
                       <el-table :data="zyzhList" @row-click="selectZH"
                                 style="width: 100%"  size="small">
-                        <el-table-column label="证候代码" prop="zhcode" width="180"></el-table-column>
-                        <el-table-column label="证候名称" prop="zhmc"></el-table-column>
+                        <el-table-column label="Mã chứng hậu" prop="zhcode" width="180"></el-table-column>
+                        <el-table-column label="Tên chứng hậu" prop="zhmc"></el-table-column>
                         <el-table-column label="Pinyin" prop="py"></el-table-column>
                       </el-table>
                     </el-popover>
@@ -542,6 +555,19 @@
             <div slot="header" style="padding: 5px 0px; font-size: 14px; font-weight: bold">
               <span>Kê đơn thuốc</span>
             </div>
+            <el-alert
+              v-if="displayAllergyHistory"
+              title="Cảnh báo dị ứng"
+              type="error"
+              :closable="false"
+              show-icon
+              style="margin-bottom: 10px"
+            >
+              <div>
+                Bệnh nhân có tiền sử dị ứng: <strong>{{ displayAllergyHistory }}</strong>
+                — kiểm tra kỹ trước khi kê đơn.
+              </div>
+            </el-alert>
             <div style="min-height: 400px">
               <el-tabs v-model="medicalEditTabsValue" type="card" @tab-remove="removeMedicalEditTab"
                        @tab-click="clickMedicalEditTab">
@@ -550,10 +576,10 @@
 										<el-popover placement="bottom-start" popper-class="medical-type-popover"
                                 trigger="hover">
 											<el-button type="text" slot="reference"><i
-                        class="el-icon-plus el-icon--right"></i>开处方</el-button>
+                        class="el-icon-plus el-icon--right"></i>Kê đơn</el-button>
 											<ul class="medical-type-ul">
 												<li v-for="(item, index) in medicalTypeList" :key="item.type">
-													<el-button @click="addMedicalEditTab(item)" plain size="mini"
+													<el-button @click="confirmAllergyBeforePrescribe(item)" plain size="mini"
                                      style="border: none">{{ item.name }}</el-button>
 												</li>
 											</ul>
@@ -671,7 +697,7 @@
                                    item.content.recipelInfo.chargeStatus !== 0 ||
                                    item.content.recipelInfo.status === -1">
                         Có phải bệnh mạn tính không{{
-                          item.content.recipelInfo.chronicDisease ? "(Đơn thuốc bệnh mạn tính tối đa kê được" + systemParamConfig.chronicDays + "ngày)" : "(非慢病处方最多可开" + systemParamConfig.normalDays + "ngày)"
+                          item.content.recipelInfo.chronicDisease ? "(Đơn thuốc bệnh mạn tính tối đa kê được" + systemParamConfig.chronicDays + "ngày)" : "(Đơn thuốc không phải bệnh mạn tính tối đa kê được" + systemParamConfig.normalDays + "ngày)"
                         }}
                       </el-checkbox>
                       <el-checkbox style="margin-left: 20px;" v-model="item.content.recipelInfo.isPre"
@@ -680,7 +706,7 @@
                                    item.content.recipelInfo.status === -1"
                                    @change="DeleteMedicalRow('','',item)"
                       >
-                        是否电子处方
+                        Đơn thuốc điện tử
                       </el-checkbox>
                       <el-button type="primary" v-if="!isReadOnly" style="float: right" plain
                                  @click="historyRecipel(item.type, index)">Đơn thuốc cũ
@@ -1137,7 +1163,7 @@
                           isReadOnly ||
                           item.content.recipelInfo.chargeStatus!== 0 ||
                           item.content.recipelInfo.status === -1
-                        " v-model="item.content.recipelInfo.chinessNotes" placeholder="输入备注选项"
+                        " v-model="item.content.recipelInfo.chinessNotes" placeholder="Nhập tùy chọn ghi chú"
                                 style="margin-top:10px"></el-input>
                     </el-row>
                   </div>
@@ -1697,7 +1723,7 @@
                               </el-button>
                             </div>
                             <div v-else>
-                              <el-button type="text" disabled>还未填写</el-button>
+                              <el-button type="text" disabled>Chưa điền</el-button>
                             </div>
                           </template>
                         </el-table-column>
@@ -2724,7 +2750,7 @@
         <el-table-column prop="patient.gender.name" label="Giới tính">
         </el-table-column>
         <el-table-column prop="patient.age" label="Tuổi"></el-table-column>
-        <el-table-column prop="name" label="处方名称"></el-table-column>
+        <el-table-column prop="name" label="Tên đơn thuốc"></el-table-column>
         <el-table-column prop="medicalRecord.westernDiagnose" label="Chẩn đoán tây y">
         </el-table-column>
         <el-table-column prop="medicalRecord.chinaDiagnose" label="Chẩn đoán đông y">
@@ -2901,7 +2927,7 @@
     </el-dialog>
 
     <!-- Hộp thoại mẫu đơn thuốc -->
-    <el-dialog title="模板处方调用" :visible.sync="templateDialogVisible" width="50%" :before-close="handleClose">
+    <el-dialog title="Gọi mẫu đơn thuốc" :visible.sync="templateDialogVisible" width="50%" :before-close="handleClose">
       <div>
         <el-row>
           <el-form :model="templateQueryModel" @submit.native.prevent label-position="left" label-width="70px"
@@ -3447,7 +3473,7 @@
         <el-table-column prop="category" label="Danh mục mẫu" width="width">
           <template slot-scope="scope">
             <span v-if="scope.row.category === '0'"> Mẫu riêng tư </span>
-            <span v-if="scope.row.category === '1'"> 公用模板 </span>
+            <span v-if="scope.row.category === '1'"> Mẫu dùng chung </span>
             <span v-if="scope.row.category === '2'"> AIMẫu </span>
           </template>
         </el-table-column>
@@ -3738,7 +3764,7 @@
     </el-dialog>
 
     <!-- Hộp thoại mẫu đơn thuốc -->
-    <el-dialog title="病历模板调用" :visible.sync="blmbDialogVisible" width="50%" :before-close="handleClose">
+    <el-dialog title="Gọi mẫu bệnh án" :visible.sync="blmbDialogVisible" width="50%" :before-close="handleClose">
       <el-car>
         <el-row>
           <el-col :span="24">
@@ -3822,7 +3848,7 @@
       </el-car>
     </el-dialog>
 
-    <el-dialog title="病历模板保存类型" :visible.sync="blmblxDialogVisible" width="30%" :before-close="handleClose">
+    <el-dialog title="Loại lưu mẫu bệnh án" :visible.sync="blmblxDialogVisible" width="30%" :before-close="handleClose">
       <el-car>
         <el-row>
           <el-form :inline="true" :model="blmbmbmc" class="demo-form-inline" :rules="blmbrules"
@@ -3882,6 +3908,7 @@
   import {
     allSaveMedicalRecord,
     allQueryMedicalRecord,
+    getLatestAllergyHistory,
     ureport,
     editSave,
     getHistoryRecipel,
@@ -5346,7 +5373,7 @@
           );
 
           arr[index].onload = () => {
-            arr[index].document.title = "新致云诊所";
+            arr[index].document.title = "Hệ thống Quản lý Phòng khám";
           };
         });
       },
@@ -5898,6 +5925,37 @@
         };
       },
       //Thêm mới khi kê đơnTabTab
+      // Tải tiền sử dị ứng của bệnh nhân từ hồ sơ khám đã lưu gần nhất.
+      // Chỉ đọc dữ liệu sẵn có, không tạo dữ liệu dị ứng mới.
+      loadPatientAllergy(patientId) {
+        this.patientAllergyHistory = ''
+        this.allergyWarningPatientId = ''
+        if (!patientId) {
+          return
+        }
+        getLatestAllergyHistory(patientId).then((responseData) => {
+          if ((responseData.code === 100 || responseData.code === '100') && responseData.data) {
+            this.patientAllergyHistory = responseData.data
+          }
+        }).catch(() => {})
+      },
+      // Chặn nhẹ trước khi kê đơn: nếu bệnh nhân có tiền sử dị ứng thì hỏi
+      // xác nhận một lần cho mỗi bệnh nhân, hủy thì không mở tab kê đơn.
+      confirmAllergyBeforePrescribe(tabTypeData) {
+        let patientId = this.BasicInfoModel ? this.BasicInfoModel.id : ''
+        if (this.displayAllergyHistory && this.allergyWarningPatientId !== patientId) {
+          this.$confirm('Bệnh nhân có tiền sử dị ứng: ' + this.displayAllergyHistory + '. Vẫn tiếp tục kê đơn?', 'Cảnh báo dị ứng', {
+            confirmButtonText: 'Vẫn kê đơn',
+            cancelButtonText: 'Hủy',
+            type: 'warning'
+          }).then(() => {
+            this.allergyWarningPatientId = patientId
+            this.addMedicalEditTab(tabTypeData)
+          }).catch(() => {})
+        } else {
+          this.addMedicalEditTab(tabTypeData)
+        }
+      },
       addMedicalEditTab(tabTypeData) {
         let tabType = tabTypeData.type;
         let typeMaxTabIndex = 0;
@@ -8729,6 +8787,12 @@
     },
     data() {
       return {
+        // Tiền sử dị ứng của bệnh nhân lấy từ hồ sơ khám cũ nhất gần nhất
+        // (không tự bịa: chỉ hiển thị khi hồ sơ đã lưu có allergyHistory).
+        patientAllergyHistory: '',
+        // id bệnh nhân đã xác nhận cảnh báo dị ứng khi kê đơn (mỗi bệnh nhân
+        // chỉ hỏi xác nhận một lần trong một ca khám).
+        allergyWarningPatientId: '',
         permission: {
           view: false,
           add: false,
@@ -9321,6 +9385,11 @@
       };
     },
     computed: {
+      // Dị ứng hiển thị trên màn khám: ưu tiên dị ứng vừa ghi trong hồ sơ
+      // của ca khám hiện tại, nếu chưa có thì lấy từ hồ sơ khám cũ.
+      displayAllergyHistory() {
+        return (this.MedicalRecordModel && this.MedicalRecordModel.allergyHistory) || this.patientAllergyHistory || ''
+      },
       Company() {
         let company = JSON.parse(sessionStorage.getItem("currentUser")).company;
         return {
@@ -9350,6 +9419,10 @@
     },
     watch: {
       checkInventory(row) {
+      },
+      // Khi mở ca khám của bệnh nhân khác thì tải lại tiền sử dị ứng.
+      'BasicInfoModel.id'(newId) {
+        this.loadPatientAllergy(newId)
       },
     },
   };

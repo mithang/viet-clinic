@@ -1142,5 +1142,15 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         return medicalRecordDao.recordpatlist(company.getId(),id);
     }
 
+    /**
+     * Tiền sử dị ứng mới nhất đã lưu của bệnh nhân trong phòng khám đang
+     * đăng nhập (dùng cho banner cảnh báo dị ứng trên màn khám). Trả về
+     * null khi bệnh nhân chưa từng có dị ứng được ghi.
+     */
+    public String getLatestAllergyHistory(String patientId) {
+        Company company = SessionUtils.getUser().getCompany();
+        return medicalRecordDao.getLatestAllergyHistory(company.getId(), patientId);
+    }
+
 
 }

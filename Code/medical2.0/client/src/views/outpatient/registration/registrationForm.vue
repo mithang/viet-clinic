@@ -161,7 +161,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
-              <el-form-item label="就诊凭证类型" prop="cardType.name">
+              <el-form-item label="Loại giấy tờ khám" prop="cardType.name">
                 <el-input
                   v-if="dialogProps.action === 'view'"
                   :disabled="true"
@@ -454,7 +454,7 @@
                 <number-input
                   v-else
                   v-model="bizFormModel.registrationFee"
-                  currency="CNY"
+                  currency="VND"
                   :precision="2"
                   :disabled="bizFormModel.freeRegistrationFee === '1' || dialogProps.action !== 'add'"
                 ></number-input>

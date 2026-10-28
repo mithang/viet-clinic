@@ -121,7 +121,7 @@
                 <el-col :span='24/2'>
           <el-form-item label='Giá nhập' prop='bid' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.bid'></el-input>
-            <number-input v-else v-model="bizFormModel.bid" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.bid" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -129,13 +129,13 @@
         <el-col :span='24/2'>
           <el-form-item label='Giá bán lẻ' prop='retailPrice' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.retailPrice'></el-input>
-            <number-input v-else v-model="bizFormModel.retailPrice" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.retailPrice" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
           <el-form-item label='Tổng giá nhập' prop='allBid' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.allBid'></el-input>
-            <number-input v-else v-model="bizFormModel.allBid" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.allBid" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -143,7 +143,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Tổng giá bán lẻ' prop='allRetailPrice' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.allRetailPrice'></el-input>
-            <number-input v-else v-model="bizFormModel.allRetailPrice" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.allRetailPrice" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
     </el-row>

@@ -74,6 +74,10 @@ public class SearchParams implements Serializable {
 					columnName = columnName.trim();
 					if (columnName.indexOf("`") >= 0) {
 						throw new ServiceException("Điều kiệnTên trườngChứa ký tự không hợp lệ");
+					} else if (Parameter.isAllowedRemainingStockExpression(columnName)) {
+						// Biểu thức hiệu tồn kho của trang Tồn kho hiện tại phải giữ
+						// nguyên, không được bọc backtick (bọc sẽ biến cả biểu thức
+						// thành một tên cột duy nhất và câu SQL sẽ lỗi).
 					} else {
 						int index = columnName.lastIndexOf(".");
 						if (index >= 0) {

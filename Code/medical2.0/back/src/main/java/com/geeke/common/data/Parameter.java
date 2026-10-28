@@ -79,6 +79,26 @@ public final class Parameter {
 	}
 
 
+	/**
+	 * Các biểu thức tồn kho còn lại duy nhất được phép vượt qua danh sách trắng
+	 * tên cột: trang Tồn kho hiện tại lọc "số lượng còn lại" bằng hiệu
+	 * (nhập - đã dùng - hoàn trả) của bảng tồn kho. Chỉ đúng 2 chuỗi hằng này
+	 * được chấp nhận, và chúng là chuỗi cố định do frontend gửi theo đúng mẫu
+	 * đã có trong views/stock/currentInventory/index.vue — không phải chuỗi
+	 * tùy ý do người gọi tự đặt, nên không mở ra lỗ hổng chèn SQL: mọi tên cột
+	 * khác vẫn phải khớp COLUMN_NAME_PATTERN.
+	 */
+	private static final java.util.Set<String> ALLOWED_REMAINING_STOCK_EXPRESSIONS =
+			new java.util.HashSet<>(java.util.Arrays.asList(
+					"stock.storage_stock-stock.used_stock-stock.reimburse_stock",
+					"a.storage_stock-a.used_stock-a.reimburse_stock"
+			));
+
+	/** Chỉ đúng 2 biểu thức tồn kho trên được coi là hợp lệ (xem ghi chú trên). */
+	public static boolean isAllowedRemainingStockExpression(String columnName) {
+		return columnName != null && ALLOWED_REMAINING_STOCK_EXPRESSIONS.contains(columnName.trim());
+	}
+
 	public String getColumnName() {
 		return columnName;
 	}
@@ -86,7 +106,9 @@ public final class Parameter {
 
 	public void setColumnName(String columnName) {
 		// Giá trị trống(null hoặc chuỗi rỗng)Cho qua trực tiếp, tính hợp lệKiểm tragiaodo SearchParams.getParams() thống nhấtXử lý
-		if (columnName != null && !columnName.trim().isEmpty() && !COLUMN_NAME_PATTERN.matcher(columnName).matches()) {
+		if (columnName != null && !columnName.trim().isEmpty()
+				&& !COLUMN_NAME_PATTERN.matcher(columnName).matches()
+				&& !isAllowedRemainingStockExpression(columnName)) {
 			throw new IllegalArgumentException("Invalid column name: " + columnName);
 		}
 		this.columnName = columnName;

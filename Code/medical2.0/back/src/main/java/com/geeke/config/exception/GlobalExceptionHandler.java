@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<JSONObject> httpMessageNotReadableHandler(HttpMessageNotReadableException e) {
         logger.warn("Định dạng thân yêu cầu sai: {}", e.getMessage());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Định dạng thân yêu cầu sai, Vui lòng kiểm traJSONĐịnh dạng", Constants.MSG_TYPE_ERROR);
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Định dạng nội dung yêu cầu sai, vui lòng kiểm tra định dạng JSON", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 

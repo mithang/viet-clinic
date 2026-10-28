@@ -281,7 +281,7 @@
                 <number-input
                   v-else
                   v-model="bizFormModel.registrationFee"
-                  currency="CNY"
+                  currency="VND"
                   :precision="2"
                   :disabled="bizFormModel.freeRegistrationFee === '1'"
                 ></number-input>
@@ -527,11 +527,21 @@ export default {
   name: "test-form",
   components: {},
   data() {
-    //Kiểm tra CMND/CCCD
+    //Kiểm tra CMND/CCCD: chấp nhận CMND 9 số và CCCD 12 số của Việt Nam;
+    //CMND 18 số kiểu Trung Quốc vẫn được chấp nhận để tương thích dữ liệu cũ
+    //(kiểm tra checksum có trọng số như trước).
     const isCnNewID = (rule, value, callback) => {
+      if (!value) {
+        callback()
+        return
+      }
+      if (/^\d{9}$/.test(value) || /^\d{12}$/.test(value)) {
+        callback()
+        return
+      }
       const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
       const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
-      if (/^\d{17}\d|x$/i.test(value)) {
+      if (/^\d{17}[\dX]$/i.test(value)) {
         let sum = 0, idx;
         for (let i = 0; i < value.length - 1; i++) {
           // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
@@ -540,13 +550,13 @@ export default {
         // Tính modulo（Thuật toán cố định）
         idx = sum % 11;
         // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
-        if (arrValid[idx] === value.substr(17, 1).toUpperCase()) {
+        if (String(arrValid[idx]) === value.substr(17, 1).toUpperCase()) {
           callback()
         } else {
-          callback("Định dạng CMND/CCCD không đúng")
+          callback("Định dạng CMND/CCCD không đúng, vui lòng nhập CMND 9 số, CCCD 12 số hoặc CMND 18 số")
         }
       } else {
-        callback("Định dạng CMND/CCCD không đúng")
+        callback("Định dạng CMND/CCCD không đúng, vui lòng nhập CMND 9 số, CCCD 12 số hoặc CMND 18 số")
       }
     }
     return {

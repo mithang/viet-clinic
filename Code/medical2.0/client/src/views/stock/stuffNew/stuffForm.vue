@@ -314,7 +314,7 @@
                 v-else
                 v-model="bizFormModel.priceOutSell"
                 :disabled="bizFormModel.isOutSell === '0'"
-                currency="CNY"
+                currency="VND"
                 :precision="2"
               ></number-input>
             </el-form-item>
@@ -344,7 +344,7 @@
                 v-else
                 v-model="bizFormModel.retailPrice"
                 :disabled="bizFormModel.isUnpackSell === '0'"
-                currency="CNY"
+                currency="VND"
                 :precision="2"
               ></number-input>
             </el-form-item>

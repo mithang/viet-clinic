@@ -1637,10 +1637,11 @@ export default {
       }
   },
   mounted() {
+    // initOptions() đã gọi onSearch() -> init() ở cuối, nên chỉ cần gọi
+    // initOptions() một lần; gọi thêm init()/onSearch() ở đây khiến trang
+    // gửi trùng 3 lần cùng một yêu cầu getDrug khi mở trang.
     this.initOptions();
-    this.init();
     //this.drugBatchNumber(1)
-    this.onSearch();
     //this.stuffBatchNumber(1)
     // this.stuffOnSearch()
   },

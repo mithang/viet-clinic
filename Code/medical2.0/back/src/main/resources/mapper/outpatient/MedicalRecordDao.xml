@@ -536,6 +536,19 @@
         order by a.create_date desc
     </select>
 
+    <select id="getLatestAllergyHistory" resultType="java.lang.String">
+        select mr.allergy_history from medical_record mr
+        inner join registration r on r.id = mr.registration_id
+        where mr.company_id = #{companyId}
+          and r.patient_id = #{patientId}
+          and mr.del_flag = '0'
+          and r.del_flag = '0'
+          and mr.allergy_history is not null
+          and mr.allergy_history != ''
+        order by mr.update_date desc
+        limit 1
+    </select>
+
     <select id="getByOrder" resultType="com.geeke.outpatient.entity.MedicalRecord">
         select
             p.name as name,

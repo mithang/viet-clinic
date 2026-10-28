@@ -9,6 +9,13 @@ import moment from "moment"
 import axios from 'axios'
 
 // Element UI Đã qua CDN tại index.html 中加载，Mặc định size là mini
+// Chuyển locale Element UI sang tiếng Việt (G-P1-01): bản CDN mặc định
+// tiếng Trung nên mọi bảng trống hiện "暂无数据", phân trang hiện "共 0 条".
+// ELEMENT.locale có sẵn trên bản UMD của Element UI.
+import elementViLocale from './utils/element-vi-locale'
+if (typeof window !== 'undefined' && window.ELEMENT && window.ELEMENT.locale) {
+  window.ELEMENT.locale(elementViLocale)
+}
 
 //引入 Liên kết ba cấp tỉnh/thành phố/quận/huyện
 import Distpicker from 'v-distpicker'

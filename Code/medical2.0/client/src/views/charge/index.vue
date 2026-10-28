@@ -1,6 +1,19 @@
 <template>
   <div class="charge_container">
-    
+    <el-alert
+      title="Dữ liệu minh họa"
+      type="warning"
+      :closable="false"
+      show-icon
+      style="margin-bottom: 10px"
+    >
+      <div>
+        Màn hình thu phí này hiện dùng dữ liệu minh họa cố định, chưa kết nối
+        dữ liệu thu phí thật của phòng khám — vì vậy số liệu ở đây không khớp
+        với trang Thu phí (tollInfo). Xem dữ liệu thu phí thật của phòng khám
+        đang đăng nhập tại trang Thu phí.
+      </div>
+    </el-alert>
     <div class="charge_left">
       <div
         style="
@@ -423,7 +436,7 @@ export default {
       if (!value) {
         return callback(new Error("Số CMND/CCCD không được để trống"));
       } else {
-        let reg = /((^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$))/;
+        let reg = /((^\d{9}$)|(^\d{12}$)|(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$))/;
         if (!reg.test(value)) {
           callback(new Error("Vui lòng nhập đúng số CMND/CCCD"));
         } else {

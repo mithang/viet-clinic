@@ -105,10 +105,10 @@
           //{code: 'left-right', icon: require('../../../assets/images/style_left_right.png')},
         ],
         sizes: [
-          {size: 'default', name: '大型'},
-          {size: 'medium', name: '中型'},
-          {size: 'small', name: '小型'},
-          {size: 'mini', name: '迷你'}
+          {size: 'default', name: 'Lớn'},
+          {size: 'medium', name: 'Vừa'},
+          {size: 'small', name: 'Nhỏ'},
+          {size: 'mini', name: 'Mini'}
         ],
         loginId:''
       }

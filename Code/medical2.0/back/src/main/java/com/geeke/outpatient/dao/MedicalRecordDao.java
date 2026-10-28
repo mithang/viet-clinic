@@ -24,5 +24,12 @@ public interface MedicalRecordDao extends CrudDao<MedicalRecord> {
 
     List<Recordpatvo> recordpatlist(@Param("companyId")String companyId,@Param("id")String id );
 
+    /**
+     * Tiền sử dị ứng mới nhất đã lưu của một bệnh nhân trong cùng phòng khám.
+     * Bệnh án không có cột patient_id nên nối qua registration (registration
+     * là cầu nối bệnh nhân — bệnh án). Chỉ đọc, không tạo dữ liệu mới.
+     */
+    String getLatestAllergyHistory(@Param("companyId") String companyId, @Param("patientId") String patientId);
+
     List<MedicalRecord> getByOrder(@Param("registration")String registration);
 }

@@ -152,6 +152,16 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
         return ResponseEntity.ok(ResultUtil.successJson(byRegistrationId));
     }
 
+    /**
+     * Tiền sử dị ứng mới nhất đã lưu của bệnh nhân (phục vụ banner cảnh báo
+     * dị ứng trên màn khám/kê đơn). Chỉ đọc dữ liệu hồ sơ sẵn có.
+     */
+    @GetMapping(value = "/allergy/{patientId}")
+    public ResponseEntity allergy(@PathVariable("patientId") String patientId) {
+        String allergyHistory = medicalRecordService.getLatestAllergyHistory(patientId);
+        return ResponseEntity.ok(ResultUtil.successJson(allergyHistory));
+    }
+
     @GetMapping(value = "/recordpat/{id}")
     public ResponseEntity recordpat(@PathVariable("id") String id){
         List<Recordpatvo> result = medicalRecordService.recordpatlist(id);

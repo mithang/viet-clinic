@@ -32,6 +32,13 @@ export const editSave = (medicalRecords) =>
         method: 'post',
         data: medicalRecords
     })
+// Tiền sử dị ứng mới nhất đã lưu của bệnh nhân (banner cảnh báo dị ứng
+// trên màn khám/kê đơn). Backend nối bệnh án qua đăng ký khám.
+export const getLatestAllergyHistory = (patientId) =>
+    request({
+        url: '/outpatient/medicalRecord/allergy/' + patientId,
+        method: 'get'
+    })
 export const getHistoryRecipel = (search) =>
     request({
         url: '/outpatient/medicalRecord/history/recipel',

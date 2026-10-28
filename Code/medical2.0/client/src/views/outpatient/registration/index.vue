@@ -290,8 +290,8 @@
                         >
                           <span v-show="permission.edit" @click="applyForStudentExcel(scope.$index, scope.row)">Khám chữa bệnh từ xa&nbsp;</span>
                           <span @click="onEditEntity(scope.$index, scope.row, 'registrationForm')">Sửa</span>
-                          <el-popconfirm title="确定退号吗？" @confirm="chargeClick(scope.row)">
-                            <span slot="reference">退号</span>
+                          <el-popconfirm title="Xác nhận hủy đăng ký?" @confirm="chargeClick(scope.row)">
+                            <span slot="reference">Hủy đăng ký</span>
                           </el-popconfirm>
                           <span v-show="permission.remove" @click="onDeleteEntity(scope.$index, scope.row, deleteApi)">Xóa</span>
                           <span class="btn1" @click="openRegistration(scope.row.id)">In</span>
@@ -354,7 +354,7 @@
             <div>
               <el-divider></el-divider>
               <div id="refundTotalFee_Container">
-                <div id="refundTotalFee_Title">应退金额（VNĐ）：</div>
+                <div id="refundTotalFee_Title">Số tiền hoàn (VNĐ):</div>
                 <div id="refundTotalFee_Fee">{{ refundTotalFee }}</div>
               </div>
               <div class="refund-registration-flex-start">
@@ -614,7 +614,7 @@
 <!--            </el-col>-->
 <!--          </el-row>-->
 <!--        </el-tab-pane>-->
-        <el-tab-pane label="患者档案" name="hzdangan">
+        <el-tab-pane label="Hồ sơ bệnh nhân" name="hzdangan">
           <!-- 直接使用封装好的患者管理组件 -->
           <PatientManage />
         </el-tab-pane>
@@ -1013,7 +1013,7 @@
       openRegistration(id) {
         let page = window.open(this.BASE_API + '/ureport/preview?_u=Newtouch:registration.ureport.xml&_t=0&registrationId=' + id)
         page.onload = () => {
-          page.document.title = "新致云诊所"
+          page.document.title = "Hệ thống Quản lý Phòng khám"
         }
       },
       async refundRegistrationPayClick() {

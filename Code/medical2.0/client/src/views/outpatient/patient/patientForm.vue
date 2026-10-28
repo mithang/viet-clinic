@@ -208,7 +208,7 @@
                 v-model="bizFormModel.healthCardNo"
                 :maxlength="45"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入健康卡号'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập số thẻ sức khỏe'
                 "
               ></el-input>
             </el-form-item>
@@ -305,7 +305,7 @@
                 v-model="bizFormModel.address"
                 :maxlength="45"
                 :placeholder="
-                  dialogProps.action === 'view' ? '' : '请输入详细地址'
+                  dialogProps.action === 'view' ? '' : 'Vui lòng nhập địa chỉ chi tiết'
                 "
               ></el-input>
             </el-form-item>
@@ -355,8 +355,18 @@ export default {
     VDistpicker
   },
   data() {
-    //Kiểm tra CMND/CCCD
+    //Kiểm tra CMND/CCCD: chấp nhận CMND 9 số và CCCD 12 số của Việt Nam;
+    //CMND 18 số kiểu Trung Quốc vẫn được chấp nhận để tương thích dữ liệu cũ
+    //(kiểm tra checksum có trọng số như trước).
     const isCnNewID = (rule, value, callback) => {
+      if (!value) {
+        callback()
+        return
+      }
+      if (/^\d{9}$/.test(value) || /^\d{12}$/.test(value)) {
+        callback()
+        return
+      }
       const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
       const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
       if (/^\d{17}[\dX]$/i.test(value)) {
@@ -368,16 +378,13 @@ export default {
         // Tính modulo（Thuật toán cố định）
         idx = sum % 11;
         // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
-        // arrValid holds numbers for digit check codes and 'X' for 10, so compare
-        // as strings: strict === on number vs string always failed for digit codes
-        // and only 'X' ever passed. The weighted-sum/mod-11 rule itself is unchanged.
         if (String(arrValid[idx]) === value.substr(17, 1).toUpperCase()) {
           callback()
         } else {
-          callback("Định dạng CMND/CCCD không đúng")
+          callback("Định dạng CMND/CCCD không đúng, vui lòng nhập CMND 9 số, CCCD 12 số hoặc CMND 18 số")
         }
       } else {
-        callback("Định dạng CMND/CCCD không đúng")
+        callback("Định dạng CMND/CCCD không đúng, vui lòng nhập CMND 9 số, CCCD 12 số hoặc CMND 18 số")
       }
     }
     return {
@@ -430,7 +437,17 @@ export default {
   methods: {
     //Lấy ngày tháng năm sinh qua số CMND/CCCD
     getBirthday() {
-      if (this.bizFormModel.card.length === 18) {
+      if (this.bizFormModel.card.length === 12) {
+        // CCCD 12 số của Việt Nam không mã hóa tháng/ngày sinh nên chỉ suy
+        // giới tính từ chữ số thứ 4 (chẵn: Nam, lẻ: Nữ), không tự điền ngày sinh.
+        let sexDigit = parseInt(this.bizFormModel.card.substring(3, 4), 10)
+        let sexName = sexDigit % 2 === 0 ? "Nam" : "Nữ";
+        if (this.gender_List && this.gender_List.length > 0) {
+          this.bizFormModel.gender = this.gender_List.find(item => {
+            return item.name === sexName
+          })
+        }
+      } else if (this.bizFormModel.card.length === 18) {
         let birthDay = this.bizFormModel.card.substring(6, 14)
         let year = birthDay.substring(0, 4)
         let month = birthDay.substring(4, 6)
@@ -439,12 +456,11 @@ export default {
         this.bizFormModel.birthday = newBirthday
         this.birthdayChanges()
 
-        // Giới tính
+        // Giới tính (CMND 18 số: lẻ là Nam, chẵn là Nữ)
         let sexStr = this.bizFormModel.card.substring(16, 17)
-        // 0女1男
-        let sexName = "男";
+        let sexName = "Nam";
         if (parseInt(sexStr) % 2 === 0) {
-          sexName = "女";
+          sexName = "Nữ";
         }
         if (this.gender_List && this.gender_List.length > 0) {
           this.bizFormModel.gender = this.gender_List.find(item => {
@@ -586,31 +602,36 @@ export default {
     },
     doSave() {
       let flagCard = false
-      //Kiểm tra số CMND/CCCD
+      //Kiểm tra số CMND/CCCD: CMND 9 số, CCCD 12 số của Việt Nam luôn hợp lệ;
+      //CMND 18 số kiểu Trung Quốc vẫn kiểm tra checksum có trọng số như trước.
       if (this.bizFormModel.card) {
-        const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
-        const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
-        if (/^\d{17}[\dX]$/i.test(this.bizFormModel.card)) {
-          let sum = 0, idx;
-          for (let i = 0; i < this.bizFormModel.card.length - 1; i++) {
-            // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
-            sum += parseInt(this.bizFormModel.card.substr(i, 1), 10) * arrExp[i];
-          }
-          // Tính modulo（Thuật toán cố định）
-          idx = sum % 11;
-          // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
-          if (String(arrValid[idx]) === this.bizFormModel.card.substr(17, 1).toUpperCase()) {
-            flagCard = true
+        if (/^\d{9}$/.test(this.bizFormModel.card) || /^\d{12}$/.test(this.bizFormModel.card)) {
+          flagCard = true
+        } else {
+          const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
+          const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
+          if (/^\d{17}[\dX]$/i.test(this.bizFormModel.card)) {
+            let sum = 0, idx;
+            for (let i = 0; i < this.bizFormModel.card.length - 1; i++) {
+              // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
+              sum += parseInt(this.bizFormModel.card.substr(i, 1), 10) * arrExp[i];
+            }
+            // Tính modulo（Thuật toán cố định）
+            idx = sum % 11;
+            // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
+            if (String(arrValid[idx]) === this.bizFormModel.card.substr(17, 1).toUpperCase()) {
+              flagCard = true
+            } else {
+              flagCard = false
+            }
           } else {
             flagCard = false
           }
-        } else {
-          flagCard = false
         }
       }
 
       if (!flagCard && this.bizFormModel.card) {
-        this.$message.error("Số CMND/CCCD không đúng，Vui lòng nhập lại")
+        this.$message.error("Số CMND/CCCD không đúng, vui lòng nhập CMND 9 số, CCCD 12 số hoặc CMND 18 số")
         this.flag = false
         return;
       }

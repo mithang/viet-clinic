@@ -174,7 +174,7 @@
                 v-else
                 :disabled="salesFlage"
                 v-model="bizFormModel.costPrice"
-                currency="CNY"
+                currency="VND"
                 :precision="2"
               ></number-input>
             </el-form-item>
@@ -192,7 +192,7 @@
                 v-else
                 :disabled="salesFlage"
                 v-model="bizFormModel.salePrice"
-                currency="CNY"
+                currency="VND"
                 :precision="2"
               ></number-input>
             </el-form-item>

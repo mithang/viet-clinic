@@ -338,11 +338,8 @@
   import {BigNumber} from "bignumber.js";
   import BaseUI from "@/views/components/baseUI";
   import {getLocalCurrentCompany} from "@/utils/auth";
-  import XLSX from 'xlsx'
-  import Vue from "vue";
+  import * as XLSX from 'xlsx'
   import fileurl from "@/assets/file/inventory.xlsx";
-
-  Vue.use(XLSX)
 
   export default {
     extends: BaseUI,

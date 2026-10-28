@@ -1535,7 +1535,7 @@ export default {
             "&type=0"
         );
         page.onload=()=>{
-          page.document.title = "新致云诊所"
+          page.document.title = "Hệ thống Quản lý Phòng khám"
         }
       //    let arr = []
       // this.prescriptionMainList.forEach((item, index) => {

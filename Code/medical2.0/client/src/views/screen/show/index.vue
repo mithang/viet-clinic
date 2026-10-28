@@ -14,7 +14,7 @@ export default {
       openRegistration(){
         let page = window.open(this.grafanaUrl)
         page.onload=()=>{
-          page.document.title = "新致云诊所"
+          page.document.title = "Hệ thống Quản lý Phòng khám"
         }
       },
     },

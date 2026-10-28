@@ -1561,7 +1561,7 @@ export default {
           index
         );
         arr[index].onload=()=>{
-          arr[index].document.title = "新致云诊所"
+          arr[index].document.title = "Hệ thống Quản lý Phòng khám"
         }
       });
     },

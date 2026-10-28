@@ -158,7 +158,7 @@
         <el-col :span='24/2'>
           <el-form-item label='Tổng chi phí' prop='fee' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.fee'></el-input>
-            <number-input v-else v-model="bizFormModel.fee" currency='CNY' :precision="2"></number-input>
+            <number-input v-else v-model="bizFormModel.fee" currency='VND' :precision="2"></number-input>
           </el-form-item>
         </el-col>
                         </el-row>

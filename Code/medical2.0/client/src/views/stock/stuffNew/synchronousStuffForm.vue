@@ -163,7 +163,7 @@
               <el-input v-if="dialogProps.action === 'view'" :disabled="true"
                 v-model="bizFormModel.priceOutSell"></el-input>
               <number-input v-else v-model="bizFormModel.priceOutSell" :disabled="bizFormModel.isOutSell === '0'"
-                currency="CNY" :precision="2"></number-input>
+                currency="VND" :precision="2"></number-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
@@ -179,7 +179,7 @@
               <el-input v-if="dialogProps.action === 'view'" :disabled="true"
                 v-model="bizFormModel.retailPrice"></el-input>
               <number-input v-else v-model="bizFormModel.retailPrice" :disabled="bizFormModel.isUnpackSell === '0'"
-                currency="CNY" :precision="2"></number-input>
+                currency="VND" :precision="2"></number-input>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
