@@ -214,11 +214,15 @@ export default {
         queryType: (this.queryModel.createDate && this.queryModel.createDate.length === 2) ? 'between' : ">=",
         value: (this.queryModel.createDate && this.queryModel.createDate.length === 2) ? this.queryModel.createDate : '2023-01-01 00:00:00'
       })
-      this.search.params.push({
-        columnName: 'company.parent_id',
-        queryType: '=',
-        value: this.loginCompany.parent.id
-      })
+      // parent có thể chưa có nếu initOptions chưa xong hoặc công ty
+      // không có cấp cha: bỏ qua điều kiện này thay vì văng TypeError.
+      if (this.loginCompany.parent && this.loginCompany.parent.id) {
+        this.search.params.push({
+          columnName: 'company.parent_id',
+          queryType: '=',
+          value: this.loginCompany.parent.id
+        })
+      }
       this.search.params.push({
         columnName: 'groupBy',
         queryType: '=',
@@ -229,9 +233,12 @@ export default {
     },
     handleListResponse(responseData) {
       this.statementTotal = responseData.data.total
-      this.statementList = responseData.data.rows
+      this.statementList = responseData.data.rows || []
     },
     initPrescriptionStatistics(){
+      if (!this.loginCompany.parent || !this.loginCompany.parent.id) {
+        return
+      }
       let param = {
         id:this.loginCompany.parent.id,
         startTime: this.queryModel.createDate ? this.queryModel.createDate[0] : '',

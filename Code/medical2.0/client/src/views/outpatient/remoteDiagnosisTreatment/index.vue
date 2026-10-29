@@ -351,7 +351,7 @@
         listDiagnosisPage(this.search).then(responseData => {
           if (responseData.code === 100) {
             this.patientTotal = responseData.data.total
-            this.patientList = responseData.data.rows
+            this.patientList = responseData.data.rows || []
           } else {
             this.showMessage(responseData)
           }
@@ -424,7 +424,9 @@
           ])
           if (listPatientRespData.code === 100 && listPermissionRespData.code === 100) {
             this.patientTotal = listPatientRespData.data.total
-            this.patientList = listPatientRespData.data.rows
+            // Backend trả rows=null khi total=0; ép về [] để vòng lặp
+            // .length phía dưới không văng TypeError và hiện dialog lỗi.
+            this.patientList = listPatientRespData.data.rows || []
             for (let i = 0; i < this.patientList.length; i++) {
               if (this.patientList[i].diagnosisTime) {
                 this.patientList[i].diagnosisTime = this.patientList[i].diagnosisTime.replace("T", " ")

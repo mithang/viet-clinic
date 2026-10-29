@@ -122,9 +122,12 @@ export default {
     async pageInit() {
       this.setLoad()
       try {
-        // 初始化选项
+        // 初始化选项 — phải await vì nhiều trang dùng dữ liệu async
+        // trong appendSearchParams (ví dụ loginCompany.parent ở trang
+        // tổng hợp rà soát đơn thuốc); không await sẽ chạy tìm kiếm
+        // khi dữ liệu chưa về và văng lỗi TypeError.
         if (this.initOptions) {
-          this.initOptions(this.queryModel)
+          await this.initOptions(this.queryModel)
         }
 
         // 构建搜索参数 — 子组件应在 appendSearchParams() 中添加查询条件

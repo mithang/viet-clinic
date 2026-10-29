@@ -46,7 +46,9 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
     public Page<RemoteDiagnosisTreatment> diagnosisPage(List<Parameter> parameters, int offset, int limit, String orderby) {
         PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
         int total = remoteDiagnosisTreatmentDao.diagnosisCount(pageRequest);
-        List<RemoteDiagnosisTreatment> list = null;
+        // Trả danh sách rỗng thay vì null khi total=0: frontend gọi
+        // .length trên rows nên null sẽ văng TypeError và hiện dialog lỗi.
+        List<RemoteDiagnosisTreatment> list = new java.util.ArrayList<>();
         if(total > 0) {
             list = remoteDiagnosisTreatmentDao.diagnosisPage(pageRequest);
         }
