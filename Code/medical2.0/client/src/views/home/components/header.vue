@@ -772,7 +772,6 @@ export default {
 .main-header {
   display: flex;
   padding: 0;
-  min-width: 1160px;
   .header-function {
     float: right;
     line-height: 56px;

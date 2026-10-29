@@ -226,6 +226,12 @@ export default {
     },
 
     connectWebSocket(){
+      // WEB_SOCKET_URL không được cấu hình (dev/prod đều để trống/comment):
+      // trước đây code vẫn tạo WebSocket với URL "undefined..." nên mọi trang
+      // đều báo lỗi console và reconnect vô hạn. Không có URL thì không kết nối.
+      if(!this.webSocketUrl){
+        return;
+      }
       if(this.userId){
         try {
           if ('WebSocket' in window) {
@@ -310,7 +316,7 @@ export default {
       this.reconnect();
     },
     setErrorMessage(){
-      console.error("连接异常");
+      console.error("Lỗi kết nối WebSocket");
       this.reconnect();
     },
 
@@ -713,7 +719,6 @@ export default {
 .body-container {
   height: 100%;
   width: 100%;
-  min-width: 1120px;
   overflow: hidden;
 
   // khi tab 固定时，给 body-container 添加顶部间距
