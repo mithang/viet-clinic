@@ -453,7 +453,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
   }
   </script>
 
-  <<style lang="scss" scoped>
+  <style lang="scss" scoped>
   .el-descriptions--mini:not(.is-bordered) .el-descriptions-item__cell{
     padding-bottom: 13px;
     padding-left: 16%;

@@ -32,14 +32,14 @@
       <el-row>
         <el-col :span='24/1'>
           <el-form-item label='Đối tượng nghiệp vụ' prop='objectId'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectId'  :maxlength='40':placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập đối tượng nghiệp vụ"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectId'  :maxlength='40' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập đối tượng nghiệp vụ"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span='24/1'>
           <el-form-item label='Tên đối tượng' prop='objectName'>
-            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectName'  :maxlength='512':placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên đối tượng"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.objectName'  :maxlength='512' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập tên đối tượng"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -47,7 +47,7 @@
         <el-col>
           <el-form-item label='Thông tin ghi chú' prop='remarks'>        
             <el-input :disabled='dialogProps.action === "view"' v-model='actionModel.remarks' type='textarea'  
-              :maxlength='255':placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"' ></el-input>
+              :maxlength='255' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thông tin ghi chú"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -62,7 +62,7 @@
         <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên bảng</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.tableName`" :rules='formRules.actionRecycle_tableName' label-width=0>
-            <el-input v-model='row.tableName'  :maxlength='200'clearable placeholder='Vui lòng nhập tên bảng'></el-input>
+            <el-input v-model='row.tableName'  :maxlength='200' clearable placeholder='Vui lòng nhập tên bảng'></el-input>
           </el-form-item>
           <span v-else>{{row.tableName}}</span>
         </template>
@@ -71,7 +71,7 @@
         <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Đối tượng nghiệp vụ</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.objectId`" :rules='formRules.actionRecycle_objectId' label-width=0>
-            <el-input v-model='row.objectId'  :maxlength='40'clearable placeholder='Vui lòng nhập đối tượng nghiệp vụ'></el-input>
+            <el-input v-model='row.objectId'  :maxlength='40' clearable placeholder='Vui lòng nhập đối tượng nghiệp vụ'></el-input>
           </el-form-item>
           <span v-else>{{row.objectId}}</span>
         </template>
@@ -80,7 +80,7 @@
         <template slot='header' slot-scope='{row,$index}'>Tên đối tượng</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.objectName`" :rules='formRules.actionRecycle_objectName' label-width=0>
-            <el-input v-model='row.objectName'  :maxlength='200'clearable placeholder='Vui lòng nhập tên đối tượng'></el-input>
+            <el-input v-model='row.objectName'  :maxlength='200' clearable placeholder='Vui lòng nhập tên đối tượng'></el-input>
           </el-form-item>
           <span v-else>{{row.objectName}}</span>
         </template>

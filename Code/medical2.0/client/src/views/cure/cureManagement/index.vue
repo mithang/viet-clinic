@@ -239,13 +239,13 @@
                           >
                           <el-descriptions-item
                             >{{ o.recipelInfo.id }}
-                            <!-- <span style="position: relative">
+                            <span style="position: relative">
                                             <div v-if="o.recipelInfo.status === -1" class="refundBox">Hủy bỏ</div>
                                             <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === 0" class="refundBox">Chưa thu phí</div>
                                             <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === 1" class="refundBox">Đã thu phí</div>
                                             <div v-if="o.recipelInfo.status === 1 && o.recipelInfo.chargeStatus === -1" class="refundBox">Đã hoàn phí</div>
-                                        </span> -->
-                          <!-- </el-descriptions-item>
+                                        </span>
+                          </el-descriptions-item>
                         </el-descriptions>
                       </div>
                     </el-collapse-item>
