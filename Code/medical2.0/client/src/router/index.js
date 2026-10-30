@@ -130,6 +130,17 @@ function generateIndexRouter() {
 function generateChildRouters() {
   let routers = getLocalRouters()
   let routerTreeArr = routerTree(routers)
+  // Đụng độ path không phân biệt hoa/thường (vd 'myTask' vs 'mytask'):
+  // vue-router mặc định match không phân biệt hoa/thường nên route đăng ký
+  // trước thắng và trang thật không bao giờ render. Chỉ các route có path
+  // đụng độ mới bật caseSensitive (cần cả 2 phía).
+  const lowerPathCounts = {}
+  routers.forEach((r) => {
+    if (r.code && r.url) {
+      const k = String(r.url).toLowerCase()
+      lowerPathCounts[k] = (lowerPathCounts[k] || 0) + 1
+    }
+  })
   let childRouters = []
   for(let router of routers) {
     if(router.code) {
@@ -138,6 +149,7 @@ function generateChildRouters() {
         path: router.url,
         name: router.code,
         component: _import(router.code + '/index'),
+        caseSensitive: !!router.url && lowerPathCounts[String(router.url).toLowerCase()] > 1,
         meta: {
           name: router.name,
           cssClass: routerProps.cssClass,

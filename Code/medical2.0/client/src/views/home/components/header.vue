@@ -470,13 +470,27 @@ export default {
     },
     tableTwoPopoverClick () {},
     // Thêm mới：获取指定父路由的子路由
+    // Đi xuyên nhóm trung gian KHÔNG có code (ví dụ nhóm "Quản lý nhiệm vụ"
+    // ...9085 dưới nhóm cấp cao ...9083): các nhóm này không phải menu lá,
+    // không có url, nên không hiển thị mà chỉ dùng để gom nhóm. Chỉ các item
+    // CÓ code mới là menu lá và được trả về; không đi xuyên qua item có code
+    // để thứ tự/nội dung các menu khác không đổi. seen chống vòng lặp/lặp item.
     getChildRouters(parentId) {
       let childRouters = [];
-      this.routers.forEach((item) => {
-        if (item.parentId === parentId && item.code) {
-          childRouters.push(item);
-        }
-      });
+      const seen = new Set();
+      const walk = (pid) => {
+        this.routers.forEach((item) => {
+          if (item.parentId === pid && !seen.has(item.id)) {
+            seen.add(item.id);
+            if (item.code) {
+              childRouters.push(item);
+            } else {
+              walk(item.id);
+            }
+          }
+        });
+      };
+      walk(parentId);
       return childRouters;
     },
     // Thêm mới：子菜单点击事件
@@ -563,6 +577,18 @@ export default {
       if (!routers) {
         return [];
       }
+      // Đụng độ path không phân biệt hoa/thường (vd 'myTask' của myTask/myTask
+      // vs 'mytask' của workbench/mytask): vue-router mặc định match không
+      // phân biệt hoa/thường nên route đăng ký trước thắng và trang thật
+      // không bao giờ render. Chỉ các route có path đụng độ mới bật
+      // caseSensitive (cần cả 2 phía), các route khác giữ nguyên mặc định.
+      const lowerPathCounts = {};
+      routers.forEach((r) => {
+        if (r.code && r.url) {
+          const k = String(r.url).toLowerCase();
+          lowerPathCounts[k] = (lowerPathCounts[k] || 0) + 1;
+        }
+      });
       let childRouters = [];
       for (let router of routers) {
         if (router.code) {
@@ -571,6 +597,7 @@ export default {
             path: router.url,
             name: router.code,
             component: _import(router.code + "/index"),
+            caseSensitive: !!router.url && lowerPathCounts[String(router.url).toLowerCase()] > 1,
             meta: {
               name: router.name,
               cssClass: routerProps.cssClass,
