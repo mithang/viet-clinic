@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.toll.dao.TollAuditLogDao">
+
+    <!--
+        Audit hủy/hoàn hóa đơn (blocker 6): chỉ insert. id/create_by/
+        create_date/update_by/update_date do DataEntity.preInsert() ghi
+        trước khi gọi insert (giống CrudService.save), nên XML chỉ liệt kê
+        đủ cột, không tự sinh giá trị.
+    -->
+    <insert id="insertAudit">
+        INSERT INTO toll_audit_log(
+            id,
+            company_id,
+            toll_id,
+            recipel_id,
+            patient_id,
+            action,
+            amount_receivable,
+            amount_received,
+            payment_type,
+            amount_status,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES (
+            #{id},
+            #{company.id},
+            #{tollId},
+            #{recipelId},
+            #{patientId},
+            #{action},
+            #{amountReceivable},
+            #{amountReceived},
+            #{paymentType},
+            #{amountStatus},
+            #{remarks},
+            #{createBy},
+            #{createDate},
+            #{updateBy},
+            #{updateDate},
+            #{delFlag}
+        )
+    </insert>
+
+</mapper>

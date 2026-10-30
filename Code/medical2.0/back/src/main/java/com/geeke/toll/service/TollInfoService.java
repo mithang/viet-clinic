@@ -38,6 +38,7 @@ import com.geeke.stock.entity.InventoryVerification;
 import com.geeke.stock.entity.Stuff;
 import com.geeke.stock.service.*;
 import com.geeke.sys.entity.DictItem;
+import com.geeke.toll.dao.TollAuditLogDao;
 import com.geeke.toll.dao.TollInfoDao;
 import com.geeke.toll.entity.*;
 import com.geeke.toll.utils.BigdecimalConvert;
@@ -132,6 +133,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     private final MdInventoryService mdInventoryService;
 
     private final MdPsnDataService mdPsnDataService;
+
+    private final TollAuditLogDao tollAuditLogDao;
 
     /**
      * Sẽ  SearchParams Chuyển đổi thành PageRequest
@@ -425,7 +428,32 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 tollInfo1.setReturnType(1);
                 refund.setAmountStatus(tollInfo.getAmountStatus());
                 refund.setReturnType(1);
-                this.save(refund);
+                TollInfo refundSaved = this.save(refund);
+                // Audit hủy/hoàn hóa đơn (blocker 6): ghi 1 dòng toll_audit_log
+                // cho mỗi phiếu hoàn vừa tạo, cùng transaction với lần hoàn
+                // phí (hoàn phí lỗi thì rollback cả log). Không đổi logic thu
+                // phí, không đổi số tiền: chỉ đọc lại các trường của phiếu
+                // hoàn vừa lưu. Người thao tác + thời điểm do preInsert()
+                // ghi từ session (create_by dạng "Tên(loginName)").
+                TollAuditLog auditLog = new TollAuditLog();
+                auditLog.setCompany(refundSaved.getCompany() != null
+                        ? refundSaved.getCompany()
+                        : SessionUtils.getUser().getCompany());
+                auditLog.setTollId(refundSaved.getId());
+                auditLog.setRecipelId(recipelInfo.getId());
+                if (tollEvt.getTollInfo().getPatient() != null) {
+                    auditLog.setPatientId(tollEvt.getTollInfo().getPatient().getId());
+                }
+                auditLog.setAction("REFUND");
+                auditLog.setAmountReceivable(refundSaved.getAmountReceivable());
+                auditLog.setAmountReceived(refundSaved.getAmountReceived());
+                auditLog.setPaymentType(refundSaved.getPaymentType() != null
+                        ? refundSaved.getPaymentType().getValue() : null);
+                auditLog.setAmountStatus(tollInfo.getAmountStatus() != null
+                        ? tollInfo.getAmountStatus().getValue() : null);
+                auditLog.setRemarks("Hoàn phí đơn thuốc, phiếu gốc " + info.getId());
+                auditLog.preInsert();
+                tollAuditLogDao.insertAudit(auditLog);
                 this.save(tollInfo1);
             }
             // trảcònVật tư
