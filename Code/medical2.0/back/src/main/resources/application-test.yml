@@ -5,22 +5,22 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/medical_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:your_password_here}
+    password: ${DB_PASSWORD}
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
+    password: ${RABBITMQ_PASSWORD}
 
 jwtUtils:
   id: jwt
-  secret: ${JWT_SECRET:your_jwt_secret_here}
+  secret: ${JWT_SECRET}
   ttlMillis: 3600000
 
 #Qixinbao
 qixin:
-  appkey: ${QIXIN_APPKEY:your_appkey_here}
-  secretKey: ${QIXIN_SECRET_KEY:your_secretkey_here}
+  appkey: ${QIXIN_APPKEY}
+  secretKey: ${QIXIN_SECRET_KEY}
   host: https://api.qixin.com/
   profile: APIService
 
@@ -28,14 +28,14 @@ qixin:
 #WeChat doanh nghiệp
 weChat:
   corpid: ${WECHAT_CORPID:your_corpid_here}
-  corpsecret: ${WECHAT_CORPSECRET:your_corpsecret_here}
+  corpsecret: ${WECHAT_CORPSECRET}
   agentid: ${WECHAT_AGENTID:your_agentid_here}
 
 # Tích hợp báo cáo
 report:
   dataease:
     username: ${REPORT_USERNAME:your_report_user}
-    password: ${REPORT_PASSWORD:your_report_password}
+    password: ${REPORT_PASSWORD}
     frontend:
       host: localhost
       port: 9528
