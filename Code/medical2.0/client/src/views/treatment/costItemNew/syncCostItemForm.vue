@@ -399,7 +399,7 @@ export default {
             this.costItemList = responseData.data.rows && responseData.data.rows.map(item => {
               item.itemTypeName = item.itemType.name
               item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
-              item.isUseName = isUse === 1 ? 'Có' : 'Không'
+              item.isUseName = item.isUse === 1 ? 'Có' : 'Không'
               return item
             })
           } else {
@@ -481,7 +481,7 @@ export default {
             this.costItemList = listCostItemRespData.data.rows && listCostItemRespData.data.rows.map(item => {
               item.itemTypeName = item.itemType.name
               item.syncNumName = item.syncNum === 1 ? 'Có' : 'Không'
-              item.isUseName = isUse === 1 ? 'Có' : 'Không'
+              item.isUseName = item.isUse === 1 ? 'Có' : 'Không'
               return item
             })
           } else {

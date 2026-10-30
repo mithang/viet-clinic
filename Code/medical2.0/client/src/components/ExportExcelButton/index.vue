@@ -56,10 +56,17 @@ export default {
         this.loading = false
       })
     },
+    parseTime(time) {
+      if (time === null || time === undefined || time === '') return ''
+      const date = new Date(time)
+      if (isNaN(date.getTime())) return time
+      const pad = n => String(n).padStart(2, '0')
+      return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds())
+    },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
         if (j === 'timestamp') {
-          return parseTime(v[j])
+          return this.parseTime(v[j])
         } else {
           return this.parsValue(v, j)
         }

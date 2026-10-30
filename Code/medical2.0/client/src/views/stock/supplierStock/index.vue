@@ -1107,7 +1107,7 @@ import SupplierStockForm from "./supplierStockForm";
 import MainUI from "@/views/components/mainUI";
 import History from "@/views/components/history";
 import {getMember,getByPatientId} from "@/api/member/memberManagement"
-import { getCurrentUser, getCurrentUserId, getCurrentCompanyId } from "@/utils/userCache";
+import { getCurrentUser, getCurrentUserId, getCurrentCompanyId, getCurrentCompany } from "@/utils/userCache";
 export default {
   extends: MainUI,
   components: {

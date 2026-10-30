@@ -560,7 +560,7 @@ export default {
         genTableColumnList: [],       // Danh sách bảng con
       }
     },
-    initOptions() {
+    initOptions(This) {
       // Bảng chính
       let st_search = {
         params: []

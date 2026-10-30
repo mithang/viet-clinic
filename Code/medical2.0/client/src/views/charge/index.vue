@@ -617,7 +617,7 @@ export default {
     changeToRetail() {
       this.isRetail = true;
       //Xóa bệnh nhân
-      patientInfoForm = {
+      this.patientInfoForm = {
         name: "",
         gender: "",
         age_year: "",

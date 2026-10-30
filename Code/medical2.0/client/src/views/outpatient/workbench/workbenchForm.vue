@@ -394,7 +394,7 @@ GetDispensingTable() {
                 name:datainfo,
               });
           })
-          this.listdispensingcounts=responseData.data,rows;
+          this.listdispensingcounts=responseData.data.rows;
         }
       });
     },

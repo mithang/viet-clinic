@@ -295,6 +295,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
       //   document.body.appendChild(elink)
       //   elink.click()
       //   document.body.removeChild(elink)
+     let Base64 = require('js-base64').Base64
      window.open("http://192.168.0.31:8099/ffview/onlinePreview?url=" + encodeURIComponent(Base64.encode(row)));
     },
     // Sẽbase64Chuyển đổi thànhblob

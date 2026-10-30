@@ -1775,17 +1775,17 @@ export default {
     //Thêm mới khi kê đơnTabTab
     addMedicalEditTab(tabTypeData) {
       let tabType = tabTypeData.value;
-      // let typeMaxTabIndex = 0;
-      // this.medicalEditTabs.forEach((element) => {
-      //   if (element.type === tabType) {
-      //     typeMaxTabIndex++;
-      //   }
-      // });
+      let typeMaxTabIndex = 0;
+      this.medicalEditTabs.forEach((element) => {
+        if (element.type === tabType) {
+          typeMaxTabIndex++;
+        }
+      });
 
-      // let isFollowUp =
-      //   this.MedicalRecordModel.registration.treatType.value === "treatType_0"
-      //     ? 0
-      //     : 1;
+      let isFollowUp =
+        this.MedicalRecordModel.registration.treatType.value === "treatType_0"
+          ? 0
+          : 1;
       let recipelInfoEvt = {};
       if (tabType === "recipelType_1") {
         recipelInfoEvt = {

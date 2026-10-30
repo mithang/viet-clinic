@@ -382,7 +382,7 @@ export default {
         queryType: '=',
         value: this.loginCompany.parent.id
       })
-      his.search.params.push({
+      this.search.params.push({
         columnName: 'recipelInfo.is_pre',
         queryType:  '=',
         value:'0'

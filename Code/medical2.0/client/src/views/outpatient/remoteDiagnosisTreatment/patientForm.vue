@@ -678,11 +678,11 @@
     watch: {
       'this.bizFormModel.age': function () {
         if (this.bizFormModel.age < 12) {
-          formRules.guardianName[0].required = true
-          formRules.guardianPhone[0].required = true
+          this.formRules.guardianName[0].required = true
+          this.formRules.guardianPhone[0].required = true
         } else {
-          formRules.guardianName[0].required = true
-          formRules.guardianPhone[0].required = true
+          this.formRules.guardianName[0].required = true
+          this.formRules.guardianPhone[0].required = true
         }
       }
     },

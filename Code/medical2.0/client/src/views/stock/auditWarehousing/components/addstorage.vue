@@ -468,9 +468,6 @@
                   let newSearchName = this.searchName.toUpperCase();
                   return i.pinyinCode.indexOf(newSearchName) > -1;
                 }
-                if (i.pinyinCode) {
-                  return i.pinyinCode.indexOf(newSearchName) > -1;
-                }
               });
               this.flag = true;
             }, 1000);
@@ -1305,7 +1302,6 @@
         //if (!FileReader.prototype.readAsBinaryString) {
         FileReader.prototype.readAsBinaryString = function (f) {
           let binary = "";
-          const rABS = false; //Có đọc tệp dưới dạng chuỗi nhị phân không
           const pt = this;
           let wb; //Dữ liệu đã đọc xong
           let outdata;
@@ -1318,16 +1314,9 @@
             }
             //Tại đây nhập vào，Dùng để phân tíchexcel
             const XLSX = require("xlsx");
-            if (rABS) {
-              wb = XLSX.read(btoa(fixdata(binary)), {
-                //Chuyển đổi thủ công
-                type: "base64"
-              });
-            } else {
-              wb = XLSX.read(binary, {
-                type: "binary"
-              });
-            }
+            wb = XLSX.read(binary, {
+              type: "binary"
+            });
             outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
             //outdatachính là dữ liệu đã đọc（không bao gồm dòng tiêu đề tức là hàng đầu bảng，Hàng đầu bảng sẽ làm chỉ số của đối tượng）
             //Tại đây có thể xử lý dữ liệu
