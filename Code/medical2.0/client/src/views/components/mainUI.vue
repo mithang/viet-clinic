@@ -47,8 +47,16 @@ export default {
     async mainUIInit() {
       this.oprColumnDefaultWidth = this.oprColumnWidth  // Lưu độ rộng cột thao tác mặc định
       if (this.tableId && this.tableId !== '0') {
+        // Route không có routerId (vd mở bằng hash tới route chưa đăng ký):
+        // không gọi backend với tham số thiếu — trước đây trả 400 + alert
+        // "thiếu bắt buộc Tham số: routerId". Giữ cột mặc định, trang vẫn
+        // hiển thị; quyền thao tác fail-closed ở pageInit.
+        const routerId = this.resolveRouterId()
+        if (!routerId) {
+          return
+        }
         this.setLoad()
-        listColumnView(this.$route.meta.routerId, this.tableId).then(responseData => {
+        listColumnView(routerId, this.tableId).then(responseData => {
           if(responseData.code === 100) {
             this.initViewColumn(responseData.data)
           } else {

@@ -136,11 +136,17 @@ export default {
           this.appendSearchParams()
         }
 
-        // 并行加载数据和权限
+        // 并行加载数据和权限 — routerId có thể thiếu khi route không có
+        // meta (mở bằng hash tới route chưa đăng ký): khi đó bỏ qua lệnh
+        // gọi quyền (trước đây gọi với undefined → 400 + alert), quyền mặc
+        // định rỗng (fail-closed: không hiện nút thao tác), danh sách vẫn tải.
         const prefix = this.permissionPrefix || this.entityName
+        const routerId = typeof this.resolveRouterId === 'function'
+          ? this.resolveRouterId()
+          : (this.$route.meta.routerId)
         const [listRespData, permissionRespData] = await Promise.all([
           this.listApi(this.search),
-          listResourcePermission(this.$route.meta.routerId)
+          routerId ? listResourcePermission(routerId) : Promise.resolve({ code: 100, data: [] })
         ])
 
         if (listRespData.code === 100 && permissionRespData.code === 100) {

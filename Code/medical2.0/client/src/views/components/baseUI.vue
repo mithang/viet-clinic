@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import { getLocalDataPermisions } from '@/utils/auth'
+import { getLocalDataPermisions, getLocalRouters } from '@/utils/auth'
 export default {
   name: 'BaseUI',
   data() {
@@ -92,6 +92,37 @@ export default {
       }
 
       return conditions
+    },
+    // RouterId của route hiện tại, kèm fallback khi route không có meta
+    // (vd mở trực tiếp bằng hash tới route chưa được đăng ký từ login:
+    // $route.meta.routerId là undefined). Fallback tra session routers
+    // theo path hiện tại hoặc $route.name (code). Trả null khi không tra
+    // được — nơi gọi phải fail-closed (bỏ qua lệnh gọi quyền/cột) thay vì
+    // gọi backend với tham số thiếu rồi hiện dialog lỗi 400.
+    resolveRouterId() {
+      const metaId = this.$route && this.$route.meta && this.$route.meta.routerId
+      if (metaId) {
+        return metaId
+      }
+      try {
+        const routers = getLocalRouters() || []
+        const path = (this.$route && this.$route.path || '').replace(/^\//, '')
+        if (path) {
+          const byUrl = routers.find((r) => r.url === path)
+          if (byUrl && byUrl.id) {
+            return byUrl.id
+          }
+        }
+        if (this.$route && this.$route.name) {
+          const byCode = routers.find((r) => r.code === this.$route.name)
+          if (byCode && byCode.id) {
+            return byCode.id
+          }
+        }
+      } catch (e) {
+        // Bỏ qua, trả null bên dưới
+      }
+      return null
     },
     pushDataPermissions(params, routerId, mataId) {
       let items = [];

@@ -39,7 +39,7 @@
               </el-col>
             </el-form>
           </el-row>
-          <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :curNode='currentCompany' exclude='company_id' :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
+          <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId' :curNode='currentCompany' exclude='company_id' :routerId='resolvedRouterId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </el-main>
       </div>
       <!--  Thanh tìm kiếm  Kết thúc -->
@@ -171,7 +171,7 @@ export default {
           value: this.queryModel.name
         })
       }
-      this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
+      this.pushDataPermissions(this.search.params, this.resolvedRouterId, this.tableId)
     },
     handleListResponse(responseData) {
       this.departmentList = responseData.data
@@ -185,10 +185,13 @@ export default {
           params.push({'columnName':'id', 'queryType': '=', 'value': currentUser.company.id})
         }
         // Quyền dữ liệu: Công tyorg_company
-        this.pushDataPermissions(params, this.$route.meta.routerId, '41040096140492800')
+        this.pushDataPermissions(params, this.resolvedRouterId, '41040096140492800')
+        // RouterId thiếu (route không có meta): bỏ qua lệnh gọi quyền
+        // (trước đây gọi với undefined → 400 + alert), quyền rỗng fail-closed,
+        // danh sách vẫn tải.
         let [treeCompanyRespData, listPermissionRespData] = await Promise.all([
           treeCompany({params: params, columnName: '', 'order': ''}),
-          listResourcePermission(this.$route.meta.routerId)
+          this.resolvedRouterId ? listResourcePermission(this.resolvedRouterId) : Promise.resolve({ code: 100, data: [] })
         ])
         if(treeCompanyRespData.code === 100 && listPermissionRespData.code === 100) {
           this.companys = treeCompanyRespData.data
@@ -314,6 +317,13 @@ export default {
     },
 
     initOptions(This) {
+    }
+  },
+  computed: {
+    // RouterId đã resolve (meta, fallback session, hoặc null): dùng cho
+    // QueryForm và các lệnh gọi quyền thay vì $route.meta.routerId thô.
+    resolvedRouterId() {
+      return this.resolveRouterId()
     }
   },
   watch: {

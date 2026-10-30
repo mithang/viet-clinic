@@ -41,7 +41,7 @@
               </el-col>
             </el-form>
           </el-row>
-          <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='$route.meta.routerId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
+          <QueryForm v-else v-model='moreParm' :tableId='tableId' :schemeId='schemeId'  :routerId='resolvedRouterId' @search='onSearch()' @moreCodition='onMoreCodition()'></QueryForm>
         </div>
         <!--  Thanh tìm kiếm  Kết thúc -->
 
@@ -184,7 +184,7 @@ export default {
           value: validatenull(this.queryModel.version.id) ? '' : this.queryModel.version.id
         })
       }
-      this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
+      this.pushDataPermissions(this.search.params, this.resolvedRouterId, this.tableId)
     },
     handleListResponse(responseData) {
       this.companyList = responseData.data
@@ -194,10 +194,13 @@ export default {
       try {
         this.initOptions(this.queryModel)
         this.search.params = []
-        this.pushDataPermissions(this.search.params, this.$route.meta.routerId, this.tableId)
+        this.pushDataPermissions(this.search.params, this.resolvedRouterId, this.tableId)
+        // RouterId thiếu (route không có meta): bỏ qua lệnh gọi quyền
+        // (trước đây gọi với undefined → 400 + alert), quyền rỗng fail-closed,
+        // danh sách vẫn tải.
         let [listCompanyRespData, listPermissionRespData] = await Promise.all([
           treeCompany(this.search),
-          listResourcePermission(this.$route.meta.routerId)
+          this.resolvedRouterId ? listResourcePermission(this.resolvedRouterId) : Promise.resolve({ code: 100, data: [] })
         ])
         if(listCompanyRespData.code === 100 && listPermissionRespData.code === 100) {
           this.handleListResponse(listCompanyRespData)
@@ -274,11 +277,18 @@ export default {
         }
       })
       version_search.params.push.apply(version_search.params, [{columnName: 'company_id', queryType: '=', value: getCurrentCompanyId()}])
-      this.pushDataPermissions(version_search.params, this.$route.meta.routerId, '987744398207139863')
+      this.pushDataPermissions(version_search.params, this.resolvedRouterId, '987744398207139863')
       this.version_List.splice(0, this.version_List.length)
       listClinicVersionAll(version_search).then(responseData => {
         this.version_List = responseData.data
       })
+    }
+  },
+  computed: {
+    // RouterId đã resolve (meta, fallback session, hoặc null): dùng cho
+    // QueryForm và các lệnh gọi quyền thay vì $route.meta.routerId thô.
+    resolvedRouterId() {
+      return this.resolveRouterId()
     }
   },
   watch: {
