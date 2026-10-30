@@ -91,6 +91,12 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
     }
 
     public Page<StatementVO> listPageStatement(List<Parameter> parameters, String orderby) {
+        // Gate fix: request không có "params" trước đây gây NPE (HTTP 500) vì
+        // parameters == null. Trả trang rỗng thay vì lỗi 500; frontend luôn
+        // gửi params nên hành vi UI không đổi.
+        if (parameters == null) {
+            return new Page<StatementVO>(0L, CollUtil.newArrayList());
+        }
         String groupBy = "";
         for (int i = parameters.size() - 1; i >= 0; i--) {
             Parameter parameter = parameters.get(i);
