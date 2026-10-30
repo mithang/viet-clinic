@@ -77,21 +77,27 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/sys/sysSeting/getFile/4", "anon");
         filterChainDefinitionMap.put("/sys/sysSeting/getFile/5", "anon");
         filterChainDefinitionMap.put("/sys/sysSeting/getFile/6", "anon");
-        filterChainDefinitionMap.put("/sys/sysSeting/getFile/**", "anon");
-        filterChainDefinitionMap.put("/sys/sysSeting/filedownload/**", "anon");
+        // getFile/** chung va filedownload/** KHONG con anon (da xoa):
+        // chung roi vao /** authc, nhung van xem/tai duoc qua URL trinh
+        // duyet nho ngoai le query token cho hai duong dan nay trong filter
+        // va session manager. Chi logo 1-6 va sysSeting/listAll (trang
+        // login can truoc khi dang nhap) moi giu anon.
+        // Swagger cung KHONG con anon (khong co frontend nao goi).
         filterChainDefinitionMap.put("/sys/sysSeting/listAll", "anon");
         filterChainDefinitionMap.put("/static/**", "anon");
         filterChainDefinitionMap.put("/login/auth", "anon");
         filterChainDefinitionMap.put("/login/logout", "anon");
         filterChainDefinitionMap.put("/error", "anon");
+        // ureport/** giu anon: in an mo bang window.open khong kem duoc
+        // header X-Token; khoa no se gay in phieu dang ky/hoa don.
         filterChainDefinitionMap.put("/ureport/**", "anon");
        // filterChainDefinitionMap.put("/outpatient/patient/**", "anon");
-        filterChainDefinitionMap.put("/swagger-ui.html","anon");
-        filterChainDefinitionMap.put("/swagger-ui/**","anon");
-        filterChainDefinitionMap.put("/webjars/**","anon");
-        filterChainDefinitionMap.put("/v3/api-docs/**","anon");
-        filterChainDefinitionMap.put("/v2/**","anon");
-        filterChainDefinitionMap.put("/swagger-resources/**","anon");
+        // Blocker 8a: CHỈ mở endpoint health cho monitoring, không mở toàn bộ actuator.
+        // Các endpoint actuator khác (/actuator/env, /actuator/metrics, ...) vẫn rơi
+        // vào "/**" -> authc, và còn bị chặn ở tầng web exposure trong application.yml
+        // (management.endpoints.web.exposure.include chỉ có health).
+        filterChainDefinitionMap.put("/actuator/health", "anon");
+
         filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;

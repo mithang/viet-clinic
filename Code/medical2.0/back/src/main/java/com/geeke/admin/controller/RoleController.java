@@ -51,10 +51,55 @@ public class RoleController extends CrudController<RoleService, Role> {
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
+    /**
+     * Danh sách vai trò không phân trang: cùng quyền "role:list" như listPage.
+     * Chỉ dùng ở form người dùng (chọn vai trò khi tạo/sửa tài khoản, trang
+     * quản trị), không phải lookup bắt buộc của trang nghiệp vụ chính, nên
+     * chặn tài khoản 0 quyền ở đây không làm gãy luồng chính.
+     */
+    @Override
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasSessionPermission("role:list")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         List<Role> result = roleService.listAllByTenantId(SessionUtils.getLoginTenantId());
         return ResponseEntity.ok(ResultUtil.successJson(result));
+    }
+
+    /**
+     * Lưu vai trò: tài khoản phải có "role:create" (thêm mới) hoặc
+     * "role:update" (sửa), vì save chung cho cả hai. Chỉ form vai trò ở
+     * trang quản trị gọi endpoint này.
+     */
+    @Override
+    @PostMapping(value = "save")
+    public ResponseEntity<JSONObject> save(@javax.validation.Valid @RequestBody Role entity) {
+        if (!hasSessionPermission("role:create") && !hasSessionPermission("role:update")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        String id = getService().save(entity).getId();
+        return ResponseEntity.ok(ResultUtil.successJson(id));
+    }
+
+    /**
+     * Xóa vai trò: chỉ tài khoản có "role:delete" mới được gọi. Chỉ trang
+     * quản trị vai trò gọi endpoint này.
+     */
+    @Override
+    @PostMapping(value = "delete")
+    public ResponseEntity<JSONObject> delete(@RequestBody Role entity) {
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        if (!hasSessionPermission("role:delete")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        int rows = getService().delete(entity);
+        return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
 
 }

@@ -42,9 +42,15 @@ public class AjaxPermissionsAuthorizationFilter extends FormAuthenticationFilter
     	HttpServletRequest httpRequest = WebUtils.toHttp(request);
 		String token = httpRequest.getHeader("X-Token");
 
-		// chú ý: QuaURLTham sốtruyềntokenTồn tạian toàn风险(tokensẽrahiệntạitruy cậpNgàynhật ký, Lịch sử trình duyệt trong )
-		// chỉtạikhôngphương phápĐặt tiêu đề yêu cầu của trường hợp(Như TệpTải xuống) trong sử dụng
-		if( token == null ) {
+		// Token qua query param (?token=...) KHONG con duoc chap nhan cho
+		// API thong thuong: token se lo trong access log, lich su trinh
+		// duyet va link chia se. Luong chuan cua frontend da gui token qua
+		// header X-Token (xem client/src/utils/request.js).
+		// Ngoai le duy nhat: xem truoc/tai tep qua URL trinh duyet
+		// (khong dat duoc header), tuc /sys/sysSeting/getFile/** va
+		// /sys/sysSeting/filedownload. Cac URL nay van yeu cau token hop
+		// le (khong con anon hoan toan), chi khac o cho lay token tu dau.
+		if( token == null && isDownloadUrl(httpRequest.getRequestURI()) ) {
 			token = httpRequest.getParameter("token");
 		}
 
@@ -80,6 +86,17 @@ public class AjaxPermissionsAuthorizationFilter extends FormAuthenticationFilter
         return true;
     }
 	
+    /**
+     * Chi hai duong dan tai tep/xem truoc qua URL trinh duyet moi duoc
+     * lay token tu query param, vi chung khong dat duoc header X-Token.
+     * Moi API khac bat buoc dung header.
+     */
+    private boolean isDownloadUrl(String uri) {
+        return uri != null
+                && (uri.contains("/sys/sysSeting/getFile/")
+                        || uri.contains("/sys/sysSeting/filedownload"));
+    }
+
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         JSONObject jsonObject = ResultUtil.errorJson(ErrorEnum.E_20011);

@@ -47,7 +47,11 @@ public class StatelessSessionManager extends DefaultWebSessionManager {
         // Từ Vui lòngtiêu đề yêu cầu trong Lấytoken
         HttpServletRequest httpRequest = WebUtils.toHttp(servletRequest);
         String token = httpRequest.getHeader(HEADER_TOKEN_NAME);
-        if (token == null) {  // QuaurlTham sốtruyềntoken
+        // Giong filter xac thuc: token qua query param chi duoc chap nhan
+        // cho hai duong dan tai tep/xem truoc qua URL trinh duyet (khong
+        // dat duoc header). API thong thuong bat buoc dung header X-Token,
+        // neu khong session se khong giai quyet duoc tu query token.
+        if (token == null && isDownloadUrl(httpRequest.getRequestURI())) {
             token = httpRequest.getParameter("token");
         }
         // Kiểm traCó hay khôngcóGiá trị
@@ -76,6 +80,16 @@ public class StatelessSessionManager extends DefaultWebSessionManager {
         Serializable serializable = UUID.randomUUID();  // Hỗ trợ trình duyệt mở hai trang đăng nhập bằng người dùng khác nhau
         logger.info("Request {} get sessionId from super get getSessionId {}", httpRequest.getRequestURI(), serializable.toString());
         return serializable;
+    }
+
+    /**
+     * Chi hai duong dan tai tep/xem truoc qua URL trinh duyet moi duoc
+     * lay token tu query param (xem AjaxPermissionsAuthorizationFilter).
+     */
+    private boolean isDownloadUrl(String uri) {
+        return uri != null
+                && (uri.contains("/sys/sysSeting/getFile/")
+                        || uri.contains("/sys/sysSeting/filedownload"));
     }
 
     /**

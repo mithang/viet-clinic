@@ -20,7 +20,9 @@ import com.geeke.sys.controller.BaseController;
 import com.geeke.utils.ResultUtil;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
+import com.geeke.utils.constants.ErrorEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -132,10 +134,65 @@ public class UserController extends CrudController<UserService, User> {
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
+    /**
+     * Ghi người dùng: chỉ tài khoản có "user:create" hoặc "user:update".
+     * Lưu ý: listPage/listAll KHÔNG chặn ở vòng này vì chúng là lookup bắt
+     * buộc của trang chính (dropdown chọn bác sĩ ở form khám, form duyệt
+     * đơn, form khoa...); chặn chúng theo user:list sẽ gãy các form đó.
+     * Ghi thì khác: mọi đường ghi đều chỉ được form quản trị người dùng gọi.
+     */
+    @Override
+    @PostMapping(value = "save")
+    public ResponseEntity<JSONObject> save(@javax.validation.Valid @RequestBody User entity) {
+        if (!hasSessionPermission("user:create") && !hasSessionPermission("user:update")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        String id = service.save(entity).getId();
+        return ResponseEntity.ok(ResultUtil.successJson(id));
+    }
+
+    @Override
+    @PostMapping(value = "bulkInsert")
+    public ResponseEntity<JSONObject> bulkInsert(@RequestBody List<User> entitys) {
+        if (!hasSessionPermission("user:create")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        List<String> ids = service.bulkInsert(entitys);
+        return ResponseEntity.ok(ResultUtil.successJson(ids));
+    }
+
+    @Override
+    @PostMapping(value = "bulkUpdate")
+    public ResponseEntity<JSONObject> bulkUpdate(@RequestBody List<User> entitys) {
+        if (!hasSessionPermission("user:update")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        List<String> ids = service.bulkUpdate(entitys);
+        return ResponseEntity.ok(ResultUtil.successJson(ids));
+    }
+
+    @Override
+    @PostMapping(value = "bulkDelete")
+    public ResponseEntity<JSONObject> bulkDelete(@RequestBody List<User> entitys) {
+        if (!hasSessionPermission("user:delete")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        int rows = service.bulkDelete(entitys);
+        return ResponseEntity.ok(ResultUtil.successJson(rows));
+    }
+
     @PostMapping(value = "saveWithFile")
     public ResponseEntity<JSONObject> saveWithFile(@RequestParam("entity") String strUser,
                                            @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                            @RequestParam(value = "deleteIds",required = false)String strDeleteIds) throws java.io.IOException {
+        if (!hasSessionPermission("user:create") && !hasSessionPermission("user:update")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         User user = JSONObject.parseObject(strUser, User.class);
         user.setLoginName(user.getPhone());
         // test
@@ -158,7 +215,10 @@ public class UserController extends CrudController<UserService, User> {
     public ResponseEntity<JSONObject> update(@RequestParam("entity") String strUser,
                                              @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                              @RequestParam("deleteIds")String strDeleteIds) throws java.io.IOException  {
-
+        if (!hasSessionPermission("user:create") && !hasSessionPermission("user:update")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         User user = JSONObject.parseObject(strUser, User.class);
         List<Parameter> list = SearchParamsBuilder.create()
                 .eq("company_id", user.getCompany().getId())
@@ -175,6 +235,13 @@ public class UserController extends CrudController<UserService, User> {
     @Override
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody User entity) {
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        if (!hasSessionPermission("user:delete")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         if(medicareConfigProperties.getIsDemo().equals("true")){
             throw new ServiceException("demoHệ thốngVui lòngđừngXóaNgười dùng!");
         }

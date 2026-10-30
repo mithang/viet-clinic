@@ -45,7 +45,7 @@
        <div v-if="!originallinkcheckbox || articleForm.auditstatus!=='0'">
          <el-form-item   label="Nội dung chính" prop="content">
            <div>
-              <p v-html="articleForm.content"></p>
+              <p v-html="sanitizedContent"></p>
           </div>
         </el-form-item>
        </div>
@@ -132,6 +132,7 @@ import {
   editAudit,
 } from "@/api/taskmanagement/article";
 import Editor from "./ue";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 export default {
   extends: BaseUI,
   name: "article-form",
@@ -143,6 +144,15 @@ export default {
       return this.$route.name !== undefined
         ? this.$route.name + +new Date()
         : this.$route + +new Date();
+    },
+    // Nội dung bài viết hiển thị ở chế độ xem/xét duyệt: BẮT BUỘC qua
+    // sanitize trước khi đưa vào v-html, nếu không bài viết do người khác
+    // soạn có thể chèn script (stored XSS) chạy trong trình duyệt người đọc.
+    // Bài viết bình thường (đoạn, in đậm/nghiêng, danh sách, link, ảnh)
+    // vẫn hiển thị đủ chữ và cấu trúc; chỉ mất căn lề/màu chữ của Quill
+    // (do gỡ attribute style/class) và link/ảnh với scheme lạ.
+    sanitizedContent() {
+      return sanitizeHtml(this.articleForm.content);
     },
   },
   props: ["closeValue"],

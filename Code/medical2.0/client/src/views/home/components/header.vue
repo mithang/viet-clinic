@@ -757,14 +757,20 @@ export default {
         type: "warning",
       })
         .then(() => {
-          // 先清除本地数据
-          clearLocalData();
-          // 直接跳转到登录页，不调用APITránhtoken失效时的错误
-          this.$router.replace("/login");
-          // Sử dụngsetTimeout确保路由跳转完成后再刷新
-          setTimeout(() => {
-            window.location.reload();
-          }, 100);
+          // Gọi API logout của backend trước (/auth/logout, đã có sẵn)
+          // để hủy session và ghi log đăng xuất. logOut() phải gọi TRƯỚC
+          // khi dọn local, vì interceptor đọc token từ local storage lúc
+          // tạo request. Kể cả khi token đã hết hạn (API reject 20011)
+          // vẫn dọn local và về trang login như cũ.
+          const finish = () => {
+            clearLocalData();
+            this.$router.replace("/login");
+            // Sử dụngsetTimeout确保路由跳转完成后再刷新
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          };
+          logOut().then(finish).catch(finish);
         })
         .catch(() => {});
     },
