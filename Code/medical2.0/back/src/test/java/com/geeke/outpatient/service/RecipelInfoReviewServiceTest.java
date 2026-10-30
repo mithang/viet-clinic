@@ -2,6 +2,7 @@ package com.geeke.outpatient.service;
 
 import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.outpatient.dao.RecipelInfoReviewDao;
 import com.geeke.outpatient.vo.StatementVO;
 import org.junit.Assert;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,7 +68,9 @@ public class RecipelInfoReviewServiceTest {
 
         List<Parameter> params = new ArrayList<Parameter>();
         params.add(new Parameter("company_id", "=", "1"));
-        params.add(new Parameter("`groupBy`", "=", "company_id"));
+        // Token frontend thật (biến thể "theo công ty" của getGroupBy());
+        // token ngoài allowlist phải bị từ chối, xem invalidGroupByTokenIsRejected.
+        params.add(new Parameter("`groupBy`", "=", "recipelInfo.company_id,company.name"));
         com.geeke.common.data.Page<StatementVO> page = service.listPageStatement(params, "");
 
         Assert.assertEquals(2L, page.getTotal());
@@ -74,9 +78,33 @@ public class RecipelInfoReviewServiceTest {
 
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<Parameter>> paramsCaptor = ArgumentCaptor.forClass(List.class);
-        verify(dao).listPageStatement(paramsCaptor.capture(), eq(Arrays.asList("company_id")));
+        verify(dao).listPageStatement(paramsCaptor.capture(), eq(Arrays.asList("recipelInfo.company_id", "company.name")));
         for (Parameter p : paramsCaptor.getValue()) {
             Assert.assertNotEquals("`groupBy`", p.getColumnName());
         }
+    }
+
+    @Test
+    public void invalidGroupByTokenIsRejectedBeforeDao() {
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(new Parameter("`groupBy`", "=", "company.name; DROP TABLE sys_user;--"));
+        try {
+            service.listPageStatement(params, "");
+            Assert.fail("Phải ném ServiceException với token groupBy ngoài allowlist");
+        } catch (ServiceException expected) {
+            Assert.assertTrue(expected.getMessage().contains("groupBy"));
+        }
+        verify(dao, never()).listPageStatement(any(), any());
+    }
+
+    @Test
+    public void emptyGroupByReturnsEmptyPageWithoutDaoCall() {
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(new Parameter("`groupBy`", "=", ""));
+        com.geeke.common.data.Page<StatementVO> page = service.listPageStatement(params, "");
+        Assert.assertEquals(0L, page.getTotal());
+        Assert.assertTrue(page.getRows().isEmpty());
+        // GROUP BY rỗng không được tới mapper (trước đây sinh SQL lỗi → 500).
+        verify(dao, never()).listPageStatement(any(), any());
     }
 }

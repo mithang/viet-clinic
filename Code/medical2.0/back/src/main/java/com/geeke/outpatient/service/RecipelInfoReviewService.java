@@ -28,6 +28,17 @@ import java.util.List;
  
 @Service("recipellnfoReviewService")
 public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, RecipelInfoReview>{
+    /** Các cột duy nhất được phép xuất hiện trong GROUP BY của listPageStatement
+     * (đúng 6 cột frontend gửi; xem getGroupBy() ở recipelInfoReviewStatement).
+     * Mọi token khác đều bị từ chối trước khi tới mapper. */
+    private static final java.util.Set<String> ALLOWED_GROUP_BY_COLUMNS =
+            new java.util.HashSet<String>(java.util.Arrays.asList(
+                    "recipelInfo.company_id",
+                    "company.name",
+                    "registration.department_id",
+                    "clinicOffice.name",
+                    "registration.doctor_id",
+                    "doctor.name"));
     @Resource
     private RecipelInfoReviewDao recipelInfoReviewDao;
     @Resource
@@ -97,15 +108,35 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
         if (parameters == null) {
             return new Page<StatementVO>(0L, CollUtil.newArrayList());
         }
-        String groupBy = "";
+        String groupBy = null;
         for (int i = parameters.size() - 1; i >= 0; i--) {
             Parameter parameter = parameters.get(i);
             if (StrUtil.equals(parameter.getColumnName(), "`groupBy`")) {
-                groupBy = parameter.getValue().toString();
+                Object value = parameter.getValue();
+                groupBy = value == null ? null : value.toString();
                 parameters.remove(i);
             }
         }
-        List<String> groupByColumns = StrUtil.split(groupBy, ",");
+        // groupBy thiếu/rỗng: không gọi DAO với GROUP BY rỗng (trước đây
+        // sinh SQL lỗi → HTTP 500). Trả trang rỗng, khớp hợp đồng hiện tại
+        // với params null/rỗng; frontend luôn gửi groupBy nên UI không đổi.
+        if (groupBy == null || groupBy.trim().isEmpty()) {
+            return new Page<StatementVO>(0L, CollUtil.newArrayList());
+        }
+        // Allowlist bắt buộc: chỉ đúng các cột mà frontend thực dùng (xem
+        // getGroupBy() ở recipelInfoReviewStatement/index.vue). Mapper đưa
+        // groupBy thẳng vào GROUP BY ${column} nên mọi token ngoài allowlist
+        // — kể cả payload injection — đều bị từ chối bằng HTTP 400
+        // (ServiceException → GlobalExceptionHandler), không bao giờ tới SQL.
+        List<String> groupByColumns = new java.util.ArrayList<String>();
+        for (String token : StrUtil.split(groupBy, ",")) {
+            String column = token == null ? "" : token.trim();
+            if (!ALLOWED_GROUP_BY_COLUMNS.contains(column)) {
+                throw new com.geeke.common.service.ServiceException(
+                        "groupBy không hợp lệ: chỉ chấp nhận các cột tổng hợp của trang rà soát đơn thuốc");
+            }
+            groupByColumns.add(column);
+        }
         List<StatementVO> list = dao.listPageStatement(parameters,groupByColumns);
         return new Page<StatementVO>(Long.valueOf((list.size()+"")), list);
     }
