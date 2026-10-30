@@ -83,6 +83,7 @@
                 v-model="bizFormModel.birthday"
                 type="date"
                 value-format="yyyy-MM-dd"
+                format="dd/MM/yyyy"
                 :placeholder="
                   dialogProps.action === 'view' ? '' : 'Vui lòng nhập ngày sinh'
                 "

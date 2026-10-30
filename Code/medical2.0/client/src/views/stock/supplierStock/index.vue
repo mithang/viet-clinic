@@ -474,7 +474,7 @@
                       @confirm="singleMedicineClick(0)"
                       style="padding-top:7px"
                       >
-                      <el-button slot="reference" type="primary" plain>本处方发药</el-button>
+                      <el-button slot="reference" type="primary" plain>Phát thuốc theo đơn này</el-button>
                     </el-popconfirm>
                   </el-row>
                   <el-row type="flex" justify="space-between" align="center" style="padding-top:10px" v-if="ActiveName === 'IsAll'">
@@ -486,7 +486,7 @@
                       @confirm="singleMedicineClick(1)"
                       style="padding-top:7px"
                       >
-                      <el-button slot="reference" type="primary" plain>本处方退药</el-button>
+                      <el-button slot="reference" type="primary" plain>Trả thuốc theo đơn này</el-button>
                     </el-popconfirm>
                   </el-row>
                   <el-row style="padding-top:8px" v-if="ActiveName === 'return'">
@@ -1076,7 +1076,7 @@
         </el-scrollbar>
       </el-card>
       <el-card v-if="allType !== 0">
-        <span>Tổng cộng{{ allType }}种，{{ totalMoney.toFixed(2) }}VNĐ</span>
+        <span>Tổng cộng{{ allType }} loại，{{ totalMoney.toFixed(2) }}VNĐ</span>
       </el-card>
     </el-main>
     <!--  药品追溯码弹窗-->

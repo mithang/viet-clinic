@@ -20,7 +20,7 @@
                   start-placeholder="Ngày bắt đầu"
                   end-placeholder="Ngày kết thúc"
                   :default-time="['00:00:00', '23:59:59']"
-                  format="yyyy-MM-dd HH:mm:ss"
+                  format="dd/MM/yyyy HH:mm:ss"
                 >
                 </el-date-picker>
               </el-form-item>
@@ -465,10 +465,10 @@
           number: "Số lượng",
           unit: "Đơn vị",
           bid: "Đơn giá nhập(VNĐ)",
-          packageBid: "进价包装价(VNĐ)",
+          packageBid: "Giá gói nhập (VNĐ)",
           bidTotal: "Tổng giá nhập(VNĐ)",
           price: "Đơn giá bán(VNĐ)",
-          packagePrice: "销售包装价(VNĐ)",
+          packagePrice: "Giá gói bán (VNĐ)",
           priceTotal: "Tổng giá bán(VNĐ)",
           profit: "Lợi nhuận(VNĐ)",
           factory: "Nhà sản xuất",

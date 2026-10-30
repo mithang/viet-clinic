@@ -1,0 +1,58 @@
+# Viet-clinic CI (blocker 8, file mới, KHÔNG deploy thật).
+#
+# Chỉ chạy lint + build + test bằng đúng lệnh của repo:
+#   frontend: npm run lint, npm run build  (client/package.json, Vue 2)
+#   backend:  mvn test, mvn package       (back/pom.xml, Java 8, Spring Boot 2.1)
+# Test suite hiện có: back/src/test/.../RecipelInfoReviewServiceTest
+# (JUnit + DAO mock, không cần Spring context hay database).
+# KHÔNG có job deploy: repo chưa có production thật, workflow này dừng ở
+# build/test. Nếu sau này có production, thêm job deploy riêng kèm phê duyệt.
+#
+# Lưu ý về lint: ESLint của repo hiện còn lỗi tồn đọng từ trước (xem các báo
+# cáo quality gate), nên bước lint chỉ báo cáo (continue-on-error) và chưa
+# chặn merge; build và test vẫn chặn. Khi lint sạch, bỏ continue-on-error.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: frontend lint + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Code/medical2.0/client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Code/medical2.0/client/package-lock.json
+      - run: npm ci
+      # Báo cáo lint, chưa chặn merge vì còn lỗi tồn đọng (xem ghi chú đầu file).
+      - run: npm run lint
+        continue-on-error: true
+      - run: npm run build
+
+  backend:
+    name: backend test + package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Code/medical2.0/back
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: maven
+      # Test suite hiện có (không cần DB); nếu test đỏ thì package không chạy.
+      - run: mvn -B test
+      - run: mvn -B -DskipTests package

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import LoginView from '@/views/login/index'
 import { getLocalToken, getLocalRouters } from '@/utils/auth'
 import { routerTree, handleFamily } from '@/utils/routerTree'
+import { isPlaceholderRoute, shouldHidePlaceholderRoutes } from '@/utils/placeholderRoutes'
 // Element UI Đã qua CDN Đang tải
 const ELEMENT = window.ELEMENT
 
@@ -143,6 +144,10 @@ function generateChildRouters() {
   })
   let childRouters = []
   for(let router of routers) {
+    // Blocker 5a: bản production không đăng ký route placeholder; dev/test vẫn giữ để kiểm chứng.
+    if(router.code && shouldHidePlaceholderRoutes() && isPlaceholderRoute(router.code)) {
+      continue
+    }
     if(router.code) {
       let routerProps = JSON.parse(router.properties)
       let childRouter = {

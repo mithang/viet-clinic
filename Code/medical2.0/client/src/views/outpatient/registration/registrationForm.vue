@@ -106,6 +106,7 @@
                   @change="birthdayChanges"
                   :picker-options="setDisabled"
                   value-format="yyyy-MM-dd"
+                  format="dd/MM/yyyy"
                   :placeholder="
                     dialogProps.action === 'view' ? '' : 'Vui lòng nhập ngày sinh'
                   "
@@ -192,12 +193,12 @@
             </el-col>
             <el-col :span="24 / 2" v-if="bizFormModel.cardType && bizFormModel.cardType.value === '03'">
               <el-form-item
-                label="社会保障卡号" prop="mdtrtCertNo">
+                label="Số thẻ bảo hiểm xã hội" prop="mdtrtCertNo">
                 <el-input
                   :disabled="dialogProps.action === 'view'"
                   v-model="bizFormModel.mdtrtCertNo"
                   :maxlength="45"
-                  :placeholder="dialogProps.action === 'view' ? '' : '请输入社会保障卡号'"
+                  :placeholder="dialogProps.action === 'view' ? '' : 'Nhập Số thẻ bảo hiểm xã hội'"
                 ></el-input>
               </el-form-item>
             </el-col>

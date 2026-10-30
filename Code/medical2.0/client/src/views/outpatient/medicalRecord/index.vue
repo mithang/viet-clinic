@@ -589,7 +589,7 @@
               </el-table-column>
             </el-table>
             <div class="itemBottomBox">
-              <p>西药金额：{{ WesternFee }}VNĐ</p>
+              <p>Tiền thuốc tây:{{ WesternFee }}VNĐ</p>
               <div style="width: 70%">
                 Ghi chú:<el-input
                   v-model="WesternRemarks"
@@ -761,7 +761,7 @@
               />
             </div>
             <div class="itemBottomBox">
-              <p>输液金额：{{ InfusionFee }}VNĐ</p>
+              <p>Tiền truyền dịch:{{ InfusionFee }}VNĐ</p>
               <div style="width: 70%">
                 Ghi chú:<el-input
                   style="width: 90%; margin-left: 10px"
@@ -878,7 +878,7 @@
               </el-table-column>
             </el-table>
             <div class="itemBottomBox">
-              <p>诊疗金额：{{ CostItemFee }}VNĐ</p>
+              <p>Tiền khám chữa bệnh:{{ CostItemFee }}VNĐ</p>
             </div>
           </div>
         </div>
@@ -947,7 +947,7 @@
                     v-model="scope.row.total"
                     @input="GetSurchargeFee(scope.$index, scope.row)"
                   >
-                    <template slot="append">套</template>
+                    <template slot="append">suất</template>
                   </el-input>
                 </template>
               </el-table-column>
@@ -980,7 +980,7 @@
               </el-table-column>
             </el-table>
             <div class="itemBottomBox">
-              <p>附加金额：{{ SurchargeFee }}VNĐ</p>
+              <p>Tiền phụ thu:{{ SurchargeFee }}VNĐ</p>
             </div>
           </div>
         </div>
@@ -1227,7 +1227,7 @@ export default {
       //Cấu hình bệnh án đang chọn
       ChooseRecordList: [],
       //就诊记录弹框标题
-      RecordsTitle: "就诊详情",
+      RecordsTitle: "Chi tiết lượt khám",
       //是否显示就诊记录弹框
       IsShowRecords: false,
       //就诊记录弹框加载状态
@@ -1296,11 +1296,11 @@ export default {
       //Bảng hạng mục khám chữa bệnh
       TreatmentTable: [
         {
-          BrandName: "血常规",
+          BrandName: "Xét nghiệm máu thường quy",
           dj: "3",
         },
         {
-          BrandName: "身体检查",
+          BrandName: "Khám sức khỏe tổng quát",
           dj: "2",
         },
       ],

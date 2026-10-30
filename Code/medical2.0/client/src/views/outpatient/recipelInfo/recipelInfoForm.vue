@@ -111,7 +111,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian thanh toán' prop='payDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.payDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian thanh toán"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.payDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' format='dd/MM/yyyy HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian thanh toán"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -123,7 +123,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian trả thuốc' prop='returnDrugDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnDrugDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian trả thuốc"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnDrugDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' format='dd/MM/yyyy HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian trả thuốc"' ></el-date-picker>             
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
@@ -135,7 +135,7 @@
               <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Thời gian hoàn phí' prop='returnFeeDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnFeeDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian hoàn phí"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.returnFeeDate' type='datetime' value-format='yyyy-MM-dd HH:mm:ss' format='dd/MM/yyyy HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian hoàn phí"' ></el-date-picker>             
           </el-form-item>
         </el-col>
     </el-row>

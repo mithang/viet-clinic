@@ -1,4 +1,5 @@
 import { getLocalRouters } from '@/utils/auth'
+import { isPlaceholderRoute, shouldHidePlaceholderRoutes } from '@/utils/placeholderRoutes'
 const state = {
   topMenuId: '',
   menus: [],
@@ -11,6 +12,10 @@ const actions = {
     let menus = [];
     let routers = getLocalRouters()
     for (let router of routers) {
+      // Blocker 5a: bản production không đưa placeholder vào menu (không đổi DB/quyền/flag).
+      if (shouldHidePlaceholderRoutes() && isPlaceholderRoute(router.code)) {
+        continue
+      }
       let routerProperties = JSON.parse(router.properties)
       let item = {
         id: router.id,
@@ -42,6 +47,10 @@ const hasContainSpecial = function (str) {
 }
 const tree = function (menu, routers){
   for (let router of routers) {
+    // Blocker 5a: không gắn placeholder làm menu con ở bản production.
+    if (shouldHidePlaceholderRoutes() && isPlaceholderRoute(router.code)) {
+      continue
+    }
     let routerProperties = JSON.parse(router.properties);
     let item = {
       id: router.id,

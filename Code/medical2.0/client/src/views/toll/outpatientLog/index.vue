@@ -85,7 +85,7 @@
           <el-table-column align="center" prop="signature" label="Chữ ký bác sĩ"></el-table-column>
           <el-table-column align="center" prop="poverty" label="Dấu hiệu hộ nghèo">
             <template slot-scope="scope">
-              <span v-show="scope.row.poverty!=null">贫</span>
+              <span v-show="scope.row.poverty!=null">Nghèo</span>
             </template>
           </el-table-column>
           <el-table-column align="center" prop="telephone" label="Số điện thoại liên hệ"></el-table-column>
@@ -128,7 +128,7 @@
       </el-col>
     </el-row>
     <!-- 修改用户的对话框 -->
-    <el-dialog title="修改日志" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed"
+    <el-dialog title="Sửa nhật ký" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed"
                :close-on-click-modal='false'>
       <!-- 内容主体区 -->
       <el-form :model="editUserForm" ref="editUserFormRef" label-width="120px">
@@ -146,7 +146,7 @@
         </el-row>
         <el-row>
           <el-col :span="24 / 2"><template slot-scope="scope">
-            <span v-show="scope.row.poverty!=null">贫</span>
+            <span v-show="scope.row.poverty!=null">Nghèo</span>
           </template>
             <el-form-item label="Giới tính:" prop="sex">
                 <el-select v-model="editUserForm.sex" placeholder="Vui lòng chọn giới tính">

@@ -12,10 +12,10 @@
 } */
 
 export default {
-  'datetimeFormat'(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
+  'datetimeFormat'(dataStr, pattern = 'DD/MM/YYYY HH:mm:ss') {
     return Vue.prototype.$moment(dataStr).format(pattern);
   },
-  'dateFormat'(dataStr, pattern = 'YYYY-MM-DD') {
+  'dateFormat'(dataStr, pattern = 'DD/MM/YYYY') {
     return Vue.prototype.$moment(dataStr).format(pattern);
   },
   'timeFormat'(dataStr, pattern = 'HH:mm:ss') {

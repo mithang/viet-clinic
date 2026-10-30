@@ -284,7 +284,7 @@
                 <el-col :span="4">
                   <el-form-item label="Loại điều trị:">
                     <el-radio-group :disabled="isReadOnly" v-model="registration.treatType.value" size="mini">
-                      <el-radio label="treatType_0">初诊</el-radio>
+                      <el-radio label="treatType_0">Khám lần đầu</el-radio>
                       <el-radio label="treatType_1">Tái khám</el-radio>
                     </el-radio-group>
                   </el-form-item>
@@ -317,7 +317,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item label="发病时间:">
+                  <el-form-item label="Thời gian phát bệnh:">
                     <el-date-picker
                       :disabled="isReadOnly"
                       v-model="registration.morbidityTime"
@@ -2035,7 +2035,7 @@
                      ref="queryForm" :inline-message="true">
               <el-form-item label="Chọn ngày" prop="time">
                 <el-date-picker v-model="queryModel.dateRange" type="datetimerange" range-separator="đến"
-                                format="yyyy-MM-dd HH:mm:ss">
+                                format="dd/MM/yyyy HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
             </el-form>
@@ -2785,7 +2785,7 @@
                      ref="queryForm" :inline-message="true">
               <el-form-item label="Chọn ngày" prop="time">
                 <el-date-picker v-model="queryModel.dateRange" type="datetimerange" range-separator="đến"
-                                format="yyyy-MM-dd HH:mm:ss">
+                                format="dd/MM/yyyy HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
             </el-form>
@@ -3560,7 +3560,7 @@
                   <el-date-picker :disabled="true"
                                   v-model="costInspection.inspectionCheckInfo.samplingDate" type="datetime"
                                   placeholder="Chọn ngày giờ" value-format="yyyy-MM-dd HH:mm:ss"
-                                  format="yyyy-MM-dd HH:mm:ss">
+                                  format="dd/MM/yyyy HH:mm:ss">
                   </el-date-picker>
                 </el-form-item>
               </el-col>
@@ -3592,7 +3592,7 @@
                   <el-date-picker :disabled="true"
                                   v-model="costInspection.inspectionCheckInfo.checkoutDate" type="datetime"
                                   placeholder="Chọn ngày giờ" value-format="yyyy-MM-dd HH:mm:ss"
-                                  format="yyyy-MM-dd HH:mm:ss">
+                                  format="dd/MM/yyyy HH:mm:ss">
                   </el-date-picker>
                 </el-form-item>
               </el-col>
@@ -3681,7 +3681,7 @@
                   <el-date-picker :disabled="flags"
                                   v-model="costInspection.inspectionCheckInfo.samplingDate" type="datetime"
                                   placeholder="Chọn ngày giờ" value-format="yyyy-MM-dd HH:mm:ss"
-                                  format="yyyy-MM-dd HH:mm:ss">
+                                  format="dd/MM/yyyy HH:mm:ss">
                   </el-date-picker>
                 </el-form-item>
               </el-col>
@@ -3726,7 +3726,7 @@
                   <el-date-picker :disabled="true"
                                   v-model="costInspection.inspectionCheckInfo.checkoutDate" type="datetime"
                                   placeholder="Chọn ngày giờ" value-format="yyyy-MM-dd HH:mm:ss"
-                                  format="yyyy-MM-dd HH:mm:ss">
+                                  format="dd/MM/yyyy HH:mm:ss">
                   </el-date-picker>
                 </el-form-item>
               </el-col>
@@ -3964,17 +3964,17 @@
         if (this.medicalType === 'chinese') {
           // 中医模板：中医诊断和中医证候必填
           this.BasicInfoFormRules.chinaDiagnose = [
-            { required: true, message: '请输入中医诊断', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập chẩn đoán y học cổ truyền', trigger: 'blur' }
           ];
           this.BasicInfoFormRules.chinaSyndrome = [
-            { required: true, message: '请输入中医证候', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập chứng hậu y học cổ truyền', trigger: 'blur' }
           ];
           // 移除西医诊断必填
           delete this.BasicInfoFormRules.westernDiagnose;
         } else {
           // 西医模板：西医诊断必填
           this.BasicInfoFormRules.westernDiagnose = [
-            { required: true, message: '请输入西医诊断', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập chẩn đoán tây y', trigger: 'blur' }
           ];
           // 移除中医诊断和证候必填
           delete this.BasicInfoFormRules.chinaDiagnose;
@@ -3995,7 +3995,7 @@
       lookInspection(row) {
         if (row.costItem.itemType.value === "treatmentItemType_0") {
           this.costInspection = row;
-          this.typeName = "查看检验报告";
+          this.typeName = "Xem báo cáo xét nghiệm";
           this.costInspection.inspectionCheckInfo.name =
             this.BasicInfoModel.name +
             "/" +
@@ -4008,7 +4008,7 @@
           this.inspectionDialogVisible = true;
         } else if (row.costItem.itemType.value === "treatmentItemType_1") {
           this.costInspection = row;
-          this.typeName = "查看检查报告";
+          this.typeName = "Xem báo cáo kiểm tra";
           this.costInspection.inspectionCheckInfo.name =
             this.BasicInfoModel.name +
             "/" +
@@ -8020,7 +8020,7 @@
             this.beyondInventoryType = true;
           }
           this.$message.error(
-            row.drugStuffId.name + "超出库存总量，请重新输入或者入库药品!"
+            row.drugStuffId.name + "Vượt quá tổng tồn kho, vui lòng nhập lại hoặc nhập kho thuốc!"
           );
         } else {
           this.beyondInventoryType = false;

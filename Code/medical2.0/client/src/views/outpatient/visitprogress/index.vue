@@ -95,17 +95,17 @@
     </el-table-column>
     <el-table-column
       prop="jzlx"
-      label="接诊类型"
+      label="Loại tiếp nhận"
       >
     </el-table-column>
     <el-table-column
       prop="ys"
-      label="接诊医生"
+      label="Bác sĩ tiếp nhận"
       >
     </el-table-column>
     <el-table-column
       prop="cfs"
-      label="处方数量"
+      label="Số lượng đơn thuốc"
       >
     </el-table-column>
   </el-table>

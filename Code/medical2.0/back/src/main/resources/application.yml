@@ -74,6 +74,18 @@ app:
   cache:
     type: none  # Tùy chọn redis, none, ehcache
 
+# Blocker 8a: monitoring chỉ cần /actuator/health. Chỉ expose đúng health qua web;
+# các endpoint actuator khác không expose, và Shiro vẫn chặn chúng bằng authc
+# (xem ShiroConfiguration: chỉ "/actuator/health" là anon).
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 
 
 

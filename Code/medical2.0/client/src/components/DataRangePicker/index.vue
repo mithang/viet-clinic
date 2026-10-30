@@ -8,6 +8,7 @@
     end-placeholder='Ngày giờ kết thúc'
     align='right'
     value-format='yyyy-MM-dd HH:mm:ss'
+    format='dd/MM/yyyy HH:mm:ss'
     :picker-options='pickerOptions'
     unlink-panels>
   </el-date-picker>
@@ -20,6 +21,7 @@
     end-placeholder='Ngày kết thúc'
     align='right'
     value-format='yyyy-MM-dd'
+    format='dd/MM/yyyy'
     :picker-options='pickerOptions'
     unlink-panels>
   </el-date-picker>

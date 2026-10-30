@@ -1,0 +1,7 @@
+# .dockerignore cho Dockerfile ở repo root (blocker 8).
+Code/medical2.0/back/target
+Code/medical2.0/back/logs
+Code/medical2.0/client/dist
+Code/medical2.0/client/node_modules
+**/.git
+**/*.log

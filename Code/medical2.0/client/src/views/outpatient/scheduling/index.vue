@@ -219,7 +219,7 @@
                       type="daterange"
                       style="width: 180px"
                       value-format="yyyy-MM-dd HH:mm"
-                      format="MM/dd"
+                      format="dd/MM"
                       start-placeholder="Ngày bắt đầu"
                       end-placeholder="Ngày kết thúc"
                       :default-time="['00:00:00', '23:59:59']"
@@ -406,7 +406,7 @@
     <el-dialog
       width="70%"
       height="60%"
-      title="预约信息"
+      title="Thông tin đặt lịch hẹn"
       :visible.sync="dialogTableVisible"
     >
       <el-table width="100%" height="80%" :data="schedulingmxList">
@@ -483,13 +483,13 @@ export default {
       rows: 10,
       total: 12,
       weekdaylist: [
-        "星期一",
-        "星期二",
-        "星期三",
-        "星期四",
-        "星期五",
-        "星期六",
-        "星期天",
+        "Thứ Hai",
+        "Thứ Ba",
+        "Thứ Tư",
+        "Thứ Năm",
+        "Thứ Sáu",
+        "Thứ Bảy",
+        "Chủ Nhật",
       ],
       weekproplist: [
         "monday",
@@ -901,7 +901,7 @@ export default {
           timeendint: 18,
         },
         {
-          timename: "傍晚",
+          timename: "Buổi tối",
           timestrea: "18:00",
           timeend: "24:00",
           timestreaint: 18,

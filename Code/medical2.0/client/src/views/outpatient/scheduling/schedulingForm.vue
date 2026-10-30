@@ -94,6 +94,7 @@
                   @change="birthdayChanges"
                   :picker-options="setDisabled"
                   value-format="yyyy-MM-dd"
+                  format="dd/MM/yyyy"
                   :placeholder="
                     dialogProps.action === 'view' ? '' : 'Vui lòng nhập ngày sinh'
                   "
@@ -404,7 +405,7 @@
                   :disabled="true"
                   v-model="bizFormModel.subscribedaterq"
                   :maxlength="45"
-                  :placeholder="dialogProps.action === 'view' ? '' : '请输入预约日期'"
+                  :placeholder="dialogProps.action === 'view' ? '' : 'Nhập ngày hẹn'"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -623,7 +624,7 @@ export default {
         guardianName: [{required: false, message: "Vui lòng nhập tên người giám hộ", trigger: "change"},],
         guardianPhone: [{required: false, message: "Vui lòng nhập số điện thoại người giám hộ", trigger: "change"},],
         "subscribedatetime": [
-          {required: true, message: "请选择预约时间", trigger: "change"},
+          {required: true, message: "Vui lòng chọn thời gian hẹn", trigger: "change"},
         ],
       },
     };

@@ -32,6 +32,7 @@
                       :picker-options="filerData.pickerOptions"
                       v-model="queryModel.createDate"
                       type="datetimerange"
+                      format="dd/MM/yyyy HH:mm:ss"
                       range-separator="đến"
                       start-placeholder="Ngày bắt đầu"
                       end-placeholder="Ngày kết thúc"
@@ -279,10 +280,10 @@
                       <div style="display:flex;justify-content:space-around">
                         <p class="btn" v-if="scope.row.status.value === 'registrationStatus_3'|| scope.row.status.value === null">
                       <span @click="onEditEntity(scope.$index, scope.row, 'registrationForm')"
-                      >查看或修改</span>
+                      >Xem hoặc sửa</span>
                           <span
                             @click="updateStatusId(scope.row.id, scope.row.status.value,scope.row.doctor,scope.row.clinicOffice,scope.row.subscribeDate)"
-                          >签到</span>
+                          >Check-in</span>
                         </p>
                         <p
                           class="btn1"
@@ -345,7 +346,7 @@
           <!-- Thanh phân trang     Kết thúc -->
           <!--Hộp thoại hoàn phí Bắt đầu-->
           <el-dialog
-            title="退费信息"
+            title="Thông tin hoàn phí"
             :visible.sync="refundRegistraionVisible"
             width="50%"
             :close-on-click-modal="false"
@@ -378,7 +379,7 @@
             <div slot="footer">
               <el-button @click="refundRegistraionVisible = false">Hủy</el-button>
               <el-button type="primary" @click="refundRegistrationPayClick"
-              >确认退费
+              >Xác nhận hoàn phí
               </el-button
               >
             </div>
@@ -387,7 +388,7 @@
 
           <!-- 签到弹出框 -->
           <el-dialog
-            title="添加科室和医生"
+            title="Thêm khoa và bác sĩ"
             :visible.sync="signDialogVisible"
             width="30%"
             :before-close="handleClose">
@@ -467,7 +468,7 @@
               class="edit-form"
             >
               <el-row>
-                <el-form-item label="医院名称" prop="hospital.OrganizeId">
+                <el-form-item label="Tên bệnh viện" prop="hospital.OrganizeId">
                   <el-select
                     v-model="bizFormModel.hospital"
                     @change="getks()"
@@ -508,7 +509,7 @@
                     v-model="bizFormModel.card"
                   ></el-input>
                 </el-form-item>
-                <el-form-item label="诊疗科室" prop="clinicOffice">
+                <el-form-item label="Khoa khám" prop="clinicOffice">
                   <el-select
                     v-model="bizFormModel.clinicOffice"
                     @change="getys()"
@@ -531,7 +532,7 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="诊疗医生" prop="doctor">
+                <el-form-item label="Bác sĩ khám" prop="doctor">
                   <el-select
                     v-model="bizFormModel.doctor"
                     value-key="ysgh"
@@ -553,10 +554,11 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="诊疗日期:" style="margin-right: 3px;">
+                <el-form-item label="Ngày khám:" style="margin-right: 3px;">
                   <el-date-picker
                     v-model="bizFormModel.diagnosisTime"
                     type="datetime"
+                    format="dd/MM/yyyy HH:mm:ss"
                     placeholder="Chọn ngày giờ"
                     align="right"
                     :picker-options="pickerOptions">
