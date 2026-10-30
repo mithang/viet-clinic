@@ -59,6 +59,8 @@ public class DataBean {
         PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_WECHAT, "WeChatthanh toán");
         PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_BANK_CARD, "ngân hàng dòngthẻthanh toán");
         PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_MEDICAL, "BHYTthanh toán");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_BANK_TRANSFER, "Chuyển khoản ngân hàng");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_EWALLET, "Ví điện tử");
     }
 
     /**

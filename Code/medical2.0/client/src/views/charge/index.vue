@@ -1,17 +1,19 @@
 <template>
   <div class="charge_container">
     <el-alert
-      title="Dữ liệu minh họa"
-      type="warning"
+      title="CHƯA DÙNG ĐƯỢC CHO THU PHÍ THẬT — dữ liệu minh họa"
+      type="error"
       :closable="false"
       show-icon
       style="margin-bottom: 10px"
     >
       <div>
-        Màn hình thu phí này hiện dùng dữ liệu minh họa cố định, chưa kết nối
-        dữ liệu thu phí thật của phòng khám — vì vậy số liệu ở đây không khớp
-        với trang Thu phí (tollInfo). Xem dữ liệu thu phí thật của phòng khám
-        đang đăng nhập tại trang Thu phí.
+        Trang này CHƯA nối API thu phí thật: bệnh nhân, đơn thuốc và số tiền
+        hiển thị là dữ liệu minh họa cố định, nút Thu phí / Hoàn phí và nút
+        xác nhận trong hộp thoại đã bị khóa nên không ghi nhận được khoản
+        thu nào. Thu phí thật (kể cả bán lẻ) chỉ thực hiện tại trang Thu phí
+        (tollInfo) và Thu phí bán lẻ (retailCharge), nơi đã nối API
+        /toll/tollInfo. Không dùng trang này để thu tiền của bệnh nhân.
       </div>
     </el-alert>
     <div class="charge_left">
@@ -86,9 +88,12 @@
         <div class="flex-space-between">
           <div class="goods-back">Đã trả thuốc</div>
           <div style="margin-top: 5px; margin-right: 10px">23.00</div>
+          <!-- Khóa: trang demo chưa nối API, không cho mở luồng thu/hoàn phí.
+               Thu phí thật thực hiện ở trang tollInfo / retailCharge. -->
           <el-button
             :type="chargeStatusActiveName === '1' ? 'warning' : ''"
-            :disabled="chargeStatusActiveName === '3'"
+            :disabled="true"
+            title="Trang demo chưa nối API thu phí thật — dùng trang Thu phí (tollInfo) để thu phí"
             @click="chargeClick"
             >{{ chargeStatusActiveName === "2" ? "Hoàn phí" : "Thu phí" }}</el-button
           >
@@ -302,7 +307,7 @@
           <el-row>
             <el-col :span="10">
               <el-form-item label="Số tiền thực thu">
-                <el-input v-model="model">
+                <el-input v-model="chargeForm.actualAmount">
                   <template slot="append">VNĐ</template>
                 </el-input>
               </el-form-item>
@@ -311,11 +316,14 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="Phương thức thanh toán">
-                <el-radio-group v-model="model">
-                  <el-radio label="1">Tiền mặt</el-radio>
-                  <el-radio label="2">支付宝</el-radio>
-                  <el-radio label="3">WeChat</el-radio>
-                  <el-radio label="3">银行卡</el-radio>
+                <!-- Giá trị khớp dict payType (payment_dict_vi.sql); trước đây
+                     là label số 1/2/3/3 hard-code gồm Alipay/WeChat và trùng
+                     label 3. Hộp thoại vẫn bị khóa xác nhận cho tới khi nối API. -->
+                <el-radio-group v-model="chargeForm.paymentType">
+                  <el-radio label="payType_0">Tiền mặt</el-radio>
+                  <el-radio label="payType_5">Chuyển khoản ngân hàng</el-radio>
+                  <el-radio label="payType_6">Ví điện tử</el-radio>
+                  <el-radio label="payType_3">Thẻ ngân hàng</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -323,7 +331,7 @@
           <el-row>
             <el-col :span="15">
               <el-form-item label="Ghi chú">
-                <el-input v-model="model"></el-input>
+                <el-input v-model="chargeForm.note"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -332,13 +340,18 @@
       </div>
       <div slot="footer">
         <el-button @click="chargeDialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="chargeDialogVisible = false"
+        <!-- Khóa: chưa nối API nên không được xác nhận thu phí từ trang demo. -->
+        <el-button
+          type="primary"
+          :disabled="true"
+          title="Trang demo chưa nối API thu phí thật — dùng trang Thu phí (tollInfo) để thu phí"
+          @click="chargeDialogVisible = false"
           >Xác nhận thu phí</el-button
         >
       </div>
     </el-dialog>
     <el-dialog
-      title="退费明细"
+      title="Chi tiết hoàn phí"
       :visible.sync="refundDialogVisible"
       :close-on-click-modal="false"
       width="50%"
@@ -417,10 +430,15 @@
         <el-divider></el-divider>
       </div>
       <div slot="footer" class="flex-space-between">
-        <div>实退金额：{{getRefundTotalCost()}}</div>
+        <div>Số tiền hoàn thực tế:{{getRefundTotalCost()}}</div>
         <div>
           <el-button @click="refundDialogVisible = false">Hủy</el-button>
-          <el-button type="primary" @click="refundDialogVisible = false"
+          <!-- Khóa: chưa nối API nên không được xác nhận hoàn phí từ trang demo. -->
+          <el-button
+            type="primary"
+            :disabled="true"
+            title="Trang demo chưa nối API thu phí thật — dùng trang Thu phí (tollInfo) để hoàn phí"
+            @click="refundDialogVisible = false"
             >Xác nhận</el-button
           >
         </div>
@@ -453,6 +471,9 @@ export default {
       chargeForm: {
         discountAmount: 0,
         discountRate: 0,
+        actualAmount: 0,
+        note: "",
+        paymentType: "payType_0",
       },
       refundDialogVisible: false,
       patientList: [

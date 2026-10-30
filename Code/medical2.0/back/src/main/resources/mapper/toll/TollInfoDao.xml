@@ -1935,7 +1935,11 @@
         IFNULL(SUM(CASE WHEN a.payment_type = 'payType_3' AND a.amount_status = 'amountStatus_1' THEN a.amount_received ELSE 0 END), 0)
         - IFNULL(SUM(CASE WHEN a.payment_type = 'payType_3' AND a.amount_status = 'amountStatus_2' THEN a.amount_received ELSE 0 END), 0) AS bankCardPayTotal,
         IFNULL(SUM(CASE WHEN a.payment_type = 'payType_4' AND a.amount_status = 'amountStatus_1' THEN a.amount_received ELSE 0 END), 0)
-        - IFNULL(SUM(CASE WHEN a.payment_type = 'payType_4' AND a.amount_status = 'amountStatus_2' THEN a.amount_received ELSE 0 END), 0) AS ybTotal
+        - IFNULL(SUM(CASE WHEN a.payment_type = 'payType_4' AND a.amount_status = 'amountStatus_2' THEN a.amount_received ELSE 0 END), 0) AS ybTotal,
+        IFNULL(SUM(CASE WHEN a.payment_type = 'payType_5' AND a.amount_status = 'amountStatus_1' THEN a.amount_received ELSE 0 END), 0)
+        - IFNULL(SUM(CASE WHEN a.payment_type = 'payType_5' AND a.amount_status = 'amountStatus_2' THEN a.amount_received ELSE 0 END), 0) AS transferTotal,
+        IFNULL(SUM(CASE WHEN a.payment_type = 'payType_6' AND a.amount_status = 'amountStatus_1' THEN a.amount_received ELSE 0 END), 0)
+        - IFNULL(SUM(CASE WHEN a.payment_type = 'payType_6' AND a.amount_status = 'amountStatus_2' THEN a.amount_received ELSE 0 END), 0) AS ewalletTotal
         FROM toll_info a
         <include refid="tollInfoJoins"/>
         LEFT JOIN sys_user user ON user.id = medical.doctor_id

@@ -24,5 +24,7 @@ public class TollVo implements Serializable {
     private BigDecimal weChatTotal;		// WeChatthanh toánTổng cộng
     private BigDecimal alipayTotal;		// thanh toánbảothanh toánTổng cộng
     private BigDecimal bankCardPayTotal;		// ngân hàng dòngthẻthanh toánTổng cộng
-    private BigDecimal ybTotal;		// BHYTthanh toánTổng cộng
+    private BigDecimal ybTotal;		// BHYTthanh toánTổng cộng (chỉ dữ liệu lịch sử)
+    private BigDecimal transferTotal;		// Chuyển khoản ngân hàngTổng cộng (payType_5, thêm 2026-10-30)
+    private BigDecimal ewalletTotal;		// Ví điện tửTổng cộng (payType_6, thêm 2026-10-30)
 }

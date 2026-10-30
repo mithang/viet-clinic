@@ -284,7 +284,35 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="createBy" label="Người thu phí" width="100px">
+                        <el-table-column prop="paymentType.name" label="Chuyển khoản ngân hàng" width="width">
+              <template slot-scope="scope">
+              <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
+                {{
+                  scope.row.paymentType ? (scope.row.paymentType.value === 'payType_5' ? bigNum(scope.row.amountReceived) : 0) : 0
+                }}VNĐ
+              </span>
+                <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
+                  {{
+                    scope.row.paymentType ? (scope.row.paymentType.value === 'payType_5' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0
+                  }}VNĐ
+              </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="paymentType.name" label="Ví điện tử" width="width">
+              <template slot-scope="scope">
+              <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
+                {{
+                  scope.row.paymentType ? (scope.row.paymentType.value === 'payType_6' ? bigNum(scope.row.amountReceived) : 0) : 0
+                }}VNĐ
+              </span>
+                <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
+                  {{
+                    scope.row.paymentType ? (scope.row.paymentType.value === 'payType_6' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0
+                  }}VNĐ
+              </span>
+              </template>
+            </el-table-column>
+<el-table-column prop="createBy" label="Người thu phí" width="100px">
               <template slot-scope="scope">
                 <span>
                   {{ getName(scope.row.createBy) }}
@@ -817,7 +845,7 @@ export default {
       }
     },
     getMainSummaries() {
-      let arr = ['Tổng cộng', '', '', '', '', '', '', '', '', '', '', new BigNumber(this.tollTotalTable.amountReceivableTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.amountReceivedTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.amountReceivableTotal - this.tollTotalTable.amountReceivedTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.cashTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.weChatTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.alipayTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.bankCardPayTotal).toFormat(2) + "VNĐ"]
+      let arr = ['Tổng cộng', '', '', '', '', '', '', '', '', '', '', new BigNumber(this.tollTotalTable.amountReceivableTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.amountReceivedTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.amountReceivableTotal - this.tollTotalTable.amountReceivedTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.cashTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.weChatTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.alipayTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.bankCardPayTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.transferTotal).toFormat(2) + "VNĐ", new BigNumber(this.tollTotalTable.ewalletTotal).toFormat(2) + "VNĐ"]
       return arr
     },
     getDetailSummaries() {
@@ -1308,6 +1336,8 @@ export default {
           wx: "Thanh toán WeChat",
           zfb: "Thanh toán Alipay",
           card: "Thanh toán bằng thẻ ngân hàng",
+          transfer: "Chuyển khoản ngân hàng",
+          ewallet: "Ví điện tử",
           createBy: "Người thu phí",
           createDate: "Ngày thu phí"
         }
@@ -1332,6 +1362,8 @@ export default {
             wx: "",
             zfb: "",
             card: "",
+            transfer: "",
+            ewallet: "",
             createBy: "",
             createDate: ""
           }
@@ -1353,6 +1385,8 @@ export default {
             arr.wx = this.tollList[i].paymentType.value === 'payType_2' ? this.tollList[i].amountReceived + '' : ''
             arr.zfb = this.tollList[i].paymentType.value === 'payType_1' ? this.tollList[i].amountReceived + '' : ''
             arr.card = this.tollList[i].paymentType.value === 'payType_3' ? this.tollList[i].amountReceived + '' : ''
+            arr.transfer = this.tollList[i].paymentType.value === 'payType_5' ? this.tollList[i].amountReceived + '' : ''
+            arr.ewallet = this.tollList[i].paymentType.value === 'payType_6' ? this.tollList[i].amountReceived + '' : ''
           } else if (this.tollList[i].amountStatus.value === 'amountStatus_2') {
             arr.amountReceivable = this.tollList[i].amountReceivable !== 0 ? '-' + this.tollList[i].amountReceivable + '' : '0'
             arr.amountReceived = this.tollList[i].amountReceived !== 0 ? '-' + this.tollList[i].amountReceived + '' : '0'
@@ -1361,6 +1395,8 @@ export default {
             arr.wx = this.tollList[i].paymentType.value === 'payType_2' ? '-' + this.tollList[i].amountReceived + '' : ''
             arr.zfb = this.tollList[i].paymentType.value === 'payType_1' ? '-' + this.tollList[i].amountReceived + '' : ''
             arr.card = this.tollList[i].paymentType.value === 'payType_3' ? '-' + this.tollList[i].amountReceived + '' : ''
+            arr.transfer = this.tollList[i].paymentType.value === 'payType_5' ? '-' + this.tollList[i].amountReceived + '' : ''
+            arr.ewallet = this.tollList[i].paymentType.value === 'payType_6' ? '-' + this.tollList[i].amountReceived + '' : ''
           }
           arr.createBy = this.tollList[i].createBy
           arr.createDate = this.tollList[i].createDate
@@ -1387,6 +1423,8 @@ export default {
           wx: new BigNumber(this.tollTotalTable.weChatTotal).toFormat(2) + "",
           zfb: new BigNumber(this.tollTotalTable.alipayTotal).toFormat(2) + "",
           card: new BigNumber(this.tollTotalTable.bankCardPayTotal).toFormat(2) + "",
+          transfer: new BigNumber(this.tollTotalTable.transferTotal).toFormat(2) + "",
+          ewallet: new BigNumber(this.tollTotalTable.ewalletTotal).toFormat(2) + "",
           createBy: "",
           createDate: ""
         }

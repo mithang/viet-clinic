@@ -108,8 +108,15 @@ public final class BizConstants {
     public static final String PAY_TYPE_WECHAT = "payType_2";
     /** ngân hàng dòngthẻthanh toán */
     public static final String PAY_TYPE_BANK_CARD = "payType_3";
-    /** BHYTthanh toán */
+    /** BHYTthanh toán — GIỮ HẰNG SỐ CHO DỮ LIỆU LỊCH SỬ, nhưng giá trị này
+     *  đã bị ẩn khỏi dict payType (payment_dict_vi.sql) vì hệ thống chưa
+     *  có quyết toán BHYT Việt Nam; không dùng cho thu phí mới. */
     public static final String PAY_TYPE_MEDICAL = "payType_4";
+    /** Chuyển khoản ngân hàng (Việt Nam, thêm 2026-10-30) */
+    public static final String PAY_TYPE_BANK_TRANSFER = "payType_5";
+    /** Ví điện tử Việt Nam — chỉ ghi nhận hình thức, chưa tích hợp cổng
+     *  thanh toán hay đối soát tự động (thêm 2026-10-30) */
+    public static final String PAY_TYPE_EWALLET = "payType_6";
 
     // ========== Bệnh truyền nhiễmLoại infectType ==========
     /** khôngBệnh truyền nhiễm */

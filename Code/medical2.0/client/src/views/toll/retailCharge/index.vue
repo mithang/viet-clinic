@@ -610,7 +610,7 @@
                 v-model="SearchStuffInput"
                 @input="GetStuffTable"
                 @focus="GetStuffTable"
-                placeholder="输入材料名称或拼音码"
+                placeholder="Nhập tên vật tư hoặc mã tìm kiếm"
             ></el-input>
             </el-popover>
             <!-- 材料点击回显表格 -->
@@ -627,7 +627,7 @@
                 ></el-table-column>
                 <el-table-column
                 prop=""
-                label="材料规格"
+                label="Quy cách vật tư"
                 >
                 <template slot-scope="scope">
                     {{scope.row.stuff.packNumber+'*'+scope.row.stuff.minUnit.name+'/'+scope.row.stuff.packUnit.name}}
@@ -855,11 +855,15 @@
           <el-row>
             <el-col :span="20">
               <el-form-item label="Phương thức thanh toán">
+                <!-- Lấy từ dict payType (payment_dict_vi.sql): chỉ còn
+                     Tiền mặt / Thẻ ngân hàng / Chuyển khoản / Ví điện tử.
+                     Không hard-code Alipay/WeChat/BHYT ở đây nữa. -->
                 <el-radio-group v-model="paymentType">
-                  <el-radio label="payType_0">Tiền mặt</el-radio>
-                  <el-radio label="payType_1">支付宝</el-radio>
-                  <el-radio label="payType_2">WeChat</el-radio>
-                  <el-radio label="payType_3">银行卡</el-radio>
+                  <el-radio
+                    v-for="ptype in payType_List"
+                    :key="ptype.value"
+                    :label="ptype.value"
+                  >{{ ptype.name }}</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -921,6 +925,7 @@ export default {
             },
             patientId_List:[],  //Lấy thông tin bệnh nhân
             gender_List:[],   //获取性别
+            payType_List:[], // Phương thức thanh toán (dict payType)
             SearchDrugInput:"", //药品搜索
             SearchStuffInput:"", //Tìm vật tư
             DrugMedicineTable:[], //药品表格
@@ -1414,6 +1419,10 @@ export default {
              //Truy vấn giới tính bệnh nhân
                 getDictItemsByCode(DICT_CODE.GENDER).then((data) => {
                     this.gender_List = data;
+                });
+             //Truy vấn phương thức thanh toán (dict payType, đã Việt hóa)
+                getDictItemsByCode(DICT_CODE.PAY_TYPE).then((data) => {
+                    this.payType_List = data;
                 });
         },
 

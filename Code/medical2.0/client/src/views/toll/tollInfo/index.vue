@@ -337,7 +337,7 @@
             type="primary"
             @click="addressee()"
             v-if="diagnosis !== null"
-          >添加收件人
+          >Thêm người nhận
           </el-button
           >-->
           <el-popconfirm
@@ -475,7 +475,7 @@
               </el-row>
               <el-row :gutter="24" v-if="diagnosis !== null">
                 <el-col :span="4">
-                  <el-form-item label="收件人">
+                  <el-form-item label="Người nhận">
                     <span>
                       {{ diagnosis.recipientName }}
                     </span>
@@ -1310,7 +1310,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      title="单处方收费"
+      title="Thu phí theo đơn"
       :visible.sync="singleDialogVisible"
       width="50%"
       :close-on-click-modal="false"
@@ -1469,7 +1469,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      title="添加收件人信息"
+      title="Thêm thông tin người nhận"
       :visible.sync="addresseeDialogVisible"
       width="50%"
       :close-on-click-modal="false"
@@ -1499,9 +1499,9 @@
                               @province="onChangeProvince" @city="onChangeCity" @area="onChangeArea"></v-distpicker>
               </el-form-item>-->
               <el-form-item label="Địa chỉ người nhận">
-                所属省：
+                Tỉnh:
                 <el-input  :rows="3" v-model="diagnosis.province"></el-input>
-                所属市：
+                Thành phố:
                 <el-input  :rows="3" v-model="diagnosis.market"></el-input>
                 所属镇/Quận/Huyện：
                 <el-input  :rows="3" v-model="diagnosis.distinguish"></el-input>
@@ -1574,10 +1574,10 @@
       let amountPaidRule = (rule, value, callback) => {
         //这里为什么不用 value,因为之前 写这个代码的人没有按照element-ui的规则写,他绑定的数据不是表单里面的，气人啊
         if (!this.amountPaid) {
-          callback(new Error("请输入实付金额"));
+          callback(new Error("Vui lòng nhập số tiền thực trả"));
         } else {
           if (Number(this.amountPaid) < Number(this.chargeForm.amountReceived)) {
-            callback(new Error("实付金额不能低于实收金额"));
+            callback(new Error("Số tiền thực trả không được thấp hơn số tiền thực thu"));
           } else {
             callback();
           }
@@ -3269,6 +3269,12 @@
           case "payType_3":
             paymentType.name = "银行卡";
             break;
+          case "payType_5":
+            paymentType.name = "Chuyển khoản ngân hàng";
+            break;
+          case "payType_6":
+            paymentType.name = "Ví điện tử";
+            break;
           case "payType_4":
             paymentType.name = "Bảo hiểm y tế";
             break;
@@ -3349,6 +3355,12 @@
           case "payType_3":
             paymentType.name = "银行卡";
             break;
+          case "payType_5":
+            paymentType.name = "Chuyển khoản ngân hàng";
+            break;
+          case "payType_6":
+            paymentType.name = "Ví điện tử";
+            break;
           case "payType_4":
             paymentType.name = "Bảo hiểm y tế";
             break;
@@ -3427,6 +3439,12 @@
             break;
           case "payType_3":
             paymentType.name = "银行卡";
+            break;
+          case "payType_5":
+            paymentType.name = "Chuyển khoản ngân hàng";
+            break;
+          case "payType_6":
+            paymentType.name = "Ví điện tử";
             break;
           case "payType_4":
             paymentType.name = "Bảo hiểm y tế";

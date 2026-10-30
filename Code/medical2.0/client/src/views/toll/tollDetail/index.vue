@@ -158,7 +158,7 @@
             <el-table-column prop="recipel.code" label="Số đơn thuốc" width="180px">
               <template slot-scope="scope">
                 <div class="flex-container">
-                  <el-tag class="custom-tag" v-if="scope.row.recipel.chronicDisease" primary disable-transitions>慢
+                  <el-tag class="custom-tag" v-if="scope.row.recipel.chronicDisease" primary disable-transitions>Mạn
                   </el-tag>
                   {{ scope.row.recipel.code }}
                 </div>
@@ -210,7 +210,7 @@
               </span>
               </template>
             </el-table-column>
-            <el-table-column prop="paymentType.name" label="现金支付" width="width">
+            <el-table-column prop="paymentType.name" label="Thanh toán tiền mặt" width="width">
               <template slot-scope="scope">
               <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
                 {{
@@ -224,7 +224,7 @@
               </span>
               </template>
             </el-table-column>
-            <el-table-column prop="paymentType.name" label="微信支付" width="width">
+            <el-table-column prop="paymentType.name" label="Thanh toán WeChat" width="width">
               <template slot-scope="scope">
               <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
                 {{
@@ -266,7 +266,35 @@
               </span>
               </template>
             </el-table-column>
-            <el-table-column prop="paymentType.name" label="Thanh toán bảo hiểm y tế" width="width">
+                        <el-table-column prop="paymentType.name" label="Chuyển khoản ngân hàng" width="width">
+              <template slot-scope="scope">
+              <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
+                {{
+                  scope.row.paymentType ? (scope.row.paymentType.value === 'payType_5' ? bigNum(scope.row.amountReceived) : 0) : 0
+                }}VNĐ
+              </span>
+                <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
+                  {{
+                    scope.row.paymentType ? (scope.row.paymentType.value === 'payType_5' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0
+                  }}VNĐ
+              </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="paymentType.name" label="Ví điện tử" width="width">
+              <template slot-scope="scope">
+              <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
+                {{
+                  scope.row.paymentType ? (scope.row.paymentType.value === 'payType_6' ? bigNum(scope.row.amountReceived) : 0) : 0
+                }}VNĐ
+              </span>
+                <span style="color:red" v-else-if="scope.row.amountStatus.value==='amountStatus_2'">
+                  {{
+                    scope.row.paymentType ? (scope.row.paymentType.value === 'payType_6' ? '-' + bigNum(scope.row.amountReceived) : 0) : 0
+                  }}VNĐ
+              </span>
+              </template>
+            </el-table-column>
+<el-table-column prop="paymentType.name" label="Thanh toán bảo hiểm y tế" width="width">
               <template slot-scope="scope">
                 <!--Đã thu phí-->
                 <span v-if="scope.row.amountStatus.value==='amountStatus_1'">
@@ -469,7 +497,7 @@
             <el-table-column prop="recipel.code" label="Số đơn thuốc" width="180">
               <template slot-scope="scope">
                 <div class="flex-container">
-                  <el-tag class="custom-tag" v-if="scope.row.recipel.chronicDisease" primary disable-transitions>慢
+                  <el-tag class="custom-tag" v-if="scope.row.recipel.chronicDisease" primary disable-transitions>Mạn
                   </el-tag>
                   {{ scope.row.recipel.code }}
                 </div>
@@ -794,6 +822,8 @@
           new BigNumber(this.tollTotalTable.weChatTotal).toFormat(2) + "VNĐ",
           new BigNumber(this.tollTotalTable.alipayTotal).toFormat(2) + "VNĐ",
           new BigNumber(this.tollTotalTable.bankCardPayTotal).toFormat(2) + "VNĐ",
+          new BigNumber(this.tollTotalTable.transferTotal).toFormat(2) + "VNĐ",
+          new BigNumber(this.tollTotalTable.ewalletTotal).toFormat(2) + "VNĐ",
           new BigNumber(this.tollTotalTable.ybTotal).toFormat(2) + "VNĐ"]
         return arr
       },
@@ -1105,6 +1135,8 @@
             wx: "Thanh toán WeChat",
             zfb: "Thanh toán Alipay",
             card: "Thanh toán bằng thẻ ngân hàng",
+            transfer: "Chuyển khoản ngân hàng",
+            ewallet: "Ví điện tử",
             yb: "Thanh toán bảo hiểm y tế",
             createBy: "Người thu phí",
             createDate: "Ngày thu phí"
@@ -1129,6 +1161,8 @@
               wx: "",
               zfb: "",
               card: "",
+              transfer: "",
+              ewallet: "",
               yb: "",
               createBy: "",
               createDate: ""
@@ -1150,6 +1184,8 @@
               arr.wx = this.tollList[i].paymentType.value === 'payType_2' ? this.tollList[i].amountReceived + '' : ''
               arr.zfb = this.tollList[i].paymentType.value === 'payType_1' ? this.tollList[i].amountReceived + '' : ''
               arr.card = this.tollList[i].paymentType.value === 'payType_3' ? this.tollList[i].amountReceived + '' : ''
+              arr.transfer = this.tollList[i].paymentType.value === 'payType_5' ? this.tollList[i].amountReceived + '' : ''
+              arr.ewallet = this.tollList[i].paymentType.value === 'payType_6' ? this.tollList[i].amountReceived + '' : ''
               arr.yb = this.tollList[i].paymentType.value === 'payType_4' ? this.tollList[i].amountReceived + '' : ''
             } else if (this.tollList[i].amountStatus.value === 'amountStatus_2') {
               arr.amountReceivable = this.tollList[i].amountReceivable !== 0 ? '-' + this.tollList[i].amountReceivable + '' : '0'
@@ -1160,6 +1196,8 @@
               arr.zfb = this.tollList[i].paymentType.value === 'payType_1' ? '-' + this.tollList[i].amountReceived + '' : ''
               arr.yb = this.tollList[i].paymentType.value === 'payType_4' ? '-' + this.tollList[i].amountReceived + '' : ''
               arr.card = this.tollList[i].paymentType.value === 'payType_3' ? '-' + this.tollList[i].amountReceived + '' : ''
+              arr.transfer = this.tollList[i].paymentType.value === 'payType_5' ? '-' + this.tollList[i].amountReceived + '' : ''
+              arr.ewallet = this.tollList[i].paymentType.value === 'payType_6' ? '-' + this.tollList[i].amountReceived + '' : ''
             }
             arr.createBy = this.tollList[i].createBy
             arr.createDate = this.tollList[i].createDate
@@ -1185,6 +1223,8 @@
             wx: new BigNumber(this.tollTotalTable.weChatTotal).toFormat(2) + "",
             zfb: new BigNumber(this.tollTotalTable.alipayTotal).toFormat(2) + "",
             card: new BigNumber(this.tollTotalTable.bankCardPayTotal).toFormat(2) + "",
+            transfer: new BigNumber(this.tollTotalTable.transferTotal).toFormat(2) + "",
+            ewallet: new BigNumber(this.tollTotalTable.ewalletTotal).toFormat(2) + "",
             yb: new BigNumber(this.tollTotalTable.ybTotal).toFormat(2) + "",
             createBy: "",
             createDate: ""

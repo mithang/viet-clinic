@@ -2415,6 +2415,12 @@ export default {
         case "payType_3":
           paymentType.name = "银行卡";
           break;
+        case "payType_5":
+          paymentType.name = "Chuyển khoản ngân hàng";
+          break;
+        case "payType_6":
+          paymentType.name = "Ví điện tử";
+          break;
         default:
           paymentType = {
             name: "Tiền mặt",
@@ -2482,6 +2488,12 @@ export default {
           break;
         case "payType_3":
           paymentType.name = "银行卡";
+          break;
+        case "payType_5":
+          paymentType.name = "Chuyển khoản ngân hàng";
+          break;
+        case "payType_6":
+          paymentType.name = "Ví điện tử";
           break;
         default:
           paymentType = {
@@ -2557,6 +2569,12 @@ export default {
           break;
         case "payType_3":
           paymentType.name = "银行卡";
+          break;
+        case "payType_5":
+          paymentType.name = "Chuyển khoản ngân hàng";
+          break;
+        case "payType_6":
+          paymentType.name = "Ví điện tử";
           break;
         default:
           paymentType = {
