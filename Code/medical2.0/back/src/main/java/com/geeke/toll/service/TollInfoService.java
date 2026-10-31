@@ -461,9 +461,16 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 returnPremium(recipelInfo);
             }
             // Trả thuốctrảVật tưthao tác
-            if (recipelInfo.getDispensionStatus() == 0 && !BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
+            // NPE đã gặp khi hoàn phí đơn có dispensionStatus NULL (đơn tạo
+            // qua API không đặt trạng thái phát thuốc): Integer null bị unbox
+            // ở phép == nên cả giao dịch hoàn phí rollback. NULL nghĩa là
+            // chưa phát thuốc, xử lý như 0 (hủy chiếm dụng tồn kho); chỉ
+            // -1 mới đi nhánh trả thuốc. Đơn UI tạo sẵn có 0/1/-1 nên hành
+            // vi với dữ liệu cũ không đổi.
+            Integer dispensionStatus = recipelInfo.getDispensionStatus();
+            if ((dispensionStatus == null || dispensionStatus == 0) && !BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
                 medicinalStorageControlService.cancelOccupy(recipelInfo);
-            } else if (recipelInfo.getDispensionStatus() == -1 && !BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
+            } else if (dispensionStatus != null && dispensionStatus == -1 && !BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
                 medicinalStorageControlService.goBackFee(recipelInfo);
             }
         }
