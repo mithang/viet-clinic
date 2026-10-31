@@ -166,7 +166,7 @@ import TaskdetailsForm from './taskdetailsForm'
 import listViewMixin from '@/mixins/listViewMixin'
 import MainUI from '@/views/components/mainUI'
 import History from '@/views/components/history'
-import {selecttasklist,storageTask,release,deleteTask} from "@/api/taskmanagement/taskmanagement"
+import {selecttasklist,release,deleteTask} from "@/api/taskmanagement/taskmanagement"
 import { getjglist} from "@/api/toll/tollInfo";
   export default {
     extends: MainUI,
@@ -243,7 +243,7 @@ import { getjglist} from "@/api/toll/tollInfo";
     methods: {
 
       //Xóa nhiệm vụ
-      onDelete(row,index){
+      onDelete(row){
         this.setLoad();
         deleteTask(row).then((res)=>{
           if(res.code===100){
@@ -259,7 +259,7 @@ import { getjglist} from "@/api/toll/tollInfo";
       },
 
       //Đăng nhiệm vụ
-      onRelease(row,index){
+      onRelease(row){
         row.taskstatus = "1"
         release(row).then((res)=>{
           if(res.code===100){
@@ -323,7 +323,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         })
       }
     },
-      handleClick(row) {
+      handleClick() {
       },
       onCreatePatient(types) {
       this.$refs.addtaskForm.openAddworkbenchDialog(types);

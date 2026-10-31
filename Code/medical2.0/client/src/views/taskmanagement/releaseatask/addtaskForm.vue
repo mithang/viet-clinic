@@ -116,7 +116,6 @@
 import BaseUI from "@/views/components/baseUI";
 import {inserttask,getusertree,storageTask} from "@/api/taskmanagement/taskmanagement"
 import UploadFile from '../../components/uploadFile.vue'
-import { getPhotoById,getFiled } from "@/api/sys/sysSeting"
 import { getjglist} from "@/api/toll/tollInfo";
   export default {
     extends: BaseUI,
@@ -330,7 +329,7 @@ import { getjglist} from "@/api/toll/tollInfo";
      
       },
 
-      tableRowClassName({row, rowIndex}) {
+      tableRowClassName({rowIndex}) {
         if (rowIndex === 1) {
           return 'warning-row';
         } else if (rowIndex === 3) {
@@ -349,14 +348,14 @@ import { getjglist} from "@/api/toll/tollInfo";
       });
     },
     //Tải tệp đính kèm lên
-    handleRemove(file, fileList) {
+    handleRemove() {
       },
-      handlePreview(file) {
+      handlePreview() {
       },
       handleExceed(files, fileList) {
         this.$message.warning(`Giới hạn chọn hiện tại 3 tệp, Lần này đã chọn ${files.length} tệp, Đã chọn tổng cộng ${files.length + fileList.length} tệp`);
       },
-      beforeRemove(file, fileList) {
+      beforeRemove(file) {
         return this.$confirm(`Xác nhận xóa ${ file.name }？`);
       },
       submitForm(formName){
@@ -564,7 +563,6 @@ this.ruleForm.taskregion=[];
         this.taskRow=null
       },
       openAddworkbenchDialog(types) {
-        let titles = "";
         this.uploadFiles = ""
         this.uploads = []
         this.bizFormModel = {
@@ -575,7 +573,7 @@ this.ruleForm.taskregion=[];
         this.init()
         this.flags = false
         this.flags = false
-        if (types === "") { titles = "Thêm mới" } else if (types !== "") { titles = "Sửa" } else { titles = "" };
+
         if (types !== "" && types != null) {
           this.Getselectmbbm(types);
         } else {
@@ -594,7 +592,6 @@ this.ruleForm.taskregion=[];
       },
       openUpdateworkbenchDialog(row) {
         this.uploadFiles = ""
-        let titles = "";
         this.taskRow = row
         this.fileIds = []
         this.bizFormModel = {
@@ -605,7 +602,7 @@ this.ruleForm.taskregion=[];
         this.uploads = []
         this.flags = false
         this.flags = false
-        if (row === "") { titles = "Thêm mới" } else if (row !== "") { titles = "Sửa" } else { titles = "" };
+
         if (row !== "" && row != null) {
         } else {
           this.mblx = "0",

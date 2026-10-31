@@ -180,12 +180,11 @@
 
 <script>
 import BaseUI from "@/views/components/baseUI";
-import {inserttask,getusertree,getfeedbacktable,updateaudit} from "@/api/taskmanagement/taskmanagement"
+import {updateaudit} from "@/api/taskmanagement/taskmanagement"
 import UploadFile from '../../components/uploadFile.vue'
 import UploadFile1 from '../../components/uploadFile.vue'
-import { getPhotoById,getFiled } from "@/api/sys/sysSeting"
-import { getjglist} from "@/api/toll/tollInfo";
-import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
+import { getFiled } from "@/api/sys/sysSeting"
+import { listMyTaskPage, updateMyTask } from '@/api/myTask/myTask'
   export default {
     extends: BaseUI,
   name: "taskdetails-form",
@@ -379,7 +378,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
 
           this.tableData = res.data.rows
         }
-      }).catch((error)=>{
+      }).catch(()=>{
 
       })
     },
