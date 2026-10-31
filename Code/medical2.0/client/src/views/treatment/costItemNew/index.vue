@@ -134,7 +134,6 @@ import {
 } from "@/api/treatment/costItem";
 import listViewMixin from "@/mixins/listViewMixin";
 import CostItemForm from "./costItemForm";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import ExportExcelButton from "@/components/ExportExcelButton";
 import ViewColumnsSelect from "@/views/components/ViewColumnsSelect";
@@ -234,7 +233,7 @@ export default {
       this.costItemTotal = responseData.data.total;
       this.costItemList = responseData.data.rows;
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.TREATMENT_ITEM_TYPE).then((data) => {
         this.itemType_List = data;
       });

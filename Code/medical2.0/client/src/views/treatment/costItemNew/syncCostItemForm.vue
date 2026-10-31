@@ -104,7 +104,6 @@ import {
 } from "@/api/treatment/costItem";
 import { listResourcePermission } from "@/api/admin/common/permission";
 import CostItemForm from "./costItemForm";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { listCostItemAll } from "@/api/treatment/costItem";
 import ExportExcelButton from "@/components/ExportExcelButton";
@@ -287,7 +286,7 @@ export default {
       this.$refs.queryForm.resetFields()
       this.pageInit()
     },
-    selectable(row, index) {
+    selectable(row) {
       if (row.syncNum === 1) {
         return false
       } else {
@@ -688,7 +687,7 @@ export default {
 
       this.getCostItemList();
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.TREATMENT_ITEM_TYPE).then((data) => {
         this.itemType_List = data;
       });

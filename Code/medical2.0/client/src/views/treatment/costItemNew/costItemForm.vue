@@ -350,8 +350,6 @@
 </template>
 <script>
 
-import { validatenull } from "@/utils/validate";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { saveCostItem } from "@/api/treatment/costItem";
 import BaseUI from "@/views/components/baseUI";
@@ -510,7 +508,7 @@ export default {
         isDeduct: "0", // Có thực hiện khấu trừ không
       };
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.TREATMENT_ITEM_TYPE).then((data) => {
         this.itemType_List = data;
       });
@@ -520,7 +518,7 @@ export default {
     },
 
     //Xóa hạng mục con
-    deleteRow(index, rows) {
+    deleteRow(index) {
         //Tính giá bán
         this.bizFormModel.salePrice-=(this.subproject[index].quantity*this.subproject[index].salePrice)
         this.bizFormModel.costPrice-=(this.subproject[index].quantity*this.subproject[index].costPrice)
@@ -648,7 +646,7 @@ export default {
     fun(val){
 　　　　return Number(val).toFixed(2);
 　　},
-    handleChange(currentValue, oldValue){ 
+    handleChange(){ 
        this.bizFormModel.salePrice=this.bizFormModel.salePrice-this.sale
        this.sale=0
        this.bizFormModel.costPrice=this.bizFormModel.costPrice-this.cost
@@ -847,14 +845,14 @@ export default {
       },
 },
   watch: {
-    "bizFormModel.isPackage":function(newVal, oldVal){
+    "bizFormModel.isPackage":function(newVal){
           if(newVal==="0"&&this.bizFormModel.itemType.value==="treatmentItemType_0"){
             this.objectType="0"
           }else{
             this.objectType="1"
           }
     },
-    "bizFormModel.itemType":function(newVal, oldVal){
+    "bizFormModel.itemType":function(newVal){
        if(this.bizFormModel.isPackage==="0"&&newVal.value==="treatmentItemType_0"){
             this.objectType="0"
           }else{

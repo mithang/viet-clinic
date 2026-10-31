@@ -274,7 +274,6 @@ import {
 } from "@/api/treatment/costItem";
 import listViewMixin from "@/mixins/listViewMixin";
 import CostItemForm from "./costItemForm";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { listCostItemAll } from "@/api/treatment/costItem";
 import ExportExcelButton from "@/components/ExportExcelButton";
@@ -283,7 +282,7 @@ import QueryForm from "@/views/components/queryForm";
 import MainUI from "@/views/components/mainUI";
 import OperationIcon from "@/components/OperationIcon";
 import History from "@/views/components/history";
-import { getCurrentUser, getCurrentCompanyId } from "@/utils/userCache";
+import { getCurrentCompanyId } from "@/utils/userCache";
 export default {
   extends: MainUI,
   mixins: [listViewMixin],
@@ -508,7 +507,7 @@ export default {
           this.outputError(error);
         });
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.TREATMENT_ITEM_TYPE).then((data) => {
         this.itemType_List = data;
       });
