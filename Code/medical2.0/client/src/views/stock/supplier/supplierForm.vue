@@ -95,7 +95,6 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
 import { saveSupplier } from '@/api/stock/supplier'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -185,7 +184,7 @@ export default {
         this.$refs['supplierForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -204,7 +203,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện
     onChangeProvince(data) {

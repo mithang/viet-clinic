@@ -207,7 +207,6 @@
   import {validatenull} from "@/utils/validate";
   import DispensingForm from "./dispensingForm";
   import MainUI from "@/views/components/mainUI";
-  import {listDictItemAll} from "@/api/sys/dictItem";
   import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
   import {getList, getAmount} from "@/api/stock/dispensing";
   import {BigNumber} from "bignumber.js";
@@ -306,7 +305,7 @@
         return (this.currentPage - 1) * this.search.limit + index + 1;
       },
       getTotal(param) {
-        let {columns, data} = param;
+        let {columns} = param;
         let arr = []
         columns.forEach((column, index) => {
           if (index === 0) {
@@ -443,7 +442,7 @@
         this.currentPage = val;
         this.init();
       },
-      initOptions(This) {
+      initOptions() {
         getDictItemsByCode(DICT_CODE.MEDICAL_TYPE).then((data) => {
           this.type_List = data;
         });

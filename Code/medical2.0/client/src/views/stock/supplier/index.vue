@@ -225,7 +225,7 @@ export default {
       this.supplierTotal = responseData.data.total
       this.supplierList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {
