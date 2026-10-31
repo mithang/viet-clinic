@@ -121,9 +121,8 @@ const setStyleAndValue = (cellArr, worksheet, needFormula) => {
       let letter = createCellPos(columnid)
       let target = worksheet.getCell(letter + (rowid + 1))
       // console.log('1233', letter + (rowid + 1))
-      for (const key in fill) {
+      if (Object.keys(fill).length) {
         target.fill = fill
-        break
       }
       target.font = font
       target.alignment = alignment

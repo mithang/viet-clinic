@@ -35,11 +35,11 @@ const actions = {
     commit('CHANGE_SETTING', data)
   },
 
-  saveSetting({ commit }, personalTheme) {
+  saveSetting(context, personalTheme) {
     return savePersonalTheme(personalTheme)
   },
 
-  resetSetting({ commit }) {
+  resetSetting() {
     const id = getLocalPersonalTheme().id;
     if (id) {
       return deletePersonalTheme({ id })
