@@ -160,7 +160,7 @@
         }
       },
       propertyPanels: {
-        handler(newName, oldName) {
+        handler() {
           this.$emit('input', JSON.stringify(this.propertyPanels))
         },
         deep: true
@@ -217,14 +217,14 @@
           });
         }
       },
-      initSortable(index,tableData) {
+      initSortable(index) {
         // Lấy node cha của dòng trong bảng
         const ele = this.$refs["dragTable"][index].$el.querySelector(
           ".el-table__body-wrapper tbody"
         );
 
         // Tạo instance kéo thả
-        let dragTable = Sortable.create(ele, {
+        Sortable.create(ele, {
           animation: 100, //Hoạt ảnh
           disabled: false, // Kéo thả không khả dụng? false = Kích hoạt (chỉ có tác dụng khi vừa render bảng, sau đó không còn tác dụng)
           handle: ".el-table__row", //Chỉ định mục tiêu kéo thả, chỉ khi nhấn vào mục tiêu này mới kéo được phần tử (ở đây đặt nút thao tác để kéo)
@@ -255,7 +255,7 @@
       getCheckedName(id,arr){
         let name = "";
         if(id && arr){
-          arr.some((item, index) => {
+          arr.some((item) => {
             if(item.id === id){
               name = item.name;
               return true

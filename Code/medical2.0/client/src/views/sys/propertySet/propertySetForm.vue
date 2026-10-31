@@ -39,7 +39,6 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
 import { savePropertySet } from '@/api/sys/propertySet'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -116,7 +115,7 @@ export default {
         this.$refs['propertySetForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'name': '',   // Tên
         'propertiesDef': '',   // Định nghĩa thuộc tính
@@ -124,7 +123,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     openViewPropertySetDialog(propertySet) {
       this.dialogProps.action = 'view'

@@ -156,7 +156,7 @@ export default {
       this.propertySetTotal = responseData.data.total
       this.propertySetList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

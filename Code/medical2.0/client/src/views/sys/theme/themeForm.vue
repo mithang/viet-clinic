@@ -39,7 +39,6 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
 import { saveTheme } from '@/api/sys/theme'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -116,7 +115,7 @@ export default {
         this.$refs['themeForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'name': '',   // Tên
         'theme': '',   // Chủ đề
@@ -125,7 +124,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     openViewThemeDialog(theme) {
       this.dialogProps.action = 'view'

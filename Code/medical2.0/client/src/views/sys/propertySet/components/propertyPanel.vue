@@ -142,7 +142,7 @@ export default {
       }
     },
     propertiesData: {
-      handler(newName, oldName) {
+      handler() {
           this.$emit('input', JSON.stringify(this.propertiesData))
       },
       deep: true

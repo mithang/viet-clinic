@@ -233,7 +233,6 @@ export default {
     },
     initOptions() {
       // Bảng chính
-      let This = this.actionModel
       getDictItemsByCode(DICT_CODE.ACTION_TYPE).then((data) => {
         this.actionType_List = data
       })
@@ -250,7 +249,6 @@ export default {
       })
 
       // Bảng con  Thùng rác
-      This = this.actionRecycleCurrentRow
     },
     openViewActionDialog(action) {
       this.dialogProps.action = 'view'

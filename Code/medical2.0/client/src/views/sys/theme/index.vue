@@ -157,7 +157,7 @@ export default {
       this.themeTotal = responseData.data.total
       this.themeList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {
