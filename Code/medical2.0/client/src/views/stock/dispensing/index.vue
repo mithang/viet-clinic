@@ -313,10 +313,11 @@
             arr[index] = ''
           }
         })
-        arr[8] = new BigNumber(Number(this.allTotal.bidTotalAmount)).toFormat(2) + "VNĐ"
-        // arr[4] = this.allTotal.numberAmount
-        arr[10] = new BigNumber(Number(this.allTotal.priceTotalAmount)).toFormat(2) + "VNĐ"
-        arr[11] = new BigNumber(Number(this.allTotal.profitAmount)).toFormat(2) + "VNĐ"
+        const total = this.allTotal || {}
+        arr[8] = new BigNumber(Number(total.bidTotalAmount)).toFormat(2) + "VNĐ"
+        // arr[4] = total.numberAmount
+        arr[10] = new BigNumber(Number(total.priceTotalAmount)).toFormat(2) + "VNĐ"
+        arr[11] = new BigNumber(Number(total.profitAmount)).toFormat(2) + "VNĐ"
         return arr
       },
       init() {
@@ -336,7 +337,7 @@
           this.dispensingList = res.data.rows;
           this.dispensingTotal = res.data.total;
           getAmount(this.search).then(response => {
-            this.allTotal = response.data
+            this.allTotal = response.data || {}
             this.resetLoad();
           })
         });
