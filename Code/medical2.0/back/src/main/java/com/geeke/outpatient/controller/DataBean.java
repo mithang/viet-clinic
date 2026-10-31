@@ -42,8 +42,8 @@ public class DataBean {
     private static final String MEDICAL_REMARK = "特loạiđề xuấthiển thị: theo卫sinhbộ, quốc gia trong y dượcQuản lýcục卫yphát[2002]24sốTệp规chỉ định: " +
             " là bảochứngBệnh nhândùngthuốcan toàn, Thuốcmộtquaphátra, khôngđượctrảđổi. ";
 
-    private static final String CHARGE_REMARK = "Lời nhắc thân thiện: \nPhiếu này không có chức năng thanh toán bảo hiểm, Vui lòng giữ cẩn thận biên lai nộp phí của bạn, Khám bệnh, hoàn phí giờVui lòngrahiển thịđóbằngmục. " +
-            "nếucó遗失, Sẽ gây rahoàn phíkhông便 và Thông tin泄露. ";
+    private static final String CHARGE_REMARK = "Lời nhắc thân thiện: \nPhiếu này không dùng để thanh toán bảo hiểm. Vui lòng giữ cẩn thận biên lai nộp phí. Khi khám bệnh, hoàn phí, vui lòng xuất trình biên lai này. " +
+            "Nếu mất biên lai, việc hoàn phí sẽ gặp khó khăn và thông tin có thể bị lộ. ";
 
     private static final String REGISTRATION_REMARK = "Lời nhắc thân thiện: \nPhiếu này không có chức năng thanh toán bảo hiểm, Vui lòng giữ cẩn thận biên lai nộp phí của bạn, Khám bệnh, hoàn phí giờVui lòngrahiển thịđóbằngmục. ";
 
@@ -54,11 +54,11 @@ public class DataBean {
      */
     private static final java.util.Map<String, String> PAY_TYPE_DISPLAY = new java.util.HashMap<>();
     static {
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_CASH, "tiền mặtthanh toán");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_ALIPAY, "thanh toánbảothanh toán");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_WECHAT, "WeChatthanh toán");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_BANK_CARD, "ngân hàng dòngthẻthanh toán");
-        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_MEDICAL, "BHYTthanh toán");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_CASH, "Tiền mặt");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_ALIPAY, "Alipay");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_WECHAT, "WeChat");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_BANK_CARD, "Thẻ ngân hàng");
+        PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_MEDICAL, "BHYT");
         PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_BANK_TRANSFER, "Chuyển khoản ngân hàng");
         PAY_TYPE_DISPLAY.put(BizConstants.PAY_TYPE_EWALLET, "Ví điện tử");
     }
@@ -435,7 +435,7 @@ public class DataBean {
         chargeTicketEvt.setTip(CHARGE_REMARK);
         if (null != tollInfo) {
             chargeTicketEvt.setCode("Số phiếu thu phí: " + tollInfo.getId());
-            chargeTicketEvt.setType("Thu phíLớploại: " + tollInfo.getPaymentType().getName());
+            chargeTicketEvt.setType("Loại thu phí: " + tollInfo.getPaymentType().getName());
             chargeTicketEvt.setProject("Hạng mục thu phí: " + recipelInfo.getRecipelType().getName());
             String createBy = tollInfo.getCreateBy();
             if (createBy.contains("(")) {
@@ -443,8 +443,8 @@ public class DataBean {
             }
             chargeTicketEvt.setPeople("Người thu phí: " + createBy);
             chargeTicketEvt.setDate("Ngày khám bệnh: " + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getCreateDate()));
-            chargeTicketEvt.setOffice("khám bệnhKhoa: " + registration.getClinicOffice().getName());
-            chargeTicketEvt.setFee("Thu phíSố tiền: " + recipelInfo.getFee());
+            chargeTicketEvt.setOffice("Khoa khám: " + registration.getClinicOffice().getName());
+            chargeTicketEvt.setFee("Số tiền thu phí: " + recipelInfo.getFee());
             String payTypeName = getPayTypeDisplayName(tollInfo.getPaymentType().getValue());
             chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + ": " + recipelInfo.getFee());
         }

@@ -748,35 +748,24 @@
         return name;
       },
 
+      // Giờ Việt Nam (+07) tính từ mốc UTC, không phụ thuộc múi giờ trình duyệt:
+      // khoảng mặc định trước đây lấy giờ local của trình duyệt nên ở môi trường
+      // UTC (VD container) mốc cuối chậm 7 giờ, khoản thu buổi tối +07 rơi ngoài.
+      // Chỉ đổi tham số mặc định ở tầng hiển thị; value-format và định dạng
+      // tham số API ("YYYY-MM-DD HH:mm:ss") giữ nguyên.
+      saigonDateString(date) {
+        return this.$moment
+          .utc(date.getTime() + 7 * 60 * 60 * 1000)
+          .format("YYYY-MM-DD HH:mm:ss");
+      },
       addCreateDate2() {
-
-        let date = this.$moment(new Date()).format(
-          "YYYY-MM-DD HH:mm:ss"
-        )
-        return date;
+        return this.saigonDateString(new Date());
       },
       addCreateDate() {
-        let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
-        let lastY = lw.getFullYear();
-        let lastM = lw.getMonth() + 1;
-        let lastD = lw.getDate();
-        let housrs = lw.getHours();
-        let minutes = lw.getMinutes()
-        let seconds = lw.getSeconds()
-        let startData =
-          lastY +
-          "-" +
-          (lastM < 10 ? "0" + lastM : lastM) +
-          "-" +
-          (lastD < 10 ? "0" + lastD : lastD) +
-          " " + housrs + ":" + minutes + ":" + seconds //Ngày của 30 ngày trước
-        let returnDate = new Date(startData)
-        let newDate = this.$moment(returnDate).format(
-          "YYYY-MM-DD HH:mm:ss"
-        )
-        return newDate;
-
+        // 30 ngày trước, tính trên mốc giờ +07
+        return this.saigonDateString(
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        );
       },
       resetAll() {
         this.mainCondition = {
