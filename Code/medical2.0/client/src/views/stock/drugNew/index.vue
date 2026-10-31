@@ -443,7 +443,6 @@
   } from "@/api/stock/drug";
   import listViewMixin from '@/mixins/listViewMixin'
   import DrugForm from "./drugForm";
-  import {listDictItemAll} from "@/api/sys/dictItem";
   import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
   import ExportExcelButton from "@/components/ExportExcelButton";
   import ViewColumnsSelect from "@/views/components/ViewColumnsSelect";
@@ -468,7 +467,7 @@
       History,
       DrugListSynchronization
     },
-    data(row) {
+    data() {
       return {
         inventory: null,
         mistake: null,
@@ -597,10 +596,10 @@
       // Đóng thông báo lỗi nhập
       mistakeClose(done) {
         this.$confirm('Xác nhận đóng？')
-          .then(_ => {
+          .then(() => {
             done();
           })
-          .catch(_ => {
+          .catch(() => {
           });
       },
 
@@ -620,7 +619,6 @@
         const extName = file[0].name.substring(file[0].name.lastIndexOf('.')).toLowerCase()
         if (extName === '.xlsx' || extName === '.xls') {
           const formData = new FormData()
-          let id = currentUser.company.id;
           formData.append('file', file[0])
           this.$message.success('Đang nhập dữ liệu, Vui lòng chờ')
           uploadExcel(formData).then((res) => {
@@ -748,7 +746,7 @@
           this.OpenEdit(index, row)
         }, 1000);
       },
-      initOptions(This) {
+      initOptions() {
         getDictItemsByCode(DICT_CODE.MEDICAL_TYPE).then((data) => {
           this.type_List = data;
         });

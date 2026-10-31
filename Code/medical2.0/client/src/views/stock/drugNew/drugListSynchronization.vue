@@ -375,7 +375,7 @@
       this.onSearch()
     },
     // Vô hiệu hoá thuốc đã đồng bộ
-    selectable(row, index) {
+    selectable(row) {
       if (row.syncNum === 1) {
           return false;
       } else {
@@ -500,7 +500,7 @@
           this.outputError(error);
         });
     },
-    getListByInstitution(val) {
+    getListByInstitution() {
       this.setLoad();
       /* Tham số truy vấn và quyền dữ liệu */
       this.search.params = [
@@ -581,7 +581,7 @@
           this.outputError(error);
         });
     },
-    onSubmit(formName) {
+    onSubmit() {
       if (this.drugSource === 1) {
         saveDrugSyncToClinic(this.selectDrugList)
           .then((responseData) => {

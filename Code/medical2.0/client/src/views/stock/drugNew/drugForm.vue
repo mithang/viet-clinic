@@ -840,11 +840,10 @@
   </el-dialog>
 </template>
 <script>
-  import {validatenull} from "@/utils/validate";
   import {listDictItemAll} from "@/api/sys/dictItem";
   import {getDictItemsByCode, DICT_CODE} from "@/utils/dictCache";
   import {listManufactureFactoryAll} from "@/api/basicdata/manufactureFactory";
-  import {saveDrug, getDrugById, inventory} from "@/api/stock/drug";
+  import {saveDrug} from "@/api/stock/drug";
   import BaseUI from "@/views/components/baseUI";
   import OperationIcon from "@/components/OperationIcon";
   import {BigNumber} from "bignumber.js";
@@ -1058,7 +1057,7 @@
           this.$refs["drugForm"].clearValidate();
         });
       },
-      initFormModel(This) {
+      initFormModel() {
         return {
           id:"", // Thuốcid
           goodsName: "", // Tên thuốc
@@ -1130,7 +1129,7 @@
           total: 0
         };
       },
-      async initOptions(This) {
+      async initOptions() {
         getDictItemsByCode(DICT_CODE.MEDICAL_TYPE).then((data) => {
           this.type_List = data;
         });
@@ -1261,13 +1260,13 @@
       },
     },
     watch: {
-      "bizFormModel.isUnpackSell"(newVal, oldVal) {
+      "bizFormModel.isUnpackSell"(newVal) {
         if (newVal === "0") {
           this.bizFormModel.retailPrice = "";
         }
       },
       // Giá bán
-      "bizFormModel.price"(newValue, oldValue) {
+      "bizFormModel.price"(newValue) {
         if (newValue < 0) {
           this.$message({
             type: "error",
@@ -1277,7 +1276,7 @@
         }
       },
       //Giá sau chiết khấu
-      "bizFormModel.retailPrice"(newValue, oldValue) {
+      "bizFormModel.retailPrice"(newValue) {
         if (this.bizFormModel.isUnpackSell === "1") {
           if (newValue < 0) {
             this.$message({
@@ -1306,7 +1305,7 @@
       // },
 
       //Theo dõi loại thuốc
-      "bizFormModel.type.value"(newValue, oldValue) {
+      "bizFormModel.type.value"(newValue) {
         if (newValue === "medicalType_0") {
           this.formRules.standardCode[0].required = true
         } else if (newValue === "medicalType_2") {
