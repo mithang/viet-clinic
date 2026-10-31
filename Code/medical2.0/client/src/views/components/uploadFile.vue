@@ -257,7 +257,6 @@ import { getFiled } from "@/api/sys/sysSeting";
         }
       },
       'action'(newVal,oldVal){
-        this.action=newVal
         // Trước đây việc dọn fileList nằm trong computed authority (side effect);
         // nay chuyển sang watcher này, giữ đúng điều kiện cũ: chỉ dọn khi
         // action là boolean true hoặc chuỗi khác "add".

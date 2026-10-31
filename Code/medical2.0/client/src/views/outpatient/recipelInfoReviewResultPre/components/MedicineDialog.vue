@@ -1,17 +1,17 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" title="Tra cứu kết quả lấy thuốc" width="70%" :close-on-click-modal="false"  @close="closeDialog" >
+  <el-dialog :visible="dialogVisible" @update:visible="$emit('update:dialogVisible', $event)" title="Tra cứu kết quả lấy thuốc" width="70%" :close-on-click-modal="false"  @close="closeDialog" >
     <el-form :model="formData" ref="medicineForm" label-width="120px">
       <el-row>
         <!-- Hiển thị hai mục form cạnh nhau -->
         <el-col :span="8" label-align="left" >
           <el-form-item label="Mã đơn thuốc bảo hiểm y tế">
-            <el-input v-model="formData.hiRxno" readonly style="width: 100%;"></el-input>
+            <el-input :value="formData.hiRxno" readonly style="width: 100%;"></el-input>
           </el-form-item>
         </el-col>
 
         <el-col :span="8" label-align="left">
           <el-form-item label="Thời gian quyết toán bảo hiểm y tế">
-            <el-input v-model="formData.setlTime" readonly style="width: 100%;"></el-input>
+            <el-input :value="formData.setlTime" readonly style="width: 100%;"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
