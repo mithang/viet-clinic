@@ -1086,13 +1086,7 @@ export default {
       getDictItemsByCode(DICT_CODE.STUFF_TYPE).then((data) => {
         this.stuffType = data;
       });
-    }
-  },
-  watch: {
-  },
-  mounted: function() {
-  },
-  methods: {
+    },
     openViewInventoryVerificationDialog(inventoryVerification) {
       this.dialogProps.action = 'add'
       this.dialogProps.title = 'Thêm kiểm kê'
@@ -1141,6 +1135,10 @@ export default {
       this.bizFormModel.id = null
       this.dialogProps.visible = true
     },
+  },
+  watch: {
+  },
+  mounted: function() {
   },
 }
 </script>

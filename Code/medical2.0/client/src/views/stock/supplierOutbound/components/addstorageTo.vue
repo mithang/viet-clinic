@@ -235,7 +235,6 @@
         company_id: currentUser.company.id /*Phòng khámID*/ ,
         examine_id: "1005787933775863930" /*Trạng thái đã quaID*/ ,
         examine_value: "supplierStorageExamineStatus_0" /*Trạng thái đã quaValuegiá trị*/ ,
-        title: "Thêm mới đơn nhập kho",
         goodsNameTemp: "",
         drugPreparation: 0,
         stuffPackNum: 0,
