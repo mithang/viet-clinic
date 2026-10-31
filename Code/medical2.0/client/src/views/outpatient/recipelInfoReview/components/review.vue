@@ -244,7 +244,7 @@ import OperationIcon from '@/components/OperationIcon'
 import DataRangePicker from '@/components/DataRangePicker'
 import { getCurrentUser } from "@/utils/userCache";
 export default {
-  name: "review",
+  name: "RecipelInfoReview",
   extends: MainUI,
   components: {
     ReviewForm,

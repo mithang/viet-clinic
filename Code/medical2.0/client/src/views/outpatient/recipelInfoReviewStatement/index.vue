@@ -152,6 +152,7 @@
   import DataRangePicker from '@/components/DataRangePicker'
   import MainUI from '@/views/components/mainUI'
 export default {
+  name: 'RecipelInfoReviewStatement',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

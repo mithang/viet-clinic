@@ -249,7 +249,7 @@ import DataRangePicker from '@/components/DataRangePicker'
 import ReviewFormPre from "./reviewFormPre.vue";
 import { getCurrentUser } from "@/utils/userCache";
 export default {
-  name: "review",
+  name: "RecipelInfoReviewPre",
   extends: MainUI,
   components: {
     ReviewFormPre,

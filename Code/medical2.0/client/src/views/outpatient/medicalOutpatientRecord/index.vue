@@ -3939,7 +3939,7 @@
       RegistrationForm,
       UploadFile,
     },
-    name: "index",
+    name: "MedicalOutpatientRecord",
     methods: {
       // Xử lý chuyển đổi loại hình y tế
       handleMedicalTypeChange() {
