@@ -472,15 +472,13 @@
 </template>
 
 <script>
-import { getPhotoById,getFiled } from "@/api/sys/sysSeting"
+import {getFiled} from "@/api/sys/sysSeting"
 import { listInspectionCheckPage, getInspectionCheckById, deleteInspectionCheck } from '@/api/cure/inspectionCheck'
 import listViewMixin from '@/mixins/listViewMixin'
 import {getInspectionCheckInfoByInspecId,saveInspectionCheckInfo} from '@/api/cure/inspectionCheckInfo'
-import {getInspectionCheckDetailById} from '@/api/cure/inspectionCheckDetail'
 import InspectionCheckForm from './inspectionCheckForm'
 import ExportExcelButton from '@/components/ExportExcelButton'
 import ViewColumnsSelect from '@/views/components/ViewColumnsSelect'
-import {getCostItemById} from '@/api/treatment/costItem'
 import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
 import BaseUI from "@/views/components/baseUI";
@@ -704,7 +702,7 @@ export default {
           this.dialogVisible=false
           this.resetLoad()
           this.flags=false
-      }).catch((error)=>{
+      }).catch(()=>{
         this.$message.error("Thực hiện thất bại, Vui lòng liên hệ quản trị viên xử lý!")
         this.flags=false
       })
@@ -724,20 +722,20 @@ export default {
             this.dialogVisible=false
             this.loadData()
           }
-      }).catch((error)=>{
+      }).catch(()=>{
         this.$message.error("Thực hiện thất bại, Vui lòng liên hệ quản trị viên xử lý!")
       })
      }
     },
-    handleRemove(file, fileList){
+    handleRemove(){
       this.bizFormModel.uploadFile=""
       this.bizFormModel.fileIdFile=""
     },
-    handleExceed(file, fileList){
+    handleExceed(){
       // this.$message.warning(`Giới hạn chọn hiện tại 3 tệp, Lần này đã chọn ${file.length} tệp, Đã chọn tổng cộng ${file.length + fileList.length} tệp`);
       this.$message.warning(`Hiện chỉ hỗ trợ tải lên một tệp duy nhất`);
     },
-    hanldeError(err, file, fileList){
+    hanldeError(){
     },
     handlePreview(file){
       // Tạo thẻ a
@@ -816,7 +814,7 @@ export default {
           }else{
             this.$message.error("Dữ liệu hệ thống bất thường, Vui lòng thử lại hoặc liên hệ quản trị viên!")
           }
-        }).catch((error)=>{
+        }).catch(()=>{
           this.$message.error("Lấy thông tin kiểm tra thất bại, Vui lòng thử lại")
         })
       }else{
@@ -844,7 +842,7 @@ export default {
           }else{
             this.$message.error("Dữ liệu hệ thống bất thường, Vui lòng thử lại hoặc liên hệ quản trị viên!")
           }
-        }).catch((error)=>{
+        }).catch(()=>{
           this.$message.error("Lấy thông tin kiểm tra thất bại, Vui lòng thử lại")
         })
       }

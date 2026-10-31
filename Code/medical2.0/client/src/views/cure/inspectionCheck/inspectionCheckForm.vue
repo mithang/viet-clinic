@@ -105,7 +105,6 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
 import { listCompanyAll } from '@/api/org/company'
 import { saveInspectionCheck } from '@/api/cure/inspectionCheck'
 import BaseUI from '@/views/components/baseUI'
@@ -194,7 +193,7 @@ export default {
         this.$refs['inspectionCheckForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -215,7 +214,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let company_search = {
         params: []
       }

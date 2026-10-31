@@ -1000,17 +1000,13 @@
 </template>
 
 <script>
-import { listDrugPage, listAllStock } from "@/api/stock/drug";
+import { listAllStock } from "@/api/stock/drug";
 import { saveTollTollInfo } from "@/api/toll/tollInfo";
 import { listRegistrationPages } from "@/api/outpatient/registration";
-import { getPatientById, listPatientAll } from "@/api/outpatient/patient";
-import { getRecipelInfoById } from "@/api/outpatient/recipelInfo";
+import { listPatientAll } from "@/api/outpatient/patient";
 import { saveCureManagement,listCureManagement } from "@/api/cure/cureManagement";
 import {
-  allSaveMedicalRecord,
   allQueryMedicalRecord,
-  getMedicalRecordById,
-  listMedicalRecordPage,
 } from "@/api/outpatient/medicalRecord";
 import {selectdetailid} from '@/api/cure/stmanagement'
 export default {
@@ -1581,7 +1577,7 @@ export default {
       this.returnPatientCurrentPage = pageNum;
       this.returnPayPatientList();
     },
-    isPayChange(val) {
+    isPayChange() {
     },
     //Thu phí riêng
     singleCharge(type){
@@ -1725,7 +1721,6 @@ export default {
     },
     /*Truy vấn bệnh nhân*/
     selectPatientList() {
-      const now = new Date();
       this.patientQueryCondition.limit = this.patientPageSize;
       this.patientQueryCondition.companyId = this.Company.id;
       /*Chờ thu phí*/
@@ -1778,7 +1773,6 @@ export default {
     },
     //Truy vấn danh sách đã thu phí
     getIsPayPatientList() {
-      const now = new Date();
       this.patientQueryCondition.limit = this.patientPageSize;
       this.patientQueryCondition.companyId = this.Company.id;
       this.isOnlyRead = true;
@@ -1813,7 +1807,6 @@ export default {
 
     //Truy vấn danh sách đã hoàn phí
     returnPayPatientList() {
-      const now = new Date();
       this.patientQueryCondition.limit = this.patientPageSize;
       this.patientQueryCondition.companyId = this.Company.id;
       this.patientQueryCondition.offset =
@@ -2080,8 +2073,6 @@ export default {
             let packName = element.pack.name; //Đóng gói (Đơn vị)
             let preparation = element.preparation; //Chế phẩm
             let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
-            let price = element.price; //Giá bán
-            let retailPrice = element.retailPrice; //Giá bán lẻ sau khi tách hộp
             let type = element.type.value; //Loại thuốc: medicalType_1 - Thuốc đông y medicalType_0 - Thuốc tây
 
             let stockText = "";
@@ -2156,7 +2147,7 @@ export default {
       this.RetailTable.splice(index, 1);
     },
 
-    chengeDrugTypeItems(sel) {
+    chengeDrugTypeItems() {
     },
     //Lấy đơn vị theo bán lẻ hay thêm mới/xem
     GetDrugUnit(index, row) {

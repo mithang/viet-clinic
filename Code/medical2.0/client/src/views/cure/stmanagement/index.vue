@@ -302,7 +302,6 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
     },
     formatDuring (mss) {
       if(mss > 0){
-        let hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) // Lấy số giờ
         let minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60)) // Lấy số phút
         //Lấy số phút
         let str1 = minutes < 10 ? ('0' + minutes) : minutes
