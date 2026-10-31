@@ -489,7 +489,7 @@
           .then((response) => {
             this.tokenData = response.data.BusData.data.Token
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
       // Yêu cầu lại, bắt đầu cuộc họp
@@ -518,7 +518,7 @@
 
             }
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -570,7 +570,7 @@
 
             }
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -604,7 +604,7 @@
           .then((response) => {
             this.hisPatient = response.data.BusData.data
           })
-          .catch((error) => {
+          .catch(() => {
           });
         await this.$axios.post('apis/RemoteTreated/TreatedApplyCancel', {
           Data: {
@@ -635,7 +635,7 @@
             this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường, Vui lòng liên hệ quản trị viên rồi gửi lại đề nghị!")
           }
         })
-          .catch((error) => {
+          .catch(() => {
           });
       },
       onCreatePatient() {
@@ -701,7 +701,7 @@
 
         this.getPatientList()
       },
-      initOptions(This) {
+      initOptions() {
       }
     },
     watch: {
