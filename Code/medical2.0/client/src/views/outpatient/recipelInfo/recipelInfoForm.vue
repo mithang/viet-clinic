@@ -149,7 +149,6 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
 import { listMedicalRecordAll } from '@/api/outpatient/medicalRecord'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { saveRecipelInfo } from '@/api/outpatient/recipelInfo'
@@ -228,7 +227,7 @@ export default {
         this.$refs['recipelInfoForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -267,7 +266,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let medicalRecord_search = {
         params: []
       }

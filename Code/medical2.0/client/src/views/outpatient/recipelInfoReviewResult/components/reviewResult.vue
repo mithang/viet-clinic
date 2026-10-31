@@ -212,10 +212,8 @@
 </template>
 
 <script>
-import { validatenull } from '@/utils/validate'
-import { listRecipelInfoReviewPage, getRecipelInfoReviewById,getRecipelInfoReviewByRecipelInfoId,getReviewFormByRecipelInfoId } from '@/api/outpatient/recipelInfoReview'
+import { listRecipelInfoReviewPage, getRecipelInfoReviewById,getReviewFormByRecipelInfoId } from '@/api/outpatient/recipelInfoReview'
 import { listResourcePermission } from '@/api/admin/common/permission'
-import { listDictItemAll } from '@/api/sys/dictItem'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { getCompanyById } from '@/api/org/company'
 import { listUserAll } from "@/api/admin/user";
@@ -489,7 +487,7 @@ export default {
         this.outputError(error)
       })
     },
-    async initOptions(This) {
+    async initOptions() {
       getDictItemsByCode(DICT_CODE.RECIPEL_TYPE).then((data) => {
         this.recipelType_List = data
         this.recipelType_List.unshift({name: "Tất cả", value: ""})

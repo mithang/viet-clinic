@@ -149,7 +149,7 @@ export default {
       this.recipelInfoTotal = responseData.data.total
       this.recipelInfoList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

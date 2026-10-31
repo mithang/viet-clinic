@@ -491,12 +491,12 @@
     updateData(review){
       this.bizFormModel = review
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       if (this.ChineseUseOption.length === 0) {
         this.getOption("1014474470772899981")
       }
@@ -550,7 +550,7 @@
       this.dialogProps.visible = true
       this.dialogProps.dataLoaded = true
     },
-    openAddReviewDialog(review) {
+    openAddReviewDialog() {
       this.dialogProps.action = 'add'
       this.dialogProps.title = 'Thêm thẩm tra đơn thuốc'
       this.bizFormModel = this.initFormModel()
