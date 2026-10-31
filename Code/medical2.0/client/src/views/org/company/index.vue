@@ -117,6 +117,7 @@ import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 import { getCurrentCompanyId } from "@/utils/userCache";
 export default {
+  name: 'OrgCompanyIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

@@ -119,6 +119,7 @@ import MainUI from '@/views/components/mainUI'
 import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 export default {
+  name: 'OrgLesseeIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {
