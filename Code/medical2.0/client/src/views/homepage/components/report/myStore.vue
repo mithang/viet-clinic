@@ -134,7 +134,7 @@ import '@/api/report/panel/share';
         })
       },
       remove(row) {
-        deleteEnshrine(row.panelGroupId).then(res => {
+        deleteEnshrine(row.panelGroupId).then(() => {
           this.collectList.splice(row.rowIndex, 1)
           if (row.rowIndex === this.currentRowIndex) {
             this.clearPanel()
