@@ -86,7 +86,7 @@
           if (Array.isArray(responseData.data) && responseData.data.length >= 1){
             responseData.data.forEach(data=>{
               this.saveMap.set(data.configName, data);
-              if (this.sysParamConfigForm.hasOwnProperty(data.configName)) {
+              if (Object.prototype.hasOwnProperty.call(this.sysParamConfigForm, data.configName)) {
                 this.sysParamConfigForm[data.configName] = data.configValue;
               }
             })
@@ -105,7 +105,7 @@
      */
     initSaveDatas(){
       for (let key in this.sysParamConfigForm) {
-        if (this.sysParamConfigForm.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(this.sysParamConfigForm, key)) {
           let data = {
             id: null,
             configName: key,

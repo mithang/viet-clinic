@@ -187,7 +187,7 @@ export default {
     },
     getDictItems(typeId) {
       let key = 'dict_' + typeId   // Key lưu dữ liệu bất đồng bộ
-      if(this.asyncOptions.hasOwnProperty(key) === false) {
+      if(Object.prototype.hasOwnProperty.call(this.asyncOptions, key) === false) {
         this.asyncOptions[key] = []       // Khởi tạo dữ liệu bất đồng bộ
         listDictItemAll({
           params: [{'columnName':'dict_type_id', 'queryType': '=', 'value': typeId}]

@@ -24,7 +24,7 @@ export function handleValidateForm(_this, object) {
   let arr = []
   let numArr = []
   for (let i in object) {
-    if (object.hasOwnProperty(i)) {
+    if (Object.prototype.hasOwnProperty.call(object, i)) {
       let dom = _this.$refs[i]
       if (!dom) {
         let num = +(i.split('_')[1])
