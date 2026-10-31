@@ -668,9 +668,7 @@
 import { validatenull } from "@/utils/validate";
 import MainUI from "@/views/components/mainUI";
 import {listSupplierAll} from "@/api/stock/supplier"
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
-import { getList,getAmount } from "@/api/stock/dispensing";
 import { BigNumber } from "bignumber.js";
 import { getDrug,getDrugSalesStat,getBatchNumberDrug,getStuff,getStuffSalesStat,getBatchNumberStuff,getDrugSalesStatByNumber,getStuffSalesStatNumber,exportTable} from "@/api/stock/currentInventory";
 import { downloadBlob } from '@/utils/downloadBlob'
@@ -896,24 +894,6 @@ export default {
                 }
             )
         }
-        let salesSearch={
-              offset: 0,
-              limit: 20,
-              order: "",
-              columnName: "",
-              params:[
-                  {
-                    columnName: "company_id",
-                    queryType: "=",
-                    value: currentUser.company.id,
-                  },
-                  {
-                    columnName: "is_out_sell",
-                    queryType: "=",
-                    value: '1',
-                  },
-              ]
-          }
             this.setLoad();
             getBatchNumberStuff(this.stuffSearch).then((res) => {
                 if(res.code===100){
@@ -1108,7 +1088,7 @@ export default {
 
          return price;
       },
-    handleClick(tab, event){
+    handleClick(tab){
         this.activeName = tab.name
     },
     addCreateDate(){
@@ -1135,7 +1115,7 @@ export default {
        return (this.currentPage-1)*this.search.limit+index +1;
     },
     getTotal(param){
-      let { columns, data } = param;
+      let { columns } = param;
       let arr = []
       columns.forEach((column, index) => {
           if (index === 0) {
@@ -1160,19 +1140,6 @@ export default {
       return arr
     },
     init() {
-         let salesSearch={
-              offset: 0,
-              limit: 20,
-              order: "",
-              columnName: "",
-              params:[
-                  {
-                    columnName: "company_id",
-                    queryType: "=",
-                    value: currentUser.company.id,
-                  },
-              ]
-          }
       this.setLoad();
       getDrug(this.search).then((res) => {
           if(res.code===100){
@@ -1280,19 +1247,6 @@ export default {
                 }
             )
         }
-          let salesSearch={
-              offset: 0,
-              limit: 20,
-              order: "",
-              columnName: "",
-              params:[
-                  {
-                    columnName: "company_id",
-                    queryType: "=",
-                    value: currentUser.company.id,
-                  },
-              ]
-          }
 
         this.setLoad();
      getBatchNumberDrug(this.search).then((res) => {
@@ -1485,7 +1439,7 @@ export default {
          }
       }
     },
-    initOptions(This) {
+    initOptions() {
       this.tabPosition = '1'
       getDictItemsByCode(DICT_CODE.MEDICAL_TYPE).then((data) => {
         this.type_List = data;
@@ -1543,7 +1497,7 @@ export default {
   },
   watch: {
      tabPosition:{
-          handler(newVal, oldVal) {
+          handler() {
             //  this.dispensingList=[]
             //  this.stuffList=[]
             if(this.activeName==='0'){
@@ -1578,7 +1532,7 @@ export default {
           deep: true
       },
       activeName:{
-          handler(newVal,oldVal){
+          handler(newVal){
               this.queryModel = {
                 name:'',
                 type:'',
