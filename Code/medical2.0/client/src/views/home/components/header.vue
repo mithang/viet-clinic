@@ -427,7 +427,6 @@ export default {
     },
     defaultActive() {
       const route = this.$route;
-      let routers = [];
       if (this.routers.length <= 0) {
         return "";
       }

@@ -284,7 +284,7 @@
                   message: 'Lưu thành công'
                 })
               }
-            }).catch(error => {
+            }).catch(() => {
               this.isClick = true
               this.$message({
                 type: 'error',
@@ -346,8 +346,8 @@
       onSort() {
         const userId = this.getUserId()
         this.staticList = [...this.collectList, ...this.collectMoreList]
-        updateCollect(userId, this.staticList).then(responseData => {
-        }).catch(error => {})
+        updateCollect(userId, this.staticList).then(() => {
+        }).catch(() => {})
       },
 
       // Bắt đầu kéo thả
@@ -377,7 +377,7 @@
                 message: 'Hủy lưu'
               })
             }
-          }).catch(error => {
+          }).catch(() => {
             this.isDeleteClick = true
           })
         }
