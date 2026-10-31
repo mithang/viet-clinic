@@ -345,6 +345,7 @@
 
 <script>
 export default {
+  name: 'ChargeCombineReportIndex',
   data() {
     return {
       tabPosition: "main",

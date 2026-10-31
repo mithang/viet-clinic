@@ -445,6 +445,7 @@ const PAYMENT_TYPE_NAMES = {
 };
 
 export default {
+  name: 'ChargeIndex',
   data() {
     let cardIdNo = (rule, value, callback) => {
       if (!value) {

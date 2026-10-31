@@ -102,6 +102,7 @@
 
 <script>
 export default {
+  name: 'ChargeAccountReportIndex',
   data() {
     return {
       condition: {
