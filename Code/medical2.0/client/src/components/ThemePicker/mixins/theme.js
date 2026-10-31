@@ -1,5 +1,4 @@
 // const version = ELEMENT.version; // element-ui số phiên bản
-const version = '2.15.6'; // element-ui số phiên bản
 const ORIGINAL_THEME = '#409EFF' // Hiện tại giá trị màu mặc định của element-ui
 
 export default function () {

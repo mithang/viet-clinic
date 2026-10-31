@@ -165,7 +165,7 @@ export default {
      * Xử lý phản hồi danh sách — Thành phần con cần ghi đè
      * @param {Object} responseData Dữ liệu phản hồi
      */
-    handleListResponse(responseData) {
+    handleListResponse() {
       // Thành phần con thực hiện: thiết lập dữ liệu danh sách và tổng số
       // Ví dụ: this.supplierTotal = responseData.data.total
       //       this.supplierList = responseData.data.rows

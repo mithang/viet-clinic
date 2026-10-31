@@ -621,9 +621,8 @@ export const calendar = {
         m = parseInt(m)
         d = parseInt(d)
         isLeapMonth = !!isLeapMonth;
-        const leapOffset = 0;
         const leapMonth = this.leapMonth(y);
-        const leapDay = this.leapDays(y);
+        this.leapDays(y);
         if (isLeapMonth && (leapMonth !== m)) {
             return -1;
         }//yêu cầu tính dương lịch của tháng nhuận nhưng tháng nhuận tìm được của năm đó lại khác tháng truyền vào

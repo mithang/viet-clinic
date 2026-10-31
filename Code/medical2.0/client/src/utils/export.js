@@ -310,7 +310,7 @@ const borderConvert = (borderType, style = 1, color = '#000') => {
   return border
 }
 
-function addborderToCell(borders, row_index, col_index) {
+function addborderToCell(borders) {
   let border = {}
   const luckyExcel = {
     type: {

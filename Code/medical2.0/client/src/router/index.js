@@ -1,5 +1,5 @@
 const Vue = window.Vue
-import Router from 'vue-router'
+import 'vue-router';
 import LoginView from '@/views/login/index'
 import { getLocalToken, getLocalRouters } from '@/utils/auth'
 import { routerTree, handleFamily } from '@/utils/routerTree'
@@ -84,7 +84,7 @@ router.beforeEach((to, from, next) => {
 
 });
 
-router.afterEach((to, from) => {
+router.afterEach((to) => {
   // Thiết lập breadcrumb
   let breadCrumbItems = []
   /*  let homePageCrumb = {

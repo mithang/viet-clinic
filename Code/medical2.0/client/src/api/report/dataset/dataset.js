@@ -120,7 +120,7 @@ export function batchEdit(data) {
   })
 }
 
-export function post(url, data, showLoading = true, timeout = 60000) {
+export function post(url, data, showLoading = true) {
   return request({
     url: url,
     method: 'post',
@@ -163,7 +163,7 @@ export function isKettleRunning(showLoading = true) {
   })
 }
 
-export function taskList(spage, size, data) {
+export function taskList() {
   return request({
     url: '/dataset/group/isKettleRunning',
     method: 'post',

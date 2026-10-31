@@ -195,7 +195,7 @@ export default {
      * @param {Object} [parent] - parent entity (tree structures)
      * @returns {Object}
      */
-    initFormModel(parent) {
+    initFormModel() {
       return {}
     },
 
@@ -203,7 +203,7 @@ export default {
      * Load dropdown / cascader options after dialog opens.
      * @param {Object} model - the current bizFormModel
      */
-    initOptions(model) {
+    initOptions() {
       // subclass overrides
     },
 

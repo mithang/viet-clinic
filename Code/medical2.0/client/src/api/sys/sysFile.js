@@ -1,4 +1,4 @@
-import request, { serviceLong } from '@/utils/request'
+import { serviceLong } from '@/utils/request';
 import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/sys/sysFile')

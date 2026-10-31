@@ -106,13 +106,13 @@
       }
     },
     methods: {
-      updateValue(value) {
+      updateValue() {
         this.$emit('input', parse(this.formatValue, this.options))
       },
-      handleBlur(e) {
+      handleBlur() {
         this.$emit('blur', parse(this.formatValue, this.options), this.formatOldValue)
       },
-      handleChange(value) {
+      handleChange() {
         this.$emit('change', parse(this.formatValue, this.options), this.formatOldValue)
       },
       handleFocus(e) {

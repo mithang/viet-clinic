@@ -14,7 +14,7 @@ export const bulkUpdateManufactureFactory = baseApi.bulkUpdate
 export const bulkDeleteManufactureFactory = baseApi.bulkDelete
 
 // Giao diện tùy chỉnh
-export const ureportTest = (id) =>
+export const ureportTest = () =>
     request({
         url: '/basicdata/manufactureFactory/bulkDelete',
         method: 'get'

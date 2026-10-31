@@ -1,6 +1,6 @@
 import SearchSelect from './SearchSelect'
 
-const index = (Vue, opts = {}) => {
+const index = (Vue) => {
   Vue.component('SearchSelect', SearchSelect)
 }
 

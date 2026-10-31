@@ -1,6 +1,6 @@
 import NumberInput from './NumberInput'
 
-const index = (Vue, opts = {}) => {
+const index = (Vue) => {
   Vue.component('NumberInput', NumberInput)
 }
 

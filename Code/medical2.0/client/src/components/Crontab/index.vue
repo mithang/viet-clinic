@@ -353,7 +353,7 @@ export default {
   },
   watch: {
     expression: "resolveExp",
-    hideComponent(value) {
+    hideComponent() {
       // Ẩn một số thành phần
     },
   },

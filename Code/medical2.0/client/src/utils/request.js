@@ -5,7 +5,7 @@
  * - serviceLong: Thời gian chờ 5 phút, dùng cho thao tác hàng loạt, xuất dữ liệu, v.v.
  */
 import axios from 'axios'
-import { getLocalToken, removeLocalToken, clearLocalData } from '@/utils/auth'
+import { getLocalToken, clearLocalData } from '@/utils/auth';
 import { handleSessionExpired } from '@/utils/sessionExpired'
 
 // Tạo axios instance - thời gian chờ mặc định 30 giây
