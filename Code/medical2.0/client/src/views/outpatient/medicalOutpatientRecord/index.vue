@@ -3884,17 +3884,8 @@
 
 <script>
   import {
-    listDictItemAll
-  } from "@/api/sys/dictItem";
-  import {
-    listAllStock
-  } from "@/api/stock/drug";
-  import {
     listCostItemAll
   } from "@/api/treatment/costItem";
-  import {
-    listStuffAll
-  } from "@/api/stock/stuff";
   import UploadFile from "../../components/uploadFile.vue";
   import {
     getblmblist,
@@ -3902,14 +3893,11 @@
   } from "@/api/outpatient/blmb";
   import {
     listRegistrationPage,
-    getRegistrationById,
-    updateStatus,
   } from "@/api/outpatient/registration";
   import {
     allSaveMedicalRecord,
     allQueryMedicalRecord,
     getLatestAllergyHistory,
-    ureport,
     editSave,
     getHistoryRecipel,
     getrecordpatlist,
@@ -3920,13 +3908,10 @@
     listAll
   } from "@/api/stock/medicinalStockControl";
   import {
-    listRecipelInfoAll,
     invalidStatus,
   } from "@/api/outpatient/recipelInfo";
   import {
     listRecipetemplatePage,
-    getRecipetemplateById,
-    deleteRecipetemplate,
   } from "@/api/outpatient/recipetemplate";
   import {
     getByRecipelInfoId
@@ -3935,10 +3920,8 @@
     getPatientById
   } from "@/api/outpatient/patient";
   import {
-    saveRecipetemplate,
     allSave
   } from "@/api/outpatient/recipetemplate";
-  import NP from "number-precision";
   import {
     BigNumber
   } from "bignumber.js";
@@ -3981,14 +3964,14 @@
           delete this.BasicInfoFormRules.chinaSyndrome;
         }
       },
-      getFileList(fileList) {
+      getFileList() {
       },
       deleteFile(fileId) {
         this.deleteFileIdList.push(fileId);
       },
-      beforeRemove(file, fileList) {
+      beforeRemove() {
       },
-      onChronicDiseaseChange(newVal, oldVal) {
+      onChronicDiseaseChange() {
         this.MedicalCalculate();
       },
       //Xem xét nghiệm/kiểm tra
@@ -4194,7 +4177,7 @@
             }
             this.resetLoad();
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
       //Lấy đơn thuốc truyền dịch
@@ -4230,7 +4213,6 @@
           infusion.infuseUse.push({});
         }
         //this.excharge=null
-        let arr = [];
         for (let i = 0; i < element.length; i++) {
           if (element[i].isExtra !== 1) {
             infusion.infusionProject[element[i].infuseGroup - 1].push(element[i]);
@@ -4329,8 +4311,6 @@
               }, 0);
             })
             .catch(() => {
-              let flag = true;
-              let arr = [];
               safeDetails.forEach((item) => {
                 this.medicalEditTabs[
                   this.singleRecipel
@@ -4418,7 +4398,6 @@
             infusion.infuseUse.push({});
           }
           //this.excharge=null
-          let arr = [];
           for (let i = 0; i < row.recipeTemplateDetail.length; i++) {
             if (row.recipeTemplateDetail[i].isExtra !== 1) {
               infusion.infusionProject[
@@ -4504,8 +4483,6 @@
               }, 0);
             })
             .catch(() => {
-              let flag = true;
-              let arr = [];
               row.recipelDetail.forEach((item) => {
                 this.medicalEditTabs[
                   this.singleRecipel
@@ -4591,7 +4568,6 @@
             infusion.infuseUse.push({});
           }
           //this.excharge=null
-          let arr = [];
           for (let i = 0; i < row.recipelDetail.length; i++) {
             if (row.recipelDetail[i].isExtra !== 1) {
               infusion.infusionProject[row.recipelDetail[i].infuseGroup - 1].push(
@@ -4812,7 +4788,7 @@
             }
             this.resetLoad();
           })
-          .catch((error) => {
+          .catch(() => {
             //this.$message.error("Dữ liệu hệ thống bất thường, vui lòng xác nhận dữ liệu có sai sót hay không hoặc liên hệ quản trị viên để xử lý!")
           });
       },
@@ -5220,7 +5196,6 @@
                 this.AlreadyPatientDescriptions = [];
 
                 allQueryMedicalRecord(this.registration.id).then((responseData) => {
-                    let arr = responseData.data;
                     if (responseData.code === 100) {
                       let recipelInfoEvtList =
                         responseData.data.recipelInfoEvtList;
@@ -5273,7 +5248,7 @@
       },
       pushMedicalFiles(formData) {
         let fileList = this.$refs.medicalFile.getFileList()
-        fileList.forEach((item, index) => {
+        fileList.forEach((item) => {
           formData.append("medicalFiles", item.raw)
         })
         return formData
@@ -5301,10 +5276,6 @@
           (this.medicalClickTabsValue.content.recipelInfo.id &&
             this.medicalClickTabsValue)
         ) {
-          let now = new Date();
-          let newDate = new Date(this.activeSelAlreadyPatientItem.createDate);
-          now = Date.parse(now);
-          newDate = Date.parse(newDate);
           if (this.timeOut) {
             this.$message.error("Dữ liệu quá một ngày không thể chỉnh sửa");
             return;
@@ -5377,13 +5348,13 @@
           };
         });
       },
-      handleFileRemove(file, fileList) {
+      handleFileRemove() {
       },
-      handleFileProgress(event, file, fileList) {
+      handleFileProgress() {
       },
-      handleFileBeforeUpload(file) {
+      handleFileBeforeUpload() {
       },
-      handlePatientClick(tab, event) {
+      handlePatientClick() {
         this.blmbVisit = false;
         if (this.TodayActiveName === "prepare") {
           this.isReadOnly = true;
@@ -5619,7 +5590,6 @@
                 })
                 .catch();
               allQueryMedicalRecord(this.registration.id).then((responseData) => {
-                let arr = responseData.data;
                 if (responseData.code === 100) {
                   let recipelInfoEvtList = responseData.data.recipelInfoEvtList;
                   recipelInfoEvtList.forEach((element) => {
@@ -5713,7 +5683,6 @@
                   .catch();
                 allQueryMedicalRecord(this.registration.id).then(
                   (responseData) => {
-                    let arr = responseData.data;
                     if (responseData.code === 100) {
                       let recipelInfoEvtList =
                         responseData.data.recipelInfoEvtList;
@@ -6235,7 +6204,6 @@
                 infusion.infuseUse.push({});
               }
               //this.excharge=null
-              let arr = [];
               for (let i = 0; i < element.recipelDetailEvtList.length; i++) {
                 if (element.recipelDetailEvtList[i].isExtra !== 1) {
                   infusion.infusionProject[
@@ -6710,18 +6678,13 @@
 
       //Nhấn dòng bảng truyền dịch để chọn và thêm vào bảng đơn thuốc Tây y đã chọn
       RowClickInfusionTable(row, column, event, index) {
-        let content = this.medicalClickTabsValue.content;
         let recipelDetailEvtList =
           this.medicalClickTabsValue.infusion.infusionProject[index];
         let count = 0;
-        let hasFlag = false;
 
         recipelDetailEvtList.forEach((element) => {
           if (element.isExtra === 0) {
             count++;
-            if (row.id === element.drugStuffId.drugStuffId) {
-              hasFlag = true;
-            }
           }
         });
         // if (hasFlag) {
@@ -8508,7 +8471,6 @@
           //   }
           // }).catch()
           allQueryMedicalRecord(row.regid).then((responseData) => {
-            let arr = responseData.data;
             if (responseData.code === 100) {
               let recipelInfoEvtList = responseData.data.recipelInfoEvtList;
               recipelInfoEvtList.forEach((element) => {
@@ -9418,7 +9380,7 @@
 
     },
     watch: {
-      checkInventory(row) {
+      checkInventory() {
       },
       // Khi mở ca khám của bệnh nhân khác thì tải lại tiền sử dị ứng.
       'BasicInfoModel.id'(newId) {
