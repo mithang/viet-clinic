@@ -565,7 +565,6 @@ export default {
       ],
       uploadFiles:'',
       fileIds:[],
-      flags:false,  //Ngăn gửi trùng lặp
     }
   },
   methods: {

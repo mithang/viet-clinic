@@ -751,7 +751,6 @@ export default {
         age: "",
         month: "",
         phone: "",
-        phone: "",
         card: "",
         westernDiagnose: "Không có",
         chinaDiagnose: "Không có",

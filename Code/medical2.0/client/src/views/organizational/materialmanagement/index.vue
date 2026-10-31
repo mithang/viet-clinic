@@ -474,7 +474,6 @@ if (responseData.code === 100){
           ph:item.ph,
           yxq:item.yxq,
           fl:item.fl,
-           qcsl:item.qcsl,
           //qcsl:Math.floor(item.qcsl/item.zj) >= 0 ? Math.floor(item.qcsl/item.zj)+(item.dw)+((item.sl%item.bzsl > 0) ? (item.sl%item.bzsl) + item.zxdw:""):item.sl+item.zxdw,
           qcsl:Math.floor(item.qcsl/item.zj) >= 0 ? Math.floor(item.qcsl/item.zj)+(item.dw)+((item.qcsl%item.zj > 0) ? (item.qcsl%item.zj) + item.zxdw:""):item.sl+item.zxdw,
           qccb:item.qccb,

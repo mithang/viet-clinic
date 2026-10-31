@@ -226,7 +226,6 @@ import { listMyTaskPage, updateMyTask } from '@/api/myTask/myTask'
         uploadFile:[],  //Tệp
         inspectionCheckInfo:{}
       },
-      flags:true,
       flagsfee:true,
       fileIds:[],
       flags:false,  //Ngăn gửi trùng lặp

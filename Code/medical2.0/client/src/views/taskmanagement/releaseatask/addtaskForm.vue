@@ -186,7 +186,6 @@ import { getjglist} from "@/api/toll/tollInfo";
         inspectionCheckInfo:{}
       },     //Điền đóng gói báo cáo
       flags:false,
-      flags:false,  //Ngăn gửi trùng lặp
       gettaskrcvo: {
           limit: 20,
         offset: 0,

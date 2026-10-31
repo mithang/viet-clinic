@@ -308,7 +308,6 @@ export default {
       invalid:[],//Chi tiết hủy bỏ
       condition: {
         pinyinCode: '',
-        status: '',
         supplier: {
           id: null,
         },
