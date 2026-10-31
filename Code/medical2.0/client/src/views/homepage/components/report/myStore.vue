@@ -42,7 +42,7 @@ import '@/api/report/panel/share';
 		name: "MyStore",
     props: ['id', 'panelSetIcon'],
     data() {
-		  return {
+      return {
         collectList: [],
         currentRowIndex: null,
         search: {

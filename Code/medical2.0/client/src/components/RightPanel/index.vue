@@ -39,7 +39,7 @@
       }
     },
     data() {
-		  return {
+      return {
         elIsMove: false,
         layoutType: '',
         sysType: '',
@@ -80,7 +80,7 @@
 
     },
     computed: {
-		  ...Vuex.mapState({
+      ...Vuex.mapState({
         layout: (state) => state.settings.type,
         system: (state) => state.sys.type,
         theme: (state) => state.settings.theme,

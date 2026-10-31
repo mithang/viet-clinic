@@ -85,7 +85,7 @@
                 </template>
               </el-table-column>
             </el-table>
-    	  </div>
+        </div>
         </el-col>
       </el-row>
       <!-- Thanh bảng  Kết thúc -->
@@ -163,20 +163,20 @@ export default {
       }else{
         // Tham số truy vấn: Tên đơn vị thuê
         this.search.params.push({
-      	  columnName: 'name',
-      	  queryType: 'like',
+          columnName: 'name',
+          queryType: 'like',
           value: this.queryModel.userName
         })
         // Tham số truy vấn: Số điện thoại
         this.search.params.push({
-      	  columnName: 'phone_number',
-      	  queryType: 'like',
+          columnName: 'phone_number',
+          queryType: 'like',
           value: this.queryModel.phoneNumber
         })
         // Tham số truy vấn: Trạng thái
         this.search.params.push({
-      	  columnName: 'status',
-      	  queryType: '=',
+          columnName: 'status',
+          queryType: '=',
           value: this.queryModel.status
         })
       }

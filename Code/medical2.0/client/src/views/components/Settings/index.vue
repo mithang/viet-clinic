@@ -186,7 +186,7 @@
       }
     },
     methods: {
-		  ...Vuex.mapActions({
+      ...Vuex.mapActions({
         changeSetting: 'settings/changeSetting',
         saveSetting: 'settings/saveSetting',
         resetSetting: 'settings/resetSetting',
@@ -201,7 +201,7 @@
         return id ? true : false
       },
       getThemeList() {
-		    this.drawerLoading = true;
+        this.drawerLoading = true;
         listThemeAll(this.search).then(responseData => {
           if(responseData.code === 100) {
             this.drawerLoading = false;

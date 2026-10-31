@@ -37,7 +37,7 @@
 	export default {
 		name: "MyReport",
     data() {
-		  return {
+      return {
         collectList: [],
         reportList: [],
         currentRowIndex: null,

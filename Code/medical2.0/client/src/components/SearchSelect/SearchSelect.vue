@@ -63,7 +63,7 @@
       }
     },
     data() {
-		  return {
+      return {
         currentValue: this.value,
         tempStash: [],
         searchOptions: [],
@@ -108,7 +108,7 @@
       }
     },
     methods: {
-		  async init() {
+      async init() {
         this.tempStash = this.options
         this.searchFilter(this.value)
       },
@@ -129,9 +129,9 @@
         }
       },
       loadMore(size) {
-		    if (size < 8) this.OptSize = 10 // Vượt quá 7 mục thì mới có thể cuộn
-		    return () => {
-		      this.OptSize += 5
+        if (size < 8) this.OptSize = 10 // Vượt quá 7 mục thì mới có thể cuộn
+        return () => {
+          this.OptSize += 5
         }
       },
       handleChange(value) {

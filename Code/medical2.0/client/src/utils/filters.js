@@ -58,7 +58,7 @@ export default {
   },
   'thousandsFilter'(value, decimal) {
     if (typeof(value) === 'number') {
-  	   if (typeof(decimal) !== 'number') {
+       if (typeof(decimal) !== 'number') {
         decimal = 2
       }
       const parts = value.toFixed(decimal).split('.')

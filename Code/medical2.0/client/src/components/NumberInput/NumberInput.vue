@@ -77,7 +77,7 @@
       currency: CurrencyDirective
     },
     data() {
-		  return {
+      return {
         formatValue: this.value,
         formatOldValue: null
       }

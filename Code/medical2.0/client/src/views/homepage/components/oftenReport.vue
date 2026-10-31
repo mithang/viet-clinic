@@ -28,7 +28,7 @@
       myStore
     },
     data() {
-		  return {
+      return {
         isCardLoading: false,
         panelId: this.id,
         isPanelSetIcon: this.panelSetIcon,

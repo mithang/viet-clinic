@@ -102,7 +102,7 @@
 		name: "BookMark",
     components: { draggable },
     data() {
-		  return {
+      return {
         currentKey: '1',
         moreKey: '2',
         currentSelected: '/',
@@ -186,7 +186,7 @@
         const specialStr = new RegExp(/:/g)
         return specialStr.test(url)
       },
-		  getUserId() {
+      getUserId() {
         return getLocalCurrentUser().id
       },
       getRouterId() {

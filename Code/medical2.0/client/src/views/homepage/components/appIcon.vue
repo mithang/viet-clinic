@@ -15,7 +15,7 @@
 		name: "AppIcon",
     props: ['icon'],
     data() {
-		  return {
+      return {
 
       }
     },

@@ -276,7 +276,7 @@ export default {
       this.columnViews.splice(0, this.columnViews.length)
       for (let i = 0; i <= columns.length - 1; i++) {
         if(columns[i].prop === 'operate_column') {   // Cột thao tác
-	        this.oprColumnWidth = columns[i].width
+          this.oprColumnWidth = columns[i].width
         } else {
           this.columnViews.push(columns[i])
         }

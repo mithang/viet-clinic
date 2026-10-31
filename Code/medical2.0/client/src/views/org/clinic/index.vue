@@ -92,7 +92,7 @@
                 </template>
               </el-table-column>
             </el-table>
-    	  </div>	          
+        </div>	          
         </el-col>
       </el-row>
       <!-- Thanh bảng  Kết thúc -->

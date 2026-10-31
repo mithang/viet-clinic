@@ -13,7 +13,7 @@
 		name: "ThemePicker",
     mixins: [theme()],
     data() {
-		  return {
+      return {
         predefine: ['#018cb7','#409EFF', '#1890ff', '#2f4050','#212121','#11a983', '#13c2c2', '#6959CD'],
       }
     },

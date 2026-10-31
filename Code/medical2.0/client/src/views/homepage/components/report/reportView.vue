@@ -20,7 +20,7 @@
       Preview
     },
     data() {
-		  return {
+      return {
         dialogProps: {
           visible: false,
           title: ''

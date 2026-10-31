@@ -166,7 +166,7 @@
                 </template>
               </el-table-column>
             </el-table>
-    	  </div>
+        </div>
         </el-col>
       </el-row>
       <!-- Thanh bảng  Kết thúc -->
@@ -530,8 +530,8 @@ export default {
       /* Tham số truy vấn và quyền dữ liệu */
       this.search.params = []
        this.search.params.push({
-      	  columnName: 'company_id',
-      	  queryType: '=',
+          columnName: 'company_id',
+          queryType: '=',
           value: currentUser.company.id
         })
       if(val==="1") {
@@ -539,14 +539,14 @@ export default {
       }else{
         // Tham số truy vấn: Vô hiệu hóa (0: Chưa bị vô hiệu hóa; 1: Vô hiệu hóa)
         this.search.params.push({
-      	  columnName: 'executeschedule',
-      	  queryType: '=',
+          columnName: 'executeschedule',
+          queryType: '=',
           value: this.queryModel.isLocked
         })
         // Tham số truy vấn: Tên khoa/phòng
         this.search.params.push({
-      	  columnName: 'tm.taskname',
-      	  queryType: 'like',
+          columnName: 'tm.taskname',
+          queryType: 'like',
           value: this.queryModel.name
         })
       }
@@ -602,8 +602,8 @@ export default {
         this.search.params = []
         // Quyền dữ liệu: Khoaclinic_office
          this.search.params.push({
-      	  columnName: 'company_id',
-      	  queryType: '=',
+          columnName: 'company_id',
+          queryType: '=',
           value: currentUser.company.id
         },
 

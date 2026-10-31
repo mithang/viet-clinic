@@ -82,7 +82,7 @@
                 </template>
               </el-table-column>
             </el-table>
-    	  </div>	          
+        </div>	          
         </el-col>
       </el-row>
       <!-- Thanh bảng  Kết thúc -->
@@ -142,7 +142,7 @@ export default {
       permissionPrefix: 'resource',
       queryTypes: {
         'name': 'like',
-    	'router_id': '=',
+      'router_id': '=',
       },
       queryModel:  {
         'name': '',   // Tên

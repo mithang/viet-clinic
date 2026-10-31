@@ -581,7 +581,7 @@ export default {
         this.parentTableFk_List = This.genTableColumnList
         this.orderColumns_List = this.genOderColumns(This.genTableColumnList)
         this.constraintColumn_Constraint_List = This.genTableColumnList
-	      this.interaction_GenTableColumn_List = This.genTableColumnList
+        this.interaction_GenTableColumn_List = This.genTableColumnList
       }
 
 

@@ -56,7 +56,7 @@
       }
     },
     data() {
-		  return {
+      return {
         uploadHeaders: {'X-Token': getLocalToken()},
       }
     },

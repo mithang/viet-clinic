@@ -617,7 +617,7 @@ export default {
         params: [{columnName: 'company_id', queryType: '=', value: ""}],
         offset: 0,
         limit: 20,
-		    columnName: '',      // Tên trường sắp xếp
+        columnName: '',      // Tên trường sắp xếp
         order: ''            // Sắp xếp
       },
       saveInformation:[],    //Lưu tạm dữ liệu phân trang
@@ -979,7 +979,7 @@ export default {
         params: [],
         offset: 0,
         limit: 20,
-		    columnName: '',      // Tên trường sắp xếp
+        columnName: '',      // Tên trường sắp xếp
         order: ''            // Sắp xếp
       }
       this.currentPage=1

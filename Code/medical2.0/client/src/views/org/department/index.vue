@@ -88,7 +88,7 @@
                 </template>
               </el-table-column>
             </el-table>
-    	  </div>
+        </div>
         </el-col>
       </el-row>
       <!-- Thanh bảng  Kết thúc -->
@@ -132,7 +132,7 @@ export default {
       entityName: 'Department',
       permissionPrefix: 'department',
       queryTypes: {
-    	'company_id': '=',
+      'company_id': '=',
         'name': 'like',
       },
       queryModel:  {
@@ -161,9 +161,9 @@ export default {
         return
       }
       this.search.params.push({
-      	columnName: 'company_id',
-      	queryType: '=',
-      	value: this.currentCompany.id
+        columnName: 'company_id',
+        queryType: '=',
+        value: this.currentCompany.id
       })
       if(!this.moreCodition) {
         this.search.params.push({

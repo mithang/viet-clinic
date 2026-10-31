@@ -101,7 +101,7 @@
                 </template>
               </el-table-column>
             </el-table>
-    	  </div>
+        </div>
         </el-col>
       </el-row>
       <!-- Thanh bảng  Kết thúc -->
@@ -162,7 +162,7 @@ export default {
       entityName: 'Role',
       permissionPrefix: 'role',
       queryTypes: {
-    	'company_id': '=',
+      'company_id': '=',
         'name': 'like',
       },
       queryModel:  {
