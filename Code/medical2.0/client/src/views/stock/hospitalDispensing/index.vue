@@ -84,8 +84,6 @@ import { listResourcePermission } from '@/api/admin/common/permission'
 import { listDictItemAll } from '@/api/sys/dictItem'
 import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
-import { getLocalCurrentCompany } from "@/utils/auth";
-import fileurl from "@/assets/file/stuff.xlsx";
 
 
 export default {
@@ -194,7 +192,7 @@ export default {
     handleSelectionChange(val) {
       this.currentData = val;
     },
-    selectable(row, index) {
+    selectable(row) {
       if (row.zstbzt === '诊所已同步') {
         return false
       } else {
@@ -360,7 +358,7 @@ export default {
       this.getStuffList()
     }
     ,
-    initOptions(This) {
+    initOptions() {
       let type_search = {
         // params: [{ 'columnName': 'dict_type_id', 'queryType': '=', 'value': '1004462867645374476' }]
       }
