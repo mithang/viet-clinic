@@ -248,6 +248,7 @@ import { drugmaterialsstockmanagement,drugmaterialsstockmanagementsums,getjglist
 import { BigNumber } from "bignumber.js";
 
   export default {
+  name: 'OrganizationalDrugmaterialsstockmanagementIndex',
 
     data() {
       return {

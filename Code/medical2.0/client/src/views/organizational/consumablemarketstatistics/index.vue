@@ -257,6 +257,7 @@ import { getconsumablemarketstatistics,getconsumablemarketstatisticssum,getjglis
 import { BigNumber } from "bignumber.js";
 
   export default {
+  name: 'OrganizationalConsumablemarketstatisticsIndex',
 
     data() {
       return {

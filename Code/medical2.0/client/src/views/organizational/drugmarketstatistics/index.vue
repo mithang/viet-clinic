@@ -170,6 +170,7 @@ import { getdrugmarketstatistics, getdrugmarketstatisticsStat, exportExcel } fro
 import { getjglist } from "@/api/toll/tollInfo";
 
 export default {
+  name: 'OrganizationalDrugmarketstatisticsIndex',
   mixins: [reportViewMixin],
   data() {
     return {

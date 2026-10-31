@@ -195,6 +195,7 @@ import { getCurrentUser } from "@/utils/userCache";
 import XLSXD from 'xlsx-style'
 import { getjglist} from "@/api/toll/tollInfo";
 export default {
+  name: 'OrganizationalOrgDispensingIndex',
   extends: MainUI,
   components: {
     DispensingForm,

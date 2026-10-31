@@ -621,6 +621,7 @@ import * as XLSX from 'xlsx'
 import XLSXD from 'xlsx-style'
 
 export default {
+  name: 'OrganizationalOrgtolldetailIndex',
   extends: MainUI,
   data() {
     return {

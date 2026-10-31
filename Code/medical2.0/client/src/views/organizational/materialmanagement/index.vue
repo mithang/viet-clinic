@@ -260,6 +260,7 @@ import { getmaterialmanagement,getmaterialmanagementsums,getjglist } from "@/api
 import { BigNumber } from "bignumber.js";
 
   export default {
+  name: 'OrganizationalMaterialmanagementIndex',
 
     data() {
       return {

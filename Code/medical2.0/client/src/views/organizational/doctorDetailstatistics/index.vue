@@ -276,6 +276,7 @@ import { exportExcel, getdoctorDetailstatistics, getdoctorDetailstatisticsStat }
 import { getjglist } from "@/api/toll/tollInfo";
 
 export default {
+  name: 'OrganizationalDoctorDetailstatisticsIndex',
   mixins: [reportViewMixin],
   data() {
     return {

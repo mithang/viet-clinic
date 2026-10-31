@@ -260,6 +260,7 @@ import { getpharmaceuticalInventoryManagementsums,getpharmaceuticalInventoryMana
 import { BigNumber } from "bignumber.js";
 
   export default {
+  name: 'OrganizationalPharmaceuticalInventoryManagementIndex',
 
     data() {
       return {
