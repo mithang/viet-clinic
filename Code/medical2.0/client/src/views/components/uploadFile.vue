@@ -139,7 +139,6 @@ import { getFiled } from "@/api/sys/sysSeting";
         const blob = this.dataURLtoBlob(uploadFiles)
         const elink = document.createElement('a')
         // Đặt tên tệp tải xuống
-        const timedate = Date.parse(new Date())
         elink.download = fileName
         elink.style.display = 'none'
         elink.href = URL.createObjectURL(blob)

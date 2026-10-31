@@ -57,7 +57,7 @@ export default {
           //this.showMessage(responseData)
         }
         this.loading = false
-      }).catch(error => {
+      }).catch(() => {
         //this.outputError(error)
         this.loading = false
       })      

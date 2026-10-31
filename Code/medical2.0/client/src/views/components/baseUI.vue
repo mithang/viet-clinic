@@ -190,7 +190,7 @@ export default {
           this.isAlert = true
           this.$alert(msgData.msg + tip, msgData.type === 'warning' ? 'Cảnh báo' : 'Lỗi', {
             type: msgData.type,
-            callback: action => {
+            callback: () => {
               if(this.loadcount <= 0) {
                 this.isAlert = false
               }

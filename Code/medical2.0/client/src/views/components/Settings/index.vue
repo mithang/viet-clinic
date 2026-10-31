@@ -223,7 +223,7 @@
             }
             this.handleThemeChange(this.currentTheme)
           }
-        }).catch(error => {
+        }).catch(() => {
           this.drawerLoading = false
         })
       },

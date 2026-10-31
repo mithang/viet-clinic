@@ -70,7 +70,7 @@
           } else {
             console.error('load all dicitem error:' + res.code);
           }
-        }).catch(error => {})
+        }).catch(() => {})
       }
     },
     mounted() {

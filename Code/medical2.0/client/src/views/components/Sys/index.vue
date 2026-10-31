@@ -270,7 +270,7 @@
             this.getFilesById('fileList6', 6, this.sysData.loginGraph.name)
           }
 
-        }).catch(error => {
+        }).catch(() => {
           this.drawerLoading = false
         })
       },
@@ -283,7 +283,6 @@
         }
       },
       handleChange(file, fileList, list) {
-        let str = file.name.substring(file.name.lastIndexOf('.') + 1)
         let isLt512 = file.size / 1024 < 512
         if (!isLt512) {
           this.$message.warning('Hình ảnh tải lên không được vượt quá 512k')
