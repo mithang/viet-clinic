@@ -330,7 +330,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let doctor_search = {
         params: [{columnName: 'company_id', queryType: '=', value: currentUser.company.id}]
       }

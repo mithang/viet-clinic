@@ -281,8 +281,6 @@ export default {
             let packName = element.pack.name; //Đóng gói (Đơn vị)
             let preparation = element.preparation;      //Chế phẩm
             let preparationUnit = element.preparationUnit.name;  //Đơn vị bào chế
-            let price = element.price;                  //Giá bán
-            let retailPrice = element.retailPrice;      //Giá bán lẻ sau khi tách hộp
             
             let stockText = "";
             if(isUnpackSell === '1')
@@ -334,7 +332,7 @@ export default {
       });
     },
     //Gộp số nhóm của mục đầu tiên
-    ObjectSpanMethod({ row, column, rowIndex, columnIndex }) {
+    ObjectSpanMethod({ rowIndex, columnIndex }) {
       if (columnIndex === 0) {
         if (rowIndex % this.InfoModel.infusionList.length === 0) {
           return {

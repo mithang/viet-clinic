@@ -1028,7 +1028,6 @@
 </template>
 
 <script>
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from "@/utils/dictCache";
 import { getFrequencyCount } from "@/utils/dataUtils";
 import {
@@ -1036,7 +1035,7 @@ import {
   getRegistrationById,
   updateStatus,
 } from "@/api/outpatient/registration";
-import { getPatientById, listPatientAll } from "@/api/outpatient/patient";
+import { listPatientAll } from "@/api/outpatient/patient";
 import { listAllStock } from "@/api/stock/drug";
 import { listCostItemPage } from "@/api/treatment/costItem";
 import { listStuffPage} from "@/api/stock/stuff";
@@ -1050,7 +1049,6 @@ import History from "@/views/components/history";
 import ChineseMedicine from "./components/ChineseMedicine";
 import InfusionPrescription from "./components/InfusionPrescription.vue";
 import VisitRecords from "./components/VisitRecords.vue";
-import indexVue from "../../../components/Clipboard/index.vue";
 import uploadFile from "@/views/components/uploadFile";
 import { getCurrentUser, getCurrentUserId } from "@/utils/userCache";
 export default {
@@ -1790,8 +1788,6 @@ export default {
             let packName = element.pack.name; //Đóng gói (Đơn vị)
             let preparation = element.preparation; //Chế phẩm
             let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
-            let price = element.price; //Giá bán
-            let retailPrice = element.retailPrice; //Giá bán lẻ sau khi tách hộp
 
             let stockText = "";
             if (isUnpackSell === "1") {
@@ -1866,16 +1862,6 @@ export default {
     //Theo người khámidTruy vấn bệnh án đơn thuốc
     GetSaveInfo() {
       this.VisitRecordsList = [];
-      let model = {
-        company: {
-          id: this.Company.id,
-        },
-        doctor: {
-          id: this.UserId,
-        },
-        id: this.VisitId,
-        registrationId:''
-      };
       allQueryMedicalRecord(this.VisitId).then((responseData) => {
         if (responseData.code === 100) {
           this.GetVisitRecordData(responseData.data);
@@ -2082,7 +2068,7 @@ export default {
       });
     },
     //Nhấn nút xóa sau bảng thuốc Tây y để xóa dữ liệu có chỉ số chỉ định
-    DeleteWestern(index, row) {
+    DeleteWestern(index) {
       this.ChooseWesternMedicineTable.splice(index, 1);
       this.GetWesternFee();
     },
@@ -2140,7 +2126,7 @@ export default {
       }
     },
     //Click nút xoá sau bảng hạng mục khám chữa bệnh để xoá dữ liệu tại chỉ số chỉ định
-    DeleteTreatment(index, row) {
+    DeleteTreatment(index) {
       this.ChooseTreatmentTable.splice(index, 1);
       this.GetCostItemFee();
     },
@@ -2161,7 +2147,7 @@ export default {
       }
     },
     //Click nút xoá sau bảng phụ phí để xoá dữ liệu tại chỉ số chỉ định
-    DeleteSurchargeTable(index, row) {
+    DeleteSurchargeTable(index) {
       this.ChooseSurchargeTable.splice(index, 1);
       this.GetSurchargeFee();
     },
