@@ -228,7 +228,6 @@ import { validatenull } from '@/utils/validate'
 import { listSyncStuffPage, getStuffById, deleteStuff, updateAllIndate, updateAllInventory, inventory, uploadExcel } from '@/api/stock/stuff'
 import listViewMixin from '@/mixins/listViewMixin'
 import StuffForm from './stuffForm'
-import { listDictItemAll } from '@/api/sys/dictItem'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import ExportExcelButton from '@/components/ExportExcelButton'
 import ViewColumnsSelect from '@/views/components/ViewColumnsSelect'
@@ -386,10 +385,10 @@ export default {
     // Đóng thông báo lỗi nhập
     mistakeClose(done) {
       this.$confirm('Xác nhận đóng？')
-        .then(_ => {
+        .then(() => {
           done();
         })
-        .catch(_ => { });
+        .catch(() => { });
     },
 
     // Sự kiện nhấn nút nhập hàng loạt
@@ -408,7 +407,6 @@ export default {
       const extName = file[0].name.substring(file[0].name.lastIndexOf('.')).toLowerCase()
       if (extName === '.xlsx' || extName === '.xls') {
         const formData = new FormData()
-        let id = currentUser.company.id;
         formData.append('file', file[0])
         this.$message.success('Đang nhập dữ liệu, Vui lòng chờ')
         uploadExcel(formData).then((res) => {
@@ -535,7 +533,7 @@ export default {
         this.inventory = null
       }, 1000);
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.STUFF_TYPE).then((data) => {
         this.type_List = data
       })

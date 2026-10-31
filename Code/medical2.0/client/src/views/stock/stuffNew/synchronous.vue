@@ -200,13 +200,11 @@ import { validatenull } from '@/utils/validate'
 import { listParentStuffPage, listInstitutionStuffPage, syncStuff, syncInstitutionStuff, getStuffById, deleteStuff, updateAllIndate, updateAllInventory, inventory, uploadExcel } from '@/api/stock/stuff'
 import { listResourcePermission } from '@/api/admin/common/permission'
 import synchronousStuffForm from './synchronousStuffForm'
-import { listDictItemAll } from '@/api/sys/dictItem'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import MainUI from '@/views/components/mainUI'
 import History from '@/views/components/history'
 import { getLocalCurrentCompany } from "@/utils/auth";
 import fileurl from "@/assets/file/stuff.xlsx";
-import BaseUI from "@/views/components/baseUI";
 
 
 export default {
@@ -400,7 +398,7 @@ export default {
 
       this.pageInit()
     },
-    selectable(row, index) {
+    selectable(row) {
       if (row.syncNum === 1) {
         return false
       } else {
@@ -504,10 +502,10 @@ export default {
     // Đóng thông báo lỗi nhập
     mistakeClose(done) {
       this.$confirm('Xác nhận đóng？')
-        .then(_ => {
+        .then(() => {
           done();
         })
-        .catch(_ => { });
+        .catch(() => { });
     },
 
     // Sự kiện nhấn nút nhập hàng loạt
@@ -526,7 +524,6 @@ export default {
       const extName = file[0].name.substring(file[0].name.lastIndexOf('.')).toLowerCase()
       if (extName === '.xlsx' || extName === '.xls') {
         const formData = new FormData()
-        let id = currentUser.company.id;
         formData.append('file', file[0])
         this.$message.success('Đang nhập dữ liệu, Vui lòng chờ')
         uploadExcel(formData).then((res) => {
@@ -834,7 +831,7 @@ export default {
       this.getStuffList()
     }
     ,
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.STUFF_TYPE).then((data) => {
         this.typeList = data
       })

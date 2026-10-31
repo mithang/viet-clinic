@@ -437,8 +437,6 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from "@/utils/validate";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from "@/utils/dictCache";
 import { listManufactureFactoryAll } from "@/api/basicdata/manufactureFactory";
 import { saveStuff } from "@/api/stock/stuff";
@@ -584,7 +582,7 @@ export default {
         this.$refs["stuffForm"].clearValidate();
       });
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         company: {
           // Phòng khámid
@@ -631,7 +629,7 @@ export default {
         remarks: "", // Thông tin ghi chú
       };
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.STUFF_TYPE).then((data) => {
         this.type_List = data;
       });
