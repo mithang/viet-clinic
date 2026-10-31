@@ -268,22 +268,16 @@
 
 <script>
 import AddStorage from "./components/addstorage";
-import { listSupplierPage, getSupplierById,listSupplierAll } from "@/api/stock/supplier";
+import { listSupplierAll } from "@/api/stock/supplier";
 import {
-  bulkUpdateSupplierStorage,
   bulkUpdateSupplierStorage1,
-  listSupplierStorageAll,
   listSupplierStoragePage,
 } from "@/api/stock/supplierStorage";
 import {
-  listSupplierStockAll,
   listSupplierStockPage,
-  getSupplierStockBySid,
 } from "@/api/stock/supplierStock";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 
- import FileSaver from 'file-saver'
  import * as XLSX from 'xlsx'
 //import XLSX from 'xlsx'
 import XLSXD from 'xlsx-style'
@@ -455,7 +449,6 @@ export default {
       this.searchDetail();
     },*/
     pageInit() {
-      const day = new Date();
       // this.condition.dateRange = [
       //   new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0),
       //   new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59),
@@ -686,7 +679,6 @@ export default {
       this.querySupplierStorageList();
     },
     resetCondition() {
-      const day = new Date();
       this.condition = {
         supplier: {
           id: null,
@@ -799,7 +791,6 @@ export default {
              beizhu:"Ghi chú"
         }
 
-        let numbers=0;
         let allRetailPrices=0
         for (let i = 0; i < this.storageDetailTable.length; i++) {
           let arr={
@@ -840,7 +831,6 @@ export default {
           arr.allRetailPrice=this.storageDetailTable[i].allRetailPrice+''
           arr.beizhu=''
           biaoge.push(arr)
-          numbers+=this.storageDetailTable[0].number.substring(0,this.storageDetailTable[0].number.length-1)-0
           allRetailPrices+=this.storageDetailTable[i].allRetailPrice
 
         }
@@ -884,20 +874,6 @@ export default {
         // }
 
            let web = XLSX.utils.book_new();
-           let headers={
-             name:"Thuốc/Tên vật tư",
-             norms:"Quy cách",
-             factory:"Tên nhà sản xuất",
-             batchNo:"Số lô sản xuất",
-             produceDate:"Ngày sản xuất",
-             endDate:"Hạn sử dụng",
-             number:"Số lượng",
-             bid:"Giá nhập",
-             leastBid:"Giá nhập theo đơn vị nhỏ nhất",
-             allBid:"Tổng giá nhập",
-             retailPrice:"Giá bán lẻ",
-             allRetailPrice:"Tổng giá bán lẻ"
-           }
             //biaoge.unshift(headers)
             // let contentWs = XLSX.utils.json_to_sheet(biaoge,{
             //   headers:['name','norms','factory','batchNo','produceDate','endDate','number','bid','leastBid','allBid','retailPrice','allRetailPrice'],
