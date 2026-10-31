@@ -337,17 +337,12 @@
 </template>
 
 <script>
-  import {listDrugAll,listByCompanyDrugPage} from "@/api/stock/drug";
+  import {listDrugAll} from "@/api/stock/drug";
   import {listSysParamConfigAll} from '@/api/sys/sysParamConfig';
   import {listStuffAll, listStuffPage, listDrug} from "@/api/stock/stuff";
   import {saveSupplierStockList} from "@/api/stock/supplierStock";
-  import {getSysParamConfigById} from '@/api/sys/sysParamConfig'
-  import {listPage} from "@/api/stock/medicinalStorageControl";
-  import {listSupplierPage, getSupplierById, listSupplierAll} from "@/api/stock/supplier";
-  import {BigNumber} from "bignumber.js";
+  import {listSupplierAll} from "@/api/stock/supplier";
   import BaseUI from "@/views/components/baseUI";
-  import {getLocalCurrentCompany} from "@/utils/auth";
-  import * as XLSX from 'xlsx'
   import fileurl from "@/assets/file/inventory.xlsx";
 
   export default {
@@ -449,13 +444,13 @@
       };
     },
     watch: {
-      addType: function (newVal, oldVal) {
+      addType: function (newVal) {
         this.otherInfo.supplierID = null
         if (newVal === 1) this.getDrugList();
         if (newVal === 2) this.getStuffList();
       },
 
-      searchName: function (newVal, oldVal) {
+      searchName: function (newVal) {
         const pattern = new RegExp("[A-Za-z]+");
         if (this.flag) {
           if (newVal === "") {
@@ -487,7 +482,7 @@
         }
       },
       storageDetailTable: {
-        handler(newVal, oldVal) {
+        handler(newVal) {
           if (newVal.length !== 0) {
             newVal.forEach((i, ind) => {
 
@@ -901,7 +896,7 @@
                     // this.$message.error(responseData);
                   }
                 })
-                .catch((error) => {
+                .catch(() => {
                   // this.$message.error(error);
                 });
 
@@ -1163,14 +1158,14 @@
       // Đóng thông báo lỗi nhập
       mistakeClose(done) {
         this.$confirm('Xác nhận đóng？')
-          .then(_ => {
+          .then(() => {
             done();
           })
-          .catch(_ => {
+          .catch(() => {
           });
       },
 
-      deleteRow(index, tb) {
+      deleteRow(index) {
         this.storageDetailTable.splice(index, 1);
       },
       calcTotalInPrice(row) {
@@ -1235,7 +1230,7 @@
         this.otherInfo.allRetailPrice = allRetailPrice;
         return allRetailPrice;
       },
-      testSelectGoods(data) {
+      testSelectGoods() {
       },
       // Sự kiện nhấn nút nhập hàng loạt
       importStudentExcel() {
@@ -1249,7 +1244,7 @@
 
 
       //Phương pháp xử lý khi tải tệp lên
-      handleChange(file, fileList) {
+      handleChange(file) {
         this.fileTemp = file.raw;
         if (this.fileTemp) {
           if ((this.fileTemp.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -1277,13 +1272,11 @@
         return;
       },
       //Thao tác xóa tệp
-      handleRemove(file, fileList) {
+      handleRemove() {
         this.fileTemp = null
       },
 
-      async importfxx(obj) {
-        let _this = this;
-        let inputDOM = this.$refs.inputer;
+      async importfxx() {
         // QuaDOMLấy dữ liệu tệp
 
         this.file = event.currentTarget.files[0];
@@ -1302,11 +1295,10 @@
         //if (!FileReader.prototype.readAsBinaryString) {
         FileReader.prototype.readAsBinaryString = function (f) {
           let binary = "";
-          const pt = this;
           let wb; //Dữ liệu đã đọc xong
           let outdata;
           const reader = new FileReader();
-          reader.onload = function (e) {
+          reader.onload = function () {
             const bytes = new Uint8Array(reader.result);
             const length = bytes.byteLength;
             for (let i = 0; i < length; i++) {
