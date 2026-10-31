@@ -167,7 +167,7 @@ import { listManufactureFactoryAll } from '@/api/basicdata/manufactureFactory'
 import { saveSupplierStock } from '@/api/stock/supplierStock'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
-import { getCurrentUser, getCurrentCompanyId } from "@/utils/userCache";
+import { getCurrentCompanyId } from "@/utils/userCache";
 export default {
   extends: BaseUI,
   name: 'supplierStock-form',
@@ -281,7 +281,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let company_search = {
         params: []
       }

@@ -1097,17 +1097,16 @@
 <script>
 import {
   allQueryMedicalRecord,
-  listMedicalRecordPage,
 } from "@/api/outpatient/medicalRecord";
 import { listRegistrationPages } from "@/api/outpatient/registration";
-import { getPatientById, listPatientAll } from "@/api/outpatient/patient";
+import { listPatientAll } from "@/api/outpatient/patient";
 import {listDictItemAll} from "@/api/sys/dictItem";
 import { updateStockStockList } from "@/api/stock/supplierStock";
 import SupplierStockForm from "./supplierStockForm";
 import MainUI from "@/views/components/mainUI";
 import History from "@/views/components/history";
-import {getMember,getByPatientId} from "@/api/member/memberManagement"
-import { getCurrentUser, getCurrentUserId, getCurrentCompanyId, getCurrentCompany } from "@/utils/userCache";
+import {getByPatientId} from "@/api/member/memberManagement"
+import { getCurrentUser, getCurrentUserId, getCurrentCompany } from "@/utils/userCache";
 export default {
   extends: MainUI,
   components: {
@@ -1657,7 +1656,7 @@ export default {
       this.returnCurrentPage = pageNum;
       this.GetDispensingTable();
     },
-    clickMedicalEditTab(tab, event)
+    clickMedicalEditTab()
     {
        if (this.medicalEditTabsValue === this.medicalClickTabsValue) {
         return;
