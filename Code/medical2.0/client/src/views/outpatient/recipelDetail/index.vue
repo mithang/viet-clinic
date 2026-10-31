@@ -154,7 +154,7 @@ export default {
       this.recipelDetailTotal = responseData.data.total
       this.recipelDetailList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {
