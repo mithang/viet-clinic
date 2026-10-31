@@ -238,7 +238,7 @@
           <el-card class="box-card main-card">
             <div slot="header" style="padding: 5px 0px; font-size: 14px; font-weight: bold">
               <span>Thông tin cơ bản</span>
-              <!-- <el-button v-if="isReadOnly===false" style="float: right; padding: 3px 0" type="text">清空</el-button> -->
+              <!-- <el-button v-if="isReadOnly===false" style="float: right; padding: 3px 0" type="text">Xoá hết</el-button> -->
             </div>
             <el-form :model="BasicInfoModel" ref="BasicInfoForm" label-width="auto"
                      :rules="BasicInfoFormRules" class="medical-base-form">
@@ -414,7 +414,7 @@
               </div>
             </div>
             <el-form :disabled="isReadOnly" :model="MedicalRecordModel" ref="BasicInfoForm"
-                     :rules="BasicInfoFormRules" label-width="auto" label-suffix="：">
+                     :rules="BasicInfoFormRules" label-width="auto" label-suffix=": ">
               <el-row :gutter="24">
                 <el-col :span="24">
                   <el-form-item label="Lý do khám chính" prop="patientTell">
@@ -722,7 +722,7 @@
                                  @click="saveTemplate(item.type, index)">Lưu thành mẫu
                       </el-button>
                     </el-row>
-<!--                    处方详细-->
+<!--                    Chi tiết đơn thuốc-->
                     <el-row  >
                       <el-table   :data="
                           getDataFilterTable(
@@ -1101,7 +1101,7 @@
                        @keydown.enter.native="focusNextInput('')"
                       ></el-input>
 
-                      &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng：
+                      &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng: 
                       <el-select
                          :disabled="
                           isReadOnly ||
@@ -1153,7 +1153,7 @@
                         " v-model="item.content.recipelInfo.singleDosage" style="width: 60px">
                       </el-input>&nbsp;
                       <span
-                      v-if="isSpecial">ml</span><span v-else>ml</span>
+                      v-if="isSpecial">gói</span><span v-else>ml</span>
                       <span style="float: right">Số tiền thuốc Đông y:{{
                           item.content.recipelInfo.medicalAmount
                             ? item.content.recipelInfo.medicalAmount
@@ -1196,7 +1196,7 @@
                             !isReadOnly &&
                             item.content.recipelInfo.chargeStatus === 0 &&
                             item.content.recipelInfo.status !== -1
-                          " @click="minusGroup(item)">减一组</button> -->
+                          " @click="minusGroup(item)">Giảm một nhóm</button> -->
                         <el-button type="primary" v-if="!isReadOnly" style="float: right" plain
                                    @click="historyRecipel(item.type, index)">Đơn thuốc cũ
                         </el-button>
@@ -1755,7 +1755,7 @@
                               {{
                                 scope.row.stuffType === "4"
                                   ? scope.row.stuff.type.name
-                                  : "Khám chữa bệnh（Chi phí khác）"
+                                  : "Khám chữa bệnh (Chi phí khác)"
                               }}
                             </template>
                           </el-table-column>
@@ -1837,7 +1837,7 @@
                               {{
                                 scope.row.stuffType === "4"
                                   ? scope.row.drugStuffId.stuff.type.name
-                                  : "Khám chữa bệnh（Chi phí khác）"
+                                  : "Khám chữa bệnh (Chi phí khác)"
                               }}
                             </template>
                           </el-table-column>
@@ -1918,7 +1918,7 @@
                               {{
                                 scope.row.stuffType === "4"
                                   ? scope.row.drugStuffId.stuff.type.name
-                                  : "Khám chữa bệnh（Chi phí khác）"
+                                  : "Khám chữa bệnh (Chi phí khác)"
                               }}
                             </template>
                           </el-table-column>
@@ -2004,7 +2004,7 @@
         </el-scrollbar>
       </el-card>
       <el-card class="box-card sub-card" style="height: 50px">
-        <span style="line-height: 27px">Tổng số tiền：{{ payAmount }}VNĐ</span>
+        <span style="line-height: 27px">Tổng số tiền: {{ payAmount }}VNĐ</span>
         <div style="float: right">
           <el-button type="primary" plain v-if="
               medicalEditTabsValue.content &&
@@ -2023,7 +2023,7 @@
         </div>
       </el-card>
     </el-main>
-    <!-- 历史处方弹出框 -->
+    <!-- Hộp thoại đơn thuốc lịch sử -->
     <el-dialog title="Đơn thuốc cũ" :visible.sync="historyDialogVisible" width="60%" class="ones"
                :before-close="handleClose">
       <div style="border: 1px solid #eee9e9; margin-top: -30px"></div>
@@ -2360,7 +2360,7 @@
               <div style="margin: 10px 0">
                 <el-input style="width: 50px" disabled v-model="props.row.dosage">
                 </el-input>
-                thang Cách dùng：
+                thang Cách dùng: 
                 <el-input style="width: 100px" disabled v-model="props.row.recipelUse.name">
                 </el-input>
                 <el-input style="width: 100px" disabled v-model="props.row.takeFrequency.name">
@@ -3160,7 +3160,7 @@
               <div style="margin: 10px 0">
                 <el-input style="width: 50px" disabled v-model="props.row.recipeTemplateInfo.dosage">
                 </el-input>
-                thang Cách dùng：
+                thang Cách dùng: 
                 <el-input style="width: 100px" disabled
                           v-model="props.row.recipeTemplateInfo.recipelUse.name">
                 </el-input>
@@ -3958,25 +3958,25 @@
     },
     name: "index",
     methods: {
-      // 处理医疗类型切换
+      // Xử lý chuyển đổi loại hình y tế
       handleMedicalTypeChange() {
-        // 根据模板类型调整必填项
+        // Điều chỉnh trường bắt buộc theo loại mẫu
         if (this.medicalType === 'chinese') {
-          // 中医模板：中医诊断和中医证候必填
+          // Mẫu Đông y: chẩn đoán Đông y và chứng hậu Đông y bắt buộc
           this.BasicInfoFormRules.chinaDiagnose = [
             { required: true, message: 'Vui lòng nhập chẩn đoán y học cổ truyền', trigger: 'blur' }
           ];
           this.BasicInfoFormRules.chinaSyndrome = [
             { required: true, message: 'Vui lòng nhập chứng hậu y học cổ truyền', trigger: 'blur' }
           ];
-          // 移除西医诊断必填
+          // Bỏ bắt buộc chẩn đoán Tây y
           delete this.BasicInfoFormRules.westernDiagnose;
         } else {
-          // 西医模板：西医诊断必填
+          // Mẫu Tây y: chẩn đoán Tây y bắt buộc
           this.BasicInfoFormRules.westernDiagnose = [
             { required: true, message: 'Vui lòng nhập chẩn đoán tây y', trigger: 'blur' }
           ];
-          // 移除中医诊断和证候必填
+          // Bỏ bắt buộc chẩn đoán và chứng hậu Đông y
           delete this.BasicInfoFormRules.chinaDiagnose;
           delete this.BasicInfoFormRules.chinaSyndrome;
         }
@@ -4022,7 +4022,7 @@
         }
       },
 
-      //基础资料刷新
+      //Làm mới dữ liệu cơ bản
       refresh() {
         this.$forceUpdate();
       },
@@ -4037,7 +4037,7 @@
             this.saveTemplateBizFormModel.createId = currentUser.id;
             this.saveTemplateBizFormModel.recipeTemplateInfo =
               this.medicalEditTabs[this.saveTemplateIndex].content.recipelInfo;
-            // Cách ly cấp phòng khám：仅保存当前诊所的药品/Vật tư/Hạng mục khám chữa bệnh
+            // Cách ly cấp phòng khám: chỉ lưu thuốc/Vật tư/Hạng mục khám chữa bệnh của phòng khám hiện tại
             var currentCompanyId = currentUser.company.id;
             var allDetails = this.medicalEditTabs[this.saveTemplateIndex].content.recipelDetailEvtList;
             var filteredDetails = allDetails.filter(function(d) {
@@ -4066,7 +4066,7 @@
               .catch((error) => {
                 this.outputError(error);
                 this.$message.error(
-                  "Dữ liệu hệ thống bất thường，Vui lòng kiểm tra dữ liệu có sai không hoặc liên hệ quản trị viên giải quyết！"
+                  "Dữ liệu hệ thống bất thường, Vui lòng kiểm tra dữ liệu có sai không hoặc liên hệ quản trị viên giải quyết!"
                 );
               });
           } else {
@@ -4102,7 +4102,7 @@
         this.saveTemplateDialogVisible = true;
       },
 
-      //模板处方搜索事件
+      //Sự kiện tìm kiếm đơn thuốc mẫu
       searchTemplate() {
         let search = {
           columnName: "",
@@ -4197,7 +4197,7 @@
           .catch((error) => {
           });
       },
-      //获取输液处方
+      //Lấy đơn thuốc truyền dịch
       getInfuSion(element) {
         let infusion = {
           defaultNumber: 1, //Số nhóm mặc định
@@ -4246,13 +4246,13 @@
         }
         return infusion;
       },
-      //过滤处方
+      //Lọc đơn thuốc
       filterRecipel(row) {
         let addObject = row;
         addObject = addObject.filter((item) => item.isExtra !== 1);
         return addObject;
       },
-      //过滤附加费
+      //Lọc phụ phí
       filterAdditional(row) {
         let addObject = row;
         addObject = addObject.filter((item) => item.isExtra !== 0);
@@ -4260,7 +4260,7 @@
       },
 
       invoking2(row) {
-        // Cách ly cấp phòng khám：过滤掉非本诊所的模板详情
+        // Cách ly cấp phòng khám: lọc bỏ chi tiết mẫu không thuộc phòng khám hiện tại
         var currentCompanyId = currentUser.company.id;
         var safeDetails = (row.recipeTemplateDetail || []).filter(function(d) {
           if (d.drugStuffId && d.drugStuffId.drug && d.drugStuffId.drug.company) {
@@ -4284,7 +4284,7 @@
             recipelDetailEvtLists.length >
             5
           ) {
-            this.$message.error("Sau khi gọi đơn thuốc, số lượng thuốc vượt quá5cái，Vui lòng lập lại đơn thuốc！");
+            this.$message.error("Sau khi gọi đơn thuốc, số lượng thuốc vượt quá5cái, Vui lòng lập lại đơn thuốc!");
             return;
           }
         }
@@ -4315,7 +4315,7 @@
             this.MedicalCalculate();
           }, 0);
         } else {
-          this.$confirm("Đơn thuốc này đã điền，Vui lòng chọn ghi đè hay thêm", "Nhắc nhở", {
+          this.$confirm("Đơn thuốc này đã điền, Vui lòng chọn ghi đè hay thêm", "Nhắc nhở", {
             confirmButtonText: "Ghi đè",
             cancelButtonText: "Thêm",
             type: "warning",
@@ -4342,7 +4342,7 @@
                     // if(item.drugStuffId.drugStuffId===recipelDetai.drugStuffId.drugStuffId){
                     //   this.$message({
                     //     type: 'error',
-                    //     message: 'Có thuốc giống nhau，Không thể gọi đơn thuốc！'
+                    // message: 'Có thuốc giống nhau, Không thể gọi đơn thuốc!'
                     //   });
                     //   flag=false;
                     //   return;
@@ -4471,7 +4471,7 @@
             row.recipelDetail.length >
             5
           ) {
-            this.$message.error("Sau khi gọi đơn thuốc, số lượng thuốc vượt quá5cái，Vui lòng lập lại đơn thuốc！");
+            this.$message.error("Sau khi gọi đơn thuốc, số lượng thuốc vượt quá5cái, Vui lòng lập lại đơn thuốc!");
             return;
           }
         }
@@ -4490,7 +4490,7 @@
             this.MedicalCalculate();
           }, 0);
         } else {
-          this.$confirm("Đơn thuốc này đã điền，Vui lòng chọn ghi đè hay thêm", "Nhắc nhở", {
+          this.$confirm("Đơn thuốc này đã điền, Vui lòng chọn ghi đè hay thêm", "Nhắc nhở", {
             confirmButtonText: "Ghi đè",
             cancelButtonText: "Thêm",
             type: "warning",
@@ -4517,7 +4517,7 @@
                     // if(item.drugStuffId.drugStuffId===recipelDetai.drugStuffId.drugStuffId){
                     //   this.$message({
                     //     type: 'error',
-                    //     message: 'Có thuốc giống nhau，Không thể gọi đơn thuốc！'
+                    // message: 'Có thuốc giống nhau, Không thể gọi đơn thuốc!'
                     //   });
                     //   flag=false;
                     //   return;
@@ -4875,7 +4875,7 @@
         return this.defaultNumber;
       },
 
-      //编辑保存
+      //Sửa và lưu
       save(type) {
         if (this.savelock) {
           this.$message.error("Đang lưu, vui lòng đợi");
@@ -4902,7 +4902,7 @@
         }
 
         if (this.beyondStuffInventoryType) {
-          this.$message.error("Có số lượng vật tư vượt quá tổng tồn kho khả dụng，Vui lòng điền lại!");
+          this.$message.error("Có số lượng vật tư vượt quá tổng tồn kho khả dụng, Vui lòng điền lại!");
           return;
         }
 
@@ -4953,7 +4953,7 @@
                     total > item.drugStuffId.drug.total
                   ) {
                     this.$message.error(
-                      item.drugStuffId.name + "Giới hạn tổng lượng phải nhỏ hơn tổng lượng tính theo hướng dẫn công dụng，Giới hạn tổng lượng kê thuốc là" + item.drugStuffId.drug.total + item.drugStuffId.drug.dosisUnit.name
+                      item.drugStuffId.name + "Giới hạn tổng lượng phải nhỏ hơn tổng lượng tính theo hướng dẫn công dụng, Giới hạn tổng lượng kê thuốc là" + item.drugStuffId.drug.total + item.drugStuffId.drug.dosisUnit.name
                     );
                     totalCheck = true;
                   }
@@ -4992,7 +4992,7 @@
                 if (tabElement.content.recipelDetailEvtList[i].drugStuffId.drug.total !== 0 &&
                   tabElement.content.recipelDetailEvtList[i].total > tabElement.content.recipelDetailEvtList[i].drugStuffId.drug.total) {
                   this.$message.error(
-                    tabElement.content.recipelDetailEvtList.drugStuffId.name + "Giới hạn tổng lượng phải nhỏ hơn tổng lượng tính theo hướng dẫn công dụng，Giới hạn tổng lượng kê thuốc là" + tabElement.content.recipelDetailEvtList[i].drugStuffId.drug.total + tabElement.content.recipelDetailEvtList[i].drugStuffId.drug.dosisUnit.name
+                    tabElement.content.recipelDetailEvtList.drugStuffId.name + "Giới hạn tổng lượng phải nhỏ hơn tổng lượng tính theo hướng dẫn công dụng, Giới hạn tổng lượng kê thuốc là" + tabElement.content.recipelDetailEvtList[i].drugStuffId.drug.total + tabElement.content.recipelDetailEvtList[i].drugStuffId.drug.dosisUnit.name
                   );
                   totalCheck = true;
                 }
@@ -5003,7 +5003,7 @@
                  if (item.drugStuffId.drug.total !== 0 &&
                    tabElement.content.recipelDetailEvtList[i].total > item.drugStuffId.drug.total) {
                    this.$message.error(
-                     item.drugStuffId.name + "Giới hạn tổng lượng phải nhỏ hơn tổng lượng tính theo hướng dẫn công dụng，Giới hạn tổng lượng kê thuốc là" + item.drugStuffId.drug.total + item.drugStuffId.drug.dosisUnit.name
+                     item.drugStuffId.name + "Giới hạn tổng lượng phải nhỏ hơn tổng lượng tính theo hướng dẫn công dụng, Giới hạn tổng lượng kê thuốc là" + item.drugStuffId.drug.total + item.drugStuffId.drug.dosisUnit.name
                    );
                    totalCheck = true;
                  }
@@ -5128,17 +5128,17 @@
         });
 
         if (returnForEach) {
-          this.$message.error("Có đơn thuốc Tây y hoặc Đông y，Vui lòng điền giải thích chẩn đoán tương ứng。");
+          this.$message.error("Có đơn thuốc Tây y hoặc Đông y, Vui lòng điền giải thích chẩn đoán tương ứng.");
           return;
         }
 
         if (hasSelsmallType) {
-          this.$message.error("Vui lòng kiểm tra phân loại trong mỗi đơn thuốc đã chọn chưa。");
+          this.$message.error("Vui lòng kiểm tra phân loại trong mỗi đơn thuốc đã chọn chưa.");
           return;
         }
 
         if (numberCheck) {
-          this.$message.error("Vui lòng kiểm tra mỗi đơn thuốc có thuốc chưa。");
+          this.$message.error("Vui lòng kiểm tra mỗi đơn thuốc có thuốc chưa.");
           return;
         }
         if (totalCheck) {
@@ -5194,7 +5194,7 @@
         this.savelock = true;
         editSave(formData).then((responseData) => {
           if (responseData.code === 100) {
-            this.$message.success("Thao tác thành công！");
+            this.$message.success("Thao tác thành công!");
             this.hasBtnFinishVisit = false;
             this.hasBtnPrint = false;
             this.isReadOnly = true;
@@ -5605,7 +5605,7 @@
                   if (res.code === 100) {
                     this.member = res.data;
                   } else {
-                    this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！");
+                    this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!");
                   }
                 })
                 .catch();
@@ -5614,7 +5614,7 @@
                   if (res.code === 100) {
                     this.poverty = res.data;
                   } else {
-                    this.$message.error("Dữ liệu hộ nghèo bất thường, vui lòng liên hệ quản trị viên！");
+                    this.$message.error("Dữ liệu hộ nghèo bất thường, vui lòng liên hệ quản trị viên!");
                   }
                 })
                 .catch();
@@ -5698,7 +5698,7 @@
                     if (res.code === 100) {
                       this.member = res.data;
                     } else {
-                      this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！");
+                      this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!");
                     }
                   })
                   .catch();
@@ -5707,7 +5707,7 @@
                     if (res.code === 100) {
                       this.poverty = res.data;
                     } else {
-                      this.$message.error("Dữ liệu hộ nghèo bất thường, vui lòng liên hệ quản trị viên！");
+                      this.$message.error("Dữ liệu hộ nghèo bất thường, vui lòng liên hệ quản trị viên!");
                     }
                   })
                   .catch();
@@ -5778,7 +5778,7 @@
         //   return
         // }
         this.blmbVisit = true;
-        this.recordpatid = item.patientId.id; //获取用户id
+        this.recordpatid = item.patientId.id; //Lấy id người dùng
         if (this.userClickID !== "" && this.userClickID === item.id) {
           this.hint = true;
           return;
@@ -5831,7 +5831,7 @@
                 if (res.code === 100) {
                   this.member = res.data;
                 } else {
-                  this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！");
+                  this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!");
                 }
               })
               .catch();
@@ -5840,7 +5840,7 @@
                 if (res.code === 100) {
                   this.poverty = res.data;
                 } else {
-                  this.$message.error("Dữ liệu hộ nghèo bất thường, vui lòng liên hệ quản trị viên！");
+                  this.$message.error("Dữ liệu hộ nghèo bất thường, vui lòng liên hệ quản trị viên!");
                 }
               })
               .catch();
@@ -5912,7 +5912,7 @@
           registration: {
             morbidityTime: "",
             treatType: {
-              name: "初诊",
+              name: "Khám lần đầu",
               value: "treatType_0",
             },
             infectType: {
@@ -6090,12 +6090,12 @@
         this.medicalEditTabs.push(tab);
         this.medicalEditTabsValue = tab;
         this.medicalClickTabsValue = this.medicalEditTabsValue;
-        // // 获取第一个input的焦点
+        // // Lấy focus của input đầu tiên
         //  this.$nextTick(() => {
         //   this.$refs.singleDosage-input[0].focus();
         // });
       },
-      //开具处方删除TabTab
+      //Xoá Tab khi kê đơn thuốc
       removeMedicalEditTab(targetName) {
         let tabs = this.medicalEditTabs;
         let activeName = this.medicalEditTabsValue;
@@ -6125,7 +6125,7 @@
         this.medicalEditTabs = this.medicalEditTabs;
       },
 
-      //开具处方切换Tab标签页触发事件
+      //Sự kiện kích hoạt khi chuyển Tab kê đơn thuốc
       clickMedicalEditTab() {
         if (this.medicalEditTabsValue === this.medicalClickTabsValue) {
           return;
@@ -6330,7 +6330,7 @@
       //Lấy giá trị từ điển dữ liệu
       GetAllOption() {
         this.GetSysParamConfig();
-        // 批量加载字典
+        // Tải từ điển theo lô
         getDictItemsByCode(DICT_CODE.CHINESE_MEDICINE_RECIPEL_USE).then((data) => {
           this.ChineseUseOption = data;
           if (this.isSpecial) {
@@ -6352,7 +6352,7 @@
           this.InfectTypeOption = (data || []).map(e => ({ name: e.name, value: e.value }));
         });
       },
-      //获取系统参数配置
+      //Lấy cấu hình tham số hệ thống
       GetSysParamConfig() {
         listSysParamConfigAll(this.systemParamConfigSearch).then(responseData => {
           if (responseData.code === 100) {
@@ -6453,14 +6453,14 @@
             value: "0",
           });
         }
-// Kiểm tra trường đã tồn tại chưa，Nếu chưa tồn tại mới thêm
+// Kiểm tra trường đã tồn tại chưa, Nếu chưa tồn tại mới thêm
                 listAll(this.SearchWesternModel,type)
           .then((responseData) => {
             if (responseData.code === 100) {
               // responseData.data.forEach((element) => {
               //     let isUnpackSell = element.isUnpackSell; //Cho phép bán lẻ tách hộp
               //     let stockNumber = element.stockNumber; //Số lượng tồn kho
-              //     let packName = element.pack.name; //Đóng gói（Đơn vị）
+              // let packName = element.pack.name; //Đóng gói (Đơn vị)
               //     let preparation = element.preparation; //Chế phẩm
               //     let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
               //     let price = element.price; //Giá bán
@@ -6521,7 +6521,7 @@
           this.SearchWesternModel.params[2].columnName = "drug.goods_name";
         }
 
-        // Kiểm tra trường đã tồn tại chưa，Nếu chưa tồn tại mới thêm
+        // Kiểm tra trường đã tồn tại chưa, Nếu chưa tồn tại mới thêm
         if (!this.SearchChineseModel.params.some(param => param.columnName === "surplus_stock")) {
           this.SearchChineseModel.params.push({
             columnName: "surplus_stock",
@@ -6548,7 +6548,7 @@
             // responseData.data.forEach((element) => {
             //     let isUnpackSell = element.isUnpackSell; //Cho phép bán lẻ tách hộp
             //     let stockNumber = element.stockNumber; //Số lượng tồn kho
-            //     let packName = element.pack.name; //Đóng gói（Đơn vị）
+            // let packName = element.pack.name; //Đóng gói (Đơn vị)
             //     let preparation = element.preparation; //Chế phẩm
             //     let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
             //     let price = element.price; //Giá bán
@@ -6599,7 +6599,7 @@
           this.SearchChineseModel.params[2].value = this.SearchChineseInput;
           this.SearchChineseModel.params[2].columnName = "drug.goods_name";
         }
-        // Kiểm tra trường đã tồn tại chưa，Nếu chưa tồn tại mới thêm
+        // Kiểm tra trường đã tồn tại chưa, Nếu chưa tồn tại mới thêm
         if (!this.SearchChineseModel.params.some(param => param.columnName === "surplus_stock")) {
           this.SearchChineseModel.params.push({
             columnName: "surplus_stock",
@@ -6702,7 +6702,7 @@
         setTimeout(() => {
           this.MedicalCalculate();
         }, 0);
-        this.$message.success("Thêm thành công！");
+        this.$message.success("Thêm thành công!");
         this.$nextTick(() => {
           this.$refs['westernMedicine'].slice(-2, -1)[0].focus()
         })
@@ -6770,7 +6770,7 @@
         this.medicalClickTabsValue.infusion.infusionProject[index].push(
           JSON.parse(JSON.stringify(recipelDetailEvt))
         );
-        this.$message.success("Thêm thành công！");
+        this.$message.success("Thêm thành công!");
         this.$nextTick(() => {
           this.$refs['transfusion'].slice(-2, -1)[0].focus()
         })
@@ -6779,13 +6779,13 @@
       //Nhấn nút xóa sau bảng thuốc Tây y để xóa dữ liệu có chỉ số chỉ định
       DeleteMedicalRow(index, row, item) {
         if(item!=null && item.content.recipelInfo.isPre){
-          //电子处方切换删除所有
+          //Chuyển đơn thuốc điện tử, xoá tất cả
           this.medicalClickTabsValue.content.recipelDetailEvtList.splice
           (0, this.medicalClickTabsValue.content.recipelDetailEvtList.length);
           return
         }
         //   this.chineseTest,
-        //   "就是"
+        //   "chính là"
         // );
         // if(row.stuffType===1){
         //   for (let i = 0; i < this.chineseTest[item.key-1].length; i++) {
@@ -6869,10 +6869,10 @@
         setTimeout(() => {
           this.MedicalCalculate();
         }, 0);
-        this.$message.success("Thêm thành công！");
+        this.$message.success("Thêm thành công!");
         setTimeout(()=>{
           this.$nextTick(() => {
-            // //保持到第一个
+            // //Giữ focus ở ô đầu tiên
             // this.$refs['herbMedicine'][0].focus()
             this.$refs['herbMedicine'].slice(-1)[0].focus()
           })
@@ -6957,7 +6957,7 @@
 
         let recipelDetailEvt = {
           allFee: 0,
-          total: 1, // 诊疗项目数量默认为1
+          total: 1, // Số lượng hạng mục khám chữa bệnh mặc định là 1
           company: this.Company,
           stuffType: 3,
           isExtra: 0,
@@ -6968,7 +6968,7 @@
         this.medicalClickTabsValue.content.recipelDetailEvtList.push(
           JSON.parse(JSON.stringify(recipelDetailEvt))
         );
-        this.$message.success("Thêm thành công！");
+        this.$message.success("Thêm thành công!");
         this.$nextTick(() => {
           this.$refs['DiagnosisTreatment'].slice(-2, -1)[0].focus()
         })
@@ -7138,7 +7138,7 @@
             totalDosage += Number(item.content.recipelInfo.dosage);
           })
           recipelDetailEvt.singleDosage = totalDosage;
-          // 使用售价而非成本价
+          // Dùng giá bán thay vì giá vốn
           recipelDetailEvt.allFee = recipelDetailEvt.drugStuffId.costItem.salePrice * totalDosage;
         }
 
@@ -7151,7 +7151,7 @@
             JSON.parse(JSON.stringify(recipelDetailEvt))
           );
         }
-        this.$message.success("Thêm thành công！");
+        this.$message.success("Thêm thành công!");
         this.$nextTick(() => {
           this.$refs['additionalCharge'].slice(-2, -1)[0].focus()
           this.MedicalCalculate();
@@ -7165,19 +7165,19 @@
         } else if (data.length >= 1) {
           for (let i = 0; i < data.length; i++) {
             data[i].drugOrder = i+1;
-            // 确保 isUnpackSell 有值，默认不拆零
+            // Đảm bảo isUnpackSell có giá trị, mặc định không bán lẻ
             if (data[i].isUnpackSell === undefined) {
               data[i].isUnpackSell = data[i].drugStuffId && data[i].drugStuffId.isUnpackSell === 1 ? 1 : 0;
             }
-            // Theo isUnpackSell 正确设置总量单位
+            // Theo isUnpackSell đặt đúng đơn vị tổng lượng
             if (data[i].minTotal !== undefined) {
-              // Lấy quy cách đóng gói：药品用 drug.preparation，材料用 stuff.packNumber
+              // Lấy quy cách đóng gói: thuốc dùng drug.preparation, vật tư dùng stuff.packNumber
               let preparation = 1;
               if (data[i].stuffType === '4') {
                 // Loại vật tư
                 preparation = (data[i].drugStuffId && data[i].drugStuffId.stuff && data[i].drugStuffId.stuff.packNumber) || 1;
               } else {
-                // Loại thuốc：优先使用 preparation，如果为 0 hoặc undefined，则尝试使用 stuff.packNumber
+                // Loại thuốc: ưu tiên dùng preparation, nếu bằng 0 hoặc undefined thì thử dùng stuff.packNumber
                 preparation = (data[i].drugStuffId && data[i].drugStuffId.drug && data[i].drugStuffId.drug.preparation);
                 if (!preparation) {
                   preparation = (data[i].drugStuffId && data[i].drugStuffId.stuff && data[i].drugStuffId.stuff.packNumber) || 1;
@@ -7185,10 +7185,10 @@
               }
               
               if (data[i].isUnpackSell === 1) {
-                // Bán lẻ：Tổng số lượng = 制剂单位总量
+                // Bán lẻ: Tổng số lượng = tổng lượng đơn vị bào chế
                 data[i].total = data[i].minTotal;
               } else {
-                // Không bán lẻ：Tổng số lượng = 制剂单位总量 ÷ Quy cách đóng gói = 包装单位总量
+                // Không bán lẻ: Tổng số lượng = tổng lượng đơn vị bào chế ÷ Quy cách đóng gói = tổng lượng đơn vị đóng gói
                 data[i].total = Math.ceil(data[i].minTotal / (preparation || 1));
               }
             }
@@ -7304,31 +7304,31 @@
           row.allFee = row.singleDosage * row.drugStuffId.price;
         }
       },
-      // 处理拆零销售切换时的总量转换
+      // Xử lý chuyển đổi tổng lượng khi bật/tắt bán lẻ
       handleUnpackSellChange(row, oldValue) {
-        // 如果之前没有总量或总量为0，Không cần chuyển đổi
+        // Nếu trước đó chưa có tổng lượng hoặc tổng lượng bằng 0, không cần chuyển đổi
         if (!row.total || row.total === 0) {
           this.MedicalCalculate();
           return;
         }
-        // Lấy quy cách đóng gói（每个包装包含多少制剂单位）
+        // Lấy quy cách đóng gói (mỗi đơn vị đóng gói chứa bao nhiêu đơn vị bào chế)
         let preparation = row.drugStuffId.drug.preparation || 1;
         if (oldValue === 0 && row.isUnpackSell === 1) {
-          // 从不拆零切换为拆零：包装单位转为制剂单位
+          // Từ không bán lẻ chuyển sang bán lẻ: đơn vị đóng gói chuyển thành đơn vị bào chế
           row.total = Math.ceil(row.total * preparation);
         } else if (oldValue === 1 && row.isUnpackSell === 0) {
-          // 从拆零切换为不拆零：制剂单位转为包装单位
+          // Từ bán lẻ chuyển sang không bán lẻ: đơn vị bào chế chuyển thành đơn vị đóng gói
           row.total = Math.ceil(row.total / preparation);
         }
         this.MedicalCalculate();
       },
       MedicalCalculate() {
-        let n1 = 0; //西药处方个数
-        let n2 = 0; //中药处方个数
-        let n3 = 0; //输液处方个数
-        let n4 = 0; //诊疗项目处方个数
-        let seq = 0; //处方顺序
-        let fullAmount = 0; //所有处方的费用汇总
+        let n1 = 0; //Số đơn thuốc Tây y
+        let n2 = 0; //Số đơn thuốc Đông y
+        let n3 = 0; //Số đơn thuốc truyền dịch
+        let n4 = 0; //Số đơn hạng mục khám chữa bệnh
+        let seq = 0; //Thứ tự đơn thuốc
+        let fullAmount = 0; //Tổng hợp chi phí của tất cả đơn thuốc
         // if(!this.medicalEditTabs.length>0){
         //   fullAmount=
         // }
@@ -7358,7 +7358,7 @@
                 rowElement.dosageUnitType = rowElement.dosageUnitType || 'dosis'; // Đơn vị liều lượng mặc định
 
                 if (rowElement.frequency && rowElement.days) {
-                  // Tính tổng lượng（Đơn vị bào chế）
+                  // Tính tổng lượng (Đơn vị bào chế)
                   let calculatedTotalInPreparation;
                   if (rowElement.dosageUnitType === 'preparation') {
                     // Tính theo đơn vị bào chế
@@ -7375,11 +7375,11 @@
                       .toNumber();
                   }
 
-                  // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế，Dùng để kiểm tra tồn kho ở backend
+                  // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế, Dùng để kiểm tra tồn kho ở backend
                   rowElement.minTotal = Math.ceil(calculatedTotalInPreparation);
 
                   if (rowElement.isUnpackSell === 1) {
-                    // Bán lẻ：total Lưu tổng lượng theo đơn vị bào chế
+                    // Bán lẻ: total Lưu tổng lượng theo đơn vị bào chế
                     rowElement.unitPrice = rowElement.drugStuffId.retailPrice;
                     rowElement.total = Math.ceil(calculatedTotalInPreparation);
                     // Chi phí = Tổng lượng bào chế × Đơn giá bào chế
@@ -7387,7 +7387,7 @@
                       .multipliedBy(rowElement.drugStuffId.retailPrice)
                       .toNumber()).toFixed(2);
                   } else {
-                    // Không bán lẻ：total Lưu tổng lượng theo đơn vị đóng gói
+                    // Không bán lẻ: total Lưu tổng lượng theo đơn vị đóng gói
                     rowElement.unitPrice = rowElement.drugStuffId.price;
                     rowElement.total = Math.ceil(
                       BigNumber(calculatedTotalInPreparation)
@@ -7410,7 +7410,7 @@
                   }
                   this.$message.error(
                     rowElement.drugStuffId.name +
-                    "Tồn kho không đủ，Vui lòng sửa số lượng hoặc bổ sung tồn kho！"
+                    "Tồn kho không đủ, Vui lòng sửa số lượng hoặc bổ sung tồn kho!"
                   );
                 } else {
                   this.beyondInventoryType = false;
@@ -7516,7 +7516,7 @@
                   }
                   this.$message.error(
                     rowElement.drugStuffId.name +
-                    "Tồn kho không đủ，Vui lòng sửa số lượng hoặc bổ sung tồn kho！"
+                    "Tồn kho không đủ, Vui lòng sửa số lượng hoặc bổ sung tồn kho!"
                   );
                 } else {
                   this.beyondInventoryType = false;
@@ -7590,7 +7590,7 @@
                 rowElement.allFee = rowElement.allFee ? rowElement.allFee : 0;
                 rowElement.dosageUnitType = rowElement.dosageUnitType || 'dosis'; // Đơn vị liều lượng mặc định
                 if (rowElement.frequency && rowElement.frequency.value && rowElement.days && rowElement.days.name) {
-                  // Tính tổng lượng（Đơn vị bào chế）
+                  // Tính tổng lượng (Đơn vị bào chế)
                   let calculatedTotalInPreparation;
                   if (rowElement.dosageUnitType === 'preparation') {
                     // Tính theo đơn vị bào chế
@@ -7607,11 +7607,11 @@
                       .toNumber();
                   }
 
-                  // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế，Dùng để kiểm tra tồn kho ở backend
+                  // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế, Dùng để kiểm tra tồn kho ở backend
                   rowElement.minTotal = Math.ceil(calculatedTotalInPreparation);
 
                   if (rowElement.isUnpackSell === 1) {
-                    // Bán lẻ：total Lưu tổng lượng theo đơn vị bào chế
+                    // Bán lẻ: total Lưu tổng lượng theo đơn vị bào chế
                     rowElement.unitPrice = rowElement.drugStuffId.retailPrice;
                     rowElement.total = Math.ceil(calculatedTotalInPreparation);
                     // Chi phí = Tổng lượng bào chế × Đơn giá bào chế
@@ -7640,7 +7640,7 @@
                   }
                   this.$message.error(
                     rowElement.drugStuffId.name +
-                    "Tồn kho không đủ，Vui lòng sửa số lượng hoặc bổ sung tồn kho！"
+                    "Tồn kho không đủ, Vui lòng sửa số lượng hoặc bổ sung tồn kho!"
                   );
                 } else {
                   this.beyondInventoryType = false;
@@ -7654,7 +7654,7 @@
               .plus(medicalAmount)
               .toNumber();
           }
-          //诊疗项目处方
+          //Hạng mục khám chữa bệnh
           else if (tabElement.type === "recipelType_3") {
             n4++;
             tabElement.title = recipelTypeName + n4;
@@ -7662,7 +7662,7 @@
               if (rowElement.isExtra === 0) {
                 detailSeq++;
                 rowElement.seq = detailSeq;
-                rowElement.total = rowElement.total ? rowElement.total : 1; // 默认数量为1
+                rowElement.total = rowElement.total ? rowElement.total : 1; // Số lượng mặc định là 1
                 rowElement.allFee = BigNumber(rowElement.drugStuffId.price)
                   .multipliedBy(rowElement.total - 0)
                   .toNumber();
@@ -7725,7 +7725,7 @@
                   }
                   this.$message.error(
                     rowElement.drugStuffId.name +
-                    "Tồn kho không đủ，Vui lòng sửa số lượng hoặc bổ sung tồn kho！"
+                    "Tồn kho không đủ, Vui lòng sửa số lượng hoặc bổ sung tồn kho!"
                   );
                 } else {
                   this.beyondStuffInventoryType = false;
@@ -7747,7 +7747,7 @@
                     }
                     this.$message.error(
                       rowElement.drugStuffId.name +
-                      "Tồn kho không đủ，Vui lòng sửa số lượng hoặc bổ sung tồn kho！"
+                      "Tồn kho không đủ, Vui lòng sửa số lượng hoặc bổ sung tồn kho!"
                     );
                   } else {
                     this.beyondStuffInventoryType = false;
@@ -7788,24 +7788,24 @@
       changeDosageUnit(row, unitType) {
         if (row.dosageUnitType === unitType) return;
 
-        // 保存当前值
+        // Lưu giá trị hiện tại
         const currentValue = parseFloat(row.singleDosage) || 0;
 
         if (unitType === 'preparation') {
-          // 从剂量单位转换为制剂单位
+          // Chuyển từ đơn vị liều dùng sang đơn vị bào chế
           if (row.drugStuffId.drug && row.drugStuffId.drug.dosis) {
             row.singleDosage = (currentValue / row.drugStuffId.drug.dosis).toFixed(2);
           }
         } else {
-          // 从制剂单位转换为剂量单位
+          // Chuyển từ đơn vị bào chế sang đơn vị liều dùng
           if (row.drugStuffId.drug && row.drugStuffId.drug.dosis) {
             row.singleDosage = (currentValue * row.drugStuffId.drug.dosis).toFixed(2);
           }
         }
 
-        // 更新单位类型
+        // Cập nhật loại đơn vị
         row.dosageUnitType = unitType;
-        // 重新计算
+        // Tính toán lại
         this.MedicalCalculate();
       },
       calculateDaysByTotal(row) {
@@ -7813,35 +7813,35 @@
 
         row.dosageUnitType = row.dosageUnitType || 'dosis';
 
-        // Tính liều dùng mỗi lần（Chuyển đổi sang đơn vị bào chế）
+        // Tính liều dùng mỗi lần (Chuyển đổi sang đơn vị bào chế)
         let singleDoseInPreparation;
         if (row.dosageUnitType === 'preparation') {
-          // Đơn vị bào chế，Không cần chuyển đổi
+          // Đơn vị bào chế, Không cần chuyển đổi
           singleDoseInPreparation = parseFloat(row.singleDosage) || 0;
         } else {
-          // Đơn vị liều lượng，Cần chuyển đổi sang đơn vị bào chế
+          // Đơn vị liều lượng, Cần chuyển đổi sang đơn vị bào chế
           singleDoseInPreparation = (parseFloat(row.singleDosage) || 0) / (row.drugStuffId.drug.dosis || 1);
         }
 
-        // Tính liều dùng mỗi ngày（Đơn vị bào chế）
+        // Tính liều dùng mỗi ngày (Đơn vị bào chế)
         let dailyDosage = singleDoseInPreparation * (parseFloat(row.frequency.value.split("_")[1]) || 0);
 
         if (dailyDosage > 0) {
           // Theo isUnpackSell Kiểm tra đơn vị tổng lượng
           let totalInPreparation;
           if (row.isUnpackSell === 1) {
-            // Đơn vị tổng lượng là đơn vị bào chế，Sử dụng trực tiếp
+            // Đơn vị tổng lượng là đơn vị bào chế, Sử dụng trực tiếp
             totalInPreparation = row.total;
           } else {
-            // Đơn vị tổng lượng là đơn vị đóng gói，Cần chuyển đổi sang đơn vị bào chế：Tổng số lượng × Quy cách đóng gói
+            // Đơn vị tổng lượng là đơn vị đóng gói, Cần chuyển đổi sang đơn vị bào chế: Tổng số lượng × Quy cách đóng gói
             totalInPreparation = row.total * (row.drugStuffId.drug.preparation || 1);
           }
 
-          // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế，Dùng để kiểm tra tồn kho ở backend
+          // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế, Dùng để kiểm tra tồn kho ở backend
           row.minTotal = Math.ceil(totalInPreparation);
 
-          // 计算天数 = Tổng số lượng (Đơn vị bào chế) / Liều dùng mỗi ngày
-          // 向上取整，确保天数足够覆盖总量
+          // Tính số ngày = Tổng số lượng (Đơn vị bào chế) / Liều dùng mỗi ngày
+          // Làm tròn lên, đảm bảo số ngày đủ phủ tổng lượng
           const days = Math.ceil(totalInPreparation / dailyDosage);
           if (row.days && row.days.name) {
             row.days.name = days;
@@ -7849,7 +7849,7 @@
             row.days = { name: days };
           }
 
-          // 计算费用并更新总金额
+          // Tính chi phí và cập nhật tổng tiền
           if (row.isUnpackSell === 1) {
             row.allFee = (row.total * row.drugStuffId.retailPrice).toFixed(2);
           } else {
@@ -7864,34 +7864,34 @@
 
         row.dosageUnitType = row.dosageUnitType || 'dosis';
 
-        // Tính liều dùng mỗi lần（Chuyển đổi sang đơn vị bào chế）
+        // Tính liều dùng mỗi lần (Chuyển đổi sang đơn vị bào chế)
         let singleDoseInPreparation;
         if (row.dosageUnitType === 'preparation') {
-          // Đơn vị bào chế，Không cần chuyển đổi
+          // Đơn vị bào chế, Không cần chuyển đổi
           singleDoseInPreparation = parseFloat(row.singleDosage) || 0;
         } else {
-          // Đơn vị liều lượng，Cần chuyển đổi sang đơn vị bào chế
+          // Đơn vị liều lượng, Cần chuyển đổi sang đơn vị bào chế
           singleDoseInPreparation = (parseFloat(row.singleDosage) || 0) / (row.drugStuffId.drug.dosis || 1);
         }
 
-        // Tính liều dùng mỗi ngày（Đơn vị bào chế）
+        // Tính liều dùng mỗi ngày (Đơn vị bào chế)
         let dailyDosage = singleDoseInPreparation * (parseFloat(row.frequency.value.split("_")[1]) || 0);
 
         // Tính tổng lượng (Đơn vị bào chế) = Liều dùng mỗi ngày × Số ngày
         let days = parseFloat(row.days.name) || 1;
         let totalInPreparation = dailyDosage * days;
 
-        // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế，Dùng để kiểm tra tồn kho ở backend
+        // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế, Dùng để kiểm tra tồn kho ở backend
         row.minTotal = Math.ceil(totalInPreparation);
 
         // Theo isUnpackSell Kiểm tra đơn vị tổng lượng
         if (row.isUnpackSell === 1) {
-          // Đơn vị tổng lượng là đơn vị bào chế，Sử dụng trực tiếp
+          // Đơn vị tổng lượng là đơn vị bào chế, Sử dụng trực tiếp
           row.total = Math.ceil(totalInPreparation);
           // Tính chi phí
           row.allFee = (row.total * row.drugStuffId.retailPrice).toFixed(2);
         } else {
-          // Đơn vị tổng lượng là đơn vị đóng gói，需要转换为包装单位：Tổng số lượng (Đơn vị bào chế) ÷ Quy cách đóng gói
+          // Đơn vị tổng lượng là đơn vị đóng gói, cần chuyển thành đơn vị đóng gói: Tổng số lượng (Đơn vị bào chế) ÷ Quy cách đóng gói
           let preparation = (row.drugStuffId.drug && row.drugStuffId.drug.preparation) || 
                             (row.drugStuffId.stuff && row.drugStuffId.stuff.packNumber) || 1;
           row.total = Math.ceil(totalInPreparation / preparation);
@@ -7953,17 +7953,17 @@
         });
 
         if (returnForEach) {
-          this.$message.error("Có đơn thuốc Tây y hoặc Đông y，Vui lòng điền giải thích chẩn đoán tương ứng。");
+          this.$message.error("Có đơn thuốc Tây y hoặc Đông y, Vui lòng điền giải thích chẩn đoán tương ứng.");
           return;
         }
 
         if (hasSelsmallType) {
-          this.$message.error("Vui lòng kiểm tra phân loại trong mỗi đơn thuốc đã chọn chưa。");
+          this.$message.error("Vui lòng kiểm tra phân loại trong mỗi đơn thuốc đã chọn chưa.");
           return;
         }
 
         if (numberCheck) {
-          this.$message.error("Vui lòng kiểm tra mỗi đơn thuốc có thuốc chưa。");
+          this.$message.error("Vui lòng kiểm tra mỗi đơn thuốc có thuốc chưa.");
           return;
         }
         this.MedicalRecordModel.company = this.Company;
@@ -7980,7 +7980,7 @@
         this.hint = false;
         allSaveMedicalRecord(formData).then((responseData) => {
           if (responseData.code === 100) {
-            this.$message.success("Thao tác thành công！");
+            this.$message.success("Thao tác thành công!");
             this.hasBtnFinishVisit = false;
             this.hasBtnPrint = false;
             this.isReadOnly = true;
@@ -8012,7 +8012,7 @@
         });
       },
       checkInventory(row) {
-        // 用制剂单位总量和库存（Đơn vị bào chế）比较
+        // So sánh tổng lượng đơn vị bào chế với tồn kho (Đơn vị bào chế)
         const minTotal = row.minTotal || (row.isUnpackSell === 1 ? row.total : row.total * (row.drugStuffId.drug.preparation || 1));
         if (minTotal > row.drugStuffId.surplusStock) {
           //
@@ -8026,8 +8026,8 @@
           this.beyondInventoryType = false;
         }
       },
-      //默认之展开一行
-      // 折叠面板每次只能展开一行
+      //Mặc định chỉ mở rộng một dòng
+      // Bảng gập mỗi lần chỉ mở rộng được một dòng
       expandSelect(row, expandedRows) {
         const that = this;
         if (expandedRows.length) {
@@ -8099,12 +8099,12 @@
           that.blmbexpands = []; // Mặc định không mở rộng
         }
       },
-      //病历模板弹框事件
+      //Sự kiện hộp thoại mẫu bệnh án
       blmbclick() {
         this.Getblmbtable();
         this.blmbDialogVisible = true;
       },
-      //病历历史调用
+      //Gọi bệnh án lịch sử
       onMedicalHistory() {
         this.$message.warning("Đang phát triển...");
       },
@@ -8465,7 +8465,7 @@
           this.drawer = true;
           this.Getrecordlist();
         } else {
-          this.$message.warning("Vui lòng chọn bệnh nhân！");
+          this.$message.warning("Vui lòng chọn bệnh nhân!");
         }
       },
       jzjlhandleClick(row) {
@@ -8486,7 +8486,7 @@
               if (res.code === 100) {
                 this.member = res.data;
               } else {
-                this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！");
+                this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!");
               }
             })
             .catch();
@@ -8495,7 +8495,7 @@
               if (res.code === 100) {
                 this.poverty = res.data;
               } else {
-                this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！");
+                this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!");
               }
             })
             .catch();
@@ -8504,7 +8504,7 @@
           //   if(res.code==='100'){
           //     this.member=res.data
           //   }else{
-          //     this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+          // this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
           //   }
           // }).catch()
           allQueryMedicalRecord(row.regid).then((responseData) => {
@@ -8588,7 +8588,7 @@
         //     if(res.code==='100'){
         //       this.member=res.data
         //     }else{
-        //       this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+        // this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
         //     }
         //   }).catch()
         //   allQueryMedicalRecord(row.regid).then((responseData) => {
@@ -8662,7 +8662,7 @@
         //     if(res.code==='100'){
         //       this.member=res.data
         //     }else{
-        //       this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+        // this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
         //     }
         //   }).catch()
         //   allQueryMedicalRecord(row.regid).then((responseData) => {
@@ -8722,7 +8722,7 @@
           });
           return
         }
-        // 防抖后触发查询，若没有输入则查询所有，若有输入则传入查询条件
+        // Kích hoạt truy vấn sau khi debounce: không nhập thì truy vấn tất cả, có nhập thì truyền điều kiện truy vấn
         getZdList(searchParam.trim(),zdlx).then(res => {
           if(res.code === 100){
           if (zdlx === 'WM') {
@@ -8756,7 +8756,7 @@
         this.$refs.registrationForm.openAddRegistrationDialog(this.permission.remove,this.permission.view);
       },
       focusNextInput(index) {
-        //先录入药品再回车流程
+        //Quy trình nhập thuốc rồi nhấn Enter
         if(index === ''){
           document.getElementById('singleDosageInput').focus();
           return
@@ -8765,16 +8765,16 @@
           document.getElementById('fjinput').focus();
           return
         }
-      //   const nextInput = this.$refs.herbMedicine[index + 1];  // 获取下一个 input 元素
+      //   const nextInput = this.$refs.herbMedicine[index + 1];  // Lấy phần tử input tiếp theo
       //   if (nextInput) {
-      //     nextInput.focus();  // 聚焦到下一个输入框
+      //     nextInput.focus();  // Focus vào ô nhập tiếp theo
       //   } else {
       //     this.$nextTick(() => {
       //       const dosageInput = document.getElementById('dosageInput');
-      //       dosageInput.focus(); // 设置剂量焦点
+      //       dosageInput.focus(); // Đặt focus vào ô liều dùng
       //   });
       // }
-        //录入单个药品后回车流程
+        //Quy trình nhấn Enter sau khi nhập một thuốc
         if(index === '1'){
              document.getElementById('WesternInput').focus();
         }if(index === '2'){
@@ -8801,15 +8801,15 @@
           export: false,
           skip: false,
         },
-        //诊断证候控制
+        //Kiểm soát chẩn đoán và chứng hậu
         WMpopoverVisible: false,
         TCMpopoverVisible:false,
         ZHpopoverVisible:false,
         syndromePopoverVisible:false,
         diagnosesList: [],//Chẩn đoán
         zyzhList:[],//Chứng hậu Đông y
-        syndromesList:[],//中医证候列表
-        //Loại y tế：western-Tây y，chinese-Đông y，默认西医
+        syndromesList:[],//Danh sách chứng hậu Đông y
+        //Loại y tế: western-Tây y, chinese-Đông y, mặc định Tây y
         medicalType: 'western',
         queryModel: {
           dateRange: [],
@@ -8851,7 +8851,7 @@
         registration: {
           morbidityTime: "",
           treatType: {
-            name: "初诊",
+            name: "Khám lần đầu",
             value: "treatType_0",
           },
           infectType: {
@@ -8881,7 +8881,7 @@
             type: "recipelType_3",
           },
         ],
-        //是否快速接诊
+        //Có bật tiếp nhận nhanh không
         isInstant: 0,
         ChineseButton: false,
         //tabsTrạng thái mặc định prepare:Chờ khám already:Đã khám
@@ -8963,7 +8963,7 @@
         fileIdFile: {
           fileId: "",
           action: "add",
-          deletes: [], // Chờ xóa（Đã tải lên）danh sách tệp
+          deletes: [], // Chờ xóa (Đã tải lên)danh sách tệp
           uploads: [], // Danh sách tệp chờ tải lên
         },
         //Trường cấu hình bệnh án
@@ -9102,14 +9102,14 @@
         //   ],
         // },
 
-        //开具处方数据集合
+        //Tập dữ liệu kê đơn thuốc
         recipelInfoEvtList: [],
         payAmount: 0,
-        //打印时候的处方ID
+        //ID đơn thuốc khi in
         recipelInfoId: "",
-        //是否显示完成接诊按钮
+        //Có hiển thị nút hoàn tất tiếp nhận không
         hasBtnFinishVisit: true,
-        //是否显示打印按钮
+        //Có hiển thị nút in không
         hasBtnPrint: false,
         //Chỉ đọc
         isReadOnly: true,
@@ -9128,14 +9128,14 @@
         zushu: [1],
         excharge: [], //Phí phụ thêm truyền dịch
         changeData: {},
-        hint: false, //用户切换提示
-        clickId: "", //点击id
+        hint: false, //Gợi ý khi chuyển người dùng
+        clickId: "", //Id được click
         chineseTest: [
           []
         ],
         timer: 0,
-        historyType: "", //历史处方的处方类型
-        singleRecipel: 0, //历史处方调用
+        historyType: "", //Loại đơn thuốc của đơn thuốc lịch sử
+        singleRecipel: 0, //Gọi đơn thuốc lịch sử
         templateRecipelList: [],
         expands: [],
         getRowKeys(row) {
@@ -9161,7 +9161,7 @@
           recipeTemplateInfo: {},
           recipeTemplateDetail: [{}],
           createId: "",
-        }, //保存模板对象
+        }, //Đối tượng mẫu lưu
         templateFormRules: {
           diagnosis: [{
             required: true,
@@ -9173,27 +9173,27 @@
             message: "Vui lòng nhập tên mẫu",
             trigger: "blur"
           },],
-        }, //保存模板校验
+        }, //Kiểm tra mẫu lưu
         saveTemplateType: "", //Loại mẫu
-        saveTemplateIndex: 0, //对应的处方索引
+        saveTemplateIndex: 0, //Chỉ số đơn thuốc tương ứng
         backgroundColors: 10000, //Màu nền
-        overColor: 0, //完成就诊背景颜色
+        overColor: 0, //Màu nền hoàn tất khám
         userClickID: "", //Người dùngid
-        endHint: true, //完成就诊后切换用户是否提示
+        endHint: true, //Có gợi ý chuyển người dùng sau khi hoàn tất khám không
         clickChangeColor: "",
         inspectionType: [],
         inspectionSign: 0,
         inspectionDialogVisible: false,
         typeName: "",
-        costInspection: {}, //检验检查保存
+        costInspection: {}, //Lưu xét nghiệm kiểm tra
         uploadFiles: "", //Tệpid
         member: [], //Thẻ hội viên
-        poverty: [], //贫困
+        poverty: [], //Hộ nghèo
 
-        //病历模板弹框
+        //Hộp thoại mẫu bệnh án
         blmbDialogVisible: false,
         blmblxDialogVisible: false,
-        //病历模板查询条件
+        //Điều kiện truy vấn mẫu bệnh án
 
         blmbcurrentPage: 1,
         blmbpatientTotal: 0,
@@ -9356,8 +9356,8 @@
         recordtableData: [],
         blmbVisit: false,
 
-        beyondInventoryType: false, //药品超出库存状态
-        beyondStuffInventoryType: false, //材料超出库存
+        beyondInventoryType: false, //Trạng thái thuốc vượt tồn kho
+        beyondStuffInventoryType: false, //Vật tư vượt tồn kho
         cancellation: false, //
         chronicDisease: false, //Có phải bệnh mạn tính không
         systemParamConfig: {
@@ -9378,7 +9378,7 @@
             }
           ]
         },
-        //文件上传
+        //Tải tệp lên
         MedicalFlags: "add",
         MedicalFileObjId: "",
         deleteFileIdList: [],
@@ -9536,7 +9536,7 @@
   }
 
   .aside-header {
-    position: relative; /* 使子元素可以相对于它定位 */
+    position: relative; /* Cho phép phần tử con định vị tương đối theo nó */
     font-weight: bold;
     line-height: 10px;
     height: 10px;
@@ -9619,7 +9619,7 @@
     display: inline-block;
   }
 
-  /* 医疗基础信息表单样式*/
+  /* Kiểu dáng form thông tin cơ bản y tế */
   .medical-base-form .el-form-item {
     margin-bottom: 10px;
   }

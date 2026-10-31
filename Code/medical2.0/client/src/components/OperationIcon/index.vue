@@ -25,17 +25,17 @@ export default {
       type: String,
       default: () => {return 'el-icon-picture'}
     },
-    // Loại: primary、success、info、warning、danger
+    // Loại: primary, success, info, warning, danger
     type: {
       type: String,
       default: () => {return 'primary'}
     },
-    // 显示的内容
+    // Nội dung hiển thị
     content: {
       type: String,
       default: () => {return 'Vui lòng đặt thông tin nhắc nhở'}
     },
-    // Tooltip 的出现位置
+    // Vị trí xuất hiện của Tooltip
     placement: {
       type: String,
       default: () => {return 'top-start'}

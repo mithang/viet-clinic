@@ -180,7 +180,7 @@ export default {
       this.setLoad()
       try {
         let params = []
-        /* Người không phải quản trị hệ thống，Chỉ truy vấn được dữ liệu của công ty mình */
+        /* Người không phải quản trị hệ thống, Chỉ truy vấn được dữ liệu của công ty mình */
         if(Number(currentUser.id) !== 1001) {
           params.push({'columnName':'id', 'queryType': '=', 'value': currentUser.company.id})
         }

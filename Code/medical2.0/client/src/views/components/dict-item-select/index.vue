@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  //针对所有数据字段的下拉选择控件
+  // Control chọn thả xuống dùng cho mọi trường dữ liệu
   import {
     listDictItemAll
   } from "@/api/sys/dictItem";

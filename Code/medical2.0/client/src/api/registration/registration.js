@@ -2,7 +2,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/registration/registration')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getRegistrationById = baseApi.getById
 export const listRegistrationPage = baseApi.listPage
 export const listRegistrationAll = baseApi.listAll

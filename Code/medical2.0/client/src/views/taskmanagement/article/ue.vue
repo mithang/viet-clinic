@@ -11,7 +11,7 @@ export default {
 name: 'Editor',
 props: {
 
-/* 编辑器的内容 */
+/* Nội dung của trình soạn thảo */
 value: {
 
 type: String,
@@ -23,7 +23,7 @@ height: {
 type: Number,
 default: null
 },
-/* 最小高度 */
+/* Chiều cao nhỏ nhất */
 minHeight: {
 
 type: Number,
@@ -50,7 +50,7 @@ toolbar: [
 //['blockquote', 'code-block'], // Trích dẫn Khối mã
 [{
  list: 'ordered' }, {
- list: 'bullet' }], // Có thứ tự、Danh sách không thứ tự
+ list: 'bullet' }], // Có thứ tự, Danh sách không thứ tự
 [{
  indent: '-1' }, {
  indent: '+1' }], // Thụt lề
@@ -60,11 +60,11 @@ toolbar: [
  header: [1, 2, 3, 4, 5, 6, false] }], // Tiêu đề
 [{
  color: [] }, {
- background: [] }], // Màu chữ、Màu nền chữ
+ background: [] }], // Màu chữ, Màu nền chữ
 [{
  align: [] }], // Cách căn chỉnh
 ['clean'], // Xóa định dạng văn bản
-//['link', 'image', 'video'] // Liên kết、Hình ảnh、Video
+//['link', 'image', 'video'] // Liên kết, Hình ảnh, Video
 [ 'image'] // Hình ảnh
 ]
 },

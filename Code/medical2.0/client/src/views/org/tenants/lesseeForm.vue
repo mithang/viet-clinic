@@ -39,22 +39,22 @@
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='Địa chỉ（Tỉnh/Thành phố）' prop='addressProvince' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressProvince' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Tỉnh/Thành phố）"' ></el-input>
+          <el-form-item label='Địa chỉ (Tỉnh/Thành phố)' prop='addressProvince' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressProvince' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ (Tỉnh/Thành phố)"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='Địa chỉ（Thành phố）' prop='addressCity' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressCity' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Thành phố）"' ></el-input>
+          <el-form-item label='Địa chỉ (Thành phố)' prop='addressCity' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressCity' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ (Thành phố)"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/1'>
-          <el-form-item label='Địa chỉ（Quận/Huyện）' prop='addressRegion' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressRegion' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Quận/Huyện）"' ></el-input>
+          <el-form-item label='Địa chỉ (Quận/Huyện)' prop='addressRegion' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressRegion' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ (Quận/Huyện)"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -173,9 +173,9 @@ export default {
         'phoneNumber': '',   // Số điện thoại
         'code': '',   // 
         'contactName': '',   // Họ tên người liên hệ
-        'addressProvince': '',   // Địa chỉ（Tỉnh/Thành phố）
-        'addressCity': '',   // Địa chỉ（Thành phố）
-        'addressRegion': '',   // Địa chỉ（Quận/Huyện）
+        'addressProvince': '', // Địa chỉ (Tỉnh/Thành phố)
+        'addressCity': '', // Địa chỉ (Thành phố)
+        'addressRegion': '', // Địa chỉ (Quận/Huyện)
         'address': '',   // Địa chỉ liên hệ
         'status': '1',   // Trạng thái
         'remarks': '',   // Ghi chú
@@ -215,7 +215,7 @@ export default {
       this.bizFormModel = {...this.initFormModel(), ...lessee}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
-      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+      this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
       this.dialogProps.visible = true
     }
   },

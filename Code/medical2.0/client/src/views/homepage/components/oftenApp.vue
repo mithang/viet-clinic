@@ -57,7 +57,7 @@ export default {
         return new Promise((resolve, reject) => {
           let items = [];
           let routers = getLocalRouters()
-          // 增加用户体验
+          // Tăng trải nghiệm người dùng
           setTimeout(() => {
             for (let router of routers) {
               let routerProperties = JSON.parse(router.properties)

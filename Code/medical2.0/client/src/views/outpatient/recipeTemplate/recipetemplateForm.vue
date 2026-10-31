@@ -610,7 +610,7 @@
             ></el-input
             >
 
-            &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng：
+            &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng: 
             <el-select
               :disabled="
                  dialogProps.action === 'view'
@@ -668,7 +668,7 @@
               v-model="bizFormModel.recipeTemplateInfo.singleDosage"
               style="width: 60px"
             ></el-input
-            >&nbsp;<span v-if="isSpecial">格</span><span v-else>格</span>
+            >&nbsp;<span v-if="isSpecial">gói</span><span v-else>ml</span>
             <span style="float: right"
               >Số tiền thuốc Đông y:{{
                 bizFormModel.recipeTemplateInfo.medicalAmount
@@ -1273,7 +1273,7 @@
                               {{
                                 scope.row.stuffType === "4"
                                   ? scope.row.type.name
-                                  : "Khám chữa bệnh（Chi phí khác）"
+                                  : "Khám chữa bệnh (Chi phí khác)"
                               }}
                             </template>
                           </el-table-column>
@@ -1376,7 +1376,7 @@
                             {{
                               scope.row.stuffType === "4"
                                 ? scope.row.drugStuffId.stuff.type.name
-                                : "Khám chữa bệnh（Chi phí khác）"
+                                : "Khám chữa bệnh (Chi phí khác)"
                             }}
                           </template>
                         </el-table-column>
@@ -1502,7 +1502,7 @@
                             {{
                               scope.row.stuffType === "4"
                                 ? scope.row.drugStuffId.stuff.type.name
-                                : "Khám chữa bệnh（Chi phí khác）"
+                                : "Khám chữa bệnh (Chi phí khác)"
                             }}
                           </template>
                         </el-table-column>
@@ -1873,7 +1873,7 @@ export default {
       this.medicalEditTabsValue = tab;
       this.medicalClickTabsValue = this.medicalEditTabsValue;
     },
-    //获取字典数据值
+    //Lấy giá trị dữ liệu từ điển
      //Lấy giá trị từ điển dữ liệu
     GetAllOption() {
       this.GetOption("1014474470772899981");
@@ -1947,11 +1947,11 @@ export default {
     doSave() {
       this.bizFormModel.company=this.clinic
       this.bizFormModel.createId=currentUser.id
-     // this.bizFormModel.recipeTemplateDetail=JSON.stringify(this.bizFormModel.recipeTemplateDetail)
+      // this.bizFormModel.recipeTemplateDetail=JSON.stringify(this.bizFormModel.recipeTemplateDetail)
       //this.bizFormModel.recipeTemplateInfo=JSON.stringify(this.bizFormModel.recipeTemplateInfo)
       // let totalCheck=false
       // let paramsCheck=false
-      // //判断西药处方
+      // //Kiểm tra đơn thuốc Tây y
       // if (
       //     this.bizFormModel.type.value === "recipelType_0"
       //   ) {
@@ -1996,7 +1996,7 @@ export default {
         this.resetLoad()
       }).catch(error => {
         this.outputError(error)
-        this.$message.error("Dữ liệu hệ thống bất thường，Vui lòng kiểm tra dữ liệu có sai không hoặc liên hệ quản trị viên giải quyết！")
+        this.$message.error("Dữ liệu hệ thống bất thường, Vui lòng kiểm tra dữ liệu có sai không hoặc liên hệ quản trị viên giải quyết!")
       })
     },
     switchEdit() {
@@ -2187,7 +2187,7 @@ export default {
      }
     },
 
-    //输液处方药品查询
+    //Truy vấn thuốc cho đơn thuốc truyền dịch
      GetInfusionTable(index) {
 
       let search={
@@ -2232,7 +2232,7 @@ export default {
       });
     },
 
-    //输液处方药品选择
+    //Chọn thuốc cho đơn thuốc truyền dịch
      //Nhấn dòng bảng truyền dịch để chọn và thêm vào bảng đơn thuốc Tây y đã chọn
     RowClickInfusionTable(row, column, event,index) {
       // let content = this.medicalClickTabsValue.content;
@@ -2466,7 +2466,7 @@ export default {
         let recipeTemplate={
           barCode: "",
           bitCode: "",
-          brandName: "阿司匹林",
+          brandName: "Aspirin",
           chineseMedicineUse: {name: ''},
           code: "YP-00085",
           company: window.currentUser ? window.currentUser.company : {},
@@ -2475,22 +2475,22 @@ export default {
           days: {name: ''},
           dosis: "2",
           dosisUnit: {name: 'g', value: 'medicalDosisUnit_0'},
-          factory: {id: '1083126482167300096', name: '安徽药材'},
+          factory: {id: '1083126482167300096', name: 'Dược liệu An Huy'},
           frequency: {name: ''},
-          goodsName: "阿司匹林胶囊",
+          goodsName: "Aspirin 81mg",
           id: "1111009959611269241",
           insuranceCode: "",
           inventory: 3765,
           isUnpackSell: "1",
-          nature: {name: '进口', value: 'medicalNature_1'},
-          pack: {name: '盒', value: 'medicalPackUnit_2'},
+          nature: {name: 'Nhập khẩu', value: 'medicalNature_1'},
+          pack: {name: 'Hộp', value: 'medicalPackUnit_2'},
           pinyinCode: "ASPLJN",
           preparation: "24",
-          preparationUnit: {name: '粒', value: 'medicalPreparationUnit_1'},
+          preparationUnit: {name: 'Viên', value: 'medicalPreparationUnit_1'},
           price: 25,
           remarks: "",
           retailPrice: 1,
-          source: "德国",
+          source: "Đức",
           standardCode: "2222",
           status: "1",
           stockNumber: "90360",
@@ -2661,13 +2661,13 @@ export default {
       this.MedicalCalculate();
     },
 
-    //附加费删除
+    //Xoá phụ phí
     DeleteExMedicalRow(index,row){
        this.bizFormModel.recipeTemplateDetail =
         this.bizFormModel.recipeTemplateDetail.filter(
           (item) => item.drugStuffId.drugStuffId!==row.drugStuffId.drugStuffId
         );
-       // this.medicalClickTabsValue.infusion.excharge.splice(index,1)
+        // this.medicalClickTabsValue.infusion.excharge.splice(index,1)
          this.MedicalCalculate();
     },
 
@@ -2694,7 +2694,7 @@ export default {
               rowElement.allFee = rowElement.allFee ? rowElement.allFee : 0;
               rowElement.dosageUnitType = rowElement.dosageUnitType || 'dosis'; // Đơn vị liều lượng mặc định
               if (rowElement.frequency && rowElement.days) {
-                // Tính tổng lượng（Đơn vị bào chế）
+                // Tính tổng lượng (Đơn vị bào chế)
                 let calculatedTotalInPreparation;
                 if (rowElement.dosageUnitType === 'preparation') {
                   // Tính theo đơn vị bào chế
@@ -2712,14 +2712,14 @@ export default {
                 }
 
                 if (rowElement.isUnpackSell === 1) {
-                  // Bán lẻ：Đơn vị tổng lượng là đơn vị bào chế
+                  // Bán lẻ: Đơn vị tổng lượng là đơn vị bào chế
                   rowElement.unitPrice = rowElement.drugStuffId.retailPrice;
                   rowElement.total = Math.ceil(calculatedTotalInPreparation);
                   rowElement.allFee = (BigNumber(rowElement.total)
                     .multipliedBy(rowElement.drugStuffId.retailPrice)
                     .toNumber()).toFixed(2);
                 } else {
-                  // Không bán lẻ：Đơn vị tổng lượng là đơn vị đóng gói
+                  // Không bán lẻ: Đơn vị tổng lượng là đơn vị đóng gói
                   rowElement.unitPrice = rowElement.drugStuffId.price;
                   rowElement.total = Math.ceil(
                     BigNumber(calculatedTotalInPreparation)
@@ -2862,7 +2862,7 @@ export default {
               rowElement.allFee = rowElement.allFee ? rowElement.allFee : 0;
               rowElement.dosageUnitType = rowElement.dosageUnitType || 'dosis'; // Đơn vị liều lượng mặc định
               if (rowElement.frequency && rowElement.frequency.value && rowElement.days && rowElement.days.name) {
-                // Tính tổng lượng（Đơn vị bào chế）
+                // Tính tổng lượng (Đơn vị bào chế)
                 let calculatedTotalInPreparation;
                 if (rowElement.dosageUnitType === 'preparation') {
                   // Tính theo đơn vị bào chế
@@ -2879,11 +2879,11 @@ export default {
                     .toNumber();
                 }
 
-                // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế，Dùng để kiểm tra tồn kho ở backend
+                // minTotal Thống nhất lưu tổng lượng theo đơn vị bào chế, Dùng để kiểm tra tồn kho ở backend
                 rowElement.minTotal = Math.ceil(calculatedTotalInPreparation);
 
                 if (rowElement.isUnpackSell === 1) {
-                  // Bán lẻ：total Lưu tổng lượng theo đơn vị bào chế
+                  // Bán lẻ: total Lưu tổng lượng theo đơn vị bào chế
                   rowElement.unitPrice = rowElement.drugStuffId.retailPrice;
                   rowElement.total = Math.ceil(calculatedTotalInPreparation);
                   // Chi phí = Tổng lượng bào chế × Đơn giá bào chế
@@ -2891,7 +2891,7 @@ export default {
                     .multipliedBy(rowElement.drugStuffId.retailPrice)
                     .toNumber();
                 } else {
-                  // Không bán lẻ：total Lưu tổng lượng theo đơn vị đóng gói
+                  // Không bán lẻ: total Lưu tổng lượng theo đơn vị đóng gói
                   rowElement.unitPrice = rowElement.drugStuffId.price;
                   rowElement.total = Math.ceil(
                     BigNumber(calculatedTotalInPreparation)
@@ -2954,7 +2954,7 @@ export default {
               // if (rowElement.drugStuffId.stuff.inventory < rowElement.total&&!this.isReadOnly&&tabElement.content.recipelInfo.dispensionStatus===0) {
               //   this.$message.error(
               //     rowElement.drugStuffId.name +
-              //       "Tồn kho không đủ，Vui lòng sửa số lượng hoặc bổ sung tồn kho！"
+              // "Tồn kho không đủ, Vui lòng sửa số lượng hoặc bổ sung tồn kho!"
               //   );
               // }
             } else {
@@ -2967,7 +2967,7 @@ export default {
                 // if (rowElement.drugStuffId.stuff.inventory < rowElement.total&&!this.isReadOnly&&tabElement.content.recipelInfo.dispensionStatus===0) {
                 //   this.$message.error(
                 //     rowElement.drugStuffId.name +
-                //       "Tồn kho không đủ，Vui lòng sửa số lượng hoặc bổ sung tồn kho！"
+                // "Tồn kho không đủ, Vui lòng sửa số lượng hoặc bổ sung tồn kho!"
                 //   );
                 // }
               }
@@ -2994,7 +2994,7 @@ export default {
           .toNumber();
 
       //  recipelInfo.name = tabElement.title;
-       // recipelInfo.seq = seq;
+        // recipelInfo.seq = seq;
         recipelInfo.medicalAmount = medicalAmount;
         recipelInfo.surchargeAmount = surchargeAmount;
         recipelInfo.fee = medicalFullAmount;
@@ -3047,7 +3047,7 @@ export default {
           }
       }
    },
-   //获取附加费
+   //Lấy phụ phí
    GetSurchargeTable(){
       this.SurchargeTable = [];
       this.GetSurchargeCostItemTable();
@@ -3311,7 +3311,7 @@ export default {
       this.bizFormModel = {...this.initFormModel(), ...recipetemplate}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
-      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+      this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
       this.dialogProps.visible = true
     },
   },

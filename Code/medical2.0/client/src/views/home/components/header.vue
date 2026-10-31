@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="header-content">
-        <!-- Có thể chọn：隐藏汉堡按钮（因为不再需要侧边栏） -->
+        <!-- Có thể chọn: Ẩn nút hamburger (vì không còn cần sidebar)-->
         <div class="hamburger-container" v-if="false">
           <svg
             t="1492500959545"
@@ -70,7 +70,7 @@
             @select="handleMenuSelect"
             @mouseenter="handleMenuMouseEnter"
           >
-            <!-- 改造：一级菜单改为submenu，支持子菜单 -->
+            <!-- Cải tạo: menu cấp một đổi thành submenu, hỗ trợ menu con -->
             <el-submenu
               ref="menuLi"
               v-for="(module, index) in handleRouters"
@@ -95,7 +95,7 @@
                 />
                 {{ module.name }}
               </template>
-              <!-- 子路由菜单 -->
+              <!-- Menu router con -->
               <el-menu-item
                 v-for="subModule in getChildRouters(module.id)"
                 :key="subModule.id"
@@ -110,10 +110,10 @@
               </el-menu-item>
             </el-submenu>
 
-            <!-- 超出折叠：更多子菜单 -->
+            <!-- Vượt quá giới hạn gập lại: Thêm menu con -->
             <el-submenu index="more" v-if="handleRouters.length > limitNumber">
               <template slot="title">Thêm</template>
-              <!-- 更多里的一级菜单 -->
+              <!-- Menu cấp một trong phần Thêm -->
               <el-submenu
                 class="header-sub-menu"
                 v-for="(module, index) in handleRouters"
@@ -125,7 +125,7 @@
                   <svg-icon :iconClass="module.cssClass" />
                   {{ module.name }}
                 </template>
-                <!-- 更多里的子路由 -->
+                <!-- Router con trong phần Thêm -->
                 <el-menu-item
                   v-for="subModule in getChildRouters(module.id)"
                   :key="subModule.id"
@@ -275,13 +275,13 @@
               ><svg-icon iconClass="profileInfo" /> Thông tin cá nhân</el-dropdown-item
               >
               <el-dropdown-item command="layoutSet"
-              ><svg-icon iconClass="layout" /> 布局设置</el-dropdown-item
+              ><svg-icon iconClass="layout" /> Cài đặt bố cục</el-dropdown-item
               >
               <el-dropdown-item command="sysSet" v-if="currentUser.id === 1000"
-              ><svg-icon iconClass="sysSet" /> 系统设置</el-dropdown-item
+              ><svg-icon iconClass="sysSet" /> Cài đặt hệ thống</el-dropdown-item
               >
               <el-dropdown-item command="logout" divided
-              ><svg-icon iconClass="loginout" /> 退出登录</el-dropdown-item
+              ><svg-icon iconClass="loginout" /> Đăng xuất</el-dropdown-item
               >
             </el-dropdown-menu>
           </el-dropdown>
@@ -339,11 +339,11 @@ export default {
       currentUser: window.currentUser,
       sizeKey: 0,
       currentActive: "",
-      // ❌ Xóa menuKey，不再强制重新渲染菜单
+      // ❌ Xóa menuKey, không còn buộc render lại menu
       companys: getLocalCompanys(),
       company: window.currentUser.company,
       userHeader:'',
-      // ✅ Thêm：缓存处理后的路由，避免重复计算
+      // ✅ Thêm: Cache router đã xử lý, tránh tính toán lặp lại
       cachedHandleRouters: [],
     };
   },
@@ -390,11 +390,11 @@ export default {
         this.sizeKey += 1;
       }
     },
-    // ❌ Xóa：$route 监听器不再强制刷新 menuKey
+    // ❌ Xóa: $route listener không còn buộc làm mới menuKey
     // $route(val, old) {
     //   this.menuKey += 1;
     // },
-    // ✅ Thêm：监听 routers 变化，更新缓存
+    // ✅ Thêm: Lắng nghe thay đổi routers, cập nhật cache
     routers: {
       immediate: true,
       handler(newVal) {
@@ -407,7 +407,7 @@ export default {
   computed: {
     ...Vuex.mapGetters(["settings", "menus"]),
     handleRouters() {
-      // ✅ 使用缓存，避免每次重新计算导致重新渲染
+      // ✅ Sử dụng cache, tránh tính toán lại mỗi lần gây render lại
       if (this.cachedHandleRouters.length > 0) {
         return this.cachedHandleRouters;
       }
@@ -431,7 +431,7 @@ export default {
       if (this.routers.length <= 0) {
         return "";
       }
-      // ✅ 使用缓存的路由数据
+      // ✅ Sử dụng dữ liệu router đã cache
       const parentRouters = this.cachedHandleRouters.length > 0
         ? this.cachedHandleRouters
         : this.handleRouters;
@@ -457,7 +457,7 @@ export default {
     },
   },
   methods: {
-    // ✅ Thêm mới：更新缓存的路由数据
+    // ✅ Thêm mới: Cập nhật dữ liệu router đã cache
     updateCachedRouters() {
       let routers = [];
       this.routers.forEach((item, index) => {
@@ -469,7 +469,7 @@ export default {
       return routers;
     },
     tableTwoPopoverClick () {},
-    // Thêm mới：获取指定父路由的子路由
+    // Thêm mới: Lấy router con của router cha được chỉ định
     // Đi xuyên nhóm trung gian KHÔNG có code (ví dụ nhóm "Quản lý nhiệm vụ"
     // ...9085 dưới nhóm cấp cao ...9083): các nhóm này không phải menu lá,
     // không có url, nên không hiển thị mà chỉ dùng để gom nhóm. Chỉ các item
@@ -493,13 +493,13 @@ export default {
       walk(parentId);
       return childRouters;
     },
-    // Thêm mới：子菜单点击事件
+    // Thêm mới: Sự kiện click menu con
     handleSubMenuClick(subModule) {
       if (subModule.url) {
         this.$router.push({ path: subModule.url });
       }
     },
-    // Thêm mới：菜单悬浮事件（优化体验）
+    // Thêm mới: Sự kiện hover menu (tối ưu trải nghiệm)
     handleMenuMouseEnter() {
       this.$refs.menuUl && this.$refs.menuUl.updatePopper();
     },
@@ -765,7 +765,7 @@ export default {
           const finish = () => {
             clearLocalData();
             this.$router.replace("/login");
-            // Sử dụngsetTimeout确保路由跳转完成后再刷新
+            // Sử dụng setTimeout để đảm bảo chuyển hướng router hoàn tất trước khi làm mới
             setTimeout(() => {
               window.location.reload();
             }, 100);
@@ -905,9 +905,9 @@ export default {
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      padding-left: 50px;    // 整体往右推
+      padding-left: 50px;    // Đẩy toàn bộ sang phải
       .sysLogo {
-        // 关键：限制在容器内，保持比例
+        // Quan trọng: Giới hạn trong container, giữ tỷ lệ
         height: 30px;
         display: block;
         object-fit: contain;
@@ -937,14 +937,14 @@ export default {
     top: 5px;
     left: 60px;
     display: inline-block;
-    width: calc(100% - 700px); // 适配子菜单宽度
+    width: calc(100% - 700px); // Điều chỉnh độ rộng menu con
     .el-menu {
       background: none;
       border-bottom: 0;
       width: 100%;
     }
     ::v-deep .el-menu--horizontal {
-      // 一级submenu标题样式
+      // Kiểu dáng tiêu đề submenu cấp một
       .el-submenu {
         height: 45px !important;
         line-height: 45px !important;
@@ -991,23 +991,22 @@ export default {
           }
         }
 
-        // 子菜单弹出层
+        // Lớp pop-up của menu con
         .el-menu {
-          background-color: #fff !important;  // 白色背景
+          background-color: #fff !important;  // Nền trắng
           border-radius: 4px;
           box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 
-          // 子菜单项 - 只改文字颜色
+          // Mục menu con - chỉ đổi màu chữ
           .el-menu-item {
-            color: #606266 !important;  // 默认文字色
+            color: #606266 !important;  // Màu chữ mặc định
             height: 40px !important;
             line-height: 40px !important;
             transition: all 0.2s ease !important;
 
             &:hover,
             &:focus {
-              background-color: transparent !important;  // 背景透明
-              color: #409EFF !important;                  // 只变蓝色
+              background-color: transparent !important;  // Nền trong suốt
               font-weight: 500 !important;
             }
 
@@ -1016,9 +1015,9 @@ export default {
               background-color: transparent !important;
               font-weight: 600 !important;
             }
-          }
+            }
 
-          // 嵌套子菜单
+          // Menu con lồng nhau
           .el-submenu {
             .el-submenu__title {
               color: #606266 !important;
@@ -1027,24 +1026,24 @@ export default {
 
               &:hover,
               &:focus {
-                background-color: transparent !important;  // 背景透明
-                color: #409EFF !important;                // 只变蓝色
+                background-color: transparent !important;  // Nền trong suốt
+                color: #409EFF !important;                // Chỉ đổi màu xanh
               }
-            }
+              }
 
-            // 三级菜单
+            // Menu cấp ba
             .el-menu-item {
               &:hover {
                 background-color: transparent !important;
                 color: #409EFF !important;
               }
+              }
             }
           }
         }
       }
-    }
 
-    // popper-class Kiểu
+    // popper-class Kiểu dáng
     ::v-deep .top-submenu {
       background-color: #fff !important;
 
@@ -1063,7 +1062,7 @@ export default {
       }
     }
 
-    // 关键：确保 popper-class 样式生效
+    // Quan trọng: đảm bảo style popper-class có hiệu lực
     ::v-deep .top-submenu {
 
 
@@ -1072,42 +1071,42 @@ export default {
           background-color: #171616 !important;
           color: #1890ff !important;
         }
-      }
+        }
 
       .el-submenu__title {
         &:hover {
           background-color: #171616 !important;
           color: #1890ff !important;
         }
+        }
       }
     }
   }
-}
-// 隐藏汉堡按钮（Có thể chọn）
+// Ẩn nút hamburger (có thể chọn)
 .hamburger {
   display: none !important;
 }
 .hamburger.is-active {
   transform: rotate(0deg);
 }
-// 更多子菜单样式 - 增强悬浮反馈
+// Style submenu "Thêm" - tăng phản hồi khi hover
 .header-sub-menu {
   .el-submenu__title {
     color: #555 !important;
-    // 更多里的一级子菜单标题悬浮
+    // Hover tiêu đề submenu cấp một trong "Thêm"
     &:hover {
       color: #1890ff !important;
     }
   }
   .el-menu-item {
     color: #333 !important;
-    // 更多里的子菜单选项悬浮
+    // Hover các mục submenu trong "Thêm"
     &:hover {
       color: #1890ff !important;
     }
   }
 }
-// 自定义子菜单弹出层样式 - 提升优先级
+// Style lớp popup submenu tuỳ chỉnh - tăng độ ưu tiên
 ::v-deep .top-submenu {
   background-color: #fff !important;
 
@@ -1116,16 +1115,16 @@ export default {
       background-color: transparent !important;
       color: #409EFF !important;
     }
-  }
+    }
 
   .el-submenu__title {
     &:hover {
       background-color: transparent !important;
       color: #409EFF !important;
     }
+    }
   }
-}
-// 下拉菜单选项悬浮样式
+// Style hover của mục menu thả xuống
 ::v-deep .el-dropdown-menu__item:not(.is-disabled) {
   &:hover {
     color: #1890ff !important;
@@ -1133,17 +1132,17 @@ export default {
       color: var(--active-color) !important;
       fill: currentColor;
     }
+    }
   }
-}
-// 强制覆盖Element UI默认的子菜单样式（关键修复）
+// Buộc ghi đè style submenu mặc định của Element UI (sửa lỗi quan trọng)
 ::v-deep .el-menu--popup {
   .el-menu-item {
     &:hover {
       color: #1890ff !important;
     }
-  }
+    }
   .el-submenu__title:hover {
     color: #1890ff !important;
   }
-}
+  }
 </style>

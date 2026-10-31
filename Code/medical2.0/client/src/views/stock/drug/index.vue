@@ -385,7 +385,7 @@
         <!-- <el-divider style="margin-top:-30px;"></el-divider> -->
         <div style="padding-bottom:10px;margin-top:-20px">
           <el-alert
-            title="Sau khi đặt hàng loạt sẽ sửa số lượng cảnh báo tồn kho của tất cả thuốc（Cảnh báo theo đơn vị đóng gói）"
+            title="Sau khi đặt hàng loạt sẽ sửa số lượng cảnh báo tồn kho của tất cả thuốc (Cảnh báo theo đơn vị đóng gói)"
             :closable="false"
             type="warning">
           </el-alert>
@@ -605,7 +605,7 @@
           const formData = new FormData()
           let id = currentUser.company.id;
           formData.append('file', file[0])
-          this.$message.success('Đang nhập dữ liệu，Vui lòng chờ')
+          this.$message.success('Đang nhập dữ liệu, Vui lòng chờ')
           uploadExcel(formData).then((res) => {
             if (res.code === 100) {
               if (res.data[2] === ""){
@@ -631,7 +631,7 @@
             }
           })
         } else {
-          this.$message.error('Nhập dữ liệu thất bại，Vui lòng chọn đúngxlsxTệp mẫu')
+          this.$message.error('Nhập dữ liệu thất bại, Vui lòng chọn đúngxlsxTệp mẫu')
           this.cancellation();
         }
         this.load();
@@ -701,7 +701,7 @@
       OpenEdit(index, row) {
         if (this.inventory !== 0) {
           this.$message({
-            message: "Vật phẩm còn tồn kho，Không thể sửa",
+            message: "Vật phẩm còn tồn kho, Không thể sửa",
             type: 'warning'
           })
         } else if (this.inventory === 0) {

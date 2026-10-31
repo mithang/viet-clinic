@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/stuff')
 
-// Tiêu chuẩnCRUDGiao diện
+// Giao diện CRUD tiêu chuẩn
 export const getStuffById = baseApi.getById
 export const listStuffPage = baseApi.listPage
 export const listStuffAll = baseApi.listAll
@@ -21,7 +21,7 @@ export const listSyncStuffPage = search =>
     data: search
   });
 
-// 获取上级租户材料列表
+// Lấy danh sách vật tư của đơn vị thuê cấp trên
 export const listParentStuffPage = search =>
   request({
     url: "/stock/stuff/listByInstitution",
@@ -29,7 +29,7 @@ export const listParentStuffPage = search =>
     data: search
   });
 
-// 获取院版材料列表
+// Lấy danh sách vật tư bản bệnh viện
 export const listInstitutionStuffPage = search =>
   request({
     url: "/hosdata/HosCollectData/getHosMaterials",
@@ -37,7 +37,7 @@ export const listInstitutionStuffPage = search =>
     data: search
   });
 
-// 选择租户的材料同步至诊所
+// Chọn vật tư của đơn vị thuê để đồng bộ về phòng khám
 export const syncStuff = search =>
   request({
     url: "/stock/stuff/syncToClinic",
@@ -45,7 +45,7 @@ export const syncStuff = search =>
     data: search
   });
 
-// 选择院办材料同步
+// Chọn vật tư của phòng bệnh viện để đồng bộ
 export const syncInstitutionStuff = search =>
   request({
     url: "/hosdata/HosCollectData/HisMaterialsToClinic",
@@ -95,7 +95,7 @@ export const uploadExcel = formData =>
     data: formData
   });
 
-// 院版发药列表
+// Danh sách phát thuốc bản bệnh viện
 export const listInstitutionDispensingPage = search =>
   request({
     url: "/hosdata/HosDepartmentStorage/getHosDrugsStorage",
@@ -103,7 +103,7 @@ export const listInstitutionDispensingPage = search =>
     data: search
   });
 
-// 院版发药同步
+// Đồng bộ phát thuốc bản bệnh viện
 export const syncInstitutionDispensing = search =>
   request({
     url: "/hosdata/HosDepartmentStorage/auditHosDrugsStorage",

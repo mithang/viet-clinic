@@ -83,7 +83,7 @@
     </el-menu>
     <div class="favorite" :style="styleObject">
       <span class="collect-num" :class="fly? 'num' : ''">+1</span>
-      <el-tooltip :content="isCollected? '已收藏' : '未收藏'" placement="top" effect="light">
+      <el-tooltip :content="isCollected? 'Đã lưu' : 'Chưa lưu'" placement="top" effect="light">
         <i class="el-icon-star-on" :class="isCollected? 'is-active' : ''" @click="handleCollect"></i>
       </el-tooltip>
     </div>
@@ -335,9 +335,9 @@
         const moreFirst = this.collectMoreList.shift()
         this.collectList.push(moreFirst)
       },
-      // 开始拖拽
+      // Bắt đầu kéo thả
       onCurrentStart(e) {},
-      // 拖拽结束
+      // Kết thúc kéo thả
       onCurrentEnd(e) {
         if (this.collectMoreList.length > 10) {
           this.initMoreList()
@@ -350,9 +350,9 @@
         }).catch(error => {})
       },
 
-      // 开始拖拽
+      // Bắt đầu kéo thả
       onMoreStart(e) {},
-      // 拖拽结束
+      // Kết thúc kéo thả
       onMoreEnd(e) {},
 
       deleteCollect(currentId) {

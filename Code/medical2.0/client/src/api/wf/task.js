@@ -6,7 +6,7 @@ export const claimTask = (taskId) =>
         method: 'get'
     })
 
-// 获取用户的指派任务和候选任务
+// Lấy công việc được giao và công việc ứng viên của người dùng
 export const pageTask = (search) =>
     request({
         url: '/wf/task/page',

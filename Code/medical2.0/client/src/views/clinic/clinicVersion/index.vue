@@ -2,7 +2,7 @@
   <el-row v-loading="loading">
     <!-- Lịch sử  -->
     <History :bussObject="curentRow"></History>
-    <!-- 权限窗口  -->
+    <!-- Cửa sổ quyền  -->
     <version-permission ref="versionPermission"></version-permission>
     <!-- Cửa sổ chỉnh sửa  -->
     <clinicVersion-form

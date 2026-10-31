@@ -73,20 +73,20 @@
         <div class="inventoryVerificationShow" style="margin-top:-30px">
           <el-row class="inventoryMessages">
             <el-col :span="24/4">
-              Số đơn kiểm kê：{{this.inventoryVerifications.code}}
+              Số đơn kiểm kê: {{this.inventoryVerifications.code}}
             </el-col>
              <el-col :span="24/4">
-              Người kiểm kê：{{this.inventoryVerifications.createBy}}
+              Người kiểm kê: {{this.inventoryVerifications.createBy}}
             </el-col>
              <el-col :span="24/4">
-              Thời gian tạo：{{this.inventoryVerifications.createDate}}
+              Thời gian tạo: {{this.inventoryVerifications.createDate}}
             </el-col>
             <el-col :span="24/4">
               <span v-if="inventoryVerifications.allPrice>=0" style="color:	#32CD32">
-                Tổng số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
+                Tổng số tiền lãi/lỗ: {{this.inventoryVerifications.allPrice}} VNĐ
               </span>
               <span v-else style="color:	#FF0000">
-                Tổng số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
+                Tổng số tiền lãi/lỗ: {{this.inventoryVerifications.allPrice}} VNĐ
               </span>
             </el-col>
           </el-row>
@@ -287,7 +287,7 @@
         </div>
     </div>
 
-    <!-- 盘点材料 -->
+    <!-- Vật tư kiểm kê -->
     <div v-if="inventoryVerifications.type==='1'">
     <div>
        <div >
@@ -350,20 +350,20 @@
         <div class="inventoryVerificationShow" style="margin-top:-30px">
           <el-row class="inventoryMessages">
             <el-col :span="24/4">
-              Số đơn kiểm kê：{{this.inventoryVerifications.code}}
+              Số đơn kiểm kê: {{this.inventoryVerifications.code}}
             </el-col>
              <el-col :span="24/4">
-              Người kiểm kê：{{this.inventoryVerifications.createBy}}
+              Người kiểm kê: {{this.inventoryVerifications.createBy}}
             </el-col>
              <el-col :span="24/4">
-              Thời gian tạo：{{this.inventoryVerifications.createDate}}
+              Thời gian tạo: {{this.inventoryVerifications.createDate}}
             </el-col>
              <el-col :span="24/4">
               <span v-if="inventoryVerifications.allPrice>=0" style="color:	#32CD32">
-                Số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
+                Số tiền lãi/lỗ: {{this.inventoryVerifications.allPrice}} VNĐ
               </span>
               <span v-else style="color:	#FF0000">
-                Số tiền lãi/lỗ：{{this.inventoryVerifications.allPrice}} VNĐ
+                Số tiền lãi/lỗ: {{this.inventoryVerifications.allPrice}} VNĐ
               </span>
             </el-col>
           </el-row>
@@ -586,11 +586,11 @@ export default {
   data() {
     return {
       currentPage: 1,
-      inventoryVerifications:{},   //库存盘点主表存储
-      inventoryVerificationDetail:[],  //库存盘点详情
+      inventoryVerifications:{},   //Lưu bảng chính kiểm kê tồn kho
+      inventoryVerificationDetail:[],  //Chi tiết kiểm kê tồn kho
       inventoryVerificationDetailTotal:0,
-      preparation:[],  //Thuốc/材料最小单位数量集合
-      pack:[],        //Thuốc/最小单位数量集合
+      preparation:[],  //Tập hợp số lượng theo đơn vị nhỏ nhất của thuốc/vật tư
+      pack:[],        //Tập hợp số lượng theo đơn vị nhỏ nhất của thuốc
       drugType:[],   //Loại thuốc
       stuffType:[],  //Loại vật tư
       bizFormModel: {
@@ -608,7 +608,7 @@ export default {
           value: "",
           name: "",
         },
-      },  //搜索框
+      },  //Ô tìm kiếm
       tabIndex: '1',
        dialogProps: {
         visible: false,
@@ -622,7 +622,7 @@ export default {
 		    columnName: '',      // Tên trường sắp xếp
         order: ''            // Sắp xếp
       },
-      saveInformation:[],    //分页数据暂存
+      saveInformation:[],    //Lưu tạm dữ liệu phân trang
       formRules: {
         'code': [
             { required: true, message: 'Vui lòng nhập số đơn kiểm kê', trigger: 'blur' }
@@ -654,7 +654,7 @@ export default {
           return nameTwo
         }
       },
-      //获取有效期
+      //Lấy hạn dùng
       getEndDate(row){
        let date = new Date(row)
         let year = date.getFullYear()
@@ -666,7 +666,7 @@ export default {
     //Xuất
     exportExcel(){
       exportExcel(this.inventoryVerifications).then((res)=>{
-       //const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]) || '.xls'
+        //const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]) || '.xls'
         const filename = "Kiểm kê tồn kho.xls"
         const blob = new Blob([res.data], {
 
@@ -742,12 +742,12 @@ export default {
       this.saveInformation[this.currentPage-1]=this.inventoryVerificationDetail
       return saveAll(this.saveInformation).then((res)=>{
         if(res.code === 100&&res.data==='Thực hiện thành công'){
-          this.$message.success("Lưu thành công！")
+          this.$message.success("Lưu thành công!")
             this.$emit('save-finished')
             this.dialogProps.visible=false
         }else{
 
-          this.$$message.error("Lưu thất bại，dữ liệu bất thường, vui lòng thử lại hoặc liên hệ quản trị viên!")
+          this.$$message.error("Lưu thất bại, dữ liệu bất thường, vui lòng thử lại hoặc liên hệ quản trị viên!")
         }
       }).catch((error)=>{
         this.outputError(error)
@@ -774,7 +774,7 @@ export default {
         this.getInventoryVerificationDetail()
     },
 
-    //盘盈盘亏计算
+    //Tính thừa/thiếu khi kiểm kê
     changeprofitAndLoss(row,index){
      if(this.inventoryVerifications.type==='0'){
         let figure1=this.pack[index]*row.drug.preparation
@@ -998,7 +998,7 @@ export default {
           this.preparation=[]
           this.inventoryVerificationDetail=responseData.data.rows
           this.inventoryVerificationDetailTotal=responseData.data.total
-          //获取数据页数
+          //Lấy số trang dữ liệu
           let currentNum = Math.ceil(responseData.data.total/search.limit)
           for (let i = 0; i < currentNum; i++) {
               this.saveInformation.push([])

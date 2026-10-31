@@ -12,7 +12,7 @@ export const bulkInsertScheduleJob = baseApi.bulkInsert
 export const bulkUpdateScheduleJob = baseApi.bulkUpdate
 export const bulkDeleteScheduleJob = baseApi.bulkDelete
 
-// 启动定时器
+// Khởi động bộ hẹn giờ
 export const startTask = (scheduleJob) =>
   request({
     url: '/schedule/dynamicTask/startTask',
@@ -20,7 +20,7 @@ export const startTask = (scheduleJob) =>
     data: scheduleJob
   })
 
-// 启动定时器
+// Khởi động bộ hẹn giờ
 export const endTask = (scheduleJob) =>
   request({
     url: '/schedule/dynamicTask/endTask',
@@ -28,7 +28,7 @@ export const endTask = (scheduleJob) =>
     data: scheduleJob
   })
 
-// 重启定时器
+// Khởi động lại bộ hẹn giờ
 export const restartTask = (scheduleJob) =>
   request({
     url: '/schedule/dynamicTask/restartTask',

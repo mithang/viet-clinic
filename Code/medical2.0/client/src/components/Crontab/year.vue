@@ -2,7 +2,7 @@
 	<el-form size="small">
 		<el-form-item>
 			<el-radio :label="1" v-model='radioValue'>
-				Không điền，Ký tự đại diện được phép[, - * /]
+				Không điền, Ký tự đại diện được phép[, - * /]
 			</el-radio>
 		</el-form-item>
 
@@ -23,7 +23,7 @@
 		<el-form-item>
 			<el-radio :label="4" v-model='radioValue'>
 				Từ
-				<el-input-number v-model='average01' :min='fullYear' /> năm bắt đầu，mỗi
+				<el-input-number v-model='average01' :min='fullYear' /> năm bắt đầu, mỗi
 				<el-input-number v-model='average02' :min='fullYear' /> năm thực hiện một lần
 			</el-radio>
 
@@ -137,7 +137,7 @@ export default {
 		}
 	},
 	mounted: function () {
-		// 仅获取当前年份
+		// Chỉ lấy năm hiện tại
 		this.fullYear = Number(new Date().getFullYear());
 	}
 }

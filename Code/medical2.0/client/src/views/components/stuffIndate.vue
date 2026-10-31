@@ -72,7 +72,7 @@ export default {
     extends: MainUI,
     data(){
         return{
-            expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại，Cần đặtrow-keythuộc tính mới sử dụng được，Thuộc tính này là của dòng mở rộngkeysMảng
+            expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại, Cần đặtrow-keythuộc tính mới sử dụng được, Thuộc tính này là của dòng mở rộngkeysMảng
            stuffIndateList:[],
            inventoryList:[],
            activeName: 'stuffIndate',

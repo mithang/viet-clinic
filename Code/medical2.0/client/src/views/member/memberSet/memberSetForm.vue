@@ -43,7 +43,7 @@
          <el-col :span='24/2'>
            
           <el-form-item label='Thời gian hiệu lực' prop='startDate' >
-            <!-- <el-date-picker :disabled='dialogProps.action == "view"' v-model='bizFormModel.startDate' type='date' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action == "view"? "" : "请输入开始时间"' ></el-date-picker>              -->
+            <!-- <el-date-picker :disabled='dialogProps.action == "view"' v-model='bizFormModel.startDate' type='date' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action == "view"? "" : "Vui lòng nhập thời gian bắt đầu"' ></el-date-picker>              -->
             <el-date-picker
             v-model="bizFormModel.startDate"
             type="daterange"
@@ -60,7 +60,7 @@
         <!-- </el-col>
                 <el-col :span='24/3'>
           <el-form-item label='Thời gian kết thúc' prop='endDate' >
-            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.endDate' type='date' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "请输入结束时间"' ></el-date-picker>             
+            <el-date-picker :disabled='dialogProps.action === "view"' v-model='bizFormModel.endDate' type='date' value-format='yyyy-MM-dd HH:mm:ss' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập thời gian kết thúc"' ></el-date-picker>             
           </el-form-item>  -->
         </el-col>
       </el-row>
@@ -131,7 +131,7 @@
               </el-table-column>
                <el-table-column
                 prop="number"
-                label="项目数量"
+                label="Số lượng hạng mục"
                 align="center">
                  <template slot-scope="scope">
                   <el-input-number :disabled="dialogProps.action === 'view'" size="mini" v-model="memberData[scope.$index].number" @change="handleChange"    ></el-input-number>
@@ -188,7 +188,7 @@ export default {
         action: '',
         title: ''
       },
-      TreatmentTable:[],   //诊疗项目集合
+      TreatmentTable:[],   //Tập hợp hạng mục điều trị
       formRules: {
         'name': [
             { required: true, message: 'Vui lòng nhập tên thẻ thành viên', trigger: 'blur' }
@@ -197,7 +197,7 @@ export default {
             { required: true, message: 'Vui lòng nhập loại thẻ thành viên', trigger: 'blur' }
         ],
         amount:[
-          {required: true, message: '请输入会员卡张数', trigger: 'blur'}
+          {required: true, message: 'Vui lòng nhập số lượng thẻ', trigger: 'blur'}
         ]
       }
     }    
@@ -221,7 +221,7 @@ export default {
   },  
   methods: {
 
-    //进行项目删除
+    //Thực hiện xoá hạng mục
     removeClick(row,index){
       this.memberData.splice(index,1)
     },
@@ -237,7 +237,7 @@ export default {
       this.memberData.push(objectItem)
     },
 
-    //选择诊疗项目
+    //Chọn hạng mục điều trị
     itemChange(index){
       this.TreatmentTable.forEach(item=>{
         if(item.id===this.memberData[index].name){
@@ -350,13 +350,13 @@ export default {
           'name': null,
         },
         'name': '',   // Tên thẻ thành viên
-        'type': {name:'体验卡',
+        'type': {name:'Thẻ trải nghiệm',
                 value:'memberType_0'},   // Loại thẻ thành viên
-        'money': 0,    // 会员卡金额
-        'amount': 0,    // 会员卡总数
+        'money': 0,    // Số tiền thẻ hội viên
+        'amount': 0,    // Tổng số thẻ hội viên
         'number': 0,    // Số lượng còn lại
-        'status': '0',   // Có kích hoạt không（0：Kích hoạt，1:Vô hiệu hóa）
-        'failure': '0',   // 是否失效（0：Không，1：Có）
+        'status': '0', // Có kích hoạt không (0: Kích hoạt, 1:Vô hiệu hóa)
+        'failure': '0', // Có hết hiệu lực không (0: Không, 1: Có)
         'startDate': '',   // Thời gian bắt đầu
         'endDate': '',   // Thời gian kết thúc
 

@@ -400,7 +400,7 @@ export default {
         //Xuất theo hạn sử dụng
         exportTable(this.indateSearch).then((res)=>{
                const filename = decodeURI(res.headers.split(';')[1].split('=')[1]) || '.xls'
-                //const filename = "药品有效期预警.xls"
+                //const filename = "Cảnh báo hạn dùng thuốc.xls"
                 const blob = new Blob([res.data], {
 
                 type: 'application/octet-stream'
@@ -428,7 +428,7 @@ export default {
         //Xuất theo tồn kho
         exportTable(this.inventorySearch).then((res)=>{
                 const filename = decodeURI(res.headers.split(';')[1].split('=')[1]) || '.xls'
-                //const filename = "药品库存预警.xls"
+                //const filename = "Cảnh báo tồn kho thuốc.xls"
                 const blob = new Blob([res.data], {
 
                 type: 'application/octet-stream'

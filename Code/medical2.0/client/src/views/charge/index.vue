@@ -217,13 +217,13 @@
             <div class="flex-space-between">
               <div class="flex-start">
                 <div style="">{{ prescriptionMain.quantity }}thang</div>
-                <div>Cách dùng：{{ prescriptionMain.useMethod }}</div>
+                <div>Cách dùng: {{ prescriptionMain.useMethod }}</div>
                 <div>{{ yypc }}</div>
-                <!--煎药频次：1ngày1thang=-->
+                <!--Tần suất sắc thuốc: 1 ngày 1 thang-->
                 <div>{{ fypc }}</div>
-                <!--服药频次：1ngày2lần=-->
+                <!--Tần suất uống thuốc: 1 ngày 2 lần-->
                 <div>{{ mcyl }}</div>
-                <!--Liều dùng mỗi lần：một lần500ml-->
+                <!--Liều dùng mỗi lần: một lần500ml-->
               </div>
               <div>Tổng cộng{{ pz }},Tổng cộng{{ zj }}VNĐ</div>
             </div>

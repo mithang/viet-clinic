@@ -29,8 +29,8 @@
         </el-popover>
       </div>
       <div class="drawer-item img-item" :class="fileList1.length > 0? 'hasImage' : ''" style="padding-top: 12px">
-        <i class="tip">Khuyến nghị：174*32，cấp số nhân，png，Dùng cho trang đăng nhập</i>
-        <span>Hạng mụclogo（&lt;512K）</span>
+        <i class="tip">Khuyến nghị: 174*32, cấp số nhân, png, Dùng cho trang đăng nhập</i>
+        <span>Hạng mụclogo (&lt;512K)</span>
         <el-popover
           class="img-tip"
           placement="left"
@@ -48,8 +48,8 @@
         </image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList2.length > 0? 'hasImage' : ''">
-        <i class="tip">Khuyến nghị：152*28，cấp số nhân，png，Dùng cho hộp đăng nhập</i>
-        <span>Hộp đăng nhậplogo（&lt;512K）</span>
+        <i class="tip">Khuyến nghị: 152*28, cấp số nhân, png, Dùng cho hộp đăng nhập</i>
+        <span>Hộp đăng nhậplogo (&lt;512K)</span>
         <el-popover
           class="img-tip"
           placement="left"
@@ -66,8 +66,8 @@
           :file-list="fileList2"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList3.length > 0? 'hasImage' : ''">
-        <i class="tip">Khuyến nghị：170*30，cấp số nhân，png，Dùng cho trang chủ hệ thống</i>
-        <span>Trang chủ hệ thốnglogo（&lt;512K）</span>
+        <i class="tip">Khuyến nghị: 170*30, cấp số nhân, png, Dùng cho trang chủ hệ thống</i>
+        <span>Trang chủ hệ thốnglogo (&lt;512K)</span>
         <el-popover
           class="img-tip"
           placement="left"
@@ -84,7 +84,7 @@
           :file-list="fileList3"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList4.length > 0? 'hasImage' : ''">
-        <i class="tip">Khuyến nghị：16*16，cấp số nhân，ico，Dùng cho đầu trang web</i>
+        <i class="tip">Khuyến nghị: 16*16, cấp số nhân, ico, Dùng cho đầu trang web</i>
         <span>Biểu tượng trang webICO</span>
         <el-popover
           class="img-tip"
@@ -127,8 +127,8 @@
           popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item img-item" :class="fileList5.length > 0? 'hasImage' : ''">
-        <i class="tip">jpg/png，Dùng làm ảnh nền trang đăng nhập</i>
-        <span>Ảnh nền（&lt;512K）</span>
+        <i class="tip">jpg/png, Dùng làm ảnh nền trang đăng nhập</i>
+        <span>Ảnh nền (&lt;512K)</span>
         <el-popover
           class="img-tip"
           placement="left"
@@ -145,8 +145,8 @@
           :file-list="fileList5"></image-upload>
       </div>
       <div class="drawer-item img-item" :class="fileList6.length > 0? 'hasImage' : ''">
-        <i class="tip">Khuyến nghị：690*500，cấp số nhân，jpg/png，Dùng cho hộp đăng nhập</i>
-        <span>Ảnh minh họa khung đăng nhập（&lt;512K）</span>
+        <i class="tip">Khuyến nghị: 690*500, cấp số nhân, jpg/png, Dùng cho hộp đăng nhập</i>
+        <span>Ảnh minh họa khung đăng nhập (&lt;512K)</span>
         <el-popover
           class="img-tip"
           placement="left"

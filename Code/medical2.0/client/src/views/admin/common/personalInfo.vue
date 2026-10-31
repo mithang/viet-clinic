@@ -55,7 +55,7 @@ export default {
     }
     const validateCheckPassword = (rule, value, callback) => {
       if (this.userModel.loginPasswordUpdate && (value === '' || value === undefined)) {
-        callback(new Error('请再次输入密码'))
+        callback(new Error('Vui lòng nhập lại mật khẩu'))
       } else if (this.userModel.loginPasswordUpdate && (value !== this.userModel.loginPassword)) {
         callback(new Error('Hai lần nhập mật khẩu không khớp!'))
       } else {
@@ -76,7 +76,7 @@ export default {
       dialogVisible: false,
       rules: {
         name: [
-          { required: true, message: '请输入用户名称', trigger: 'blur' },
+          { required: true, message: 'Vui lòng nhập tên người dùng', trigger: 'blur' },
           { min: 3, max: 32, message: 'Độ dài trong khoảng 3 đến 32 ký tự', trigger: 'blur' }
         ],
         loginName: [
@@ -103,7 +103,7 @@ export default {
   methods: {
     isMobileNumber(rule, value, callback) {
       if (!value) {
-        return new Error("请输入手机号码");
+        return new Error("Vui lòng nhập số điện thoại");
       } else {
         const reg = /^1[3|4|5|6|7|8|9][0-9]\d{8}$/;
         const isPhone = reg.test(value);
@@ -120,7 +120,7 @@ export default {
         }
       }
     },
-    //邮箱校验
+    //Kiểm tra email
      isEmail(rule, value, callback) {
       if (!value) {
         callback();
@@ -128,7 +128,7 @@ export default {
         const reg = /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/;
         const email = reg.test(value);
         if (!email) {
-          callback(new Error("邮箱格式如:xxx@163.com"));
+          callback(new Error("Email không đúng định dạng, ví dụ: ten@domain.com"));
         } else {
           callback();
         }

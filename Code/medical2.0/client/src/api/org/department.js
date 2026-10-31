@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/org/department')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getDepartmentById = baseApi.getById
 export const listDepartmentPage = baseApi.listPage
 export const listDepartmentAll = baseApi.listAll

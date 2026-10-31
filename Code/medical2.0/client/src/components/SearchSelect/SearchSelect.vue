@@ -19,17 +19,17 @@
 
 <script>
   /**
-   * el-select 下拉选择框 在加载数据量过大时使用
-   * 调用示例：
+   * el-select ô chọn dropdown Sử dụng khi tải lượng dữ liệu lớn
+ * Ví dụ gọi: 
    * <search-select :optionSize="8" v-model="value" option-label="label" option-value="value" :options="options"></search-select>
-   * Attributes：
-   * optionSize：初始下拉选项的条数
-   * option-label：选项的标签，若不设置则默认与 value 相同 （Bắt buộc）
-   * option-value：选项的值
-   * options：下拉选项数组
-   * khi 值绑定为对象时，必须指定 value-key 唯一标识，且只需设置 option-label Thuộc tính，无需设置 option-value Thuộc tính
-   * 其他属性同 el-select 官方属性
-   * 特性后续优化
+   * Attributes: 
+ * optionSize: Số lượng tùy chọn dropdown ban đầu
+ * option-label: Nhãn của tùy chọn, nếu không thiết lập thì mặc định giống với value (Bắt buộc)
+ * option-value: Giá trị của tùy chọn
+ * options: Mảng tùy chọn dropdown
+   * khi giá trị liên kết là đối tượng, phải chỉ định value-key định danh duy nhất, và chỉ cần thiết lập thuộc tính option-label, không cần thiết lập thuộc tính option-value
+   * Các thuộc tính khác giống thuộc tính chính thức của el-select
+   * Tính năng sẽ được tối ưu hóa sau
    */
 	export default {
 		name: "SearchSelect",
@@ -129,7 +129,7 @@
         }
       },
       loadMore(size) {
-		    if (size < 8) this.OptSize = 10 // 超过 7 条则才可滚动
+		    if (size < 8) this.OptSize = 10 // Vượt quá 7 mục thì mới có thể cuộn
 		    return () => {
 		      this.OptSize += 5
         }

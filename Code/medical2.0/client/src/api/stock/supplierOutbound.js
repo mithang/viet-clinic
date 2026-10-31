@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/supplierOutbound')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getSupplierOutbound = baseApi.getById
 export const listSupplierOutbound = baseApi.listPage
 export const saveSupplierOutbound = (data) =>

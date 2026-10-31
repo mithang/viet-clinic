@@ -1,7 +1,7 @@
 <template>
 <el-row v-loading="loading">
     <el-card class="page-container">
-        <!-- 药品和材料预警 -->
+        <!-- Cảnh báo thuốc và vật tư -->
          <div style="margin-top:-20px;margin-left:-20px">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
                 <el-tab-pane label="Cảnh báo thuốc" name="0">
@@ -69,12 +69,12 @@ export default {
   },
   methods: {
 
-    //修改分页
+    //Thay đổi phân trang
     changeCurrentPage(pagination){
         this.currentPage = pagination
     },
 
-    //修改总数
+    //Thay đổi tổng số
     changeTotal(total){
         this.dispensingTotal = total
     },
@@ -109,7 +109,7 @@ export default {
     },
   },
   watch: {
-     //监听activeNameChuyển đổi
+     //Theo dõi activeName chuyển đổi
     //  activeName:{
     //      handler(newVal,oldVal){
     //          if(newVal==)

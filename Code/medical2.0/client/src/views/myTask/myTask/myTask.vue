@@ -287,7 +287,7 @@ export default {
             validatenull(This) || validatenull(This.name) ? null : This.name,
         },
         code: "", // Mã khoa/phòng
-        isLocked: "0", // Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        isLocked: "0", // Vô hiệu hóa (0: Chưa bị vô hiệu hóa; 1: Vô hiệu hóa)
         name: "", // Tên khoa/phòng
         sort: "0", // Sắp xếp
         category: "", // Nhóm lớn khoa/phòng

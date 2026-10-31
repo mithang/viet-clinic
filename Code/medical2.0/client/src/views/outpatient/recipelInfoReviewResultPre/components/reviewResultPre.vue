@@ -139,8 +139,8 @@
 <!--              width="220"-->
 <!--              align="center">-->
 <!--              <template slot-scope="scope">-->
-<!--                Chẩn đoán Đông y：{{scope.row.medicalRecord.chinaDiagnose}};-->
-<!--                Chẩn đoán Tây y：{{scope.row.medicalRecord.westernDiagnose}};-->
+<!-- Chẩn đoán Đông y: {{scope.row.medicalRecord.chinaDiagnose}};-->
+<!-- Chẩn đoán Tây y: {{scope.row.medicalRecord.westernDiagnose}};-->
 <!--              </template>-->
 <!--            </el-table-column>-->
             <el-table-column
@@ -154,7 +154,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label='有效状态'
+              label='Trạng thái hiệu lực'
               prop='recipelInfo.recipelType.name'
               align="center">
               <template slot-scope="scope">
@@ -173,7 +173,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label='药师审查内容'
+              label='Nội dung duyệt của dược sĩ'
               prop='reviewContent'
               align="center">
             </el-table-column>
@@ -208,19 +208,19 @@
             <el-button  @click="onPrescriptionCancel(selectedRow)"  type="danger">Thu hồi đơn thuốc</el-button>
           </div>
 
-          <!-- 取药查询模态框 -->
+          <!-- Modal truy vấn lấy thuốc -->
           <medicine-dialog
             :dialogVisible="medicineDialogVisible"
             :formData="medicineFormData"
             @update:dialogVisible="medicineDialogVisible = $event"
           ></medicine-dialog>
-          <!-- 审核查询模态框 -->
+          <!-- Modal truy vấn duyệt đơn -->
           <audit-dialog
             :dialogVisible="auditDialogVisible"
             :formData="auditFormData"
             @update:dialogVisible="auditDialogVisible = $event"
           ></audit-dialog>
-          <!-- 处方查询模态框 -->
+          <!-- Modal truy vấn đơn thuốc -->
           <prescription-dialog
             :dialogVisible="prescriptionDialogVisible"
             :formData="prescriptionFormData"
@@ -238,7 +238,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">Hủy</el-button>
-      <el-button type="primary" @click="submitCancel">确认撤销</el-button>
+      <el-button type="primary" @click="submitCancel">Xác nhận huỷ</el-button>
     </span>
     </el-dialog>
     <!-- Thanh bảng  Kết thúc -->
@@ -315,7 +315,7 @@ export default {
   },
   data() {
     return {
-      selectedRow: null,  // 当前选中的行
+      selectedRow: null,  // Dòng đang được chọn
       medicineDialogVisible: false,
       auditDialogVisible: false,
       prescriptionDialogVisible: false,
@@ -400,7 +400,7 @@ export default {
         return;
       }
       this.medicineDialogVisible = true;
-      // 在这里编写取药查询的逻辑
+      // Viết logic truy vấn lấy thuốc tại đây
       getMdMedicineInfo(row).then(response => {
        this.medicineFormData = response.data
         }
@@ -414,7 +414,7 @@ export default {
         return;
       }
       this.auditDialogVisible = true;
-      // 在这里编写审核查询的逻辑
+      // Viết logic truy vấn duyệt đơn tại đây
       getMdExamineInfo(row).then(response => {
         this.auditFormData = response.data
       })
@@ -428,7 +428,7 @@ export default {
       }
       this.prescriptionFormData = true;
 
-      // 在这里编写处方查询的逻辑
+      // Viết logic truy vấn đơn thuốc tại đây
     },
 
     // Thu hồi đơn thuốc
@@ -440,14 +440,14 @@ export default {
         this.$message.warning('Đã hủy đơn thuốc!');
         return;
       }
-      // 重置撤销原因
+      // Đặt lại lý do huỷ
       this.cancelForm.reason = '';
-      // 显示模态框
+      // Hiển thị modal
       this.dialogVisible = true;
 
     },
     submitCancel() {
-      // 校验撤销原因
+      // Kiểm tra lý do huỷ
       this.$refs.cancelForm.validate(valid => {
         if (valid) {
           this.cancelPrescription();
@@ -457,8 +457,8 @@ export default {
       });
     },
     cancelPrescription() {
-      // 处理撤销
-      const recipelInfoReview =  this.selectedRow;  // 假设选中行有 id
+      // Xử lý huỷ
+      const recipelInfoReview =  this.selectedRow;  // Giả sử dòng được chọn có id
       const undoRea = this.cancelForm.reason;
       //cancelElectronicPrescription( recipelInfoReview, undoRea);
       this.dialogVisible = false;
@@ -754,7 +754,7 @@ export default {
     },
     getTagType(row) {
       const status = row.reviewStatus;
-      // 根据不同的状态返回不同的标签类型
+      // Trả về loại nhãn khác nhau theo trạng thái
       if (status === 1) {
         return 'success';  // green color
       } else if (status === 0) {

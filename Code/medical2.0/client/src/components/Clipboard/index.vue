@@ -40,7 +40,7 @@
     methods: {
       handleCopy(content) {
         if (content) {
-          // 渐进式使用，暂不考虑兼容性
+          // Sử dụng tiến triển, tạm thời không xét tương thích
           let input = document.createElement('input')
           input.value = content
           document.body.appendChild(input)

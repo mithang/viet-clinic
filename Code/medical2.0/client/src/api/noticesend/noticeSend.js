@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/noticesend/noticeSend')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getNoticeSendById = baseApi.getById
 export const listNoticeSendPage = baseApi.listPage
 export const listNoticeSendAll = baseApi.listAll

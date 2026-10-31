@@ -343,7 +343,7 @@ export default {
           },
         ],
       };
-      // Toán tử điều kiện của trường phản hồi，Thay bằng toán tử của trường kích hoạt
+      // Toán tử điều kiện của trường phản hồi, Thay bằng toán tử của trường kích hoạt
       doctor_search.params.forEach((item) => {
         if (this.queryTypes[item.columnName]) {
           item.queryType = this.queryTypes[item.columnName];

@@ -186,7 +186,7 @@
         </div>
 
 
-<!-- 药品查询 -->
+<!-- Truy vấn thuốc -->
           <div v-else-if="tabPosition==='1' && dispensingList!=null">
             <div class='query-form-container'>
           <el-row class='search-row'>
@@ -332,7 +332,7 @@
           </div>
      </div>
 
-<!-- 材料栏 -->
+<!-- Cột vật tư -->
 
     <div v-else>
          <!-- Hiển thị theo số lô và hàng hóa -->
@@ -497,7 +497,7 @@
       <!-- Thanh bảng  Kết thúc -->
         </div>
 
-<!-- 按材料商品 -->
+<!-- Theo hàng hoá vật tư -->
 
           <div v-else-if="tabPosition==='1' && stuffList!=null">
             <div class='query-form-container'>
@@ -772,7 +772,7 @@ export default {
   },
   methods: {
 
-      //导出辅助方法
+      //Phương thức hỗ trợ xuất dữ liệu
       doExport(search, filename) {
         exportTable(search).then((res) => {
           downloadBlob(res, filename)
@@ -781,7 +781,7 @@ export default {
         })
       },
 
-      //药品信息导出
+      //Xuất thông tin thuốc
       exportTable() {
         if (this.activeName === '0') {
           if (this.tabPosition === '0') {
@@ -798,7 +798,7 @@ export default {
         }
       },
 
-      //材料按批号
+      //Vật tư theo số lô
       stuffBatchNumber(type,limit,offset){
         this.stuffList =null
         if(type===1){
@@ -1010,7 +1010,7 @@ export default {
           this.stuffInit()
       },
 
-      //计算材料的售价合计
+      //Tính tổng giá bán của vật tư
       getStuffPriceTotal(item){
           let price;
           if(this.tabPosition==='0'){
@@ -1022,7 +1022,7 @@ export default {
           return price;
       },
 
-      //材料初始化获取类型
+      //Lấy loại khởi tạo của vật tư
       stuffInitOptions(){
           this.tabPosition = '1'
           getDictItemsByCode(DICT_CODE.STUFF_TYPE).then((data) => {
@@ -1086,12 +1086,12 @@ export default {
                     this.$message.error(error)
                 })
       },
-      //药品显示状态
+      //Trạng thái hiển thị thuốc
       changStatus(){
 
       },
 
-      //获取售价合计
+      //Lấy tổng giá bán
       getPriceTotal(item){
           let price;
 
@@ -1113,7 +1113,7 @@ export default {
     },
     addCreateDate(){
        let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
+        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa, 30nghĩa là ngày
         let lastY = lw.getFullYear();
         let lastM = lw.getMonth() + 1;
         let lastD = lw.getDate();
@@ -1188,7 +1188,7 @@ export default {
       });
     },
 
-    //药品批号获取药品库存
+    //Lấy tồn kho thuốc theo số lô
     drugBatchNumber(type,limit,offset){
         if(type===1){
           this.currentPage =1
@@ -1548,7 +1548,7 @@ export default {
             //  this.stuffList=[]
             if(this.activeName==='0'){
               this.dispensingList = null
-                //按药品批号获取
+                //Lấy theo số lô thuốc
                 if(this.tabPosition==="0"){
                     this.currentPage = 1
                     this.drugBatchNumber(1)
@@ -1566,7 +1566,7 @@ export default {
           }
         },
      },
-     // tableDataCóel-tableDữ liệu đã liên kết
+      // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
           // Khắc phục lỗi hiển thị lệch bảng
           handler () {

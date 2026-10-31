@@ -462,7 +462,7 @@
       <div>
         <el-divider></el-divider>
         <div id="registrationTotalFee_Container">
-          <div id="registrationTotalFee_Title">Số tiền phải thu（VNĐ）：</div>
+          <div id="registrationTotalFee_Title">Số tiền phải thu (VNĐ): </div>
           <div id="registrationTotalFee_Fee">
             {{ this.bizFormModel.registrationFee }}
           </div>
@@ -548,7 +548,7 @@ export default {
           // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
           sum += parseInt(value.substr(i, 1), 10) * arrExp[i];
         }
-        // Tính modulo（Thuật toán cố định）
+        // Tính modulo (Thuật toán cố định)
         idx = sum % 11;
         // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
         if (String(arrValid[idx]) === value.substr(17, 1).toUpperCase()) {
@@ -563,10 +563,10 @@ export default {
     return {
       setDisabled: {
         disabledDate(time) {
-          return time.getTime() > Date.now(); // Có thể chọn ngày trước、Có thể chọn ngày hiện tại、Không thể chọn ngày tương lai
-          // return time.getTime() > Date.now() - 8.64e7;  // Có thể chọn ngày trước、Không thể chọn ngày hiện tại、Không thể chọn ngày tương lai
-          // return time.getTime() < Date.now() - 8.64e7;  // Không thể chọn ngày trước、Có thể chọn ngày hiện tại、Có thể chọn ngày tương lai
-          // return time.getTime() < Date.now(); // Không thể chọn ngày trước、Không thể chọn ngày hiện tại、Có thể chọn ngày tương lai
+          return time.getTime() > Date.now(); // Có thể chọn ngày trước, Có thể chọn ngày hiện tại, Không thể chọn ngày tương lai
+          // return time.getTime() > Date.now() - 8.64e7; // Có thể chọn ngày trước, Không thể chọn ngày hiện tại, Không thể chọn ngày tương lai
+          // return time.getTime() < Date.now() - 8.64e7; // Không thể chọn ngày trước, Có thể chọn ngày hiện tại, Có thể chọn ngày tương lai
+          // return time.getTime() < Date.now(); // Không thể chọn ngày trước, Không thể chọn ngày hiện tại, Có thể chọn ngày tương lai
 
           /*Chỉ chọn được 7 ngày gần đây trước hôm nay*/
           // let now = Date.now();
@@ -580,7 +580,7 @@ export default {
       bizFormModel: {...this.initFormModel(), ...this.initPatientModel()},
       PatientFormModel: this.initPatientModel(),
       tabIndex: "1",
-      listarry: {streatime: '', endtime: ''},//父级传值接收使用
+      listarry: {streatime: '', endtime: ''},//Dùng để nhận giá trị truyền từ component cha
       flag: false,//Ngăn gửi trùng lặp
       gender_List: [], // Giới tính
       withPatientNexus_List: [], // Quan hệ với bệnh nhân
@@ -789,7 +789,7 @@ export default {
           if (responseData.code === 100) {
             this.dialogProps.visible = false;
             this.payRegistrationFeeVisible = false;
-            //Sau khi lưu thành công，Nếu có phí đăng ký khám，Chèn dữ liệu vào bảng thu phí
+            //Sau khi lưu thành công, Nếu có phí đăng ký khám, Chèn dữ liệu vào bảng thu phí
             if (this.bizFormModel.registrationFee > 0) {
               toll.registrationFeeId = responseData.data
               //Chèn dữ liệu vào bảng thu phí
@@ -923,12 +923,12 @@ export default {
           name: "Chờ check-in",
         },
         dispensingStatus: "0", // Trạng thái phát thuốc
-        dispensingDate: "", // 发/Thời gian trả thuốc
+        dispensingDate: "", // Thời gian phát/trả thuốc
         chargeStatus: "0", // Trạng thái thu phí
         chargeDate: "", // Thời gian thu phí
         subscribeDate: "",//Ngày hẹn
-        subscribedaterq: "",//显示用 不传入后台 拼接预约日期
-        subscribedatetime: "",//Thời gian hẹn 传入后台前拼接到预约日期字段里 这里只做显示和绑定使用
+        subscribedaterq: "",//Chỉ dùng để hiển thị, không truyền lên backend, dùng để nối thành ngày hẹn
+        subscribedatetime: "",//Thời gian hẹn, trước khi truyền lên backend sẽ nối vào trường ngày hẹn, ở đây chỉ dùng để hiển thị và binding
       };
     },
     initOptions(This) {
@@ -1104,7 +1104,7 @@ export default {
       this.PatientFormModel = this.initPatientModel();
       this.bizFormModel = { ...this.bizFormModel, ...this.PatientFormModel };
       this.initOptions(this.bizFormModel);
-      this.bizFormModel.treatType.name = "初诊"
+      this.bizFormModel.treatType.name = "Khám lần đầu"
       this.bizFormModel.subscribedaterq = rowdata.fn;
       this.bizFormModel.doctor.id = rowdata.userid;
       this.bizFormModel.doctor.name = rowdata.username;
@@ -1147,7 +1147,7 @@ export default {
     },
   },
   watch: {
-    //Trình theo dõi phát hiện khoa/phòng thay đổi，Lấy liên kết nhân viên trong khoa/phòng
+    //Trình theo dõi phát hiện khoa/phòng thay đổi, Lấy liên kết nhân viên trong khoa/phòng
     "bizFormModel.department.id": function (val, oldVal) {
       if (val !== oldVal) {
         if (

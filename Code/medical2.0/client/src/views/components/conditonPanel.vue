@@ -25,7 +25,7 @@
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'SingleInput'">
             <div v-if="groupOne[idx].column && (groupOne[idx].column.javaType.value === 'Long' || groupOne[idx].column.javaType.value === 'Integer' || groupOne[idx].column.javaType.value === 'Double' || groupOne[idx].column.javaType.value === 'Float' || groupOne[idx].column.javaType.value === 'java.math.BigDecimal')">
               <number-range-input v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" v-model='groupOne[idx].value'></number-range-input>
-              <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupOne[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
+              <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "VND":null' :precision="groupOne[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
             </div>
             <el-input v-else v-model='groupOne[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
           </div>
@@ -49,7 +49,7 @@
           </div>-->
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && (groupOne[idx].column.showType.value === 'InputNumber' || groupOne[idx].column.showType.value === 'IncNumber')">
             <number-range-input v-if="groupOne[idx].queryType === 'between' || groupOne[idx].queryType === 'not between'" v-model='groupOne[idx].value' :type="groupOne[idx].column.javaType.value" :precision="groupOne[idx].column.decimalLenth"></number-range-input>
-            <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupOne[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
+            <number-input v-else v-model="groupOne[idx].value" :currency='groupOne[idx].column.javaType.value === "java.math.BigDecimal" ? "VND":null' :precision="groupOne[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
           </div>
           <div v-else-if="groupOne[idx].column && groupOne[idx].column.showType && groupOne[idx].column.showType.value === 'Select'">
             <el-select v-if="groupOne[idx].queryType === 'in' || groupOne[idx].queryType === 'not in'" v-model='groupOne[idx].value' :value-key='groupOne[idx].column.fieldId' multiple filterable placeholder='Vui lòng chọn giá trị điều kiện'>
@@ -98,7 +98,7 @@
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'SingleInput'">
               <div v-if="groupTwo[idx].column && (groupTwo[idx].column.javaType.value === 'Long' || groupTwo[idx].column.javaType.value === 'Integer' || groupTwo[idx].column.javaType.value === 'Double' || groupTwo[idx].column.javaType.value === 'Float'  || groupTwo[idx].column.javaType.value === 'java.math.BigDecimal')">
                 <number-range-input v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" v-model='groupTwo[idx].value'></number-range-input>
-                <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
+                <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "VND":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
               </div>
               <el-input v-else v-model='groupTwo[idx].value' :clearable='true' placeholder='Vui lòng nhập giá trị điều kiện' ></el-input>
             </div>
@@ -122,7 +122,7 @@
             </div>-->
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && (groupTwo[idx].column.showType.value === 'InputNumber' || groupTwo[idx].column.showType.value === 'IncNumber')">
               <number-range-input v-if="groupTwo[idx].queryType === 'between' || groupTwo[idx].queryType === 'not between'" v-model='groupTwo[idx].value' :type="groupTwo[idx].column.javaType.value" :precision="groupTwo[idx].column.decimalLenth" ></number-range-input>
-              <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "CNY":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
+              <number-input v-else v-model="groupTwo[idx].value" :currency='groupTwo[idx].column.javaType.value === "java.math.BigDecimal" ? "VND":null' :precision="groupTwo[idx].column.decimalLenth" placeholder='Vui lòng nhập giá trị điều kiện'></number-input>
             </div>
             <div v-else-if="groupTwo[idx].column && groupTwo[idx].column.showType && groupTwo[idx].column.showType.value === 'Select'">
               <el-select v-if="groupTwo[idx].queryType === 'in' || groupTwo[idx].queryType === 'not in'" v-model='groupTwo[idx].value' :value-key='groupTwo[idx].column.fieldId' multiple filterable placeholder='Vui lòng chọn giá trị điều kiện'>
@@ -159,8 +159,8 @@ export default {
     return {
       pp: {
         "0": [],  "1": [], "2": [], "3": [], "4": [], "5": []
-      },  // 对象字段的值选择项
-      columns: [],  // 字段列表
+      },  // Tùy chọn giá trị trường đối tượng
+      columns: [],  // Danh sách trường
       logics: [
         {value: 'AND', label: 'Và'},
         {value: 'OR', label: 'hoặc'}
@@ -175,7 +175,7 @@ export default {
         {logic: 'AND', column: null, queryType: '', value: null, operations: []},
         {logic: 'AND', column: null, queryType: '', value: null, operations: []}
       ],
-      groupLogic: 'OR'    // 两组连接逻辑运算符
+      groupLogic: 'OR'    // Toán tử logic nối hai nhóm
     }
   },
   props: {
@@ -212,7 +212,7 @@ export default {
     },
     groupLogic(val, oldVal) {
       if(val!==oldVal){
-        this.value['groupLogic'] = val    // 非对象，需要监控修改
+        this.value['groupLogic'] = val    // Không phải đối tượng, cần theo dõi thay đổi
       }
     },
     curNode(val, oldVal) {
@@ -359,13 +359,13 @@ export default {
         }
       }
     },
-    // interColumnName 联动列字段名
+    // interColumnName tên trường cột liên động
     watchGroupHandler(interColumnName, group) {
       for(let i= 0 ; i < group.length; i++) {
         if(group[i].column && group[i].column.interaction) {
           let colNames = group[i].column.interaction.split(",")
           for(let j = 0; j < colNames.length; j++) {
-            if(colNames[j] === interColumnName) { // 有联动变量是依赖于左边选择框的
+            if(colNames[j] === interColumnName) { // Có biến liên động phụ thuộc vào hộp chọn bên trái
               group[i].value = null
               let [This, operates] = this.constructModel(colNames, group, i)
               this.initOptions(This, operates, group[i].column, group === this.groupOne ? i : i+ 3)
@@ -374,13 +374,13 @@ export default {
         }
       }
     },
-    // colNames 联动变量数组;
+    // colNames mảng biến liên động;
     async constructModel(colNames, group, idx) {
       let model = {}
       let operates = {}
-      let colIdx = group === this.groupOne ? idx : idx + 3 // 需要查询的选项的下标
+      let colIdx = group === this.groupOne ? idx : idx + 3 // Chỉ mục của tùy chọn cần truy vấn
       for(let i=0; i < colNames.length; i++) {
-        /** 此时的 column 可能还没值 会报错 */
+        /** column lúc này có thể chưa có giá trị, sẽ báo lỗi */
         let column = await this.init() && this.columns.find(item => {
           return item.name === colNames[i]
         })
@@ -389,7 +389,7 @@ export default {
           model[column.simpleJavaField] = this.curNode
           operates[colNames[i] + colIdx] = '='
         } else {
-          // 同一组中
+          // Trong cùng nhóm
           model[column.simpleJavaField] = {}
           model[column.simpleJavaField][column.fieldId] = null
           let find = false
@@ -408,7 +408,7 @@ export default {
             }
           }
 
-          // 同一组中未找到, 且组之间为AND
+          // Không tìm thấy trong cùng nhóm, và giữa các nhóm là AND
           if(!find && this.groupLogic === 'AND') {
             let gp = group === this.groupOne ? this.groupTwo : this.groupOne
             for(let j = 0; j < gp.length; j++) {
@@ -440,7 +440,7 @@ export default {
       })
     },
     onQueryTypeChange(queryType, group, index) {
-      // 根据操作符 和显示类型确定初始值，有待测试  变化时同步修改dataPermistion.vue onQueryTypeChange(rule)Phương pháp
+      // Dựa vào toán tử và kiểu hiển thị để xác định giá trị khởi tạo, cần kiểm thử; khi thay đổi thì đồng bộ sửa phương thức onQueryTypeChange(rule) trong dataPermistion.vue
       if(group[index].column && (group[index].column.showType.value === "Select" || group[index].column.showType.value === "SelectTree") && (queryType === "in" || queryType === "not in")) {
         group[index].value = []
       } else {
@@ -448,7 +448,7 @@ export default {
       }
     },
     onColumnChange(column, group, index) {
-      // 重置查询条件值
+      // Đặt lại giá trị điều kiện truy vấn
       group[index].value = null
       group[index].queryType = ''
 
@@ -536,9 +536,9 @@ export default {
         this.initOptions(This, operates, column, group === this.groupOne ? index : index + 3)
       }
     },
-    // This curNode； column 选择的字段； index 0~2 groupOnecủa，3~5 groupTwo
+    // This curNode; column trường được chọn; index 0~2 của groupOne, 3~5 của groupTwo
     initOptions(This, operates, column, index) {
-      // 选项列表数据
+      // Dữ liệu danh sách lựa chọn
       let className = column.customType.genTable.className
       let apiPath = column.customType.moduleName + '/' + (column.customType.subModuleName !== '' ? column.customType.subModuleName + '/': '') + className.charAt(0).toLowerCase() + className.slice(1)
       let fnOption = ''
@@ -553,7 +553,7 @@ export default {
         eval('parameters = [' + column.parameters + ']')
       }
 
-      // 根据联动参数选择的符号替换操作符
+      // Dựa vào ký hiệu được chọn trong tham số liên kết để thay thế toán tử
       parameters.forEach(item => {
         let key = item.columnName+index
         if(key in operates) {
@@ -606,7 +606,7 @@ export default {
         this.groupOne = this.value['groupOne']
         this.groupTwo = this.value['groupTwo']
         this.groupLogic = this.value['groupLogic']
-      } else {  // 若数据为空，进行初始化
+      } else { // Nếu dữ liệu rỗng thì thực hiện khởi tạo
         this.reset()
       }
 

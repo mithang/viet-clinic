@@ -3,7 +3,7 @@
 
     <el-row>
       <el-col :span="6">
-        <span><b>Nhà cung cấp：</b></span>
+        <span><b>Nhà cung cấp: </b></span>
         <el-select
           v-model="otherInfo.supplierID"
           filterable
@@ -19,8 +19,8 @@
       </el-col>
 
       <el-col :span="6">
-        <span v-if="addType === 1"><b>Tên thuốc：</b></span>
-        <span v-else><b>Tên vật tư：</b></span>
+        <span v-if="addType === 1"><b>Tên thuốc: </b></span>
+        <span v-else><b>Tên vật tư: </b></span>
         <el-popover
           placement="right"
           width="700"
@@ -88,8 +88,8 @@
             </el-table-column>
           </el-table>
 
-          <!-- <span v-if="addType == 1">Tên thuốc：</span>
-        Tên vật tư： -->
+          <!-- <span v-if="addType == 1">Tên thuốc: </span>
+        Tên vật tư: -->
           <el-input
             style="width: 80%"
             slot="reference"
@@ -254,11 +254,11 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="3" :offset="12">Chủng loại：{{ CalcBreed() }}</el-col>
-      <el-col :span="3">Số lượng：{{ calcTotalNumber() }}</el-col>
-      <el-col :span="3" v-if="systemParamConfig===1">Tổng giá nhập：{{ calcAllRetailPrice() }}</el-col>
-      <el-col :span="3" v-if="systemParamConfig===2">Tổng giá nhập：{{ calcAllBid() }}</el-col>
-      <el-col :span="3">Tổng giá bán lẻ：{{ calcAllRetailPrice() }}</el-col>
+      <el-col :span="3" :offset="12">Chủng loại: {{ CalcBreed() }}</el-col>
+      <el-col :span="3">Số lượng: {{ calcTotalNumber() }}</el-col>
+      <el-col :span="3" v-if="systemParamConfig===1">Tổng giá nhập: {{ calcAllRetailPrice() }}</el-col>
+      <el-col :span="3" v-if="systemParamConfig===2">Tổng giá nhập: {{ calcAllBid() }}</el-col>
+      <el-col :span="3">Tổng giá bán lẻ: {{ calcAllRetailPrice() }}</el-col>
     </el-row>
     <el-row>
       <el-col :span="24 / 4">
@@ -307,7 +307,7 @@
     :append-to-body="true"
                :before-close="cancellation">
 
-      <!--limit:Số lượng tải lên tối đa，on-exceed：Thao tác khi vượt quá số lượng tải lên tối đa  -->
+      <!--limit:Số lượng tải lên tối đa, on-exceed: Thao tác khi vượt quá số lượng tải lên tối đa -->
       <el-upload
         class="upload-demo"
         action=""
@@ -369,12 +369,12 @@
         //Đặt ngày trước hôm nay của ngày hết hiệu lực thành không thể chọn
         expireTimeOption: {
           // disabledDate(date) {
-          //   //disabledDate Trên tài liệu：Đặt trạng thái vô hiệu hóa，Tham số là ngày hiện tại，Yêu cầu trả về Boolean
+          // //disabledDate Trên tài liệu: Đặt trạng thái vô hiệu hóa, Tham số là ngày hiện tại, Yêu cầu trả về Boolean
           //   return date.getTime() < Date.now() - 24 * 60 * 60 * 1000;
           // },
         },
         searchName: "", // Tên thuốc hoặc vật tư
-        // radio: "1", // 1 Thuốc，2Vật tư
+        // radio: "1", // 1 Thuốc, 2Vật tư
         company_id: JSON.parse(window.sessionStorage.getItem("currentUser"))
           .company.id /*Phòng khámID*/,
         examine_id: "1005787933775863930" /*Trạng thái đã quaID*/,
@@ -529,8 +529,8 @@
       },
       openDialog(scope) {
         if ( scope.row.quantity <= 0 || ! scope.row.quantity) {
-          this.$message.error('Vui lòng nhập trước số lượng hợp lệ và có tách hộp không！');
-          return; // Nếu số lượng không hợp lệ，Dừng thực hiện
+          this.$message.error('Vui lòng nhập trước số lượng hợp lệ và có tách hộp không!');
+          return; // Nếu số lượng không hợp lệ, Dừng thực hiện
         }
         this.currentRow = scope.row; // Ghi lại dòng hiện tại
         this.inputCount = 0; // Đặt lại bộ đếm nhập liệu
@@ -801,7 +801,7 @@
             .replace(/\./g, "")
             .replace("$#$", ".");
           if (checkPlan.indexOf(".") < 0 && checkPlan !== "") {
-            // Các ký tự trên đã được lọc，Tại đây kiểm soát trường hợp không có dấu thập phân，Ký tự đầu tiên không được giống 01、02số tiền
+            // Các ký tự trên đã được lọc, Tại đây kiểm soát trường hợp không có dấu thập phân, Ký tự đầu tiên không được giống 01, 02số tiền
             checkPlan = parseFloat(checkPlan) + "";
           } else if (checkPlan.indexOf(".") >= 0) {
             // checkPlan = checkPlan.replace(/^()*(\d+)\.(\d\d).*$/, "$1$2.$3"); // Chỉ được nhập tối đa hai chữ số thập phân
@@ -818,7 +818,7 @@
         //   .replace(/\./g, '')
         //   .replace('$#$', '.')
         // if (checkPlan.indexOf('.') < 0 && checkPlan !== '') {
-        //   // Các ký tự trên đã được lọc，Tại đây kiểm soát trường hợp không có dấu thập phân，Ký tự đầu tiên không được giống 01、02số tiền
+        // // Các ký tự trên đã được lọc, Tại đây kiểm soát trường hợp không có dấu thập phân, Ký tự đầu tiên không được giống 01, 02số tiền
         //   checkPlan = parseFloat(checkPlan) + ''
         // } else if (checkPlan.indexOf('.') >= 0) {
         //   checkPlan = checkPlan
@@ -956,7 +956,7 @@
       selectGoods(item) {
         this.selectGoodsTemp = item;
       },
-      // 每条里的模糊查询后的选中
+      // Mục được chọn sau khi tìm kiếm mờ trong từng dòng
       selectGoodsItem(item) {
         this.selectGoodsTemp = item;
         const newStorage = {
@@ -1090,7 +1090,7 @@
                   ? this.$moment(element.expireDate).format("YYYY-MM-DD HH:mm:ss")
                   : null, // Hạn sử dụng
               number: element.goodsType === 1 ? element.quantity * element.preparation : element.quantity * element.packNumber, // Số lượng
-              cnt: element.goodsType === 1 ? element.quantity : element.quantity * element.packNumber, // 医保字段数量
+              cnt: element.goodsType === 1 ? element.quantity : element.quantity * element.packNumber, // Số lượng trường bảo hiểm y tế
               bid: element.inPrice, // Giá nhập
               retailPrice: element.outPrice, // Giá bán lẻ
               allBid: element.totalInPrice, // Tổng giá nhập
@@ -1258,13 +1258,13 @@
           } else {
             this.$message({
               type: 'warning',
-              message: 'Định dạng tệp đính kèm sai，Vui lòng xóa rồi tải lên lại！'
+              message: 'Định dạng tệp đính kèm sai, Vui lòng xóa rồi tải lên lại!'
             })
           }
         } else {
           this.$message({
             type: 'warning',
-            message: 'Vui lòng tải tệp đính kèm lên！'
+            message: 'Vui lòng tải tệp đính kèm lên!'
           })
         }
       },
@@ -1272,7 +1272,7 @@
       handleExceed() {
         this.$message({
           type: 'warning',
-          message: 'Giới hạn vượt quá số lượng tệp tải lên tối đa！'
+          message: 'Giới hạn vượt quá số lượng tệp tải lên tối đa!'
         })
         return;
       },
@@ -1312,13 +1312,32 @@
             for (let i = 0; i < length; i++) {
               binary += String.fromCharCode(bytes[i]);
             }
-            //Tại đây nhập vào，Dùng để phân tíchexcel
+            //Tại đây nhập vào, Dùng để phân tíchexcel
             const XLSX = require("xlsx");
             wb = XLSX.read(binary, {
               type: "binary"
             });
             outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-            //outdatachính là dữ liệu đã đọc（không bao gồm dòng tiêu đề tức là hàng đầu bảng，Hàng đầu bảng sẽ làm chỉ số của đối tượng）
+            // Chuẩn hoá tiêu đề cột: chấp nhận cả mẫu Excel tiếng Việt và mẫu cũ tiếng Trung
+            const HEADER_ALIAS = {
+              'Tên thuốc': 'goodsName', 'Tên vật tư': 'goodsName', 'Tên thuốc/vật tư': 'goodsName', '药品材料名称': 'goodsName',
+              'Quy cách': 'specification', '规格': 'specification',
+              'Giá bán lẻ': 'price', 'Giá bán': 'price', '售价': 'price',
+              'Số lô sản xuất': 'batchNumber', 'Số lô': 'batchNumber', '生产批号': 'batchNumber',
+              'Ngày sản xuất': 'producedDate', '生产日期': 'producedDate',
+              'Ngày hiệu lực': 'expireDate', 'Hạn sử dụng': 'expireDate', '过期日期': 'expireDate',
+              'Số lượng nhập': 'quantity', 'Số lượng': 'quantity', '入库数量': 'quantity',
+              'Giá nhập': 'inPrice', '进价': 'inPrice'
+            };
+            outdata = outdata.map(function (row) {
+              const normalized = Object.assign({}, row);
+              Object.keys(row).forEach(function (header) {
+                const field = HEADER_ALIAS[String(header).trim()];
+                if (field) { normalized[field] = row[header]; }
+              });
+              return normalized;
+            });
+            //outdatachính là dữ liệu đã đọc (không bao gồm dòng tiêu đề tức là hàng đầu bảng, Hàng đầu bảng sẽ làm chỉ số của đối tượng)
             //Tại đây có thể xử lý dữ liệu
             // let arr = [];
             // outdata.map(v => {
@@ -1334,12 +1353,12 @@
             // _this.dalen=arr.length;
             for (let i = 0; i < outdata.length; i++) {
               for (let j = 0; j < newList.length; j++) {
-                if (outdata[i].药品材料名称 === newList[j].goodsName && outdata[i].规格 === newList[j].specification && outdata[i].售价 === newList[j].price) {
-                  newList[j].batchNumber = outdata[i].生产批号;
-                  newList[j].producedDate = outdata[i].生产日期;
-                  newList[j].expireDate = outdata[i].过期日期;
-                  newList[j].quantity = outdata[i].入库数量;
-                  newList[j].inPrice = outdata[i].进价;
+                if (outdata[i].goodsName === newList[j].goodsName && outdata[i].specification === newList[j].specification && outdata[i].price === newList[j].price) {
+                  newList[j].batchNumber = outdata[i].batchNumber;
+                  newList[j].producedDate = outdata[i].producedDate;
+                  newList[j].expireDate = outdata[i].expireDate;
+                  newList[j].quantity = outdata[i].quantity;
+                  newList[j].inPrice = outdata[i].inPrice;
                   newList[j].outPrice = newList[j].price;
                   storageDetailTable.push(newList[j]);
                   dr += 1;
@@ -1348,7 +1367,7 @@
               }
               if (a !== 1){
                 wdr += 1;
-                cw += "Dòng thứ"+(i+1)+"dòng["+outdata[i].药品材料名称+"]Thông tin bất thường，Vui lòng kiểm tra rồi nhập lại\n";
+                cw += "Dòng "+(i+1)+" ["+outdata[i].goodsName+"] có thông tin bất thường, vui lòng kiểm tra rồi nhập lại\n";
               }
               a = 0;
             }

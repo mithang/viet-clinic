@@ -3,7 +3,7 @@
     <el-collapse v-model="activeNames" v-loading="loading">
       <el-collapse-item name="3">
         <template slot="title">
-          <span class="collapse-title">{{title}}<span style="color: #ccc">（Mở rộng để xem thêm）</span></span>
+          <span class="collapse-title">{{title}}<span style="color: #ccc"> (Mở rộng để xem thêm)</span></span>
           <div class="collapse-btn">
 <!--            <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='!action'>Tải lên</el-button>-->
             <el-button style="width: 90px;" type="primary" @click.stop="onUploadFile" v-if='authority === "add" || authority === "edit"'>Tải lên</el-button>
@@ -29,9 +29,9 @@
         </el-upload>
         <el-table :data='viewFileList' style='width: 100%' v-show="authority !== 'add'">
 <!--        <el-table :data='viewFileList' style='width: 100%' v-show="action">-->
-          <el-table-column prop='name' label='附件名' :width="width"></el-table-column>
-          <el-table-column prop="createBy" label='上传人' width='190px'></el-table-column>
-          <el-table-column prop='createDate' label='上传日期' width='160px'></el-table-column>
+          <el-table-column prop='name' label='Tên tệp đính kèm' :width="width"></el-table-column>
+          <el-table-column prop="createBy" label='Người tải lên' width='190px'></el-table-column>
+          <el-table-column prop='createDate' label='Ngày tải lên' width='160px'></el-table-column>
           <el-table-column label='Thao tác' header-align='center' width='120px'>
             <template slot-scope='scope'>
               <OperationIcon type='info' content='Xem trước' placement='top-start' icon-name='el-icon-view'
@@ -83,14 +83,14 @@
     },
     data() {
       return {
-        uploadBtnId: 'uploadBtn' + Math.random(),  // 上传文件动态id，解决一个页面多个文件上传组件存在问题
+        uploadBtnId: 'uploadBtn' + Math.random(), // Id động của tệp tải lên, giải quyết vấn đề một trang có nhiều component tải tệp
 
-        activeNames: [], // 折叠面板
+        activeNames: [], // Bảng thu gọn
         uploadHeaders: {'X-Token': getLocalToken()},
         baseApi: process.env.BASE_API,
         fileList:  [],
         loading: false,
-        viewFileList: [], // 附件回显列表
+        viewFileList: [], // Danh sách tệp đính kèm hiển thị lại
         fileName:"",
         uploadFiles:"",
       }
@@ -105,7 +105,7 @@
         }
         document.getElementById(this.uploadBtnId).click()
       },
-      onRemoveFileList(file, fileList) { // 移除文件
+      onRemoveFileList(file, fileList) { // Xoá tệp
         this.value.uploads = fileList
       },
       onUploadViewFile(index, row) { // Tải xuống
@@ -119,13 +119,13 @@
          const src = `data:text/plain;base64,${res.base64Str}`;
         let name = res.name
       //  this.fileName=name
-       // this.uploadFiles = src
+        // this.uploadFiles = src
         this.download(src,name)
         }).catch((error)=>{
             this.outputError(error)
         })
       },
-      //下载方法
+      // Phương thức tải xuống
       download(uploadFiles, fileName) {
         // const blob = new Blob([content]);
         // const url = window.URL.createObjectURL(blob);
@@ -147,7 +147,7 @@
         elink.click()
         document.body.removeChild(elink)
       },
-      // Sẽbase64Chuyển đổi thànhblob
+      // Sẽ base64 Chuyển đổi thành blob
     dataURLtoBlob(dataurl) {
       const arr = dataurl.split(',')
       const mime = arr[0].match(/:(.*?);/)[1]
@@ -171,7 +171,7 @@
           this.$emit("beforeRemove",file,fileList)
         }
       },
-      fileSuccess(res, file){                 //上传文件成功
+      fileSuccess(res, file){                 // Tải tệp lên thành công
       },
       onChangeFileList(file, fileList) {
         this.fileList = fileList
@@ -180,9 +180,9 @@
       },
       onViewFileList(index, row) { // Xem trước
         let suffix = row.name.substring(row.name.lastIndexOf("."))
-        let fileId = row.id + "" + suffix // 拼接参数，TệpID + 后缀名
+        let fileId = row.id + "" + suffix // Ghép tham số, ID tệp + phần mở rộng
         let token = getLocalToken()
-        // 文件流访问路径
+        // Đường dẫn truy cập luồng tệp
         let url = process.env.FILE_PREVIEW_URL + `sys/sysSeting/getFile/` + fileId + `?token=` + token
         window.open(process.env.KK_FILE_URL + encodeURIComponent(Base64.encode(url)));
       },
@@ -202,7 +202,7 @@
       getViewFileList(){
         return this.viewFileList;
       },
-      // TheoobjectId，获取附件信息
+      // Theo objectId, lấy thông tin tệp đính kèm
       getSysFileAll() {
         this.setLoad()
         let file_search = {

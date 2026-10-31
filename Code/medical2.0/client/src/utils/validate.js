@@ -7,31 +7,31 @@ export function isvalidUsername(str) {
   return valid_map.indexOf(str.trim()) >= 0
 }
 
-/* 合法uri*/
+/* URI hợp lệ */
 export function validateURL(textval) {
   const urlregex = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/
   return urlregex.test(textval)
 }
 
-/* 小写字母*/
+/* Chữ thường */
 export function validateLowerCase(str) {
   const reg = /^[a-z]+$/
   return reg.test(str)
 }
 
-/* 大写字母*/
+/* Chữ hoa */
 export function validateUpperCase(str) {
   const reg = /^[A-Z]+$/
   return reg.test(str)
 }
 
-/* 大小写字母*/
+/* Chữ hoa và chữ thường */
 export function validatAlphabets(str) {
   const reg = /^[A-Za-z]+$/
   return reg.test(str)
 }
 /**
- * 判断是否为空
+ * Kiểm tra có rỗng không
  */
 export function validatenull(val) {
   if (typeof val === 'boolean') {
@@ -52,14 +52,14 @@ export function validatenull(val) {
 }
 
 /**
- * 判断手机号码是否正确
+ * Kiểm tra số điện thoại có đúng không
  */
 export function isvalidatemobile(phone) {
   const list = []
   let result = true
   let msg = ''
   const isPhone = /^0\d{2,3}-?\d{7,8}$/
-  // Thêm134 Giảm|1349[0-9]{7}，Thêm181,Thêm145，Thêm17[678]
+  // Thêm 134 Giảm|1349[0-9]{7}, Thêm 181, Thêm 145, Thêm 17[678]
   // const isMob = /^((\+?86)|(\(\+86\)))?(13[0123456789][0-9]{8}|15[012356789][0-9]{8}|18[012356789][0-9]{8}|14[57][0-9]{8}|17[3678][0-9]{8})$/
   if (!validatenull(phone)) {
     if (phone.length === 11) {
@@ -104,7 +104,7 @@ export function isMobileNumber (rule, value, callback) {
 };
 
 /**
- * 非法字符
+ * Ký tự không hợp lệ
  */
 export function validaPatrn(str) {
   const patrn = /[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘'，。、]/im; 
@@ -112,7 +112,7 @@ export function validaPatrn(str) {
 }
 
 /**
- * 中文
+ * Tiếng Trung
  */
 export function validaChinese(str) {
   const reg = /^[^\u4e00-\u9fa5]*$/
@@ -120,17 +120,17 @@ export function validaChinese(str) {
 }
 
 /**
- * 经纬度
+ * Kinh độ/vĩ độ
  */
  export function isLatitudeAndlongitude (rule, value, callback) {
     let LatitudeAndlongitude = ''
-    if(value.indexOf("，") !== -1){  //寻找每一个中文逗号，并替换
+    if(value.indexOf("，") !== -1){  //Tìm mỗi dấu phẩy tiếng Trung và thay thế
       value = value.replace(/，/ig,',');
     }
     LatitudeAndlongitude = value.split(",") 
-    // 经度,Phần nguyên là0-180Phần thập phân là0đến15vị
+    // Kinh độ, phần nguyên là 0-180 phần thập phân là 0 đến 15 vị
     const longreg = /^(\-|\+)?(((\d|[1-9]\d|1[0-7]\d|0{1,3})\.\d{0,15})|(\d|[1-9]\d|1[0-7]\d|0{1,3})|180\.0{0,15}|180)$/
-    // 纬度,Phần nguyên là0-90Phần thập phân là0đến15vị
+    // Vĩ độ, phần nguyên là 0-90 phần thập phân là 0 đến 15 vị
     const latreg = /^(\-|\+)?([1-8]?\d{1}\.\d{0,15}|90\.0{0,15}|[1-8]?\d{1}|90)$/
     if (LatitudeAndlongitude[0] && !longreg.test(LatitudeAndlongitude[0])) {
       callback(new Error('Phạm vi phần nguyên của kinh độ từ -180 đến 180, phần thập phân 0 đến 15 ký tự! Kinh Đông là dương, kinh Tây là âm.'))

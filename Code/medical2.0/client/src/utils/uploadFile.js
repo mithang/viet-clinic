@@ -1,4 +1,4 @@
-/*b64转文件*/
+/*Chuyển b64 thành tệp*/
 export function b64toFile(b64Data, filename, contentType) {
   let sliceSize = 512;
   let byteCharacters = atob(b64Data);

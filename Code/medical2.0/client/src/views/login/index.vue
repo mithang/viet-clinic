@@ -6,13 +6,12 @@
     :style="{ backgroundImage: 'url(' + (sysData.loginBg || backImg) + ')' }"
   >
     <div class="login-header">
-      <div class="login-logo">
-         <img :src="sysData.projectLogo" alt="" />
+      <div class="login-logo" v-if="sysData.projectLogo">
+        <img :src="sysData.projectLogo" alt="Logo phòng khám" />
       </div>
       <div class="login-title">
-        {{ sysData.sysName }}
+        {{ sysData.sysName || 'Phòng khám đám mây' }}
       </div>
-      <div class="login-right"></div>
     </div>
     <div class="login-form">
       <el-form
@@ -25,10 +24,11 @@
         @submit.native.prevent
       >
         <div class="login-body">
-          <h1 class="form-title">
-            <!-- <img :src="sysData.loginLogo" alt="" /> -->
-            Hệ thống Quản lý Phòng khám
-          </h1>
+          <h1 class="form-title">Đăng nhập hệ thống</h1>
+          <p class="form-subtitle">
+            Vui lòng đăng nhập bằng tài khoản được cấp bởi quản trị viên.
+          </p>
+
           <el-alert
             class="login-error"
             v-show="isError"
@@ -37,34 +37,39 @@
             show-icon
             :closable="false"
           ></el-alert>
+
           <el-form-item prop="username">
+            <span class="field-label">Tên đăng nhập</span>
             <el-input
               name="username"
               v-model="loginForm.username"
-              autoComplete="on"
-              autofocus="autofocus"
-              placeholder="Tên đăng nhập"
+              autoComplete="username"
+              autofocus
+              placeholder="Nhập tên đăng nhập"
+              prefix-icon="el-icon-user"
               @input="isError = false"
               size="large"
-            >
-              <div class="login-username" slot="prepend"></div>
-            </el-input>
+            ></el-input>
           </el-form-item>
+
           <el-form-item prop="password">
+            <span class="field-label">Mật khẩu</span>
             <el-input
               name="password"
               type="password"
               v-model.trim="loginForm.password"
-              placeholder="Mật khẩu"
+              autoComplete="current-password"
+              placeholder="Nhập mật khẩu"
+              prefix-icon="el-icon-lock"
+              show-password
               @input="isError = false"
+              @keyup.enter.native="doLogin"
               size="large"
-            >
-              <template slot="prepend"
-                ><div class="login-password"></div
-              ></template>
-            </el-input>
+            ></el-input>
           </el-form-item>
+
           <el-button
+            class="login-submit"
             type="primary"
             :loading="showLoading"
             @click.native.prevent="doLogin"
@@ -82,34 +87,48 @@
 
 
 
-    <div class="footer">Copyright © 2025 湖北天天数链技术有限公司
-      <!-- 第三行：协议名称（单独占一行） -->
-      <div  style="margin-top: 2px;">
+    <div class="footer">
+      <div class="footer-copyright">
+        Bản quyền © 2025 Công ty TNHH Công nghệ Chuỗi số Thiên Thiên Hồ Bắc
+        <span class="footer-legal">(湖北天天数链技术有限公司)</span>
+      </div>
+      <!-- Dòng riêng: tên thỏa thuận cấp phép -->
+      <div class="footer-license">
         <a
           href="https://open.tntlinking.com/communityTreaty"
           target="_blank"
           rel="noopener noreferrer"
-          :style="{
-            color: settings.theme, // 复用主题色作为链接色
-            textDecoration: 'none',
-          }">
-          本系统软件源代码许可来源于《天天开源软件（社区版）许可协议》
+        >
+          Mã nguồn hệ thống được phát hành theo Thỏa thuận Giấy phép Phần mềm
+          Mã nguồn mở Thiên Thiên (Bản Cộng đồng)
         </a>
       </div>
     </div>
 
 
     <el-dialog
-      title="登陆提醒"
+      title="Chọn phòng khám"
       :visible.sync="dialogVisible"
-      width="40%"
+      width="440px"
       append-to-body
+      custom-class="clinic-picker-dialog"
+      :close-on-click-modal="false"
     >
-      <p class="til">检测到当前账号绑定多个诊所，请选择需要登录的诊所</p>
-      <ul>
-        <li v-for="(i, ind) in firmList" :key="i.id" @click="firmIndex = ind">
-          <p><span v-show="firmIndex === ind"></span></p>
-          <p>{{ i.name }}</p>
+      <p class="til">
+        Tài khoản của bạn được liên kết với nhiều phòng khám. Vui lòng chọn
+        phòng khám cần đăng nhập.
+      </p>
+      <ul class="clinic-list">
+        <li
+          v-for="(i, ind) in firmList"
+          :key="i.id"
+          :class="{ 'is-selected': firmIndex === ind }"
+          @click="firmIndex = ind"
+        >
+          <span class="clinic-radio">
+            <i v-show="firmIndex === ind" class="el-icon-check"></i>
+          </span>
+          <span class="clinic-name">{{ i.name }}</span>
         </li>
       </ul>
       <div slot="footer" class="dialog-footer">
@@ -162,7 +181,7 @@ export default {
         username: [
           { required: true, message: "Vui lòng nhập tên đăng nhập", trigger: "blur" },
         ],
-        password: [{ required: true, message: "请输入口令", trigger: "blur" }],
+        password: [{ required: true, message: "Vui lòng nhập mật khẩu", trigger: "blur" }],
       },
       loginBg: require("../../assets/images/Logbk.png"),
       loginSubBg: require("../../assets/images/logsubbg.jpg"),
@@ -264,14 +283,14 @@ export default {
         if (valid) {
           try {
             const res = await getFirmList(this.loginForm.username, this.loginForm.password);
-            // 检查是否返回了错误响应
+            // Kiểm tra xem có trả về phản hồi lỗi không
             if (res && res.code && res.code !== 100) {
               this.isError = true;
               this.loginError = res.msg || "Đăng nhập thất bại";
               return;
             }
             if (!res || !Array.isArray(res) || res.length === 0) {
-              // 诊所列表为空时（如超级管理员），尝试直接登录
+              // Khi danh sách phòng khám rỗng (ví dụ siêu quản trị viên), thử đăng nhập trực tiếp
               try {
                 const tokenRes = await getToken(this.loginForm.username, this.loginForm.password, "")
                 if (tokenRes && tokenRes.code === 100) {
@@ -282,7 +301,7 @@ export default {
                 // fall through to error
               }
               this.isError = true
-              this.loginError = "未找到关联诊所"
+              this.loginError = "Không tìm thấy phòng khám liên kết"
               return
             }
             setLocalCompanys(res);
@@ -294,7 +313,7 @@ export default {
             }
           } catch (error) {
             this.isError = true;
-            this.loginError = error.msg || "Đăng nhập thất bại，请检查网络连接";
+            this.loginError = error.msg || "Đăng nhập thất bại, vui lòng kiểm tra kết nối mạng";
           }
         }
       });
@@ -389,30 +408,30 @@ export default {
           personalTheme.theme = typeof personalTheme.theme === 'string' ? JSON.parse(personalTheme.theme) : (personalTheme.theme || {});
         } catch (e) {
           personalTheme.theme = {};
-        }
+          }
         setLocalPersonalTheme(personalTheme);
         this.changeTheme(personalTheme.theme);
 
-        // 初始化首页路由
+        // Khởi tạo router trang chủ
         this.initIndexRouter();
 
-        const routers = userData.routers; // 当前用户的路由
+        const routers = userData.routers; // Router của người dùng hiện tại
         if (this.$route.query.redirect) {
-          // 判断有无重定向
+          // Kiểm tra có chuyển hướng không
           const url = this.removeBlock(
             JSON.stringify({ url: this.$route.query.redirect.substring(1) })
           );
           if (routers.includes(url)) {
-            // 判断路由是否包含 重定向路径 判断有无权限
+            // Kiểm tra router có chứa đường dẫn chuyển hướng, kiểm tra có quyền không
             this.$router.push(this.$route.query.redirect);
           }
         }
       } catch (e) {
-        console.error("登录信息处理异常:", e);
+        console.error("Lỗi xử lý thông tin đăng nhập:", e);
       }
-      // 跳转到首页
+      // Chuyển đến trang chủ
       this.$router.push("/").catch(err => {
-        console.error("路由跳转失败:", err);
+        console.error("Chuyển hướng router thất bại:", err);
       });
     },
     removeBlock(str) {
@@ -454,319 +473,405 @@ export default {
 </script>
 
 <style scoped>
-
-
-
+// Hộp thoại chọn phòng khám khi tài khoản liên kết nhiều cơ sở
 .til {
-  margin: 0 auto;
-}
-ul {
-  max-height: 200px;
-  overflow-y: scroll;
-}
-ul li {
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  padding: 0px 50px;
-}
-ul li p {
-  margin-top: 10px;
-  margin-bottom: 2;
-}
-ul li p:nth-child(1) {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  position: relative;
-  border: 1px solid #333;
-  margin-right: 20px;
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #5a6b7d;
 }
 
-ul li p:nth-child(1) span {
-  width: 10px;
-  height: 10px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: #409eff;
+.clinic-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 280px;
+  overflow-y: auto;
+
+  li {
+    display: flex;
+    align-items: center;
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    border: 1px solid #dfe6ee;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.18s, background-color 0.18s;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      border-color: #a8cfe0;
+      background-color: #f7fbfd;
+    }
+
+    &.is-selected {
+      border-color: #018cb7;
+      background-color: #eef8fc;
+    }
+  }
+
+  .clinic-radio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    border: 1px solid #c3cfdb;
+    border-radius: 50%;
+    font-size: 11px;
+    color: #fff;
+    background-color: #fff;
+    transition: all 0.18s;
+  }
+
+  li.is-selected .clinic-radio {
+    border-color: #018cb7;
+    background-color: #018cb7;
+    }
+
+  .clinic-name {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #1f2d3d;
+    word-break: break-word;
+  }
 }
 </style>
-<style rel='stylesheet/scss' lang='scss' scoped>
+<style rel="stylesheet/scss" lang="scss" scoped>
+// ===========================================================================
+// Trang đăng nhập — bố cục responsive theo chuẩn hiện đại.
+// Thay thế layout cũ dùng min-width: 1000px + margin-top âm (vỡ trên laptop
+// 1366x768 và không dùng được trên tablet).
+// ===========================================================================
+$brand: #018cb7;
+$brand-dark: #013c5a;
+
 .login-container {
-  min-width: 1000px;
-  width: 100%;
-  height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 32px 16px 80px;
+  box-sizing: border-box;
+  background-color: #eef4f8;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  overflow: auto;
+  overflow-x: hidden;
   z-index: 1001;
-  .login-header {
-    height: 100px;
-    min-width: 1000px;
-    width: 80%;
-    margin: 0 auto;
-    z-index: 1000;
-    box-sizing: border-box;
-    transition: all 0.5s ease;
-    .login-logo {
-      float: left;
-      margin: 0;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      img {
-        display: inline-block;
-        overflow: hidden;
-        height: 32px;
-      }
-    }
-    .login-title {
-      float: left;
-      padding-left: 20px;
-      font-weight: bold;
-      font-size: 24px;
-      color: #555;
-      line-height: 92px;
-      position: relative;
-      top: 5px;
-    }
-  }
-  .el-input {
-    width: 100%;
-  }
-  .el-button {
-    width: 100%;
-  }
-  .login-form {
+
+  // Lớp phủ giúp nội dung luôn đủ tương phản trên ảnh nền tuỳ chỉnh
+  &::before {
+    content: "";
     position: absolute;
-    border-radius: 4px;
-    top: 50%;
-    left: 50%;
-    -webkit-box-shadow: 0 10px 40px rgba(1, 140, 183, 0.15);
-    box-shadow: 0 10px 40px rgba(1, 140, 183, 0.15);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(1, 140, 183, 0.62) 0%,
+      rgba(1, 60, 90, 0.74) 100%
+    );
+    z-index: 0;
   }
 
-  .footer {
-    font-size: 12px;
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    color: #fff;
+  // Header: logo + tên hệ thống, nằm trên thẻ đăng nhập
+  .login-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 0 0 18px;
+    padding: 0;
+    box-sizing: border-box;
+
+    .login-logo {
+      display: flex;
+      align-items: center;
+      height: auto;
+      margin-right: 12px;
+      float: none;
+
+      img {
+        display: block;
+        height: 34px;
+        width: auto;
+        max-width: 140px;
+        object-fit: contain;
+      }
+    }
+
+    .login-title {
+      position: static;
+      float: none;
+      padding: 0;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    }
   }
-}
-.simple-center {
+
+  // Thẻ đăng nhập
   .login-form {
-    width: 400px;
-    margin: 0 auto;
-    margin-top: -159px;
-    margin-left: -200px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    margin: 0;
     background-color: #fff;
-    .footer {
-      position: absolute;
-      color: #f5f5f5;
-      font-size: 14px;
-      bottom: -200px;
-      width: 100%;
-      text-align: center;
-    }
+    border-radius: 14px;
+    box-shadow: 0 18px 48px rgba(1, 60, 90, 0.2);
+    overflow: hidden;
   }
-  .form-title {
-    font-size: 14px;
-    text-align: center;
-    margin-bottom: 50px;
-    img {
-      display: inline-block;
-      height: 28px;
-      overflow: hidden;
-    }
+
+  .form {
+    width: 100%;
   }
+
   .login-body {
-    padding: 30px;
-    text-align: center;
+    padding: 32px 28px 30px;
+    text-align: left;
+
     .form-title {
-      font-size: 25px;
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: #1f2d3d;
+      text-align: left;
     }
-    .profile-img {
-      width: 96px;
-      height: 96px;
-      margin: 0 auto 10px;
-      display: block;
+
+    .form-subtitle {
+      margin: 0 0 22px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #7a8699;
     }
+
     .login-error {
-      position: relative;
-      font-size: 14px;
-      color: #f00;
-      margin-bottom: 5px;
+      margin-bottom: 16px;
+      border-radius: 6px;
     }
-    .login-username {
-      width: 20px;
-      height: 20px;
-      margin: 0px -10px;
-      background-image: url("../../assets/images/user.png");
+
+    .field-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #48576a;
     }
+
+    .el-form-item {
+      margin-bottom: 18px;
+    }
+
+    .login-username,
     .login-password {
       width: 20px;
       height: 20px;
-      margin: 0px -10px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 16px;
+        }
+
+    .login-username {
+      background-image: url("../../assets/images/user.png");
+    }
+
+    .login-password {
       background-image: url("../../assets/images/lock.png");
-    }
-  }
-  .graph {
-    display: none;
-  }
-}
-.left-graph {
-  .login-form {
-    min-width: 1000px;
-    background-color: #fff;
-    /*width: 80%;*/
-    width: 1000px;
-    margin: 0 auto;
-    margin-top: -250px;
-    /*margin-left: -40%;*/
-    margin-left: -500px;
-    &:after {
-      content: "";
-      height: 0;
-      line-height: 0;
-      display: block;
-      visibility: hidden;
-      clear: both;
-    }
-    .footer {
-      position: absolute;
-      color: #f5f5f5;
-      font-size: 14px;
-      bottom: -50px;
+        }
+
+    .login-submit {
       width: 100%;
-      text-align: center;
-    }
-    .graph {
-      height: 100%;
-      margin-right: 450px;
-      background-position: center top;
-      background-size: 100%;
-      background-repeat: no-repeat;
-      min-height: 500px;
-      border-radius: 4px 0 0 4px;
-      overflow: hidden;
-    }
-    .form {
-      box-sizing: border-box;
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 450px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 500px;
-      .login-body {
-        width: 80%;
-        margin-top: -100px;
-        .form-title {
-          font-size: 14px;
-          text-align: center;
-          margin-bottom: 50px;
-          img {
-            display: inline-block;
-            height: 28px;
-            overflow: hidden;
-          }
-        }
-        .login-username {
-          width: 20px;
-          height: 20px;
-          margin: 0px -10px;
-          background-image: url("../../assets/images/user.png");
-        }
-        .login-password {
-          width: 20px;
-          height: 20px;
-          margin: 0px -10px;
-          background-image: url("../../assets/images/lock.png");
-        }
-      }
-    }
-  }
-}
-.right-graph {
-  .login-form {
-    min-width: 1000px;
-    background-color: #fff;
-    /*width: 80%;*/
-    width: 1000px;
-    margin: 0 auto;
-    margin-top: -250px;
-    /*margin-left: -40%;*/
-    margin-left: -500px;
-    &:after {
-      content: "";
-      height: 0;
-      line-height: 0;
-      display: block;
-      visibility: hidden;
-      clear: both;
-    }
-    .footer {
-      position: absolute;
-      color: #f5f5f5;
+      height: 44px;
+      margin-top: 4px;
       font-size: 15px;
-      bottom: -50px;
-      width: 100%;
-      text-align: center;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      border-radius: 8px;
     }
-    .graph {
-      height: 100%;
-      border-radius: 0 4px 4px 0;
-      margin-left: 450px;
-      background-position: center top;
-      background-size: 100%;
-      background-repeat: no-repeat;
-      min-height: 500px;
-      overflow: hidden;
+  }
+
+  .el-input {
+    width: 100%;
+
+    ::v-deep .el-input__inner {
+      height: 44px;
+      line-height: 44px;
+      font-size: 14px;
+      border-radius: 8px;
     }
-    .form {
-      box-sizing: border-box;
-      width: 450px;
-      float: left;
+
+    ::v-deep .el-input__prefix {
+      left: 12px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      min-height: 500px;
-      .login-body {
-        width: 80%;
-        margin-top: -100px;
-        .form-title {
-          font-size: 25px;
-          text-align: center;
-          margin-bottom: 50px;
-          img {
-            display: inline-block;
-            height: 28px;
-            overflow: hidden;
-          }
+      font-size: 16px;
+      color: #9aa8b8;
+    }
+
+    ::v-deep .el-input__inner:not([type="password"]) {
+      padding-left: 36px;
+    }
+  }
+
+  // Ảnh minh hoạ: chỉ hiển thị ở biến thể 2 cột trên màn hình lớn
+    .graph {
+    display: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+
+  // Footer bản quyền / giấy phép
+  .footer {
+    position: absolute;
+    right: 0;
+    bottom: 16px;
+    left: 0;
+    z-index: 1;
+    padding: 0 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.86);
+
+    .footer-copyright {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    // Tên pháp lý gốc: hiển thị mờ hơn để không phá bố cục tiếng Việt
+    .footer-legal {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 11px;
         }
-        .login-username {
-          width: 20px;
-          height: 20px;
-          margin: 0px -10px;
-          background-image: url("../../assets/images/user.png");
-        }
-        .login-password {
-          width: 20px;
-          height: 20px;
-          margin: 0px -10px;
-          background-image: url("../../assets/images/lock.png");
+
+    .footer-license {
+      margin-top: 2px;
+    }
+
+    a {
+      color: rgba(255, 255, 255, 0.94);
+      text-decoration: underline;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.75;
+      }
         }
       }
     }
+
+// ---------------------------------------------------------------------------
+// Biến thể bố cục 2 cột (left-graph / right-graph) trên màn hình >= 1024px
+// ---------------------------------------------------------------------------
+@mixin two-column($form-order: 1, $graph-order: 2, $graph-radius: 0 16px 16px 0) {
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+
+    .login-header {
+      position: absolute;
+      top: 32px;
+      left: 48px;
+      max-width: none;
+      width: auto;
+      margin: 0;
+    }
+
+    .login-form {
+      display: flex;
+      max-width: 960px;
+      min-height: 520px;
+      margin: 0;
+      border-radius: 16px;
+      align-items: stretch;
+    }
+
+    .form {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 46%;
+      flex: 0 0 46%;
+      order: $form-order;
+    }
+
+    .login-body {
+      width: 100%;
+      padding: 40px 36px;
+    }
+
+    .graph {
+      display: block;
+      flex: 1 1 auto;
+      min-height: 100%;
+      order: $graph-order;
+      border-radius: $graph-radius;
+    }
+  }
+}
+
+.left-graph {
+  @include two-column(1, 2, 16px 0 0 16px);
+}
+
+.right-graph {
+  @include two-column(2, 1, 0 16px 16px 0);
+}
+
+// ---------------------------------------------------------------------------
+// Màn hình nhỏ: thu gọn khoảng cách, footer chuyển về luồng bình thường
+// ---------------------------------------------------------------------------
+@media (max-width: 480px) {
+  .login-container {
+    padding: 20px 12px 24px;
+    justify-content: flex-start;
+
+    .login-header {
+      margin-top: 8px;
+      margin-bottom: 14px;
+
+      .login-title {
+        font-size: 17px;
+      }
+    }
+
+    .login-body {
+      padding: 24px 20px;
+    }
+
+    .footer {
+      position: static;
+      margin-top: 20px;
+      font-size: 11px;
+    }
+  }
+}
+
+// Tablet nằm ngang thấp: tránh cắt nội dung
+@media (max-height: 640px) and (min-width: 481px) {
+  .login-container {
+    justify-content: flex-start;
+    padding-top: 24px;
+    padding-bottom: 64px;
   }
 }
 </style>

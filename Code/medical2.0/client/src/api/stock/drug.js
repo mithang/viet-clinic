@@ -1,12 +1,12 @@
 /**
- * 药品管理 API
+ * API quản lý thuốc
  */
 import request from '@/utils/request'
 import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/drug')
 
-// Tiêu chuẩnCRUDGiao diện
+// Giao diện CRUD tiêu chuẩn
 export const getDrugById = baseApi.getById
 export const listDrugPage = baseApi.listPage
 export const listDrugAll = baseApi.listAll

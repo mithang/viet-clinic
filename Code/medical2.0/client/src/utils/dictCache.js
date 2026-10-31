@@ -1,10 +1,10 @@
 /**
- * 字典缓存工具
- * 通过字典类型 code（而非雪花 ID）Lấy mục từ điển，消除前端硬编码 ID
+ * Tiện ích bộ nhớ đệm từ điển
+ * Lấy mục từ điển theo mã loại từ điển (thay vì ID snowflake), loại bỏ hard-code ID ở frontend
  */
 import { listDictItemByCode } from '@/api/sys/dictItem'
 
-// 所有字典类型 code 常量
+// Hằng số mã của tất cả loại từ điển
 export const DICT_CODE = {
   // Thông tin cơ bản
   GENDER: 'gender',
@@ -46,19 +46,19 @@ export const DICT_CODE = {
   SUPPLIER_STORAGE_EXAMINE_STATUS: 'supplierStorageExamineStatus',
   SUPPLIER_OUTBOUND_STATUS: 'supplierOutboundStatus',
   OUTBOUND_METHOD: 'outboundMethod',
-  // 会员
+  // Thành viên
   MEMBER_TYPE: 'memberType',
   // Hệ thống
   ACTION_TYPE: 'actionType',
 }
 
-// 内存缓存
+// Bộ nhớ đệm trong RAM
 const cache = new Map()
 
 /**
- * Theo loại từ điển code 获取字典项列表（带内存缓存）
- * @param {string} code Loại từ điển code，như DICT_CODE.GENDER
- * @returns {Promise<Array>} 字典项列表
+ * Lấy danh sách mục từ điển theo mã loại từ điển (có bộ nhớ đệm)
+ * @param {string} code Mã loại từ điển, như DICT_CODE.GENDER
+ * @returns {Promise<Array>} Danh sách mục từ điển
  */
 export async function getDictItemsByCode(code) {
   if (cache.has(code)) return cache.get(code)
@@ -68,22 +68,22 @@ export async function getDictItemsByCode(code) {
     cache.set(code, items)
     return items
   } catch (e) {
-    console.error('加载字典失败:', code, e)
+    console.error('Tải từ điển thất bại:', code, e)
     return []
   }
 }
 
 /**
- * 批量预加载字典（用于页面初始化）
- * @param {string[]} codes Loại từ điển code Mảng
+ * Nạp trước từ điển hàng loạt (dùng khi khởi tạo trang)
+ * @param {string[]} codes Mảng mã loại từ điển
  */
 export async function preloadDicts(codes) {
   await Promise.all(codes.map(code => getDictItemsByCode(code)))
 }
 
 /**
- * 清除指定或全部字典缓存
- * @param {string} [code] 不传则清除全部
+ * Xoá bộ nhớ đệm từ điển được chỉ định hoặc toàn bộ
+ * @param {string} [code] Không truyền thì xoá toàn bộ
  */
 export function clearDictCache(code) {
   if (code) cache.delete(code)

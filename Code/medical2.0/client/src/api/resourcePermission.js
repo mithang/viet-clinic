@@ -1,5 +1,5 @@
 /**
- * QuyềnAPI — 统一入口
- * Từ admin/common/permission 重新导出，供 mixins Sử dụng
+ * Quyền API — đầu mối thống nhất
+ * Xuất lại từ admin/common/permission, để mixins sử dụng
  */
 export { listResourcePermission } from '@/api/admin/common/permission'

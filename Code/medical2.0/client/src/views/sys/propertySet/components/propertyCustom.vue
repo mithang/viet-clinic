@@ -19,13 +19,13 @@
           </template>
         </template>
         <template slot="title" v-else>
-          <span style="margin-left: 30px;">{{panel.name ? panel.name : '默认分组'}}</span>
+          <span style="margin-left: 30px;">{{panel.name ? panel.name : 'Nhóm mặc định'}}</span>
         </template>
         <el-table   class='drag_table'   row-key="id" ref="dragTable" :data='panel.propertys' border highlight-current-row :row-class-name="tableRowClassName">
           <el-table-column prop='name' label='Tên trường'  header-align='center'>
             <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên trường</template>
             <template slot-scope='{row,$index}'>
-              <el-form-item :data-num='dataNum' :ref="`PRO_${dataNum}_propertys_${$index}_name`" :prop='`PRO_${dataNum}_propertys_${$index}_name`' :rules="[{ required: true, validator: inputValidator, val: row.name,  message: '请输入字段名称', trigger: 'blur'}]"  v-if='action !== "view" '  label-width=0>
+              <el-form-item :data-num='dataNum' :ref="`PRO_${dataNum}_propertys_${$index}_name`" :prop='`PRO_${dataNum}_propertys_${$index}_name`' :rules="[{ required: true, validator: inputValidator, val: row.name,  message: 'Vui lòng nhập tên trường', trigger: 'blur'}]"  v-if='action !== "view" '  label-width=0>
                 <el-input v-model="row.name" />
               </el-form-item>
               <span v-else >{{row.name}}</span>
@@ -34,7 +34,7 @@
           <el-table-column prop="dictId" label="Thuộc tính"  header-align='center'>
             <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Thuộc tính</template>
             <template slot-scope='{row,$index}'>
-              <el-form-item :data-num='dataNum' label-width=0 v-if='action !== "view" ' :ref="`PRO_${dataNum}_propertys_${$index}_dictId`" :prop='`PRO_${dataNum}_propertys_${$index}_dictId`' :rules="[{ required: true, validator: inputValidator, val: row.dictId,  message: '请选择属性集', trigger: ['blur', 'change']}]">
+              <el-form-item :data-num='dataNum' label-width=0 v-if='action !== "view" ' :ref="`PRO_${dataNum}_propertys_${$index}_dictId`" :prop='`PRO_${dataNum}_propertys_${$index}_dictId`' :rules="[{ required: true, validator: inputValidator, val: row.dictId,  message: 'Vui lòng chọn bộ thuộc tính', trigger: ['blur', 'change']}]">
                 <el-select v-model="row.dictId" value-key='id' filterable clearable placeholder='Vui lòng chọn loại thuộc tính' @change="changeDictId(row)">
                   <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled"/>
                 </el-select>
@@ -59,7 +59,7 @@
               <span v-else>{{row.bo}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop='isRequired' label='是否必填' width="80" header-align='center'>
+          <el-table-column prop='isRequired' label='Bắt buộc nhập' width="80" header-align='center'>
             <template slot-scope='{row,$index}'>
               <el-form-item :data-num='dataNum' v-if='action !== "view" ' label-width=0>
                 <el-switch v-model='row.isRequired' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -138,7 +138,7 @@
       value:{
         type:String
       },
-      //Loại thao tác--Sửa、Xem v.v.
+      //Loại thao tác--Sửa, Xem v.v.
       action: {
         type: String,
         default: () => { return "add"}
@@ -149,7 +149,7 @@
       }
      },
     watch:{
-      // 关闭窗口后，在此打开时触发
+      // Kích hoạt khi mở lại sau khi đóng cửa sổ
       value(val, oldVal) {
         if(val !== oldVal) {
           if(this.value) {
@@ -177,7 +177,7 @@
       let inputValidator= (rule, value, callback) => {
         if(rule.required) {
           if(!rule.val) {
-            let msg = rule.message | 'Không được để trống！'
+            let msg = rule.message | 'Không được để trống!'
             return callback(new Error(msg))
           }
         }
@@ -185,15 +185,15 @@
       }
        return{
          propertyPanels:this.initPropertyDef(),
-         deleteTeamArr:[], //要删除的自定义属性分组
-         deleteArr:[],     //要删除的自定义属性id
-         indexArr:[],  //展开卡片得下标数组
+         deleteTeamArr:[], //Nhóm thuộc tính tuỳ chỉnh cần xoá
+         deleteArr:[],     //Id thuộc tính tuỳ chỉnh cần xoá
+         indexArr:[],  //Mảng chỉ số thẻ đang mở rộng
          tableKey: 1,
-         checkRowData:null, // 选中行数据
-         options:[],        //字典值
+         checkRowData:null, // Dữ liệu dòng được chọn
+         options:[],        //Giá trị từ điển
          businessOptions: [], //Tất cả mục từ điển
-         propertySetS:[],        //属性集集合
-         defValOptions: [],   //选择属性的字典
+         propertySetS:[],        //Tập hợp bộ thuộc tính
+         defValOptions: [],   //Từ điển chọn thuộc tính
          dictIdvalid: false,
          defLoading: false,
          inputValidator: inputValidator,
@@ -218,24 +218,24 @@
         }
       },
       initSortable(index,tableData) {
-        // 获取表格row的父节点
+        // Lấy node cha của dòng trong bảng
         const ele = this.$refs["dragTable"][index].$el.querySelector(
           ".el-table__body-wrapper tbody"
         );
 
-        // 创建拖拽实例
+        // Tạo instance kéo thả
         let dragTable = Sortable.create(ele, {
-          animation: 100, //动画
-          disabled: false, // 拖拽不可用? false Kích hoạt（刚刚渲染表格的时候起作用，后面不起作用）
-          handle: ".el-table__row", //指定拖拽目标，点击此目标才可拖拽元素(此例中设置操作按钮拖拽)
-          filter: ".disabled", //指定不可拖动的类名（el-table中可通过row-class-name设置行的class）
-          dragClass: "dragClass", //设置拖拽样式类名
-          ghostClass: "ghostClass", //设置拖拽停靠样式类名
-          chosenClass: "chosenClass", //设置选中样式类名
-          // 开始拖动事件
+          animation: 100, //Hoạt ảnh
+          disabled: false, // Kéo thả không khả dụng? false = Kích hoạt (chỉ có tác dụng khi vừa render bảng, sau đó không còn tác dụng)
+          handle: ".el-table__row", //Chỉ định mục tiêu kéo thả, chỉ khi nhấn vào mục tiêu này mới kéo được phần tử (ở đây đặt nút thao tác để kéo)
+          filter: ".disabled", //Chỉ định class không thể kéo (trong el-table có thể đặt class cho dòng qua row-class-name)
+          dragClass: "dragClass", //Đặt class style khi kéo
+          ghostClass: "ghostClass", //Đặt class style khi thả
+          chosenClass: "chosenClass", //Đặt class style khi được chọn
+          // Sự kiện bắt đầu kéo
           onStart: () => {
           },
-          // 结束拖动事件
+          // Sự kiện kết thúc kéo
           onEnd: ({newIndex, oldIndex}) => {
               const row = this.propertyPanels[index].propertys.splice(oldIndex,1)[0];
               this.propertyPanels[index].propertys.splice(newIndex,0,row);
@@ -264,7 +264,7 @@
         }
         return name;
       },
-      // 触发默认值下拉框时加载对应选项
+      // Tải các lựa chọn tương ứng khi mở dropdown giá trị mặc định
       checkChange(currentRow){
         this.checkRowData = currentRow;
         if(this.action !== "view" ){
@@ -280,7 +280,7 @@
           }
         }
       },
-      //获取字典项的子集
+      //Lấy tập con của mục từ điển
       getDictChildren(val,row){
         row.defaultValue = null;
         let dictItem = {
@@ -290,7 +290,7 @@
           this.defValOptions = responseData.data;
         })
       },
-      //获取字典数据
+      //Lấy dữ liệu từ điển
       getOptions(){
         let dictItem = {
           params: [{'columnName':'dict_type_id', 'queryType': '=', 'value': '5100'}]
@@ -305,7 +305,7 @@
             this.businessOptions = result.data
           }
         });
-        listPropertySetAll({params: []}).then(result =>{  //所有属性集
+        listPropertySetAll({params: []}).then(result =>{  //Tất cả bộ thuộc tính
           if(result.code === 100){
             this.propertySetS = result.data
           }
@@ -319,7 +319,7 @@
       pushCustomTeam(){       //Thêm nhóm mới
         this.propertyPanels.push({'id':uuid.v1(),'name':'','isTeam': '1','propertys': []},)
       },
-      deletePropertyData(index,row,list) { // 删除分组
+      deletePropertyData(index,row,list) { // Xoá nhóm
         list.splice(index,1);
         if(row.id){
           this.deleteTeamArr.push({id:row.id});
@@ -338,7 +338,7 @@
           this.indexArr.splice(this.indexArr.indexOf(bizindex),1)
         }
       },
-      //新增扩展属性
+      //Thêm mới thuộc tính mở rộng
       pushPropertyData(panel, index){
         if(this.indexArr.indexOf(index) === -1){
           this.indexArr.push(index);
@@ -361,7 +361,7 @@
           return 'current-row'
         }
       },
-      //默认初始化属性定义
+      //Khởi tạo mặc định định nghĩa thuộc tính
       initPropertyDef(){
         return [
           {'id':uuid.v1(),'name':'','isTeam': '0','propertys': []}
@@ -372,15 +372,15 @@
 </script>
 
 <style lang="scss" >
-  // 拖拽
+  // Kéo thả
   .dragClass {
     background: rgba($color: #41c21a, $alpha: 0.5) !important;
   }
-  // 停靠
+  // Thả
   .ghostClass {
     background: rgba($color: #6cacf5, $alpha: 0.5) !important;
   }
-  // 选择
+  // Chọn
   .chosenClass:hover > td {
     background: rgba($color: #f56c6c, $alpha: 0.5) !important;
   }

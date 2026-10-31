@@ -1165,7 +1165,7 @@ export default {
     host: 'Host name / IP address',
     port: 'Port',
     datasource_url: 'URL address',
-    please_input_datasource_url: 'Please enter Elasticsearch 地址，e.g: http://es_host:es_port',
+    please_input_datasource_url: 'Please enter Elasticsearch address, e.g: http://es_host:es_port',
     please_input_data_base: 'Please enter the database name',
     please_input_user_name: 'Please enter user name',
     please_input_password: 'Please enter Password',

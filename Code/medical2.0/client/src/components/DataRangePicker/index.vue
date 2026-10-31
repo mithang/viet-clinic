@@ -79,14 +79,14 @@ export default {
           this.$emit('input', this.vModel);
       }
     },
-    value(val, oldVal){   //添加监听valuegiá trị
+    value(val, oldVal){   //Thêm theo dõi value giá trị
       if(val!==oldVal){
         this.vModel=this.value;
       }
     },
   },
   mounted(){
-    //初始话日期框的值
+    //Khởi tạo giá trị ô ngày tháng
     this.vModel=this.value;
   }
 }

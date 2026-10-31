@@ -161,7 +161,7 @@ export default {
             { required: true, message: 'Vui lòng nhập độ rộng chỉnh sửa', trigger: 'blur' }
         ],
         'colCounts': [
-            { required: true, message: '请选择编辑列数', trigger: 'blur' }
+            { required: true, message: 'Vui lòng chọn số cột hiển thị', trigger: 'blur' }
         ],
         'genTable.id': [
             { required: true, message: 'Vui lòng chọn bảng nghiệp vụ', trigger: 'change' }
@@ -272,7 +272,7 @@ export default {
     generate(formName, replace) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          /* 是否替换文件 */
+          /* Có thay thế tệp không */
           this.bizFormModel.replace = replace
           this.doGenerateCode();
         } else {

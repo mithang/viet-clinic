@@ -77,9 +77,9 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='Trạng thái chứng từ，Enum tham khảo' prop='amountStatus.value' >
+          <el-form-item label='Trạng thái chứng từ, Enum tham khảo' prop='amountStatus.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.amountStatus.name'></el-input>
-            <el-select v-else v-model='bizFormModel.amountStatus' value-key='value' filterable clearable placeholder='Vui lòng chọn trạng thái chứng từ，Enum tham khảo'
+            <el-select v-else v-model='bizFormModel.amountStatus' value-key='value' filterable clearable placeholder='Vui lòng chọn trạng thái chứng từ, Enum tham khảo'
               @clear='bizFormModel.amountStatus={
                 "value": null,
                                 "name": null,
@@ -96,9 +96,9 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='Loại thu phí，Enum tham khảo' prop='tollType.value' >
+          <el-form-item label='Loại thu phí, Enum tham khảo' prop='tollType.value' >
             <el-input v-if='dialogProps.action === "view"' :disabled='true' v-model='bizFormModel.tollType.name'></el-input>
-            <el-select v-else v-model='bizFormModel.tollType' value-key='value' filterable clearable placeholder='Vui lòng chọn loại thu phí，Enum tham khảo'
+            <el-select v-else v-model='bizFormModel.tollType' value-key='value' filterable clearable placeholder='Vui lòng chọn loại thu phí, Enum tham khảo'
               @clear='bizFormModel.tollType={
                 "value": null,
                                 "name": null,
@@ -161,8 +161,8 @@ export default {
           company_List: [],  // Phòng khámid
           medical_List: [],  // Bệnh án
           paymentType_List: [],  // Loại thanh toán
-          amountStatus_List: [],  // Trạng thái chứng từ，Enum tham khảo
-          tollType_List: [],  // Loại thu phí，Enum tham khảo
+          amountStatus_List: [], // Trạng thái chứng từ, Enum tham khảo
+          tollType_List: [], // Loại thu phí, Enum tham khảo
           patient_List: [],  // Bệnh nhân
        dialogProps: {
         visible: false,
@@ -174,13 +174,13 @@ export default {
             { required: true, message: 'Vui lòng chọn loại thanh toán', trigger: 'change' }
         ],
         'amountStatus.value': [
-            { required: true, message: 'Vui lòng chọn trạng thái chứng từ，Enum tham khảo', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn trạng thái chứng từ, Enum tham khảo', trigger: 'change' }
         ],
         'tollNumber': [
-            { required: true, message: '请选择收费单号', trigger: 'blur' }
+            { required: true, message: 'Vui lòng chọn số phiếu thu', trigger: 'blur' }
         ],
         'tollType.value': [
-            { required: true, message: 'Vui lòng chọn loại thu phí，Enum tham khảo', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn loại thu phí, Enum tham khảo', trigger: 'change' }
         ],
       }
     }
@@ -246,12 +246,12 @@ export default {
           'value': null,
           'name': null,
         },
-        'amountStatus': {     // Trạng thái chứng từ，Enum tham khảo
+        'amountStatus': { // Trạng thái chứng từ, Enum tham khảo
           'value': null,
           'name': null,
         },
         'tollNumber': '',    // Số phiếu thu phí
-        'tollType': {     // Loại thu phí，Enum tham khảo
+        'tollType': { // Loại thu phí, Enum tham khảo
           'value': null,
           'name': null,
         },
@@ -344,7 +344,7 @@ export default {
       this.bizFormModel = {...this.initFormModel(), ...tollInfo}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
-      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+      this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
       this.dialogProps.visible = true
     }
   },

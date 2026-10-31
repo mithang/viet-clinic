@@ -168,7 +168,7 @@ export default {
   data() {
     return {
       SearchInfusionName: "",
-      //输液处方可选择表格
+      //Bảng chọn thuốc cho đơn thuốc truyền dịch
       InfusionPresciptionTable: [],
     };
   },
@@ -278,7 +278,7 @@ export default {
           responseData.data.forEach(element => {
             let isUnpackSell = element.isUnpackSell;    //Cho phép bán lẻ tách hộp
             let stockNumber = element.stockNumber;      //Số lượng tồn kho
-            let packName = element.pack.name;           //Đóng gói（Đơn vị）
+            let packName = element.pack.name; //Đóng gói (Đơn vị)
             let preparation = element.preparation;      //Chế phẩm
             let preparationUnit = element.preparationUnit.name;  //Đơn vị bào chế
             let price = element.price;                  //Giá bán
@@ -320,12 +320,12 @@ export default {
         }
       });
     },
-    //删除输血处方每组表格的行
+    //Xoá dòng của bảng từng nhóm trong đơn thuốc truyền dịch
     DeleteInfusionItem(index) {
       this.InfoModel.infusionList.splice(index, 1);
       this.$emit('GetInfusionFee')
     },
-    //搜索药品表格行点击添加到当前组
+    //Click dòng bảng thuốc tìm kiếm để thêm vào nhóm hiện tại
     RowClickInfusionPrescriptionTable(row) {
       row.infuseGroup = this.GroupNumber
       this.InfoModel.infusionList.push({
@@ -333,7 +333,7 @@ export default {
         ...JSON.parse(JSON.stringify(row))
       });
     },
-    //合并第一项组号
+    //Gộp số nhóm của mục đầu tiên
     ObjectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
         if (rowIndex % this.InfoModel.infusionList.length === 0) {

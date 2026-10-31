@@ -18,7 +18,7 @@
       }
     },
     methods: {
-      // 递归检查报表的dataviewer是否加载
+      // Kiểm tra đệ quy xem dataviewer của báo cáo đã tải xong chưa
       wactchDataView () {
         if(window["vue-dataviewer"]) {
           this.existDataView = true
@@ -29,7 +29,7 @@
     },
     mounted() {
       // Cookies.set('Authorization', sessionStorage.getItem('token'))
-      // 避免因域名相同（端口或许不同）giờ 共用一个 cookie 'Authorization'，要两者分开定义
+      // Tránh việc vì cùng tên miền (cổng có thể khác nhau) mà dùng chung một cookie 'Authorization', cần định nghĩa tách biệt cho cả hai
       Cookies.set('x-token', sessionStorage.getItem('token'))
 
       this.wactchDataView()

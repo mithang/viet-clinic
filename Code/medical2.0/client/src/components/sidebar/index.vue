@@ -1,5 +1,5 @@
 <template>
-  <!-- 外层容器：flex垂直布局，撑满父容器，确保版权沉底 -->
+  <!-- Container ngoài: bố cục flex dọc, lấp đầy container cha, đảm bảo bản quyền ở đáy -->
   <div class="sidebar-wrapper" :style="{ height: '100%' }">
     <el-menu
       class="nav-menu"
@@ -13,7 +13,7 @@
       <sidebar-item v-for="(router, index) in routers" :key="index" :item="router"></sidebar-item>
     </el-menu>
 
-    <!-- 版权信息区域：Căn trái + 协议单独一行 + 沉底 + 超链接 -->
+    <!-- Khu vực thông tin bản quyền: Căn trái + thỏa thuận một dòng riêng + ở đáy + siêu liên kết -->
     <div
       class="sidebar-copyright"
       :style="{
@@ -26,27 +26,27 @@
         borderTop: isLight('sidebarColor') ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(255,255,255,0.05)',
         marginTop: 'auto'
       }">
-      <!-- 第一行：版权信息 -->
-      <div v-if="!isCollapse">Copyright © 2025 湖北天天数链技术有限公司</div>
-      <!-- 第二行：协议前缀 -->
+      <!-- Dòng đầu: thông tin bản quyền -->
+      <div v-if="!isCollapse">Bản quyền © 2025 Công ty TNHH Công nghệ Chuỗi số Thiên Thiên Hồ Bắc</div>
+      <!-- Dòng thứ hai: tiền tố thỏa thuận -->
       <div v-if="!isCollapse" style="margin-top: 6px;">Mã nguồn của hệ thống này được cấp phép theo</div>
-      <!-- 第三行：协议名称（单独占一行） -->
+      <!-- Dòng thứ ba: Tên thỏa thuận (một dòng riêng) -->
       <div v-if="!isCollapse" style="margin-top: 2px;">
         <a
           href="https://open.tntlinking.com/communityTreaty"
           target="_blank"
           rel="noopener noreferrer"
           :style="{
-            color: settings.theme, // 复用主题色作为链接色
+            color: settings.theme, // Dùng lại màu chủ đề làm màu liên kết
             textDecoration: 'none',
-            display: 'inline-block' // 确保单独一行的排版稳定性
+            display: 'inline-block' // Đảm bảo ổn định bố cục một dòng riêng
           }">
-          《phần mềm mã nguồn mở 天天（bản cộng đồng）thỏa thuận cấp phép》
+          Thỏa thuận Giấy phép Phần mềm Mã nguồn mở Thiên Thiên (Bản Cộng đồng)
         </a>
       </div>
 
-      <!-- 折叠状态下简短显示（居中，避免文字溢出） -->
-      <div v-if="isCollapse" style="font-size: 10px; text-align: center;">©2025 天天数链</div>
+      <!-- Trạng thái thu gọn hiển thị ngắn gọn (căn giữa, tránh tràn văn bản) -->
+      <div v-if="isCollapse" style="font-size: 10px; text-align: center;">©2025 Thiên Thiên Số Liên</div>
     </div>
   </div>
 </template>
@@ -211,7 +211,7 @@
     overflow: hidden;
   }
 
-  /* Có thể chọn：优化滚动条样式 */
+  /* Tùy chọn: Tối ưu hóa kiểu dáng thanh cuộn */
   .nav-menu::-webkit-scrollbar {
     width: 4px;
   }
@@ -219,23 +219,23 @@
     background-color: rgba(0,0,0,0.1);
   }
 
-  /* 核心布局：确保容器撑满高度，版权沉底 */
+  /* Bố cục cốt lõi: Đảm bảo container lấp đầy chiều cao, bản quyền ở đáy */
   .sidebar-wrapper {
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
-  /* 菜单占满剩余高度，内容超出可滚动 */
+  /* Menu chiếm đầy chiều cao còn lại, nội dung vượt có thể cuộn */
   .nav-menu {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
   }
 
-  /* 优化链接hover效果（兼容scopedKiểu） */
+  /* Tối ưu hóa hiệu ứng hover liên kết (tương thích kiểu scoped) */
   .sidebar-copyright a {
-    color: var(--el-color-primary) !important; /* 复用element-plusMàu chủ đề */
+    color: var(--el-color-primary) !important; /* Dùng lại màu chủ đề element-plus */
     text-decoration: none;
   }
 
@@ -243,7 +243,7 @@
     text-decoration: underline !important;
   }
 
-  /* Có thể chọn：优化滚动条样式 */
+  /* Tùy chọn: Tối ưu hóa kiểu dáng thanh cuộn */
   .nav-menu::-webkit-scrollbar {
     width: 4px;
   }
@@ -251,7 +251,7 @@
     background-color: rgba(0,0,0,0.1);
   }
 
-  /* 确保折叠状态下布局正常 */
+  /* Đảm bảo bố cục bình thường trong trạng thái thu gọn */
   :deep(.el-menu--collapse) {
     width: 64px !important;
   }

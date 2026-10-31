@@ -1,14 +1,14 @@
 /**
- * 用户信息缓存工具
- * 避免重复解析sessionStorage中的JSON
+ * Tiện ích bộ nhớ đệm thông tin người dùng
+ * Tránh phân tích JSON trong sessionStorage nhiều lần
  */
 
 let currentUserCache = null
 let currentCompanyCache = null
 
 /**
- * 获取当前用户信息（Có bộ nhớ đệm）
- * @returns {Object} 用户信息
+ * Lấy thông tin người dùng hiện tại (có bộ nhớ đệm)
+ * @returns {Object} Thông tin người dùng
  */
 export function getCurrentUser() {
     if (!currentUserCache) {
@@ -17,7 +17,7 @@ export function getCurrentUser() {
             try {
                 currentUserCache = JSON.parse(userStr)
             } catch (e) {
-                console.error('解析用户信息失败:', e)
+                console.error('Phân tích thông tin người dùng thất bại:', e)
                 currentUserCache = {}
             }
         }
@@ -26,8 +26,8 @@ export function getCurrentUser() {
 }
 
 /**
- * 获取当前公司信息（Có bộ nhớ đệm）
- * @returns {Object} 公司信息
+ * Lấy thông tin đơn vị hiện tại (có bộ nhớ đệm)
+ * @returns {Object} Thông tin đơn vị
  */
 export function getCurrentCompany() {
     if (!currentCompanyCache) {
@@ -36,7 +36,7 @@ export function getCurrentCompany() {
             try {
                 currentCompanyCache = JSON.parse(companyStr)
             } catch (e) {
-                console.error('解析公司信息失败:', e)
+                console.error('Phân tích thông tin đơn vị thất bại:', e)
                 currentCompanyCache = {}
             }
         }
@@ -45,16 +45,16 @@ export function getCurrentCompany() {
 }
 
 /**
- * 获取当前用户ID
- * @returns {string} Người dùngID
+ * Lấy ID người dùng hiện tại
+ * @returns {string} ID người dùng
  */
 export function getCurrentUserId() {
     return getCurrentUser().id || ''
 }
 
 /**
- * 获取当前公司ID
- * @returns {string} Công tyID
+ * Lấy ID đơn vị hiện tại
+ * @returns {string} ID đơn vị
  */
 export function getCurrentCompanyId() {
     return getCurrentCompany().id || ''

@@ -462,7 +462,7 @@
                   </span>
                   <el-row style="padding-top:8px" type="flex" justify="space-between" align="center" v-if="chargeStatusActiveName === '1' && payState">
                     <!-- <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.fee }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.fee }}VNĐ
                     </div> -->
                     <!-- <el-popconfirm
                         title="Bạn có chắc muốn thu phí không？"
@@ -475,7 +475,7 @@
                   </el-row>
                   <el-row type="flex" justify="space-between" align="center" style="padding-top:8px" v-if="chargeStatusActiveName === '2' && medicalEditTabs.length>0">
                     <!-- <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.fee }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.fee }}VNĐ
                     </div> -->
                     <!-- <el-popconfirm
                         title="Bạn có chắc muốn hoàn phí không？"
@@ -488,7 +488,7 @@
                   </el-row>
                   <el-row style="padding-top:8px" v-if="chargeStatusActiveName === '3' && medicalEditTabs.length>0">
                     <!-- <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.fee }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.fee }}VNĐ
                     </div> -->
                   </el-row>
                  <div v-if="item.type!=='recipelType_2'">
@@ -529,7 +529,7 @@
                     </el-table-column>
                    <el-table-column
                       prop="createBy"
-                      label="开单人"
+                      label="Người kê đơn"
                       width="width"
                     >
                     <template slot-scope="scope">
@@ -598,7 +598,7 @@
     :before-close="handleClose">
     <div style="border:1px solid #CCCC"></div>
     <div style="margin-top:10px;" >
-      <span>Thời gian thực hiện：</span>
+      <span>Thời gian thực hiện: </span>
         <el-date-picker
           v-model="executeDate"
           type="datetime"
@@ -635,7 +635,7 @@
      </el-table>
      </div>
      <div style="margin-top:10px;">
-       <div>Bản ghi thực hiện：</div>
+       <div>Bản ghi thực hiện: </div>
 
        <div v-for="(item,index) in recordList" :key="index" style="margin-top:10px;">
          <span style="font-siza:10px;">{{GetCreateBy(index, item)}} &nbsp; {{item.executeDate}}
@@ -937,12 +937,12 @@ export default {
         let date = new Date(e);
 
           date = date.getFullYear() + '-'
-              + (date.getMonth()+1) + '-'   // 这里加1là vìgetMonth()giá trị trả về là0~11
+              + (date.getMonth()+1) + '-'   // Ở đây cộng 1 vì giá trị getMonth() trả về là 0~11
               + date.getDate() + ' '
                   + date.getHours() + ':'
                   + date.getMinutes() + ':'
                   + date.getSeconds();
-          date = Date.parse(new Date(date))/1000; // Chuyển thành dấu thời gian，Giá trị trả về làms，chia1000sau đó chuyển thành giây
+          date = Date.parse(new Date(date))/1000; // Chuyển thành dấu thời gian, Giá trị trả về làms, chia1000sau đó chuyển thành giây
           date += (86400); // Một ngày là86400giây
           let newDate = new Date(parseInt(date) * 1000); // Chuyển dấu thời gian thành ngày
           // let myDate = date.getFullYear() + '-'
@@ -1214,7 +1214,7 @@ export default {
         if (!this.isRetail) {
           let IsOpen = this.IsChargeCorrect("0");
           if (!IsOpen) {
-            this.$message("Đơn thuốc đang chọn không đúng！");
+            this.$message("Đơn thuốc đang chọn không đúng!");
             return;
           }
         } else {
@@ -1227,11 +1227,11 @@ export default {
           "Đơn thuốc bán lẻ"
         ) {
           let IsOpen = this.IsChargeCorrect("1");
-          if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng！");
+          if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng!");
           else this.OutRetailSaveRetailPrescription();
         } else {
           let IsOpen = this.IsChargeCorrect("1");
-          if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng！");
+          if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng!");
           else this.chargeBtn(2);
         }
       }
@@ -1737,12 +1737,12 @@ export default {
           responseData.data.forEach((element) => {
             let isUnpackSell = element.isUnpackSell; //Cho phép bán lẻ tách hộp
             let stockNumber = element.stockNumber; //Số lượng tồn kho
-            let packName = element.pack.name; //Đóng gói（Đơn vị）
+            let packName = element.pack.name; //Đóng gói (Đơn vị)
             let preparation = element.preparation; //Chế phẩm
             let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
             let price = element.price; //Giá bán
             let retailPrice = element.retailPrice; //Giá bán lẻ sau khi tách hộp
-            let type = element.type.value; //Loại thuốc： medicalType_1 - Thuốc đông y   medicalType_0 - Thuốc tây
+            let type = element.type.value; //Loại thuốc: medicalType_1 - Thuốc đông y medicalType_0 - Thuốc tây
 
             let stockText = "";
             let selectDrugTypeItems = [];
@@ -1979,9 +1979,9 @@ export default {
       let recipelDetailEvtList = [];
       let allFee = 0;
       if (this.patientInfoForm.gender.value === "gender_0") {
-        this.patientInfoForm.gender.name = "男";
+        this.patientInfoForm.gender.name = "Nam";
       } else {
-        this.patientInfoForm.gender.name = "女";
+        this.patientInfoForm.gender.name = "Nữ";
       }
       this.RetailTable.map((item) => {
         allFee += item.allFee;
@@ -2077,13 +2077,13 @@ export default {
           paymentType.name = "Tiền mặt";
           break;
         case "payType_1":
-          paymentType.name = "支付宝";
+          paymentType.name = "Alipay";
           break;
         case "payType_2":
           paymentType.name = "WeChat";
           break;
         case "payType_3":
-          paymentType.name = "银行卡";
+          paymentType.name = "Thẻ ngân hàng";
           break;
         case "payType_5":
           paymentType.name = "Chuyển khoản ngân hàng";
@@ -2151,13 +2151,13 @@ export default {
           paymentType.name = "Tiền mặt";
           break;
         case "payType_1":
-          paymentType.name = "支付宝";
+          paymentType.name = "Alipay";
           break;
         case "payType_2":
           paymentType.name = "WeChat";
           break;
         case "payType_3":
-          paymentType.name = "银行卡";
+          paymentType.name = "Thẻ ngân hàng";
           break;
         case "payType_5":
           paymentType.name = "Chuyển khoản ngân hàng";
@@ -2231,13 +2231,13 @@ export default {
           paymentType.name = "Tiền mặt";
           break;
         case "payType_1":
-          paymentType.name = "支付宝";
+          paymentType.name = "Alipay";
           break;
         case "payType_2":
           paymentType.name = "WeChat";
           break;
         case "payType_3":
-          paymentType.name = "银行卡";
+          paymentType.name = "Thẻ ngân hàng";
           break;
         case "payType_5":
           paymentType.name = "Chuyển khoản ngân hàng";
@@ -2379,7 +2379,7 @@ export default {
       })
       }
       if(state){
-        this.$message.error('Có đơn thuốc đã phát thuốc nhưng chưa trả thuốc，Vui lòng trả thuốc trước')
+        this.$message.error('Có đơn thuốc đã phát thuốc nhưng chưa trả thuốc, Vui lòng trả thuốc trước')
         return
       }
       let model = {
@@ -2395,7 +2395,7 @@ export default {
       saveTollTollInfo(model, type)
         .then((responseData) => {
           if (responseData.code === 100) {
-            this.$message.success("Thao tác thành công！");
+            this.$message.success("Thao tác thành công!");
             this.selectPatientList();
             // if (this.VisitId) {
             //   this.getSaveInfo();
@@ -2435,7 +2435,7 @@ export default {
   mounted() {
     this.pageInit();
     this.GetDrugTable();
-    // 同时加载已完成列表的数量（用于显示徽章）
+    // Đồng thời tải số lượng danh sách đã hoàn thành (dùng để hiển thị huy hiệu)
     this.getIsPayPatientList();
   },
 };

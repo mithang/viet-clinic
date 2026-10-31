@@ -1,4 +1,4 @@
-// 保持 Element UI 尺寸为 mini（在 index.html 中已设置）
+// Giữ kích thước Element UI ở mức mini (đã thiết lập trong index.html)
 const size = 'mini'
 
 const loadLink = function(url, rel, type, callback) {
@@ -13,7 +13,7 @@ const loadLink = function(url, rel, type, callback) {
       }
     }
   }else{
-    //其他浏览器
+    // Trình duyệt khác
     link.onload = function(){
       fn();
     }
@@ -38,7 +38,7 @@ const loadJS = function( url, callback) {
       }
     };
   }else{
-    //其他浏览器
+    // Trình duyệt khác
     script.onload = function() {
       fn()
     }
@@ -53,11 +53,12 @@ const sleep = function(time) {
   return new Promise((resolve) => setTimeout(resolve, time))
 }
 
-/* 异步加载报表
-  先加载dataviewer使用的异步资源，在确保这些资源都已经加载完成后，再加载dataview
+/* Tải báo cáo bất đồng bộ
+  Nạp trước các tài nguyên bất đồng bộ mà dataviewer sử dụng; sau khi chắc chắn
+  các tài nguyên này đã nạp xong mới nạp dataview
 */
 const loadDataViewer = function() {
-  let prevCount = 4 // 需前置加载的资源数
+  let prevCount = 4 // Số tài nguyên cần nạp trước
   sleep(50).then(() => {
     // echarts
     loadJS('lib/echarts/echarts@5.3.0.js', function(){

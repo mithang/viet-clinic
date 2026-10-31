@@ -1,5 +1,5 @@
 /**
- * 月份列表
+ * Danh sách tháng
  */
 const monthList = [
   '1',
@@ -17,8 +17,8 @@ const monthList = [
 ]
 
 /**
- * Thời gian hiện tại，năm，tháng，ngày
- * @param {* 实例化时间 } date
+ * Thời gian hiện tại, năm, tháng, ngày
+ * @param {* Thời gian khởi tạo } date
  */
 const getNewDate = (date) => {
   const year = date.getFullYear()

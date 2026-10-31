@@ -131,7 +131,7 @@
             ><i class="el-icon-timer"></i
             >{{ item.medicalRecord.diagnoseDate }}</span
           >
-          Chẩn đoán：<span class="diagnosisTitel">{{
+          Chẩn đoán: <span class="diagnosisTitel">{{
             item.medicalRecord.diagnose
           }}</span>
         </li>
@@ -160,11 +160,11 @@
         </span>
       </el-dialog>
     </div>
-    <!-- 右侧信息块 -->
+    <!-- Khối thông tin bên phải -->
     <div class="rightInfo">
-      <!-- 上方信息区域 -->
+      <!-- Vùng thông tin phía trên -->
       <div class="topInfoBox">
-        <!-- 基础信息块 -->
+        <!-- Khối thông tin cơ bản -->
         <div class="infoItem">
           <div class="infoTitleBox">
             <h4>Thông tin cơ bản</h4>
@@ -180,7 +180,7 @@
               <el-col :span="7">
                 <el-form-item label="Loại điều trị" prop="treatType">
                   <el-radio-group v-model="BasicInfoModel.treatType">
-                    <el-radio label="初诊">初诊</el-radio>
+                    <el-radio label="初诊">Khám lần đầu</el-radio>
                     <el-radio label="Tái khám">Tái khám</el-radio>
                   </el-radio-group>
                 </el-form-item>
@@ -243,7 +243,7 @@
             </el-row>
           </el-form>
         </div>
-        <!-- 病历块 -->
+        <!-- Khối bệnh án -->
         <div class="infoItem">
           <div class="infoTitleBox">
             <h4>Bệnh án</h4>
@@ -291,32 +291,32 @@
             label-width="90px"
             size="medium"
           >
-            <el-form-item label="Lý do khám chính：" prop="patientTell">
+            <el-form-item label="Lý do khám chính: " prop="patientTell">
               <el-input v-model="MedicalRecordModel.patientTell"></el-input>
             </el-form-item>
-            <el-form-item label="Bệnh sử hiện tại：" prop="nowHistory">
+            <el-form-item label="Bệnh sử hiện tại: " prop="nowHistory">
               <el-input v-model="MedicalRecordModel.nowHistory"></el-input>
             </el-form-item>
-            <el-form-item label="Tiền sử bệnh：" prop="beforeHistory">
+            <el-form-item label="Tiền sử bệnh: " prop="beforeHistory">
               <el-input v-model="MedicalRecordModel.beforeHistory"></el-input>
             </el-form-item>
-            <el-form-item label="Xét nghiệm khác：" prop="otherCheck">
+            <el-form-item label="Xét nghiệm khác: " prop="otherCheck">
               <el-input v-model="MedicalRecordModel.otherCheck"></el-input>
             </el-form-item>
-            <el-form-item label="Chẩn đoán：" prop="diagnose">
+            <el-form-item label="Chẩn đoán: " prop="diagnose">
               <el-input v-model="MedicalRecordModel.diagnose"></el-input>
             </el-form-item>
             <el-form-item
               v-for="(item, index) in ChooseRecordList"
               :key="index"
-              :label="item.label + '：'"
+              :label="item.label + ': '"
               :prop="item.name"
             >
               <el-input v-model="item.value"></el-input>
             </el-form-item>
           </el-form>
         </div>
-        <!-- 添加处方块 -->
+        <!-- Khối thêm đơn thuốc -->
         <div v-if="!IsOnlyRead" class="addPrescriptionBox">
           <!-- <h4><span class="titleSign"></span>Thêm đơn thuốc</h4> -->
           <!-- <el-button-group>
@@ -369,7 +369,7 @@
             </el-dropdown-menu>
           </el-dropdown>
         </div>
-        <!-- 西药处方块 -->
+        <!-- Khối đơn thuốc Tây y -->
         <div class="infoItem" v-if="IsShowWestern">
           <el-popover
             placement="right"
@@ -601,7 +601,7 @@
             </div>
           </div>
         </div>
-        <!-- 中药处方块 -->
+        <!-- Khối đơn thuốc Đông y -->
         <div class="infoItem" v-if="IsShowChinese">
           <div class="infoTitleBox">
             <h4>Đơn thuốc đông y</h4>
@@ -666,7 +666,7 @@
               </div>
             </div>
             <div class="itemBottomBox">
-              <p>Số tiền thuốc Đông y：{{ ChinesePrescription.fee }}VNĐ</p>
+              <p>Số tiền thuốc Đông y: {{ ChinesePrescription.fee }}VNĐ</p>
               <div style="width: 70%">
                 <el-input
                   v-model="ChinesePrescription.dosage"
@@ -674,7 +674,7 @@
                   @input="GetChineseFee"
                   style="width: 10%"
                 ></el-input
-                >thang Cách dùng：
+                >thang Cách dùng: 
                 <el-select
                   v-model="ChinesePrescription.recipelUse"
                   :disabled="IsOnlyRead"
@@ -727,7 +727,7 @@
             </div>
           </div>
         </div>
-        <!-- 输液处方块 -->
+        <!-- Khối đơn thuốc truyền dịch -->
         <div class="infoItem" v-if="IsShowInfusion">
           <div class="infoTitleBox">
             <h4>Đơn truyền dịch</h4>
@@ -774,7 +774,7 @@
             </div>
           </div>
         </div>
-        <!-- 诊疗项目块 -->
+        <!-- Khối hạng mục khám chữa bệnh -->
         <div class="infoItem" v-if="IsShowTreatment">
           <div class="infoTitleBox">
             <h4>Hạng mục khám chữa bệnh</h4>
@@ -882,7 +882,7 @@
             </div>
           </div>
         </div>
-        <!-- 附加费块 -->
+        <!-- Khối phụ phí -->
         <div class="infoItem">
           <div class="infoTitleBox">
             <h4>Phí phụ thêm</h4>
@@ -988,9 +988,9 @@
           <template slot="prepend">Hạng mục y lệnh</template>
         </el-input>
       </div>
-      <!-- 下方固定区域 -->
+      <!-- Vùng cố định phía dưới -->
       <div class="bottomInfoBox">
-        <h5>Tổng số tiền：{{ AllTotal }}VNĐ</h5>
+        <h5>Tổng số tiền: {{ AllTotal }}VNĐ</h5>
         <div class="btnGroup" v-if="!IsOnlyRead">
           <el-button class="visitRecordBtn" @click="FinishVisit"
             >Hoàn thành tiếp nhận khám</el-button
@@ -1084,27 +1084,27 @@ export default {
           val: "TreatmentInput",
         },
       ],
-      // 选中的处方
+      // Đơn thuốc được chọn
       addPrescriptionList: [],
       prescriptionIsShow: false,
       IsShowRecordFile: false,
       fileIdFile: {
         fileId: "",
         action: "add",
-        deletes: [], // Chờ xóa（Đã tải lên）danh sách tệp
+        deletes: [], // Chờ xóa (Đã tải lên)danh sách tệp
         uploads: [], // Danh sách tệp chờ tải lên
       },
       //Tất cả bệnh nhân
       AllPatientOption: [],
-      //当前就诊id
+      //Id lượt khám hiện tại
       VisitId: "",
-      //待就诊当前下标
+      //Chỉ số hiện tại của bệnh nhân chờ khám
       NowPreIndex: 5,
-      //已就诊当前下标
+      //Chỉ số hiện tại của bệnh nhân đã khám
       NowAlreadyIndex: 5,
-      //是否只读
+      //Có chỉ đọc không
       IsOnlyRead: false,
-      //医嘱
+      //Y lệnh
       DoctorAdvice: "",
       //Điều kiện tìm kiếm khám bệnh
       SearchPreModel: {
@@ -1142,17 +1142,17 @@ export default {
       SearchCostItemInput: "",
       //Tìm phí phụ thêm
       SearchSurchargeInput: "",
-      //西药备注
+      //Ghi chú thuốc Tây y
       WesternRemarks: "",
-      //输液备注
+      //Ghi chú truyền dịch
       InfusionRemarks: "",
-      //西药总价格
+      //Tổng giá thuốc Tây y
       WesternFee: 0,
-      //输液总价格
+      //Tổng giá truyền dịch
       InfusionFee: 0,
-      //诊疗项目总价格
+      //Tổng giá hạng mục khám chữa bệnh
       CostItemFee: 0,
-      //附加费总价格
+      //Tổng giá phụ phí
       SurchargeFee: 0,
       //Đơn thuốc đông y
       ChinesePrescription: this.ReturnChineseModel(),
@@ -1226,13 +1226,13 @@ export default {
       ],
       //Cấu hình bệnh án đang chọn
       ChooseRecordList: [],
-      //就诊记录弹框标题
+      //Tiêu đề hộp thoại lịch sử khám
       RecordsTitle: "Chi tiết lượt khám",
-      //是否显示就诊记录弹框
+      //Có hiển thị hộp thoại lịch sử khám không
       IsShowRecords: false,
-      //就诊记录弹框加载状态
+      //Trạng thái tải hộp thoại lịch sử khám
       RecordsLoading: false,
-      //是否显示西药处方-Đơn thuốc đông y-Đơn truyền dịch-Hạng mục khám chữa bệnh
+      //Có hiển thị đơn thuốc Tây y-Đơn thuốc đông y-Đơn truyền dịch-Hạng mục khám chữa bệnh
       IsShowWestern: false,
       IsShowChinese: false,
       IsShowInfusion: false,
@@ -1247,9 +1247,9 @@ export default {
       AlreadyPatientList: [],
       //Tổng số bệnh nhân đã khám hôm nay
       AlreadyPatientListTotal: 0,
-      //就诊记录列表
+      //Danh sách lịch sử khám
       VisitRecordsList: [],
-      //当前就诊记录信息
+      //Thông tin lịch sử khám hiện tại
       NowVisitInfo: {},
       checkedForm: {
         record: false,
@@ -1273,9 +1273,9 @@ export default {
       MedicalRecordModel: this.ReturnMedicalModel(),
       InfusionUseOption: [],
       InfusionOption: [],
-      //西药处方表格数据
+      //Dữ liệu bảng đơn thuốc Tây y
       WesternMedicineTable: [],
-      //已选择西药处方
+      //Đơn thuốc Tây y đã chọn
       ChooseWesternMedicineTable: [],
       //Dữ liệu bảng đơn thuốc Đông y
       ChineseMedicineTable: [],
@@ -1286,12 +1286,12 @@ export default {
       FrequencyOption: [],
       //Danh sách thả xuống số ngày thuốc Tây y
       DayNumOption: [],
-      //已选择中药处方
+      //Đơn thuốc Đông y đã chọn
       ChooseChineseMedicineTable: [],
       //Danh sách thả xuống cách dùng thuốc Đông y
       ChineseUseOption: [],
       ChineseTimeOption: [],
-      //输液处方组表格
+      //Bảng nhóm đơn thuốc truyền dịch
       InfusionItemList: [],
       //Bảng hạng mục khám chữa bệnh
       TreatmentTable: [
@@ -1304,11 +1304,11 @@ export default {
           dj: "2",
         },
       ],
-      //已选诊疗项目表格
+      //Bảng hạng mục khám chữa bệnh đã chọn
       ChooseTreatmentTable: [],
       //Dữ liệu bảng phí phụ thêm có thể chọn
       SurchargeTable: [],
-      //附加费已选表格数据
+      //Dữ liệu bảng phụ phí đã chọn
       ChooseSurchargeTable: [],
       //Xác thực biểu mẫu bệnh nhân
       BasicInfoFormRules: {
@@ -1326,7 +1326,7 @@ export default {
       },
       tableId: "1007027220819460134",
       schemeId: "1007027220819460165",
-      //是否允许作废处方
+      //Có cho phép huỷ đơn thuốc không
       IsInvalidPrescription: false,
     };
   },
@@ -1554,7 +1554,7 @@ export default {
         fee: 0,
       };
     },
-    //待就诊翻页
+    //Chuyển trang bệnh nhân chờ khám
     PreparePrePage() {
       if (this.SearchPreModel.offset === 0) return;
       this.SearchPreModel.offset -= 1;
@@ -1570,7 +1570,7 @@ export default {
       this.SearchPreModel.offset += 1;
       this.GetPreparePatientList();
     },
-    //已就诊翻页
+    //Chuyển trang bệnh nhân đã khám
     AlreadyPrePage() {
       if (this.SearchAlreadyModel.offset === 0) return;
       this.SearchAlreadyModel.offset -= 1;
@@ -1585,7 +1585,7 @@ export default {
       this.SearchAlreadyModel.offset += 1;
       this.GetAlreadyPatientList();
     },
-    //得到处方总价
+    //Lấy tổng giá đơn thuốc
     GetChineseFee(type) {
       if (type !== 1 && !this.ChinesePrescription.dosage) return;
       this.ChinesePrescription.fee = 0;
@@ -1695,7 +1695,7 @@ export default {
         });
       });
     },
-    //获取处方表格数据
+    //Lấy dữ liệu bảng đơn thuốc
     GetSurchargeTable() {
       let SearchModel = {
         columnName: "",
@@ -1787,7 +1787,7 @@ export default {
           responseData.data.forEach((element) => {
             let isUnpackSell = element.isUnpackSell; //Cho phép bán lẻ tách hộp
             let stockNumber = element.stockNumber; //Số lượng tồn kho
-            let packName = element.pack.name; //Đóng gói（Đơn vị）
+            let packName = element.pack.name; //Đóng gói (Đơn vị)
             let preparation = element.preparation; //Chế phẩm
             let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
             let price = element.price; //Giá bán
@@ -1828,7 +1828,7 @@ export default {
         }
       });
     },
-    //点击待就诊患者开始就诊
+    //Click bệnh nhân chờ khám để bắt đầu khám
     GoVisit(item, index) {
       this.GetClearData();
       this.ClearMedicineCofigure();
@@ -1888,7 +1888,7 @@ export default {
       this.VisitRecordsList[0].info = this.BasicInfoModel;
       this.$forceUpdate();
     },
-    //调用历史病例
+    //Gọi bệnh án lịch sử
     UseRecord() {
       let NeedData = JSON.parse(JSON.stringify(this.NowVisitInfo));
       if (!this.checkedForm.record) NeedData.medicalRecord = {};
@@ -1896,10 +1896,10 @@ export default {
       this.GetOnlyReadData(NeedData);
       this.IsShowRecords = false;
     },
-    //得到只读数据
+    //Lấy dữ liệu chỉ đọc
     GetOnlyReadData(allData) {
       this.ClearMedicineCofigure();
-      //得到病例和医嘱
+      //Lấy bệnh án và y lệnh
       this.DoctorAdvice = allData.medicalRecord.doctorAdvice;
       this.MedicalRecordModel.patientTell = allData.medicalRecord.patientTell;
       this.MedicalRecordModel.nowHistory = allData.medicalRecord.nowHistory;
@@ -1911,7 +1911,7 @@ export default {
         item.value = allData.medicalRecord[`${item.name}`];
         if (item.value) this.ChooseRecordList.push(item);
       });
-      //得到处方
+      //Lấy đơn thuốc
       allData.recipelInfoEvtList.map((prescriptionItem) => {
         switch (prescriptionItem.recipelInfo.recipelType.name) {
           case "Đơn thuốc tây":
@@ -1983,7 +1983,7 @@ export default {
         }
       });
     },
-    //删除添加的处方
+    //Xoá đơn thuốc đã thêm
     closePrescription(val) {
       const list = this.addPrescriptionList.filter((i) => {
         return i.val !== val;
@@ -2015,7 +2015,7 @@ export default {
         if (list[list.length - 1].val === "TreatmentInput")
           this.IsShowTreatment = true;
       } else {
-        // 清空处方
+        // Xoá trắng đơn thuốc
         this.IsShowWestern = false;
         this.IsShowChinese = false;
         this.IsShowInfusion = false;
@@ -2026,9 +2026,9 @@ export default {
         this.ChooseTreatmentTable = [];
       }
     },
-    //添加处方并聚焦
+    //Thêm đơn thuốc và focus
     OpenPrescription(name) {
-      //先都关闭掉 再显示点击项
+      //Đóng tất cả trước rồi hiển thị mục được click
       this.IsShowWestern = false;
       this.IsShowChinese = false;
       this.IsShowInfusion = false;
@@ -2069,7 +2069,7 @@ export default {
       });
       this.ChooseRecordList = [];
     },
-    //打开历史就诊记录弹框
+    //Mở hộp thoại lịch sử khám
     OpenVisitRecords(row) {
       this.IsShowRecords = true;
       this.NowVisitInfo = row;
@@ -2086,7 +2086,7 @@ export default {
       this.ChooseWesternMedicineTable.splice(index, 1);
       this.GetWesternFee();
     },
-    //中药表格行点击选择添加到已选择中药处方的表格
+    //Click dòng bảng Đông y để thêm vào bảng đơn thuốc Đông y đã chọn
     RowClickChineseTable(row) {
       let flag = false;
       this.ChooseChineseMedicineTable.forEach((element) => {
@@ -2102,7 +2102,7 @@ export default {
         });
       }
     },
-    //点击中药处方的关闭按钮，删除这条中药处方
+    //Click nút đóng của đơn thuốc Đông y để xoá đơn thuốc này
     DeleteChinese(index) {
       this.ChooseChineseMedicineTable.splice(index, 1);
     },
@@ -2118,12 +2118,12 @@ export default {
       };
       this.InfusionItemList.push(JSON.parse(JSON.stringify(InfoModel)));
     },
-    //输液处方删除一组
+    //Xoá một nhóm trong đơn thuốc truyền dịch
     DeleteInfusionItem(index) {
       this.InfusionItemList.splice(index, 1);
       this.GetInfusionFee();
     },
-    //诊疗项目表格行点击选择添加到已选择诊疗项目处方的表格
+    //Click dòng bảng hạng mục khám chữa bệnh để thêm vào bảng đã chọn
     RowClickTreatmentTable(row) {
       let flag = false;
       this.ChooseTreatmentTable.forEach((element) => {
@@ -2139,12 +2139,12 @@ export default {
         });
       }
     },
-    //点击诊疗项目表格后的删除按钮删除指定下标的数据
+    //Click nút xoá sau bảng hạng mục khám chữa bệnh để xoá dữ liệu tại chỉ số chỉ định
     DeleteTreatment(index, row) {
       this.ChooseTreatmentTable.splice(index, 1);
       this.GetCostItemFee();
     },
-    //附加费表格数据添加
+    //Thêm dữ liệu bảng phụ phí
     RowClickSurchargeTable(row) {
       let flag = false;
       this.ChooseSurchargeTable.forEach((element) => {
@@ -2160,7 +2160,7 @@ export default {
         });
       }
     },
-    //点击附加费表格后的删除按钮删除指定下标的数据
+    //Click nút xoá sau bảng phụ phí để xoá dữ liệu tại chỉ số chỉ định
     DeleteSurchargeTable(index, row) {
       this.ChooseSurchargeTable.splice(index, 1);
       this.GetSurchargeFee();
@@ -2170,7 +2170,7 @@ export default {
         medicalRecord: {},
         recipelInfoEvtList: [],
       };
-      //得到最后的病例
+      //Lấy bệnh án cuối cùng
       this.ChooseRecordList.map((item) => {
         this.MedicalRecordModel[`${item.name}`] = item.value;
       });
@@ -2348,7 +2348,7 @@ export default {
           let model = this.createFormData(FinishModel);
           allSaveMedicalRecord(model).then((responseData) => {
             if (responseData.code === 100) {
-              this.$message.success("Thao tác thành công！");
+              this.$message.success("Thao tác thành công!");
               this.GetClearData();
               this.GetVisitList();
             }
@@ -2360,13 +2360,13 @@ export default {
       getRegistrationById(this.VisitId).then((responseData) => {
         if (responseData.code === 100) {
           let status = responseData.data.status.value;
-          let chargeStatus = responseData.data.chargeStatus; //Trạng thái thu phí 0- Chờ thu phí   1-部分收费   2- Đã thu phí   3-  部分退费    4- Đã hoàn phí
+          let chargeStatus = responseData.data.chargeStatus; //Trạng thái thu phí 0- Chờ thu phí   1- Thu phí một phần   2- Đã thu phí   3-  Hoàn phí một phần    4- Đã hoàn phí
           if (chargeStatus === "0" && status === "registrationStatus_1") {
             updateStatus(this.VisitId, "registrationStatus_4").then(
               (responseData) => {
                 if (responseData.code === 100) {
                   this.GetAlreadyPatientList();
-                  this.$message.success("Thao tác thành công！");
+                  this.$message.success("Thao tác thành công!");
                 }
               }
             );

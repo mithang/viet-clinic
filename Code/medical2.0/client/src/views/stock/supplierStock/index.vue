@@ -467,7 +467,7 @@
                   </span>
                   <el-row type="flex" justify="space-between" align="center" style="padding-top:10px" v-if="ActiveName === 'IsWaitingDrug' && buttonState">
                     <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
                     </div>
                     <el-popconfirm
                       title="Bạn có chắc muốn phát thuốc không？"
@@ -479,7 +479,7 @@
                   </el-row>
                   <el-row type="flex" justify="space-between" align="center" style="padding-top:10px" v-if="ActiveName === 'IsAll'">
                     <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
                     </div>
                     <el-popconfirm
                       title="Bạn có chắc muốn trả thuốc không？"
@@ -491,7 +491,7 @@
                   </el-row>
                   <el-row style="padding-top:8px" v-if="ActiveName === 'return'">
                     <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
                     </div>
                   </el-row>
                  <div v-if="item.type!=='recipelType_2'">
@@ -696,11 +696,11 @@
                     </el-input>
                     Mỗi lần uống
                     <el-input style="width:80px" disabled v-model="item.content.recipelInfo.dosage">
-                    </el-input>{{isSpecial?'格':'ml'}}
+                    </el-input>{{isSpecial?'gói':'ml'}}
                   </div>-->
                   <el-row v-if="item.type==='recipelType_1'">
                     <el-input disabled v-model="item.content.recipelInfo.dosage" oninput="value=value.replace(/[^\d.]/g,'')" style="width: 60px"></el-input>
-                    &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng：
+                    &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng: 
                     <el-select disabled v-model="item.content.recipelInfo.recipelUse" placeholder="Vui lòng chọn" style="width: 110px">
                       <el-option v-for="pitem in ChineseUseOption" :key="pitem.value"
                                  :label="pitem.name"
@@ -755,7 +755,7 @@
                             >
 
                             </el-input>
-                             <!-- <el-select
+                              <!-- <el-select
                                style="float:right;width:10%"
                               v-model="item.infusion.days[index]"
                               :disabled="
@@ -784,7 +784,7 @@
                             >
 
                             </el-input>
-                             <!-- <el-select
+                              <!-- <el-select
                                style="float:right;width:10%;"
                               v-model="item.infusion.frequency[index]"
                               :disabled="
@@ -1076,10 +1076,10 @@
         </el-scrollbar>
       </el-card>
       <el-card v-if="allType !== 0">
-        <span>Tổng cộng{{ allType }} loại，{{ totalMoney.toFixed(2) }}VNĐ</span>
+        <span>Tổng cộng{{ allType }} loại, {{ totalMoney.toFixed(2) }}VNĐ</span>
       </el-card>
     </el-main>
-    <!--  药品追溯码弹窗-->
+    <!--  Hộp thoại mã truy xuất thuốc-->
     <el-dialog  @keydown.native="handleKeydown" :modal="false"  :visible.sync="drugDialogVisible" title="Nhập mã truy xuất thuốc" @open="focusInput" @close="resetInput">
       <el-input
         v-model="currentInput"
@@ -1116,8 +1116,8 @@ export default {
   },
   data() {
     return {
-      dispensingPageSize: 15, //每页数量
-      //tabs当前为待发药
+      dispensingPageSize: 15, //Số lượng mỗi trang
+      //tab hiện tại là chờ phát thuốc
       ActiveName: "IsWaitingDrug",
       Offset: 0,
       SearchPatientId: "",
@@ -1127,15 +1127,15 @@ export default {
       WaitingTotal: 0,
       OtherTotal: 0,
       returnTotal: 0,
-      //待发药表格数据
+      //Dữ liệu bảng chờ phát thuốc
       WaitingTable: [],
-      //全部发药表格数据
+      //Dữ liệu bảng tất cả phát thuốc
       dispensingTable: [],
-      //已退药表格
+      //Bảng đã trả thuốc
       returnTable:[],
-      //当前就诊信息
+      //Thông tin lượt khám hiện tại
       NowVisitInfo: {},
-      //当前患者信息
+      //Thông tin bệnh nhân hiện tại
       VisitId: "",
       NowPatientInfo: {
         address: "",
@@ -1162,15 +1162,15 @@ export default {
         chinaDiagnose: "",
         dispensingStatus: "",
       },
-      //所有处方
+      //Tất cả đơn thuốc
       prescriptionALllList: [],
-      //复选框选择的表格数据
+      //Dữ liệu bảng được chọn bằng checkbox
       CheckMedicineList: [],
       BASE_API: process.env.BASE_API,
       buttonState: false,
       //Tổng số tiền
       totalMoney: 0,
-      //总数
+      //Tổng số
       allType: 0,
       //Lớp thực thể tham số mới
       PageRegistration: {
@@ -1188,9 +1188,9 @@ export default {
         patientName:'',
         patientCode:''
       },
-      allCurrentPage: 1, //已发药页码
-      dispensingCurrentPage: 1, //未发药页码
-      returnCurrentPage: 1, //已退药页码
+      allCurrentPage: 1, //Trang đã phát thuốc
+      dispensingCurrentPage: 1, //Trang chưa phát thuốc
+      returnCurrentPage: 1, //Trang đã trả thuốc
       prescriptionMainList: [],//Danh sách đơn thuốc
       patientInfoRow:{},
       patientInfoForm: {
@@ -1304,7 +1304,7 @@ export default {
   methods: {
     handleKeydown(event) {
       if (event.key === 'Enter' ||event.key === 'enter'  ) {
-        // 调用回车键确定操作
+        // Xác nhận thao tác bằng phím Enter
         this.submitInput();
       }
     },
@@ -1366,7 +1366,7 @@ export default {
           if(res.code === 100){
             this.allMember=res.data
           }else{
-            this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+            this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
           }
         }).catch()
     },
@@ -1387,7 +1387,7 @@ export default {
             item.isExtra = [];
             item.notExtra = [];
             item.recipelDetailEvtList.forEach((items) => {
-              this.$set(items, 'drugTracCodg', ''); // 药品追溯码字段
+              this.$set(items, 'drugTracCodg', ''); // Trường mã truy xuất thuốc
               if (items.isExtra === 1) {
                 item.isExtra.push(items);
               } else {
@@ -1554,7 +1554,7 @@ export default {
       //     index
       //   );
       //   arr[index].onload=()=>{
-      //     arr[index].document.title = "新致云诊所"
+      //     arr[index].document.title = "Phòng khám Tân Trí Vân"
       //   }
       // });
     },
@@ -1740,7 +1740,7 @@ export default {
     indexMethod2(index) {
       return ((this.Offset + 10) / 10 - 1) * 10 + index + 1;
     },
-    //单独发药退药
+    //Phát thuốc / trả thuốc riêng lẻ
     singleMedicineClick(type){
       let prescriptionIdList = [];
       this.CheckMedicineList = [];
@@ -1767,7 +1767,7 @@ export default {
           if (responseData.code === 100) {
             this.GetDispensingTable();
             this.buttonState = false;
-            this.$message.success("Thao tác thành công！");
+            this.$message.success("Thao tác thành công!");
           } else {
             this.showMessage(responseData);
           }
@@ -1776,7 +1776,7 @@ export default {
           this.outputError(error);
         });
     },
-    //点击发药按钮0-Phát thuốc/1-Trả thuốc
+    //Bấm nút phát thuốc 0-Phát thuốc/1-Trả thuốc
     DispensingMedicineClick(type) {
       let prescriptionIdList = [];
       this.CheckMedicineList = [];
@@ -1799,13 +1799,13 @@ export default {
         dispensingType: type,
         dispensingDetailEvtList: this.CheckMedicineList,
       };
-     // return
+      // return
       updateStockStockList(model)
         .then((responseData) => {
           if (responseData.code === 100) {
             this.GetDispensingTable();
             this.buttonState = false;
-            this.$message.success("Thao tác thành công！");
+            this.$message.success("Thao tác thành công!");
           }else if(responseData.code === 50001){
             this.$message.warning(responseData.msg)
           }

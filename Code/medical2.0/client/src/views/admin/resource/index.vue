@@ -153,10 +153,10 @@ export default {
       search: {
         limit: 10
       },
-      currentRouter: {},     //树形结构中选择的路由
+      currentRouter: {},     //Route được chọn trong cấu trúc cây
       resourceTotal: 0,
       resourceList: [],     // Dữ liệu bảng số
-      routers: [],           // 路由树表
+      routers: [],           // Bảng cây route
     
       oprColumnWidth: 140,  // Độ rộng cột thao tác
       resourceDefs: [{name: 'Truy vấn', permission: 'list'}, {name: 'Xem', permission: 'read'}, {name: 'Xuất', permission: 'export'}, {name: 'Thêm', permission: 'create'}, {name: 'Xóa', permission: 'delete'}, {name: 'Cập nhật', permission: 'update'}],
@@ -239,7 +239,7 @@ export default {
           'url': this.currentRouter.url,   // Url
           'permission': this.currentRouter.code.substr(this.currentRouter.code.lastIndexOf('/') + 1) + ':' + this.resourceDefs[item].permission,   // Quyền
           'canPermission': '1', // Có thể cấp quyền
-          'isDefault': 0,  // 是否默认资源
+          'isDefault': 0,  // Có phải tài nguyên mặc định không
           'isLocked': 0,    // Vô hiệu hóa
           'router': {     // Bảng cha Định tuyến
             'id': this.currentRouter.id,

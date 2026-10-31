@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/org/company')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getCompanyById = baseApi.getById
 export const listCompanyPage = baseApi.listPage
 export const listCompanyAll = baseApi.listAll

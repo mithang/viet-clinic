@@ -37,7 +37,7 @@
         <el-color-picker color-format="rgb" v-model="currentSidebarColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item">
-        <span>Màu nền（Nên dùng tông màu nhạt）</span>
+        <span>Màu nền (Nên dùng tông màu nhạt)</span>
         <el-color-picker color-format="rgb" v-model="currentBackgroundColor" :predefine="predefine" class="theme-picker color-picker" popper-class="theme-picker-dropdown"/>
       </div>
       <div class="drawer-item">
@@ -192,7 +192,7 @@
         resetSetting: 'settings/resetSetting',
         showPanel: 'settings/showPanel',
       }),
-      //Theoid来判断保存主题得按钮是否显示
+      //Dùng oid để xác định có hiển thị nút lưu giao diện hay không
       getLoginId(){
           this.loginId = getLocalCurrentUser().id;
       },
@@ -206,11 +206,11 @@
           if(responseData.code === 100) {
             this.drawerLoading = false;
             const result = responseData.data;
-            // 引用类型 存放在堆内存中
+            // Kiểu tham chiếu được lưu trong bộ nhớ heap
             const obj = result.find(item => {
               return item.isDefault === '1'
             })
-            obj.name = obj.name + '（系统默认）'
+            obj.name = obj.name + ' (mặc định hệ thống)'
             this.sysThemeList = result
             const personalTheme = getLocalPersonalTheme()
             personalTheme.theme = JSON.stringify(personalTheme.theme);
@@ -313,7 +313,7 @@
 
           this.$message({
             type: 'success',
-            message: '已重置'
+            message: 'Đã đặt lại'
           })
           this.layoutLoading().close()
           this.getThemeList()
@@ -325,7 +325,7 @@
           this.layoutLoading().close()
         }
       },
-      //保存主题
+      //Lưu giao diện
       saveTheTheme() {
         const data={
             "theme":this.settings.theme,
@@ -369,7 +369,7 @@
       layoutLoading() {
         return this.$loading({
           lock: true,
-          text: '处理中...',
+          text: 'Đang xử lý...',
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
         });

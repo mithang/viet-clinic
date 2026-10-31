@@ -297,7 +297,7 @@ export default {
     async onSubmit() {
       if (this.multipleSelection.length === 0) {
         this.$message({
-          message: "请选择要同步的项目",
+          message: "Vui lòng chọn mục cần đồng bộ",
           type: "warning",
         });
         return;

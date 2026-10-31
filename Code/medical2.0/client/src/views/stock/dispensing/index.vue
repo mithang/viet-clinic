@@ -284,7 +284,7 @@
     methods: {
       addCreateDate() {
         let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
+        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa, 30nghĩa là ngày
         let lastY = lw.getFullYear();
         let lastM = lw.getMonth() + 1;
         let lastD = lw.getDate();
@@ -803,11 +803,11 @@
           },
 
         ]
-        //Cố định dòng đầu tiên và cột đầu tiên：
+        //Cố định dòng đầu tiên và cột đầu tiên: 
         contentWs['!freeze'] = {
           xSplit: "11",  //Cố định cột
           ySplit: "1",  //Cố định dòng
-          topLeftCell: "A2",  //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
+          topLeftCell: "A2", //Ô hiển thị ở góc trên bên trái của vùng chưa cố định, Mặc định là ô chưa cố định đầu tiên
           state: "frozen"
         }
         contentWs["!merges"] = mergeTitle
@@ -817,7 +817,7 @@
 
         contentWs["!margins"] = {left: 1.0, right: 1.0, top: 1.0, bottom: 1.0, header: 0.5, footer: 0.5}
         XLSX.utils.book_append_sheet(web, contentWs, "Bảng chi tiết bán thuốc");
-        // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
+        // //Sử dụngxlsx-styleCách ghi tệp, để kiểu tùy chỉnh có hiệu lực
         const tmpDown = new Blob([
           this.s2ab(
             XLSXD.write(web, {

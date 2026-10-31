@@ -356,11 +356,11 @@ export default {
         // itro: [{ required: true, message: "Vui lòng nhập giới thiệu", trigger: "blur" }], // Giới thiệu
         // dept_resper_name: [{ required: true, message: "Vui lòng nhập họ tên người phụ trách", trigger: "blur" }], // Người phụ trách
         // dept_resper_tel: [{ required: true, message: "Vui lòng nhập số điện thoại người phụ trách", trigger: "blur" }], // Số điện thoại người phụ trách
-        // dept_estbdat: [{ required: true, message: "请输入成立时间", trigger: "blur" }], // Thời gian thành lập
-        // aprv_bed_cnt: [{ required: true, message: "请输入批准床位数", trigger: "blur"}], // Số giường được phê duyệt
+        // dept_estbdat: [{ required: true, message: "Vui lòng nhập thời gian thành lập", trigger: "blur" }], // Thời gian thành lập
+        // aprv_bed_cnt: [{ required: true, message: "Vui lòng nhập số giường được phê duyệt", trigger: "blur"}], // Số giường được phê duyệt
         // poolarea_no: [{ required: true, message: "Vui lòng nhập mã khu vực điều phối", trigger: "blur" }], // Mã khu vực điều phối
-        // dr_psncnt: [{ required: true, message: "请输入医生人数", trigger: "blur", type: 'number' }], // Số lượng bác sĩ
-        // phar_psncnt: [{ required: true, message: "请输入药房人数", trigger: "blur", type: 'number' }], // Số lượng nhân viên nhà thuốc
+        // dr_psncnt: [{ required: true, message: "Vui lòng nhập số lượng bác sĩ", trigger: "blur", type: 'number' }], // Số lượng bác sĩ
+        // phar_psncnt: [{ required: true, message: "Vui lòng nhập số lượng nhân viên nhà thuốc", trigger: "blur", type: 'number' }], // Số lượng nhân viên nhà thuốc
         // nurs_psncnt: [{ required: true, message: "Vui lòng nhập số lượng điều dưỡng", trigger: "blur", type: 'number' }], // Số lượng điều dưỡng
         // tecn_psncnt: [{ required: true, message: "Vui lòng nhập số lượng kỹ thuật viên", trigger: "blur", type: 'number' }] // Số lượng kỹ thuật viên
       },
@@ -434,7 +434,7 @@ export default {
             validatenull(This) || validatenull(This.name) ? null : This.name,
         },
         code: "", // Mã khoa/phòng
-        isLocked: "0", // Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        isLocked: "0", // Vô hiệu hóa (0: Chưa bị vô hiệu hóa; 1: Vô hiệu hóa)
         name: "", // Tên khoa/phòng
         sort: "0", // Sắp xếp
         category: "", // Loại khoa/phòng

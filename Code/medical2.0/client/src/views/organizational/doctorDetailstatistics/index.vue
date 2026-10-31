@@ -20,7 +20,7 @@
                   start-placeholder="Ngày bắt đầu"
                   end-placeholder="Ngày kết thúc"
                   :default-time="['00:00:00', '23:59:59']"
-                  format="yyyy-MM-dd HH:mm:ss"
+                  format="dd/MM/yyyy HH:mm:ss"
                 >
                 </el-date-picker>
               </el-form-item>
@@ -456,7 +456,7 @@ export default {
   },
   watch: {},
   mounted() {
-    // reportViewMixin.mounted() Đã gọi this.pageInit()（内含 initOptions + Tải dữ liệu），
+    // reportViewMixin.mounted() đã gọi this.pageInit() (gồm initOptions + tải dữ liệu), 
     // Tại đây chỉ bổ sung tải danh sách cơ sở
     this.Getcliniclist()
   },

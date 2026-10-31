@@ -155,10 +155,10 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="3" :offset="12">Chủng loại：{{ CalcBreed() }}</el-col>
-          <el-col :span="3">Số lượng：{{ calcTotalNumber() }}</el-col>
-          <el-col :span="3">Tổng giá nhập：{{ otherInfo.allBid}}</el-col>
-          <el-col :span="3">Tổng giá bán lẻ：{{ otherInfo.allRetailPrice }}</el-col>
+          <el-col :span="3" :offset="12">Chủng loại: {{ CalcBreed() }}</el-col>
+          <el-col :span="3">Số lượng: {{ calcTotalNumber() }}</el-col>
+          <el-col :span="3">Tổng giá nhập: {{ otherInfo.allBid}}</el-col>
+          <el-col :span="3">Tổng giá bán lẻ: {{ otherInfo.allRetailPrice }}</el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
@@ -242,7 +242,7 @@
     data() {
       return {
         test: 1,
-        thisType: 1, //Loại hiện tại，Thuốc hoặc vật tư
+        thisType: 1, //Loại hiện tại, Thuốc hoặc vật tư
         flag: true,
         outboundId: 0, //Mã đơn xuất kho hiện cần sửa
         supplierId: null,
@@ -250,11 +250,11 @@
         //Đặt ngày trước hôm nay của ngày hết hiệu lực thành không thể chọn
         expireTimeOption: {
           // disabledDate(date) {
-          //   //disabledDate Trên tài liệu：Đặt trạng thái vô hiệu hóa，Tham số là ngày hiện tại，Yêu cầu trả về Boolean
+          // //disabledDate Trên tài liệu: Đặt trạng thái vô hiệu hóa, Tham số là ngày hiện tại, Yêu cầu trả về Boolean
           //   return date.getTime() < Date.now() - 24 * 60 * 60 * 1000;
           // },
         },
-        // radio: "1", // 1 Thuốc，2Vật tư
+        // radio: "1", // 1 Thuốc, 2Vật tư
         company_id: currentUser.company.id /*Phòng khámID*/ ,
         examine_id: "1005787933775863930" /*Trạng thái đã quaID*/ ,
         examine_value: "supplierStorageExamineStatus_0" /*Trạng thái đã quaValuegiá trị*/ ,
@@ -266,11 +266,11 @@
         drugStuffPlaceholder: "", //tương ứngplaceholder
         goodsInfo: null,
         storageDetailTable: [],
-        reasonLists: null, //不同的出库原因
+        reasonLists: null, //Các lý do xuất kho khác nhau
         methodLists: [{
-          name: '销售出库',
+          name: 'Xuất bán',
           id: 1
-        }], //不同的出库方式
+        }], //Các hình thức xuất kho khác nhau
         otherInfo: {
           supplierID: null,
           /*Nhà cung cấp*/
@@ -333,7 +333,7 @@
                 i.preparationAmount = 0
                 newVal[ind].expireDate = "";
                 this.$message({
-                  message: i.drugStuffName+"可用库存不足数量",
+                  message: i.drugStuffName+"Số lượng tồn khả dụng không đủ",
                   type: "warning",
                 });
 
@@ -367,8 +367,8 @@
       },
       openDrugDialog(scope) {
         if ( scope.row.packAmount <= 0 || ! scope.row.packAmount) {
-          this.$message.error('Vui lòng nhập trước số lượng hợp lệ và có tách hộp không！');
-          return; // Nếu số lượng không hợp lệ，Dừng thực hiện
+          this.$message.error('Vui lòng nhập trước số lượng hợp lệ và có tách hộp không!');
+          return; // Nếu số lượng không hợp lệ, Dừng thực hiện
         }
         this.currentRow = scope.row; // Ghi lại dòng hiện tại
         this.inputCount = 0; // Đặt lại bộ đếm nhập liệu
@@ -492,7 +492,7 @@
           }
         });
       },
-      //当选择了某个库存时触发
+      //Kích hoạt khi chọn một tồn kho
       onMedicinalStorageSelect(row) {
         let obj = {
           drug: row.drug,
@@ -501,7 +501,7 @@
           surplusStock : row.surplusStock,
           drugStuffName:row.drugStuffName,
         };
-        //将所有值都从子对象转移到根以便于处理
+        //Chuyển toàn bộ giá trị từ đối tượng con ra gốc để dễ xử lý
         obj.factoryName = null;
         if (row.drug && row.drug.id) {
           obj.factoryName = row.drug.factory.name;
@@ -528,11 +528,11 @@
         this.storageDetailTable.push(obj);
       },
 
-      //保存出库单
+      //Lưu phiếu xuất kho
       saveSupplierOutbound() {
         /* if (!this.otherInfo.supplierID) {
           this.$message({
-            message: "请选择出库人员",
+            message: "Vui lòng chọn người xuất kho",
             type: "warning"
           });
           return;
@@ -586,7 +586,7 @@
                 id: this.company_id,
               },
               number: this.getNumber(element), //element.quantity,
-              cnt:   element.packAmount,        //医保数量
+              cnt:   element.packAmount,        //Số lượng bảo hiểm y tế
               drugTracCodg:element.drugTracCodg,//Mã truy xuất bảo hiểm y tế
               supplierId: {
                 // Nhà cung cấp
@@ -609,7 +609,7 @@
             };
             saveInfo.supplierOutboundOrderList.push(detail);
           } catch (e) {
-            console.error('格式化出库单明细出错', e);
+            console.error('Lỗi định dạng chi tiết phiếu xuất kho', e);
           }
         });
         if (this.flag === "Số lượng") {

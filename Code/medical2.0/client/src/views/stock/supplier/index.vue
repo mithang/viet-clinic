@@ -192,7 +192,7 @@ export default {
           value: '2',
           label: 'Nhà cung cấp vật tư'
         },
-      ],//供应商类型
+      ],//Loại nhà cung cấp
       queryModel: {
         'name': '',   // Tên
         'linkman': '',   // Người liên hệ
@@ -230,7 +230,7 @@ export default {
   },
   watch: {
    
-     // tableDataCóel-tableDữ liệu đã liên kết
+      // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
           // Khắc phục lỗi hiển thị lệch bảng
           handler () {

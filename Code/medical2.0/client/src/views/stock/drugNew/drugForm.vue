@@ -256,7 +256,7 @@
 
         <el-divider class="line"></el-divider>
         <!-- Quy cách -->
-        <div class="specifications">Thông tin quy cách &nbsp;&nbsp;<span style="color:#C0C0C0;">(ví dụ：2.5g*12 viên/túi)</span></div>
+        <div class="specifications">Thông tin quy cách &nbsp;&nbsp;<span style="color:#C0C0C0;">(ví dụ: 2.5g*12 viên/túi)</span></div>
         <div class="specifications-box">
           <!-- Liều lượng -->
           <div class="dose-box">
@@ -929,7 +929,7 @@
 
       onSubmit(formName) {
         /*if (this.bizFormModel.company.id !== this.currentUser.company.id) {
-          this.$message.error('Không thể sửa thông tin thuốc của cơ sở，Vui lòng liên hệ cơ sở để sửa thông tin thuốc cơ bản')
+          this.$message.error('Không thể sửa thông tin thuốc của cơ sở, Vui lòng liên hệ cơ sở để sửa thông tin thuốc cơ bản')
           return
         }*/
         if (this.bizFormModel.type.value !== 'medicalType_1') {

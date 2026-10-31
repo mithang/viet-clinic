@@ -59,10 +59,10 @@
         }
       },
       methods:{
-        onEditorBlur(){},  // 失去焦点事件
+        onEditorBlur(){},  // Sự kiện mất focus
         onEditorFocus(event){
-        }, // 获得焦点事件
-        onEditorChange(){  // 内容改变事件
+        }, // Sự kiện nhận focus
+        onEditorChange(){  // Sự kiện nội dung thay đổi
 
         },
         updateValue(value) {

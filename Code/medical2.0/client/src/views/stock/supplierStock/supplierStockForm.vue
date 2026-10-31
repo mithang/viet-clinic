@@ -379,7 +379,7 @@ export default {
       this.bizFormModel = {...this.initFormModel(), ...supplierStock}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
-      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+      this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
       this.dialogProps.visible = true
     }
   },

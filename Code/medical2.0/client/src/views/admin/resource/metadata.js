@@ -2,7 +2,7 @@ const metadata = [
 	{
         id: '4006',
         schemeId: '6008',
-        name: '资源',
+        name: 'Tài nguyên',
         dataRules:[]
     },
 	{

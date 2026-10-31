@@ -28,7 +28,7 @@
 </template>
 
 <script>
-	// Thuốc、材料动态库存选择
+	// Chọn tồn kho động của thuốc, vật tư
 
 	import {
 		listPage

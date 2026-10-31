@@ -104,7 +104,7 @@ fymodel: {
         action: '',
         title: '',
       },
-      //待执行类型
+      //Loại chờ thực hiện
      types:"",
 
      titletype:"",
@@ -125,7 +125,7 @@ fymodel: {
       },
 
 
-       //待发药新的传参实体类
+       //Lớp tham số mới cho danh sách chờ phát thuốc
       PageRegistration: {
         columnName: "",
         limit: 0,
@@ -142,9 +142,9 @@ fymodel: {
         patientCode:'',
         overlook:'',
       },
-      //待发药数据
+      //Dữ liệu chờ phát thuốc
       listdispensingcounts:[],
-      //待发药总人数
+      //Tổng số người chờ phát thuốc
       dispensingsum:0,
 
       //Chờ thu phí
@@ -164,7 +164,7 @@ fymodel: {
         patientCode:null,
         overlook:'',
       },
-      //待收费数据
+      //Dữ liệu chờ thu phí
       PatientchargeList:[],
       Patientchargesum:0,
 //Chờ điều trị
@@ -363,7 +363,7 @@ this.selectpatientdjyjclist();
         }
       });
     },
-//获取待发药列表
+//Lấy danh sách chờ phát thuốc
 GetDispensingTable() {
   this.tableData=[];
   this.PageRegistration.overlook="0",
@@ -559,7 +559,7 @@ selectpatientdjyjclist(){
       })
 },
 
-//跳转路由
+//Chuyển route
 handleClick(type,itemid){
 type=this.types
 switch(type){
@@ -583,7 +583,7 @@ case "dfy":
   break;
 }
 },
-//LấyId进行忽略单条数据
+//Lấy Id để bỏ qua từng bản ghi dữ liệu
     btnoverlook(values,types){
       this.tableData=[];
       let strRecipelInfoIds=values;

@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/myTask/myTask')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getMyTaskById = baseApi.getById
 export const listMyTaskPage = baseApi.listPage
 export const listMyTaskAll = baseApi.listAll

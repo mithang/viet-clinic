@@ -2,7 +2,7 @@
 	<el-form size="small">
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="1">
-				ngày，Ký tự đại diện được phép[, - * / L M]
+				ngày, Ký tự đại diện được phép[, - * / L M]
 			</el-radio>
 		</el-form-item>
 
@@ -23,7 +23,7 @@
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="4">
 				Từ
-				<el-input-number v-model='average01' :min="0" :max="31" /> ngày bắt đầu，mỗi
+				<el-input-number v-model='average01' :min="0" :max="31" /> ngày bắt đầu, mỗi
 				<el-input-number v-model='average02' :min="0" :max="31" /> ngày thực hiện một lần
 			</el-radio>
 		</el-form-item>
@@ -122,7 +122,7 @@ export default {
 				this.$emit('update', 'day', this.averageTotal);
 			}
 		},
-		// 最近工作日值变化时
+		// Khi giá trị ngày làm việc gần nhất thay đổi
 		workdayChange() {
 			if (this.radioValue === '5') {
 				this.$emit('update', 'day', this.workday + 'W');
@@ -134,9 +134,9 @@ export default {
 				this.$emit('update', 'day', this.checkboxString);
 			}
 		},
-		// 父组件传递的week发生变化触发
+		// Khi tuần do thành phần cha truyền vào thay đổi kích hoạt
 		weekChange() {
-			//Xác địnhweek值与day不能同时为“?”
+			//Xác định giá trị week và day không thể cùng lúc là "?"
 			if (this.cron.week === '?' && this.radioValue === '2') {
 				this.radioValue = '1';
 			} else if (this.cron.week !== '?' && this.radioValue !== '2') {
@@ -164,7 +164,7 @@ export default {
 			this.average02 = this.checkNum(this.average02, 1, 31)
 			return this.average01 + '/' + this.average02;
 		},
-		// 计算工作日格式
+		// Tính định dạng ngày làm việc
 		workdayCheck: function () {
 			this.workday = this.checkNum(this.workday, 1, 31)
 			return this.workday;

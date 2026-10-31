@@ -9,7 +9,7 @@
 
     v-loading="loading"
   >
-  <!-- 选择任务执行审核 -->
+  <!-- Chọn duyệt thực hiện công việc -->
     <div v-if="mark==='0'">
           <el-table
             :data="tableData"
@@ -98,20 +98,20 @@
      <div class="specifications">Chi tiết nhiệm vụ</div>
         <div style="width:80%;margin-left:100px">
            <div>
-             Loại nhiệm vụ：{{this.indexdata.tasktype==='0'?"Nhiệm vụ thường xuyên":"Hoạt động tuyên truyền"}}
+             Loại nhiệm vụ: {{this.indexdata.tasktype==='0'?"Nhiệm vụ thường xuyên":"Hoạt động tuyên truyền"}}
            </div>
            <div>
-             Tên nhiệm vụ：{{this.indexdata.taskname}}
+             Tên nhiệm vụ: {{this.indexdata.taskname}}
            </div>
            <div>
-             Mô tả nhiệm vụ：{{this.indexdata.taskdescribe}}
+             Mô tả nhiệm vụ: {{this.indexdata.taskdescribe}}
               <upload-file  :objectId="uploadFiles" @getFileList="getFileList" :action="flags" @deleteFile="deleteFile"></upload-file>
            </div>
             <div>
-             Người khởi tạo nhiệm vụ：{{this.indexdata.user.name}}
+             Người khởi tạo nhiệm vụ: {{this.indexdata.user.name}}
            </div>
             <div>
-             Thời hạn nhiệm vụ：{{this.indexdata.taskdeadline}}
+             Thời hạn nhiệm vụ: {{this.indexdata.taskdeadline}}
            </div>
         </div>
          <br>
@@ -119,7 +119,7 @@
         <div class="specifications">Phản hồi tình hình thực hiện</div>
          <div style="width:80%;margin-left:100px">
            <div>
-             Tiến độ thực hiện：{{this.feedbacklist[0]===undefined?"":this.feedbacklist[0].executeschedule}}
+             Tiến độ thực hiện: {{this.feedbacklist[0]===undefined?"":this.feedbacklist[0].executeschedule}}
            </div>
 
            <div>
@@ -127,7 +127,7 @@
            </div>
 
             <div>
-             Ghi chú：{{this.feedbacklist[0]===undefined?"---":this.feedbacklist[0].remark}}
+             Ghi chú: {{this.feedbacklist[0]===undefined?"---":this.feedbacklist[0].remark}}
            </div>
         </div>
 <!-- <el-descriptions title="Chi tiết nhiệm vụ" :column="1" >
@@ -213,7 +213,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
       },
        rules: {
           auditresult: [
-            { required: true, message: '请选择审核结果', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn kết quả duyệt', trigger: 'change' }
           ],
        },
        fileName:'',  //Tên tệp
@@ -236,15 +236,15 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
       uploadFilesfee:'',
       zxjd:'',
       bz:'',
-      mark:"0",  //div切换标志
-      tableData:[],  //执行任务数据
+      mark:"0",  //Cờ chuyển đổi div
+      tableData:[],  //Dữ liệu công việc thực hiện
       checkFlage:false,
       taskManagementId:"",
       myTaskId:"",
      }
    },
    methods:{
-     //取消按钮
+     //Nút hủy
      onDialogClose() {
      this.$emit('typeclick',"");
       this.dialogProps.visible = false;
@@ -392,7 +392,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
         this.gettaskrcvo.taskmanagementid=row.taskManagement.id
          this.ruleForm.id=row.taskManagement.id
         this.getfileddata();
-       // this.Getfeedbackdata();
+        // this.Getfeedbackdata();
          this.feedbacklist.push({
                 companyId:row.companyId,
                 createdBy:row.createdBy,
@@ -424,7 +424,7 @@ import { listMyTaskPage, saveMyTask, updateMyTask } from '@/api/myTask/myTask'
         this.gettaskrcvo.taskmanagementid=row.taskManagement.id
          this.ruleForm.id=row.taskManagement.id
         this.getfileddata();
-       // this.Getfeedbackdata();
+        // this.Getfeedbackdata();
          this.feedbacklist.push({
                 companyId:row.companyId,
                 createdBy:row.createdBy,

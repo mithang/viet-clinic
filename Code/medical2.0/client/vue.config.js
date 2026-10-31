@@ -105,7 +105,7 @@ module.exports = {
             chunks: 'all',
             enforce: true
           },
-          // 将大型库拆分为独立 chunk
+          // Tách các thư viện lớn thành chunk riêng
           xlsx: {
             test: /[\\/]node_modules[\\/](exceljs|file-saver)/,
             name: 'xlsx',
@@ -124,7 +124,7 @@ module.exports = {
   },
 
   chainWebpack: config => {
-    // 注入自定义环境变量
+    // Tiêm biến môi trường tùy chỉnh
     try {
       const prodEnv = require('./config/prod.env')
       config.plugin('define').tap(args => {
@@ -152,7 +152,7 @@ module.exports = {
       return args
     })
 
-    // 修复 SVG Xử lý：让默认 svg 规则排除 src/icons，并为 icons 目录单独使用 svg-sprite-loader
+    // Sửa xử lý SVG: loại src/icons khỏi quy tắc svg mặc định và dùng riêng svg-sprite-loader cho thư mục icons
     config.module.rule('svg').exclude.add(path.resolve(__dirname, 'src/icons')).end()
 
     config.module
@@ -166,7 +166,7 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
 
-    // Thêm .xlsx 文件处理规则
+    // Thêm quy tắc xử lý tệp .xlsx
     config.module
       .rule('xlsx')
       .test(/\.xlsx$/)

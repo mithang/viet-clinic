@@ -111,7 +111,7 @@ export default {
           'id': null,
           'name': null,
         },
-        'sysRule': {     // 系统编号规则
+        'sysRule': {     // Quy tắc mã hệ thống
           'id': null,
           'name': null,
         },

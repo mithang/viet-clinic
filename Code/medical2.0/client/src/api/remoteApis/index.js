@@ -1,17 +1,17 @@
 /**
- * Khám chữa bệnh từ xa/Bản phòng khám HIS 接口统一调用层
+ * Lớp gọi API thống nhất cho HIS phòng khám/Khám chữa bệnh từ xa
  *
- * Tất cả apis/ 开头的外部接口通过此模块调用，避免在视图中硬编码 URL 和重复 boilerplate。
- * 调用方式：import { treatedApplyInfo, getPatient, ... } from '@/api/remoteApis'
+ * Tất cả API bên ngoài bắt đầu bằng apis/ đều được gọi qua module này, tránh hard-code URL và lặp boilerplate trong view.
+ * Cách gọi: import { treatedApplyInfo, getPatient, ... } from '@/api/remoteApis'
  */
 import axios from 'axios'
 
 const APP_ID = 'Oh_Newtouch_Clinic'
 
 /**
- * 创建远程 API Hàm yêu cầu
- * @param {string} url - 接口路径 (như 'apis/RemoteTreated/TreatedApplyInfo')
- * @returns {function} Hàm yêu cầu，Nhận (data, organizeId, token) Tham số
+ * Tạo hàm yêu cầu API từ xa
+ * @param {string} url - Đường dẫn API (như 'apis/RemoteTreated/TreatedApplyInfo')
+ * @returns {function} Hàm yêu cầu, nhận tham số (data, organizeId, token)
  */
 function createRemoteApi(url) {
   return (data, organizeId, token) =>
@@ -29,67 +29,67 @@ function createRemoteApi(url) {
 
 // ========== Khám chữa bệnh từ xa ==========
 
-/** 会诊申请信息查询 */
+/** Truy vấn thông tin yêu cầu hội chẩn */
 export const treatedApplyInfo = createRemoteApi('apis/RemoteTreated/TreatedApplyInfo')
 
-/** 远程会诊申请（仅转诊） */
+/** Yêu cầu hội chẩn từ xa (chỉ chuyển tuyến) */
 export const remoteTreatedApplyZfOnly = createRemoteApi('apis/RemoteTreated/RemoteTreatedApplyZfOnly')
 
-/** 医生会议申请 */
+/** Yêu cầu họp bác sĩ */
 export const doctorMeetingApply = createRemoteApi('apis/RemoteTreated/DoctorMeetingApply')
 
-/** 用户加入会议申请 */
+/** Yêu cầu người dùng tham gia cuộc họp */
 export const userJoinMeetingApply = createRemoteApi('apis/RemoteTreated/UserJoinMeetingApply')
 
-/** 会诊申请取消 */
+/** Huỷ yêu cầu hội chẩn */
 export const treatedApplyCancel = createRemoteApi('apis/RemoteTreated/TreatedApplyCancel')
 
 // ========== Bệnh nhân ==========
 
-/** 查询患者信息 */
+/** Truy vấn thông tin bệnh nhân */
 export const getPatient = createRemoteApi('apis/Patient/GetPatient')
 
-/** 患者自助挂号 */
+/** Bệnh nhân tự đăng ký khám */
 export const patientSelfReg = createRemoteApi('apis/Patient/PatientSelfReg')
 
-/** 添加患者地址 */
+/** Thêm địa chỉ bệnh nhân */
 export const patientAddressAdd = createRemoteApi('apis/patient/PatientAddressAdd')
 
-/** 更新患者地址 */
+/** Cập nhật địa chỉ bệnh nhân */
 export const patientAddressUpdate = createRemoteApi('apis/patient/PatientAddressUpdate')
 
-/** 查询患者订单地址 */
+/** Truy vấn địa chỉ đơn hàng của bệnh nhân */
 export const patientOrderAddressQuery = createRemoteApi('apis/patient/PatientOrderAddressQuery')
 
-// ========== 门诊 ==========
+// ========== Ngoại trú ==========
 
-/** 门诊账单未缴费查询 */
+/** Truy vấn hoá đơn ngoại trú chưa thanh toán */
 export const outpBillUnpaidByMzh = createRemoteApi('apis/Outpatient/OutpBillUnpaidByMzh')
 
-/** 门诊账单项目明细 */
+/** Chi tiết hạng mục hoá đơn ngoại trú */
 export const outpBillItemDetail = createRemoteApi('apis/Outpatient/OutpBillItemDetail')
 
 // ========== Đăng ký khám/Hẹn khám ==========
 
-/** 获取机构列表 */
+/** Lấy danh sách cơ sở */
 export const getOrgList = createRemoteApi('apis/SysOrg/GetOrgList')
 
-/** 获取门诊科室 */
+/** Lấy khoa ngoại trú */
 export const getOutpDepartment = createRemoteApi('apis/Booking/GetOutpDepartment')
 
-/** 获取门诊医生 */
+/** Lấy bác sĩ ngoại trú */
 export const getOutpDoctor = createRemoteApi('apis/Booking/GetOutpDoctor')
 
 // ========== Thanh toán ==========
 
-/** 订单查询 */
+/** Truy vấn đơn hàng */
 export const orderQuery = createRemoteApi('apis/PayOrder/OrderQuery')
 
-/** 创建账单订单 */
+/** Tạo đơn hàng hoá đơn */
 export const billOrderCreate = createRemoteApi('apis/PayOrder/BillOrderCreate')
 
-/** 账单锁定申请 */
+/** Yêu cầu khoá hoá đơn */
 export const billOrderLockApply = createRemoteApi('apis/PayOrder/BillOrderLockApply')
 
-/** 账单支付 */
+/** Thanh toán hoá đơn */
 export const billOrderPay = createRemoteApi('apis/PayOrder/BillOrderPay')

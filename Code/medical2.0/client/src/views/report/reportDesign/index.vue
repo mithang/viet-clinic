@@ -1,6 +1,6 @@
 <template>
   <div class="report-design-container">
-    Vui lòng xem tại trang chuyển hướng hiện tại！
+    Vui lòng xem tại trang chuyển hướng hiện tại!
   </div>
 </template>
 

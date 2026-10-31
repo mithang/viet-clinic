@@ -19,7 +19,7 @@
                 start-placeholder="Ngày bắt đầu"
                 end-placeholder="Ngày kết thúc"
                 :default-time="['00:00:00', '23:59:59']"
-                format="yyyy-MM-dd HH:mm:ss"
+                format="dd/MM/yyyy HH:mm:ss"
               >
               </el-date-picker>
               </el-form-item>
@@ -92,7 +92,7 @@
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column prop="actual" label="Số tiền thực thu">实际
+              <el-table-column prop="actual" label="Số tiền thực thu">
                 <template slot-scope="scope">
                   <span style="display:inline-block;width:100%;text-align:right">
                     {{scope.row.actual?bigNum(scope.row.actual):0}}VNĐ

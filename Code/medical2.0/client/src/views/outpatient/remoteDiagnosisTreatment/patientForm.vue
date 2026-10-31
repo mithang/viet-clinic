@@ -110,7 +110,7 @@
           </el-col>
           <el-row>
             <el-col :span="24 / 2">
-              <el-form-item label="费用金额" prop="payFee" v-if="dialogProps.action === 'view'">
+              <el-form-item label="Số tiền phí" prop="payFee" v-if="dialogProps.action === 'view'">
                 <el-input
                   :disabled="true"
                   v-model="bizFormModel.payFee"
@@ -200,7 +200,7 @@
             // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
             sum += parseInt(value.substr(i, 1), 10) * arrExp[i];
           }
-          // Tính modulo（Thuật toán cố định）
+          // Tính modulo (Thuật toán cố định)
           idx = sum % 11;
           // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
           if (String(arrValid[idx]) === value.substr(17, 1).toUpperCase()) {
@@ -431,7 +431,7 @@
           this.outputError(error)
         })
       },
-      // 获取远程患者信息
+      // Lấy thông tin bệnh nhân từ xa
       async getPatient() {
         this.bizFormModel.patientId = null
         this.bizFormModel.patientKh = null
@@ -441,7 +441,7 @@
         ).then((response) => {
           if (response.data.BusData.code === 40004) {
             patientSelfReg(
-              { zjh: this.bizFormModel.card, xm: this.bizFormModel.name, xb: this.bizFormModel.gender === "男" ? "1" : "2" },
+              { zjh: this.bizFormModel.card, xm: this.bizFormModel.name, xb: this.bizFormModel.gender === "Nam" ? "1" : "2" },
               this.bizFormModel.hospitalId, this.tokenData
             ).then((response) => {
               this.bizFormModel.patientId = response.data.BusData.data.patid
@@ -463,7 +463,7 @@
             console.error(error);
           });
         this.flag = true
-        // 提交远程会诊申请
+        // Gửi yêu cầu hội chẩn từ xa
         await this.getPatient()
         await this.getPatient()
         await remoteTreatedApplyZfOnly(
@@ -481,7 +481,7 @@
               this.bizFormModel.applyId = response.data.BusData.data.ApplyId
               this.dialogProps.visible = false;
               this.statusEdit("1")
-              this.$message.success("Lưu thành công！")
+              this.$message.success("Lưu thành công!")
               modifiedState(this.bizFormModel).then(responseData => {
                 if (responseData.code === 100) {
                 } else {
@@ -492,7 +492,7 @@
                 this.outputError(error)
               })
             } else {
-              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，Vui lòng liên hệ quản trị viên rồi gửi lại đề nghị!")
+              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường, Vui lòng liên hệ quản trị viên rồi gửi lại đề nghị!")
             }
 
           })
@@ -518,7 +518,7 @@
                 // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
                 sum += parseInt(this.bizFormModel.card.substr(i, 1), 10) * arrExp[i];
               }
-              // Tính modulo（Thuật toán cố định）
+              // Tính modulo (Thuật toán cố định)
               idx = sum % 11;
               // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
               if (String(arrValid[idx]) === this.bizFormModel.card.substr(17, 1).toUpperCase()) {
@@ -671,7 +671,7 @@
         this.bizFormModel = {...this.initFormModel(this.user), ...patient}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
-        this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+        this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
         this.dialogProps.visible = true
       },
     },

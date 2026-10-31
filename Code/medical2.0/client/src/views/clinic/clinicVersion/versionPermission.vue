@@ -169,12 +169,12 @@ export default {
       if(data.type === 'router' && this.isRouterLeaf(data)) {
         // Chọn tất cả hoặc trạng thái chọn một phần
         if(this.isHalfOrChecked(node)) {
-          // 元数据配置文件存在
+          // Tệp cấu hình metadata tồn tại
           try {
             let metas = require('@/views/' + data.code + '/metadata').metadata
             return true
           }catch (e) {
-            console.warn('Không tìm thấy tệp mô tả siêu dữ liệu：%s', '@/views/' + data.code + '/metadata')
+            console.warn('Không tìm thấy tệp mô tả siêu dữ liệu: %s', '@/views/' + data.code + '/metadata')
           }
         }
       }

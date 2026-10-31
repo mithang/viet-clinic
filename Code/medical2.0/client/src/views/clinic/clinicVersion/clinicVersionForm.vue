@@ -82,10 +82,10 @@ export default {
             { required: true, message: 'Vui lòng nhập tên phiên bản', trigger: 'blur' }
         ],
         'price': [
-            { required: true, message: '请选择版本价格', trigger: 'blur' }
+            { required: true, message: 'Vui lòng chọn giá phiên bản', trigger: 'blur' }
         ],
         'code': [
-            { required: true, message: '请输入版本编号', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập mã phiên bản', trigger: 'blur' }
         ],
       }
     }    
@@ -112,7 +112,7 @@ export default {
     },
     doSave() {
       this.setLoad()
-     // debugger
+      // debugger
       saveClinicVersion(this.bizFormModel).then(responseData => {
         this.flag=false
         if(responseData.code === 100) {

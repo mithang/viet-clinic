@@ -2,7 +2,7 @@
 	<el-form size='small'>
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="1">
-				tuần，Ký tự đại diện được phép[, - * / L #]
+				tuần, Ký tự đại diện được phép[, - * / L #]
 			</el-radio>
 		</el-form-item>
 
@@ -105,7 +105,7 @@ export default {
 					break;
 			}
 		},
-		// 根据互斥事件，更改radio的值
+		// Theo sự kiện xung đột, thay đổi giá trị radio
 
 		// Khi hai giá trị chu kỳ thay đổi
 		cycleChange() {
@@ -119,7 +119,7 @@ export default {
 				this.$emit('update', 'week', this.averageTotal);
 			}
 		},
-		// 最近工作日值变化时
+		// Khi giá trị ngày làm việc gần nhất thay đổi
 		weekdayChange() {
 			if (this.radioValue === '5') {
 				this.$emit('update', 'week', this.weekday + 'L');
@@ -152,7 +152,7 @@ export default {
 			this.average02 = this.checkNum(this.average02, 1, 7)
 			return this.average01 + '#' + this.average02;
 		},
-		// 最近的工作日（Định dạng）
+		// Ngày làm việc gần nhất (Định dạng)
 		weekdayCheck: function () {
 			this.weekday = this.checkNum(this.weekday, 1, 7)
 			return this.weekday;

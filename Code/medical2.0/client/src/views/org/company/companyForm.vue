@@ -42,20 +42,20 @@
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='Địa chỉ（Tỉnh/Thành phố）' prop='addressProvince' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressProvince' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Tỉnh/Thành phố）"' ></el-input>
+          <el-form-item label='Địa chỉ (Tỉnh/Thành phố)' prop='addressProvince' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressProvince' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ (Tỉnh/Thành phố)"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
               <el-row>
         <el-col :span='24/2'>
-          <el-form-item label='Địa chỉ（Thành phố）' prop='addressCity' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressCity' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Thành phố）"' ></el-input>
+          <el-form-item label='Địa chỉ (Thành phố)' prop='addressCity' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressCity' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ (Thành phố)"' ></el-input>
           </el-form-item>
         </el-col>
                 <el-col :span='24/2'>
-          <el-form-item label='Địa chỉ（Quận/Huyện）' prop='addressRegion' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressRegion' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ（Quận/Huyện）"' ></el-input>
+          <el-form-item label='Địa chỉ (Quận/Huyện)' prop='addressRegion' >
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.addressRegion' :maxlength='10' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập địa chỉ (Quận/Huyện)"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -87,7 +87,7 @@
         </el-col>
                         </el-row>
       <el-row>
-         <!-- Tải lên nhiều tệp： Ảnh giấy phép phòng khám -->
+         <!-- Tải lên nhiều tệp: Ảnh giấy phép phòng khám -->
         <upload-file v-if='dialogProps.visible' v-model='bizFormModel.fileIdFile' titile='Ảnh giấy phép phòng khám' :action='dialogProps.action' :objectId='bizFormModel.fileId'></upload-file>
       </el-row>
               <el-row>
@@ -174,13 +174,13 @@ export default {
             { required: true, message: 'Vui lòng chọn sắp xếp', trigger: 'blur' }
         ],
         'addressProvince': [
-            { required: true, message: 'Vui lòng nhập địa chỉ（Tỉnh/Thành phố）', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập địa chỉ (Tỉnh/Thành phố)', trigger: 'blur' }
         ],
         'addressCity': [
-            { required: true, message: 'Vui lòng nhập địa chỉ（Thành phố）', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập địa chỉ (Thành phố)', trigger: 'blur' }
         ],
         'addressRegion': [
-            { required: true, message: 'Vui lòng nhập địa chỉ（Quận/Huyện）', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập địa chỉ (Quận/Huyện)', trigger: 'blur' }
         ],
         'address': [
             { required: true, message: 'Vui lòng nhập địa chỉ', trigger: 'blur' }
@@ -271,20 +271,20 @@ export default {
           'id': validatenull(This) || validatenull(This.id) ? null : This.id,
           'name': validatenull(This) || validatenull(This.name) ? null : This.name,
         },
-        'fullName': '',   // 全称
+        'fullName': '',   // Tên đầy đủ
         'name': '',   // Tên
         'code': '',   // Mã
         'sort': This && This.children ? (This.children.length + 1) * 10000 : (this.parent_List ? (this.parent_List.length + 1) * 10000 : 10000),
-        'addressProvince': '',   // Địa chỉ（Tỉnh/Thành phố）
-        'addressCity': '',   // Địa chỉ（Thành phố）
-        'addressRegion': '',   // Địa chỉ（Quận/Huyện）
+        'addressProvince': '', // Địa chỉ (Tỉnh/Thành phố)
+        'addressCity': '', // Địa chỉ (Thành phố)
+        'addressRegion': '', // Địa chỉ (Quận/Huyện)
         'address': '',   // Địa chỉ
         'phoneNumber': '',   // Điện thoại
         'remarks': '',   // Thông tin ghi chú
         'licenseSubject': '',   // Môn được cấp phép hành nghề
         'fileId': '',
         'fileIdFile': {
-          deletes: [],  // Chờ xóa（Đã tải lên）danh sách tệp
+          deletes: [], // Chờ xóa (Đã tải lên)danh sách tệp
           uploads: []   // Danh sách tệp chờ tải lên
          },
         'version': {     // Phiên bản phòng khám

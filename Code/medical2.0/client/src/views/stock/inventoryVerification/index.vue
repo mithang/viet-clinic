@@ -17,7 +17,7 @@
                         align="right"
                         start-placeholder="Ngày bắt đầu"
                         end-placeholder="Ngày kết thúc"
-                        format="yyyy-MM-dd HH:mm:ss"
+                        format="dd/MM/yyyy HH:mm:ss"
                         :default-time="['00:00:00', '23:59:59']">
                       </el-date-picker>
               </el-form-item>
@@ -224,7 +224,7 @@ export default {
       oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1235640942656921602',
       schemeId: '1235640942656921612',
-      check:false,   //新增条件
+      check:false,   //Điều kiện thêm mới
     }
   },
   methods: {
@@ -271,7 +271,7 @@ export default {
       this.$refs.inventoryVerificationForm.openViewInventoryVerificationDialog(row)
     },
     onCreateInventoryVerification(sign) {
-      //判断所有项目是否都已经完成盘点
+      //Kiểm tra tất cả hạng mục đã hoàn thành kiểm kê chưa
       let flag=0;
       if(this.inventoryVerificationList){
         this.inventoryVerificationList.forEach(item=>{
@@ -291,7 +291,7 @@ export default {
         type='0'
       }
       let variety=sign
-      //执行新增盘点
+      //Thực hiện thêm mới kiểm kê
       saveInventoryVerification(type,variety).then(res=>{
         if(res.code === 100){
           this.$message.success("Thêm kiểm kê mới thành công")

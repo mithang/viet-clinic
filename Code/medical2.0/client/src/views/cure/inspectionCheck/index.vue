@@ -17,7 +17,7 @@
                         align="right"
                         start-placeholder="Ngày bắt đầu"
                         end-placeholder="Ngày kết thúc"
-                        format="yyyy-MM-dd HH:mm:ss"
+                        format="dd/MM/yyyy HH:mm:ss"
                         :default-time="['00:00:00', '23:59:59']">
                       </el-date-picker>
                       </el-form-item>
@@ -119,7 +119,7 @@
                   <export-excel-button v-show='permission.export' :data='inspectionCheckList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>
                 </template>
                 <template slot-scope='scope'>
-                  <el-button type="text" v-if="scope.row.status==='0'"  @click="fill(scope.row,scope.$index,0)">填写报告</el-button>
+                  <el-button type="text" v-if="scope.row.status==='0'"  @click="fill(scope.row,scope.$index,0)">Nhập kết quả</el-button>
                   <el-button type="text" v-if="scope.row.status==='1'"  @click="fill(scope.row,scope.$index,1)">Xem chi tiết</el-button>
                   <OperationIcon v-show='permission.view' type='info' content='Xem' placement='top-start' icon-name='el-icon-view' 
                     @click='onViewInspectionCheck(scope.$index, scope.row)'></OperationIcon>
@@ -176,7 +176,7 @@
          <div v-if="this.type==='0'">
             <el-form :model='bizFormModel.inspectionCheckInfo' :rules='formRules' 
               ref='bizFormModel' label-width='120px' label-position='right' class='edit-form'> 
-           <!-- <el-card class="box-card main-card"> -->
+              <!-- <el-card class="box-card main-card"> -->
             
               <div style="margin-left:-60px">  
                       <el-row >
@@ -195,7 +195,7 @@
                       type="datetime"
                       placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
-                      format="yyyy-MM-dd HH:mm:ss">
+                      format="dd/MM/yyyy HH:mm:ss">
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
@@ -224,7 +224,7 @@
                       type="datetime"
                       placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
-                      format="yyyy-MM-dd HH:mm:ss">
+                      format="dd/MM/yyyy HH:mm:ss">
                     </el-date-picker>    
                   </el-form-item>
                 </el-col>
@@ -319,7 +319,7 @@
             </el-form-item>
             </div>
             <br>
-           <!-- <el-form-item label="" prop="uploadFile">
+              <!-- <el-form-item label="" prop="uploadFile">
               <el-upload
                 class="avatar-uploader"
                  action="#"
@@ -353,7 +353,7 @@
           <div v-if="this.type==='1'">
             <el-form :model='bizFormModel.inspectionCheckInfo' :rules='formRules' 
               ref='bizFormModel' label-width='120px' label-position='right' class='edit-form'> 
-           <!-- <el-card class="box-card main-card"> -->
+              <!-- <el-card class="box-card main-card"> -->
             
               <div style="margin-left:-60px">  
                       <el-row >
@@ -372,7 +372,7 @@
                       type="datetime"
                       placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
-                      format="yyyy-MM-dd HH:mm:ss">
+                      format="dd/MM/yyyy HH:mm:ss">
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
@@ -412,7 +412,7 @@
                       type="datetime"
                       placeholder="Chọn ngày giờ"
                       value-format="yyyy-MM-dd HH:mm:ss"
-                      format="yyyy-MM-dd HH:mm:ss">
+                      format="dd/MM/yyyy HH:mm:ss">
                     </el-date-picker>    
                   </el-form-item>
                 </el-col>
@@ -518,7 +518,7 @@ export default {
         'status':'',    //Trạng thái
         'completeBy':'',  //Bác sĩ kê đơn
       },
-      switchEdit:0,  //编辑上传文件按钮
+      switchEdit:0,  //Nút sửa tệp tải lên
       inspectionCheckTotal: 0,
       inspectionCheckList: [],
       fileName:'',  //Tên tệp
@@ -526,8 +526,8 @@ export default {
       oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1212102786706588488',
       schemeId: '1212102786706588513',
-      type:"",//报告类型
-      typeName:"",  //报告名称
+      type:"",//Loại báo cáo
+      typeName:"",  //Tên báo cáo
       dialogVisible:false,
       bizFormModel:{
         fileIdFile:[],   //Tệp
@@ -536,21 +536,21 @@ export default {
       },     //Điền đóng gói báo cáo
       inspectionIndex:0,    //Chỉ số nhấn bảng chính
       checkIndex:0,    //Chỉ số nhấn bảng chính
-      inspectionCheckTableData:[],   //诊疗项目报告封装
+      inspectionCheckTableData:[],   //Đóng gói báo cáo hạng mục điều trị
       conclusion:[],  //Kết quả
       describe:[],    //Mô tả
-      sign:[],       //标记
+      sign:[],       //Đánh dấu
       flags:false,
-      doctorList:[],  //医生数组
+      doctorList:[],  //Mảng bác sĩ
       signList:[
         {
-          name:'高',
+          name:'Cao',
           value:1,
         },{
           name:'Bình thường',
           value:0
         },{
-          name:'低',
+          name:'Thấp',
           value:2
         }
       ],
@@ -681,7 +681,7 @@ export default {
     //  let userHeaderFile = new FormData();
       //  userHeaderFile.append("entity", JSON.stringify(this.bizFormModel.inspectionCheckInfo));
       // userHeaderFile.append("deleteIds",JSON.stringify([this.photoId]));
-     // return
+      // return
        this.setLoad()
      if(this.bizFormModel.fileIdFile.length>0){
         this.bizFormModel.fileIdFile.forEach(item=>{
@@ -705,7 +705,7 @@ export default {
           this.resetLoad()
           this.flags=false
       }).catch((error)=>{
-        this.$message.error("Thực hiện thất bại，Vui lòng liên hệ quản trị viên xử lý!")
+        this.$message.error("Thực hiện thất bại, Vui lòng liên hệ quản trị viên xử lý!")
         this.flags=false
       })
       })
@@ -725,7 +725,7 @@ export default {
             this.loadData()
           }
       }).catch((error)=>{
-        this.$message.error("Thực hiện thất bại，Vui lòng liên hệ quản trị viên xử lý!")
+        this.$message.error("Thực hiện thất bại, Vui lòng liên hệ quản trị viên xử lý!")
       })
      }
     },
@@ -734,19 +734,19 @@ export default {
       this.bizFormModel.fileIdFile=""
     },
     handleExceed(file, fileList){
-      // this.$message.warning(`Giới hạn chọn hiện tại 3 tệp，Lần này đã chọn ${file.length} tệp，Đã chọn tổng cộng ${file.length + fileList.length} tệp`);
+      // this.$message.warning(`Giới hạn chọn hiện tại 3 tệp, Lần này đã chọn ${file.length} tệp, Đã chọn tổng cộng ${file.length + fileList.length} tệp`);
       this.$message.warning(`Hiện chỉ hỗ trợ tải lên một tệp duy nhất`);
     },
     hanldeError(err, file, fileList){
     },
     handlePreview(file){
-      // Tạoa标签
+      // Tạo thẻ a
       const link = document.createElement('a');
       // downloadThuộc tính
       link.setAttribute('download', file.name);
       // hrefLiên kết
       link.setAttribute('href', file.operationManual);
-      // 自执行点击事件
+      // Tự kích hoạt sự kiện click
       link.click();
     },
     // Tải tệp lên
@@ -759,13 +759,13 @@ export default {
         return false;
       }
        else {
-        // 存储文件，Tải lên thống nhất khi nhấn nút xác nhận
+        // Lưu tệp, Tải lên thống nhất khi nhấn nút xác nhận
 
         this.bizFormModel.uploadFile = URL.createObjectURL(file.raw);
         this.bizFormModel.fileIdFile = file.raw;
       }
     },
-    //上传限制
+    //Giới hạn tải lên
     beforeLicenseUpload(file) {
       const fileSuffix = file.name.substring(file.name.lastIndexOf(".") + 1);
        const whiteList = ["jpg", "jpeg", "png", "gif", "JPG", "JPEG","rar","zip","doc","docx","pdf", "xls", "xlsx", "ppt","txt"];
@@ -795,7 +795,7 @@ export default {
         getInspectionCheckInfoByInspecId(row.id).then((res)=>{
           if(res.code===100){
             this.bizFormModel.inspectionCheckInfo=res.data
-            this.typeName="填写检验报告"
+            this.typeName="Nhập kết quả xét nghiệm"
             this.type="0"
             this.inspectionIndex=index
              if(flag===1){
@@ -806,7 +806,7 @@ export default {
               this.switchEdit=0
             }
             
-            let sex=row.sex==="gender_0"?"男":"女"
+            let sex=row.sex==="gender_0"?"Nam":"Nữ"
             this.bizFormModel.inspectionCheckInfo.name=row.patientName+"/"+sex+"/"+row.patient.age+"tuổi"
             this.getPhoto(this.bizFormModel.inspectionCheckInfo.fileId)
 
@@ -814,17 +814,17 @@ export default {
             this.uploadFiles=this.bizFormModel.inspectionCheckInfo.id
             this.dialogVisible=true
           }else{
-            this.$message.error("Dữ liệu hệ thống bất thường，Vui lòng thử lại hoặc liên hệ quản trị viên!")
+            this.$message.error("Dữ liệu hệ thống bất thường, Vui lòng thử lại hoặc liên hệ quản trị viên!")
           }
         }).catch((error)=>{
-          this.$message.error("Lấy thông tin kiểm tra thất bại，Vui lòng thử lại")
+          this.$message.error("Lấy thông tin kiểm tra thất bại, Vui lòng thử lại")
         })
       }else{
          // Qua hạng mục có phải hạng mục đóng gói không
         getInspectionCheckInfoByInspecId(row.id).then((res)=>{
           if(res.code===100){
             this.bizFormModel.inspectionCheckInfo=res.data
-            this.typeName="填写检查报告"
+            this.typeName="Nhập kết quả kiểm tra"
             this.type="1"
             this.inspectionIndex=index
              if(flag===1){
@@ -835,17 +835,17 @@ export default {
               this.switchEdit=0
             }
             
-            let sex=row.patient.gender==="gender_0"?"男":"女"
+            let sex=row.patient.gender==="gender_0"?"Nam":"Nữ"
             this.bizFormModel.inspectionCheckInfo.name=row.patientName+"/"+sex+"/"+row.patient.age+"tuổi"
             this.getPhoto(this.bizFormModel.inspectionCheckInfo.fileId)
             this.photoId=this.bizFormModel.inspectionCheckInfo.fileId
             this.uploadFiles=this.bizFormModel.inspectionCheckInfo.id
             this.dialogVisible=true
           }else{
-            this.$message.error("Dữ liệu hệ thống bất thường，Vui lòng thử lại hoặc liên hệ quản trị viên!")
+            this.$message.error("Dữ liệu hệ thống bất thường, Vui lòng thử lại hoặc liên hệ quản trị viên!")
           }
         }).catch((error)=>{
-          this.$message.error("Lấy thông tin kiểm tra thất bại，Vui lòng thử lại")
+          this.$message.error("Lấy thông tin kiểm tra thất bại, Vui lòng thử lại")
         })
       }
       //this.dialogVisible=true
@@ -929,7 +929,7 @@ export default {
     }
   },
   watch: {
-     // tableDataCóel-tableDữ liệu đã liên kết
+      // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
           // Khắc phục lỗi hiển thị lệch bảng
           handler () {

@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/toll/tollInfo')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getTollInfoById = baseApi.getById
 export const listTollInfoPage = baseApi.listPage
 export const listTollInfoAll = baseApi.listAll

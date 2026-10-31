@@ -2,7 +2,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/noticesend/noticeReceiveSite')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getNoticeReceiveSiteById = baseApi.getById
 export const listNoticeReceiveSitePage = baseApi.listPage
 export const listNoticeReceiveSiteAll = baseApi.listAll

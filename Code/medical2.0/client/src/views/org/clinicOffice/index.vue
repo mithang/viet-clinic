@@ -176,7 +176,7 @@ export default {
         'name': 'like',
       },
       queryModel: {
-        'isLocked': '',   // Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        'isLocked': '', // Vô hiệu hóa (0: Chưa bị vô hiệu hóa; 1: Vô hiệu hóa)
         'name': '',   // Tên khoa/phòng
       },
       isLocked: [
@@ -206,7 +206,7 @@ export default {
       if (this.moreCodition) {
         this.search.params = this.search.params.concat(this.compositeCondition())
       } else {
-        // Tham số truy vấn: Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        // Tham số truy vấn: Vô hiệu hóa (0: Chưa bị vô hiệu hóa; 1: Vô hiệu hóa)
         this.search.params.push({
           columnName: 'is_locked',
           queryType: '=',

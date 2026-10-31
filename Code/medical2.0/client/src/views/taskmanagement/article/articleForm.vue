@@ -75,7 +75,7 @@
             ></el-input>
           </el-col>
         </el-form-item>
-        <!-- <el-form-item label="审核备注" prop="auditremarks" v-if="dialogProps.action == 'audit'">
+        <!-- <el-form-item label="Ghi chú duyệt" prop="auditremarks" v-if="dialogProps.action == 'audit'">
             <el-input v-model="articleForm.auditremarks"></el-input>
         </el-form-item> -->
         <el-form-item v-if="dialogProps.action === 'audit'">
@@ -159,7 +159,7 @@ export default {
   data() {
     const validatePass = (rule, value, callback) => {
       if (value === "") {
-        callback(new Error("请输入正文"));
+        callback(new Error("Vui lòng nhập nội dung"));
       } else {
         if (this.articleForm.content !== "") {
           this.$refs.articleForm.validateField("content");
@@ -194,11 +194,11 @@ export default {
       article: {
         title: [{ required: true, message: "Vui lòng nhập tiêu đề", trigger: "blur" }],
         abstracts: [
-          { required: true, message: "请输入摘要", trigger: "blur" },
+          { required: true, message: "Vui lòng nhập tóm tắt", trigger: "blur" },
           // { min: 3, max: 5, message: 'Độ dài trong khoảng 3 đến 5 ký tự', trigger: 'blur' }
         ],
         content: [
-          { required: true, message: "请输入正文内容", trigger: "change" },
+          { required: true, message: "Vui lòng nhập nội dung chính", trigger: "change" },
         ],
       },
     };
@@ -265,7 +265,7 @@ export default {
             this.showMessage("Đã kiểm duyệt nên không thể sửa");
           } else {
             if (this.articleForm.userid === currentUser.id) {
-              this.articleForm.auditstatus = "0"; //修改审核状态重新调整为0
+              this.articleForm.auditstatus = "0"; //Sửa trạng thái duyệt, đặt lại về 0
               editUpdate(this.articleForm).then((responseData) => {
                 if (responseData.code === 100) {
                   this.onDialogClose();
@@ -279,7 +279,7 @@ export default {
       });
     },
     auditForm(type) {
-      this.articleForm.auditstatus = type; //修改审核状态
+      this.articleForm.auditstatus = type; //Sửa trạng thái duyệt
       editAudit(this.articleForm).then((responseData) => {
         if (responseData.code === 100) {
           this.onDialogClose();

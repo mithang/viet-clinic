@@ -101,7 +101,7 @@
           </el-table-column>
           <el-table-column label="Thao tác" width="100px">
             <template slot-scope="scope">
-              <!-- 放置修改、删除和分配角色按钮 -->
+              <!-- Đặt nút sửa, xoá và phân quyền -->
               <el-button
                 size="mini"
                 type="success" plain
@@ -127,10 +127,10 @@
         </el-pagination>
       </el-col>
     </el-row>
-    <!-- 修改用户的对话框 -->
+    <!-- Hộp thoại sửa người dùng -->
     <el-dialog title="Sửa nhật ký" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed"
                :close-on-click-modal='false'>
-      <!-- 内容主体区 -->
+      <!-- Vùng nội dung chính -->
       <el-form :model="editUserForm" ref="editUserFormRef" label-width="120px">
         <el-row>
           <el-col :span="24 / 2">
@@ -309,13 +309,13 @@
           </el-col>
         </el-row>
       </el-form>
-      <!-- 底部区 -->
+      <!-- Vùng chân trang -->
       <span slot="footer" class="dialog-footer">
      <el-button @click="editDialogVisible = false">Hủy</el-button>
      <el-button type="primary" @click="editUser()">Xác nhận</el-button>
      </span>
     </el-dialog>
-    、
+    , 
   </el-card>
 </template>
 
@@ -368,16 +368,16 @@
         }],
         queryInfo: {
           query: "",
-          pagenum: 1, //当前的页数
-          pagesize: 2, //每页的数量
+          pagenum: 1, //Số trang hiện tại
+          pagesize: 2, //Số lượng mỗi trang
         },
         userList: [],
         total: 0,
-        addDialogVisible: false, //控制添加用户对话框的显示与隐藏
-        editDialogVisible: false, //控制修改用户对话框的显示与隐藏
-        //添加用户的表单数据
+        addDialogVisible: false, //Hiện/ẩn hộp thoại thêm người dùng
+        editDialogVisible: false, //Hiện/ẩn hộp thoại sửa người dùng
+        //Dữ liệu form thêm người dùng
         addUserForm: {},
-        //修改用户的表单数据
+        //Dữ liệu form sửa người dùng
         editUserForm: {},
         show3: false,
         //Chọn thời gian
@@ -445,7 +445,7 @@
         }
         return conetnt.substring(0, 10)+"...";
       },
-      //关闭编辑用户的对话框
+      //Đóng hộp thoại sửa người dùng
       editDialogClosed() {
         this.$refs.editUserFormRef.resetFields();
       },
@@ -454,7 +454,7 @@
         this.editUserForm = res.data;
         this.editDialogVisible = true;
       },
-      //展示编辑用户的对话框
+      //Hiển thị hộp thoại sửa người dùng
       /*showEditDialog(id) {
         this.editDialogVisible = true;
       },*/
@@ -475,12 +475,12 @@
         let date = new Date()//Lấy thời gian mới
         //Lấy năm hiện tại,và chuyển thành chuỗi
         let year = date.getFullYear().toString()
-        //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
-        //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+        //Lấy tháng hiện tại, vì tháng bắt đầu từ0Bắt đầu, tại đây cần cộng1, 
+        //Sử dụng biểu thức ba ngôi, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
         let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-        //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+        //Lấy ngày, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
         let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-        //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+        //Nối chuỗi, Nối thời gian bắt đầu và thời gian kết thúc
         let start = year + '-' + month + '-01' + ' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
         //let end=new Date(year, month, 0).getDate();
         let end = year + '-' + month + '-' + day + ' 23:59:59'  //Trong ngày
@@ -496,7 +496,7 @@
         // this.StuffsalessummaryRc.certificate = this.formInline.certificate;
         exportExcel(this.StuffsalessummaryRc).then((res)=>{
           // const filename = decodeURI(res.headers.split(';')[1].split('=')[1]) || '.xls'
-          const filename = '门诊日志.xlsx'
+          const filename = 'Nhat_ky_kham_benh.xlsx'
           const blob = new Blob([res.data], {
             type: 'application/octet-stream'
           })
@@ -575,7 +575,7 @@
                   occupation: item.occupation,  //Nghề nghiệp
                   address: item.address,  //Địa chỉ chi tiết
                   visitDate: item.visitDate,  //Ngày khám
-                  initialVisit: item.initialVisit,  //初/Tái khám
+                  initialVisit: item.initialVisit,  //Khám lần đầu/Tái khám
                   bloodPressure: item.bloodPressure,  //Huyết áp
                   symptom: item.symptom,  //Triệu chứng lâm sàng
                   fever: item.fever,  //Sốt (nhiệt độ tăng)
@@ -606,16 +606,16 @@
           }
         })
       },
-      //点击按钮，修改用户信息
+      //Bấm nút, sửa thông tin người dùng
       editUser(){
         this.$refs.editUserFormRef.validate(async valid =>{
-          if(!valid) return;//校验没通过，Quay lại
-          //可以发起修改用户的网络请求
+          if(!valid) return;//Kiểm tra không đạt, Quay lại
+          //Có thể gửi yêu cầu sửa người dùng
           await update(this.editUserForm).then(response => {
             this.$message.success('Sửa người dùng thành công!');
-            // 隐藏修改用户的对话框
+            // Ẩn hộp thoại sửa người dùng
             this.editDialogVisible = false;
-            //重新获取用户列表数据
+            //Lấy lại dữ liệu danh sách người dùng
             this.Getypjxclist();
           })
 

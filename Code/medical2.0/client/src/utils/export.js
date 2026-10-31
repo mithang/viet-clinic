@@ -4,10 +4,10 @@ const Excel = require('exceljs')
 import FileSaver from 'file-saver'
 
 export const exportExcel = (luckysheet, value, needFormula) => {
-  // 参数为luckysheet.getluckysheetfile()获取的对象
-  // 1.创建工作簿，可以为工作簿添加属性
+  // Tham số là đối tượng lấy từ luckysheet.getluckysheetfile()
+  // 1.Tạo workbook, có thể thêm thuộc tính cho workbook
   const workbook = new Excel.Workbook()
-  // 2.创建表格，第二个参数可以配置创建什么样的工作表
+  // 2.Tạo bảng, tham số thứ hai có thể cấu hình loại worksheet tạo ra
   if (Object.prototype.toString.call(luckysheet) === '[object Object]') {
     luckysheet = [luckysheet]
   }
@@ -17,7 +17,7 @@ export const exportExcel = (luckysheet, value, needFormula) => {
     const worksheet = workbook.addWorksheet(table.name)
     const merge = (table.config && table.config.merge) || {}
     const borderInfo = (table.config && table.config.borderInfo) || {}
-    // 3.设置单元格合并,设置单元格边框,设置单元格样式,设置值
+    // 3.Thiết lập gộp ô, thiết lập viền ô, thiết lập kiểu ô, thiết lập giá trị
     setStyleAndValue(table.data, worksheet, needFormula)
     setMerge(merge, worksheet)
     setBorder(borderInfo, worksheet)
@@ -39,8 +39,8 @@ export const exportExcel = (luckysheet, value, needFormula) => {
 const setMerge = (luckyMerge = {}, worksheet) => {
   const mergearr = Object.values(luckyMerge)
   mergearr.forEach((elem) => {
-    // elemĐịnh dạng：{r: 0, c: 0, rs: 1, cs: 2}
-    // 按开始行，开始列，结束行，结束列合并（相当于 K10:M12）
+    // elem định dạng: {r: 0, c: 0, rs: 1, cs: 2}
+    // Gộp theo hàng bắt đầu, cột bắt đầu, hàng kết thúc, cột kết thúc (tương đương K10:M12)
     worksheet.mergeCells(
       elem.r + 1,
       elem.c + 1,
@@ -54,7 +54,7 @@ const setBorder = (luckyBorderInfo, worksheet) => {
   if (!Array.isArray(luckyBorderInfo)) return
   // console.log('luckyBorderInfo', luckyBorderInfo)
   luckyBorderInfo.forEach((elem) => {
-    // 现在只兼容到borderType làrange的情况
+    // Hiện tại chỉ tương thích khi borderType là range
     // console.log('ele', elem)
     if (elem.rangeType === 'range') {
       let border = borderConvert(elem.borderType, elem.style, elem.color)
@@ -109,7 +109,7 @@ const setStyleAndValue = (cellArr, worksheet, needFormula) => {
       if (cell.f && needFormula) {
         value = { formula: cell.f, result: cell.v }
       } else if (!cell.v && cell.ct && cell.ct.s) {
-        // xls转为xlsxSau đó，内部存在不同的格式，都会进到富文本里，即值不存在与cell.v，而是存在于cell.ct.sSau đó
+        // xls chuyển xong sang xlsx, bên trong tồn tại định dạng khác nhau, đều sẽ vào rich text, tức giá trị không tồn tại trong cell.v, mà tồn tại trong cell.ct.s
         // value = cell.ct.s[0].v
         cell.ct.s.forEach(arr => {
           value += arr.v
@@ -117,7 +117,7 @@ const setStyleAndValue = (cellArr, worksheet, needFormula) => {
       } else {
         value = cell.v
       }
-      //  style 填入到_value中可以实现填充色
+      //  style điền vào _value có thể thực hiện màu nền ô
       let letter = createCellPos(columnid)
       let target = worksheet.getCell(letter + (rowid + 1))
       // console.log('1233', letter + (rowid + 1))
@@ -165,17 +165,19 @@ const fontConvert = (
   cl = 0,
   ul = 0
 ) => {
-  // luckysheet：ff(Kiểu), fc(颜色), bl(粗体), it(Chữ nghiêng), fs(大小), cl(Gạch ngang chữ), ul(Gạch chân)
+  // luckysheet: ff(Kiểu), fc(Màu), bl(Chữ đậm), it(Chữ nghiêng), fs(Kích thước), cl(Gạch ngang chữ), ul(Gạch chân)
+  // Ánh xạ chỉ số font của luckysheet sang tên font hỗ trợ tiếng Việt.
+  // Chỉ dùng khi ff là số (đọc từ file luckysheet); nếu ff là chuỗi thì giữ nguyên.
   const luckyToExcel = {
-    0: '微软雅黑',
-    1: '宋体（Song）',
-    2: '黑体（ST Heiti）',
-    3: '楷体（ST Kaiti）',
-    4: '仿宋（ST FangSong）',
-    5: '新宋体（ST Song）',
-    6: '华文新魏',
-    7: '华文行楷',
-    8: '华文隶书',
+    0: 'Arial',
+    1: 'Times New Roman',
+    2: 'Calibri',
+    3: 'Tahoma',
+    4: 'Verdana',
+    5: 'Segoe UI',
+    6: 'Cambria',
+    7: 'Georgia',
+    8: 'Courier New',
     9: 'Arial',
     10: 'Times New Roman ',
     11: 'Tahoma ',
@@ -184,7 +186,7 @@ const fontConvert = (
       return num === 0 ? false : true
     }
   }
-  // 出现Bug，导入的时候fflàluckyToExcelcủaval
+  // Xảy ra Bug, khi import thì ff là val của luckyToExcel
   let color
   if (fc.indexOf('rgb') === -1) {
     color = fc.replace('#', '')
@@ -212,7 +214,7 @@ const alignmentConvert = (
   tb = 'default',
   tr = 'default'
 ) => {
-  // luckysheet:vt(垂直), ht(水平), tb(换行), tr(旋转)
+  //luckysheet:vt(Đứng), ht(Ngang), tb(Xuống dòng), tr(Xoay)
   const luckyToExcel = {
     vertical: {
       0: 'middle',
@@ -253,7 +255,7 @@ const alignmentConvert = (
 }
 
 const borderConvert = (borderType, style = 1, color = '#000') => {
-  // Tương ứngluckysheetcủaconfig中borderinfo的的参数
+  // Tương ứng tham số borderinfo trong config của luckysheet
   if (!borderType) {
     return {}
   }

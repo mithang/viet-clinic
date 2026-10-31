@@ -33,39 +33,39 @@
           <el-card class="box-card" shadow="always">
           <el-row>
             <el-col :span="24/4">
-              <el-form-item label='Tổng số đơn thuốc：' prop='statistical'>
+              <el-form-item label='Tổng số đơn thuốc: ' prop='statistical'>
                 {{prescriptionStatistics.total}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='Số đơn đã phát thuốc：' prop='statistical'>
+              <el-form-item label='Số đơn đã phát thuốc: ' prop='statistical'>
                 {{prescriptionStatistics.dispensedMedicine}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='Số đơn chưa phát thuốc：' prop='statistical'>
+              <el-form-item label='Số đơn chưa phát thuốc: ' prop='statistical'>
                 {{prescriptionStatistics.undispensedMedicine}}
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24/4">
-              <el-form-item label='Số đơn đã đánh giá：' prop='statistical'>
+              <el-form-item label='Số đơn đã đánh giá: ' prop='statistical'>
                 {{prescriptionStatistics.alreadyReviewed}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='Số đơn đạt：' prop='statistical'>
+              <el-form-item label='Số đơn đạt: ' prop='statistical'>
                 {{prescriptionStatistics.good}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='Số đơn không đạt：' prop='statistical'>
+              <el-form-item label='Số đơn không đạt: ' prop='statistical'>
                 {{prescriptionStatistics.bad}}
               </el-form-item>
             </el-col>
             <el-col :span="24/4">
-              <el-form-item label='Tỷ lệ đạt：' prop='statistical'>
+              <el-form-item label='Tỷ lệ đạt: ' prop='statistical'>
                 {{prescriptionStatistics.rate}}%
               </el-form-item>
             </el-col>
@@ -128,7 +128,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  label='处方合格率'
+                  label='Tỷ lệ đơn thuốc đạt chuẩn'
                   prop='rate'
                   align="center">
                   <template slot-scope="scope">
@@ -182,12 +182,12 @@ export default {
       },
 
       statistical_List: [
-        {name: "按诊所汇总", value: "company"},
-        {name: "按科室汇总", value: "clinicOffice"},
+        {name: "Tổng hợp theo phòng khám", value: "company"},
+        {name: "Tổng hợp theo khoa", value: "clinicOffice"},
         {name: "Tổng hợp theo bác sĩ", value: "doctor"},
       ],
-      loginCompany:{}, // 当前登录公司
-      prescriptionStatistics:{}, //处方统计
+      loginCompany:{}, // Công ty đang đăng nhập
+      prescriptionStatistics:{}, //Thống kê đơn thuốc
     }
   },
   methods: {

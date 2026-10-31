@@ -35,7 +35,7 @@ export default {
     deletePanelItem () {
       this.$emit('deletePanelItemEvent', this.panelId)
     },
-    // 跳转管理界面事件
+    // Sự kiện chuyển đến giao diện quản lý
     editDesktop () {
       this.$emit('editDesktopEvent')
     },

@@ -1,18 +1,18 @@
 /**
- * 报表专用HTTP客户端
- * 用于报表模块的APIYêu cầu，Sử dụng Authorization 头而非 X-Token
+ * HTTP client riêng cho báo cáo
+ * Dùng cho yêu cầu API của module báo cáo, sử dụng header Authorization thay vì X-Token
  */
 import axios from 'axios'
 import { getLocalToken, removeLocalToken } from '@/utils/auth'
 import { handleSessionExpired } from '@/utils/sessionExpired'
 
-// TạoaxiosVí dụ thực tế
+// Tạo đối tượng axios thực tế
 const service = axios.create({
     baseURL: process.env.REPORT_SERVER_URL,
     timeout: 40000
 })
 
-// requestBộ chặn (interceptor)
+// Bộ chặn (interceptor) request
 service.interceptors.request.use(config => {
     if (getLocalToken()) {
         config.headers['Authorization'] = getLocalToken()
@@ -22,7 +22,7 @@ service.interceptors.request.use(config => {
     return Promise.reject(error)
 })
 
-// responseBộ chặn (interceptor)
+// Bộ chặn (interceptor) response
 service.interceptors.response.use(
     response => {
         return response.data
@@ -35,7 +35,7 @@ service.interceptors.response.use(
             data: error.response && error.response.data ? error.response.data : error
         }
 
-        // Xử lý 401 Lỗi（Chưa được cấp quyền/Chưa đăng nhập）— và request.js 共用全局去重的会话过期处理
+        // Xử lý lỗi 401 (chưa được cấp quyền/chưa đăng nhập) — dùng chung cách xử lý hết phiên có chống lặp toàn cục với request.js
         if (error.response && error.response.status === 401) {
             removeLocalToken()
             handleSessionExpired()

@@ -94,7 +94,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <!-- 定点医疗机构名称 -->
+          <!-- Tên cơ sở y tế được chỉ định -->
           <el-col :span='24/1'>
             <el-form-item label='Tên cơ sở y tế' prop='fixmedinsName'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.fixmedinsName' :maxlength='100'></el-input>
@@ -147,7 +147,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <!-- Tải lên nhiều tệp： Ảnh giấy phép phòng khám -->
+          <!-- Tải lên nhiều tệp: Ảnh giấy phép phòng khám -->
           <upload-file v-if='dialogProps.visible' v-model='bizFormModel.fileIdFile' titile='Ảnh giấy phép phòng khám'
                        :action='dialogProps.action' :objectId='bizFormModel.fileId'></upload-file>
         </el-row>
@@ -255,7 +255,7 @@
             {required: true, message: 'Vui lòng nhập tên phòng khám', trigger: 'blur'}
           ],
           'fixmedinsCode': [
-            {required: true, message: '请输入医疗机构代码', trigger: 'blur'}
+            {required: true, message: 'Vui lòng nhập mã cơ sở y tế', trigger: 'blur'}
           ],
           'lesseeId.id': [
             {required: true, message: 'Vui lòng chọn đơn vị thuê', trigger: 'change'}
@@ -345,7 +345,7 @@
           'parentId': '', //zuhu
           'fileId': '',
           'fileIdFile': {
-            deletes: [],  // Chờ xóa（Đã tải lên）danh sách tệp
+            deletes: [], // Chờ xóa (Đã tải lên)danh sách tệp
             uploads: []   // Danh sách tệp chờ tải lên
           },
           'version': {     // Phiên bản sản phẩm
@@ -358,14 +358,14 @@
           'startUseDate': '',   // Thời gian bắt đầu phòng khám
           'expireDate': '',   // Thời gian hết hạn phòng khám
           'remarks': '',   // Thông tin ghi chú
-          //医保配置信息
+          //Thông tin cấu hình bảo hiểm y tế
           'fixmedinsCode':'' ,//Mã cơ sở y tế
           'fixmedinsName': '',   // Tên cơ sở y tế
           'mdtrtareaAdmvs': '',  // Mã khu vực khám bệnh
           'appId': '',           // Đơn thuốc điện tử AppId
           'appSecret': '',       // Đơn thuốc điện tử AppSecret
-          'privateKey': '',      // Đơn thuốc điện tử 私钥
-          'publicKey': '',       // Đơn thuốc điện tử 公钥
+          'privateKey': '',      // Đơn thuốc điện tử - khoá riêng
+          'publicKey': '',       // Đơn thuốc điện tử - khoá công khai
         }
       },
       initOptions(This) {

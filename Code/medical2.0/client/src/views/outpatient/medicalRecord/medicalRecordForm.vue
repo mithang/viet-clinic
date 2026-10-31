@@ -171,7 +171,7 @@
         </el-col>
       </el-row>
               <el-row>
-         <!-- Tải lên nhiều tệp： Tải tệp đính kèm lên -->
+         <!-- Tải lên nhiều tệp: Tải tệp đính kèm lên -->
         <upload-file v-if='dialogProps.visible' v-model='bizFormModel.fileIdFile' titile='Tải tệp đính kèm lên' :action='dialogProps.action' :objectId='bizFormModel.fileId'></upload-file>
       </el-row>
       </div>
@@ -324,7 +324,7 @@ export default {
         'remarks': '',   // Thông tin ghi chú
         'fileId': '',
         'fileIdFile': {
-          deletes: [],  // Chờ xóa（Đã tải lên）danh sách tệp
+          deletes: [], // Chờ xóa (Đã tải lên)danh sách tệp
           uploads: []   // Danh sách tệp chờ tải lên
          },
 
@@ -386,7 +386,7 @@ export default {
       this.bizFormModel = {...this.initFormModel(), ...medicalRecord}
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
-      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+      this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
       this.dialogProps.visible = true
     }
   },

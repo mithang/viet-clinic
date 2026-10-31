@@ -79,24 +79,24 @@
       <!--  <el-row>
         <el-col :span='24/2'>
           <el-form-item label='Nội dung tin nhắn trong hệ thống' prop='siteContent' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.siteContent' :maxlength='1000' :placeholder='dialogProps.action === "view"? "" : "请输入站内消息内容"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.siteContent' :maxlength='1000' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập nội dung tin nhắn trong hệ thống"' ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span='24/2'>
           <el-form-item label='Nội dung tin nhắn WeChat' prop='wechatContent' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.wechatContent' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "请输入微信消息内容"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.wechatContent' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập nội dung tin nhắn WeChat"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span='24/2'>
               <el-form-item label='Nội dung tin nhắn email' prop='emailContent' >
-                <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.emailContent' :maxlength='1000' :placeholder='dialogProps.action === "view"? "" : "请输入邮件消息内容"' ></el-input>
+                <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.emailContent' :maxlength='1000' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập nội dung tin nhắn email"' ></el-input>
               </el-form-item>
         </el-col>
         <el-col :span='24/2'>
           <el-form-item label='Nội dung tin nhắn SMS' prop='smsContent' >
-            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.smsContent' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "请输入短信消息内容"' ></el-input>
+            <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.smsContent' :maxlength='500' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập nội dung tin nhắn SMS"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>-->
@@ -141,7 +141,7 @@ export default {
         emitPath:false,
         value: 'id',
         label: 'name',
-        children: 'children' },  //多选
+        children: 'children' },  // Chọn nhiều
         
       dialogProps: {
         visible: false,
@@ -154,13 +154,13 @@ export default {
             { required: true, message: 'Vui lòng nhập tiêu đề', trigger: 'blur' }
         ],
         'receivedBy': [
-            { required: true, message: '请输入接收人', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập người nhận', trigger: 'blur' }
         ],
       }
     }
   },
   watch: {
-    'bizFormModel.isSite':{     //站内消息
+    'bizFormModel.isSite':{     // Tin nhắn trong hệ thống
       handler(newValue,old){
         if(newValue === "0"){
           this.bizFormModel.siteContent = "";
@@ -168,7 +168,7 @@ export default {
         }
       }
     },
-    'bizFormModel.isEmail':{     //邮件消息
+    'bizFormModel.isEmail':{     // Tin nhắn email
       handler(newValue,old){
         if(newValue === "0"){
           this.bizFormModel.emailContent = "";
@@ -176,14 +176,14 @@ export default {
         }
       }
     },
-    'bizFormModel.isWechat':{     //微信消息
+    'bizFormModel.isWechat':{     // Tin nhắn WeChat
       handler(newValue,old){
         if(newValue === "0"){
           this.bizFormModel.wechatContent = "";
         }
       }
     },
-    'bizFormModel.isSms':{        //短信消息
+    'bizFormModel.isSms':{        // Tin nhắn SMS
       handler(newValue,old){
         if(newValue === "0"){
           this.bizFormModel.smsContent = "";
@@ -240,12 +240,12 @@ export default {
     },
     initFormModel(This) {
       return {
-        'senderId': currentUser.id,   // 消息发送人id
+        'senderId': currentUser.id,   // Id người gửi tin nhắn
         'title': '',   // Tiêu đề
         'isSite': '0',   // Có phải tin nhắn trong hệ thống không
         'isWechat': '0',   // Có phải tin nhắn WeChat không
-        'isEmail': '0',   // 是否邮件
-        'isSms': '0',   // 是否短信
+        'isEmail': '0',   // Có phải email không
+        'isSms': '0',   // Có phải SMS không
         'siteContent': '',   // Nội dung tin nhắn trong hệ thống
         'wechatContent': '',   // Nội dung tin nhắn WeChat
         'emailContent': '',   // Nội dung tin nhắn email

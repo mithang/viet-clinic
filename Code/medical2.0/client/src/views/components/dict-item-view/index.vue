@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  //针对所有数据字典的显示，传入类型和值即可显示对应的名称
+  // Dùng để hiển thị cho mọi từ điển dữ liệu, chỉ cần truyền loại và giá trị là hiển thị được tên tương ứng
   import {
     listDictItemAll
   } from "@/api/sys/dictItem";

@@ -26,7 +26,7 @@
           <SearchItem label="Trạng thái">
             <SupplierOutboundStatusSelect v-model="condition.status"></SupplierOutboundStatusSelect>
           </SearchItem>
-          <!--   <el-select v-model="condition.status" placeholder="出库单状态">
+          <!--   <el-select v-model="condition.status" placeholder="Trạng thái phiếu xuất kho">
             <el-option label="Tất cả" value="">Tất cả</el-option>
             <el-option
               v-for="statusxz in statusList"
@@ -103,12 +103,12 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="createBy" label="出库人"></el-table-column>
-            <el-table-column prop="createDate" label="出库日期"></el-table-column>
-            <el-table-column prop="examineBy" label="审批人"></el-table-column>
+            <el-table-column prop="createBy" label="Người xuất"></el-table-column>
+            <el-table-column prop="createDate" label="Ngày xuất"></el-table-column>
+            <el-table-column prop="examineBy" label="Người duyệt"></el-table-column>
             <el-table-column prop="examineDate" label="Ngày phê duyệt"></el-table-column>
-            <!--  <el-table-column prop="purchasing" label="进价总额"></el-table-column>
-         <el-table-column prop="retail" label="零售总额"></el-table-column>-->
+            <!--  <el-table-column prop="purchasing" label="Tổng giá nhập"></el-table-column>
+         <el-table-column prop="retail" label="Tổng giá bán"></el-table-column>-->
             <el-table-column prop="examine.name" label="Trạng thái" width="80px">
               <template slot-scope="scope">
                 <SupplierOutboundStatusView v-model="scope.row.status"></SupplierOutboundStatusView>
@@ -119,7 +119,7 @@
                <OperationIcon  content='Xem'  type="info"  icon-name="el-icon-view"  @click="onView(scope.$index,scope.row)"></OperationIcon>
                <OperationIcon v-if="scope.row.status===1"  content='Duyệt'  type="primary"  icon-name="el-icon-document"  @click="onAudit(scope.$index,scope.row)"></OperationIcon>
                 <OperationIcon v-if="scope.row.status===1"  content='Sửa'  type="primary"  icon-name="el-icon-edit"  @click="onUpdate(scope.$index,scope.row)"></OperationIcon>
-                <OperationIcon v-if="scope.row.status===1"  content='撤消'  type="primary"  icon-name="el-icon-delete"  @click="onCancel(scope.$index,scope.row)"></OperationIcon>
+                <OperationIcon v-if="scope.row.status===1"  content='Hoàn tác'  type="primary"  icon-name="el-icon-delete"  @click="onCancel(scope.$index,scope.row)"></OperationIcon>
               </template>
             </el-table-column>
           </el-table>
@@ -132,7 +132,7 @@
       </el-row>
       <AddStorageTo @fatherMethod="closeDialog" @onSupplierOutboundUpdated="onSupplierOutboundUpdated"
         :title="dialogTitle" :addType="addType" ref="uAddStorage"></AddStorageTo>
-      <SupplierOutboundView @fatherMethod="closeDialog"  title="出库单详情" ref="uOutboundView">
+      <SupplierOutboundView @fatherMethod="closeDialog"  title="Chi tiết phiếu xuất kho" ref="uOutboundView">
       </SupplierOutboundView>
     </div>
   </el-card>
@@ -238,7 +238,7 @@ import OperationIcon from '@/components/OperationIcon'
         dialogVisible: false,
         dialogTitle: "",
         isAdd: 0 /*0Sửa 1Thêm mới*/ ,
-        addtype: 1, //新增出库单类型 1là thuốc 2là vật tư
+        addtype: 1, //Loại phiếu xuất kho thêm mới 1 là thuốc 2 là vật tư
         selectStorage: [],
         supplierSearch: {
           params: [{
@@ -350,7 +350,7 @@ import OperationIcon from '@/components/OperationIcon'
             if (res.code === 100) {
               that.$message({
                 type: 'success',
-                message: '撤消成功'
+                message: 'Hoàn tác thành công'
               })
             } else {
               that.$message(res.msg)
@@ -358,13 +358,13 @@ import OperationIcon from '@/components/OperationIcon'
             that.querySupplierStorageList()
           }).catch(error => {
             //this.outputError(error)
-            console.error('撤消失败',error);
+            console.error('Hoàn tác thất bại',error);
           })
         }).catch(() => {})
       },
       onUpdate(index, row) {
         let outboundId = row.id;
-        this.dialogTitle = "修改出库单";
+        this.dialogTitle = "Sửa phiếu xuất kho";
         this.$refs.uAddStorage.openDialog(outboundId);
       },
       selectionChange(rows) {
@@ -617,9 +617,9 @@ import OperationIcon from '@/components/OperationIcon'
         this.addType = type
         this.isAdd = 1;
         if (this.addType === 1) {
-          this.dialogTitle = "新增药品出库单";
+          this.dialogTitle = "Thêm phiếu xuất thuốc";
         } else {
-          this.dialogTitle = "新增材料出库单";
+          this.dialogTitle = "Thêm phiếu xuất vật tư";
         }
         this.$refs.uAddStorage.openDialog();
       },
@@ -679,7 +679,7 @@ import OperationIcon from '@/components/OperationIcon'
           batchNo: "Số lô sản xuất",
           produceDate: "Ngày sản xuất",
           endDate: "Hạn sử dụng",
-          createDate: "出库时间",
+          createDate: "Thời gian xuất",
           supplier: "Đơn vị cung ứng",
           factory: "Tên nhà sản xuất",
           beizhu: "Ghi chú"
@@ -751,7 +751,7 @@ import OperationIcon from '@/components/OperationIcon'
           beizhu: ""
         }
         // biaoge[num+1]={
-        //      code:'Người lập đơn：',
+        // code:'Người lập đơn: ',
         //      name:"",
         //      norms:"",
         //      number:"",
@@ -759,14 +759,14 @@ import OperationIcon from '@/components/OperationIcon'
         //     //  leastBid:"",
         //      allBid:"",
         //      retailPrice:"",
-        //      allRetailPrice:"Thủ kho：",
+        // allRetailPrice:"Thủ kho: ",
         //      batchNo:"",
         //      produceDate:"",
         //      endDate:"",
-        //      createDate:'Người nhận hàng：',
+        // createDate:'Người nhận hàng: ',
         //      supplier:'',
         //      factory:"",
-        //      beizhu:"Ngày nhận hàng："
+        // beizhu:"Ngày nhận hàng: "
         // }
 
         let web = XLSX.utils.book_new();
@@ -1572,11 +1572,11 @@ import OperationIcon from '@/components/OperationIcon'
 
         ]
 
-        //Cố định dòng đầu tiên và cột đầu tiên：
+        //Cố định dòng đầu tiên và cột đầu tiên: 
         contentWs['!freeze'] = {
           xSplit: "11", //Cố định cột
           ySplit: "1", //Cố định dòng
-          topLeftCell: "A2", //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
+          topLeftCell: "A2", //Ô hiển thị ở góc trên bên trái của vùng chưa cố định, Mặc định là ô chưa cố định đầu tiên
           state: "frozen"
         }
 
@@ -1626,7 +1626,7 @@ import OperationIcon from '@/components/OperationIcon'
 
         XLSX.utils.book_append_sheet(web, contentWs, "Bảng chi tiết xuất kho");
 
-        // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
+        // //Sử dụngxlsx-styleCách ghi tệp, để kiểu tùy chỉnh có hiệu lực
         const tmpDown = new Blob([
           this.s2ab(
             XLSXD.write(web, {

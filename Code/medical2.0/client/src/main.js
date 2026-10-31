@@ -8,30 +8,30 @@ import store from './store'
 import moment from "moment"
 import axios from 'axios'
 
-// Element UI Đã qua CDN tại index.html 中加载，Mặc định size là mini
+// Element UI đã qua CDN tải tại index.html, mặc định size là mini
 // Chuyển locale Element UI sang tiếng Việt (G-P1-01): bản CDN mặc định
-// tiếng Trung nên mọi bảng trống hiện "暂无数据", phân trang hiện "共 0 条".
+// tiếng Trung nên mọi bảng trống hiện "không có dữ liệu", phân trang hiện "tổng 0 bản ghi".
 // ELEMENT.locale có sẵn trên bản UMD của Element UI.
 import elementViLocale from './utils/element-vi-locale'
 if (typeof window !== 'undefined' && window.ELEMENT && window.ELEMENT.locale) {
   window.ELEMENT.locale(elementViLocale)
 }
 
-//引入 Liên kết ba cấp tỉnh/thành phố/quận/huyện
+// Import liên kết ba cấp tỉnh/thành phố/quận/huyện
 import Distpicker from 'v-distpicker'
 
 
 Vue.prototype.$moment = moment
 Vue.prototype.$axios = axios
 
-//全局使用省市区三级联动
+// Toàn cục sử dụng liên kết ba cấp tỉnh/thành phố/quận/huyện
 Vue.component('v-distpicker', Distpicker)
 
-//引入汉字转拼英码
+// Import thư viện chuyển Hán tự sang bính âm
 import pinyin from 'js-pinyin'
 pinyin.setOptions({checkPolyphone: false, charCase: 0})
 
-// Element UI 主题变量已通过 CDN Đang tải，无需额外导入
+// Biến chủ đề Element UI đã qua CDN đang tải, không cần import thêm
 //import * as filters from './utils/filters'
 import filters from './utils/filters'
 
@@ -44,34 +44,34 @@ Vue.use(VueCropper)
 
 Vue.config.productionTip = false
 
-// 强制设置 Element UI 尺寸为 mini（确保在 Vue 实例创建后生效）
+// Buộc đặt kích thước Element UI thành mini (đảm bảo hiệu lực sau khi tạo Vue instance)
 Vue.prototype.$ELEMENT = { size: 'mini', zIndex: 3000 }
 
-// 全局兜底方法：部分定制组件（như medicalOutpatientRecord）既没有 extends BaseUI，
-// 也未引入 listViewMixin，却在请求 .catch 中调用 this.outputError / this.showMessage，
-// 会话过期时便会抛 “outputError is not a function”。此处提供安全兜底实现，
-// 组件自身或继承（BaseUI）的同名方法优先级更高，不会覆盖既有逻辑。
+// Phương thức dự phòng toàn cục: một số component tùy chỉnh (như medicalOutpatientRecord) không extends BaseUI,
+// cũng không import listViewMixin, nhưng trong .catch lại gọi this.outputError / this.showMessage,
+// khi hết phiên sẽ ném "outputError is not a function". Tại đây cung cấp triển khai dự phòng an toàn,
+// phương thức cùng tên của component hoặc kế thừa (BaseUI) có ưu tiên cao hơn, không ghi đè logic đã có.
 Vue.mixin({
   methods: {
     outputError(error) {
-      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng，避免重复弹窗
+      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng, tránh lặp popup
       if (error && error.code === 20011) return
       console.error(error && error.response ? error.response : error)
       if (this.$message) {
         this.$message({
           showClose: true,
-          message: 'Đã xảy ra lỗi，Vui lòng nhấnF12Xem nhật ký trình duyệt。',
+          message: 'Đã xảy ra lỗi. Vui lòng nhấn F12 để xem nhật ký trình duyệt.',
           type: 'error'
         })
       }
     },
     showMessage(msgData) {
       if (!msgData) return
-      // 会话过期由拦截器统一处理，跳过以免重复提示
+      // Hết phiên do interceptor xử lý thống nhất, bỏ qua để tránh nhắc lại
       if (msgData.code === 20011) return
       const tip =
         msgData.type === 'error' && msgData.data
-          ? '， Vui lòng nhấnF12Xem nhật ký trình duyệt。'
+          ? '. Vui lòng nhấn F12 để xem nhật ký trình duyệt.'
           : ''
       if (this.$message) {
         this.$message({
@@ -85,12 +85,12 @@ Vue.mixin({
 })
 
 
-/* 注入全局filter*/
+/* Inject filter toàn cục */
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 
-// 报表
+// Báo cáo
 import i18n from '@/views/report/lang'
 Vue.config.devtools = process.env.NODE_ENV !== 'production';
 
@@ -106,7 +106,7 @@ let vm = new Vue({
 
 export default vm
 
-// 解决 ResizeObserver 循环报错（ElementUI 必加）不需要可注释
+// Khắc phục lỗi vòng ResizeObserver (ElementUI bắt buộc thêm), không cần thì có thể comment
 const debounce = (func, wait) => {
   let timeout;
   return function (...args) {

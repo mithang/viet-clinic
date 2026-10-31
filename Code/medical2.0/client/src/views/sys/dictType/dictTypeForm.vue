@@ -61,7 +61,7 @@
 
       </div>
 
-    <!--Bảng con：   Mục từ điển Bắt đầu-->
+    <!--Bảng con: Mục từ điển Bắt đầu-->
     <div class="tab-item" v-show='tabIndex==="2"'>
       <el-row>
         <el-col>
@@ -109,7 +109,7 @@
         </el-col>
       </el-row>
     </div>
-    <!--Bảng con：   Mục từ điển Kết thúc-->
+    <!--Bảng con: Mục từ điển Kết thúc-->
     </el-form>
 
     <!-- Nút  Bắt đầu-->
@@ -140,7 +140,7 @@ export default {
       bizFormModel: this.initFormModel(),
       flag:false,
       tabIndex: '1',
-      companyList: [],  // 租户列表
+      companyList: [],  // Danh sách đơn vị thuê
        dialogProps: {
         visible: false,
         action: '',
@@ -241,7 +241,7 @@ export default {
     },
     onAddDictItemRow(tableData) {
         tableData.push({
-            'dictType': {     // Bảng cha 字典类型表ID
+            'dictType': {     // Bảng cha - ID bảng loại từ điển
               'id': validatenull(parent) || validatenull(parent.dictType) ? null : parent.dictType.id,
               'name': validatenull(parent) || validatenull(parent.dictType) ? null : parent.dictType.name,
             },
@@ -280,12 +280,12 @@ export default {
       }
     },
     initOptions() {
-      // Bảng chính - 加载租户列表
+      // Bảng chính - Tải danh sách đơn vị thuê
       this.loadCompanyList()
       // Bảng con  Mục từ điển
     },
     loadCompanyList() {
-      // 只有超级管理员才需要加载租户列表
+      // Chỉ quản trị viên cấp cao mới cần tải danh sách đơn vị thuê
       if (currentUser.id === 1000) {
         listCompanyAll({
           params: [{ columnName: 'parent_id', queryType: '!=', value: '0' }]
@@ -294,16 +294,16 @@ export default {
             this.companyList = responseData.data || []
           }
         }).catch(error => {
-          console.error('加载租户列表失败', error)
+          console.error('Tải danh sách đơn vị thất bại', error)
         })
       }
     },
     onSystemChange(val) {
-      // 切换系统级时，清空租户选择
+      // Khi chuyển sang cấp hệ thống, xoá lựa chọn đơn vị thuê
       if (val === '1') {
         this.bizFormModel.company = null
       } else {
-        // 切换到业务级时，初始化公司对象
+        // Khi chuyển sang cấp nghiệp vụ, khởi tạo đối tượng công ty
         this.bizFormModel.company = { id: '', name: '' }
       }
     },

@@ -1,6 +1,6 @@
 <template>
   <div  style="text-align:left" >
-    listvàformLớp thành phần cơ sở của cửa sổ，Xử lý thống nhất thông tin lỗi bất thường。
+    Lớp thành phần cơ sở của cửa sổ list và form, xử lý thống nhất thông tin lỗi bất thường.
   </div>
 </template>
 <script>
@@ -9,11 +9,11 @@ export default {
   name: 'BaseUI',
   data() {
     return {
-      currentUser: window.currentUser,  // 单前登录用户
-      loadcount: 0,   // loading加载次数
-      loading: false,  // 加载标志，用与显示加载遮罩
+      currentUser: window.currentUser,  // Người dùng đăng nhập hiện tại
+      loadcount: 0,   // Số lần loading
+      loading: false,  // Cờ loading, dùng để hiển thị lớp phủ loading
 
-      isAlert: false   // 已经弹出alert对话标志
+      isAlert: false   // Cờ đã hiển thị hộp thoại alert
     }
   },
   methods: {
@@ -31,16 +31,20 @@ export default {
     getAttrValue(entity, attr, javaType) {
       let pos = attr.indexOf('.')
       if(pos === -1) {
-        if(javaType === "java.math.BigDecimal") {  // 金额类型，保留两位小数，Phân tách hàng nghìn
-          return  (entity[attr] || 0).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+        if(javaType === "java.math.BigDecimal") {
+          // Kiểu tiền tệ: 2 chữ số thập phân, phân tách hàng nghìn theo
+          // chuẩn Việt Nam (vd 1234567.89 -> 1.234.567,89)
+          const parts = (entity[attr] || 0).toFixed(2).split('.')
+          const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+          return intPart + ',' + parts[1]
         }
         return entity[attr]
       }
       return this.getAttrValue(entity[attr.substr(0, pos)], attr.substr(pos + 1), javaType)
     },
-    // 构造更多的组合查询条件 Định dạng （ （ groupOne）  groupLogic （ groupTwo ））
+    // Xây dựng điều kiện truy vấn tổ hợp thêm, Định dạng ( ( groupOne)groupLogic ( groupTwo ))
     compositeCondition(moreParm, isFirst) {
-      moreParm = moreParm || this.moreParm  // this.moreParm 是主界面的组合挑选条件
+      moreParm = moreParm || this.moreParm  // this.moreParm là điều kiện lọc tổ hợp của giao diện chính
       let firstLogic = isFirst ? '' : 'AND'
       let conditions = []
       let groupOne = []
@@ -157,18 +161,18 @@ export default {
     },
     outputError(error) {
       this.resetLoad()
-      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng（全局去重），此处不再弹窗
+      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng (loại bỏ trùng lặp toàn cục), không hiển thị dialog nữa
       if (error && error.code === 20011) {
         return
       }
       console.error(error.response ? error.response : error.message)
-      this.$alert('Đã xảy ra lỗi，Vui lòng nhấnF12Xem nhật ký trình duyệt。', 'Nhắc nhở', {
+      this.$alert('Đã xảy ra lỗi. Vui lòng nhấn F12 để xem nhật ký trình duyệt.', 'Nhắc nhở', {
         type: 'error'
       })
     },
     showMessage(msgData) {
-      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng（全局去重），
-      // 此处只做收尾（Đóng hộp thoại），不再弹窗、不再重复跳转
+      // Phiên hết hạn đã được request.js bộ chặn thống nhất nhắc và chuyển hướng (loại bỏ trùng lặp toàn cục),
+      // chỉ làm khâu cuối (đóng hộp thoại), không hiển thị dialog nữa, không chuyển hướng lặp lại
       if (msgData && msgData.code === 20011) {
         if (this.dialogProps) {
           this.dialogProps.visible = false
@@ -178,7 +182,7 @@ export default {
       let tip = ''
       if(msgData.type === 'error' && msgData.data) {
         console.error(msgData.data)
-        tip = '， Vui lòng nhấnF12Xem nhật ký trình duyệt。'
+        tip = '. Vui lòng nhấn F12 để xem nhật ký trình duyệt.'
       }
 
       if (msgData.type === 'warning' || msgData.type === 'error') {

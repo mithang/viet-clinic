@@ -204,8 +204,8 @@ export default {
         'registrationId': '',   // Thông tin đăng kýid
         'costItemId': '',   // Hạng mục khám chữa bệnhid
         'name': '',   // Tên hạng mục
-        'type': '',   // Loại（0：Xét nghiệm；1：Kiểm tra）
-        'status': '0',   // Trạng thái điền（0：Chưa điền；1：Đã điền）
+        'type': '', // Loại (0: Xét nghiệm; 1: Kiểm tra)
+        'status': '0', // Trạng thái điền (0: Chưa điền; 1: Đã điền)
         'patientName': '',   // Tên bệnh nhân
         'sex': '',   // Giới tính
         'phone': '',   // Số điện thoại di động
@@ -271,7 +271,7 @@ export default {
         this.bizFormModel = {...this.initFormModel(), ...inspectionCheck}
         this.initOptions(this.bizFormModel)
         this.tabIndex = '1'
-        this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+        this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
         this.dialogProps.visible = true
       },
 },

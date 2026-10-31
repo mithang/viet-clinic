@@ -321,10 +321,10 @@
             Đã thu phí
           </div>
           <div v-if="chargeStatusActiveName === '1' && payState &&!isRetail && diagnosisPrescription" style="margin-right:10px">
-            Tổng cộng：{{ this.totalMoney }}VNĐ
+            Tổng cộng: {{ this.totalMoney }}VNĐ
           </div>
           <!--<div v-if="chargeStatusActiveName === '1' && payState &&!isRetail && diagnosisPrescription" style="margin-right:10px">
-            Tổng cộng：{{ this.hisTotalMoney.toFixed(2) }}VNĐ
+            Tổng cộng: {{ this.hisTotalMoney.toFixed(2) }}VNĐ
           </div>-->
           <el-button
             type="primary"
@@ -582,7 +582,7 @@
                   <el-row style="padding-top:8px" type="flex" justify="space-between" align="center"
                           v-if="chargeStatusActiveName === '1' && payState">
                     <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.fee }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.fee }}VNĐ
                     </div>
                     <el-popconfirm
                       title="Bạn có chắc muốn thu phí không？"
@@ -596,7 +596,7 @@
                   <el-row type="flex" justify="space-between" align="center" style="padding-top:8px"
                           v-if="chargeStatusActiveName === '2' && medicalEditTabs.length>0">
                     <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
                     </div>
                     <el-popconfirm
                       title="Bạn có chắc muốn hoàn phí không？"
@@ -609,7 +609,7 @@
                   </el-row>
                   <el-row style="padding-top:8px" v-if="chargeStatusActiveName === '3' && medicalEditTabs.length>0">
                     <div class="single">
-                      Chi phí của đơn thuốc này：{{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
+                      Chi phí của đơn thuốc này: {{ item.content.recipelInfo.amountReceivedTotal }}VNĐ
                     </div>
                   </el-row>
                   <div v-if="item.type!=='recipelType_2'">
@@ -800,12 +800,12 @@
                      </el-input>
                      Mỗi lần uống
                      <el-input style="width:80px" disabled v-model="item.content.recipelInfo.singleDosage">
-                     </el-input>{{'格'}}
+                     </el-input>{{'liều'}}
                    </div>-->
                     <el-row v-if="item.type==='recipelType_1'">
                       <el-input disabled v-model="item.content.recipelInfo.dosage"
                                 oninput="value=value.replace(/[^\d.]/g,'')" style="width: 60px"></el-input>
-                      &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng：
+                      &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng: 
                       <el-select disabled v-model="item.content.recipelInfo.recipelUse" placeholder="Vui lòng chọn"
                                  style="width: 110px">
                         <el-option v-for="pitem in ChineseUseOption" :key="pitem.value"
@@ -1193,12 +1193,12 @@
       <div>
         <el-divider></el-divider>
         <div id="chargeTotalFee_Container">
-          <div id="chargeTotalFee_Title">Số tiền thực thu（VNĐ）：</div>
+          <div id="chargeTotalFee_Title">Số tiền thực thu (VNĐ): </div>
           <div id="chargeTotalFee_Fee" v-if="this.chargeForm.amountReceived && !diagnosisPrescription">
             {{ this.chargeForm.amountReceived }}VNĐ
           </div>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <div id="chargeTotalFee_Title">Số tiền phải thu（VNĐ）：</div>
+          <div id="chargeTotalFee_Title">Số tiền phải thu (VNĐ): </div>
           <div id="chargeTotalFee_Fee" v-if="this.chargeForm.amountReceivable">
             {{ this.chargeForm.amountReceivable }}VNĐ
           </div>
@@ -1213,7 +1213,7 @@
                   @input="GetAmountReceived"
                   placeholder="Chiết khấu"
                 >
-                  <template slot="append">折</template>
+                  <template slot="append">%</template>
                 </el-input>
               </el-form-item>
             </el-col>
@@ -1275,9 +1275,9 @@
               <el-form-item label="Phương thức thanh toán">
                 <!--<el-radio-group v-model="chargeForm.paymentType">
                   <el-radio label="payType_0">Tiền mặt</el-radio>
-                  <el-radio label="payType_1">支付宝</el-radio>
+                  <el-radio label="payType_1">Alipay</el-radio>
                   <el-radio label="payType_2">WeChat</el-radio>
-                  <el-radio label="payType_3">银行卡</el-radio>
+                  <el-radio label="payType_3">Thẻ ngân hàng</el-radio>
                 </el-radio-group>-->
                 <el-radio-group
                   v-model="chargeForm.paymentType"
@@ -1319,12 +1319,12 @@
       <div>
         <el-divider></el-divider>
         <div class="chargeTotalFee_Container">
-          <div class="chargeTotalFee_Title">Số tiền thực thu（VNĐ）：</div>
+          <div class="chargeTotalFee_Title">Số tiền thực thu (VNĐ): </div>
           <div class="chargeTotalFee_Fee" v-if="this.singleForm.amountReceived">
             {{ this.singleForm.amountReceived }}VNĐ
           </div>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <div id="chargeTotalFee_Title">Số tiền phải thu（VNĐ）：</div>
+          <div id="chargeTotalFee_Title">Số tiền phải thu (VNĐ): </div>
           <div id="chargeTotalFee_Fee" v-if="this.singleForm.amountReceivable">
             {{ this.singleForm.amountReceivable }}VNĐ
           </div>
@@ -1339,7 +1339,7 @@
                   @input="GetSingleAmountReceived"
                   placeholder="Chiết khấu"
                 >
-                  <template slot="append">折</template>
+                  <template slot="append">%</template>
                 </el-input>
               </el-form-item>
             </el-col>
@@ -1392,9 +1392,9 @@
               <el-form-item label="Phương thức thanh toán">
                 <!--<el-radio-group v-model="singleForm.paymentType">
                   <el-radio label="payType_0">Tiền mặt</el-radio>
-                  <el-radio label="payType_1">支付宝</el-radio>
+                  <el-radio label="payType_1">Alipay</el-radio>
                   <el-radio label="payType_2">WeChat</el-radio>
-                  <el-radio label="payType_3">银行卡</el-radio>
+                  <el-radio label="payType_3">Thẻ ngân hàng</el-radio>
                 </el-radio-group>-->
                 <el-radio-group
                   v-model="chargeForm.paymentType"
@@ -1503,9 +1503,9 @@
                 <el-input  :rows="3" v-model="diagnosis.province"></el-input>
                 Thành phố:
                 <el-input  :rows="3" v-model="diagnosis.market"></el-input>
-                所属镇/Quận/Huyện：
+                Quận/Huyện: 
                 <el-input  :rows="3" v-model="diagnosis.distinguish"></el-input>
-                Địa chỉ chi tiết：
+                Địa chỉ chi tiết: 
                 <el-input  :rows="3" v-model="diagnosis.recipientAddress"></el-input>
               </el-form-item>
             </el-col>
@@ -1572,7 +1572,7 @@
         }
       };
       let amountPaidRule = (rule, value, callback) => {
-        //这里为什么不用 value,因为之前 写这个代码的人没有按照element-ui的规则写,他绑定的数据不是表单里面的，气人啊
+        //Ở đây không dùng value vì người viết code trước đây không theo quy tắc của element-ui, dữ liệu ràng buộc không nằm trong form, thật bực mình
         if (!this.amountPaid) {
           callback(new Error("Vui lòng nhập số tiền thực trả"));
         } else {
@@ -1591,11 +1591,11 @@
 
         hisPatient: null, //hisThông tin hội chẩn bệnh nhân
         tokenData: null, // hisToken
-        orderForm: null, // 订单信息
+        orderForm: null, // Thông tin đơn hàng
         hisCheck: null, // hisHóa đơn chờ thanh toán
         hisCheckDetail: null, // hisChi tiết hóa đơn chờ thanh toán
-        diagnosisPrescription: false, // 是否远程诊疗处方
-        prescriptionCollection: [], // 远程诊疗处方集合
+        diagnosisPrescription: false, // Có phải đơn thuốc khám bệnh từ xa không
+        prescriptionCollection: [], // Tập hợp đơn thuốc khám bệnh từ xa
 
         isBaseReadOnly: true,
         isRetail: false, //Có bán lẻ không
@@ -1762,7 +1762,7 @@
         isOnlyRead: false,
         BASE_API: process.env.BASE_API,
         totalMoney: 0, //Tổng số tiền
-        hisTotalMoney: 0, //远程诊疗总金额
+        hisTotalMoney: 0, //Tổng số tiền khám bệnh từ xa
         payState: true,
         medicalEditTabs: [],
         medicalEditTabsValue: {},
@@ -1792,9 +1792,9 @@
         overColor: 0,
         member: [],   //Thẻ hội viên
         allMember: [],  //Tất cả thẻ thành viên
-        diagnosis: null,  //远程诊疗信息 Chẩn đoán
-        memberCopy: [],  //本次使用次数暂存
-        saveMember: {},  //保存会员体验卡
+        diagnosis: null,  //Thông tin khám bệnh từ xa Chẩn đoán
+        memberCopy: [],  //Tạm lưu số lần sử dụng lần này
+        saveMember: {},  //Lưu thẻ trải nghiệm hội viên
         amountOfRemission: "0",  //Số tiền chiết khấu
         reductionAmount:'0',   // Số tiền miễn giảm
         signleAmountOfRemission: "0", //Thu phí riêng
@@ -1900,7 +1900,7 @@
           });
       },
 
-      // 地址新增
+      // Thêm mới địa chỉ
       async PatientAddressAdd(){
         await this.getToken()
         await this.$axios.post('apis/patient/PatientAddressAdd', {
@@ -1929,7 +1929,7 @@
           });
       },
 
-      // 地址修改
+      // Sửa địa chỉ
       async PatientAddressUpdate(){
         await this.getToken()
         await this.$axios.post('apis/patient/PatientAddressUpdate', {
@@ -1991,7 +1991,7 @@
         await this.getToken()
         await this.$axios.post('apis/Outpatient/OutpBillItemDetail', {
           Data: {
-            PresIds: this.prescriptionCollection, // Đơn thuốcid集合
+            PresIds: this.prescriptionCollection, // Đơn thuốcid tập hợp
             mzh: this.hisPatient.mzh // Số khám ngoại trú
           },
           OrganizeId: this.diagnosis.hospitalId,
@@ -2012,7 +2012,7 @@
           });
       },
 
-      // 查询订单
+      // Truy vấn đơn hàng
       async orderQuery(){
         await this.getToken();
         await this.$axios.post('apis/PayOrder/OrderQuery', {
@@ -2021,7 +2021,7 @@
             OrderType: 1, // Loại đơn hàng
             CardNo: this.hisPatient.kh, //Số thẻ khám bệnh
             VisitNo: this.hisPatient.mzh,  // Số khám ngoại trú
-            OrderStu: null // 订单状态
+            OrderStu: null // Trạng thái đơn hàng
           },
           OrganizeId: this.diagnosis.hospitalId,
           AppId: "Oh_Newtouch_Clinic",
@@ -2038,14 +2038,14 @@
           });
       },
 
-      // 创建订单
+      // Tạo đơn hàng
       async createOrder(){
         await this.getToken()
         await this.$axios.post('apis/PayOrder/BillOrderCreate', {
           Data: {
             kh: this.hisPatient.kh, // Số thẻ
             mzh: this.hisPatient.mzh, // Số khám ngoại trú
-            OrderType: 1, // 1 为门诊订单 2为住院订单
+            OrderType: 1, // 1 là đơn hàng ngoại trú, 2 là đơn hàng nội trú
             addressInfo: {
               patid: this.hisPatient.patid, // Bệnh nhânid
               OrganizeId: this.diagnosis.hospitalId, // Cơ sở
@@ -2091,7 +2091,7 @@
           });
       },
 
-      // 锁定订单
+      // Khóa đơn hàng
       async lockedOrder(){
         await this.getToken();
         await this.$axios.post('apis/PayOrder/BillOrderLockApply', {
@@ -2114,19 +2114,19 @@
           });
       },
 
-      // 订单结算
+      // Quyết toán đơn hàng
       async orderSettlement(){
         await this.getToken();
         await this.$axios.post('apis/PayOrder/BillOrderPay', {
           Data: {
             CardNo: this.hisPatient.kh, // Số thẻ khám bệnh
             OrderNo: this.orderForm.OrderNo, // Số đơn hàng
-            PayWay: "12", // Phương thức thanh toán(门诊支付)
+            PayWay: "12", // Phương thức thanh toán(thanh toán ngoại trú)
             PayFee: this.chargeForm.amountReceivable, // Phí thanh toán
-            PayLsh: this.diagnosis.registrationId, // 支付流水号(使用云诊所挂号id)
-            PayerId: this.hisPatient.patid, // 支付者身份标识（hisBệnh nhânid）
+            PayLsh: this.diagnosis.registrationId, // Số giao dịch thanh toán(dùng id đăng ký khám của phòng khám cloud)
+            PayerId: this.hisPatient.patid, // Định danh người thanh toán (hisBệnh nhânid)
 
-            PayTime: new Date(), // 支付时间
+            PayTime: new Date(), // Thời gian thanh toán
 
             OrderType: 1 // Loại đơn hàng
           },
@@ -2180,7 +2180,7 @@
           }
         }
       },
-      //选择体验卡进行扣减
+      //Chọn thẻ trải nghiệm để trừ
       chooseMember(row) {
         this.saveMember = {};
         let memberCopy = JSON.parse(JSON.stringify(this.memberCopy))
@@ -2341,7 +2341,7 @@
         if (type === 1) {
           this.IsSingleCorrect();
           this.singleForm.member = ""
-          //如果单独收费时为诊疗项目，判断其项目是否存在体验项目
+          //Nếu thu phí riêng là hạng mục điều trị, kiểm tra xem hạng mục đó có hạng mục trải nghiệm không
           if (this.medicalEditTabsValue.type === "recipelType_3") {
             let recipelInfoEvt = {
               recipelInfo: this.medicalEditTabsValue.content.recipelInfo,
@@ -2365,11 +2365,11 @@
           this.singleChargeBtn(2)
         }
       },
-      // 添加收费人信息
+      // Thêm thông tin người thu tiền
       addressee() {
         this.addresseeDialogVisible = true
       },
-      // 收件人信息保存
+      // Lưu thông tin người nhận
       async addresseeSave() {
         /* this.diagnosis.province = this.province;
          this.diagnosis.market = this.city;
@@ -2379,10 +2379,10 @@
           if (res.code === 100) {
             this.addresseeDialogVisible = false
             this.$message.success("Thêm thông tin người nhận thành công!")
-            // 发起订单锁定
+            // Khởi tạo khóa đơn hàng
             // this.lockedOrder();
           } else {
-            this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+            this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
           }
         }).catch()
 
@@ -2405,7 +2405,7 @@
             if(response.data.BusData.code === 10000){
               this.PatientAddressUpdate()
             }else if(response.data.BusData.code !== 10000) {
-              // 创建订单并锁定
+              // Tạo đơn hàng và khóa
               this.createOrder();
               // this.PatientAddressAdd()
             }
@@ -2427,7 +2427,7 @@
           if (!this.isRetail) {
             let IsOpen = this.IsChargeCorrect("0");
             if (!IsOpen) {
-              this.$message("Đơn thuốc đang chọn không đúng！");
+              this.$message("Đơn thuốc đang chọn không đúng!");
               return;
             }
           } else {
@@ -2444,11 +2444,11 @@
             "Đơn thuốc bán lẻ"
           ) {
             let IsOpen = this.IsChargeCorrect("1");
-            if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng！");
+            if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng!");
             else this.OutRetailSaveRetailPrescription();
           } else {
             let IsOpen = this.IsChargeCorrect("1");
-            if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng！");
+            if (!IsOpen) this.$message("Đơn thuốc đang chọn không đúng!");
             else this.chargeBtn(2);
           }
         }
@@ -2556,7 +2556,7 @@
             if (res.code === 100) {
               this.allMember = res.data
             } else {
-              this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+              this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
             }
           }).catch()
         }
@@ -2565,7 +2565,7 @@
 
         this.getSaveInfo(this.patientInfoRow.id);
 
-        // 获取患者远程诊疗信息（已注释）
+        // Lấy thông tin khám bệnh từ xa của bệnh nhân (đã comment)
         // this.diagnosis = null
         // getRegistrationId(this.patientInfoRow.id).then(res => {
         //   if (res.data.id !== null) {
@@ -2578,7 +2578,7 @@
         //     // this.billingDetail(this.prescriptionCollection);
 
         //   } else {
-        //     this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+        // this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
         //   }
         // }).catch()
 
@@ -2916,12 +2916,12 @@
             responseData.data.forEach((element) => {
               let isUnpackSell = element.isUnpackSell; //Cho phép bán lẻ tách hộp
               let stockNumber = element.stockNumber; //Số lượng tồn kho
-              let packName = element.pack.name; //Đóng gói（Đơn vị）
+              let packName = element.pack.name; //Đóng gói (Đơn vị)
               let preparation = element.preparation; //Chế phẩm
               let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
               let price = element.price; //Giá bán
               let retailPrice = element.retailPrice; //Giá bán lẻ sau khi tách hộp
-              let type = element.type.value; //Loại thuốc： medicalType_1 - Thuốc đông y   medicalType_0 - Thuốc tây
+              let type = element.type.value; //Loại thuốc: medicalType_1 - Thuốc đông y medicalType_0 - Thuốc tây
 
               let stockText = "";
               let selectDrugTypeItems = [];
@@ -3163,9 +3163,9 @@
         let recipelDetailEvtList = [];
         let allFee = 0;
         if (this.patientInfoForm.gender.value === "gender_0") {
-          this.patientInfoForm.gender.name = "男";
+          this.patientInfoForm.gender.name = "Nam";
         } else {
-          this.patientInfoForm.gender.name = "女";
+          this.patientInfoForm.gender.name = "Nữ";
         }
         this.RetailTable.map((item) => {
           allFee += item.allFee;
@@ -3261,13 +3261,13 @@
             paymentType.name = "Tiền mặt";
             break;
           case "payType_1":
-            paymentType.name = "支付宝";
+            paymentType.name = "Alipay";
             break;
           case "payType_2":
             paymentType.name = "WeChat";
             break;
           case "payType_3":
-            paymentType.name = "银行卡";
+            paymentType.name = "Thẻ ngân hàng";
             break;
           case "payType_5":
             paymentType.name = "Chuyển khoản ngân hàng";
@@ -3347,13 +3347,13 @@
             paymentType.name = "Tiền mặt";
             break;
           case "payType_1":
-            paymentType.name = "支付宝";
+            paymentType.name = "Alipay";
             break;
           case "payType_2":
             paymentType.name = "WeChat";
             break;
           case "payType_3":
-            paymentType.name = "银行卡";
+            paymentType.name = "Thẻ ngân hàng";
             break;
           case "payType_5":
             paymentType.name = "Chuyển khoản ngân hàng";
@@ -3432,13 +3432,13 @@
             paymentType.name = "Tiền mặt";
             break;
           case "payType_1":
-            paymentType.name = "支付宝";
+            paymentType.name = "Alipay";
             break;
           case "payType_2":
             paymentType.name = "WeChat";
             break;
           case "payType_3":
-            paymentType.name = "银行卡";
+            paymentType.name = "Thẻ ngân hàng";
             break;
           case "payType_5":
             paymentType.name = "Chuyển khoản ngân hàng";
@@ -3586,7 +3586,7 @@
         }
 
         if (state) {
-          this.$message.error('Có đơn thuốc đã phát thuốc nhưng chưa trả thuốc，Vui lòng trả thuốc trước')
+          this.$message.error('Có đơn thuốc đã phát thuốc nhưng chưa trả thuốc, Vui lòng trả thuốc trước')
           return
         }
         let model = {
@@ -3602,23 +3602,23 @@
         if (this.diagnosis !== null){
           /*modifiedState(this.diagnosis).then(res => {
             if (res.code === 100) {
-              this.$message.success("Thu phí thành công！")
+              this.$message.success("Thu phí thành công!")
             } else {
-              this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+              this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
             }
           }).catch()*/
 
           chargeState(model).then(res => {
             if (res.code === 100) {
-              this.$message.success("Thu phí thành công！")
+              this.$message.success("Thu phí thành công!")
               if (this.diagnosis != null){
-                // 查询远程诊疗订单
+                // Truy vấn đơn hàng khám bệnh từ xa
                 this.orderQuery();
                 setTimeout(() => {
-                  // 结算远程诊疗订单
+                  // Quyết toán đơn hàng khám bệnh từ xa
                   this.orderSettlement();
                 }, 1000);
-                // 修改状态
+                // Sửa trạng thái
                 this.diagnosis.diagnosisTime = null;
                 this.diagnosis.medicationStatus = "1"
                 this.diagnosis.cardNo = this.hisPatient.kh // Số thẻ khám bệnh
@@ -3637,7 +3637,7 @@
                 })
               }
             } else {
-              this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên！")
+              this.$message.error("Dữ liệu hệ thống bất thường, vui lòng liên hệ quản trị viên!")
             }
           }).catch()
           this.chargeDialogVisible = false;
@@ -3647,7 +3647,7 @@
           saveTollTollInfo(model, type)
             .then((responseData) => {
               if (responseData.code === 100) {
-                this.$message.success("Thao tác thành công！");
+                this.$message.success("Thao tác thành công!");
                 this.selectPatientList();
                 this.search();
                 this.payState = false;

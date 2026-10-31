@@ -76,7 +76,7 @@ const mutations = {
     state.menus = data.menus
     state.topMenuId = data.menuId
   },
-  Set_ToPath(state, data){  //缓存登录前访问路径
+  Set_ToPath(state, data){  //Cache đường dẫn truy cập trước khi đăng nhập
     state.toPath = data;
   },
 }

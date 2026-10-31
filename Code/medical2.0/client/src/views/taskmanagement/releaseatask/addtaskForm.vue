@@ -37,7 +37,7 @@
   :on-exceed="handleExceed"
   :file-list="fileList">
   <el-button size="small" type="primary">Nhấn để tải lên</el-button>
-  <div slot="tip" class="el-upload__tip">只能上传jpg/pngTệp,且不超过500kb</div>
+  <div slot="tip" class="el-upload__tip">Chỉ được tải lên tệp JPG/PNG, dung lượng không quá 500KB</div>
 </el-upload> -->
               <div style="margin-left:-50px">
               <upload-file  :objectId="uploadFiles" :value="uploads" @getFileList="getFileList" :action="flags" @deleteFile="deleteFile"></upload-file>
@@ -68,7 +68,7 @@
   <el-form-item label="Người thực hiện nhiệm vụ" width="80%">
     <!-- <el-select v-model="ruleForm.taskregion" placeholder="Vui lòng chọn người thực hiện nhiệm vụ">
       <el-option label="Quản trị viên phòng khám" value="1247793999298339926"></el-option>
-      <el-option label="执行人二" value="beijing"></el-option>
+      <el-option label="Người thực hiện 2" value="beijing"></el-option>
     </el-select> -->
     <!-- <el-cascader
     :options="ruleForm.taskregion"
@@ -158,10 +158,10 @@ import { getjglist} from "@/api/toll/tollInfo";
 
         rules: {
             tasktype: [
-            { required: true, message: '请选择任务类型', trigger: 'change' }
+            { required: true, message: 'Vui lòng chọn loại công việc', trigger: 'change' }
           ],
           taskname: [
-            { required: true, message: '请填写任务名称', trigger: 'blur' },
+            { required: true, message: 'Vui lòng nhập tên công việc', trigger: 'blur' },
             // { min: 3, max: 5, message: 'Độ dài trong khoảng 3 đến 5 ký tự', trigger: 'blur' }
           ],
           taskdescribe: [
@@ -169,16 +169,16 @@ import { getjglist} from "@/api/toll/tollInfo";
           ],
           
           taskdeadline: [
-            {  required: true, message: '请选择日期时间', trigger: 'change' }
+            {  required: true, message: 'Vui lòng chọn ngày giờ', trigger: 'change' }
           ],
           taskregion: [
             { type: 'array', required: true, message: 'Vui lòng chọn người thực hiện nhiệm vụ', trigger: 'change' }
           ],
         //   resource: [
-        //     { required: true, message: '请选择活动资源', trigger: 'change' }
+        //     { required: true, message: 'Vui lòng chọn tài nguyên hoạt động', trigger: 'change' }
         //   ],
         //   desc: [
-        //     { required: true, message: '请填写活动形式', trigger: 'blur' }
+        //     { required: true, message: 'Vui lòng nhập hình thức hoạt động', trigger: 'blur' }
         //   ]
         },
         bizFormModel:{
@@ -210,13 +210,13 @@ import { getjglist} from "@/api/toll/tollInfo";
       jgiddatalist:[],
       fileIds:[],
       uploadFiles:"",
-      taskRow:null, //任务对象
+      taskRow:null, //Đối tượng công việc
       uploads:null,
       }
     },
     methods: {
 
-      //任务保存
+      //Lưu công việc
       save(formName){
            if(this.flags){
        return
@@ -249,12 +249,12 @@ import { getjglist} from "@/api/toll/tollInfo";
         userHeaderFile.append("fileIdUploads",item);
         userHeaderFile.append("countId",countId);
       // this.$refs[formName].validate((valid) => {
-         //  if (valid) {
+          //  if (valid) {
            await  storageTask(userHeaderFile).then((responseData)=>{
                if(responseData.code === 100){
                  countId = responseData.data.id
                }else {
-                 this.$message.error("Thực hiện thất bại！")
+                 this.$message.error("Thực hiện thất bại!")
                   
                  this.flags=false
                  return;
@@ -275,7 +275,7 @@ import { getjglist} from "@/api/toll/tollInfo";
                 taskdeadline:'',
                 taskregion:[],
              };
-            this.$message.success("Thực hiện thành công！")
+            this.$message.success("Thực hiện thành công!")
             this.flags=false
             this.onDialogClose();
         //})
@@ -299,8 +299,8 @@ import { getjglist} from "@/api/toll/tollInfo";
         userHeaderFile.append("deleteIds",JSON.stringify(this.fileIds));
         userHeaderFile.append("fileIdUploads",null);
         userHeaderFile.append("countId",countId);
-       // this.$refs[formName].validate((valid) => {
-         //  if (valid) {
+        // this.$refs[formName].validate((valid) => {
+            //  if (valid) {
             //  this.ruleForm.taskinitiator=currentUser.id;
              storageTask(userHeaderFile).then((responseData)=>{
                if(responseData.code === 100){
@@ -354,7 +354,7 @@ import { getjglist} from "@/api/toll/tollInfo";
       handlePreview(file) {
       },
       handleExceed(files, fileList) {
-        this.$message.warning(`Giới hạn chọn hiện tại 3 tệp，Lần này đã chọn ${files.length} tệp，Đã chọn tổng cộng ${files.length + fileList.length} tệp`);
+        this.$message.warning(`Giới hạn chọn hiện tại 3 tệp, Lần này đã chọn ${files.length} tệp, Đã chọn tổng cộng ${files.length + fileList.length} tệp`);
       },
       beforeRemove(file, fileList) {
         return this.$confirm(`Xác nhận xóa ${ file.name }？`);
@@ -391,15 +391,15 @@ import { getjglist} from "@/api/toll/tollInfo";
         userHeaderFile.append("deleteIds",JSON.stringify(this.fileIds));
         userHeaderFile.append("fileIdUploads",item);
         userHeaderFile.append("countId",countId);
-       // this.$refs[formName].validate((valid) => {
-         //  if (valid) {
+        // this.$refs[formName].validate((valid) => {
+            //  if (valid) {
             //  this.ruleForm.taskinitiator=currentUser.id;
             await inserttask(userHeaderFile).then((responseData)=>{
                if(responseData.code === 100){
                  countId = responseData.data.id
                }else{
                 this.flags=false
-                this.$message.error("Thực hiện thất bại！")
+                this.$message.error("Thực hiện thất bại!")
                 return;
                }
              })
@@ -409,7 +409,7 @@ import { getjglist} from "@/api/toll/tollInfo";
           //    this.flags=false
           //  }
        //  })
-       // })
+        // })
          }
           this.ruleForm= {
                 tasktype:0,
@@ -420,7 +420,7 @@ import { getjglist} from "@/api/toll/tollInfo";
                 taskdeadline:'',
                 taskregion:[],
             };
-            this.$message.success("Thực hiện thành công！")
+            this.$message.success("Thực hiện thành công!")
             this.flags=false
             this.onDialogClose();
 
@@ -444,7 +444,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         userHeaderFile.append("deleteIds",JSON.stringify(this.fileIds));
         userHeaderFile.append("fileIdUploads",null);
         userHeaderFile.append("countId",countId);
-       // this.$refs[formName].validate((valid) => {
+          // this.$refs[formName].validate((valid) => {
           // if (valid) {
             //  this.ruleForm.taskinitiator=currentUser.id;
              inserttask(userHeaderFile).then((responseData)=>{
@@ -525,7 +525,7 @@ import { getjglist} from "@/api/toll/tollInfo";
           })
       },
       hideOther() {
-      // 数组的indexOfPhương pháp，会返回当前值在数组中的下标，没有则为-1
+      // Phương thức indexOf của mảng, trả về chỉ mục của giá trị hiện tại trong mảng, không có thì trả về -1
       if (this.jgiddatalist.indexOf('qb') === -1 ) {
         this.jglist.map((item) => {
           item.disabled = true

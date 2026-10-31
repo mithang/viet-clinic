@@ -1,6 +1,6 @@
 <template>
   <div class="layout-container" :class="[layout.style , layout.fixedHeader? 'fixed-header' : '', isCollapse? 'is-collapse':'']">
-    <!-- 顶部导航 Header -->
+    <!-- Header điều hướng trên cùng -->
     <nav-header @openPersonalInfoDialog="openPersonalInfoDialog"
                 ref="NavHeader"
                 :isCollapse="isCollapse"
@@ -11,7 +11,7 @@
                 @openSetting="onOpenSetting">
     </nav-header>
 
-    <!-- Tab 标签页栏 - 固定定位，不随滚动移动 -->
+    <!-- Thanh tab trang - cố định vị trí, không di chuyển theo cuộn -->
     <div class="tabs-bar" :class="{ 'is-fixed': layout.fixedHeader }" v-if="visitedViews.length > 0">
       <div class="tabs-wrapper">
         <el-tabs
@@ -35,7 +35,7 @@
           </el-tab-pane>
         </el-tabs>
 
-        <!-- 右键菜单 -->
+        <!-- Menu chuột phải -->
         <ul
           v-show="contextMenuVisible"
           :style="{left: contextMenuLeft + 'px', top: contextMenuTop + 'px'}"
@@ -58,17 +58,17 @@
         </ul>
       </div>
 
-      <!-- 收藏列表 -->
+      <!-- Danh sách thu thập -->
       <div class="collect-container">
         <book-mark class="book-mark"></book-mark>
       </div>
     </div>
 
-    <!-- 占位元素，防止内容被固定的 tab 栏遮挡 -->
+    <!-- Phần tử giữ chỗ, ngăn nội dung bị che bởi thanh tab cố định -->
     <div class="tabs-placeholder" v-if="visitedViews.length > 0 && layout.fixedHeader"></div>
 
     <el-container class="body-container" :style="">
-      <!--工作区-->
+      <!--Khu vực làm việc-->
       <el-main class="main" :style="{backgroundColor: settings.backgroundColor}">
         <div v-show="false" class="mask-layout" :class="isCollapse? 'is-collapse':''" v-loading="true"></div>
         <div class="main-content">
@@ -78,7 +78,7 @@
             </keep-alive>
           </transition>
         </div>
-        <!-- 右边栏 -->
+        <!-- Thanh bên phải -->
         <right-panel ref="settings">
           <Settings ref="layout" slot="layout"/>
           <Sys ref="sys" slot="sys"></Sys>
@@ -110,7 +110,7 @@ export default {
     return {
       sysLogo: logoImage,
       isCollapse: false,
-      header: 'Jeeke demo',
+      header: 'Phòng khám đám mây',
       currentUsername: '',
       userId: window.currentUser ? window.currentUser.id : '',
 
@@ -122,7 +122,7 @@ export default {
       serverTimeoutObj:  null,
       timeoutNum:  null,
 
-      // 标签页相关数据
+      // Dữ liệu liên quan đến tab
       activeTab: '',
       visitedViews: [],
       cachedViews: [],
@@ -492,7 +492,7 @@ export default {
 
     getHamburgerStatus(collapse) {
       this.isCollapse = collapse;
-      this.header = collapse? 'Jeeke' : 'Jeeke demo'
+      this.header = collapse? 'Phòng khám' : 'Phòng khám đám mây'
     },
 
     getWindowHeight() {
@@ -530,7 +530,7 @@ export default {
 };
 </script>
 
-<!-- 全局样式 -->
+<!-- Kiểu dáng toàn cục -->
 <style lang="scss">
 @import '../../assets/scss/common.scss';
 </style>
@@ -554,7 +554,7 @@ export default {
   position: relative;
 }
 
-// Tab 栏样式 - 固定定位
+// Kiểu dáng thanh tab - cố định vị trí
 .tabs-bar {
   background: #fff;
   border-bottom: 1px solid #d8dce5;
@@ -567,10 +567,10 @@ export default {
   position: relative;
   z-index: 10;
 
-  // 固定定位模式
+  // Chế độ cố định vị trí
   &.is-fixed {
     position: fixed;
-    top: 56px; // header chiều cao
+    top: 56px; // Chiều cao header
     left: 0;
     right: 0;
     z-index: 100;
@@ -664,13 +664,13 @@ export default {
   }
 }
 
-// 占位元素 - 防止内容被固定的 tab 栏遮挡
+// Phần tử giữ chỗ - ngăn nội dung bị che bởi thanh tab cố định
 .tabs-placeholder {
   height: 37px;
   width: 100%;
 }
 
-// 右键菜单样式
+// Kiểu dáng menu chuột phải
 .contextmenu {
   position: fixed;
   margin: 0;
@@ -715,15 +715,15 @@ export default {
   }
 }
 
-// 主体容器
+// Container chính
 .body-container {
   height: 100%;
   width: 100%;
   overflow: hidden;
 
-  // khi tab 固定时，给 body-container 添加顶部间距
+  // Khi tab cố định, thêm khoảng cách phía trên cho body-container
   .layout-container.fixed-header & {
-    padding-top: 37px; // tab 栏高度
+    padding-top: 37px; // Chiều cao thanh tab
   }
 }
 
@@ -737,7 +737,7 @@ export default {
   }
 }
 
-// 其他原有样式...
+// Các kiểu dáng gốc khác...
 .fixed-header {
   &.up-down {
     .body-container {

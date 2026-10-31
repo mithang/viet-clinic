@@ -12,13 +12,13 @@ module.exports = {
   // BASE_API: '"http://36.137.36.185:7417/lease-backend-test"',
   // WEB_SOCKET_URL:'"ws://36.137.36.185:7417/lease-backend-test/websocket/"',
 
-  // 报表地址配置
+  // Cấu hình địa chỉ báo cáo
   // REPORT_CLIENT_URL: '"http://59.80.34.149/dataease/frontend/"',
   // REPORT_SERVER_URL: '"http://59.80.34.149/dataease/backend/"',
 
-  // 文件在线预览地址
+  // Địa chỉ xem trước tệp trực tuyến
   // FILE_PREVIEW_URL: '"http://localhost:7020/lease-backend-test/"',
-  // kkFile在线预览地址
+  // Địa chỉ xem trước trực tuyến kkFile
   // KK_FILE_URL: '"http://localhost:7018/onlinePreview?url="',
   // FILE_PREVIEW_URL: '"http://61.172.179.48:19020/lease-backend-test/"',
   // KK_FILE_URL: '"http://61.172.179.48:17018/onlinePreview?url="',
@@ -27,9 +27,9 @@ module.exports = {
   // FILE_PREVIEW_URL: '"http://61.172.179.73:5017/lease-backend-test/"',
   // KK_FILE_URL: '"http://61.172.179.73:5017/onlinePreview?url="',
 
-  // 随访服务地址
+  // Địa chỉ dịch vụ theo dõi sau khám
   FOLLOW_UP_URL: '"http://61.172.179.73:5019"',
-  // 大屏看板地址
+  // Địa chỉ bảng điều khiển màn hình lớn
   GRAFANA_URL: '"http://61.172.179.48:19017"',
 
 }

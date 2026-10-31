@@ -1,4 +1,4 @@
-// lys 2019/12/12  人工编写
+// lys 2019/12/12  biên soạn thủ công
 import request from '@/utils/request'
 
 export const restoreAction = (action) =>

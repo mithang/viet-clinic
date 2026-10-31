@@ -5,7 +5,7 @@
         <el-card  shadow='hover'>
           <div slot='header' class='clearfix'>
             <span>
-              Dữ liệu meta：{{metaData.name}}
+              Dữ liệu meta: {{metaData.name}}
             </span>
           </div>
           <ConditionPanel ref='conditionPanel' v-model='metaData.dataRules' :tableId='metaData.id' :schemeId='metaData.schemeId' :routerId='metaData.routerId'></ConditionPanel>
@@ -31,11 +31,11 @@ export default {
   data() {
     return {
       metaFormModel: {
-        metaDatas: []    // 待选节点列表
+        metaDatas: []    // Danh sách node chờ chọn
       },
       visible: false,
-      roleId: null,       // 当前配置的角色Id
-      routerId: null     // 当前配置的路由Id
+      roleId: null,       // Id vai trò đang cấu hình
+      routerId: null     // Id route đang cấu hình
     }    
   },
   props: {
@@ -52,15 +52,15 @@ export default {
       let dataRules = this.value
       this.$refs['metaForm'].validate(valid => {
         if (valid) {
-          // 移除元数据的权限
+          // Xoá quyền của metadata
           this.metaFormModel.metaDatas.forEach((item)=>{
             dataRules = dataRules.filter((ruel) => {
               return !(ruel.metaId === item.id && ruel.routerId === routerId)
             })
           })
-          // 添加新的数据权限
+          // Thêm quyền dữ liệu mới
           this.metaFormModel.metaDatas.forEach((item)=>{
-            // 仅保存配置了有效条件的数据权限
+            // Chỉ lưu quyền dữ liệu đã cấu hình điều kiện hợp lệ
             if(this.compositeCondition(item.dataRules).length > 0) { 
               dataRules.push({
                 'roleId': roleId,
@@ -83,7 +83,7 @@ export default {
       this.roleId = roleId
       this.routerId = routerId
       let metas = require('@/views/' + code + '/metadata').metadata
-      // 合并角色配置的数据权限, 并去除metadata.js已经删除的元数据
+      // Gộp quyền dữ liệu đã cấu hình của vai trò, đồng thời loại bỏ metadata đã xoá trong metadata.js
       this.metaFormModel.metaDatas = []
       metas.forEach((item, idx) => {
         let noFound = true
@@ -98,7 +98,7 @@ export default {
             noFound = false
           }
         })
-        // 配置后，新添加的元数据
+        // Metadata mới thêm sau khi cấu hình
         if(noFound) {
           this.metaFormModel.metaDatas.push({
             id: item.id,

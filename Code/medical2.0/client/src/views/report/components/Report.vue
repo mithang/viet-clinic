@@ -37,7 +37,7 @@
   import { uuid } from 'vue-uuid'
 
   import bus from '@/views/report/utils/bus'
-  // 注入报表组件
+  // Tiêm (inject) component báo cáo
   import store from '@/store'
   import { UxGrid } from 'umy-ui'
   Vue.use(window['vue-dataviewer']).use(UxGrid)
@@ -48,7 +48,7 @@
     name: "Report",
     mixins: [reportMixin],
     props: {
-      // 报表显示模式 1 嵌入式模式； 2 浏览报表模式； 3 浏览器弹出页面模式
+      // Chế độ hiển thị báo cáo: 1 chế độ nhúng; 2 chế độ xem báo cáo; 3 chế độ mở trang bằng trình duyệt
       reportType: {
         type: String | Number,
         required: true
@@ -72,7 +72,7 @@
     },
     mounted() {
       this.$nextTick(() => {
-        // 获取看板 Chỉ có hiệu lực trong báo cáo nhúng
+        // Lấy bảng điều khiển (dashboard), chỉ có hiệu lực trong báo cáo nhúng
         if(this.dashboardId) {
           this.getDashboard(this.dashboardId)
         }
@@ -115,7 +115,7 @@
           this.addViewFilter(param)
         } else {
           setTimeout(() => {
-            // 为解决默认初始值有时不准确
+            // Để khắc phục tình trạng giá trị khởi tạo mặc định đôi khi không chính xác
             this.embeddedKey++
             this.addViewFilterFun(param)
           }, 50)

@@ -2,7 +2,7 @@
   <el-dialog :visible.sync="dialogVisible" title="Tra cứu kết quả lấy thuốc" width="70%" :close-on-click-modal="false"  @close="closeDialog" >
     <el-form :model="formData" ref="medicineForm" label-width="120px">
       <el-row>
-        <!-- 让两个表单项并排显示 -->
+        <!-- Hiển thị hai mục form cạnh nhau -->
         <el-col :span="8" label-align="left" >
           <el-form-item label="Mã đơn thuốc bảo hiểm y tế">
             <el-input v-model="formData.hiRxno" readonly style="width: 100%;"></el-input>
@@ -17,7 +17,7 @@
       </el-row>
       <!-- Thông tin lấy thuốc của đơn thuốc -->
       <el-col :span="8" style="margin-top: 5px;font-size: 12px">Thông tin lấy thuốc của đơn thuốc</el-col>
-      <!-- 渲染表格 -->
+      <!-- Render bảng -->
       <el-table :data="formData.eltdelts" style="width: 100%">
         <el-table-column prop="medinsListCodg" label="Mã thuốc của cơ sở y tế"></el-table-column>
         <el-table-column prop="drugGenname" label="Tên chung"></el-table-column>

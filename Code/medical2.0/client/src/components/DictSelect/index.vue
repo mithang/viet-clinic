@@ -73,10 +73,10 @@ export default {
     async loadDictItems() {
       try {
         if (this.dictCode) {
-          // 推荐方式：Theo loại từ điển code Lấy（Có bộ nhớ đệm）
+          // Cách khuyên dùng: Lấy theo mã từ điển (Có bộ nhớ đệm)
           this.options = await getDictItemsByCode(this.dictCode)
         } else if (this.dictTypeId) {
-          // 兼容方式：按 dict_type_id Lấy
+          // Cách tương thích: Lấy theo dict_type_id
           const res = await listDictItemAll({
             params: [{ columnName: 'dict_type_id', queryType: '=', value: this.dictTypeId }]
           })
@@ -85,7 +85,7 @@ export default {
           }
         }
       } catch (error) {
-        console.error('加载字典项失败:', error)
+        console.error('Tải mục từ điển thất bại:', error)
       }
     },
     onClear() {

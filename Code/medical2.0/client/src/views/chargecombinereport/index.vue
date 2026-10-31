@@ -9,7 +9,7 @@
         <div>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">Ngày thu phí：</div>
+              <div class="condition-name">Ngày thu phí: </div>
               <el-date-picker
               style="width:320px;"
                 v-model="mainCondition.chargeDateRange"
@@ -20,7 +20,7 @@
               ></el-date-picker>
             </el-col>
             <el-col :span="6"  class="flex-start">
-              <div class="condition-name">Tên chi phí：</div>
+              <div class="condition-name">Tên chi phí: </div>
               <el-select
                 v-model="mainCondition.mainCostType"
                 placeholder="Tên chi phí"
@@ -35,7 +35,7 @@
               </el-select>
             </el-col>
             <el-col :span="6"   class="flex-start">
-              <div class="condition-name">Người thu phí：</div>
+              <div class="condition-name">Người thu phí: </div>
               <el-select
                 v-model="mainCondition.chargeOper"
                 placeholder="Người thu phí"
@@ -50,7 +50,7 @@
               </el-select>
             </el-col>
             <el-col :span="5"  class="flex-start">
-              <div class="condition-name">Tên bệnh nhân：</div>
+              <div class="condition-name">Tên bệnh nhân: </div>
               <el-input
                 v-model="mainCondition.patientName"
                 style="width:200px;"
@@ -60,7 +60,7 @@
           </el-row>
           <el-row>
             <el-col :span="7"  class="flex-start">
-              <div class="condition-name">Số phiếu thu phí：</div>
+              <div class="condition-name">Số phiếu thu phí: </div>
               <el-input
                 style="width:320px;"
                 v-model="mainCondition.chargeCode"
@@ -68,7 +68,7 @@
               ></el-input>
             </el-col>
             <el-col :span="6"  class="flex-start">
-              <div class="condition-name">Khoa lập phiếu：</div>
+              <div class="condition-name">Khoa lập phiếu: </div>
               <el-select
                 v-model="mainCondition.prescriptionDept"
                 placeholder="Khoa lập phiếu"
@@ -83,7 +83,7 @@
               </el-select>
             </el-col>
             <el-col :span="6"  class="flex-start">
-              <div class="condition-name">Bác sĩ kê đơn：</div>
+              <div class="condition-name">Bác sĩ kê đơn: </div>
               <el-select
                 v-model="mainCondition.prescriptionOper"
                 placeholder="Người thu phí"
@@ -98,7 +98,7 @@
               </el-select>
             </el-col>
             <el-col :span="5"  class="flex-start">
-              <div class="condition-name">Trạng thái thu phí：</div>
+              <div class="condition-name">Trạng thái thu phí: </div>
               <el-select
                style="width:200px;"
                 v-model="mainCondition.chargeStatu"
@@ -176,7 +176,7 @@
         <div>
           <el-row>
             <el-col :span="7"  class="flex-start">
-              <div class="condition-name">Ngày thu phí：</div>
+              <div class="condition-name">Ngày thu phí: </div>
               <el-date-picker
                 style="width:320px;"
                 v-model="detailCondition.chargeDateRange"
@@ -187,7 +187,7 @@
               ></el-date-picker>
             </el-col>
             <el-col :span="6"   class="flex-start">
-              <div class="condition-name">Phân loại thu phí：</div>
+              <div class="condition-name">Phân loại thu phí: </div>
               <el-select
               style="width:250px;"
                 v-model="detailCondition.detailCostType"
@@ -203,7 +203,7 @@
               </el-select>
             </el-col>
             <el-col :span="6"   class="flex-start">
-              <div class="condition-name">Người thu phí：</div>
+              <div class="condition-name">Người thu phí: </div>
               <el-select
                 v-model="detailCondition.chargeOper"
                 placeholder="Người thu phí"
@@ -218,7 +218,7 @@
               </el-select>
             </el-col>
             <el-col :span="5"   class="flex-start">
-              <div class="condition-name">Tên bệnh nhân：</div>
+              <div class="condition-name">Tên bệnh nhân: </div>
               <el-input style="width:200px;"
                 v-model="detailCondition.patientName"
                 placeholder="Tên bệnh nhân"
@@ -227,7 +227,7 @@
           </el-row>
           <el-row>
             <el-col :span="7"   class="flex-start"> 
-              <div class="condition-name">Số phiếu thu phí：</div>
+              <div class="condition-name">Số phiếu thu phí: </div>
               <el-input
                  style="width:320px;"
                 v-model="detailCondition.chargeCode"
@@ -235,7 +235,7 @@
               ></el-input>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Hạng mục thu phí：</div>
+              <div class="condition-name">Hạng mục thu phí: </div>
               <el-input
               style="width:250px;"
                 v-model="detailCondition.chargeItem"
@@ -243,7 +243,7 @@
               ></el-input>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Khoa lập phiếu：</div>
+              <div class="condition-name">Khoa lập phiếu: </div>
               <el-select
                 v-model="detailCondition.prescriptionDept"
                 placeholder="Khoa lập phiếu"
@@ -258,7 +258,7 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">Bác sĩ kê đơn：</div>
+              <div class="condition-name">Bác sĩ kê đơn: </div>
               <el-select
                 style="width:200px;"
                 v-model="detailCondition.prescriptionOper"
@@ -276,7 +276,7 @@
           </el-row>
           <el-row>
             <el-col :span="7"  class="flex-start">
-              <div class="condition-name">Trạng thái thu phí：</div>
+              <div class="condition-name">Trạng thái thu phí: </div>
               <el-select
                  style="width:320px;"
                 v-model="detailCondition.chargeStatu"
@@ -406,31 +406,31 @@ export default {
       chargeOpers: [
         {
           id: 1,
-          name: "张三",
+          name: "Nguyễn Văn An",
         },
         {
           id: 2,
-          name: "李四",
+          name: "Trần Thị Bình",
         },
       ],
       prescriptionDepts: [
         {
           id: 1,
-          name: "内科",
+          name: "Nội khoa",
         },
         {
           id: 2,
-          name: "外科",
+          name: "Ngoại khoa",
         },
       ],
       prescriptionOpers: [
         {
           id: 1,
-          name: "张三",
+          name: "Nguyễn Văn An",
         },
         {
           id: 2,
-          name: "李四",
+          name: "Trần Thị Bình",
         },
       ],
       chargeStatus: [

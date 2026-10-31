@@ -333,7 +333,7 @@
           <el-input  label="Vui lòng nhập đơn vị tham khảo" :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" v-model="examine.referenceUnit"></el-input>
         </el-form-item>
         <el-form-item label="Giá trị tham khảo">
-          <el-input label="Vui lòng nhập giá trị tham khảo，Xuống dòng thêm nhiều nhóm" :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" type="textarea" v-model="examine.referenceValue"></el-input>
+          <el-input label="Vui lòng nhập giá trị tham khảo, Xuống dòng thêm nhiều nhóm" :disabled="dialogProps.action === 'view' || (bizFormModel.syncId !== '' && dialogProps.action !== 'add')" type="textarea" v-model="examine.referenceValue"></el-input>
         </el-form-item>
       </el-form>
       </el-col>
@@ -382,7 +382,7 @@ export default {
       itemName_List:[],//Tên hạng mục con
       unit_List: [], // Đơn vị
       flag:false,
-      subproject:[],//子项目表格集合
+      subproject:[],//Tập hợp bảng hạng mục con
       examine:{
         referenceUnit:"",
         referenceValue:""
@@ -454,7 +454,7 @@ export default {
     },
     doSave() {
       this.setLoad()
-     // return
+      // return
       saveCostItem(this.dto).then(responseData => {
         this.flag=false
         this.salesFlage=false
@@ -521,7 +521,7 @@ export default {
 
     //Xóa hạng mục con
     deleteRow(index, rows) {
-       //Tính giá bán
+        //Tính giá bán
         this.bizFormModel.salePrice-=(this.subproject[index].quantity*this.subproject[index].salePrice)
         this.bizFormModel.costPrice-=(this.subproject[index].quantity*this.subproject[index].costPrice)
         this.sale-=(this.subproject[index].quantity*this.subproject[index].salePrice)
@@ -593,7 +593,7 @@ export default {
           }
         
        }
-     // this.subproject=[]
+      // this.subproject=[]
       //Thêm
       
       if(this.subjectName.length>this.subproject.length){
@@ -662,7 +662,7 @@ export default {
        this.bizFormModel.salePrice=this.bizFormModel.salePrice+this.sale
        this.bizFormModel.costPrice=this.bizFormModel.costPrice+this.cost
      },
-     //添加弹出框的回调事件
+     //Sự kiện callback của hộp thoại thêm mới
      close(){
        this.salesFlage=false
      },
@@ -784,7 +784,7 @@ export default {
         // this.bizFormModel = { ...this.initFormModel(this.user), ...costItem };
         // this.initOptions(this.bizFormModel);
         // this.tabIndex = "1";
-        // this.bizFormModel.id = null; //ĐặtidĐặt thành trống，Thêm mới một
+        // this.bizFormModel.id = null; //ĐặtidĐặt thành trống, Thêm mới một
         // this.dialogProps.visible = true;
         // this.subjectName=[]
         // this.subproject=[]

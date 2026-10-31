@@ -1,6 +1,6 @@
 <template>
 <el-card class="page-container" style="padding: 0px;">
-   <!-- <el-row>
+        <!-- <el-row>
         <el-col style="text-align:right;margin-bottom:10px">
           <el-button type="primary" icon="el-icon-upload2" @click='exportExcel'>Xuất</el-button>
         </el-col>
@@ -309,12 +309,12 @@ pickerOptions: {
      let date = new Date()//Lấy thời gian mới
      //Lấy năm hiện tại,và chuyển thành chuỗi
      let year = date.getFullYear().toString()
-     //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
-    //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+     //Lấy tháng hiện tại, vì tháng bắt đầu từ0Bắt đầu, tại đây cần cộng1, 
+    //Sử dụng biểu thức ba ngôi, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
      let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-     //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+     //Lấy ngày, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
      let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-     //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+     //Nối chuỗi, Nối thời gian bắt đầu và thời gian kết thúc
      let start = year + '-' + month + '-01'+' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
      //let end=new Date(year, month, 0).getDate();
      let end = year + '-' + month + '-' + day +' 23:59:59'  //Trong ngày

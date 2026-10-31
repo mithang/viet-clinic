@@ -279,7 +279,7 @@ selectvisiprogresslist(this.visitprogresspara).then((responseData)=>{
       };
       switch(item.jzlx){
         case "treatType_0":
-          item.jzlx="初诊"
+          item.jzlx="Khám lần đầu"
           break;
           case "treatType_1":
           item.jzlx="Tái khám"

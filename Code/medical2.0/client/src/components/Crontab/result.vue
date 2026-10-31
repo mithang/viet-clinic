@@ -5,7 +5,7 @@
 			<template v-if='isShow'>
 				<li v-for='item in resultList' :key="item">{{item}}</li>
 			</template>
-			<li v-else>计算结果中...</li>
+			<li v-else>Đang tính kết quả...</li>
 		</ul>
 	</div>
 </template>
@@ -23,18 +23,18 @@ export default {
 	},
 	name: 'crontab-result',
 	methods: {
-		// 表达式值变化时，开始去计算结果
+		// Khi giá trị biểu thức thay đổi, bắt đầu tính kết quả
 		expressionChange() {
 
-			// 计算开始-隐藏结果
+			// Bắt đầu tính - ẩn kết quả
 			this.isShow = false;
-			// 获取规则数组[0giây、1phút、2giờ、3ngày、4tháng、5星期、6năm]
+			// Lấy mảng quy tắc [0 giây, 1 phút, 2 giờ, 3 ngày, 4 tháng, 5 tuần, 6 năm]
 			let ruleArr = this.$options.propsData.ex.split(' ');
-			// 用于记录进入循环的次数
+			// Dùng để ghi số lần vào vòng lặp
 			let nums = 0;
-			// 用于暂时存符号时间规则结果的数组
+			// Mảng dùng để tạm lưu kết quả quy tắc thời gian
 			let resultArr = [];
-			// 获取当前时间精确至[năm、tháng、ngày、giờ、phút、giây]
+			// Lấy thời gian hiện tại chính xác đến [năm, tháng, ngày, giờ, phút, giây]
 			let nTime = new Date();
 			let nYear = nTime.getFullYear();
 			let nMonth = nTime.getMonth() + 1;
@@ -42,7 +42,7 @@ export default {
 			let nHour = nTime.getHours();
 			let nMin = nTime.getMinutes();
 			let nSecond = nTime.getSeconds();
-			// 根据规则获取到近100年可能年数组、月数组等等
+			// Theo quy tắc lấy mảng năm, mảng tháng v.v. có thể trong 100 năm gần nhất
 			this.getSecondArr(ruleArr[0]);
 			this.getMinArr(ruleArr[1]);
 			this.getHourArr(ruleArr[2]);
@@ -50,21 +50,21 @@ export default {
 			this.getMonthArr(ruleArr[4]);
 			this.getWeekArr(ruleArr[5]);
 			this.getYearArr(ruleArr[6], nYear);
-			// 将获取到的数组赋值-方便使用
+			// Gán mảng lấy được - tiện sử dụng
 			let sDate = this.dateArr[0];
 			let mDate = this.dateArr[1];
 			let hDate = this.dateArr[2];
 			let DDate = this.dateArr[3];
 			let MDate = this.dateArr[4];
 			let YDate = this.dateArr[5];
-			// 获取当前时间在数组中的索引
+			// Lấy chỉ mục của thời gian hiện tại trong mảng
 			let sIdx = this.getIndex(sDate, nSecond);
 			let mIdx = this.getIndex(mDate, nMin);
 			let hIdx = this.getIndex(hDate, nHour);
 			let DIdx = this.getIndex(DDate, nDay);
 			let MIdx = this.getIndex(MDate, nMonth);
 			let YIdx = this.getIndex(YDate, nYear);
-			// 重置月日时分秒的函数(后面用的比较多)
+			// Hàm đặt lại tháng ngày giờ phút giây (sau dùng khá nhiều)
 			const resetSecond = function () {
 				sIdx = 0;
 				nSecond = sDate[sIdx]
@@ -89,11 +89,11 @@ export default {
 				nMonth = MDate[MIdx]
 				resetDay();
 			}
-			// 如果当前年份不为数组中当前值
+			// Nếu năm hiện tại không phải giá trị hiện tại trong mảng
 			if (nYear !== YDate[YIdx]) {
 				resetMonth();
 			}
-			// 如果当前月份不为数组中当前值
+			// Nếu tháng hiện tại không phải giá trị hiện tại trong mảng
 			if (nMonth !== MDate[MIdx]) {
 				resetDay();
 			}
@@ -110,7 +110,7 @@ export default {
 				resetSecond();
 			}
 
-			// 循环年份数组
+			// Vòng lặp mảng năm
 			goYear: for (let Yi = YIdx; Yi < YDate.length; Yi++) {
 				let YY = YDate[Yi];
 				// Khi đạt giá trị tối đa
@@ -118,9 +118,9 @@ export default {
 					resetMonth();
 					continue;
 				}
-				// 循环月份数组
+				// Vòng lặp mảng tháng
 				goMonth: for (let Mi = MIdx; Mi < MDate.length; Mi++) {
-					// 赋值、方便后面运算
+					// Gán giá trị, thuận tiện cho phép tính phía sau
 					let MM = MDate[Mi];
 					MM = MM < 10 ? '0' + MM : MM;
 					// Khi đạt giá trị tối đa
@@ -132,9 +132,9 @@ export default {
 						}
 						continue;
 					}
-					// 循环日期数组
+					// Vòng lặp mảng ngày
 					goDay: for (let Di = DIdx; Di < DDate.length; Di++) {
-						// 赋值、方便后面运算
+						// Gán giá trị, thuận tiện cho phép tính phía sau
 						let DD = DDate[Di];
 						let thisDD = DD < 10 ? '0' + DD : DD;
 
@@ -152,14 +152,14 @@ export default {
 							continue;
 						}
 
-						// 判断日期的合法性，不合法的话也是跳出当前循环
+						// Phán đoán tính hợp pháp của ngày, nếu không hợp pháp cũng thoát vòng lặp hiện tại
 						if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true && this.dayRule !== 'workDay' && this.dayRule !== 'lastWeek' && this.dayRule !== 'lastDay') {
 							resetDay();
 							continue goMonth;
 						}
-						// 如果日期规则中有值时
+						// Nếu quy tắc ngày có giá trị
 						if (this.dayRule === 'lastDay') {
-							// 如果不是合法日期则需要将前将日期调到合法日期即月末最后一天
+							// Nếu không phải ngày hợp lệ thì cần điều chỉnh ngày về ngày hợp lệ tức ngày cuối cùng của tháng
 
 							if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 								while (DD > 0 && this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
@@ -169,26 +169,26 @@ export default {
 								}
 							}
 						} else if (this.dayRule === 'workDay') {
-							// 校验并调整如果是2tháng30号这种日期传进来时需调整至正常月底
+							// Kiểm tra và điều chỉnh: nếu truyền vào ngày kiểu 30 tháng 2 thì cần điều chỉnh về ngày cuối tháng hợp lệ
 							if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 								while (DD > 0 && this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD--;
 									thisDD = DD < 10 ? '0' + DD : DD;
 								}
 							}
-							// 获取达到条件的日期是星期X
+							// Lấy ngày đạt điều kiện là thứ mấy
 							let thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + thisDD + ' 00:00:00'), 'week');
-							// 当星期日时
+							// Khi là Chủ nhật
 							if (thisWeek === 0) {
-								// 先找下一个日，并判断是否为月底
+								// Tìm ngày tiếp theo trước, và phán đoán xem có phải cuối tháng không
 								DD++;
 								thisDD = DD < 10 ? '0' + DD : DD;
-								// 判断下一日已经不是合法日期
+								// Phán đoán ngày tiếp theo đã không phải ngày hợp lệ
 								if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD -= 3;
 								}
 							} else if (thisWeek === 6) {
-								// 当星期6时只需判断不是1号就可进行操作
+								// Khi thứ 6 chỉ cần phán đoán không phải ngày 1 là có thể thao tác
 								if (this.dayRuleSup !== 1) {
 									DD--;
 								} else {
@@ -196,10 +196,10 @@ export default {
 								}
 							}
 						} else if (this.dayRule === 'weekDay') {
-							// 如果指定了是星期几
-							// 获取当前日期是属于星期几
+							// Nếu đã chỉ định là thứ mấy
+							// Lấy ngày hiện tại thuộc thứ mấy
 							let thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + DD + ' 00:00:00'), 'week');
-							// 校验当前星期是否在星期池（dayRuleSup）中
+							// Xác thực thứ hiện tại có trong pool thứ (dayRuleSup) không
 							if (Array.indexOf(this.dayRuleSup, thisWeek) < 0) {
 								// Khi đạt giá trị tối đa
 								if (Di === DDate.length - 1) {
@@ -213,8 +213,8 @@ export default {
 								continue;
 							}
 						} else if (this.dayRule === 'assWeek') {
-							// 如果指定了是第几周的星期几
-							// 获取每月1号是属于星期几
+							// Nếu đã chỉ định là tuần thứ mấy của thứ nào
+							// Lấy ngày 1 của mỗi tháng thuộc thứ mấy
 							let thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + DD + ' 00:00:00'), 'week');
 							if (this.dayRuleSup[1] >= thisWeek) {
 								DD = (this.dayRuleSup[0] - 1) * 7 + this.dayRuleSup[1] - thisWeek + 1;
@@ -222,24 +222,24 @@ export default {
 								DD = this.dayRuleSup[0] * 7 + this.dayRuleSup[1] - thisWeek + 1;
 							}
 						} else if (this.dayRule === 'lastWeek') {
-							// 如果指定了每月最后一个星期几
-							// 校验并调整如果是2tháng30号这种日期传进来时需调整至正常月底
+							// Nếu đã chỉ định thứ mấy cuối cùng của mỗi tháng
+							// Xác thực và điều chỉnh nếu ngày như 30 tháng 2 truyền vào thì cần điều chỉnh về cuối tháng bình thường
 							if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 								while (DD > 0 && this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD--;
 									thisDD = DD < 10 ? '0' + DD : DD;
 								}
 							}
-							// 获取月末最后一天是星期几
+							// Lấy ngày cuối cùng của tháng là thứ mấy
 							let thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + thisDD + ' 00:00:00'), 'week');
-							// 找到要求中最近的那个星期几
+							// Tìm thứ gần nhất trong yêu cầu
 							if (this.dayRuleSup < thisWeek) {
 								DD -= thisWeek - this.dayRuleSup;
 							} else if (this.dayRuleSup > thisWeek) {
 								DD -= 7 - (this.dayRuleSup - thisWeek)
 							}
 						}
-						// 判断时间值是否小于10置换成“05”这种格式
+						// Phán đoán giá trị thời gian có nhỏ hơn 10 thì thay thành định dạng "05"
 						DD = DD < 10 ? '0' + DD : DD;
 
 						// Vòng lặp“giờ”Mảng
@@ -291,12 +291,12 @@ export default {
 								// Vòng lặp"giây"Mảng
 								goSecond: for (let si = sIdx; si <= sDate.length - 1; si++) {
 									let ss = sDate[si] < 10 ? '0' + sDate[si] : sDate[si];
-									// 添加当前时间（时间合法性在日期循环时已经判断）
+									// Thêm thời gian hiện tại (tính hợp pháp thời gian đã được phán đoán khi vòng lặp ngày)
 									if (MM !== '00' && DD !== '00') {
 										resultArr.push(YY + '-' + MM + '-' + DD + ' ' + hh + ':' + mm + ':' + ss)
 										nums++;
 									}
-									// 如果条数满了就退出循环
+									// Nếu đủ số lượng thì thoát vòng lặp
 									if (nums === 5) break goYear;
 									// Khi đạt giá trị tối đa
 									if (si === sDate.length - 1) {
@@ -325,21 +325,21 @@ export default {
 					}//goDay
 				}//goMonth
 			}
-			// Xác định100年内的结果条数
+			// Xác định số kết quả trong 100 năm
 			if (resultArr.length === 0) {
-				this.resultList = ['没有达到条件的结果！'];
+				this.resultList = ['Không có kết quả nào thoả mãn điều kiện!'];
 			} else {
 				this.resultList = resultArr;
 				if (resultArr.length !== 5) {
-					this.resultList.push('最近100年内只有上面' + resultArr.length + '条结果！')
+					this.resultList.push('Trong 100 năm gần nhất chỉ có ' + resultArr.length + ' kết quả như trên!')
 				}
 			}
-			// 计算完成-显示结果
+			// Tính xong - hiển thị kết quả
 			this.isShow = true;
 
 
 		},
-		// 用于计算某位数字在数组中的索引
+		// Dùng để tính chỉ mục của một chữ số trong mảng
 		getIndex(arr, value) {
 			if (value <= arr[0] || value > arr[arr.length - 1]) {
 				return 0;
@@ -351,7 +351,7 @@ export default {
 				}
 			}
 		},
-		// Lấy"năm"Mảng
+		// Lấy mảng "năm"
 		getYearArr(rule, year) {
 			this.dateArr[5] = this.getOrderArr(year, year + 100);
 			if (rule !== undefined) {
@@ -364,7 +364,7 @@ export default {
 				}
 			}
 		},
-		// Lấy"tháng"Mảng
+		// Lấy mảng "tháng"
 		getMonthArr(rule) {
 			this.dateArr[4] = this.getOrderArr(1, 12);
 			if (rule.indexOf('-') >= 0) {
@@ -375,9 +375,9 @@ export default {
 				this.dateArr[4] = this.getAssignArr(rule)
 			}
 		},
-		// Lấy"ngày"Mảng-主要为日期规则
+		// Lấy mảng "ngày" - chủ yếu là quy tắc ngày
 		getWeekArr(rule) {
-			// 只有当日期规则的两个值均为“”时则表达日期是有选项的
+			// Chỉ khi cả hai giá trị quy tắc ngày đều là "" thì biểu thị ngày có tùy chọn
 			if (this.dayRule === '' && this.dayRuleSup === '') {
 				if (rule.indexOf('-') >= 0) {
 					this.dayRule = 'weekDay';
@@ -401,7 +401,7 @@ export default {
 					this.dayRule = 'weekDay';
 					this.dayRuleSup = this.getAssignArr(rule)
 				}
-				// NếuweekDay时将7调整为0【weekgiá trị0即是星期日】
+				// Nếu weekDay thì điều chỉnh 7 thành 0【giá trị week 0 tức là Chủ nhật】
 				if (this.dayRule === 'weekDay') {
 					for (let i = 0; i < this.dayRuleSup.length; i++) {
 						if (this.dayRuleSup[i] === 7) {
@@ -411,7 +411,7 @@ export default {
 				}
 			}
 		},
-		// Lấy"ngày"Mảng-少量为日期规则
+		// Lấy mảng "ngày" - ít trường hợp là quy tắc ngày
 		getDayArr(rule) {
 			this.dateArr[3] = this.getOrderArr(1, 31);
 			this.dayRule = '';
@@ -437,7 +437,7 @@ export default {
 				this.dayRuleSup = 'null';
 			}
 		},
-		// Lấy"giờ"Mảng
+		// Lấy mảng "giờ"
 		getHourArr(rule) {
 			this.dateArr[2] = this.getOrderArr(0, 23);
 			if (rule.indexOf('-') >= 0) {
@@ -448,7 +448,7 @@ export default {
 				this.dateArr[2] = this.getAssignArr(rule)
 			}
 		},
-		// Lấy"phút"Mảng
+		// Lấy mảng "phút"
 		getMinArr(rule) {
 			this.dateArr[1] = this.getOrderArr(0, 59);
 			if (rule.indexOf('-') >= 0) {
@@ -459,7 +459,7 @@ export default {
 				this.dateArr[1] = this.getAssignArr(rule)
 			}
 		},
-		// Lấy"giây"Mảng
+		// Lấy mảng "giây"
 		getSecondArr(rule) {
 			this.dateArr[0] = this.getOrderArr(0, 59);
 			if (rule.indexOf('-') >= 0) {
@@ -470,7 +470,7 @@ export default {
 				this.dateArr[0] = this.getAssignArr(rule)
 			}
 		},
-		// 根据传进来的min-max返回一个顺序的数组
+		// Theo min-max truyền vào trả về một mảng tuần tự
 		getOrderArr(min, max) {
 			let arr = [];
 			for (let i = min; i <= max; i++) {
@@ -478,7 +478,7 @@ export default {
 			}
 			return arr;
 		},
-		// 根据规则中指定的零散值返回一个数组
+		// Theo giá trị rời rạc được chỉ định trong quy tắc trả về một mảng
 		getAssignArr(rule) {
 			let arr = [];
 			let assiginArr = rule.split(',');
@@ -488,7 +488,7 @@ export default {
 			arr.sort(this.compare)
 			return arr;
 		},
-		// 根据一定算术规则计算返回一个数组
+		// Theo quy tắc số học nhất định tính toán trả về một mảng
 		getAverageArr(rule, limit) {
 			let arr = [];
 			let agArr = rule.split('/');
@@ -500,9 +500,9 @@ export default {
 			}
 			return arr;
 		},
-		// 根据规则返回一个具有周期性的数组
+		// Theo quy tắc trả về một mảng có tính chu kỳ
 		getCycleArr(rule, limit, status) {
-			// status--表示是否从0Bắt đầu（则从1Bắt đầu）
+			// status--biểu thị có bắt đầu từ 0 hay không (thì bắt đầu từ 1)
 			let arr = [];
 			let cycleArr = rule.split('-');
 			let min = Number(cycleArr[0]);
@@ -520,7 +520,7 @@ export default {
 			arr.sort(this.compare)
 			return arr;
 		},
-		// 比较数字大小（用于Array.sort）
+		// So sánh độ lớn số (dùng cho Array.sort)
 		compare(value1, value2) {
 			if (value2 - value1 > 0) {
 				return -1;
@@ -528,9 +528,9 @@ export default {
 				return 1;
 			}
 		},
-		// 格式化日期格式如：2017-9-19 18:04:33
+		// Định dạng định dạng ngày như: 2017-9-19 18:04:33
 		formatDate(value, type) {
-			// 计算日期相关值
+			// Tính các giá trị liên quan đến ngày
 			let time = typeof value === 'number' ? new Date(value) : value;
 			let Y = time.getFullYear();
 			let M = time.getMonth() + 1;
@@ -539,14 +539,14 @@ export default {
 			let m = time.getMinutes();
 			let s = time.getSeconds();
 			let week = time.getDay();
-			// 如果传递了type的话
+			// Nếu đã truyền type
 			if (type === undefined) {
 				return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
 			} else if (type === 'week') {
 				return week;
 			}
 		},
-		// 检查日期是否存在
+		// Kiểm tra ngày có tồn tại không
 		checkDate(value) {
 			let time = new Date(value);
 			let format = this.formatDate(time)
@@ -558,7 +558,7 @@ export default {
 	},
 	props: ['ex'],
 	mounted: function () {
-		// Khởi tạo 获取一次结果
+		// Khởi tạo lấy kết quả một lần
 		this.expressionChange();
 	}
 }

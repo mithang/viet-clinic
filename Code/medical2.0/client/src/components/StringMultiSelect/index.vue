@@ -25,7 +25,7 @@ export default {
       type: String,
       default: () => {return 'Vui lòng chọn'}
     },
-    // 选择器选择项
+    // Tùy chọn của bộ chọn
     opts: {
       type: Array,
       default: () => {return []}

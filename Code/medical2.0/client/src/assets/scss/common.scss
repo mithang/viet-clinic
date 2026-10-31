@@ -1,9 +1,17 @@
+// Font stack hướng Việt Nam: ưu tiên font hệ điều hành có đủ dấu tiếng Việt
+// (Inter / Segoe UI / Roboto / Noto Sans). Tránh font Trung Quốc (PingFang SC,
+// Microsoft YaHei, SimSun) vì dấu tiếng Việt bị lệch baseline và thiếu glyph.
 body {
-  font-family: pingfang SC,helvetica neue,arial,hiragino sans gb,microsoft yahei ui,microsoft yahei,simsun,sans-serif!important;
+  font-family: "Inter", "Be Vietnam Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Noto Sans Vietnamese",
+    sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  // Dấu tiếng Việt cần giãn dòng thoáng hơn mặc định
+  line-height: 1.5;
+  letter-spacing: 0;
 }
-/* 表格 */
+/* Bảng */
 .el-table {
   width: 100%;
   min-width: 600px;
@@ -17,7 +25,7 @@ body {
       text-align: center;
   }
   
-  /* 修复 ResizeObserver Lỗi */
+  /* Khắc phục ResizeObserver lỗi */
   .el-table__body-wrapper {
     overflow: auto;
   }
@@ -34,9 +42,9 @@ body {
     overflow: hidden;
   }
   
-  /* Vô hiệu hóa ResizeObserver 错误提示 */
+  /* Vô hiệu hóa ResizeObserver thông báo lỗi */
   .el-table {
-    /* 避免在调整列宽时触发过多的 ResizeObserver sự kiện */
+    /* Tránh kích hoạt quá nhiều sự kiện ResizeObserver khi điều chỉnh độ rộng cột */
     --el-table-resize-observer-disabled: true;
   }
 }
@@ -46,11 +54,11 @@ body {
 }
 
 
-/**修改全局的滚动条*/
-/**滚动条的宽度*/
+/**Chỉnh sửa thanh cuộn toàn cục*/
+/**Chiều rộng của thanh cuộn*/
 ::-webkit-scrollbar {
-  width: 8px;        //y轴宽度
-  height: 8px;      //x轴高度
+  width: 8px;        //chiều rộng trục y
+  height: 8px;      //chiều cao trục x
 
 }
 //Thanh trượt của thanh cuộn
@@ -60,7 +68,7 @@ body {
 }
 
 
-//修改表格的滚动条
+//Chỉnh sửa thanh cuộn của bảng
 .el-table__body-wrapper::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -72,7 +80,7 @@ body {
 }
 
 
-//表格对齐
+//Căn chỉnh bảng
 body .el-table th.gutter {
   display: table-cell !important;
 }
@@ -80,7 +88,7 @@ body .el-table colgroup.gutter {
   display: table-cell !important;
 }
 
-/* 确保表头正常显示 */
+/* Đảm bảo tiêu đề bảng hiển thị bình thường */
 .el-table__header-wrapper {
   overflow: visible !important;
 }
@@ -95,7 +103,7 @@ body .el-table colgroup.gutter {
   margin-top: 10px;
 }
 
-/* 对话框 */
+/* Hộp thoại */
 .el-dialog {
   display: flex;
   flex-direction: column;
@@ -127,14 +135,14 @@ body .el-table colgroup.gutter {
   overflow-y: auto;
 }
 
-/* Container 布局容器 */
+/* Container - Bố cục container */
 .el-container {
   .el-main {
     padding-top: 5px;
     padding: 0px }
 }
 
-/* 主页面搜索框 */
+/* Ô tìm kiếm trang chính */
 .search-row {
   // padding-bottom: 5px;
   .el-col {
@@ -178,7 +186,7 @@ body .el-table colgroup.gutter {
   }
 }
 
-/* Sửaform */
+/* Form chỉnh sửa */
 .edit-form {
   .el-date-editor.el-input { width: 100%; }
 
@@ -193,7 +201,7 @@ body .el-table colgroup.gutter {
   }
 }
 
-/* 卡片样式 */
+/* Kiểu dáng thẻ */
 .el-card {
   margin-bottom: 16px;
   
@@ -202,7 +210,7 @@ body .el-table colgroup.gutter {
   }
 }
 
-/* 表格样式 */
+/* Kiểu dáng bảng */
 .el-table {
   margin-top: 16px;
   margin-bottom: 16px;
@@ -215,7 +223,7 @@ body .el-table colgroup.gutter {
     padding: 8px 6px;
   }
   
-  /* 确保操作列与表格行对齐 */
+  /* Đảm bảo cột thao tác căn chỉnh với hàng bảng */
   .el-table__column--fixed-right {
     height: 100% !important;
   }
@@ -231,28 +239,28 @@ body .el-table colgroup.gutter {
     top: 0 !important;
   }
   
-  /* 确保固定列与主体列对齐 */
+  /* Đảm bảo cột cố định căn chỉnh với cột chính */
   .el-table__fixed-header-wrapper th,
   .el-table__fixed-body-wrapper td {
     padding: 8px 6px !important;
   }
   
-  /* 调整固定列的表头高度 */
+  /* Điều chỉnh chiều cao tiêu đề cột cố định */
   .el-table__fixed-header-wrapper .el-table__header th {
     padding: 8px 6px !important;
   }
   
-  /* 调整固定列的行高度 */
+  /* Điều chỉnh chiều cao hàng cột cố định */
   .el-table__fixed-body-wrapper .el-table__row {
     padding: 8px 6px !important;
   }
   
-  /* 调整主体列的行高度，确保与固定列一致 */
+  /* Điều chỉnh chiều cao hàng cột chính, đảm bảo nhất quán với cột cố định */
   .el-table__body-wrapper .el-table__row {
     padding: 8px 6px !important;
   }
   
-  /* 序号列样式 */
+  /* Kiểu dáng cột số thứ tự */
   .el-table .el-table__column--type-index {
     text-align: center !important;
   }
@@ -261,13 +269,13 @@ body .el-table colgroup.gutter {
     padding: 0 12px !important;
   }
   
-  /* 调整操作列内容的垂直对齐 - Sử dụng flex 布局确保按钮垂直居中 */
+  /* Điều chỉnh căn chỉnh dọc nội dung cột thao tác - Sử dụng bố cục flex đảm bảo nút căn giữa theo chiều dọc */
   .el-table__fixed-body-wrapper .el-table__row .el-table__cell {
     vertical-align: middle !important;
     padding: 8px !important;
   }
   
-  /* 确保操作列按钮与行数据垂直居中对齐 */
+  /* Đảm bảo nút cột thao tác căn giữa theo chiều dọc với dữ liệu hàng */
   .el-table__fixed-body-wrapper .el-table__row .cell {
     display: flex !important;
     align-items: center !important;
@@ -275,18 +283,18 @@ body .el-table colgroup.gutter {
     height: 100% !important;
   }
   
-  /* 确保操作列按钮与文本对齐 */
+  /* Đảm bảo nút cột thao tác căn chỉnh với văn bản */
   .el-table__fixed-body-wrapper .el-table__row .el-button {
     margin: 0 4px !important;
     vertical-align: middle !important;
   }
   
-  /* 调整固定列的垂直对齐 */
+  /* Điều chỉnh căn chỉnh dọc cột cố định */
   .el-table__fixed-body-wrapper .el-table__row {
     vertical-align: middle !important;
   }
   
-  /* 修复操作列按钮对齐问题 */
+  /* Khắc phục vấn đề căn chỉnh nút cột thao tác */
   .el-table .el-table__column--fixed-right .cell {
     display: flex !important;
     align-items: center !important;
@@ -295,7 +303,7 @@ body .el-table colgroup.gutter {
     gap: 4px !important;
   }
   
-  /* 修复表头对齐问题 */
+  /* Khắc phục vấn đề căn chỉnh tiêu đề bảng */
   .el-table__header-wrapper .el-table__header th {
     vertical-align: middle !important;
   }
@@ -310,7 +318,7 @@ body .el-table colgroup.gutter {
   color: #606266!important;
 }
 
-/* 编辑框中 计数器的InputNumber的文本左对齐，Chiều rộng100% */
+/* Trong ô chỉnh sửa, văn bản InputNumber của bộ đếm căn trái, chiều rộng 100% */
 .el-input-number {
   width: 100% !important;
   .el-input__inner {
@@ -323,7 +331,7 @@ body .el-table colgroup.gutter {
 .el-cascader { width:100%; }
 
 
-/* disable控件的样式 */
+/* Kiểu dáng điều khiển disable */
 .el-switch.is-disabled {
   opacity: 1
 }
@@ -403,7 +411,7 @@ body .el-table colgroup.gutter {
   min-width: 0;
 }
 
-/* 数据展示 */
+/* Hiển thị dữ liệu */
 .data-container {
   padding: 18px;
   background: #fff;
@@ -488,7 +496,7 @@ body .el-table colgroup.gutter {
   margin: 85px 0px;
 }
 
-// 用于解决表格最右横线问题
+// Dùng để giải quyết vấn đề đường kẻ ngang ngoài cùng bên phải của bảng
 .el-table__fixed-right{
   height: 100% !important;
 }

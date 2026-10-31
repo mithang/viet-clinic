@@ -16,7 +16,7 @@
 
     data() {
       return {
-        typeList: [{name:'退还供方',id:'1'},{name:'药品报损',id:'2'},{name:'调拔出库',id:'3'},{name:'Khác',id:'4'}],
+        typeList: [{name:'Trả lại nhà cung cấp',id:'1'},{name:'Báo hỏng thuốc',id:'2'},{name:'Xuất điều chuyển',id:'3'},{name:'Khác',id:'4'}],
         selectedMethod: null
       };
     },

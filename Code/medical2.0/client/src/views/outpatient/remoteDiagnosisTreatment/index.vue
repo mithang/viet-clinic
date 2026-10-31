@@ -139,7 +139,7 @@
                   <span v-if="scope.row.status === '2'" style="color: #0a7be0"
                         @click="conference(scope.$index, scope.row)">Tham gia cuộc họp&nbsp;</span>
                 <!--  <span v-if="scope.row.status === '2'" style="color: #0a7be0"
-                        @click="sponsorConference(scope.$index, scope.row)">发起会议&nbsp;</span>-->
+                        @click="sponsorConference(scope.$index, scope.row)">Bắt đầu cuộc họp&nbsp;</span>-->
                   <span style="color: #0a7be0" @click="viewDiagnosis(scope.$index, scope.row)">Chi tiết&nbsp;</span>
                   <!--
                   <span style="color: #0a7be0" @click="statusEdit(scope.$index, scope.row)">Trạng thái&nbsp;</span>
@@ -204,7 +204,7 @@
       return {
         tokenData: null,
         hisPatient: null,
-        conferenceReturn: {}, // 会议申请返回内容
+        conferenceReturn: {}, // Nội dung trả về của yêu cầu hội chẩn
         permission: {
           caseDialogVisible: false,
           view: false,
@@ -366,7 +366,7 @@
       addCreateDate() {
 
         let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
+        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa, 30nghĩa là ngày
         let lastY = lw.getFullYear();
         let lastM = lw.getMonth() + 1;
         let lastD = lw.getDate();
@@ -455,7 +455,7 @@
           this.outputError(error)
         }
       },
-      // 提交保存申请
+      // Gửi và lưu yêu cầu
       submit(index, row) {
         this.setLoad()
         getDiagnosisById(row.id).then(responseData => {
@@ -469,7 +469,7 @@
           this.outputError(error)
         })
       },
-      // 查看详情信息
+      // Xem thông tin chi tiết
       viewDiagnosis(index, row) {
         this.setLoad()
         getDiagnosisById(row.id).then(responseData => {
@@ -492,7 +492,7 @@
           .catch((error) => {
           });
       },
-      // 重新申请发起会议
+      // Yêu cầu lại, bắt đầu cuộc họp
       async sponsorConference(index, row){
         await this.getToken()
         await this.$axios.post('apis/RemoteTreated/DoctorMeetingApply', {
@@ -513,7 +513,7 @@
         })
           .then((response) => {
             if (response.data.BusData.code === 20000) {
-              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，vui lòng gửi lại yêu cầu!")
+              this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường, vui lòng gửi lại yêu cầu!")
             }else if (response.data.BusData.code === 10000){
 
             }
@@ -574,7 +574,7 @@
           });
       },
 
-      // 撤销申请
+      // Huỷ yêu cầu
       cancel(index, row){
         this.$confirm('Bạn có chắc muốn hủy yêu cầu không?', 'Xác nhận', {
           confirmButtonText: 'Xác nhận',
@@ -632,7 +632,7 @@
               this.outputError(error)
             })
           } else {
-            this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường，Vui lòng liên hệ quản trị viên rồi gửi lại đề nghị!")
+            this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường, Vui lòng liên hệ quản trị viên rồi gửi lại đề nghị!")
           }
         })
           .catch((error) => {

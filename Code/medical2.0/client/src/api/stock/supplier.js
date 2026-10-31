@@ -1,9 +1,9 @@
 import { createCrudApi } from '@/utils/apiFactory'
 
-// 使用工厂函数生成标准CRUDGiao diện
+// Dùng hàm factory để sinh giao diện CRUD chuẩn
 const baseApi = createCrudApi('/stock/supplier')
 
-// 导出所有接口（Giữ tương thích ngược）
+// Xuất tất cả API (giữ tương thích ngược)
 export const getSupplierById = baseApi.getById
 export const listSupplierPage = baseApi.listPage
 export const listSupplierAll = baseApi.listAll

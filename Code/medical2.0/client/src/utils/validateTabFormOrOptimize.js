@@ -51,7 +51,7 @@ export function handleValidateForm(_this, object) {
 }
 
 /**
- * 校验列表行表单
+ * Kiểm tra biểu mẫu dòng trong danh sách
  */
 export function validateField(_this, form, index) {
   let result = true
@@ -69,7 +69,7 @@ export function validateField(_this, form, index) {
 }
 
 /**
- * 校验列表行
+ * Kiểm tra dòng trong danh sách
  */
 export function validTableFormText(_this, form, tableData) {
   // let currentIndex = tableData.length == 0? -1 : tableData.length - 1

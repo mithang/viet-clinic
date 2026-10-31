@@ -372,7 +372,7 @@
                   :label="item.label + '(' + item.weekName + ')'"
                   width="180"
                 >
-                  <!-- 动态表格 -->
+                  <!-- Bảng động -->
 
                   <template slot-scope="scope">
                     <template v-for="(column, index) in scope.row.dates">
@@ -547,23 +547,23 @@ export default {
       tableData1: [
         {
           date: "2016-05-02",
-          name: "张三",
-          address: "上海市普陀区金沙江路 1518 弄",
+          name: "Nguyễn Văn An",
+          address: "Số 1518 đường Kim Sa Giang, Q. Phổ Đà, TP. Thượng Hải",
         },
         {
           date: "2016-05-04",
-          name: "张三",
-          address: "上海市普陀区金沙江路 1517 弄",
+          name: "Nguyễn Văn An",
+          address: "Số 1517 đường Kim Sa Giang, Q. Phổ Đà, TP. Thượng Hải",
         },
         {
           date: "2016-05-01",
-          name: "张三",
-          address: "上海市普陀区金沙江路 1519 弄",
+          name: "Nguyễn Văn An",
+          address: "Số 1519 đường Kim Sa Giang, Q. Phổ Đà, TP. Thượng Hải",
         },
         {
           date: "2016-05-03",
-          name: "张三",
-          address: "上海市普陀区金沙江路 1516 弄",
+          name: "Nguyễn Văn An",
+          address: "Số 1516 đường Kim Sa Giang, Q. Phổ Đà, TP. Thượng Hải",
         },
       ],
       seachmodel: {
@@ -586,7 +586,7 @@ export default {
         schedulingtime: null,
         timeid: null,
       },
-      dialogTableVisible: false, //明细弹框
+      dialogTableVisible: false, //Hộp thoại chi tiết
     };
   },
   mounted() {
@@ -652,7 +652,7 @@ export default {
         this.schedulingmxdaylistcreate();
       }
     },
-    //排班新增功能 选中下拉框
+    //Chức năng thêm ca trực, chọn trong dropdown
     rowdata(data, index, rows) {
       if (data) {
         let count = this.weekproplist.findIndex((role) => role === index);
@@ -679,7 +679,7 @@ export default {
           });
       }
     },
-    //排班撤销功能 删除下拉框选中内容
+    //Chức năng huỷ ca trực, xoá nội dung đã chọn trong dropdown
     delrowdata(data, index, rows) {
       let count = this.weekproplist.findIndex((role) => role === index);
 
@@ -704,7 +704,7 @@ export default {
           //this.outputError(error)
         });
     },
-    //周表格中新增按钮事件
+    //Sự kiện nút thêm trong bảng tuần
     rowbutinsert(val, itemdata, rowdata) {
       let listarray = {
         ...itemdata,
@@ -712,7 +712,7 @@ export default {
       };
       this.$refs.testForm.openAddRegistrationDialog(listarray);
     },
-    //周表格中明细弹框显示
+    //Hiển thị hộp thoại chi tiết trong bảng tuần
     rowbutseach(val, itemdata, rowdata) {
       this.schedulingmxList=[];
       this.dialogTableVisible = true;
@@ -743,7 +743,7 @@ export default {
           //this.outputError(error)
         });
     },
-    //日表格中明细弹框显示
+    //Hiển thị hộp thoại chi tiết trong bảng ngày
     rdaybutton(itemdata){
       this.schedulingmxList=[];
       this.dialogTableVisible = true;
@@ -775,9 +775,9 @@ export default {
         });
 
     },
-    //周和日表格切换点击事件
+    //Sự kiện click chuyển bảng tuần và ngày
     changeTheme(val) {
-      //周和日表格切换
+      //Chuyển bảng tuần và ngày
       if (val === "0") {
         this.schedulingzlDayList();
       } else {
@@ -786,7 +786,7 @@ export default {
     },
     handleSizeChange(val) {
     },
-    //预约总览表格周初始化数据
+    //Dữ liệu khởi tạo bảng tổng quan lịch hẹn theo tuần
     schedulingzlDayList(val) {
       this.schedulingzlday = [];
       this.dateweeklist = [];
@@ -959,7 +959,7 @@ export default {
           this.spanArr.push(1);
           this.contentSpanArr.push(1);
         } else {
-          // 判断第二列
+          // Kiểm tra cột thứ hai
           if ((item.index + 1) % 3 !== 1) {
             this.spanArr[contactDot] += 1;
             this.spanArr.push(0);
@@ -967,7 +967,7 @@ export default {
             this.spanArr.push(1);
             contactDot = index;
           }
-          //判断第三列
+          //Kiểm tra cột thứ ba
           if (false) {
             this.contentSpanArr[contactDot_1] += 1;
             this.contentSpanArr.push(0);
@@ -978,7 +978,7 @@ export default {
         }
       });
     },
-    //预约总览周表格合并列
+    //Gộp cột bảng tổng quan lịch hẹn theo tuần
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
         const _row = this.spanArr[rowIndex];
@@ -997,7 +997,7 @@ export default {
         };
       }
     },
-    //预约总览日表格初始化数据
+    //Dữ liệu khởi tạo bảng tổng quan lịch hẹn theo ngày
     schedulingzlrdaysList(val) {
       this.schedulingzlrdayList=[];
       this.schedulingzlrday=[];
@@ -1054,7 +1054,7 @@ export default {
           this.$message.success(error);
         });
     },
-    //预约明细表格初始化数据
+    //Dữ liệu khởi tạo bảng chi tiết lịch hẹn
     schedulingmxdayList() {
       this.schedulingmxList=[];
       let seachmode = this.seachmodel;
@@ -1082,9 +1082,9 @@ export default {
           this.$message.success(error);
         });
     },
-    //排班表格初始化数据
+    //Dữ liệu khởi tạo bảng ca trực
     schedulingDayList(val) {
-      this.schedulingList = []; //先清空数据
+      this.schedulingList = []; //Xoá dữ liệu trước
       this.dateweeklist = [];
       this.formThead = [];
       // Thêm động số ngày và thứ tương ứng
@@ -1092,7 +1092,7 @@ export default {
       let nowDay = nowDate.getDate(); //ngày
       let nowmonth = nowDate.getMonth() + 1; //tháng
       let yeare = nowDate.getFullYear(); //năm
-      let nowDayss = nowDate.getDate() - nowDate.getDay() + 1; //星期
+      let nowDayss = nowDate.getDate() - nowDate.getDay() + 1; //Thứ trong tuần
 
       let time = new Date();
       let timesStamp;

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-//根据图片id回显图片
+// Hiển thị lại ảnh theo id ảnh
 export const getFileById = (id) =>
     request({
         url: '/sys/sysSeting/getFile/' + id,

@@ -19,7 +19,7 @@
                 start-placeholder="Ngày bắt đầu"
                 end-placeholder="Ngày kết thúc"
                 :default-time="['00:00:00', '23:59:59']"
-                format="yyyy-MM-dd HH:mm:ss"
+                format="dd/MM/yyyy HH:mm:ss"
               >
               </el-date-picker>
               </el-form-item>

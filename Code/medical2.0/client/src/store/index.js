@@ -5,16 +5,16 @@ const Vue = window.Vue
 Vue.use(Vuex);
 
 /**
- * 处理导入 modules 下模块
+ * Xử lý import module dưới thư mục modules
  */
 let modules = {};
 const modulesFiles = require.context('./modules', true, /\.js$/);
 modulesFiles.keys().forEach(module => {
   const com = modulesFiles(module);
   
-  // 获取模块名
+  // Lấy tên module
   const comName = module.replace(/^\.\/(.*)\.\w+$/, '$1');
-  // 添加模块对象
+  // Thêm đối tượng module
   modules[comName] = com.default;
 })
 

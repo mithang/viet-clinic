@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-//新增任务
+// Thêm mới công việc
 export const inserttask = (search) =>
     request({
         // url: '/taskmanagement/taskmanage/inserttask',
@@ -31,7 +31,7 @@ export const deleteTask = (task) =>
     })
 
     
-//获取任务数据
+// Lấy dữ liệu công việc
 export const selecttasklist = (search) =>
     request({
         url: '/taskmanagement/taskmanage/selecttasklist',
@@ -39,21 +39,21 @@ export const selecttasklist = (search) =>
         data: search
     })
 
-    //获取执行人数据
+    // Lấy dữ liệu người thực hiện
 export const getusertree = (search) =>
 request({
     url: '/taskmanagement/taskmanage/getusertree',
     method: 'post',
     data: search
 })
-//获取反馈情况
+// Lấy tình hình phản hồi
 export const getfeedbacktable = (search) =>
 request({
     url: '/taskmanagement/taskmanage/getfeedbacktable',
     method: 'post',
     data: search
 })
-//任务审核
+// Duyệt công việc
 export const updateaudit = (search) =>
 request({
     url: '/taskmanagement/taskmanage/updateaudit',

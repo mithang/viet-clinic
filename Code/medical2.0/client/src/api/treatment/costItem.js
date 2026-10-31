@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/treatment/costItem')
 
-// Tiêu chuẩnCRUDGiao diện
+// Giao diện CRUD tiêu chuẩn
 export const getCostItemById = baseApi.getById
 export const listCostItemPage = baseApi.listPage
 export const listCostItemAll = baseApi.listAll
@@ -19,7 +19,7 @@ export const bulkUpdateCostItem = baseApi.bulkUpdate
 export const bulkDeleteCostItem = baseApi.bulkDelete
 
 // Giao diện tùy chỉnh
-// 上级租户的诊疗项目列表信息
+// Thông tin hạng mục khám chữa bệnh của đơn vị thuê cấp trên
 export const listCostItemPageByParent = search =>
   request({
     url: "/treatment/costItem/listByInstitution",
@@ -27,7 +27,7 @@ export const listCostItemPageByParent = search =>
     data: search
   });
 
-// 获取院版所有诊疗项目
+// Lấy toàn bộ hạng mục khám chữa bệnh bản bệnh viện
 export const listCostItemPageByInstitutionAll = search =>
   request({
     url: "/hosdata/HosCollectData/getHosInstitutions",
@@ -35,7 +35,7 @@ export const listCostItemPageByInstitutionAll = search =>
     data: search
   });
 
-// 选择租户的诊疗项目同步至诊所
+// Chọn hạng mục khám chữa bệnh của đơn vị thuê để đồng bộ về phòng khám
 export const listCostItemPageByInstitution = search =>
   request({
     url: "/treatment/costItem/syncToClinic",
@@ -43,7 +43,7 @@ export const listCostItemPageByInstitution = search =>
     data: search
   });
 
-// 选择院版诊疗项目同步
+// Chọn hạng mục khám chữa bệnh bản bệnh viện để đồng bộ
 export const listCostItemPageByInstitutionSync = search =>
   request({
     url: "/hosdata/HosCollectData/HisInstitutionsToClinic",

@@ -51,15 +51,15 @@ export const titleConfig = [
 export const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // In đậm Chữ nghiêng Gạch chân Gạch ngang chữ
   ["blockquote", "code-block"], // Trích dẫn  Khối mã
-  [{ header: 1 }, { header: 2 }], // 1、2 级标题
-  [{ list: "ordered" }, { list: "bullet" }], // Có thứ tự、Danh sách không thứ tự
+  [{ header: 1 }, { header: 2 }], // Tiêu đề cấp 1, 2
+  [{ list: "ordered" }, { list: "bullet" }], // Có thứ tự, Danh sách không thứ tự
   [{ script: "sub" }, { script: "super" }], // Chỉ số trên/Chỉ số dưới
   [{ indent: "-1" }, { indent: "+1" }], // Thụt lề
   // [{'direction': 'rtl'}],                         // Hướng văn bản
   [{ size: ["small", false, "large", "huge"] }], // Cỡ chữ
   [{ header: [1, 2, 3, 4, 5, 6, false] }], // Tiêu đề
-  [{ color: [] }, { background: [] }], // Màu chữ、Màu nền chữ
-  [{ font: [] }], // 字体种类
+  [{ color: [] }, { background: [] }], // Màu chữ, Màu nền chữ
+  [{ font: [] }], // Loại phông chữ
   [{ align: [] }], // Cách căn chỉnh
   ['link','image'],
   ["clean"], // Xóa định dạng văn bản

@@ -9,22 +9,22 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
 
-    // proxTable 处理跨域问题
+    // proxTable xử lý vấn đề cross-origin
     proxyTable: {
       '/token': {
-        target: 'http://61.172.179.30:17025/api', //远程诊疗token请求地址
+        target: 'http://61.172.179.30:17025/api', //Địa chỉ yêu cầu token khám bệnh từ xa
         ws: true,
-        changOrigin: true, //允许跨域
+        changOrigin: true, //Cho phép cross-origin
         pathRewrite: {
-          '^/token': '/' //请求的时候使用这个api就可以
+          '^/token': '/' //Khi gọi API chỉ cần dùng tiền tố này
         }
       },
       '/apis': {
-        target: 'http://61.172.179.30:17026/api', //远程诊疗请求地址
+        target: 'http://61.172.179.30:17026/api', //Địa chỉ yêu cầu khám bệnh từ xa
         ws: true,
-        changOrigin: true, //允许跨域
+        changOrigin: true, //Cho phép cross-origin
         pathRewrite: {
-          '^/apis': '/' //请求的时候使用这个api就可以
+          '^/apis': '/' //Khi gọi API chỉ cần dùng tiền tố này
         }
       },
       '/api': {

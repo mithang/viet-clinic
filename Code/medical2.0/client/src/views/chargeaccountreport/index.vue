@@ -8,7 +8,7 @@
           style="width:250px;margin-right:8px;"
           placeholder="Vui lòng nhập tên người thu phí"
         ></el-input>
-        <div>Ngày thu phí：</div>
+        <div>Ngày thu phí: </div>
         <el-date-picker
           v-model="condition.chargeDateRange"
           type="daterange"

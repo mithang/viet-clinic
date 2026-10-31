@@ -187,14 +187,14 @@
                 v-model="bizFormModel.userExt.post"
                 placeholder="Chức danh bảo hiểm y tế"
               >
-                <!-- 医生相关的选项 -->
+                <!-- Các lựa chọn liên quan đến bác sĩ -->
                 <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Bác sĩ trưởng khoa" value="231"></el-option>
                 <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Phó bác sĩ trưởng khoa" value="232"></el-option>
                 <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Bác sĩ điều trị chính" value="233"></el-option>
                 <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Bác sĩ" value="234"></el-option>
                 <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Y sĩ" value="235"></el-option>
 
-                <!-- 药师相关的选项 -->
+                <!-- Các lựa chọn liên quan đến dược sĩ -->
                 <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ hành nghề" value="1"></el-option>
                 <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ phụ trách" value="2.3"></el-option>
                 <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ trưởng" value="2.1"></el-option>
@@ -216,7 +216,7 @@
           </el-col>
         </el-row>
 
-  <!--Bảng con：   Vai trò người dùng Bắt đầu-->
+  <!--Bảng con: Vai trò người dùng Bắt đầu-->
         <el-row>
           <el-col>
             <el-form-item label="Vai trò người dùng" prop="userRoleList">
@@ -239,7 +239,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <!--Bảng con：   Vai trò người dùng Kết thúc-->
+        <!--Bảng con: Vai trò người dùng Kết thúc-->
 
         <el-row>
           <el-col :span="24 / 2">
@@ -250,7 +250,7 @@
               <el-date-picker
                 v-model="bizFormModel.userExt.startWorkTime"
                 type="date"
-                format="yyyy-MM-dd"
+                format="dd/MM/yyyy"
                 placeholder="Thời gian bắt đầu"
                 :picker-options="starttime"
               >
@@ -262,7 +262,7 @@
               <el-date-picker
                 v-model="bizFormModel.userExt.endWorkTime"
                 type="date"
-                format="yyyy-MM-dd"
+                format="dd/MM/yyyy"
                 placeholder="Thời gian kết thúc"
                 :picker-options="endTime"
               >
@@ -438,7 +438,7 @@ export default {
   },
   data() {
     return {
-      photoId: null, // 头像id 查看或修改会给它赋值
+      photoId: null, // Id ảnh đại diện, sẽ được gán khi xem hoặc sửa
       bizFormModel: this.initFormModel(),
       tabIndex: "1",
       flag:false,
@@ -479,14 +479,14 @@ export default {
         // "userExt.startWorkTime": [
         //   {
         //     required: true,
-        //     message: "请选择开始日期",
+        //     message: "Vui lòng chọn ngày bắt đầu",
         //     trigger: "blur",
         //   },
         // ],
         // "userExt.endWorkTime": [
         //   {
         //     required: true,
-        //     message: "请选择结束日期",
+        //     message: "Vui lòng chọn ngày kết thúc",
         //     trigger: "blur",
         //   },
         // ],
@@ -494,7 +494,7 @@ export default {
         //   { required: true, message: "Vui lòng chọn loại giấy tờ", trigger: "change" },
         // ],
         // "userExt.post": [
-        //   { required: true, message: "请选择职位", trigger: "blur" },
+        //   { required: true, message: "Vui lòng chọn chức danh", trigger: "blur" },
         // ],
         "userExt.office": [
           { required: true, message: "Vui lòng chọn khoa/phòng", trigger: "change" },
@@ -503,10 +503,10 @@ export default {
         //   { required: true, message: "Vui lòng chọn giới tính", trigger: "change" },
         // ],
         // "userExt.isDuty": [
-        //   { required: true, message: "请选择是否在职", trigger: "change" },
+        //   { required: true, message: "Vui lòng chọn trạng thái đang làm việc", trigger: "change" },
         // ],
         "userExt.jobType": [
-          { required: true, message: "请选择类别", trigger: "change" },
+          { required: true, message: "Vui lòng chọn loại", trigger: "change" },
         ],
         name: [{ required: true, message: "Vui lòng nhập tên đăng nhập", trigger: "blur" }],
         // In Add mode these three values are derived by createForme() (loginName = phone,
@@ -557,13 +557,13 @@ export default {
         ],
         phone: [
           { required: true, message: "Vui lòng nhập số điện thoại di động", trigger: "blur" },
-          { min: 11, max: 11, message: "Vui lòng nhập11位手机号码", trigger: "blur" },
+          { min: 10, max: 10, message: "Vui lòng nhập số điện thoại 10 chữ số", trigger: "blur" },
           {
             pattern:
           // /^1(3[0-9]|4[01456879]|5[0-3,5-9]|6[2567]|7[0-8]|8[0-9]|9[0-3,5-9])d{8}$/,
           // /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
             /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
-          message: "请输入正确的手机号码",
+          message: "Vui lòng nhập đúng số điện thoại",
           },
         ],
         // email: [{ required: true, message: "Vui lòng nhập email", trigger: "blur" }],
@@ -601,20 +601,20 @@ export default {
     },
   },
   methods: {
-    // 上传图片
+    // Tải ảnh lên
     handleLicensePreview(file) {
       const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isLt2M) {
         this.$message.error(this.inter.sctpdx + " 2MB!");
       } else {
-        // 存储图片，Tải lên thống nhất khi nhấn nút xác nhận
+        // Lưu ảnh, thống nhất tải lên khi nhấn nút xác nhận
 
         this.bizFormModel.userHeader = URL.createObjectURL(file.raw);
         this.bizFormModel.fileIdFile = file.raw;
       }
     },
 
-    //图片上传限制
+    //Giới hạn tải ảnh lên
     beforeLicenseUpload(file) {
       const fileSuffix = file.name.substring(file.name.lastIndexOf(".") + 1);
       const whiteList = ["jpg", "jpeg", "png", "gif", "JPG", "JPEG"];
@@ -683,7 +683,7 @@ export default {
 
     createForme() {
       this.bizFormModel.loginName = this.bizFormModel.phone;
-      //如果是新增，密码默认手机号最后6vị
+      //Nếu là thêm mới, mật khẩu mặc định là 6 số cuối của số điện thoại
       if(this.dialogProps.action === "add"){
         this.bizFormModel.loginPassword = this.bizFormModel.phone.substring((this.bizFormModel.phone.length-6),this.bizFormModel.phone.length)
       }
@@ -741,7 +741,7 @@ export default {
     onAddUserRoleRow(tableData) {
       tableData.push({
         user: {
-          // Bảng cha 用户标识
+          // Bảng cha - định danh người dùng
           id:
             validatenull(parent) || validatenull(parent.user)
               ? null
@@ -816,15 +816,15 @@ export default {
           isDuty: "", // Có đang công tác không
           creditType: "", // Loại giấy tờ
           creditNum: "", // Số giấy tờ
-          post: "", // 职位
-          postCode:"" ,//职位代码
+          post: "", // Chức danh
+          postCode:"" ,//Mã chức danh
           office: "", // Tên khoa/phòng
-          jobType: "", // 职业类型
+          jobType: "", // Loại nghề nghiệp
           startWorkTime: "", // Thời gian bắt đầu
           endWorkTime: "", //Thời gian kết thúc
           pracPsnCode:"" ,//Mã hành nghề
         },
-        userHeader: "", // 用户头像回显
+        userHeader: "", // Ảnh đại diện người dùng hiển thị
         name: "", // Tên đăng nhập
         loginName: "", // Tên đăng nhập
         loginPassword: "", // Mật khẩu
@@ -833,11 +833,11 @@ export default {
           (this.dialogProps.action === "add" ||
             this.dialogProps.action === "copy")
             ? true
-            : false, // 是否修改密码
+            : false, // Có đổi mật khẩu không
         isLocked: 0, // Kích hoạt
         phone: "", // Số điện thoại di động
         email: "", // Email
-        qyOpenId: "", // 企业openid
+        qyOpenId: "", // openid doanh nghiệp
         remarks: "", // Thông tin ghi chú
         // userRoleList: [], // Danh sách bảng con
       };
@@ -918,7 +918,7 @@ export default {
         this.outputError(error);
       });
     },
-    //根据手机号获取表单信息
+    //Lấy thông tin biểu mẫu theo số điện thoại
     async byPhoneGetList(phone) {
       const res = await changemylist(phone);
       if (res.code === 100 && res.data) {
@@ -936,7 +936,7 @@ export default {
       } else {
         this.$message({
           type: "error",
-          message: "此号码已注册",
+          message: "Số điện thoại này đã được đăng ký",
         });
       }
     },
@@ -1018,7 +1018,7 @@ export default {
     },
   },
   watch: {
-    //监听输入框手机号位数
+    //Theo dõi số chữ số của số điện thoại trong ô nhập
     "bizFormModel.phone"(newValue, oldValue) {
       //  if( this.dialogProps.action == 'edit' ){
       if (newValue.length === 11 && this.dialogProps.action === "add") {

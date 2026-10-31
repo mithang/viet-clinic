@@ -1,15 +1,15 @@
 /**
- * 列表视图混入
- * 封装通用的分页、Sắp xếp、CRUD调度和权限加载逻辑
+ * Mixin danh sách
+ * Đóng gói logic phân trang, sắp xếp, điều phối CRUD và tải quyền chung
  *
- * Cách sử dụng：
- * 1. 在组件中 mixins: [listViewMixin]
- * 2. tại data 中定义 listApi, getApi, deleteApi, entityName, permissionPrefix
- * 3. 实现 loadData() 方法加载列表数据（不包含权限）
- * 4. 实现 handleListResponse() 方法处理列表响应
+ * Cách sử dụng: 
+ * 1. Trong thành phần mixins: [listViewMixin]
+ * 2. Tại data định nghĩa listApi, getApi, deleteApi, entityName, permissionPrefix
+ * 3. Thực hiện loadData() để tải danh sách dữ liệu (không bao gồm quyền)
+ * 4. Thực hiện handleListResponse() để xử lý phản hồi danh sách
  *
- * 注意：pageInit() 仅在页面初始化时调用一次（Tải dữ liệu+Quyền），
- *       loadData() 在搜索/Phân trang/排序时调用（仅加载列表数据）。
+ * Lưu ý: pageInit() chỉ gọi một lần khi khởi tạo trang (Tải dữ liệu+Quyền), 
+ *       loadData() gọi khi tìm kiếm/Phân trang/sắp xếp (chỉ tải danh sách dữ liệu).
  */
 import { listResourcePermission } from '@/api/resourcePermission'
 import { mapPermissions } from '@/utils/searchParamsBuilder'
@@ -33,17 +33,17 @@ export default {
         export: false,
         skip: false
       },
-      // 子组件需要定义以下属性
-      // listApi: Function,       // Truy vấn danh sáchAPI
-      // getApi: Function,        // 获取单条API
-      // deleteApi: Function,     // XóaAPI
-      // entityName: String,      // 实体名称（用于权限映射，như 'Drug'）
-      // permissionPrefix: String // 权限前缀（như 'drug'）
+      // Thành phần con cần định nghĩa các thuộc tính sau
+      // listApi: Function,       // API truy vấn danh sách
+      // getApi: Function,        // API lấy một bản ghi
+      // deleteApi: Function,     // API xóa
+      // entityName: String,      // Tên thực thể (dùng cho ánh xạ quyền, như 'Drug')
+      // permissionPrefix: String // Tiền tố quyền (như 'drug')
     }
   },
   methods: {
     /**
-     * 序号计算
+     * Tính số thứ tự
      */
     indexMethod(index) {
       return (this.currentPage - 1) * this.search.limit + index + 1
@@ -71,7 +71,7 @@ export default {
     },
 
     /**
-     * 每页数量变化
+     * Số lượng mỗi trang thay đổi
      */
     onSizeChange(val) {
       this.currentPage = 1
@@ -81,7 +81,7 @@ export default {
     },
 
     /**
-     * 页码变化
+     * Số trang thay đổi
      */
     onCurrentChange(val) {
       this.search.offset = (val - 1) * this.search.limit
@@ -90,7 +90,7 @@ export default {
     },
 
     /**
-     * 排序变化 — Nhận el-table sort-change của orderby Đối tượng
+     * Thay đổi sắp xếp — Nhận el-table sort-change của đối tượng orderby
      * @param {Object} orderby - { prop: string, order: string }
      */
     onSortChange(orderby) {
@@ -105,7 +105,7 @@ export default {
     },
 
     /**
-     * 重置搜索表单
+     * Đặt lại form tìm kiếm
      */
     reset() {
       if (this.$refs.queryForm) {
@@ -115,14 +115,14 @@ export default {
     },
 
     /**
-     * Khởi tạo trang — 仅在 mounted 时调用一次
-     * Tải dữ liệu danh sách + 权限信息
-     * 子组件可覆盖此方法以添加自定义逻辑
+     * Khởi tạo trang — Chỉ gọi một lần khi mounted
+     * Tải dữ liệu danh sách + thông tin quyền
+     * Thành phần con có thể ghi đè phương thức này để thêm logic tùy chỉnh
      */
     async pageInit() {
       this.setLoad()
       try {
-        // 初始化选项 — phải await vì nhiều trang dùng dữ liệu async
+        // Khởi tạo tùy chọn — phải await vì nhiều trang dùng dữ liệu async
         // trong appendSearchParams (ví dụ loginCompany.parent ở trang
         // tổng hợp rà soát đơn thuốc); không await sẽ chạy tìm kiếm
         // khi dữ liệu chưa về và văng lỗi TypeError.
@@ -130,13 +130,13 @@ export default {
           await this.initOptions(this.queryModel)
         }
 
-        // 构建搜索参数 — 子组件应在 appendSearchParams() 中添加查询条件
+        // Xây dựng tham số tìm kiếm — Thành phần con nên thêm điều kiện truy vấn trong appendSearchParams()
         this.search.params = []
         if (this.appendSearchParams) {
           this.appendSearchParams()
         }
 
-        // 并行加载数据和权限 — routerId có thể thiếu khi route không có
+        // Tải song song dữ liệu và quyền — routerId có thể thiếu khi route không có
         // meta (mở bằng hash tới route chưa đăng ký): khi đó bỏ qua lệnh
         // gọi quyền (trước đây gọi với undefined → 400 + alert), quyền mặc
         // định rỗng (fail-closed: không hiện nút thao tác), danh sách vẫn tải.
@@ -162,20 +162,20 @@ export default {
     },
 
     /**
-     * 处理列表响应 — 子组件需要覆盖
-     * @param {Object} responseData 响应数据
+     * Xử lý phản hồi danh sách — Thành phần con cần ghi đè
+     * @param {Object} responseData Dữ liệu phản hồi
      */
     handleListResponse(responseData) {
-      // 子组件实现：设置列表数据和总数
-      // Ví dụ：this.supplierTotal = responseData.data.total
+      // Thành phần con thực hiện: thiết lập dữ liệu danh sách và tổng số
+      // Ví dụ: this.supplierTotal = responseData.data.total
       //       this.supplierList = responseData.data.rows
     },
 
     /**
-     * 添加搜索参数 — 子组件需要覆盖
-     * 在此方法中构建 this.search.params
+     * Thêm tham số tìm kiếm — Thành phần con cần ghi đè
+     * Trong phương thức này xây dựng this.search.params
      *
-     * 示例：
+ * Ví dụ: 
      * appendSearchParams() {
      *   this.search.params = [
      *     { columnName: 'company_id', queryType: '=', value: currentUser.company.id },
@@ -185,17 +185,17 @@ export default {
      * }
      */
     appendSearchParams() {
-      // 子组件实现
+      // Thành phần con thực hiện
     },
 
     /**
-     * Tải dữ liệu danh sách — Tìm kiếm/Phân trang/排序时调用
-     * 子组件可覆盖此方法以添加自定义逻辑
-     * 默认实现：Gọi listApi 并触发 handleListResponse
+     * Tải dữ liệu danh sách — Gọi khi tìm kiếm/Phân trang/sắp xếp
+     * Thành phần con có thể ghi đè phương thức này để thêm logic tùy chỉnh
+     * Thực hiện mặc định: Gọi listApi và kích hoạt handleListResponse
      */
     loadData() {
       this.setLoad()
-      // 重建搜索参数
+      // Xây dựng lại tham số tìm kiếm
       this.search.params = []
       if (this.appendSearchParams) {
         this.appendSearchParams()
@@ -213,7 +213,7 @@ export default {
     },
 
     /**
-     * 查看实体
+     * Xem thực thể
      */
     onViewEntity(index, row, formRef) {
       this.setLoad()
@@ -230,7 +230,7 @@ export default {
     },
 
     /**
-     * 编辑实体
+     * Chỉnh sửa thực thể
      */
     onEditEntity(index, row, formRef) {
       this.setLoad()
@@ -247,7 +247,7 @@ export default {
     },
 
     /**
-     * 复制实体
+     * Sao chép thực thể
      */
     onCopyEntity(index, row, formRef) {
       this.setLoad()
@@ -288,7 +288,7 @@ export default {
     },
 
     /**
-     * 创建实体 — Thành phần con có thể ghi đè
+     * Tạo thực thể — Thành phần con có thể ghi đè
      */
     onCreateEntity(formRef) {
       this.$refs[formRef][`openAdd${this.entityName}Dialog`]()

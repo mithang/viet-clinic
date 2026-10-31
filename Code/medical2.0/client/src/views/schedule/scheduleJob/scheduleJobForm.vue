@@ -39,7 +39,7 @@
               <el-row>
         <el-col :span='24/1'>
           <el-form-item label='Trạng thái nhiệm vụ' prop='status' >
-            <el-input disabled  v-model='bizFormModel.status' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "请输入任务状态"' ></el-input>
+            <el-input disabled :value='statusLabel' :maxlength='100' :placeholder='dialogProps.action === "view"? "" : "Vui lòng nhập trạng thái nhiệm vụ"' ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -61,9 +61,9 @@
     </el-form>
     <span slot='footer' class='dialog-footer'>
       <el-dropdown v-if='dialogProps.action === "edit"' split-button type='warning' @click='startTask("scheduleJobForm")'>
-        启动任务
+        Khởi động nhiệm vụ
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item><el-button  type='text' :plain='true' @click='restartTask("scheduleJobForm")'>保存并启动</el-button></el-dropdown-item>
+          <el-dropdown-item><el-button  type='text' :plain='true' @click='restartTask("scheduleJobForm")'>Lưu và khởi động</el-button></el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
        <el-button v-if='dialogProps.action === "edit"' type='primary' :plain='true' @click='endTask("scheduleJobForm")'>Tạm dừng</el-button>
@@ -71,7 +71,7 @@
       <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
       <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
     </span>
-    <el-dialog title="Cron表达式生成器" width="80%" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
+    <el-dialog title="Trình tạo biểu thức Cron" width="80%" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
       <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
     </el-dialog>
   </el-dialog>
@@ -100,7 +100,7 @@ export default {
         
       },
       openCron: false,
-      // 传入的表达式
+      // Biểu thức được truyền vào
       expression: "",
       formRules: {
         'name': [
@@ -121,18 +121,39 @@ export default {
       type: Object
     }
   },  
+  computed: {
+    /**
+     * Nhãn trạng thái hiển thị cho người dùng.
+     * Backend (Quartz) trả về chuỗi tiếng Trung nên chỉ dịch phần hiển thị,
+     * KHÔNG đổi giá trị gán cho bizFormModel.status để giữ nguyên logic so sánh.
+     */
+    statusLabel() {
+      const map = {
+        '执行中': 'Đang chạy',
+        '已暂停': 'Đã tạm dừng',
+        '待执行': 'Chờ chạy',
+        '已完成': 'Đã hoàn thành',
+        '已停止': 'Đã dừng'
+      }
+      const status = this.bizFormModel.status
+      if (!status) {
+        return ''
+      }
+      return map[status] || status
+    }
+  },
   methods: {
-    /** cron表达式按钮操作 */
+    /** Thao tác nút biểu thức cron */
     handleShowCron() {
       this.expression = this.bizFormModel.cron;
       this.openCron = true;
     },
-    /** 确定后回传值 */
+    /** Trả giá trị về sau khi xác nhận */
     crontabFill(value) {
       this.bizFormModel.cron = value;
     },
 
-    //取消任务
+    //Huỷ nhiệm vụ
     endTask(formName){
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -158,7 +179,7 @@ export default {
         }
       });
     },
-    //启动定时任务
+    //Khởi động tác vụ định kỳ
     startTask(formName){
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -185,14 +206,14 @@ export default {
       });
     },
 
-    //保存并重启任务
+    //Lưu và khởi động lại nhiệm vụ
     restartTask(formName){
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.setLoad()
           saveScheduleJob(this.bizFormModel).then(responseData => {
               if(responseData.code === 100) {
-                //任务重启
+                //Khởi động lại nhiệm vụ
                   restartTask(this.bizFormModel).then(responseData => {
                     if(responseData.code === 100) {
                       this.dialogProps.visible = false

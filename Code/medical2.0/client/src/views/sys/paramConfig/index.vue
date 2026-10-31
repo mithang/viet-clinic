@@ -10,7 +10,7 @@
           <template slot="append">ngày</template>
         </el-input>
       </el-form-item>
-      <el-form-item label="普通处方最多可开">
+      <el-form-item label="Đơn thuốc thường được kê tối đa">
           <el-input v-model="sysParamConfigForm.normalDays"
                     placeholder="Vui lòng nhập nội dung"
                     @input="handleInput('normalDays')"
@@ -19,7 +19,7 @@
             <template slot="append">ngày</template>
           </el-input>
       </el-form-item>
-      <el-form-item label="挂号费默认金额：">
+      <el-form-item label="Số tiền phí đăng ký mặc định: ">
         <el-input v-model="sysParamConfigForm.registrationFee"
                   @input="limitNum('registrationFee')"
                   type="text"
@@ -28,13 +28,13 @@
           <template slot="append">VNĐ</template>
         </el-input>
       </el-form-item>
-      <el-form-item label="药品进价是否为零售价">
+      <el-form-item label="Giá nhập thuốc là giá bán lẻ">
         <el-checkbox label="" v-model="sysParamConfigForm.retailPrice === 'true'?true:false"
                      @change="retailPriceHandleChange"></el-checkbox>
       </el-form-item>
     </el-form>
 
-    <!-- 保存按钮 -->
+    <!-- Nút lưu -->
     <div class="save-button">
       <el-button type="primary" size="medium" @click="saveData">Lưu</el-button>
     </div>
@@ -59,7 +59,7 @@
       deleteApi: saveSysParamConfigList,
       entityName: 'SysParamConfig',
       permissionPrefix: 'sys_param_config',
-      //这个对象很重要，每次增加了类型config_name都要对应加上
+      //Đối tượng này rất quan trọng, mỗi lần thêm loại config_name đều phải thêm tương ứng
       sysParamConfigForm: {
         chronicDays: null,//Số ngày đơn thuốc bệnh mạn tính
         normalDays: null,//Số ngày đơn thuốc thông thường
@@ -76,7 +76,7 @@
   },
   methods: {
     /**
-     *  Khởi tạo trang，主要是将后台数据结构转换成页面需要的
+     * Khởi tạo trang, chủ yếu chuyển cấu trúc dữ liệu backend sang dạng trang cần
      * @returns {Promise<void>}
      */
     async pageInit() {
@@ -135,32 +135,32 @@
       this.sysParamConfigForm.retailPrice = String(value);
     },
     /**
-     * input中只允许输入正整数
+     * Trong input chỉ cho phép nhập số nguyên dương
      * @param field
      */
     handleInput(field) {
       let value = this.sysParamConfigForm[field]
-      // 在输入事件中检查输入值是否为整数
+      // Kiểm tra giá trị nhập có phải số nguyên trong sự kiện input
       if (!/^\d+$/.test(this.inputValue)) {
-        // 如果不是整数，清除输入值
+        // Nếu không phải số nguyên, xoá giá trị nhập
         this.sysParamConfigForm[field] = value.replace(/[^\d]/g, '');
       }
     },
     /**
-     * input中只允许输入小数并保留2vị
+     * Trong input chỉ cho phép nhập số thập phân và giữ 2 chữ số
      * @param amount
      */
-    //用户输入01、02等，则展示成1、2，等于非小数时过滤第一位0
+    //Người dùng nhập 01, 02... thì hiển thị thành 1, 2, tức là lọc bỏ số 0 đầu tiên khi không phải số thập phân
     limitNum(field) {
       let amount = this.sysParamConfigForm[field]
-        .replace(/[^\d.]/g, "") //只能输入数字
+        .replace(/[^\d.]/g, "") //Chỉ được nhập số
         .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3") //Chỉ được nhập tối đa hai chữ số thập phân
-        .replace(/\.{2,}/g, "."); //出现多个点时只保留第一个
-      // 第一位不让输小数点
+        .replace(/\.{2,}/g, "."); //Khi xuất hiện nhiều dấu chấm chỉ giữ lại dấu đầu tiên
+      // Không cho nhập dấu chấm thập phân ở vị trí đầu
       if (amount === ".") {
         amount = "";
       }
-      // 如果第一位是0，第二位必须大于0或者小数点
+      // Nếu chữ số đầu là 0, chữ số thứ hai phải lớn hơn 0 hoặc là dấu chấm thập phân
       if (amount.substring(0, 1) === 0) {
         if (amount.substring(1, 2) > 0) {
           amount = amount.substring(1, 2);
@@ -171,7 +171,7 @@
           amount = "0";
         }
       } else {
-        // 如果第一位数字大于0（Không bằng0肯定就大于0），仅需考虑第二位是小数点的情况
+        // Nếu chữ số đầu lớn hơn 0 (khác 0 thì chắc chắn lớn hơn 0), chỉ cần xét trường hợp chữ số thứ hai là dấu chấm thập phân
         if (amount.indexOf(".") !== -1) {
           if (amount.substring(0, 1) > 0) {
           } else {
@@ -186,7 +186,7 @@
       this.sysParamConfigForm[field] = amount;
     },
     /**
-     * 将页面数据结构转换成后台对象
+     * Chuyển cấu trúc dữ liệu trang thành đối tượng backend
      * @returns {[]}
      */
     getSaveData(){
@@ -197,7 +197,7 @@
       return saveDatas;
     },
     /**
-     * 保存数据
+     * Lưu dữ liệu
      */
     saveData(){
       let saveDatas = this.getSaveData();
@@ -224,7 +224,7 @@
   .save-button {
     display: flex;
     justify-content: center;
-    margin-top: auto; /* 将按钮推到底部 */
-    padding: 20px; /* Có thể chọn：为按钮添加一些内边距 */
+    margin-top: auto; /* Đẩy nút xuống cuối */
+    padding: 20px; /* Có thể chọn: thêm padding cho nút */
   }
 </style>

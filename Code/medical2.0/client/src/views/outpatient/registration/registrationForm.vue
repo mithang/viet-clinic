@@ -492,7 +492,7 @@
               </el-form-item>
             </el-col>
 <!--            <el-col :span="24 / 2">-->
-<!--              <el-form-item label="医保医疗类型" prop="medType.name">-->
+<!--              <el-form-item label="Loại hình bảo hiểm y tế" prop="medType.name">-->
 <!--                <el-input-->
 <!--                  v-if="dialogProps.action === 'view'"-->
 <!--                  :disabled="true"-->
@@ -679,7 +679,7 @@
       <div>
         <el-divider></el-divider>
         <div id="registrationTotalFee_Container">
-          <div id="registrationTotalFee_Title">Số tiền phải thu（VNĐ）：</div>
+          <div id="registrationTotalFee_Title">Số tiền phải thu (VNĐ): </div>
           <div id="registrationTotalFee_Fee">
             {{ this.bizFormModel.registrationFee }}
           </div>
@@ -741,7 +741,7 @@ import BaseUI from "@/views/components/baseUI";
 import OperationIcon from "@/components/OperationIcon";
 import {saveTollInfo} from "@/api/toll/tollInfo";
 
-// 模块级别初始化函数 — 避免在 Vue data() 中调用 this Phương pháp（此时 methods 尚未初始化）
+// Hàm khởi tạo cấp module — tránh gọi this.Phương pháp trong data() của Vue (lúc này methods chưa được khởi tạo)
 function _defaultFormModel() {
   const cu = window.currentUser || {};
   const co = cu.company || {};
@@ -805,10 +805,10 @@ export default {
     return {
       setDisabled: {
         disabledDate(time) {
-          return time.getTime() > Date.now(); // Có thể chọn ngày trước、Có thể chọn ngày hiện tại、Không thể chọn ngày tương lai
-          // return time.getTime() > Date.now() - 8.64e7;  // Có thể chọn ngày trước、Không thể chọn ngày hiện tại、Không thể chọn ngày tương lai
-          // return time.getTime() < Date.now() - 8.64e7;  // Không thể chọn ngày trước、Có thể chọn ngày hiện tại、Có thể chọn ngày tương lai
-          // return time.getTime() < Date.now(); // Không thể chọn ngày trước、Không thể chọn ngày hiện tại、Có thể chọn ngày tương lai
+          return time.getTime() > Date.now(); // Có thể chọn ngày trước, Có thể chọn ngày hiện tại, Không thể chọn ngày tương lai
+          // return time.getTime() > Date.now() - 8.64e7; // Có thể chọn ngày trước, Không thể chọn ngày hiện tại, Không thể chọn ngày tương lai
+          // return time.getTime() < Date.now() - 8.64e7; // Không thể chọn ngày trước, Có thể chọn ngày hiện tại, Có thể chọn ngày tương lai
+          // return time.getTime() < Date.now(); // Không thể chọn ngày trước, Không thể chọn ngày hiện tại, Có thể chọn ngày tương lai
 
           /*Chỉ chọn được 7 ngày gần đây trước hôm nay*/
           // let now = Date.now();
@@ -923,10 +923,10 @@ export default {
 
         // Giới tính
         let sexStr = this.bizFormModel.card.substring(16, 17)
-        // 0女1男
-        let sexName = "男";
+        // 0 nữ 1 nam
+        let sexName = "Nam";
         if (parseInt(sexStr) % 2 === 0) {
-          sexName = "女";
+          sexName = "Nữ";
         }
         if (this.gender_List && this.gender_List.length > 0) {
           this.bizFormModel.gender = this.gender_List.find(item => {
@@ -991,7 +991,7 @@ export default {
         this.doSave();
         return;
       }
-      //医保默认为普通门诊
+      //Bảo hiểm y tế mặc định là khám ngoại trú thường
       this.bizFormModel.medType.value='11'
 
       savePatient(this.bizFormModel)
@@ -1020,7 +1020,7 @@ export default {
     },
     onSubmit(formName) {
       // if(!flagCard){
-      //   this.$message.error("Số CMND/CCCD không đúng，Vui lòng nhập lại")
+      // this.$message.error("Số CMND/CCCD không đúng, Vui lòng nhập lại")
       //   return;
       // }
       this.flag = true
@@ -1102,7 +1102,7 @@ export default {
             if (this.dialogProps.action === "add" && this.remove){
               this.$router.push('/medicalOutpatientRecord')
             }
-            //Sau khi lưu thành công，Nếu có phí đăng ký khám，Chèn dữ liệu vào bảng thu phí
+            //Sau khi lưu thành công, Nếu có phí đăng ký khám, Chèn dữ liệu vào bảng thu phí
             if (this.bizFormModel.registrationFee > 0) {
               toll.registrationFeeId = responseData.data
               //Chèn dữ liệu vào bảng thu phí
@@ -1263,7 +1263,7 @@ export default {
           name: "Chờ khám",
         },
         dispensingStatus: "0", // Trạng thái phát thuốc
-        dispensingDate: "", // 发/Thời gian trả thuốc
+        dispensingDate: "", // Thời gian phát/trả thuốc
         chargeStatus: "0", // Trạng thái thu phí
         chargeDate: "", // Thời gian thu phí
       };
@@ -1416,7 +1416,7 @@ export default {
         // this.formRules.phone[0].required=true
       }
     },
-    // 获取默认挂号费
+    // Lấy phí đăng ký khám mặc định
     async pageInit() {
       listSysParamConfigAll({params:[this.search]}).then(responseData => {
         if(responseData.code === 100) {
@@ -1494,7 +1494,7 @@ export default {
       this.PatientFormModel = this.initPatientModel();
       this.bizFormModel = { ...this.bizFormModel, ...this.PatientFormModel };
       this.initOptions(this.bizFormModel);
-      this.bizFormModel.treatType.name = "初诊"
+      this.bizFormModel.treatType.name = "Khám lần đầu"
       if (this.cardTypeList && this.cardTypeList.length > 0) {
         this.bizFormModel.cardType = this.cardTypeList[0];
       }
@@ -1520,7 +1520,7 @@ export default {
     },
   },
   watch: {
-    //Trình theo dõi phát hiện khoa/phòng thay đổi，Lấy liên kết nhân viên trong khoa/phòng
+    //Trình theo dõi phát hiện khoa/phòng thay đổi, Lấy liên kết nhân viên trong khoa/phòng
     "bizFormModel.department.id": function (val, oldVal) {
       if (val !== oldVal) {
         if (

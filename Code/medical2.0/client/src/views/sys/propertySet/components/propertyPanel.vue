@@ -84,15 +84,15 @@ export default {
       if(rule.required) {
         let theValue = this.propertiesData[rule.dataId]
         if(!theValue) {
-          let msg = rule.message | 'Không được để trống！'
+          let msg = rule.message | 'Không được để trống!'
           return callback(new Error(msg))
         }
       }
       callback()
     }
     return {
-      asyncOptions: {},             // 保存从后台获取的异步选项数据
-      panels:[],                    // 属性集分组数组
+      asyncOptions: {},             // Lưu dữ liệu lựa chọn bất đồng bộ lấy từ backend
+      panels:[],                    // Mảng nhóm bộ thuộc tính
       propertiesData: {},
       inputValidator: inputValidator
     }
@@ -110,12 +110,12 @@ export default {
     propertyDef: {
       type: String
     },
-    // Loại thao tác--Sửa、Xem v.v.
+    // Loại thao tác--Sửa, Xem v.v.
     action: {
       type: String,
       default: () => { return "view"}
     },
-    // 编辑框布局列数
+    // Số cột bố cục khung sửa
     cols: {
       type: Number | String,
       default: () => { return 1}
@@ -154,12 +154,12 @@ export default {
     },
     init(propertyDef) {
       this.panels = JSON.parse(propertyDef)
-      // 初始化默认值
+      // Khởi tạo giá trị mặc định
       if(this.panels && JSON.stringify(this.propertiesData) === "{}"){
         let obj = {};
         for(let panel of this.panels){
             for(let property of panel.propertys){
-                if(property.dictId === "8606"){  //当为属性集时  忽略掉默认值
+                if(property.dictId === "8606"){  //Khi là bộ thuộc tính thì bỏ qua giá trị mặc định
                   obj[property.id] = null;
                 }else{
                   obj[property.id] =  property.defaultValue
@@ -186,9 +186,9 @@ export default {
       }
     },
     getDictItems(typeId) {
-      let key = 'dict_' + typeId   // 异步数据保存key
+      let key = 'dict_' + typeId   // Key lưu dữ liệu bất đồng bộ
       if(this.asyncOptions.hasOwnProperty(key) === false) {
-        this.asyncOptions[key] = []       // 初始化异步数据
+        this.asyncOptions[key] = []       // Khởi tạo dữ liệu bất đồng bộ
         listDictItemAll({
           params: [{'columnName':'dict_type_id', 'queryType': '=', 'value': typeId}]
          }).then(responseData => {
@@ -211,7 +211,7 @@ export default {
     if(this.value) {
       this.propertiesData = JSON.parse(this.value)
     }
-    // Theo propertiesId 获取属性集定义
+    // Lấy định nghĩa bộ thuộc tính theo propertiesId
     this.getDef()
   }
 }

@@ -160,7 +160,7 @@
                   <OperationIcon v-show='permission.view' type='info' content='Lịch sử' placement='top-start' icon-name='el-icon-info'
                     @click='onShowHistory(scope.$index, scope.row)'></OperationIcon> -->
                   <center>
-                    <el-button type="text" v-if="scope.row.executeschedule==='0'"  @click="execute(scope.row,scope.$index)">立即执行</el-button>
+                    <el-button type="text" v-if="scope.row.executeschedule==='0'"  @click="execute(scope.row,scope.$index)">Thực hiện ngay</el-button>
                   <el-button type="text" v-if="scope.row.executeschedule==='1'||scope.row.executeschedule==='0'"  @click="viewDetails(scope.row,scope.$index)">Xem chi tiết</el-button>
                   </center>
                 </template>
@@ -187,9 +187,9 @@
       </el-row>
       <!-- Thanh phân trang     Kết thúc -->     </el-card>
 
-      <!-- 立即执行弹出框 -->
+      <!-- Hộp thoại thực hiện ngay -->
       <el-dialog
-        title="任务执行"
+        title="Thực hiện công việc"
         :visible.sync="executeDialogVisible"
         v-if="executeDialogVisible"
         width="50%"
@@ -197,23 +197,23 @@
         <div class="specifications">Chi tiết nhiệm vụ</div>
         <div style="width:80%;margin-left:100px">
            <div>
-             Loại nhiệm vụ：{{task.taskManagement.tasktype==='0'?"Nhiệm vụ thường xuyên":"Hoạt động tuyên truyền"}}
+             Loại nhiệm vụ: {{task.taskManagement.tasktype==='0'?"Nhiệm vụ thường xuyên":"Hoạt động tuyên truyền"}}
            </div>
            <div>
-             Tên nhiệm vụ：{{task.taskManagement.taskname}}
+             Tên nhiệm vụ: {{task.taskManagement.taskname}}
            </div>
            <div>
-             Mô tả nhiệm vụ：{{task.taskManagement.taskdescribe}}
+             Mô tả nhiệm vụ: {{task.taskManagement.taskdescribe}}
              <upload-file  :objectId="uploadFiles" @getFileList="getFileList" :action="flags" @deleteFile="deleteFile"></upload-file>
            </div>
             <div>
-             Người khởi tạo nhiệm vụ：{{task.taskManagement.user.name}}
+             Người khởi tạo nhiệm vụ: {{task.taskManagement.user.name}}
            </div>
             <div>
-             Thời hạn nhiệm vụ：{{task.taskManagement.taskdeadline}}
+             Thời hạn nhiệm vụ: {{task.taskManagement.taskdeadline}}
            </div>
             <div v-if="task.auditType==='1' || task.auditType==='2'">
-             Ghi chú：{{task.taskManagement.taskremark}}
+             Ghi chú: {{task.taskManagement.taskremark}}
            </div>
         </div>
         <br>
@@ -221,7 +221,7 @@
         <div class="specifications">Phản hồi tình hình thực hiện</div>
          <div style="width:80%;margin-left:100px">
            <div>
-             Tiến độ thực hiện：<el-radio :disabled="flagsTask" v-model="executeschedule" label="0">Chờ thực hiện</el-radio>
+             Tiến độ thực hiện: <el-radio :disabled="flagsTask" v-model="executeschedule" label="0">Chờ thực hiện</el-radio>
                         <el-radio :disabled="flagsTask" v-model="executeschedule" label="1">Đã thực hiện</el-radio>
            </div>
 
@@ -230,7 +230,7 @@
            </div>
 
             <div>
-             Ghi chú：<el-input :disabled="flagsTask" v-model="remark"></el-input>
+             Ghi chú: <el-input :disabled="flagsTask" v-model="remark"></el-input>
            </div>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -283,7 +283,7 @@ export default {
         'name': 'like',
       },
       queryModel: {
-        'isLocked': '',   // Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        'isLocked': '', // Vô hiệu hóa (0: Chưa bị vô hiệu hóa; 1: Vô hiệu hóa)
         'name': '',   // Tên khoa/phòng
       },
 
@@ -361,7 +361,7 @@ export default {
     //  let userHeaderFile = new FormData();
       //  userHeaderFile.append("entity", JSON.stringify(this.bizFormModel.inspectionCheckInfo));
       // userHeaderFile.append("deleteIds",JSON.stringify([this.photoId]));
-     // return
+      // return
        this.setLoad()
      if(this.bizFormModelTask.fileIdFile.length>0){
         this.bizFormModelTask.fileIdFile.forEach(item=>{
@@ -386,7 +386,7 @@ export default {
           this.resetLoad()
           this.flagsTask=false
       }).catch((error)=>{
-        this.$message.error("Thực hiện thất bại，vui lòng liên hệ quản trị viên để xử lý!")
+        this.$message.error("Thực hiện thất bại, vui lòng liên hệ quản trị viên để xử lý!")
         this.flagsTask=false
         this.resetLoad()
       })
@@ -407,7 +407,7 @@ export default {
           this.resetLoad()
       }).catch((error)=>{
         this.flagsTask=false
-        this.$message.error("Thực hiện thất bại，Vui lòng liên hệ quản trị viên xử lý!")
+        this.$message.error("Thực hiện thất bại, Vui lòng liên hệ quản trị viên xử lý!")
         this.resetLoad()
       })
      }
@@ -463,7 +463,7 @@ export default {
        this.bizFormModelTask.fileIdFile.push(fileList[i].raw)
       }
     },
-    //执行任务
+    //Thực hiện công việc
     execute(row,index){
       this.fileIds=[]
       this.fileIdsTask=[]
@@ -536,7 +536,7 @@ export default {
       if(val==="1") {
         this.search.params = this.search.params.concat(this.compositeCondition())
       }else{
-        // Tham số truy vấn: Vô hiệu hóa（0：Chưa bị vô hiệu hóa；1：Vô hiệu hóa）
+        // Tham số truy vấn: Vô hiệu hóa (0: Chưa bị vô hiệu hóa; 1: Vô hiệu hóa)
         this.search.params.push({
       	  columnName: 'executeschedule',
       	  queryType: '=',

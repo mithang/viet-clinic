@@ -11,12 +11,12 @@
           <div class="clinic-info">
             <div class="info-item">
               <i class="el-icon-office-building"></i>
-              <span class="label">Tên cơ sở：</span>
+              <span class="label">Tên cơ sở: </span>
               <span class="value">{{ clinicName }}</span>
             </div>
             <div class="info-item">
               <i class="el-icon-postcard"></i>
-              <span class="label">Mã cơ sở：</span>
+              <span class="label">Mã cơ sở: </span>
               <span class="value">{{ institutionCode }}</span>
             </div>
           </div>

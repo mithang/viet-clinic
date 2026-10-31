@@ -386,7 +386,7 @@
           </el-dialog>
           <!--Hộp thoại hoàn phí Kết thúc-->
 
-          <!-- 签到弹出框 -->
+          <!-- Hộp thoại điểm danh -->
           <el-dialog
             title="Thêm khoa và bác sĩ"
             :visible.sync="signDialogVisible"
@@ -572,7 +572,7 @@
         </span>
           </el-dialog>
         </el-tab-pane>
-<!--        <el-tab-pane label="预约分诊" name="yyfz">-->
+<!--        <el-tab-pane label="Phân loại khám theo hẹn" name="yyfz">-->
 <!--          <el-row style="margin-top:40px;">-->
 <!--            <el-col :span="7" v-for="(item,index) in registrationList" :key="index" :offset="1"-->
 <!--                    style="padding-top:20px;">-->
@@ -588,12 +588,12 @@
 <!--                    <br/>-->
 <!--                    <br/>-->
 <!--                    <span-->
-<!--                      style="font-size: 14px; color: darkgray;">登记科室：{{-->
+<!-- style="font-size: 14px; color: darkgray;">Khoa đăng ký: {{-->
 <!--                        item.clinicOffice.name-->
 <!--                      }} {{ "(" + item.treatType.name + ")" }}</span>-->
 <!--                    <br/>-->
 <!--                    <span-->
-<!--                      style="font-size: 14px; color: darkgray;">Thời gian đăng ký：{{-->
+<!-- style="font-size: 14px; color: darkgray;">Thời gian đăng ký: {{-->
 <!--                        $moment(item.createDate).format("HH:mm")-->
 <!--                      }}</span>-->
 
@@ -602,11 +602,11 @@
 <!--                  <div class="bottom clearfix">-->
 <!--                    <el-row style="padding-left:40px;">-->
 <!--                      <el-col :span="10">-->
-<!--                        <el-button type="text" style="font-size: 15px; color:darkgray;" @click="buttonyz(item)">预诊-->
+<!--                        <el-button type="text" style="font-size: 15px; color:darkgray;" @click="buttonyz(item)">Khám sơ bộ-->
 <!--                        </el-button>-->
 <!--                      </el-col>-->
 <!--                      <el-col :span="10">-->
-<!--                        <el-button type="text" style="font-size: 15px; color:darkgray;" @click="buttonys(item)">选择医生-->
+<!--                        <el-button type="text" style="font-size: 15px; color:darkgray;" @click="buttonys(item)">Chọn bác sĩ-->
 <!--                        </el-button>-->
 <!--                      </el-col>-->
 <!--                    </el-row>-->
@@ -617,7 +617,7 @@
 <!--          </el-row>-->
 <!--        </el-tab-pane>-->
         <el-tab-pane label="Hồ sơ bệnh nhân" name="hzdangan">
-          <!-- 直接使用封装好的患者管理组件 -->
+          <!-- Dùng trực tiếp component quản lý bệnh nhân đã đóng gói -->
           <PatientManage />
         </el-tab-pane>
 
@@ -710,7 +710,7 @@
             // },
           },
         },
-        // exitNumberDate:"",      //退号时间
+        // exitNumberDate:"",      //Thời gian huỷ đăng ký
         activeName: "djxx",
         listApi: listRegistrationPage,
         getApi: getRegistrationById,
@@ -739,7 +739,7 @@
             name: "",
           },
           hospital: {
-            // 医院
+            // Bệnh viện
             OrganizeId: null,
             Name: "",
           },
@@ -777,14 +777,14 @@
         tableId: "1008534118685450402",
         schemeId: "1008534118685450425",
         BASE_API: process.env.BASE_API,
-        payType_List: [], //支付类型集合
+        payType_List: [], //Tập loại thanh toán
         refundRegistrationId: 0,
-        refundRegistraionVisible: false, //是否显示退挂号费弹框
-        refundTotalFee: 0, //退费费用金额
-        refundReistrationPayType: "", //退费支付方式
-        refundRegistrationRemarks: "", //退费备注信息
+        refundRegistraionVisible: false, //Có hiển thị hộp thoại hoàn phí đăng ký khám không
+        refundTotalFee: 0, //Số tiền hoàn phí
+        refundReistrationPayType: "", //Phương thức thanh toán hoàn phí
+        refundRegistrationRemarks: "", //Ghi chú hoàn phí
 
-        refundStatus: "registrationStatus_2", //退费状态默认值
+        refundStatus: "registrationStatus_2", //Giá trị mặc định trạng thái hoàn phí
 
         bizFormModel: {
           id: '',
@@ -796,14 +796,14 @@
           doctor: {},
           clinicOffice: {},
           hospital: {}
-        },//网上签到封装对象
+        },//Đối tượng đóng gói điểm danh trực tuyến
         departments_List: [], // Khoa
         doctors_List: [], // Bác sĩ
         selects_doctor: [],
         selects_mechanism: [],
         signDialogVisible: false,
         keys_department: 1, // el-cascader key
-        applyForDialogVisible: false, // 远程诊疗申请弹框变量
+        applyForDialogVisible: false, // Biến hộp thoại yêu cầu khám chữa bệnh từ xa
         formRules: {
 
           "hospital.Name": [
@@ -841,7 +841,7 @@
 
       },
 
-      // 打开远程诊疗申请窗口
+      // Mở cửa sổ yêu cầu khám chữa bệnh từ xa
       async applyForStudentExcel(index, row) {
         await getRegistrationId(row.id).then((res) => {
           if (res.data !== null) {
@@ -862,7 +862,7 @@
           .catch((error) => {
           });
 
-        // 获取远程诊所医院
+        // Lấy bệnh viện phòng khám từ xa
         await this.$axios.post('apis/SysOrg/GetOrgList',institution,{
           headers: {
             Authorization: "Bearer "+this.tokenData
@@ -875,7 +875,7 @@
           .catch((error) => {
           });
 
-        // 获取远程诊所科室
+        // Lấy khoa của phòng khám từ xa
         await this.$axios.post('apis/Booking/GetOutpDepartment',{
           Data: null,
           OrganizeId: this.bizFormModel.hospital.OrganizeId,
@@ -924,7 +924,7 @@
             this.outputError(error);
           });
       },
-      // 远程诊疗申请保存
+      // Lưu yêu cầu khám chữa bệnh từ xa
       savedRequest() {
         this.bizFormModel.hospital = this.bizFormModel.hospital.Name
         this.bizFormModel.hospitalId = this.bizFormModel.doctor.organizeId
@@ -941,10 +941,10 @@
         saveDiagnosis(this.bizFormModel).then((res) => {
           if (res.code === 100) {
             this.applyForDialogVisible = false
-            this.$message.success("Lưu thành công！")
+            this.$message.success("Lưu thành công!")
             this.loadData();
           } else {
-            this.$message.error("Lưu thất bại，Vui lòng liên hệ backend!")
+            this.$message.error("Lưu thất bại, Vui lòng liên hệ backend!")
           }
         }).catch((error) => {
           this.$message.error(error)
@@ -1044,7 +1044,7 @@
           this.refundRegistrationRemarks,
         );
         if (res.code === 100) {
-          //退费成功后修改费用表的状态
+          //Sau khi hoàn phí thành công thì sửa trạng thái bảng chi phí
           // getTollInfoByRegistrationId(this.refundRegistrationId).then((res)=>{
           //   if(res.code=="100"){
           //     let tollMesssage=res.data
@@ -1074,7 +1074,7 @@
           }
         }
       },
-      //显示退费弹框
+      //Hiển thị hộp thoại hoàn phí
       showRefundRegistrationDialog(refundData) {
         this.returnToll = refundData
         this.refundRegistrationId = refundData.id;
@@ -1085,7 +1085,7 @@
       },
       async updateStatusId(id, status, doctor, clinicOffice, subscribeDate) {
         let flag = false
-        //判断预约时间是否在当天
+        //Kiểm tra thời gian hẹn có trong ngày hôm nay không
         if (subscribeDate) {
           let orderDate = new Date(subscribeDate);
           let orderYear = orderDate.getFullYear()
@@ -1093,7 +1093,7 @@
           let orderDay = orderDate.getDate()
           let newOrderTime = orderYear + "-" + orderMonth + "-" + orderDay
 
-          //获取当前时间
+          //Lấy thời gian hiện tại
           let now = new Date();
           let nowYear = now.getFullYear();
           let nowMonth = now.getMonth() + 1;
@@ -1122,7 +1122,7 @@
 
 
             } else {
-              this.$message.error("Lưu thất bại，Vui lòng liên hệ backend")
+              this.$message.error("Lưu thất bại, Vui lòng liên hệ backend")
             }
           }).catch((error) => {
             this.$message.error(error)
@@ -1294,7 +1294,7 @@
             },
           ],
         };
-        // Toán tử điều kiện của trường phản hồi，Thay bằng toán tử của trường kích hoạt
+        // Toán tử điều kiện của trường phản hồi, Thay bằng toán tử của trường kích hoạt
         department_search.params.forEach((item) => {
           if (this.queryTypes[item.columnName]) {
             item.queryType = this.queryTypes[item.columnName];
@@ -1315,7 +1315,7 @@
         let patientId_search = {
           params: [],
         };
-        // Toán tử điều kiện của trường phản hồi，Thay bằng toán tử của trường kích hoạt
+        // Toán tử điều kiện của trường phản hồi, Thay bằng toán tử của trường kích hoạt
         patientId_search.params.forEach((item) => {
           if (this.queryTypes[item.columnName]) {
             item.queryType = this.queryTypes[item.columnName];
@@ -1348,7 +1348,7 @@
             },
           ],
         };
-        // Toán tử điều kiện của trường phản hồi，Thay bằng toán tử của trường kích hoạt
+        // Toán tử điều kiện của trường phản hồi, Thay bằng toán tử của trường kích hoạt
         doctor_search.params.forEach((item) => {
           if (this.queryTypes[item.columnName]) {
             item.queryType = this.queryTypes[item.columnName];
@@ -1442,7 +1442,7 @@
       addCreateDate() {
 
         let myDate = new Date();
-        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa，30nghĩa là ngày
+        let lw = new Date(myDate.getTime() - 1000 * 60 * 60 * 24 * 30); //Chữ số cuối cùng30có thể sửa, 30nghĩa là ngày
         let lastY = lw.getFullYear();
         let lastM = lw.getMonth() + 1;
         let lastD = lw.getDate();
@@ -1468,7 +1468,7 @@
 
 
           } else {
-            this.$message.error("Lưu thất bại，Vui lòng liên hệ backend")
+            this.$message.error("Lưu thất bại, Vui lòng liên hệ backend")
           }
         }).catch((error) => {
           this.$message.error(error)
@@ -1493,7 +1493,7 @@
               },
             ],
           };
-          // Toán tử điều kiện của trường phản hồi，Thay bằng toán tử của trường kích hoạt
+          // Toán tử điều kiện của trường phản hồi, Thay bằng toán tử của trường kích hoạt
           doctor_search.params.forEach((item) => {
             if (this.queryTypes[item.columnName]) {
               item.queryType = this.queryTypes[item.columnName];
@@ -1658,7 +1658,7 @@
       height: 100% !important;
     }
     
-    // 修复操作列按钮对齐
+    // Sửa căn lề nút cột thao tác
     ::v-deep .el-table__column--fixed-right .cell {
       display: flex !important;
       align-items: center !important;
@@ -1668,17 +1668,17 @@
       height: 100% !important;
     }
     
-    // 修复表格行高度和对齐
+    // Sửa chiều cao và căn lề dòng bảng
     ::v-deep .el-table__row {
       height: 48px !important;
     }
     
-    // 修复单元格内容垂直居中
+    // Sửa căn giữa theo chiều dọc nội dung ô
     ::v-deep .el-table__cell {
       vertical-align: middle !important;
     }
     
-    // 修复表头对齐
+    // Sửa căn lề tiêu đề bảng
     ::v-deep .el-table__header th {
       vertical-align: middle !important;
     }

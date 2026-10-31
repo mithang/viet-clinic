@@ -113,9 +113,9 @@
       },
       initFormModel(This) {
         return {
-          'name': '',   // 设备名称
+          'name': '',   // Tên thiết bị
           'remarks': '',   // Thông tin ghi chú
-          'allDay': '0', // 是否全天  0Có 1Không
+          'allDay': '0', // Có phải cả ngày không  0 Có 1 Không
           'fromDate': null,
           'toDade': null
         }

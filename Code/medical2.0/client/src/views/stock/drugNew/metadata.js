@@ -149,7 +149,7 @@ const tenantList = [
       "routerId": "2077468568630584869",
       "tableId": "1004078055755374623",
       "prop": "status",
-      "label": "启用标志",
+      "label": "Trạng thái hoạt động",
       "align": "center",
       "miniWidth": 100,
       "width": null,
@@ -190,7 +190,7 @@ const versionList = [
 //   },
   {
   "prop": "brandName",
-  "label": "商品别名",
+  "label": "Tên khác",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -222,7 +222,7 @@ const versionList = [
 //   },
   {
   "prop": "factory",
-  "label": "生产单位",
+  "label": "Đơn vị sản xuất",
   "align": "center",
   "miniWidth": 160,
   "width": null,
@@ -238,7 +238,7 @@ const versionList = [
   },
   {
   "prop": "price",
-  "label": "价格",
+  "label": "Giá",
   "align": "center",
   "miniWidth": 160,
   "width": null,

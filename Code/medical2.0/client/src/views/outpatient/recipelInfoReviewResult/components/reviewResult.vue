@@ -139,8 +139,8 @@
               width="220"
               align="center">
               <template slot-scope="scope">
-                Chẩn đoán Đông y：{{scope.row.medicalRecord.chinaDiagnose}};
-                Chẩn đoán Tây y：{{scope.row.medicalRecord.westernDiagnose}};
+                Chẩn đoán Đông y: {{scope.row.medicalRecord.chinaDiagnose}};
+                Chẩn đoán Tây y: {{scope.row.medicalRecord.westernDiagnose}};
               </template>
             </el-table-column>
             <el-table-column

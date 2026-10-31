@@ -146,7 +146,7 @@ export default {
       if (this.expression) {
         let arr = this.expression.split(" ");
         if (arr.length >= 6) {
-          //6 位以上是合法表达式
+          //6 vị trở lên là biểu thức hợp lệ
           let obj = {
             second: arr[0],
             min: arr[1],
@@ -164,15 +164,15 @@ export default {
           }
         }
       } else {
-        // 没有传入的表达式 则还原
+        // Không có biểu thức truyền vào thì khôi phục
         this.clearCron();
       }
     },
-    // tab切换值
+    // Giá trị chuyển đổi tab
     tabCheck(index) {
       this.tabActive = index;
     },
-    // 由子组件触发，更改表达式组成的字段值
+    // Do thành phần con kích hoạt, thay đổi giá trị trường cấu thành biểu thức
     updateCrontabValue(name, value, from) {
       "updateCrontabValue", name, value, from;
       this.crontabValueObj[name] = value;
@@ -180,7 +180,7 @@ export default {
         this.changeRadio(name, value);
       }
     },
-    // 赋值到组件
+    // Gán giá trị vào thành phần
     changeRadio(name, value) {
       let arr = ["second", "min", "hour", "month"],
         refName = "cron" + name,
@@ -285,9 +285,9 @@ export default {
       }
       this.$refs[refName].radioValue = insValue;
     },
-    // 表单选项的子组件校验数字格式（Qua-props传递）
+    // Thành phần con của tùy chọn form xác thực định dạng số (Truyền qua props)
     checkNumber(value, minLimit, maxLimit) {
-      // 检查必须为整数
+      // Kiểm tra phải là số nguyên
       value = Math.floor(value);
       if (value < minLimit) {
         value = minLimit;
@@ -296,18 +296,18 @@ export default {
       }
       return value;
     },
-    // 隐藏弹窗
+    // Ẩn popup
     hidePopup() {
       this.$emit("hide");
     },
-    // 填充表达式
+    // Điền biểu thức
     submitFill() {
       this.$emit("fill", this.crontabValueString);
       this.hidePopup();
     },
     clearCron() {
-      // 还原选择项
-      ("准备还原");
+      // Khôi phục tùy chọn đã chọn
+      ("Sẵn sàng khôi phục");
       this.crontabValueObj = {
         second: "*",
         min: "*",
@@ -354,7 +354,7 @@ export default {
   watch: {
     expression: "resolveExp",
     hideComponent(value) {
-      // 隐藏部分组件
+      // Ẩn một số thành phần
     },
   },
   mounted: function() {

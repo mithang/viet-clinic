@@ -52,7 +52,7 @@
                   align="right"
                   start-placeholder="Ngày bắt đầu"
                   end-placeholder="Ngày kết thúc"
-                  format="yyyy-MM-dd HH:mm:ss"
+                  format="dd/MM/yyyy HH:mm:ss"
                   :default-time="['00:00:00', '23:59:59']">
                 </el-date-picker>
               </el-form-item>
@@ -187,9 +187,9 @@
       </el-row>
       <!-- Thanh phân trang     Kết thúc -->     </div>
 
-    <!-- 添加弹出框 -->
+    <!-- Hộp thoại thêm mới -->
     <el-dialog
-      title="添加处方模板"
+      title="Thêm mẫu đơn thuốc"
       :visible.sync="templateDialogVisible"
       width="30%"
       :before-close="handleClose">
@@ -487,12 +487,12 @@
     width: 120px;
     height: 40px;
     padding: 0;
-    //控制图标icon大小
+    //Điều chỉnh kích thước icon
     ::v-deep i {
       font-size: 20px;
     }
 
-    //控制字大小
+    //Điều chỉnh cỡ chữ
     ::v-deep {
       font-size: 20px;
     }

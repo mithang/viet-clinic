@@ -17,15 +17,15 @@
                         <el-table-column prop="date" width="180"></el-table-column>
                         <el-table-column width="120">
                             <template slot-scope="scope">
-                                <el-button @click="handleRead(scope.$index)">标为已读</el-button>
+                                <el-button @click="handleRead(scope.$index)">Đánh dấu đã đọc</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                     <div class="handle-row">
-                        <el-button type="primary">全部标为已读</el-button>
+                        <el-button type="primary">Đánh dấu tất cả đã đọc</el-button>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane :label="`已读消息(${read.length})`" name="second">
+                <el-tab-pane :label="`Tin đã đọc (${read.length})`" name="second">
                     <template v-if="message === 'second'">
                         <el-table :data="read" :show-header="false" style="width: 100%">
                             <el-table-column>
@@ -41,7 +41,7 @@
                             </el-table-column>
                         </el-table>
                         <div class="handle-row">
-                            <el-button type="danger">删除全部</el-button>
+                            <el-button type="danger">Xóa tất cả</el-button>
                         </div>
                     </template>
                 </el-tab-pane>
@@ -61,7 +61,7 @@
                             </el-table-column>
                         </el-table>
                         <div class="handle-row">
-                            <el-button type="danger">清空回收站</el-button>
+                            <el-button type="danger">Dọn sạch thùng rác</el-button>
                         </div>
                     </template>
                 </el-tab-pane>
@@ -80,18 +80,18 @@
           unread: [
           {
             date: '2019-11-7 8:00:00',
-            title: '通知公告指的是系统或官方发出的消息，一般是不可回复的'
+            title: 'Thông báo là tin do hệ thống hoặc đơn vị phát hành, thường không thể trả lời'
           },
           {
             date: '2019-11-7 9:00:00',
-            title: '消息涵盖面比较广，会包含私信、评论、关注、点赞、收藏、系统通知等通知'
+            title: 'Tin nhắn bao gồm tin riêng, bình luận, theo dõi, lượt thích, mục đã lưu và thông báo hệ thống'
           },          
           {
             date: '2018-04-19 20:00:00',
             title: '【Thông báo hệ thống】Hệ thống này sẽ tiến hành nâng cấp bảo trì vào rạng sáng nay lúc2giờ đến5giờ để nâng cấp bảo trì'
           }, {
             date: '2018-04-19 21:00:00',
-            title: '今晚12点整发大红包，先到先得'
+            title: 'Ưu đãi gửi lúc 0 giờ đêm nay, số lượng có hạn'
           }],
           read: [{
             date: '2018-04-19 20:00:00',

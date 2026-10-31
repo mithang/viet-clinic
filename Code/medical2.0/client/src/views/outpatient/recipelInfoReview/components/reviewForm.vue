@@ -219,7 +219,7 @@
       </el-row>
       <el-row v-if="bizFormModel.recipelInfoReview.recipelInfo.recipelType.value  ==='recipelType_1'">
         <el-input disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.dosage" oninput="value=value.replace(/[^\d.]/g,'')" style="width: 60px"></el-input>
-        &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng：
+        &nbsp;thang &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cách dùng: 
         <el-select disabled v-model="bizFormModel.recipelInfoReview.recipelInfo.recipelUse" placeholder="Vui lòng chọn" style="width: 110px">
           <el-option v-for="pitem in ChineseUseOption" :key="pitem.value"
                      :label="pitem.name"
@@ -579,7 +579,7 @@
       this.dialogProps.title = 'Thêm thẩm tra đơn thuốc'
       this.bizFormModel = review
       this.initOptions(this.bizFormModel)
-      this.bizFormModel.id = null   //ĐặtidĐặt thành trống，Thêm mới một
+      this.bizFormModel.id = null //ĐặtidĐặt thành trống, Thêm mới một
       this.dialogProps.visible = true
       this.dialogProps.dataLoaded = true
     },

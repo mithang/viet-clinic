@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     onExport() { 
-      // 没有数据时，Nhắc nhở
+      // Không có dữ liệu thì, Nhắc nhở
       if(!this.data) {
         this.$alert('Không có dữ liệu để xuất!', 'Nhắc nhở', {
           type: 'info'

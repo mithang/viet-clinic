@@ -42,7 +42,7 @@
           <el-table-column align="center" prop="createDate" label="Thời gian nhận"/>
         </el-table>
       </el-tab-pane>
-<!--      <el-tab-pane label="全部标记已读" name="all">
+<!--      <el-tab-pane label="Đánh dấu tất cả đã đọc" name="all">
       </el-tab-pane>-->
     </el-tabs>
 
@@ -60,7 +60,7 @@
         </el-pagination>
       </el-col>
 
-  <!--    <el-dialog title="通告" ref="dialog" id="dialog"  v-if="contentVisible" :visible.sync="contentVisible" :close-on-click-modal="false"	width="30%" :modal-append-to-body="false"
+  <!--    <el-dialog title="Thông báo" ref="dialog" id="dialog"  v-if="contentVisible" :visible.sync="contentVisible" :close-on-click-modal="false"	width="30%" :modal-append-to-body="false"
         :before-close="handleClose">
         <span id="msg" ref="msg"></span>
       </el-dialog>-->
@@ -75,12 +75,12 @@
     name: "tabSite",
     data() {
       return {
-        expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại，Cần đặtrow-keythuộc tính mới sử dụng được，Thuộc tính này là của dòng mở rộngkeysMảng
-        contentVisible:false, //消息显示
+        expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại, Cần đặtrow-keythuộc tính mới sử dụng được, Thuộc tính này là của dòng mở rộngkeysMảng
+        contentVisible:false, // Hiển thị tin nhắn
         loading:false,
         activeName: 'unread',
         readStatus:"0",
-        unreadList:[],        //未读的消息id
+        unreadList:[],        // Id tin nhắn chưa đọc
         noticeRecordSiteList:[],
         noticeRecordSiteTotal:0,
         currentPage: 1,
@@ -112,28 +112,28 @@
           row ? this.expands.push(row.id) : ''
         }
       },
-      //关闭页面
+      //Đóng trang
       handleClose(){
         this.contentVisible = false;
       },
-      onOpen(row,index){    //点击链接跳转
+      onOpen(row,index){    //Nhấn liên kết để chuyển trang
         this.$nextTick(()=> {
           let msg = document.getElementById(this.activeName);         //Nội dung chính
           msg.innerHTML = row.siteContent;
           if(row.readStatus === "0"){
-             saveNoticeReceiveSite({id:row.id,readStatus:'1'}).then(result =>{ //查询赋值并修改 状态为已读
+             saveNoticeReceiveSite({id:row.id,readStatus:'1'}).then(result =>{ //Truy vấn gán giá trị và sửa trạng thái thành đã đọc
                 if(result.code === 100){
                   row.readStatus = "1";
                 }
             })
           }
         });
- /*       const obj = row.noticeRecord;
+        /*       const obj = row.noticeRecord;
         this.content = obj.siteContent;
         this.$nextTick(()=>{
           let msg = document.getElementById(this.activeName);         //Nội dung chính
-          //  (.*?)  (\S*) 两种拿到中间值 str.match(/<a>(.*?)<\/a>/i)
-          if(this.content.match(/<a>(\S*)<\/a>/)){          //判断有无a标签跳转
+          //  (.*?)  (\S*)  hai cách lấy giá trị ở giữa str.match(/<a>(.*?)<\/a>/i)
+          if(this.content.match(/<a>(\S*)<\/a>/)){          //Kiểm tra có thẻ a để chuyển trang hay không
             const txt = this.content.match(/<a>(\S*)<\/a>/)[1];
             msg.innerHTML = this.content.replace("<a>"+txt+"</a>",'<a class="el-link el-link--primary is-underline" onclick="skip()">'+ txt +'</a>');
           }else{
@@ -184,7 +184,7 @@
 
             if(this.readStatus === "0" && this.noticeRecordSiteList){
             /*  this.unreadList = [];
-              this.noticeRecordSiteList.some((item) =>{  //存储未读消息id
+              this.noticeRecordSiteList.some((item) =>{  //Lưu id tin nhắn chưa đọc
                 this.unreadList.push({id:item.id,readStatus:"1"})
               });*/
               this.$store.dispatch('notices/SetNoticeTotal',this.noticeRecordSiteTotal);

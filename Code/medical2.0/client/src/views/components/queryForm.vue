@@ -46,7 +46,7 @@
       </el-row>
     </el-aside>
 
-    <!-- 保存查询的名称对话框 -->
+    <!-- Hộp thoại lưu tên truy vấn -->
     <el-dialog :title='conditionSelected ? "Cập nhật tiêu đề tra cứu" : "Nhập tiêu đề tra cứu"' :visible.sync='dialogVisible' width='350px'>
       <el-form :model='nameModel' ref='nameForm' label-width='0px' label-position='right' class='edit-form' :rules='formRules'>
         <el-form-item prop='name'>
@@ -74,16 +74,16 @@ export default {
   data() {
     return {
       vModel: null,
-      conditionSelected: null, // 我的查询列表框选择的值
-      conditionList: [],       // 我的查询列表框选项列表
-      dialogVisible: false,   // 查询标题框显示标志
+      conditionSelected: null, // Giá trị được chọn trong danh sách truy vấn của tôi
+      conditionList: [],       // Danh sách lựa chọn của danh sách truy vấn của tôi
+      dialogVisible: false,   // Cờ hiển thị hộp tiêu đề truy vấn
       nameModel: {
-        name: ''   // 查询标题名
+        name: ''   // Tên tiêu đề truy vấn
       },
 
       formRules: {
         'name': [
-            { required: true, message: '请输入查询标题', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập tiêu đề tra cứu', trigger: 'blur' }
         ],
       }
     }
@@ -168,7 +168,7 @@ export default {
         this.outputError(error)
       })
     },
-    // 点击保存按钮
+    // Nhấn nút lưu
     onSaveCondition() {
       if(this.conditionSelected) {
         this.nameModel.name = this.conditionSelected.name
@@ -177,7 +177,7 @@ export default {
       }
       this.dialogVisible = true
     },
-    // 点击保存对话框确定按钮
+    // Nhấn nút xác nhận trong hộp thoại lưu
     onDoSaveCondition() {
         this.$refs['nameForm'].validate(valid => {
         if (valid) {
@@ -191,7 +191,7 @@ export default {
           }).then(responseData => {
             if(responseData.code === 100) {
 
-              // todo 查询列表
+              // todo danh sách truy vấn
               listQueryConditionAll({
                 params: [{columnName: 'user_id', queryType: '=', value: currentUser.id},
                   {columnName: 'router_id', queryType: '=', value: this.routerId}

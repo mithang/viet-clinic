@@ -9,19 +9,19 @@ export default {
     const { params, query } = this.$route
     const { to } = query
 
-    // 如果有 to Tham số，跳转到指定路径
+    // Nếu có tham số to, chuyển đến đường dẫn chỉ định
     if (to) {
       this.$router.replace({
         path: to,
         query: query
       })
     } else {
-      // 否则跳转到首页
+      // Ngược lại chuyển về trang chủ
       this.$router.replace('/homepage')
     }
   },
   render(h) {
-    return h() // 避免渲染任何内容
+    return h() // Tránh render bất kỳ nội dung nào
   }
 }
 </script>

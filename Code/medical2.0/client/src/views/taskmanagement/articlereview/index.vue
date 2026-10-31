@@ -112,10 +112,10 @@
           <el-table-column label="Thao tác" width="120">
             <template slot-scope="scope">
               <el-button v-if="scope.row.auditstatus==='0'" @click="onCreatePatient('Duyệt',scope.row.id)" type="text" size="small"
-                >审 核</el-button
+                >Duyệt</el-button
               >
                <el-button @click="onCreatePatient('Xem',scope.row.id)" type="text" size="small"
-                >查 看</el-button
+                >Xem</el-button
               >
             </template>
           </el-table-column>
@@ -198,7 +198,7 @@ export default {
         this.onSearch()
     },
 
-    //初始化状态
+    //Khởi tạo trạng thái
     initOptions(){
      
       let id = currentUser.company.id
@@ -209,7 +209,7 @@ export default {
             item.id!==currentUser.company.id
           )
         }else{
-          this.$message.error("Thực hiện thất bại！")
+          this.$message.error("Thực hiện thất bại!")
         }
       }).catch((error)=>{
         this.$message.error(error)
@@ -221,18 +221,18 @@ export default {
       let date = new Date(); //Lấy thời gian mới
       //Lấy năm hiện tại,và chuyển thành chuỗi
       let year = date.getFullYear().toString();
-      //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
-      //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+      //Lấy tháng hiện tại, vì tháng bắt đầu từ0Bắt đầu, tại đây cần cộng1, 
+      //Sử dụng biểu thức ba ngôi, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
       let month =
         date.getMonth() + 1 < 10
           ? "0" + (date.getMonth() + 1).toString()
           : (date.getMonth() + 1).toString();
-      //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+      //Lấy ngày, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
       let day =
         date.getDate() < 10
           ? "0" + date.getDate().toString()
           : date.getDate().toString();
-      //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+      //Nối chuỗi, Nối thời gian bắt đầu và thời gian kết thúc
       let start = year + "-" + month + "-01" + " 00:00:00"; //Ngày đầu tiên của tháng hiện tại
       //let end=new Date(year, month, 0).getDate();
       let end = year + "-" + month + "-" + day + " 23:59:59"; //Trong ngày

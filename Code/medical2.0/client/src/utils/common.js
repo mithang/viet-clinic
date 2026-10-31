@@ -1,6 +1,6 @@
 
 /**
-* 两层循环实现建树 Đặtlist数据通过 id，vàparentId够造成一个树
+* Hai vòng lặp để xây dựng cây: dữ liệu list thông qua id và parentId cấu thành cây
 */
 export function buildTree(list) {
   const map = {}
@@ -18,7 +18,7 @@ export function buildTree(list) {
   return trees
 }
 
-// 保留旧名称以保持向后兼容
+// Giữ tên cũ để đảm bảo tương thích ngược
 export const bulidTree = buildTree
 
 export function isLightOrDark(rgbColor) {
@@ -29,18 +29,18 @@ export function isLightOrDark(rgbColor) {
 }
 
 /**
- * Lấy N 天前的日期
+ * Lấy ngày cách đây N ngày
  * @param {number} days Số ngày
- * @returns {Date} N 天前的 Date Đối tượng
+ * @returns {Date} Đối tượng Date của N ngày trước
  */
 export function daysAgo(days) {
   return new Date(Date.now() - days * 86400000)
 }
 
 /**
- * 格式化日期为 YYYY-MM-DD HH:mm:ss Chuỗi ký tự
- * @param {Date} date 日期对象
- * @returns {string} 格式化后的日期字符串
+ * Định dạng ngày thành chuỗi YYYY-MM-DD HH:mm:ss
+ * @param {Date} date Đối tượng ngày
+ * @returns {string} Chuỗi ngày đã định dạng
  */
 export function formatDateTime(date) {
   const y = date.getFullYear()
@@ -53,10 +53,10 @@ export function formatDateTime(date) {
 }
 
 /**
- * BigNumber 格式化工具（Phân tách hàng nghìn，保留2chữ số thập phân）
- * 需要项目中已引入 BigNumber.js
- * @param {BigNumber} BigNumber BigNumber 构造函数
- * @returns {function} 格式化函数
+ * Công cụ định dạng BigNumber (phân tách hàng nghìn, giữ 2 chữ số thập phân)
+ * Cần dự án đã import BigNumber.js
+ * @param {BigNumber} BigNumber Hàm khởi tạo BigNumber
+ * @returns {function} Hàm định dạng
  */
 export function createBigNumFormatter(BigNumber) {
   return function bigNum(num) {

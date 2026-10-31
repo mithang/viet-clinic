@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/outpatient/remoteDiagnosisTreatment')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getDiagnosisById = baseApi.getById
 export const listDiagnosisPage = baseApi.listPage
 export const listDiagnosisAll = baseApi.listAll

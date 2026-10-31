@@ -26,7 +26,7 @@
                   </el-select>
               </el-form-item>
             </el-col>
-             <!-- <el-col :span="5">
+              <!-- <el-col :span="5">
 
               <el-form-item label="Trạng thái kích hoạt" prop="status">
                 <el-switch
@@ -194,7 +194,7 @@ export default {
           value: '2',
           label: 'Hãng vật tư'
         },
-      ],//厂家类型
+      ],//Loại nhà sản xuất
       status:[
             {
               value: '0',
@@ -254,7 +254,7 @@ export default {
   },
   watch: {
 
-     // tableDataCóel-tableDữ liệu đã liên kết
+      // tableDataCóel-tableDữ liệu đã liên kết
       tableData: {
           // Khắc phục lỗi hiển thị lệch bảng
           handler () {

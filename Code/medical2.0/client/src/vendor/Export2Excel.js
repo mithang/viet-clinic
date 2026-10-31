@@ -124,20 +124,20 @@ export function export_json_to_excel({header, data, filename='excel-list', autoW
     var wb = new Workbook(), ws = sheet_from_array_of_arrays(data);
 
     if(autoWidth){
-      /*Cài đặtworksheet每列的最大宽度*/
+      /*Cài đặt chiều rộng tối đa của mỗi cột trong worksheet*/
       const colWidth = data.map(row => row.map(val => {
-        /*先判断是否为null/undefined*/
+        /*Kiểm tra trước xem có phải null/undefined không*/
         if (val == null) {
           return {'wch': 10};
         }
-        /*再判断是否为中文*/
+        /*Kiểm tra tiếp xem có phải ký tự tiếng Trung không*/
         else if (val.toString().charCodeAt(0) > 255) {
           return {'wch': val.toString().length * 2};
         } else {
           return {'wch': val.toString().length};
         }
       }))
-      /*以第一行为初始值*/
+      /*Dùng hàng đầu tiên làm giá trị ban đầu*/
       let result = colWidth[0];
       for (let i = 1; i < colWidth.length; i++) {
         for (let j = 0; j < colWidth[i].length; j++) {

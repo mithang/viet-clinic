@@ -1,5 +1,5 @@
 <template>
-  <div class="search-item"><b class="label">{{label}}：</b>
+  <div class="search-item"><b class="label">{{label}}: </b>
     <slot name="default"></slot>
   </div>
 </template>

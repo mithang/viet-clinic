@@ -18,7 +18,7 @@
             {{ dialogProps.title }}
           </span>
           <div style="margin-right: 20px;">
-            <span style="font-size: 14px;font-weight: 300;">Nguồn：</span>
+            <span style="font-size: 14px;font-weight: 300;">Nguồn: </span>
             <el-select
             v-model="drugSource"
             placeholder="Vui lòng chọn nguồn thuốc"
@@ -78,7 +78,7 @@
             </el-col>
         </el-row>
         <div class="tab-item">
-          <!-- 选择的药品集合 -->
+          <!-- Tập hợp thuốc đã chọn -->
           <el-card shadow="never" v-if="selectDrugList.length" :body-style="{padding: '10px'}" style="margin-bottom: 10px;">
               <el-tag
                 v-for="drug in selectDrugList"
@@ -303,7 +303,7 @@
           title: '',
         },
         drugSource: 1, // 'Nguồn gốc thuốc'
-        drugList: [],  // 租户药品列表
+        drugList: [],  // Danh sách thuốc của đơn vị thuê
         currentPage: 1,
         drugTotal: 0,
         queryModel: {
@@ -374,7 +374,7 @@
       this.$refs.drugForm.resetFields()
       this.onSearch()
     },
-    // 禁用已同步的药品
+    // Vô hiệu hoá thuốc đã đồng bộ
     selectable(row, index) {
       if (row.syncNum === 1) {
           return false;
@@ -398,7 +398,7 @@
       }
       this.getListByInstitution();
     },
-    // 药品来源发生变化
+    // Nguồn thuốc thay đổi
     onDrugSourcesChange(val) {
       this.selectDrugList = []
       this.drugList = []
@@ -445,7 +445,7 @@
       }
       this.selectDrugList = selectDrugListCopy
     },
-    // 删除药物
+    // Xoá thuốc
     delectDrug(row) {
       let name = this.drugSource === 1 ? 'id': 'ypId'
       let index = this.selectDrugList.findIndex(item => item[name] === row[name])

@@ -6,9 +6,9 @@ const getters = {
     sys: state => state.sys,
     menus: state => state.menus,
     topMenuId: state => state.menus.topMenuId,
-    toPath: state => state.menus.toPath,             //登录前请求的页面路径
-    noticeTotal: state => state.notices.noticeTotal, //未读消息总数
-    // geoMap: state => state['report/map'].geoMap // 获取地图数据
+    toPath: state => state.menus.toPath,             //Đường dẫn trang yêu cầu trước khi đăng nhập
+    noticeTotal: state => state.notices.noticeTotal, //Tổng số tin nhắn chưa đọc
+    // geoMap: state => state['report/map'].geoMap // Lấy dữ liệu bản đồ
 };
 
 export default getters

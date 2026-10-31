@@ -364,7 +364,7 @@ export default {
       let type_search = {
         // params: [{ 'columnName': 'dict_type_id', 'queryType': '=', 'value': '1004462867645374476' }]
       }
-      // Toán tử điều kiện của trường phản hồi，Thay bằng toán tử của trường kích hoạt
+      // Toán tử điều kiện của trường phản hồi, Thay bằng toán tử của trường kích hoạt
       type_search.params && type_search.params.forEach(item => {
         if (this.queryTypes[item.columnName]) {
           item.queryType = this.queryTypes[item.columnName]

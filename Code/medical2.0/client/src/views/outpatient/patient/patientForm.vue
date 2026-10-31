@@ -225,7 +225,7 @@
                 value-key="value"
                 filterable
                 clearable
-                :placeholder="dialogProps.action === 'view' ? '' : '请选择省份'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Chọn tỉnh/thành phố'"
                 @clear="
                   bizFormModel.province = '';
                   bizFormModel.city= '';
@@ -254,7 +254,7 @@
               value-key="value"
               filterable
               clearable
-              :placeholder="dialogProps.action === 'view' ? '' : '请选择市'"
+              :placeholder="dialogProps.action === 'view' ? '' : 'Chọn quận/huyện'"
               @clear="
                 bizFormModel.city= '';
                 bizFormModel.area= '';
@@ -283,7 +283,7 @@
                 value-key="value"
                 filterable
                 clearable
-                :placeholder="dialogProps.action === 'view' ? '' : '请选择区县'"
+                :placeholder="dialogProps.action === 'view' ? '' : 'Chọn xã/phường'"
                 @clear="
                   bizFormModel.area= '';
                 "
@@ -376,7 +376,7 @@ export default {
           // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
           sum += parseInt(value.substr(i, 1), 10) * arrExp[i];
         }
-        // Tính modulo（Thuật toán cố định）
+        // Tính modulo (Thuật toán cố định)
         idx = sum % 11;
         // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
         if (String(arrValid[idx]) === value.substr(17, 1).toUpperCase()) {
@@ -617,7 +617,7 @@ export default {
               // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
               sum += parseInt(this.bizFormModel.card.substr(i, 1), 10) * arrExp[i];
             }
-            // Tính modulo（Thuật toán cố định）
+            // Tính modulo (Thuật toán cố định)
             idx = sum % 11;
             // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
             if (String(arrValid[idx]) === this.bizFormModel.card.substr(17, 1).toUpperCase()) {

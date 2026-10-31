@@ -1,17 +1,17 @@
 /**
- * API工厂函数
- * 生成标准CRUDGiao diện，消除API层重复代码
+ * Hàm factory API
+ * Sinh giao diện CRUD chuẩn, loại bỏ code trùng lặp tầng API
  *
- * Cách sử dụng：
+ * Cách sử dụng: 
  * // api/stock/supplier.js
  * import { createCrudApi } from '@/utils/apiFactory'
  *
  * const baseApi = createCrudApi('/stock/supplier')
  *
- * // 添加自定义接口
+ * // Thêm interface tùy chỉnh
  * export const customMethod = (data) => request({ url: '/stock/supplier/custom', method: 'post', data })
  *
- * // 导出所有接口
+ * // Xuất tất cả interface
  * export default {
  *   ...baseApi,
  *   customMethod
@@ -20,15 +20,15 @@
 import request from './request'
 
 /**
- * 创建标准CRUD API
- * @param {string} baseUrl - APIĐường dẫn cơ sở
- * @returns {Object} 包含标准CRUD方法的对象
+ * Tạo CRUD API chuẩn
+ * @param {string} baseUrl - Đường dẫn cơ sở API
+ * @returns {Object} Đối tượng chứa phương thức CRUD chuẩn
  */
 export function createCrudApi(baseUrl) {
   return {
     /**
-     * TheoID获取实体
-     * @param {string} id - Thực thểID
+     * Lấy entity theo ID
+     * @param {string} id - ID entity
      */
     getById: (id) => request({
       url: `${baseUrl}/${id}`,
@@ -56,8 +56,8 @@ export function createCrudApi(baseUrl) {
     }),
 
     /**
-     * 保存实体（新增或更新）
-     * @param {Object} data - Dữ liệu thực thể
+ * Lưu entity (thêm mới hoặc cập nhật)
+     * @param {Object} data - Dữ liệu entity
      */
     save: (data) => request({
       url: `${baseUrl}/save`,
@@ -66,8 +66,8 @@ export function createCrudApi(baseUrl) {
     }),
 
     /**
-     * Xóa thực thể
-     * @param {Object} data - Dữ liệu thực thể
+     * Xóa entity
+     * @param {Object} data - Dữ liệu entity
      */
     delete: (data) => request({
       url: `${baseUrl}/delete`,
@@ -76,8 +76,8 @@ export function createCrudApi(baseUrl) {
     }),
 
     /**
-     * 批量新增
-     * @param {Array} data - Mảng thực thể
+     * Thêm hàng loạt
+     * @param {Array} data - Mảng entity
      */
     bulkInsert: (data) => request({
       url: `${baseUrl}/bulkInsert`,
@@ -86,8 +86,8 @@ export function createCrudApi(baseUrl) {
     }),
 
     /**
-     * 批量更新
-     * @param {Array} data - Mảng thực thể
+     * Cập nhật hàng loạt
+     * @param {Array} data - Mảng entity
      */
     bulkUpdate: (data) => request({
       url: `${baseUrl}/bulkUpdate`,
@@ -96,8 +96,8 @@ export function createCrudApi(baseUrl) {
     }),
 
     /**
-     * 批量删除
-     * @param {Array} data - Mảng thực thể
+     * Xóa hàng loạt
+     * @param {Array} data - Mảng entity
      */
     bulkDelete: (data) => request({
       url: `${baseUrl}/bulkDelete`,
@@ -108,9 +108,9 @@ export function createCrudApi(baseUrl) {
 }
 
 /**
- * 创建带分页的查询API
- * @param {string} baseUrl - APIĐường dẫn cơ sở
- * @returns {Object} 包含分页查询方法的对象
+ * Tạo API truy vấn có phân trang
+ * @param {string} baseUrl - Đường dẫn cơ sở API
+ * @returns {Object} Đối tượng chứa phương thức truy vấn phân trang
  */
 export function createPagedApi(baseUrl) {
   return {
@@ -137,9 +137,9 @@ export function createPagedApi(baseUrl) {
 }
 
 /**
- * 创建自定义请求方法
- * @param {string} url - Yêu cầuURL
- * @param {string} method - 请求方法
+ * Tạo phương thức yêu cầu tùy chỉnh
+ * @param {string} url - URL yêu cầu
+ * @param {string} method - Phương thức yêu cầu
  * @returns {Function} Hàm yêu cầu
  */
 export function createRequest(url, method = 'post') {

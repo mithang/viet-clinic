@@ -16,7 +16,7 @@
         <div>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">Ngày thu phí：</div>
+              <div class="condition-name">Ngày thu phí: </div>
               <el-date-picker
                 style="width:320px;"
                 v-model="mainCondition.chargeDateRange"
@@ -26,11 +26,11 @@
                 end-placeholder="Ngày kết thúc"
                 :default-time="['00:00:00', '23:59:59']"
                 value-format="yyyy-MM-dd HH:mm:ss"
-                format="yyyy-MM-dd HH:mm:ss"
+                format="dd/MM/yyyy HH:mm:ss"
               ></el-date-picker>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Loại chi phí：</div>
+              <div class="condition-name">Loại chi phí: </div>
               <el-select
                 v-model="mainCondition.tollType"
                 placeholder="Loại chi phí"
@@ -46,7 +46,7 @@
               </el-select>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Người thu phí：</div>
+              <div class="condition-name">Người thu phí: </div>
               <el-select
                 v-model="mainCondition.create_by"
                 placeholder="Người thu phí"
@@ -61,7 +61,7 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">Tên bệnh nhân：</div>
+              <div class="condition-name">Tên bệnh nhân: </div>
               <el-select
                 v-model="mainCondition.name"
                 value-key="id"
@@ -81,7 +81,7 @@
           </el-row>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">Số phiếu thu phí：</div>
+              <div class="condition-name">Số phiếu thu phí: </div>
               <el-input
                 style="width:320px;"
                 v-model="mainCondition.tollNumber"
@@ -89,7 +89,7 @@
               ></el-input>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Khoa lập phiếu：</div>
+              <div class="condition-name">Khoa lập phiếu: </div>
               <el-select
                 v-model="mainCondition.prescriptionDept"
                 placeholder="Khoa lập phiếu"
@@ -104,7 +104,7 @@
               </el-select>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Bác sĩ kê đơn：</div>
+              <div class="condition-name">Bác sĩ kê đơn: </div>
               <el-select
                 v-model="mainCondition.prescriptionOper"
                 placeholder="Bác sĩ kê đơn"
@@ -119,7 +119,7 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">Trạng thái thu phí：</div>
+              <div class="condition-name">Trạng thái thu phí: </div>
               <el-select
                 style="width:200px;"
                 v-model="mainCondition.chargeStatu"
@@ -338,7 +338,7 @@
         <div>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">Ngày thu phí：</div>
+              <div class="condition-name">Ngày thu phí: </div>
               <el-date-picker
                 style="width:320px;"
                 v-model="detailCondition.chargeDateRange"
@@ -347,11 +347,11 @@
                 start-placeholder="Ngày bắt đầu"
                 end-placeholder="Ngày kết thúc"
                 value-format="yyyy-MM-dd HH:mm:ss"
-                format="yyyy-MM-dd HH:mm:ss"
+                format="dd/MM/yyyy HH:mm:ss"
               ></el-date-picker>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Loại chi phí：</div>
+              <div class="condition-name">Loại chi phí: </div>
               <el-select
                 v-model="detailCondition.tollType"
                 placeholder="Loại chi phí"
@@ -367,7 +367,7 @@
               </el-select>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Người thu phí：</div>
+              <div class="condition-name">Người thu phí: </div>
               <el-select
                 v-model="detailCondition.create_by"
                 placeholder="Người thu phí"
@@ -382,7 +382,7 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">Tên bệnh nhân：</div>
+              <div class="condition-name">Tên bệnh nhân: </div>
               <el-select
                 v-model="detailCondition.name"
                 value-key="id"
@@ -402,7 +402,7 @@
           </el-row>
           <el-row>
             <el-col :span="7" class="flex-start">
-              <div class="condition-name">Số phiếu thu phí：</div>
+              <div class="condition-name">Số phiếu thu phí: </div>
               <el-input
                 style="width:320px;"
                 v-model="detailCondition.tollNumber"
@@ -410,7 +410,7 @@
               ></el-input>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Phân loại thu phí：</div>
+              <div class="condition-name">Phân loại thu phí: </div>
               <el-select
                 v-model="detailCondition.payType"
                 placeholder="Phân loại thu phí"
@@ -425,7 +425,7 @@
               </el-select>
             </el-col>
             <el-col :span="6" class="flex-start">
-              <div class="condition-name">Khoa lập phiếu：</div>
+              <div class="condition-name">Khoa lập phiếu: </div>
               <el-select
                 v-model="detailCondition.prescriptionDept"
                 placeholder="Khoa lập phiếu"
@@ -440,7 +440,7 @@
               </el-select>
             </el-col>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">Bác sĩ kê đơn：</div>
+              <div class="condition-name">Bác sĩ kê đơn: </div>
               <el-select
                 v-model="detailCondition.prescriptionOper"
                 placeholder="Bác sĩ kê đơn"
@@ -458,7 +458,7 @@
           </el-row>
           <el-row>
             <el-col :span="5" class="flex-start">
-              <div class="condition-name">Trạng thái thu phí：</div>
+              <div class="condition-name">Trạng thái thu phí: </div>
               <el-select
                 style="width:200px;"
                 v-model="detailCondition.chargeStatu"
@@ -1090,9 +1090,9 @@
       },
       //Xuất bảng
       exportExcel() {
-        // var xlsxParam = { raw: true } // 导出的内容只做解析，不进行格式转换
+        // var xlsxParam = { raw: true } // Nội dung xuất chỉ phân tích, không chuyển đổi định dạng
         // var table = document.querySelector('#exportTable').cloneNode(true)
-        // // table.removeChild(table.querySelector('.el-table__fixed')) //这里是双下划线
+        // // table.removeChild(table.querySelector('.el-table__fixed')) //Ở đây là dấu gạch dưới kép
         // var wb = XLSX.utils.table_to_book(table, xlsxParam)
 
         // var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
@@ -1222,7 +1222,7 @@
           let contentWs = XLSX.utils.json_to_sheet(biaoge);
           contentWs["A1"] = {
             t: "s",
-            v: this.Company.name + ' Báo cáo chi phí（Tổng hợp）',
+            v: this.Company.name + ' Báo cáo chi phí (Tổng hợp)',
             s: {
               alignment: {
                 horizontal: "center",
@@ -1618,11 +1618,11 @@
             },
 
           ]
-          //Cố định dòng đầu tiên và cột đầu tiên：
+          //Cố định dòng đầu tiên và cột đầu tiên: 
           contentWs['!freeze'] = {
             xSplit: "11",  //Cố định cột
             ySplit: "1",  //Cố định dòng
-            topLeftCell: "A2",  //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
+            topLeftCell: "A2", //Ô hiển thị ở góc trên bên trái của vùng chưa cố định, Mặc định là ô chưa cố định đầu tiên
             state: "frozen"
           }
           contentWs["!merges"] = mergeTitle
@@ -1631,8 +1631,8 @@
           contentWs["!rows"] = {}
 
           contentWs["!margins"] = {left: 1.0, right: 1.0, top: 1.0, bottom: 1.0, header: 0.5, footer: 0.5}
-          XLSX.utils.book_append_sheet(web, contentWs, "Báo cáo chi phí（Tổng hợp）");
-          // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
+          XLSX.utils.book_append_sheet(web, contentWs, "Báo cáo chi phí (Tổng hợp)");
+          // //Sử dụngxlsx-styleCách ghi tệp, để kiểu tùy chỉnh có hiệu lực
           const tmpDown = new Blob([
             this.s2ab(
               XLSXD.write(web, {
@@ -1643,7 +1643,7 @@
               })
             )
           ])
-          this.downExcel(tmpDown, 'Báo cáo chi phí（Tổng hợp）.xlsx')
+          this.downExcel(tmpDown, 'Báo cáo chi phí (Tổng hợp).xlsx')
         } else {
           biaoge[0] = {
             code: "Số đơn thuốc",
@@ -1719,7 +1719,7 @@
           let contentWs = XLSX.utils.json_to_sheet(biaoge);
           contentWs["A1"] = {
             t: "s",
-            v: this.Company.name + ' Báo cáo chi phí（Chi tiết）',
+            v: this.Company.name + ' Báo cáo chi phí (Chi tiết)',
             s: {
               alignment: {
                 horizontal: "center",
@@ -1975,11 +1975,11 @@
             },
 
           ]
-          //Cố định dòng đầu tiên và cột đầu tiên：
+          //Cố định dòng đầu tiên và cột đầu tiên: 
           contentWs['!freeze'] = {
             xSplit: "11",  //Cố định cột
             ySplit: "1",  //Cố định dòng
-            topLeftCell: "A2",  //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
+            topLeftCell: "A2", //Ô hiển thị ở góc trên bên trái của vùng chưa cố định, Mặc định là ô chưa cố định đầu tiên
             state: "frozen"
           }
           contentWs["!merges"] = mergeTitle
@@ -1988,8 +1988,8 @@
           contentWs["!rows"] = {}
 
           contentWs["!margins"] = {left: 1.0, right: 1.0, top: 1.0, bottom: 1.0, header: 0.5, footer: 0.5}
-          XLSX.utils.book_append_sheet(web, contentWs, "Báo cáo chi phí（Chi tiết）");
-          // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
+          XLSX.utils.book_append_sheet(web, contentWs, "Báo cáo chi phí (Chi tiết)");
+          // //Sử dụngxlsx-styleCách ghi tệp, để kiểu tùy chỉnh có hiệu lực
           const tmpDown = new Blob([
             this.s2ab(
               XLSXD.write(web, {
@@ -2000,7 +2000,7 @@
               })
             )
           ])
-          this.downExcel(tmpDown, 'Báo cáo chi phí（Chi tiết）.xlsx')
+          this.downExcel(tmpDown, 'Báo cáo chi phí (Chi tiết).xlsx')
         }
 
       },
@@ -2140,10 +2140,10 @@
 
   .flex-container {
     display: flex;
-    align-items: center; /* 垂直居中 */
+    align-items: center; /* Căn giữa theo chiều dọc */
   }
 
   .custom-tag {
-    max-width: 20px; /* 设置最大宽度，根据需要调整 */
+    max-width: 20px; /* Đặt chiều rộng tối đa, điều chỉnh theo nhu cầu */
   }
 </style>

@@ -146,7 +146,7 @@ export default {
   },
   methods: {
     appendSearchParams() {
-      // 如果不是超级用户，列表仅显示非系统级的系统用户
+      // Nếu không phải người dùng cấp cao, danh sách chỉ hiển thị người dùng hệ thống không thuộc cấp hệ thống
       if(currentUser.id !== 1000) {
         this.search.params.push({columnName: 'is_system', queryType: '=', value: '0'})
       }
@@ -191,7 +191,7 @@ export default {
       const _this = this
       reader.onload = function () {
         _this.ImportJSON = JSON.parse(this.result)
-        // 检测是否导入成功
+        // Kiểm tra xem nhập có thành công không
         _this.ImportJson(_this.ImportJSON)
         document.getElementById("fileinput").value = "";
 

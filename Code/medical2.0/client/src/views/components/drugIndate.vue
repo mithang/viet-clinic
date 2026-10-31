@@ -81,7 +81,7 @@ export default {
     props:['fatherDrugIndateList'],
     data(){
         return{
-           expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại，Cần đặtrow-keythuộc tính mới sử dụng được，Thuộc tính này là của dòng mở rộngkeysMảng
+           expands: [], // Đặt qua thuộc tính nàyTableDòng đang mở rộng hiện tại, Cần đặtrow-keythuộc tính mới sử dụng được, Thuộc tính này là của dòng mở rộngkeysMảng
            drugIndateList:[],
            inventoryList:[],
            activeName: 'drugIndate',
@@ -111,7 +111,7 @@ export default {
     mounted(){
 
         this.activeName = 'drugIndate';
-         //获取药品有效期预警是否存在
+         //Kiểm tra cảnh báo hạn sử dụng thuốc có tồn tại hay không
         this.search={
             offset: 0,
             limit: 5,

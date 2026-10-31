@@ -2,7 +2,7 @@
 	<el-form size="small">
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="1">
-				Phút，Ký tự đại diện được phép[, - * /]
+				Phút, Ký tự đại diện được phép[, - * /]
 			</el-radio>
 		</el-form-item>
 
@@ -17,7 +17,7 @@
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="3">
 				Từ
-				<el-input-number v-model='average01' :min="0" :max="60" /> phút bắt đầu，mỗi
+				<el-input-number v-model='average01' :min="0" :max="60" /> phút bắt đầu, mỗi
 				<el-input-number v-model='average02' :min="0" :max="60" /> phút thực hiện một lần
 			</el-radio>
 		</el-form-item>

@@ -2,11 +2,11 @@
   <div class="visitRecords">
     <ul class="patientInfo">
       <li>
-        Tên bệnh nhân：{{ NowVisitInfo.info.name }}（{{ NowVisitInfo.info.age }}tuổi）
+        Tên bệnh nhân: {{ NowVisitInfo.info.name }} ({{ NowVisitInfo.info.age }}tuổi)
       </li>
-      <li>Giới tính：{{ NowVisitInfo.info.gender.name }}</li>
-      <li>Thời gian khám：{{ NowVisitInfo.medicalRecord.diagnoseDate }}</li>
-      <li>Bác sĩ khoa：{{ NowVisitInfo.medicalRecord.createBy }}</li>
+      <li>Giới tính: {{ NowVisitInfo.info.gender.name }}</li>
+      <li>Thời gian khám: {{ NowVisitInfo.medicalRecord.diagnoseDate }}</li>
+      <li>Bác sĩ khoa: {{ NowVisitInfo.medicalRecord.createBy }}</li>
     </ul>
     <div class="titleBox">
       <h4><el-checkbox v-model="checkedForm.record">Bệnh án</el-checkbox></h4>
@@ -192,7 +192,7 @@ export default {
   data() {
     return {
       IsOnlyRead: true,
-      //全部病例配置
+      //Cấu hình toàn bộ bệnh án
       AllMedicineRecordLabelList: [
         {
           label: "Lý do khám chính",

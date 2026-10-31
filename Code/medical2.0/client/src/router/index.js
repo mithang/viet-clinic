@@ -13,10 +13,10 @@ Vue.use(VueRouter)
 
 //Tải theo nhu cầu
 /**
- * 有时候我们想把某个路由下的所有组件都打包在同个异步 chunk 中。
- * 只需要 给 chunk 命名，提供 require.ensure 第三个参数作为 chunk 的名称。
- * Webpack 将相同 chunk 下的所有异步模块打包到一个异步块里面，
- * 这也意味着我们无须明确列出 require.ensure 的依赖（传空数组就行）。
+ * Đôi khi ta muốn gói tất cả component trong cùng một route vào cùng một async chunk.
+ * Chỉ cần đặt tên chunk, cung cấp tham số thứ ba của require.ensure làm tên chunk.
+ * Webpack sẽ gói tất cả module async trong cùng chunk vào một khối async,
+ * điều này cũng có nghĩa là không cần liệt kê rõ dependency của require.ensure (truyền mảng rỗng là được).
  */
 //const Index = resolve => require(['@/views/index'], resolve)
 //const foodList = r => require.ensure([], () => r(require('@/page/foodList')), 'foodList');
@@ -56,11 +56,11 @@ const router = new VueRouter({
 
 generateIndexRouter();
 
-// 验证token，存在才跳转
+// Kiểm tra token, chỉ chuyển hướng khi token tồn tại
 router.beforeEach((to, from, next) => {
   let token = getLocalToken()
   /*
-	if(to.meta.requiresAuth) {    //判断是否需要登录权限
+	if(to.meta.requiresAuth) {    //Kiểm tra xem có cần quyền đăng nhập không
 		next()
 	}
   */
@@ -85,10 +85,10 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach((to, from) => {
-  // 设置面包屑
+  // Thiết lập breadcrumb
   let breadCrumbItems = []
   /*  let homePageCrumb = {
-	  title: '首页',
+	  title: 'Trang chủ',
 	  to: '/'
 	}
 	breadCrumbItems.push(homePageCrumb)*/
@@ -102,14 +102,14 @@ router.afterEach((to, from) => {
       breadCrumbItems.push(routerBreadCrumb)
     });
   }
-  // 更新到state
+  // Cập nhật vào state
 
   if (router.app.$store) {
     router.app.$store.dispatch('setBreadcurmbItems', breadCrumbItems)
   }
 })
 
-// 生成首页路由
+// Sinh route trang chủ
 function generateIndexRouter() {
   if (!sessionStorage.routers || sessionStorage.getItem('indexRouterGenerated') === 'true') {
     return
@@ -127,7 +127,7 @@ function generateIndexRouter() {
   sessionStorage.setItem('indexRouterGenerated', 'true')
 }
 
-// 生成嵌套路由（子路由）
+// Sinh route lồng nhau (route con)
 function generateChildRouters() {
   let routers = getLocalRouters()
   let routerTreeArr = routerTree(routers)
@@ -179,7 +179,7 @@ function generateChildRouters() {
   return childRouters
 }
 
-// 避免重复路由
+// Tránh route trùng lặp
 const originalPush = VueRouter.prototype.push
 
 VueRouter.prototype.push = function push(location) {

@@ -207,7 +207,7 @@
     <el-row style="margin-top: 10px;">
       <!-- <el-col :span="4" :offset="1">
         <div class="spaninput">
-          <span>Số đơn kèm hàng：</span>
+          <span>Số đơn kèm hàng: </span>
           <el-input
             id="withGoodsNo"
             v-model="otherInfo.withGoodsNo"
@@ -218,7 +218,7 @@
       </el-col>
       <el-col :span="4" :offset="1">
         <div class="spaninput">
-          <span>Số hóa đơn：</span>
+          <span>Số hóa đơn: </span>
           <el-input v-model="otherInfo.invoiceNumber" :readonly="true">
           </el-input>
         </div>
@@ -768,7 +768,7 @@ export default {
         this.$message({ message: "Vui lòng truy vấn chi tiết trước", type: "error" });
       }
      },
-     //Xuất bảng
+      //Xuất bảng
       exportExcel () {
         let biaoge=[]
         biaoge[0]={
@@ -855,7 +855,7 @@ export default {
              beizhu:""
         }
         // biaoge[num+1]={
-        //      code:'Người lập đơn：',
+        // code:'Người lập đơn: ',
         //      name:"",
         //      norms:"",
         //      number:"",
@@ -863,14 +863,14 @@ export default {
         //     //  leastBid:"",
         //      allBid:"",
         //      retailPrice:"",
-        //      allRetailPrice:"Thủ kho：",
+        // allRetailPrice:"Thủ kho: ",
         //      batchNo:"",
         //      produceDate:"",
         //      endDate:"",
-        //      createDate:'Người nhận hàng：',
+        // createDate:'Người nhận hàng: ',
         //      supplier:'',
         //      factory:"",
-        //      beizhu:"Ngày nhận hàng："
+        // beizhu:"Ngày nhận hàng: "
         // }
 
            let web = XLSX.utils.book_new();
@@ -888,7 +888,7 @@ export default {
              retailPrice:"Giá bán lẻ",
              allRetailPrice:"Tổng giá bán lẻ"
            }
-           //biaoge.unshift(headers)
+            //biaoge.unshift(headers)
             // let contentWs = XLSX.utils.json_to_sheet(biaoge,{
             //   headers:['name','norms','factory','batchNo','produceDate','endDate','number','bid','leastBid','allBid','retailPrice','allRetailPrice'],
             //   skipHeader:false,
@@ -1414,11 +1414,11 @@ export default {
 
               ]
 
-              //Cố định dòng đầu tiên và cột đầu tiên：
+              //Cố định dòng đầu tiên và cột đầu tiên: 
               contentWs['!freeze'] = {
                 xSplit: "11",  //Cố định cột
                 ySplit: "1",  //Cố định dòng
-                topLeftCell: "A2",  //Ô hiển thị ở góc trên bên trái của vùng chưa cố định，Mặc định là ô chưa cố định đầu tiên
+                topLeftCell: "A2", //Ô hiển thị ở góc trên bên trái của vùng chưa cố định, Mặc định là ô chưa cố định đầu tiên
                 state: "frozen"
               }
 
@@ -1435,7 +1435,7 @@ export default {
 
             XLSX.utils.book_append_sheet(web,contentWs,"Bảng chi tiết nhập kho");
 
-            // //Sử dụngxlsx-styleCách ghi tệp，để kiểu tùy chỉnh có hiệu lực
+            // //Sử dụngxlsx-styleCách ghi tệp, để kiểu tùy chỉnh có hiệu lực
             const tmpDown=new Blob([
               this.s2ab(
                 XLSXD.write(web,{

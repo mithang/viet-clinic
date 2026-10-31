@@ -1,8 +1,8 @@
 /**
- * 查询参数构建器
- * 提供流式API构建查询参数，提高代码可读性
+ * Builder tham số truy vấn
+ * Cung cấp fluent API để xây dựng tham số truy vấn, nâng cao tính dễ đọc của code
  *
- * 使用示例：
+ * Ví dụ sử dụng: 
  * import { SearchParamsBuilder } from '@/utils/searchParamsBuilder'
  *
  * const params = SearchParamsBuilder.create()
@@ -18,21 +18,21 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 创建新的构建器实例
+   * Tạo instance builder mới
    */
   static create() {
     return new SearchParamsBuilder()
   }
 
   /**
-   * 创建带租户过滤的构建器实例
+   * Tạo instance builder có lọc tenant
    */
   static createWithTenant(companyId) {
     return new SearchParamsBuilder().eq('company_id', companyId)
   }
 
   /**
-   * 等于查询
+   * Truy vấn bằng
    */
   eq(columnName, value) {
     if (value !== null && value !== undefined && value !== '') {
@@ -42,7 +42,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 不等于查询
+   * Truy vấn không bằng
    */
   ne(columnName, value) {
     if (value !== null && value !== undefined) {
@@ -52,7 +52,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 模糊查询
+   * Truy vấn mờ
    */
   like(columnName, value) {
     if (value !== null && value !== undefined && value.toString().trim() !== '') {
@@ -62,7 +62,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 左模糊查询
+   * Truy vấn mờ trái
    */
   leftLike(columnName, value) {
     if (value !== null && value !== undefined && value.toString().trim() !== '') {
@@ -72,7 +72,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 右模糊查询
+   * Truy vấn mờ phải
    */
   rightLike(columnName, value) {
     if (value !== null && value !== undefined && value.toString().trim() !== '') {
@@ -82,7 +82,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 大于查询
+   * Truy vấn lớn hơn
    */
   gt(columnName, value) {
     if (value !== null && value !== undefined) {
@@ -92,7 +92,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 大于等于查询
+   * Truy vấn lớn hơn hoặc bằng
    */
   ge(columnName, value) {
     if (value !== null && value !== undefined) {
@@ -102,7 +102,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 小于查询
+   * Truy vấn nhỏ hơn
    */
   lt(columnName, value) {
     if (value !== null && value !== undefined) {
@@ -112,7 +112,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 小于等于查询
+   * Truy vấn nhỏ hơn hoặc bằng
    */
   le(columnName, value) {
     if (value !== null && value !== undefined) {
@@ -168,7 +168,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 添加自定义参数
+   * Thêm tham số tùy chỉnh
    */
   add(param) {
     if (param) {
@@ -178,7 +178,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * ThêmOR逻辑参数
+   * Thêm tham số logic OR
    */
   or(columnName, queryType, value) {
     if (value !== null && value !== undefined) {
@@ -188,7 +188,7 @@ export class SearchParamsBuilder {
   }
 
   /**
-   * 构建参数列表
+   * Xây dựng danh sách tham số
    */
   build() {
     return [...this.params]
@@ -196,7 +196,7 @@ export class SearchParamsBuilder {
 }
 
 /**
- * 创建分页搜索对象
+ * Tạo đối tượng tìm kiếm phân trang
  */
 export function createSearch(options = {}) {
   const {
@@ -214,7 +214,7 @@ export function createSearch(options = {}) {
 }
 
 /**
- * 创建权限对象
+ * Tạo đối tượng quyền
  */
 export function createPermissions() {
   return {
@@ -227,7 +227,7 @@ export function createPermissions() {
 }
 
 /**
- * 映射权限数据
+ * Ánh xạ dữ liệu quyền
  */
 export function mapPermissions(permissionData, prefix) {
   return {

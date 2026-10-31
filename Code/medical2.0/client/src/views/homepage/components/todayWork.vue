@@ -28,7 +28,7 @@
       
         <!-- tuần -->
         <span  v-else>
-          <el-date-picker v-model="value" type="week" format="yyyy thứ WW tuần" @change="weekChange" :clearable="false"></el-date-picker>
+          <el-date-picker v-model="value" type="week" format="[Tuần] WW, yyyy" @change="weekChange" :clearable="false"></el-date-picker>
           <el-button-group>
             <el-button plain icon="el-icon-arrow-left" @click="handleOnWeek('on')">Tuần trước</el-button>
             <el-button plain @click="getToday">Hôm nay</el-button>
@@ -40,14 +40,14 @@
 
       <el-container class='query-form-container'>
         <el-main>
-          <!-- 日历 -->
+          <!-- Lịch -->
           <el-calendar v-model="value" :range="range" :class="{'weeks': dateType === '1' ? false : true}">
             <template slot="dateCell" slot-scope="{ date, data }">
               <div @click="calendarOnClick(data)" :class="['date-content', data.isSelected ? 'is-selected' : '']">
                 <div>
                   <span v-if="systemTime === data.day">Hôm nay</span>
                   <span v-else :class="[isWeek(date) ? 'restRed' : '' , 'isrest']">{{ getDay(date, data) }}</span>
-                  <!-- <span v-if="isWeek(date)" class="rest">休</span> -->
+                  <!-- <span v-if="isWeek(date)" class="rest">Nghỉ</span> -->
                   <span>{{ data.isSelected ? '✔️' : ''}}</span>
                   <div>{{solarDate2lunar(data.day)}}</div>
                   <div v-for="memoItem in dataList" :key="memoItem.data">
@@ -70,13 +70,13 @@
                 <div>Lịch trình của tôi</div>
                 <el-button circle icon="el-icon-plus" @click="schedule"></el-button>
               </div>
-              <el-empty description="暂无日程" v-if="popoverList.length <= 0"></el-empty>
+              <el-empty description="Chưa có lịch trình" v-if="popoverList.length <= 0"></el-empty>
 
               <div class="schedule_List" v-else>
                 <div v-for="(item,indexs) in popoverList" :key="indexs">
                   <el-alert 
                     :title="item.name" 
-                    :description="'描述文字说明文字说明文字说明文字说明文字说明文字说明'"
+                    :description="'Nội dung mô tả chi tiết'"
                     :type="item.type" 
                     :closable="item.closable" 
                     style="margin-bottom: 4px;width: 98%;">
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { calendar } from '@/utils/calendar' // 阴历节气转换
+import { calendar } from '@/utils/calendar' // Chuyển đổi âm lịch - tiết khí
 import addTodayWork from './addTodayWork'
 
 export default {
@@ -101,29 +101,29 @@ export default {
     return {
       value: new Date(),
       range: null,
-      dateType: '1', // 日期类型
+      dateType: '1', // Loại ngày
       headOptions: {},
       panelId: this.id,
       systemTime: '',
       show3: true,
       isPanelSetIcon: this.panelSetIcon,
       showAll: false,
-      popoverList: [], // 气泡框展示内容
+      popoverList: [], // Nội dung hiển thị trong popover
       scheduleAnimation:'',
       dataList: [
         { date:'2022-03-09',
           list: [
-            { closable: false, type: 'warning' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
-            { closable: true, type: 'success' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
-            { closable: false, type: 'error' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: false, type: 'warning' ,name: 'Phòng 221 toà nhà 2 - Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: true, type: 'success' ,name: 'Phòng 221 toà nhà 2 - Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: false, type: 'error' ,name: 'Phòng 221 toà nhà 2 - Cảnh báo hợp đồng sắp hết hạn'},
             { closable: true, type: 'success' ,name: 'Cảnh báo hợp đồng sắp hết hạn-xxx'},
-            { closable: false, type: 'info' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
-            { closable: true, type: 'success' ,name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: false, type: 'info' ,name: 'Phòng 221 toà nhà 2 - Cảnh báo hợp đồng sắp hết hạn'},
+            { closable: true, type: 'success' ,name: 'Phòng 221 toà nhà 2 - Cảnh báo hợp đồng sắp hết hạn'},
           ],
         },
         { date:'2022-03-14',
           list: [
-            {closable: false, type: 'error', name: '待办事项'}
+            {closable: false, type: 'error', name: 'Việc cần làm'}
           ],
         }
       ],
@@ -148,7 +148,7 @@ export default {
     }
   },
   mounted () {
-    this.systemTime = this.fun() // Lấyyyyy-mm-dd格式的当前日期
+    this.systemTime = this.fun() // Ngày hiện tại định dạng yyyy-mm-dd
     this.headOptions = this.solarlunarDay(new Date())
     this.calendarOnClick(this.systemTime)
   },
@@ -162,13 +162,13 @@ export default {
         this.scheduleAnimation = 'move_up'
       }
     },
-    // 农历显示
+    // Hiển thị âm lịch
     solarDate2lunar(solarDate) {
       const solar = solarDate.split('-')
       const lunar = calendar.solar2lunar(solar[0], solar[1], solar[2])
       return lunar.lunarFestival || lunar.festival || lunar.Term || lunar.IDayCn
     },
-    // 获取当前日期具体信息
+    // Lấy thông tin chi tiết của ngày hiện tại
     solarlunarDay(solarDate) {
       const timestamp = new Date(solarDate);
       const res = timestamp.toISOString().slice(0,10)
@@ -176,13 +176,13 @@ export default {
       const lunar = calendar.solar2lunar(solar[0], solar[1], solar[2])
       return lunar
     },
-    // 查看更多，获取当前日期所有日程
+    // Xem thêm, lấy toàn bộ lịch trình của ngày hiện tại
     getAll() {
       this.popoverList = [
         { closable: true, type: 'success', name: 'Cảnh báo hợp đồng sắp hết hạn-xxx', },
         { closable: false, type: 'warning', name: 'LS/12/1210Chờ ghi số'},
         { closable: false, type: 'info', name: 'GM/14/1410Chờ ghi số'},
-        { closable: true, type: 'success', name: '陆家嘴2号楼221Cảnh báo hợp đồng sắp hết hạn'},
+        { closable: true, type: 'success', name: 'Phòng 221 toà nhà 2 - Cảnh báo hợp đồng sắp hết hạn'},
         { closable: true, type: 'success', name: 'LS/12/1210Chờ ghi số'},
         { closable: false, type: 'error', name: 'LS/12/1210Chờ ghi số'},
       ]
@@ -191,10 +191,10 @@ export default {
     deletePanelItem () {
       this.$emit('deletePanelItemEvent', this.panelId)
     },
-    // 选中具体待办事项
+    // Chọn một việc cần làm cụ thể
     getMemorandum (memoItem) {
     },
-    // 点击日历块
+    // Nhấn vào ô lịch
     calendarOnClick(data) {
       this.popoverList = []
       let calendardata;
@@ -211,22 +211,22 @@ export default {
       if (this.dateType === '2') { // tuần
         let weeks = this.GetMonday(new Date())
         weeks = new Date(Date.parse(weeks))
-        this.weekChange(weeks) // 跳转至当前日所在周
+        this.weekChange(weeks) // Chuyển đến tuần chứa ngày hiện tại
       } else {
         this.range = null
       }
       this.calendarOnClick(this.systemTime)
       this.value = new Date()
     },
-    // 切换上下月
+    // Chuyển tháng trước / tháng sau
     handleMonth(type) {
       const month = this.getLastMonth(this.value, type)
       this.value = new Date(Date.parse(month))
     },
     getLastMonth(Time,type) {
-      let year = Time.getFullYear();   // 当前年：四位数字
-      let month = Time.getMonth() + 1;     // 当前月：0-11
-      if (type === 'on' ) {// Nếu là1，上一个月就是去年的12tháng
+      let year = Time.getFullYear(); // Năm hiện tại: bốn chữ số
+      let month = Time.getMonth() + 1; // Tháng hiện tại: 0-11
+      if (type === 'on' ) {// Nếu là 1, tháng trước chính là tháng 12 của năm trước
         if (month === 1) {
           year -= 1;
           month = 12;
@@ -234,7 +234,7 @@ export default {
           month -= 1
         }
       } 
-      if (type === 'next' ) {// Nếu là12上一个月就是去年的12tháng
+      if (type === 'next' ) {// Nếu là 12, tháng sau chính là tháng 1 của năm sau
         if (month === 12) {
           year += 1;
           month = 1;
@@ -242,7 +242,7 @@ export default {
           month += 1;
         }
       }
-      month = month < 10 ? ('0' + month) : month;   // 月份小于10则追加个0
+      month = month < 10 ? ('0' + month) : month;   // Tháng nhỏ hơn 10 thì thêm số 0 phía trước
       let lastYearMonth = year + '-' + month;
       return lastYearMonth;
     },
@@ -256,14 +256,14 @@ export default {
         this.weekChange(this.value)
       }
     },
-    // 选择周
+    // Chọn tuần
     weekChange(val) {
-      let timeStamp = val.getTime(); // 标准时间转为时间戳，毫秒级别
+      let timeStamp = val.getTime(); // Chuyển thời gian chuẩn sang timestamp, đơn vị mili giây
       this.range = []
       this.range[0] = this.fun(timeStamp ); // Thời gian bắt đầu
       this.range[1] = this.fun(timeStamp + (24 * 60 * 60 * 1000) * 6) // Thời gian kết thúc
     },
-    // 切换上下周
+    // Chuyển tuần trước / tuần sau
     handleOnWeek(val) {
       let weeks = this.GetMonday(this.value)
       weeks = new Date(weeks).getTime()
@@ -275,25 +275,25 @@ export default {
       this.value = new Date(Date.parse(weeks))
       this.weekChange(this.value)
     },
-    // 获取日期当前周的周一：日历控件的时间范围，开始时间必须是周一，结束时间必须是周日
+    // Lấy thứ Hai của tuần chứa ngày: phạm vi thời gian của điều khiển lịch, thời gian bắt đầu phải là thứ Hai, thời gian kết thúc phải là Chủ nhật
     GetMonday(dd) {
-      const week = dd.getDay(); // 获取时间的星期数
+      const week = dd.getDay(); // Lấy thứ trong tuần của thời gian
       const minus = week ? week - 1 : 6;
-      dd.setDate(dd.getDate() - minus); // Lấyminus天前的日期
+      dd.setDate(dd.getDate() - minus); // Lấy ngày cách đây minus ngày
       const res = dd.toISOString().slice(0,10)
       return res
     },
-    // 时间戳转为 yyyy-mm-dd
+    // Chuyển timestamp sang yyyy-mm-dd
     fun(unixtimestamp) {
       const timestamp = unixtimestamp ? new Date(unixtimestamp): new Date();
       const res = timestamp.toISOString().slice(0,10)
       return res
     },
-    // 处理日期
+    // Xử lý ngày
     getDay(date) {
       return date.getDate()
     },
-    // 判断是否周六日
+    // Kiểm tra có phải thứ Bảy hoặc Chủ nhật
     isWeek(date) {
       return date.getDay() === 6 || date.getDay() === 0
     },
@@ -302,7 +302,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .el-calendar__header { // 移除组件头部
+::v-deep .el-calendar__header { // Ẩn phần đầu của component
   display: none;
 }
 .index-module-card.el-card ::v-deep .el-card__header {

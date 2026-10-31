@@ -3,7 +3,7 @@ import { createCrudApi } from '@/utils/apiFactory'
 
 const baseApi = createCrudApi('/stock/inventoryVerification')
 
-// Chuẩn xuất dữ liệuCRUDGiao diện（Giữ tương thích ngược）
+// Chuẩn xuất dữ liệuCRUDGiao diện (Giữ tương thích ngược)
 export const getInventoryVerificationById = baseApi.getById
 export const listInventoryVerificationPage = baseApi.listPage
 export const listInventoryVerificationAll = baseApi.listAll

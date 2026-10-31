@@ -1,15 +1,15 @@
 /**
- * 数据解析工具函数
- * 集中管理脆弱的数据格式解析逻辑
+ * Hàm công cụ phân tích dữ liệu
+ * Quản lý tập trung logic phân tích định dạng dữ liệu mong manh
  */
 
 /**
- * 从复合值中提取数值部分
+ * Trích xuất phần giá trị số từ giá trị phức hợp
  * Ví dụ: "BID_2" → 2, "tollType_0" → "0"
- * @param {string} value - 复合值字符串 (như "BID_2")
- * @param {string} separator - 分隔符 (Mặc định "_")
- * @param {*} defaultValue - 解析失败时的默认值
- * @returns {string} 分隔符后的部分
+ * @param {string} value - Chuỗi giá trị phức hợp (như "BID_2")
+ * @param {string} separator - Dấu phân cách (mặc định "_")
+ * @param {*} defaultValue - Giá trị mặc định khi phân tích thất bại
+ * @returns {string} Phần sau dấu phân cách
  */
 export function extractSuffix(value, separator = '_', defaultValue = '') {
   if (!value || typeof value !== 'string') return defaultValue;
@@ -18,12 +18,12 @@ export function extractSuffix(value, separator = '_', defaultValue = '') {
 }
 
 /**
- * 从复合值中提取前缀部分
+ * Trích xuất phần tiền tố từ giá trị phức hợp
  * Ví dụ: "BID_2" → "BID", "tollType_0" → "tollType"
- * @param {string} value - 复合值字符串
- * @param {string} separator - 分隔符 (Mặc định "_")
- * @param {*} defaultValue - 解析失败时的默认值
- * @returns {string} 分隔符前的部分
+ * @param {string} value - Chuỗi giá trị phức hợp
+ * @param {string} separator - Dấu phân cách (mặc định "_")
+ * @param {*} defaultValue - Giá trị mặc định khi phân tích thất bại
+ * @returns {string} Phần trước dấu phân cách
  */
 export function extractPrefix(value, separator = '_', defaultValue = '') {
   if (!value || typeof value !== 'string') return defaultValue;
@@ -32,10 +32,10 @@ export function extractPrefix(value, separator = '_', defaultValue = '') {
 }
 
 /**
- * 从频次值中提取次数
+ * Trích xuất số lần từ giá trị tần suất
  * Ví dụ: "BID_2" → 2, "QD_1" → 1
- * @param {string} frequencyValue - 频次值
- * @returns {number} 频次次数
+ * @param {string} frequencyValue - Giá trị tần suất
+ * @returns {number} Số lần tần suất
  */
 export function getFrequencyCount(frequencyValue) {
   const suffix = extractSuffix(frequencyValue, '_', '1');
@@ -44,10 +44,10 @@ export function getFrequencyCount(frequencyValue) {
 }
 
 /**
- * 拼接药品规格字符串
- * Ví dụ: "10mg*12片/盒"
- * @param {object} drug - 药品对象
- * @returns {string} 规格字符串
+ * Nối chuỗi quy cách thuốc
+ * Ví dụ: "10mg*12viên/hộp"
+ * @param {object} drug - Đối tượng thuốc
+ * @returns {string} Chuỗi quy cách
  */
 export function formatDrugSpec(drug) {
   if (!drug) return '';

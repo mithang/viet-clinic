@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-  // 传给报表组件的后台服务地址
+  // Địa chỉ service backend truyền cho component báo cáo
   window.REPORT_SERVER_URL = process.env.REPORT_SERVER_URL
   export default {
     name: "app",

@@ -1,16 +1,16 @@
 /**
- * 报表视图 Mixin
- * 提供医生工作量报表、药品销售报表等通用报表的公共逻辑
+ * Mixin báo cáo
+ * Cung cấp logic chung cho các báo cáo như báo cáo khối lượng công việc bác sĩ, báo cáo bán thuốc
  *
- * Cách sử dụng：
- * 1. 在组件中 mixins: [reportViewMixin]
- * 2. tại data 中覆盖以下属性：
- *    - listApi: Truy vấn danh sách API Hàm
- *    - statApi: Thống kê API Hàm（Có thể chọn）
- *    - exportApi: Xuất API Hàm
- *    - dictTypeId: Loại từ điển ID（用于加载下拉选项）
- *    - searchParams: 额外的查询参数
- * 3. 如果需要自定义 appendSearchParams，覆盖该方法
+ * Cách sử dụng: 
+ * 1. Trong thành phần mixins: [reportViewMixin]
+ * 2. Tại data ghi đè các thuộc tính sau: 
+ *    - listApi: Hàm API truy vấn danh sách
+ *    - statApi: Hàm API thống kê (Có thể chọn)
+ *    - exportApi: Hàm API xuất
+ *    - dictTypeId: ID loại từ điển (dùng để tải tùy chọn dropdown)
+ *    - searchParams: Tham số truy vấn bổ sung
+ * 3. Nếu cần tùy chỉnh appendSearchParams, ghi đè phương thức đó
  */
 import MainUI from '@/views/components/mainUI'
 import listViewMixin from '@/mixins/listViewMixin'
@@ -24,13 +24,13 @@ export default {
   mixins: [listViewMixin],
   data() {
     return {
-      // 子组件必须覆盖
+      // Thành phần con bắt buộc ghi đè
       listApi: null,
       statApi: null,
       exportApi: null,
-      // Loại từ điển ID，Thành phần con có thể ghi đè
+      // ID loại từ điển, Thành phần con có thể ghi đè
       dictTypeId: '1004078055755374603',
-      // 子组件可覆盖初始查询条件
+      // Thành phần con có thể ghi đè điều kiện truy vấn ban đầu
       queryModel: {
         dateRange: [daysAgo(30), new Date()]
       },
@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     /**
-     * Xuất Excel（Thành phần con có thể ghi đè columnName）
+     * Xuất Excel (Thành phần con có thể ghi đè columnName)
      */
     exportExcel() {
       if (!this.exportApi) return
@@ -96,22 +96,22 @@ export default {
     },
 
     /**
-     * Lấy 30 天前的日期时间字符串
-     * @returns {string} 30天前的日期时间字符串
+     * Lấy chuỗi ngày giờ 30 ngày trước
+     * @returns {string} Chuỗi ngày giờ 30 ngày trước
      */
     addCreateDate() {
       return formatDateTime(daysAgo(30))
     },
 
     /**
-     * 子组件覆盖此方法来添加自定义查询条件
+     * Thành phần con ghi đè phương thức này để thêm điều kiện truy vấn tùy chỉnh
      */
     appendSearchParams() {
-      // 默认无额外条件，子组件覆盖
+      // Mặc định không có điều kiện bổ sung, thành phần con ghi đè
     },
 
     /**
-     * 处理列表响应数据
+     * Xử lý dữ liệu phản hồi danh sách
      */
     handleListResponse(responseData) {
       this.dispensingList = responseData.data.rows
@@ -119,7 +119,7 @@ export default {
     },
 
     /**
-     * Tải dữ liệu（Danh sách + Thống kê）
+     * Tải dữ liệu (Danh sách + Thống kê)
      */
     loadData() {
       this.setLoad()
@@ -148,7 +148,7 @@ export default {
     },
 
     /**
-     * 初始化字典选项
+     * Khởi tạo tùy chọn từ điển
      */
     initOptions() {
       if (!this.dictTypeId) return
@@ -178,7 +178,7 @@ export default {
     },
 
     /**
-     * 重置查询条件
+     * Đặt lại điều kiện truy vấn
      */
     resetCondition() {
       this.queryModel = {
@@ -190,7 +190,7 @@ export default {
     },
 
     /**
-     * BigNumber 格式化（Phân tách hàng nghìn，2chữ số thập phân）
+     * Định dạng BigNumber (Phân tách hàng nghìn, 2 chữ số thập phân)
      */
     bigNum(num) {
       if (num || num === '0') {
@@ -200,8 +200,8 @@ export default {
     }
   },
   mounted() {
-    // pageInit() 内部已调用 this.initOptions(this.queryModel)，
-    // 此处无需重复调用，避免重复发起字典请求
+    // pageInit() nội bộ đã gọi this.initOptions(this.queryModel),
+    // ở đây không cần gọi lại, tránh lặp lại yêu cầu từ điển
     this.pageInit()
   }
 }

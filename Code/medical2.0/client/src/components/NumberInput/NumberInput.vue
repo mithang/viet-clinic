@@ -30,21 +30,23 @@
       value: {
         type: Number | String
       },
-      // 语言环境
+      // Ngôn ngữ định dạng số. Mặc định vi-VN để dấu phân cách đúng chuẩn
+      // Việt Nam: "." phân tách hàng nghìn, "," phân tách phần thập phân.
       locale: {
-        type: String
+        type: String,
+        default: 'vi-VN'
       },
-      // 货币类型
+      // Loại tiền tệ
       currency: {
         type: String | Object,
         default: null
       },
-      // 小数位数
+      // Số chữ số thập phân
       precision: {
         type: Number,
         default: 0
       },
-      // 是否隐藏可忽略的十进制数字、货币符号和焦点分组符号
+      // Có ẩn chữ số thập phân có thể bỏ qua, ký hiệu tiền tệ và ký tự phân nhóm tiêu điểm không
       distractionFree: {
         type: Boolean,
         default: false

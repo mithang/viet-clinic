@@ -1,8 +1,8 @@
 <template>
   <div class="input-number-range">
-    <number-input v-model="beginValue" :currency="type === 'java.math.BigDecimal' ? 'CNY' : null" :precision="precision" clearable></number-input>
+    <number-input v-model="beginValue" :currency="type === 'java.math.BigDecimal' ? 'VND' : null" :precision="precision" clearable></number-input>
     <span>đến</span>
-    <number-input v-model="endValue" :currency="type === 'java.math.BigDecimal' ? 'CNY' : null" :precision="precision" clearable></number-input>
+    <number-input v-model="endValue" :currency="type === 'java.math.BigDecimal' ? 'VND' : null" :precision="precision" clearable></number-input>
   </div>
 </template>
 
@@ -24,17 +24,17 @@ export default {
     arrValue: {
       type: Array
     },
-    // 货币类型
+    // Loại tiền tệ
     currency: {
       type: String | Object,
       default: null
     },
-    // 小数位数
+    // Số chữ số thập phân
     precision: {
       type: Number,
       default: 0
     },
-    // 数据类型 （一般数值、Số tiền）
+    // Kiểu dữ liệu (giá trị số thông thường, số tiền)
     type: {
       type: String
     }
@@ -53,7 +53,7 @@ export default {
     }
   },
   mounted(){
-    //初始话日期框的值
+    //Khởi tạo giá trị ô ngày tháng
 
     if (this.value instanceof Array){
       if (this.value.length === 2){
@@ -63,23 +63,23 @@ export default {
     }
   },
    methods: {
-    //验证只能数字
+    //Xác thực chỉ được nhập số
     proving(e){
       let num = e.target.value || ''
       let code = e.which || e.keyCode
       let str = (e.key && e.key !== 'Unidentified') ? e.key : num.substr(num.length - 1)
 
-/*      //禁止输入中文
+/*      //Cấm nhập tiếng Trung
       if(code == '229') {
         e.returnValue = false
         return false
       }*/
 
-      //无论任何情况，皆可执行 回退、Xóa、左方向、右方向
+      //Trong mọi trường hợp, đều có thể thực hiện lùi, Xóa, trái, phải
       if(code === '8' || code === '46' || code === '37' || code === '39') {
         return true
       }
-      //没有满足任何一种情况，中断执行
+      //Không thỏa mãn bất kỳ trường hợp nào, ngắt thực hiện
       if(!(/[\d.]/.test(str) || code === '190')) {
         e.returnValue = false
         return false

@@ -163,7 +163,7 @@ export default {
         order: "desc",
         companyId: "",
         recipeStatus: "0",
-        updateDate: "2022-06-01 00:00:00", // 数据迁移截止时间，过滤迁移前的历史数据
+        updateDate: "2022-06-01 00:00:00", // Thời điểm cắt di chuyển dữ liệu, lọc dữ liệu lịch sử trước khi di chuyển
         status: "registrationStatus_1",
         chargeStatus: 1,
         dispensionStatus: 0,
@@ -279,7 +279,7 @@ export default {
   },
 
   methods: {
-    // 类型映射配置
+    // Cấu hình ánh xạ loại
     getTypeConfig(type) {
       const configs = {
         djz: {
@@ -310,7 +310,7 @@ export default {
       return configs[type];
     },
 
-    // ========== 加载方法 ==========
+    // ========== Phương thức tải ==========
 
     // Chờ khám
     loadDjz() {
@@ -525,11 +525,11 @@ export default {
       });
     },
 
-    // ========== 并发加载所有 ==========
+    // ========== Tải song song tất cả ==========
     loadlist() {
       const loadingInstance = Loading.service({ fullscreen: true });
 
-      // 所有加载请求
+      // Tất cả yêu cầu tải
       const requests = [
         this.loadDjz(),
         this.loadDfy(),
@@ -549,7 +549,7 @@ export default {
       });
     },
 
-    // ========== 刷新单个 ==========
+    // ========== Làm mới từng mục ==========
     typeclickload(type) {
       const config = this.getTypeConfig(type);
       if (config && config.load) {
@@ -557,7 +557,7 @@ export default {
       }
     },
 
-    // ========== 忽略单条 ==========
+    // ========== Bỏ qua từng bản ghi ==========
     btnoverlook(id, type) {
       updateoverlockids(id).then((responseData) => {
         this.$message.success(responseData.msg);
@@ -677,7 +677,7 @@ export default {
       }
     },
 
-    // ========== 打开弹窗 ==========
+    // ========== Mở hộp thoại ==========
     onCreatePatient(types) {
       this.$refs.workbenchForm.openAddworkbenchDialog(types);
     },

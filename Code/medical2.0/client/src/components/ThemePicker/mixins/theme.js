@@ -1,6 +1,6 @@
-// const version = ELEMENT.version; // element-ui 版本号
-const version = '2.15.6'; // element-ui 版本号
-const ORIGINAL_THEME = '#409EFF' // 目前 element-ui 默认色值
+// const version = ELEMENT.version; // element-ui số phiên bản
+const version = '2.15.6'; // element-ui số phiên bản
+const ORIGINAL_THEME = '#409EFF' // Hiện tại giá trị màu mặc định của element-ui
 
 export default function () {
   return {
@@ -12,7 +12,7 @@ export default function () {
     },
     created() {
       this.themeVal = this.theme;
-      // 初始化时不触发主题切换提示
+      // Khi khởi tạo không kích hoạt thông báo chuyển chủ đề
       // if (this.theme === ORIGINAL_THEME) {
       //   this.themeChange(this.theme, ORIGINAL_THEME);
       // }

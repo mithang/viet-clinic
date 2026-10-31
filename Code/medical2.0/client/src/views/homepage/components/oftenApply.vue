@@ -15,7 +15,7 @@
         style="float: right; padding: 3px 0"
       ></i>
     </div>
-    <!-- 流程区域 -->
+    <!-- Khu vực quy trình -->
     <div class="often-apply-box">
       <div class="apply-item">
         <el-avatar class="avatar-icon" :size="50"> user </el-avatar>

@@ -53,7 +53,7 @@
       </el-row>
     <!-- Biểu mẫu chính  Kết thúc-->
     
-    <!--Bảng con：   Thùng rác Bắt đầu-->
+    <!--Bảng con: Thùng rác Bắt đầu-->
       <el-divider content-position="left"> Thùng rác</el-divider>
       <el-row>
         <el-col>
@@ -98,7 +98,7 @@
       @click='onAddActionRecycleRow(actionModel.actionRecycleList)'>Thêm</el-button>
         </el-col>
       </el-row>
-      <!--Bảng con：   Thùng rác Kết thúc-->
+      <!--Bảng con: Thùng rác Kết thúc-->
     </el-form>
         
     <!-- Nút  Bắt đầu-->

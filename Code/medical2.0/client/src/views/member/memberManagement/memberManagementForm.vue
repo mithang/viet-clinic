@@ -183,8 +183,8 @@ export default {
           patient_List: [],  // Thông tin bệnh nhân
           memberSet_List: [],  // Thẻ hội viênid
           typeList:[],  //Loại thẻ thành viên
-          memberItem:[],  //项目内容
-          memberManagementDetail:[],  //会员详情
+          memberItem:[],  //Nội dung hạng mục
+          memberManagementDetail:[],  //Chi tiết hội viên
        dialogProps: {
         visible: false,
         action: '',
@@ -211,7 +211,7 @@ export default {
     }
   },  
   methods: {
-    //获取项目
+    //Lấy hạng mục
     getCostItem(row){
       this.memberItem=row.memberItem
     },

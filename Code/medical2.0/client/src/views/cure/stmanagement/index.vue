@@ -96,15 +96,15 @@
       label="Người thực hiện"
       width="130">
     </el-table-column>
-    <el-table-column  label="皮试结果" :width="140">
+    <el-table-column  label="Kết quả test da" :width="140">
        <template slot-scope="scope">
       <el-select v-model="scope.row.stresult" filterable allow-create @change="psjgchange(scope.row)">
-      <el-option label="阴性" value="0"></el-option>
-      <el-option label="阳性" value="1"></el-option>
+      <el-option label="Âm tính" value="0"></el-option>
+      <el-option label="Dương tính" value="1"></el-option>
     </el-select>
         </template>
 </el-table-column>
-<el-table-column  label="皮试时间" :width="140"  >
+<el-table-column  label="Thời gian test da" :width="140"  >
        <template slot-scope="scope">
       <el-select v-model="scope.row.sttime" filterable allow-create @change="pssjchange(scope.row)">
       <el-option label="5Phút" value="5"></el-option>
@@ -129,7 +129,7 @@
       label="Thao tác"
       width="100">
       <template slot-scope="scope">
-        <el-button type="text" :disabled="scope.row.intervalTime!=='' && scope.row.intervalTime!=null" @click.native="stclick(scope.$index,scope.row)">{{scope.row.stresult!=='' && scope.row.stresult!=null ?"重新皮试":"Bắt đầu test da"}}</el-button>
+        <el-button type="text" :disabled="scope.row.intervalTime!=='' && scope.row.intervalTime!=null" @click.native="stclick(scope.$index,scope.row)">{{scope.row.stresult!=='' && scope.row.stresult!=null ?"Test da lại":"Bắt đầu test da"}}</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -161,40 +161,40 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
           tableData:[],
         // tableData: [{
         //   date: '2016-05-02',
-        //   name: '王小虎',
-        //   province: '上海',
-        //   city: '普陀区',
-        //   address: '上海市普陀区金沙江路 1518 弄',
+        //   name: 'Nguyễn Văn A',
+        //   province: 'Hà Nội',
+        //   city: 'Quận Ba Đình',
+        //   address: 'Số 1518 đường Nguyễn Trãi, quận Ba Đình, Hà Nội',
         //   zip: 200333,
         //   stresult:'',
         //   sttime:'',
         //   intervalTime:'',
         // }, {
         //   date: '2016-05-04',
-        //   name: '王小虎',
-        //   province: '上海',
-        //   city: '普陀区',
-        //   address: '上海市普陀区金沙江路 1517 弄',
+        //   name: 'Nguyễn Văn A',
+        //   province: 'Hà Nội',
+        //   city: 'Quận Ba Đình',
+        //   address: 'Số 1517 đường Nguyễn Trãi, quận Ba Đình, Hà Nội',
         //   zip: 200333,
         //   stresult:'',
         //   sttime:'',
         //   intervalTime:'',
         // }, {
         //   date: '2016-05-01',
-        //   name: '王小虎',
-        //   province: '上海',
-        //   city: '普陀区',
-        //   address: '上海市普陀区金沙江路 1519 弄',
+        //   name: 'Nguyễn Văn A',
+        //   province: 'Hà Nội',
+        //   city: 'Quận Ba Đình',
+        //   address: 'Số 1519 đường Nguyễn Trãi, quận Ba Đình, Hà Nội',
         //   zip: 200333,
         //   stresult:'',
         //   sttime:'',
         //   intervalTime:'',
         // }, {
         //   date: '2016-05-03',
-        //   name: '王小虎',
-        //   province: '上海',
-        //   city: '普陀区',
-        //   address: '上海市普陀区金沙江路 1516 弄',
+        //   name: 'Nguyễn Văn A',
+        //   province: 'Hà Nội',
+        //   city: 'Quận Ba Đình',
+        //   address: 'Số 1516 đường Nguyễn Trãi, quận Ba Đình, Hà Nội',
         //   zip: 200333,
         //   stresult:'',
         //   sttime:'',
@@ -269,12 +269,12 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
      let date = new Date()//Lấy thời gian mới
      //Lấy năm hiện tại,và chuyển thành chuỗi
      let year = date.getFullYear().toString()
-     //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
-    //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+     //Lấy tháng hiện tại, vì tháng bắt đầu từ0Bắt đầu, tại đây cần cộng1, 
+    //Sử dụng biểu thức ba ngôi, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
      let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-     //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+     //Lấy ngày, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
      let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-     //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+     //Nối chuỗi, Nối thời gian bắt đầu và thời gian kết thúc
      let start = year + '-' + month + '-01'+' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
      //let end=new Date(year, month, 0).getDate();
      let end = year + '-' + month + '-' + day +' 23:59:59'  //Trong ngày
@@ -286,28 +286,28 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
         this.setIntervaltime = new Array(this.tableData.length);
      };
       clearInterval(this.setIntervaltime[index]);
-    // acceptanceOverTime 是我后台返回的截止时间
+    // acceptanceOverTime là thời hạn chót backend trả về
       if(row.sttime >0 ){
-          let set = Date.parse(new Date()) //Thời gian tạo 获得时间戳
-          const end = set + 1000 * 60 * row.sttime  //Kết thúc 在当前时间戳的基础上添加30Phút
+          let set = Date.parse(new Date()) //Thời gian tạo lấy mốc thời gian
+          const end = set + 1000 * 60 * row.sttime  //Kết thúc cộng thêm 30Phút vào mốc thời gian hiện tại
         this.setIntervaltime[index] =setInterval(() => {
        //   row.intervalTime =  this.formatDuring(end - new Date());
-     //  this.tableData[index].intervalTime = 1
+      //  this.tableData[index].intervalTime = 1
        this.$set(this.tableData[index],'intervalTime',this.formatDuring(end - new Date()));
           if(row.intervalTime===""){clearInterval(this.setIntervaltime[index]);}
-        }, 1000); //这边采取的是1秒调用一次
-        //这里采用简单写法，直接在查询的时候调用一次，不用等定时器调用
+        }, 1000); //Ở đây gọi mỗi 1 giây một lần
+        //Ở đây dùng cách viết đơn giản, gọi trực tiếp một lần khi truy vấn, không cần chờ bộ hẹn giờ gọi
         //row.intervalTime = this.formatDuring(new Date(row.sttime) - new Date());
       }
     },
     formatDuring (mss) {
       if(mss > 0){
-        let hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) // 得到小时
-        let minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60)) // 得到分钟数
-        //获取分钟
+        let hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) // Lấy số giờ
+        let minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60)) // Lấy số phút
+        //Lấy số phút
         let str1 = minutes < 10 ? ('0' + minutes) : minutes
         
-        /*得到秒数*/
+        /*Lấy số giây*/
         // let seconds = (mss % (1000 * 60)) / 1000
         let seconds=Math.floor((mss / 1000) % 60);
         let str2 = seconds < 10 ? ('0' + seconds) : seconds
@@ -339,7 +339,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
         this.TimeInterval=this.getInitializeDate();
         this.Getstmanagementlist();
     },
-    //获取数据
+    //Lấy dữ liệu
     Getstmanagementlist(){
         this.tableData=[];
         if(this.TimeInterval){
@@ -410,7 +410,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
       this.Getstmanagementlist();
     },
     beforeDestroy() {
-      // 清除所有倒计时定时器，Ngăn rò rỉ bộ nhớ
+      // Xoá toàn bộ bộ hẹn giờ đếm ngược, Ngăn rò rỉ bộ nhớ
       if (this.setIntervaltime && this.setIntervaltime.length > 0) {
         this.setIntervaltime.forEach(timer => {
           if (timer) clearInterval(timer);

@@ -93,7 +93,7 @@
     </el-table-column>
     <!-- <el-table-column
       prop="city"
-      label="市区"
+      label="Nội thành"
       width="120">
     </el-table-column> -->
     <el-table-column
@@ -187,7 +187,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         },
         entityName: 'Task',
         permissionPrefix: 'task',
-        tableData: [],//表格数据
+        tableData: [],//Dữ liệu bảng
         jglist:[],
         show:false,
         formInline: {
@@ -247,7 +247,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         this.setLoad();
         deleteTask(row).then((res)=>{
           if(res.code===100){
-            this.$message.success("Xóa thành công！")
+            this.$message.success("Xóa thành công!")
             this.loadData()
             this.resetLoad();
           }else{
@@ -271,7 +271,7 @@ import { getjglist} from "@/api/toll/tollInfo";
         })
       },
 
-      //修改任务
+      //Sửa công việc
       onUpdate(row,index){
         this.$refs.addtaskForm.openUpdateworkbenchDialog(this.taskAll[index]);
       },
@@ -281,12 +281,12 @@ import { getjglist} from "@/api/toll/tollInfo";
      let date = new Date()//Lấy thời gian mới
      //Lấy năm hiện tại,và chuyển thành chuỗi
      let year = date.getFullYear().toString()
-     //Lấy tháng hiện tại，vì tháng bắt đầu từ0Bắt đầu，tại đây cần cộng1，
-    //Sử dụng biểu thức ba ngôi，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+     //Lấy tháng hiện tại, vì tháng bắt đầu từ0Bắt đầu, tại đây cần cộng1, 
+    //Sử dụng biểu thức ba ngôi, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
      let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : (date.getMonth() + 1).toString()
-     //Lấy ngày，Kiểm tra có nhỏ hơn không10，Nếu vậy，thì nối thêm vào trước chuỗi'0'
+     //Lấy ngày, Kiểm tra có nhỏ hơn không10, Nếu vậy, thì nối thêm vào trước chuỗi'0'
      let day = date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString()
-     //Nối chuỗi，Nối thời gian bắt đầu và thời gian kết thúc
+     //Nối chuỗi, Nối thời gian bắt đầu và thời gian kết thúc
      let start = year + '-' + month + '-01'+' 00:00:00'    //Ngày đầu tiên của tháng hiện tại
      //let end=new Date(year, month, 0).getDate();
      let end = year + '-' + month + '-' + day +' 23:59:59'  //Trong ngày

@@ -367,13 +367,13 @@ export default {
 </script>
 
 <style scoped>
-/* 穿透作用域，作用于固定列 */
+/* Xuyên qua scope, áp dụng cho cột cố định */
 ::v-deep(.el-table__fixed-right .cell) {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important; /* 根据需求改为 center */
-  gap: 5px; /* 按钮间距 */
-  padding: 0 5px; /* 内边距 */
+  justify-content: flex-start !important; /* Đổi thành center theo yêu cầu */
+  gap: 5px; /* Khoảng cách giữa các nút */
+  padding: 0 5px; /* Padding bên trong */
   height: 100% !important;
 }
 
@@ -384,12 +384,12 @@ export default {
   vertical-align: middle !important;
 }
 
-/* 修复表格行高度 */
+/* Sửa chiều cao dòng bảng */
 ::v-deep(.el-table__fixed-right .el-table__body-wrapper .el-table__row) {
   height: 48px !important;
 }
 
-/* 表格内容居中 */
+/* Căn giữa nội dung bảng */
 ::v-deep(.el-table__cell) {
   vertical-align: middle !important;
 }

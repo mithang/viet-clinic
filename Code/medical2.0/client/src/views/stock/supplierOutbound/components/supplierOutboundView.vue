@@ -126,10 +126,10 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="3" :offset="12">Chủng loại：{{ CalcBreed() }}</el-col>
-          <el-col :span="3">Số lượng：{{ calcTotalNumber() }}</el-col>
-          <el-col :span="3">Tổng giá nhập：{{ calcAllBid() |numberFormatter(2)}}</el-col>
-          <el-col :span="3">Tổng giá bán lẻ：{{ calcAllRetailPrice() |numberFormatter(2) }}</el-col>
+          <el-col :span="3" :offset="12">Chủng loại: {{ CalcBreed() }}</el-col>
+          <el-col :span="3">Số lượng: {{ calcTotalNumber() }}</el-col>
+          <el-col :span="3">Tổng giá nhập: {{ calcAllBid() |numberFormatter(2)}}</el-col>
+          <el-col :span="3">Tổng giá bán lẻ: {{ calcAllRetailPrice() |numberFormatter(2) }}</el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
@@ -200,10 +200,10 @@
     },
     data() {
       return {
-        thisType: 1, //Loại hiện tại，Thuốc hoặc vật tư
+        thisType: 1, //Loại hiện tại, Thuốc hoặc vật tư
         outboundId: 0, //Mã đơn xuất kho hiện cần sửa
         dialogVisibleTo: false, //Có hiển thị không
-        // radio: "1", // 1 Thuốc，2Vật tư
+        // radio: "1", // 1 Thuốc, 2Vật tư
         company_id: currentUser.company.id /*Phòng khámID*/ ,
         outbound: {},
         storageDetailTable: [],

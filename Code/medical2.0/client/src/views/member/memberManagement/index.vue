@@ -45,7 +45,7 @@
                         align="right"
                         start-placeholder="Ngày bắt đầu"
                         end-placeholder="Ngày kết thúc"
-                        format="yyyy-MM-dd HH:mm:ss"
+                        format="dd/MM/yyyy HH:mm:ss"
                         :default-time="['00:00:00', '23:59:59']">
                       </el-date-picker>
                       </el-form-item>
@@ -149,7 +149,7 @@
                     {{memberManagementList[$index].age}}tuổi
                   </span>
                    <span v-else-if="columnViews[index].prop==='type'">
-                    <!-- <span v-if="memberManagementList[$index].type=='gender_0'">男</span> -->
+                    <!-- <span v-if="memberManagementList[$index].type=='gender_0'">Nam</span> -->
                     {{memberManagementList[$index].type.name}}
                   </span>
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
@@ -308,7 +308,7 @@ export default {
         this.memberSet_List = responseData.data
       })
     },
-    //禁用会员
+    //Vô hiệu hoá hội viên
     disableMember(index,row){
       deleteMemberManagement(row).then((res)=>{
         if(res.code === 100){
