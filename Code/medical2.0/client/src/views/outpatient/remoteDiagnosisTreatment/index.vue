@@ -32,7 +32,7 @@
             </el-col>
             <el-col :span="4">
               <el-form-item label='Trạng thái' prop='status'>
-                <el-select v-model='queryModel.status' :clearable='true' placeholder='Vui lòng chọn trạng thái' clearable>
+                <el-select v-model='queryModel.status' :clearable='true' placeholder='Vui lòng chọn trạng thái'>
                   <el-option
                     v-for="item in options"
                     :key="item.value"

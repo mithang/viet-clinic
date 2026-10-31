@@ -454,7 +454,6 @@
                   }
                 "
                   @input="getPrice"
-                  type="number"
                   currency="VND"
                   :precision="2"
                 >
