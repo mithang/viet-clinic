@@ -617,7 +617,7 @@ export default {
       }else{
         this.loading = true
         // Khởi tạo tên class
-        this.bizFormModel.className = this.bizFormModel.name.substring(0, 1).toUpperCase() +  this.bizFormModel.name.substring(1).replace(/\_(\w)/g, function(all, letter){
+        this.bizFormModel.className = this.bizFormModel.name.substring(0, 1).toUpperCase() +  this.bizFormModel.name.substring(1).replace(/_(\w)/g, function(all, letter){
           return letter.toUpperCase()
         })
         try {

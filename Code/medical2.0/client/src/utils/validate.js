@@ -107,7 +107,7 @@ export function isMobileNumber (rule, value, callback) {
  * Ký tự không hợp lệ
  */
 export function validaPatrn(str) {
-  const patrn = /[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘'，。、]/im; 
+  const patrn = /[`~!@#$%^&*()_\-+=<>?:"{}|,./;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘'，。、]/im; 
   return patrn.test(str)
 }
 
@@ -129,9 +129,9 @@ export function validaChinese(str) {
     }
     LatitudeAndlongitude = value.split(",") 
     // Kinh độ, phần nguyên là 0-180 phần thập phân là 0 đến 15 vị
-    const longreg = /^(\-|\+)?(((\d|[1-9]\d|1[0-7]\d|0{1,3})\.\d{0,15})|(\d|[1-9]\d|1[0-7]\d|0{1,3})|180\.0{0,15}|180)$/
+    const longreg = /^(-|\+)?(((\d|[1-9]\d|1[0-7]\d|0{1,3})\.\d{0,15})|(\d|[1-9]\d|1[0-7]\d|0{1,3})|180\.0{0,15}|180)$/
     // Vĩ độ, phần nguyên là 0-90 phần thập phân là 0 đến 15 vị
-    const latreg = /^(\-|\+)?([1-8]?\d{1}\.\d{0,15}|90\.0{0,15}|[1-8]?\d{1}|90)$/
+    const latreg = /^(-|\+)?([1-8]?\d{1}\.\d{0,15}|90\.0{0,15}|[1-8]?\d{1}|90)$/
     if (LatitudeAndlongitude[0] && !longreg.test(LatitudeAndlongitude[0])) {
       callback(new Error('Phạm vi phần nguyên của kinh độ từ -180 đến 180, phần thập phân 0 đến 15 ký tự! Kinh Đông là dương, kinh Tây là âm.'))
     } else if (LatitudeAndlongitude[1] && !latreg.test(LatitudeAndlongitude[1])){

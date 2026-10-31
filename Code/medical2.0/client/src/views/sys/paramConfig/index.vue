@@ -155,7 +155,7 @@
     limitNum(field) {
       let amount = this.sysParamConfigForm[field]
         .replace(/[^\d.]/g, "") //Chỉ được nhập số
-        .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3") //Chỉ được nhập tối đa hai chữ số thập phân
+        .replace(/^(-)*(\d+)\.(\d\d).*$/, "$1$2.$3") //Chỉ được nhập tối đa hai chữ số thập phân
         .replace(/\.{2,}/g, "."); //Khi xuất hiện nhiều dấu chấm chỉ giữ lại dấu đầu tiên
       // Không cho nhập dấu chấm thập phân ở vị trí đầu
       if (amount === ".") {

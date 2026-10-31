@@ -342,7 +342,7 @@
           this.$prompt('Vui lòng nhập tên chủ đề', 'Nhắc nhở', {
               confirmButtonText: 'Xác nhận',
               cancelButtonText: 'Hủy',
-              inputPattern: /^(a-z|A-Z|0-9)*[^$%^&*;:,<>?()\""\']{1,128}$/,
+              inputPattern: /^(a-z|A-Z|0-9)*[^$%^&*;:,<>?()""']{1,128}$/,
               inputErrorMessage: 'Vui lòng nhập tên chủ đề'
           }).then(({ value }) => {
               const dateTheme={

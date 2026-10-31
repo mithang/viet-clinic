@@ -748,7 +748,7 @@
             checkPlan = parseFloat(checkPlan) + "";
           } else if (checkPlan.indexOf(".") >= 0) {
             // checkPlan = checkPlan.replace(/^()*(\d+)\.(\d\d).*$/, "$1$2.$3"); // Chỉ được nhập tối đa hai chữ số thập phân
-            checkPlan = checkPlan.replace(/^(\-)*(\d+)\.(\d{4}).*$/, '$1$2.$3'); // Chỉ được nhập tối đa hai chữ số thập phân
+            checkPlan = checkPlan.replace(/^(-)*(\d+)\.(\d{4}).*$/, '$1$2.$3'); // Chỉ được nhập tối đa hai chữ số thập phân
           }
           i.inPrice = checkPlan;
         });
