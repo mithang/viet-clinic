@@ -487,6 +487,7 @@ import History from '@/views/components/history'
 import UploadFile from '../../components/uploadFile.vue'
 let Base64 = require('js-base64').Base64
 export default {
+  name: 'CureInspectionCheckIndex',
   extends: MainUI,BaseUI,
   mixins: [listViewMixin],
   components: {

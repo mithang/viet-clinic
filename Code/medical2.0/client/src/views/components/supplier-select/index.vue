@@ -9,6 +9,7 @@
 import { listSupplierAll } from "@/api/stock/supplier";
   import BaseUI from "@/views/components/baseUI";
   export default {
+    name: 'ComponentsSupplierSelectIndex',
     extends: BaseUI,
     props: {
       value: {

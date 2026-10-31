@@ -666,6 +666,7 @@ import {
   allQueryMedicalRecord,
 } from "@/api/outpatient/medicalRecord";
 export default {
+  name: 'CureCureManagementIndex',
   data() {
     let cardIdNo = (rule, value, callback) => {
       if (!value) {

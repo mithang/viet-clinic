@@ -1010,6 +1010,7 @@ import {
 } from "@/api/outpatient/medicalRecord";
 import {selectdetailid} from '@/api/cure/stmanagement'
 export default {
+  name: 'CureInfusionIndex',
   data() {
     let cardIdNo = (rule, value, callback) => {
       if (!value) {
