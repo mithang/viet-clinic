@@ -1523,24 +1523,17 @@
 </template>
 
 <script>
-  import {listDrugPage, listAllStock} from "@/api/stock/drug";
+  import {listAllStock} from "@/api/stock/drug";
   import {saveTollTollInfo} from "@/api/toll/tollInfo";
   import {listRegistrationPages} from "@/api/outpatient/registration";
   import {getMember, getByPatientId} from "@/api/member/memberManagement"
   import {
-    listDiagnosisPage,
-    saveDiagnosis,
     chargeState,
-    getRegistrationId,
     modifiedState
   } from '@/api/outpatient/remoteDiagnosisTreatment'
-  import {getPatientById, listPatientAll} from "@/api/outpatient/patient";
-  import {getRecipelInfoById} from "@/api/outpatient/recipelInfo";
+  import {listPatientAll} from "@/api/outpatient/patient";
   import {
-    allSaveMedicalRecord,
     allQueryMedicalRecord,
-    getMedicalRecordById,
-    listMedicalRecordPage,
   } from "@/api/outpatient/medicalRecord";
   import {getDictItemsByCode, DICT_CODE} from "@/utils/dictCache";
   import BaseUI from "@/views/components/baseUI";
@@ -1874,7 +1867,7 @@
           .then((response) => {
             this.tokenData = response.data.BusData.data.Token
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -1896,7 +1889,7 @@
           .then((response) => {
             this.hisPatient = response.data.BusData.data
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -1923,9 +1916,9 @@
             Authorization: "Bearer " + this.tokenData
           }
         })
-          .then((response) => {
+          .then(() => {
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -1952,9 +1945,9 @@
             Authorization: "Bearer " + this.tokenData
           }
         })
-          .then((response) => {
+          .then(() => {
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -1982,12 +1975,12 @@
               this.hisTotalMoney += this.hisCheck[i].PresAmt;
             }
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
       // hisChi tiết hóa đơn chờ thanh toán
-      async billingDetail(presIds){
+      async billingDetail(){
         await this.getToken()
         await this.$axios.post('apis/Outpatient/OutpBillItemDetail', {
           Data: {
@@ -2008,7 +2001,7 @@
               this.hisTotalMoney += this.hisCheckDetail[i].Amt;
             }*/
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -2034,7 +2027,7 @@
           .then((response) => {
             this.orderForm = response.data.BusData.data[0]
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -2068,7 +2061,7 @@
           .then((response) => {
             this.orderForm = response.data.BusData.data
           })
-          .catch((error) => {
+          .catch(() => {
           });
 
         await this.$axios.post('apis/PayOrder/BillOrderLockApply', {
@@ -2085,9 +2078,9 @@
             Authorization: "Bearer " + this.tokenData
           }
         })
-          .then((response) => {
+          .then(() => {
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -2108,9 +2101,9 @@
             Authorization: "Bearer " + this.tokenData
           }
         })
-          .then((response) => {
+          .then(() => {
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -2138,9 +2131,9 @@
             Authorization: "Bearer " + this.tokenData
           }
         })
-          .then((response) => {
+          .then(() => {
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -2334,7 +2327,7 @@
         this.returnPatientCurrentPage = pageNum;
         this.returnPayPatientList();
       },
-      isPayChange(val) {
+      isPayChange() {
       },
       //Thu phí riêng
       singleCharge(type) {
@@ -2410,7 +2403,7 @@
               // this.PatientAddressAdd()
             }
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
       /*Nhấn nút thu phí/hoàn phí*/
@@ -2591,7 +2584,6 @@
       },
       /*Truy vấn bệnh nhân*/
       selectPatientList() {
-        const now = new Date();
         this.patientQueryCondition.limit = this.patientPageSize;
         this.patientQueryCondition.companyId = this.Company.id;
         /*Chờ thu phí*/
@@ -2643,7 +2635,6 @@
       },
       //Truy vấn danh sách đã thu phí
       getIsPayPatientList() {
-        const now = new Date();
         this.patientQueryCondition.limit = this.patientPageSize;
         this.patientQueryCondition.companyId = this.Company.id;
         this.isOnlyRead = true;
@@ -2678,7 +2669,6 @@
 
       //Truy vấn danh sách đã hoàn phí
       returnPayPatientList() {
-        const now = new Date();
         this.patientQueryCondition.limit = this.patientPageSize;
         this.patientQueryCondition.companyId = this.Company.id;
         this.patientQueryCondition.offset =
@@ -2919,8 +2909,6 @@
               let packName = element.pack.name; //Đóng gói (Đơn vị)
               let preparation = element.preparation; //Chế phẩm
               let preparationUnit = element.preparationUnit.name; //Đơn vị bào chế
-              let price = element.price; //Giá bán
-              let retailPrice = element.retailPrice; //Giá bán lẻ sau khi tách hộp
               let type = element.type.value; //Loại thuốc: medicalType_1 - Thuốc đông y medicalType_0 - Thuốc tây
 
               let stockText = "";
@@ -2995,7 +2983,7 @@
         this.RetailTable.splice(index, 1);
       },
 
-      chengeDrugTypeItems(sel) {
+      chengeDrugTypeItems() {
       },
       //Lấy đơn vị theo bán lẻ hay thêm mới/xem
       GetDrugUnit(index, row) {

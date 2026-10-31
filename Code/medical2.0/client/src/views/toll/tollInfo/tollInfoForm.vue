@@ -140,7 +140,6 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
 import { listCompanyAll } from '@/api/org/company'
 import { listMedicalRecordAll } from '@/api/outpatient/medicalRecord'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
@@ -228,7 +227,7 @@ export default {
         this.$refs['tollInfoForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -263,7 +262,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let company_search = {
         params: []
       }
