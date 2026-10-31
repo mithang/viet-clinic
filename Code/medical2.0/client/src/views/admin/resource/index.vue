@@ -249,7 +249,7 @@ export default {
         }
 
         this.setLoad()
-        saveResource(resource).then(responseData => {
+        saveResource(resource).then(() => {
           this.resetLoad()
           if(this.loadcount === 0) {
             this.getResourceList()

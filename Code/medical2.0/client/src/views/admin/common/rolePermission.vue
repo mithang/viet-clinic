@@ -170,7 +170,7 @@ export default {
         if(this.isHalfOrChecked(node)) {
           // Tệp cấu hình metadata tồn tại
           try {
-            let metas = require('@/views/' + data.code + '/metadata').metadata
+            require('@/views/' + data.code + '/metadata')
             return true
           }catch (e) {
             console.warn('Không tìm thấy tệp mô tả siêu dữ liệu: %s', '@/views/' + data.code + '/metadata')
