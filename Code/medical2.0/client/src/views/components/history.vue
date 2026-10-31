@@ -16,7 +16,7 @@
 <script>
 import { listActionAll } from '@/api/sys/action'
 export default {
-  name: 'History',
+  name: 'AppHistory',
   data() {
     return {
       drawer: false,

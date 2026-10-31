@@ -81,7 +81,7 @@
   import { saveTheme } from '@/api/sys/theme'
   import { getLocalCurrentUser, getLocalPersonalTheme, setLocalPersonalTheme } from '@/utils/auth'
   export default {
-		name: "Setting",
+		name: "AppSettings",
     components: {
       ThemePicker,
     },

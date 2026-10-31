@@ -175,7 +175,7 @@
   
   import { listSysSetingAll, saveSysSeting } from '@/api/sys/sysSeting.js'
   export default {
-    name: "Sys",
+    name: "AppSys",
     components: {
       ThemePicker,
       imageUpload
