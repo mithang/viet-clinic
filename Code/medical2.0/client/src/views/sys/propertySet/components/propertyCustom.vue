@@ -23,7 +23,7 @@
         </template>
         <el-table   class='drag_table'   row-key="id" ref="dragTable" :data='panel.propertys' border highlight-current-row :row-class-name="tableRowClassName">
           <el-table-column prop='name' label='Tên trường'  header-align='center'>
-            <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên trường</template>
+            <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên trường</template>
             <template slot-scope='{row,$index}'>
               <el-form-item :data-num='dataNum' :ref="`PRO_${dataNum}_propertys_${$index}_name`" :prop='`PRO_${dataNum}_propertys_${$index}_name`' :rules="[{ required: true, validator: inputValidator, val: row.name,  message: 'Vui lòng nhập tên trường', trigger: 'blur'}]"  v-if='action !== "view" '  label-width=0>
                 <el-input v-model="row.name" />
@@ -60,7 +60,7 @@
             </template>
           </el-table-column>
           <el-table-column prop='isRequired' label='Bắt buộc nhập' width="80" header-align='center'>
-            <template slot-scope='{row,$index}'>
+            <template slot-scope='{row}'>
               <el-form-item :data-num='dataNum' v-if='action !== "view" ' label-width=0>
                 <el-switch v-model='row.isRequired' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
               </el-form-item>
@@ -68,7 +68,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="defaultValue" label="Giá trị mặc định"  header-align='center' >
-            <template slot-scope='{row,$index}'>
+            <template slot-scope='{row}'>
               <template v-if="row.dictId === '8406'"> <!-- Từ điển -->
                 <el-form-item :data-num='dataNum' v-if='action !== "view" ' label-width=0>
                   <el-select :loading="defLoading" v-model="row.defaultValue" value-key='id' filterable clearable placeholder='Vui lòng chọn loại thuộc tính' @focus="checkChange(row)" >
@@ -101,7 +101,7 @@
             </template>
           </el-table-column>
           <el-table-column prop='remarks' label='Giải thích'  header-align='center'>
-            <template slot-scope='{row,$index}'>
+            <template slot-scope='{row}'>
               <el-form-item :data-num='dataNum' v-if='action !== "view" ' label-width=0>
                 <el-input v-model='row.remarks' :maxlength='128' clearable placeholder='Vui lòng nhập giải thích'></el-input>
               </el-form-item>
@@ -109,7 +109,7 @@
             </template>
           </el-table-column>
           <el-table-column label='Thao tác' min-width="40px" v-if="action !== 'view'" >
-            <template slot='header' slot-scope="scope">
+            <template slot='header'>
               <el-button circle icon="el-icon-plus" :disabled="action === 'view'" @click="pushPropertyData(panel, bizindex)"></el-button>
             </template>
             <template slot-scope='scope'>

@@ -59,7 +59,7 @@
         <el-col>
     <el-table ref='action' :data='actionModel.actionRecycleList' border @current-change='(currentRow, oldCurrentRow) => {actionRecycleCurrentRow = currentRow}'>
       <el-table-column prop='tableName' label='Tên bảng' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên bảng</template>
+        <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên bảng</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.tableName`" :rules='formRules.actionRecycle_tableName' label-width=0>
             <el-input v-model='row.tableName'  :maxlength='200' clearable placeholder='Vui lòng nhập tên bảng'></el-input>
@@ -68,7 +68,7 @@
         </template>
       </el-table-column>
       <el-table-column prop='objectId' label='Đối tượng nghiệp vụ' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Đối tượng nghiệp vụ</template>
+        <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Đối tượng nghiệp vụ</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.objectId`" :rules='formRules.actionRecycle_objectId' label-width=0>
             <el-input v-model='row.objectId'  :maxlength='40' clearable placeholder='Vui lòng nhập đối tượng nghiệp vụ'></el-input>
@@ -77,7 +77,7 @@
         </template>
       </el-table-column>
       <el-table-column prop='objectName' label='Tên đối tượng' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Tên đối tượng</template>
+        <template slot='header'>Tên đối tượng</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === actionRecycleCurrentRow' :prop="`actionRecycleList.${$index}.objectName`" :rules='formRules.actionRecycle_objectName' label-width=0>
             <el-input v-model='row.objectName'  :maxlength='200' clearable placeholder='Vui lòng nhập tên đối tượng'></el-input>

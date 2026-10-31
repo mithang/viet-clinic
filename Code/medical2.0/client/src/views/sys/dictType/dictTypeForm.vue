@@ -71,7 +71,7 @@
             </div>
           <el-table ref='dictType' :data='bizFormModel.dictItemList' border @current-change='(currentRow, oldCurrentRow) => {dictItemCurrentRow = currentRow}'>
             <el-table-column prop='name' label='Tên' min-width='120px' header-align='center'>
-              <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên</template>
+              <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên</template>
               <template slot-scope='{row,$index}'>
                 <el-form-item data-num='2' :ref="`dictItemList.${$index}.name`" v-if='dialogProps.action !== "view" && row === dictItemCurrentRow' :prop="`dictItemList.${$index}.name`" :rules='formRules.dictItem_name' label-width=0>
                   <el-input v-model='row.name'  :maxlength='64' clearable placeholder='Vui lòng nhập tên'></el-input>
@@ -80,7 +80,7 @@
                   </template>
                 </el-table-column>
             <el-table-column prop='value' label='giá trị' min-width='160px' header-align='center'>
-              <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>giá trị</template>
+              <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>giá trị</template>
               <template slot-scope='{row,$index}'>
                 <el-form-item data-num='2' :ref="`dictItemList.${$index}.value`" v-if='dialogProps.action !== "view" && row === dictItemCurrentRow' :prop="`dictItemList.${$index}.value`" :rules='formRules.dictItem_value' label-width=0>
                   <el-input v-model='row.value'  :maxlength='128' clearable placeholder='Vui lòng nhập giá trị'></el-input>
@@ -89,7 +89,7 @@
                   </template>
                 </el-table-column>
             <el-table-column prop='remarks' label='Thông tin ghi chú' min-width='200px' header-align='center'>
-              <template slot='header' slot-scope='{row,$index}'>Thông tin ghi chú</template>
+              <template slot='header'>Thông tin ghi chú</template>
               <template slot-scope='{row,$index}'>
                 <el-form-item data-num='2' :ref="`dictItemList.${$index}.remarks`" v-if='dialogProps.action !== "view" && row === dictItemCurrentRow' :prop="`dictItemList.${$index}.remarks`" :rules='formRules.dictItem_remarks' label-width=0>
                   <el-input v-model='row.remarks'  :maxlength='255' clearable placeholder='Vui lòng nhập thông tin ghi chú'></el-input>
