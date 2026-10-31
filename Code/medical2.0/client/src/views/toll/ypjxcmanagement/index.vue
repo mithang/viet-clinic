@@ -354,7 +354,7 @@ export default {
     })
   },
   methods: {
-    stateFormat(row, column) {
+    stateFormat(row) {
       if (row.fl === "medicalType_0") {
         return 'Thuốc tây'
       } else if (row.fl === "medicalType_1") {
@@ -382,7 +382,7 @@ export default {
       return [start, end] //Gán giá trị cho thành phầnDatePicker Dữ liệu đã liên kết
     },
     getSummaries(param) {
-      const {columns, data} = param;
+      const {columns} = param;
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {

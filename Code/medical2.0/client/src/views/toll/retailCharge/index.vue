@@ -888,18 +888,12 @@
 </template>
 <script>
 
-import { validatenull } from "@/utils/validate";
-import { listClinicOfficeAll } from "@/api/org/clinicOffice";
 import {
   listPatientAll,
-  savePatient,
-  getPatientById,
 } from "@/api/outpatient/patient";
 import { getDictItemsByCode, DICT_CODE } from "@/utils/dictCache";
-import { saveRegistration,listDoctorsAll } from "@/api/outpatient/registration";
 import {listAll} from "@/api/stock/medicinalStockControl";
 import BaseUI from "@/views/components/baseUI";
-import { saveTollInfo } from "@/api/toll/tollInfo";
 import { BigNumber } from "bignumber.js";
 import { saveTollTollInfo } from "@/api/toll/tollInfo";
 export default {
@@ -1208,7 +1202,6 @@ export default {
                  this.$refs[formName].validate((valid) => {
                 if (valid) {
                     let flag = false
-                    let flag1 =false
                     if(!this.DrugList.length>0){
                         this.$message.error("Vui lòng chọn thuốc")
                         return
@@ -1292,7 +1285,7 @@ export default {
            }
         },
 
-        compute(row){
+        compute(){
             this.totalAllFee = 0
            if(this.activeName==='0'){
                this.DrugList.forEach((item)=>{
@@ -1574,7 +1567,7 @@ export default {
         }
     },
     watch:{
-        activeName:function(newVal,oldVal){
+        activeName:function(newVal){
             if(newVal==='0'){
                 this.bizFormModel = this.initPatientModel()
                     this.DrugList=[]

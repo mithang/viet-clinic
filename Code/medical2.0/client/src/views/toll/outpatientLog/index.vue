@@ -320,10 +320,8 @@
 </template>
 
 <script>
-  import {getStuffsalessummarylists, getStuffsalessummarysumss} from "@/api/toll/tollInfo";
+  import {getStuffsalessummarysumss} from "@/api/toll/tollInfo";
   import {get, list, update,exportExcel} from "../../../api/toll/outpatientLog";
-  import {BigNumber} from "bignumber.js";
-  import RoleForm from "../../admin/role/roleForm";
   export default {
 
     data() {
@@ -458,7 +456,7 @@
       /*showEditDialog(id) {
         this.editDialogVisible = true;
       },*/
-      stateFormat(row, column) {
+      stateFormat(row) {
         if (row.sex === "gender_0") {
           return 'Nam'
         } else {
@@ -611,7 +609,7 @@
         this.$refs.editUserFormRef.validate(async valid =>{
           if(!valid) return;//Kiểm tra không đạt, Quay lại
           //Có thể gửi yêu cầu sửa người dùng
-          await update(this.editUserForm).then(response => {
+          await update(this.editUserForm).then(() => {
             this.$message.success('Sửa người dùng thành công!');
             // Ẩn hộp thoại sửa người dùng
             this.editDialogVisible = false;

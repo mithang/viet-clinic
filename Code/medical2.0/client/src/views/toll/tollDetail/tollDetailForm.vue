@@ -128,7 +128,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let recipel_search = {
         params: []
       }

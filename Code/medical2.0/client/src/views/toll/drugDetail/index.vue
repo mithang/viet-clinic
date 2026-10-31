@@ -235,7 +235,7 @@ export default {
       })
     },
     getTotal(param){
-      let { columns, data } = param;
+      let { columns } = param;
       let arr = []
       columns.forEach((column, index) => {
           if (index === 0) {

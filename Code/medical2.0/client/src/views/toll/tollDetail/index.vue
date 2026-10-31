@@ -599,7 +599,6 @@
   import {BigNumber} from "bignumber.js";
   import { getCurrentUser } from "@/utils/userCache";
 
-  import FileSaver from 'file-saver'
   import * as XLSX from 'xlsx'
   import XLSXD from 'xlsx-style'
 

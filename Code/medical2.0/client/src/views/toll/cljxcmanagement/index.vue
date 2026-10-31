@@ -310,7 +310,7 @@ pickerOptions: {
     })
   },
     methods: {
-      stateFormat(row, column) {
+      stateFormat(row) {
         if (row.fl ==="stuffType_0") {
           return 'Vật tư y tế'
         }
@@ -337,7 +337,7 @@ pickerOptions: {
      return [start,end] //Gán giá trị cho thành phầnDatePicker Dữ liệu đã liên kết
    },
       getSummaries(param) {
-        const { columns, data } = param;
+        const { columns } = param;
         const sums = [];
         columns.forEach((column, index) => {
           if (index === 0) {
