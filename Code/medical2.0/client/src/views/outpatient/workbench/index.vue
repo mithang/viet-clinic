@@ -723,11 +723,11 @@ export default {
     onOpenAll() {
     },
 
-    onClickContent(item) {
+    onClickContent() {
       this.$router.push({ path: '/recipelInfoReviewResult', params: {} });
     },
 
-    onClickOne(item) {
+    onClickOne() {
       this.$router.push({ path: '/recipelInfoReviewResult', params: {} });
     },
 

@@ -71,7 +71,6 @@ import BaseUI from "@/views/components/baseUI";
 import {
   listSchedulesPage,
   listdispensingPages,
-  listPatientcharge,
   updateoverlockids,
 } from "@/api/workbench/Schedules";
 import moment from "moment";
@@ -245,7 +244,7 @@ fymodel: {
     indexMethod(index){
        return (this.currentPage-1)*this.fymodel.limit+index +1;
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         company: {
           // Phòng khámid
@@ -264,22 +263,7 @@ fymodel: {
         this.$refs["workbenchForm"].clearValidate();
       });
     },
-    initOptions(This) {
-      let division_search = {
-        params: [
-          {
-            columnName: "parten_id",
-            queryType: "=",
-            value: "0",
-          },
-          {
-            columnName: "level",
-            queryType: "=",
-            value: "1",
-          }
-        ],
-      }
-
+    initOptions() {
       getDictItemsByCode(DICT_CODE.GENDER).then((data) => {
         this.gender_List = data;
       });
