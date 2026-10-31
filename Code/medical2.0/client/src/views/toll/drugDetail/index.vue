@@ -195,6 +195,7 @@ import { BigNumber } from "bignumber.js";
 import { getDrugSales, getDrugSalesStat, exportExcel } from "@/api/toll/drugDetail";
 import { validatenull } from "@/utils/validate";
 export default {
+    name: 'TollDrugDetailIndex',
   mixins: [reportViewMixin],
   data() {
     return {

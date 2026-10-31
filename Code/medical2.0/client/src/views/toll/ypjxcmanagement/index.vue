@@ -267,6 +267,8 @@ import {BigNumber} from "bignumber.js";
 
 export default {
 
+
+    name: 'TollYpjxcManagementIndex',
   data() {
     return {
       show3: false,

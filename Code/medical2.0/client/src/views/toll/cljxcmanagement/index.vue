@@ -243,6 +243,8 @@ import { BigNumber } from "bignumber.js";
 
   export default {
 
+
+      name: 'TollCljxcManagementIndex',
     data() {
       return {
         show3: false,

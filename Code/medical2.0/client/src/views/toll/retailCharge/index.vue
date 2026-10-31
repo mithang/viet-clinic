@@ -897,6 +897,7 @@ import BaseUI from "@/views/components/baseUI";
 import { BigNumber } from "bignumber.js";
 import { saveTollTollInfo } from "@/api/toll/tollInfo";
 export default {
+    name: 'TollRetailChargeIndex',
     extends: BaseUI,
     data(){
         return{

@@ -240,6 +240,8 @@ import { BigNumber } from "bignumber.js";
 
   export default {
 
+
+      name: 'TollStuffSalesSummaryIndex',
     data() {
       return {
         show3: false,

@@ -205,6 +205,7 @@ import reportViewMixin from '@/mixins/reportViewMixin'
 import { BigNumber } from "bignumber.js";
 import { getWorkload, getWorkLoadStat, exportExcel } from "@/api/toll/doctorDetail";
 export default {
+    name: 'TollDoctorDetailIndex',
   mixins: [reportViewMixin],
   data() {
     return {

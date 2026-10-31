@@ -1550,6 +1550,8 @@
   }
 
   export default {
+
+      name: 'TollInfoIndex',
     extends: BaseUI,
     data() {
       let cardIdNo = (rule, value, callback) => {

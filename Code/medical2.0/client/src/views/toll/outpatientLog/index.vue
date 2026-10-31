@@ -324,6 +324,7 @@
   import {get, list, update,exportExcel} from "../../../api/toll/outpatientLog";
   export default {
 
+      name: 'TollOutpatientLogIndex',
     data() {
       return {
         pickerOption: {

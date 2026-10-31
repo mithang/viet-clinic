@@ -231,6 +231,8 @@ import { BigNumber } from "bignumber.js";
 
   export default {
 
+
+      name: 'TollYpclrkListIndex',
     data() {
       return {
         show3: false,

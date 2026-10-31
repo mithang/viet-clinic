@@ -603,6 +603,8 @@
   import XLSXD from 'xlsx-style'
 
   export default {
+
+      name: 'TollDetailIndex',
     extends: MainUI,
     data() {
       return {
