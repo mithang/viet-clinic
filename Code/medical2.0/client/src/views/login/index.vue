@@ -473,7 +473,7 @@ export default {
 </script>
 
 <style scoped>
-// Hộp thoại chọn phòng khám khi tài khoản liên kết nhiều cơ sở
+/* Hộp thoại chọn phòng khám khi tài khoản liên kết nhiều cơ sở */
 .til {
   margin: 0 0 14px;
   font-size: 13px;

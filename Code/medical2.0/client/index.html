@@ -12,19 +12,19 @@
     <script src="lib/vue-router@3.5.3.js"></script>
     <script src="lib/vue-i18n@7.3.2.js"></script>
 
-    <!-- 必须在 Element UI 加载前设置默认值 -->
+    <!-- Phải đặt giá trị mặc định trước khi tải Element UI -->
     <script>
       window.ELEMENT = window.ELEMENT || {};
       window.ELEMENT.size = 'mini';
       window.ELEMENT.zIndex = 3000;
     </script>
 
-    <!-- 引入样式 -->
+    <!-- Nạp stylesheet -->
     <link rel="stylesheet" href="lib/element/element-ui@2.15.6.css">
-    <!-- 引入组件库 -->
+    <!-- Nạp thư viện component -->
     <script src="lib/element/element-ui@2.15.6.js"></script>
 
-    <!-- 异步加载资源，如luckysheet、dataviewer -->
+    <!-- Tải bất đồng bộ tài nguyên như luckysheet, dataviewer -->
     <script src="loadResource.js"></script>
   </head>
   <body style="height: 100%; width: 100%; margin: 0px; padding: 0px;">
