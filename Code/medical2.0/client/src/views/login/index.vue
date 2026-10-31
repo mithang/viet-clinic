@@ -161,6 +161,7 @@ import backImg from "@/assets/images/Logbk.png";
 const _import = require("@/router/_import_" + process.env.NODE_ENV);
 
 export default {
+  name: 'LoginIndex',
   extends: BaseUI,
   data() {
     return {

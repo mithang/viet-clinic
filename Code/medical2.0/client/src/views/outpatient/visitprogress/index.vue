@@ -138,6 +138,7 @@ import {
 }  from "@/api/workbench/Schedules";
 import moment from "moment"; 
   export default {
+  name: 'OutpatientVisitprogressIndex',
     extends: MainUI,
   components: {
     History

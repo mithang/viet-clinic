@@ -257,6 +257,7 @@ import UploadFile from '../../components/uploadFile.vue'
 import UploadFile1 from '../../components/uploadFile.vue'
 import { getFiled } from "@/api/sys/sysSeting";
 export default {
+  name: 'MyTaskMyTaskIndex',
   extends: MainUI,
   components: {
     ExportExcelButton,

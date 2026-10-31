@@ -2,6 +2,7 @@
 </template>
 <script>
 export default {
+  name: 'ScreenShowIndex',
     data(){
         return{
 

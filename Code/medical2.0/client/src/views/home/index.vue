@@ -105,6 +105,7 @@ import { isLightOrDark } from '@/utils/common'
 import { getLocalRouters, getLocalSysSetting, getLocalCurrentUser } from '@/utils/auth'
 
 export default {
+  name: 'HomeIndex',
   extends: BaseUI,
   data() {
     return {
