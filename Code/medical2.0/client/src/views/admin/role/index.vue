@@ -142,6 +142,7 @@ import OperationIcon from '@/components/OperationIcon'
 import RolePermission from '@/views/admin/common/rolePermission'
 import History from '@/views/components/history'
 export default {
+  name: 'AdminRoleIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {
