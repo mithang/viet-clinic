@@ -7,6 +7,7 @@
 
 <script>
   export default {
+    name: 'ComponentsSupplierOutboundStatusSelectIndex',
     props: {
       value: {
         type: String,

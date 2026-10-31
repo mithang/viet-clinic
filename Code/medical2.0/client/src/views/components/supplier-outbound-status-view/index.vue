@@ -4,6 +4,7 @@
 
 <script>
   export default {
+    name: 'ComponentsSupplierOutboundStatusViewIndex',
     props: {
       value: {
         type: Number,

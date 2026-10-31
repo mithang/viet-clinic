@@ -6,7 +6,8 @@
 </template>
 
 <script> 
-  export default { 
+  export default {
+    name: 'ComponentsDrugStuffTypeSelectIndex',
     props: {
       value: {
         type: String,
