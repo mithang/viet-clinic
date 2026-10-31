@@ -340,7 +340,6 @@
   </el-dialog>
 </template>
 <script>
-import {listDictItemAll} from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import {listAdministrativeDivisionAll} from "@/api/org/administrativeDivision";
 import {savePatient} from "@/api/outpatient/patient";
@@ -670,7 +669,7 @@ export default {
         this.$refs["patientForm"].clearValidate();
       });
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         company: {
           // Phòng khámid
@@ -701,7 +700,7 @@ export default {
         remarks: "", // Thông tin ghi chú
       };
     },
-    initOptions(This) {
+    initOptions() {
       let division_search = {
         params: [
           {

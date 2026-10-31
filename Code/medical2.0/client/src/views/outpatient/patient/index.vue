@@ -206,7 +206,7 @@ export default {
       this.patientTotal = responseData.data.total
       this.patientList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

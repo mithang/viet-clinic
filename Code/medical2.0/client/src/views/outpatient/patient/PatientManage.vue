@@ -322,7 +322,7 @@ export default {
       }
       this.getPatientList()
     },
-    initOptions(This) {},
+    initOptions() {},
     setLoad() {
       this.loading = true
     },

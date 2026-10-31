@@ -173,7 +173,7 @@ import {getblmblist,deletembbm} from '@/api/outpatient/blmb'
       }
       this.Getblmbtable();
       },
-      handleClick(row) {
+      handleClick() {
         
       },
       onCreatePatient(types) {
