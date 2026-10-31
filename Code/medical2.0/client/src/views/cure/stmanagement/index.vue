@@ -155,6 +155,7 @@
 <script>
 import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagement'
   export default {
+    name: 'CureStmanagementIndex',
     
     data() {
       return {

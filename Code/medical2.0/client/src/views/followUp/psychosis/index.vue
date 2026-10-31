@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+    name: 'FollowUpPsychosisIndex',
     computed: {
         followUpUrl() {
             return process.env.FOLLOW_UP_URL + '/s/8421ad792ba54d7b923c0e3d41b075b0'

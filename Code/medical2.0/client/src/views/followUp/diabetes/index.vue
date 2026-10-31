@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+    name: 'FollowUpDiabetesIndex',
     computed: {
         followUpUrl() {
             return process.env.FOLLOW_UP_URL + '/s/b16f4bf90dac459f8d12cdd3bd3ea97c'

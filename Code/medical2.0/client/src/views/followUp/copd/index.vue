@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+    name: 'FollowUpCopdIndex',
     computed: {
         followUpUrl() {
             return process.env.FOLLOW_UP_URL + '/s/11150b9499e04e74b16f09e0f3b6e0a1'

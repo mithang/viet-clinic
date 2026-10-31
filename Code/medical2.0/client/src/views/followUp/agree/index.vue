@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+    name: 'FollowUpAgreeIndex',
     computed: {
         followUpUrl() {
             return process.env.FOLLOW_UP_URL + '/:8088/s/424ca3e65af3411da6dd629605e9ff46'

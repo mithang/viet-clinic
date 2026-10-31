@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+    name: 'FollowUpPersonalInformationIndex',
     computed: {
         followUpUrl() {
             return process.env.FOLLOW_UP_URL + '/s/634831e611664e4eb2af640b2e5a2274'

@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+    name: 'FollowUpTuberculosisIndex',
     computed: {
         followUpUrl() {
             return process.env.FOLLOW_UP_URL + '/s/c1e5183064dc499a8b3ec81f39d9f18e'

@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+    name: 'FollowUpHypertensionIndex',
     computed: {
         followUpUrl() {
             return process.env.FOLLOW_UP_URL + '/s/9dadd587b567455a9055d7b82a5dff4b'
