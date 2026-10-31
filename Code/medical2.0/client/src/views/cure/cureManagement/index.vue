@@ -330,8 +330,8 @@
                       v-model="patientInfoForm.gender.name"
                       style="width: 100%"
                     >
-                      <el-option label="Nam" value="男"></el-option>
-                      <el-option label="Nữ" value="女"></el-option>
+                      <el-option label="Nam" value="Nam"></el-option>
+                      <el-option label="Nữ" value="Nữ"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
