@@ -464,7 +464,6 @@ import {
   listschedumxling,
   listzlrday,
 } from "@/api/outpatient/scheduling";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import MainUI from "@/views/components/mainUI";
 import History from "@/views/components/history";
@@ -636,7 +635,7 @@ export default {
         patientname: null,
       };
     },
-    handleClick(tab, event) {
+    handleClick(tab) {
        //this.$message.success(this.tabPosition);
       if (tab.name === "scheduling") {
         this.schedulingDayList();
@@ -673,7 +672,7 @@ export default {
             }
             //this.resetLoad()
           })
-          .catch((error) => {
+          .catch(() => {
             //this.flag = false;
             //this.outputError(error)
           });
@@ -699,7 +698,7 @@ export default {
           }
           //this.resetLoad()
         })
-        .catch((error) => {
+        .catch(() => {
           //this.flag = false;
           //this.outputError(error)
         });
@@ -784,7 +783,7 @@ export default {
         this.schedulingzlrdaysList();
       }
     },
-    handleSizeChange(val) {
+    handleSizeChange() {
     },
     //Dữ liệu khởi tạo bảng tổng quan lịch hẹn theo tuần
     schedulingzlDayList(val) {
@@ -792,7 +791,6 @@ export default {
       this.dateweeklist = [];
       this.schedulingzlList=[];
       // Thêm động số ngày và thứ tương ứng
-      let tableprop = 0;
 
       let time = new Date();
       let timesStamp;
@@ -822,14 +820,6 @@ export default {
         .replace(/\//g, "-");
       let newdates1 = new Date(newtime1);
       let newdates2 = new Date(newtime2);
-      let vardates =
-        newdates1.getFullYear() +
-        "-" +
-        (newdates1.getMonth() + 1) +
-        "-" +
-        (newdates1.getDate() < 10
-          ? "0" + newdates1.getDate()
-          : newdates1.getDate());
       let vardates1 =
         newdates1.getFullYear() +
         "-" +
@@ -873,7 +863,7 @@ export default {
           }
           //this.resetLoad()
         })
-        .catch((error) => {
+        .catch(() => {
           //this.flag = false;
           //this.outputError(error)
         });
@@ -979,7 +969,7 @@ export default {
       });
     },
     //Gộp cột bảng tổng quan lịch hẹn theo tuần
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+    objectSpanMethod({ rowIndex, columnIndex }) {
       if (columnIndex === 0) {
         const _row = this.spanArr[rowIndex];
         const _col = _row > 0 ? 1 : 0;
@@ -1023,7 +1013,6 @@ export default {
           : nowDate.getMonth() + 1; //tháng
       let yeare = nowDate.getFullYear(); //năm
       this.week_time = yeare + "/" + nowmonth + "/" + nowDay;
-      let hh = nowDate.getHours(); //giờ
       let housrs = this.housrslist;
       for (let i = 0; i < housrs.length - 1; i++) {
         let daylist = {
@@ -1088,11 +1077,6 @@ export default {
       this.dateweeklist = [];
       this.formThead = [];
       // Thêm động số ngày và thứ tương ứng
-      let nowDate = new Date(Date.parse(new Date()));
-      let nowDay = nowDate.getDate(); //ngày
-      let nowmonth = nowDate.getMonth() + 1; //tháng
-      let yeare = nowDate.getFullYear(); //năm
-      let nowDayss = nowDate.getDate() - nowDate.getDay() + 1; //Thứ trong tuần
 
       let time = new Date();
       let timesStamp;
@@ -1121,14 +1105,6 @@ export default {
         .replace(/\//g, "-");
       let newdates1 = new Date(newtime1);
       let newdates2 = new Date(newtime2);
-      let vardates =
-        newdates1.getFullYear() +
-        "-" +
-        (newdates1.getMonth() + 1) +
-        "-" +
-        (newdates1.getDate() < 10
-          ? "0" + newdates1.getDate()
-          : newdates1.getDate());
       let vardates1 =
         newdates1.getFullYear() +
         "-" +
@@ -1163,7 +1139,7 @@ export default {
           }
           //this.resetLoad()
         })
-        .catch((error) => {
+        .catch(() => {
           //this.flag = false;
           //this.outputError(error)
         });

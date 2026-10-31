@@ -519,7 +519,6 @@ import BaseUI from "@/views/components/baseUI";
 import {saveTollInfo} from "@/api/toll/tollInfo";
 import {validatenull} from "@/utils/validate";
 import {getPatientById, listPatientAll, savePatient,} from "@/api/outpatient/patient";
-import {listDictItemAll} from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import {listDoctorsAll, saveRegistration} from "@/api/outpatient/registration";
 
@@ -528,38 +527,6 @@ export default {
   name: "test-form",
   components: {},
   data() {
-    //Kiểm tra CMND/CCCD: chấp nhận CMND 9 số và CCCD 12 số của Việt Nam;
-    //CMND 18 số kiểu Trung Quốc vẫn được chấp nhận để tương thích dữ liệu cũ
-    //(kiểm tra checksum có trọng số như trước).
-    const isCnNewID = (rule, value, callback) => {
-      if (!value) {
-        callback()
-        return
-      }
-      if (/^\d{9}$/.test(value) || /^\d{12}$/.test(value)) {
-        callback()
-        return
-      }
-      const arrExp = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];//Hệ số trọng số
-      const arrValid = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2];//Mã kiểm tra
-      if (/^\d{17}[\dX]$/i.test(value)) {
-        let sum = 0, idx;
-        for (let i = 0; i < value.length - 1; i++) {
-          // Đối với17chữ số đầu nhân với trọng số rồi cộng lại
-          sum += parseInt(value.substr(i, 1), 10) * arrExp[i];
-        }
-        // Tính modulo (Thuật toán cố định)
-        idx = sum % 11;
-        // Kiểm tra chữ số thứ18có bằng mã kiểm tra không
-        if (String(arrValid[idx]) === value.substr(17, 1).toUpperCase()) {
-          callback()
-        } else {
-          callback("Định dạng CMND/CCCD không đúng, vui lòng nhập CMND 9 số, CCCD 12 số hoặc CMND 18 số")
-        }
-      } else {
-        callback("Định dạng CMND/CCCD không đúng, vui lòng nhập CMND 9 số, CCCD 12 số hoặc CMND 18 số")
-      }
-    }
     return {
       setDisabled: {
         disabledDate(time) {
@@ -652,7 +619,7 @@ export default {
         this.birthdayChanges()
       }
     },
-    sortDoc(clinicOffice, officename) {
+    sortDoc(clinicOffice) {
       if (this.doctor_List.length !== 0) {
         //Lọc bác sĩ
         this.select_doctor = this.doctor_List.filter(doctor => doctor.office === clinicOffice)
@@ -931,7 +898,7 @@ export default {
         subscribedatetime: "",//Thời gian hẹn, trước khi truyền lên backend sẽ nối vào trường ngày hẹn, ở đây chỉ dùng để hiển thị và binding
       };
     },
-    initOptions(This) {
+    initOptions() {
       //Truy vấn giới tính bệnh nhân
       getDictItemsByCode(DICT_CODE.GENDER).then((data) => {
         this.gender_List = data;
@@ -1113,7 +1080,6 @@ export default {
       this.tabIndex = "1";
       this.dialogProps.visible = true;
       let myDate = new Date();
-      let nowDate = new Date(Date.parse(new Date()));
       let hou = String(myDate.getHours() < 10 ? '0' + myDate.getHours() : myDate.getHours())
       let min = String(myDate.getMinutes() < 10 ? '0' + myDate.getMinutes() : myDate.getMinutes())
       let hhmm = hou + ':' + min;
@@ -1187,7 +1153,7 @@ export default {
         });
       }
     },
-    "bizFormModel.age": function (newValue, oldValue) {
+    "bizFormModel.age": function (newValue) {
       if (newValue < 12) {
         this.formRules.guardianName[0].required = true
         this.formRules.guardianPhone[0].required = true
