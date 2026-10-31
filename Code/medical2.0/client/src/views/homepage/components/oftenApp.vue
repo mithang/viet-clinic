@@ -10,12 +10,14 @@
       <el-row>
         <el-carousel height="200px" :autoplay="false" indicator-position="outside" arrow="never" :loop="false">
           <el-carousel-item v-for="num in carouselNum" :key="num">
-            <el-col :span="6" v-for="(item, index) in carouselRouters(num)" :key="item.id" v-if="index < 8">
+            <template v-for="(item, index) in carouselRouters(num)">
+            <el-col :span="6" :key="item.id" v-if="index < 8">
               <div class="often-app" @click="handleAppClick(item.id)">
                 <app-icon :icon="item.cssClass"></app-icon>
                 <span class="app-name">{{item.name}}</span>
               </div>
             </el-col>
+            </template>
           </el-carousel-item>
         </el-carousel>
         <div class="no-data" v-if="appLists.length === 0">Chưa có dữ liệu</div>

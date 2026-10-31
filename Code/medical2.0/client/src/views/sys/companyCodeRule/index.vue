@@ -44,7 +44,8 @@
         <el-col :span='24'>
           <div @mouseleave='moveTableOutside'>
             <el-table class='drag_table' :data='companyCodeRuleList' border @sort-change='onSortChange' @header-dragend='onChangeWidth' :cell-class-name='cellClassName' :header-cell-class-name='headerCellClassName' highlight-current-row>
-              <el-table-column v-for="(cv, index) in columnViews" v-if='cv.display' :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align' :min-width='cv.miniWidth+"px"' :width='cv.width+"px"' header-align='center' :column-key='index.toString()' :render-header="renderHeader">
+              <template v-for="(cv, index) in columnViews">
+              <el-table-column v-if='cv.display' :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align' :min-width='cv.miniWidth+"px"' :width='cv.width+"px"' header-align='center' :column-key='index.toString()' :render-header="renderHeader">
                 <template slot-scope='{row}'>
                   <span v-if='columnViews[index].showType === "Switch" || columnViews[index].showType === "Checkbox" || columnViews[index].showType === "Radio"'>
                     <li v-if='getAttrValue(row, columnViews[index].prop) === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
@@ -52,6 +53,7 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType)}}</span>
                 </template>
               </el-table-column>
+              </template>
               <!--Nút thao tác theo dòng-->
               <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"'>
                 <template slot='header'>

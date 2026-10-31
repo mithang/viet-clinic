@@ -114,7 +114,8 @@
                 :index="indexMethod"
                 align="center">
               </el-table-column>
-              <el-table-column v-for="(cv, index) in columnViews" v-if='cv.display' :prop='cv.prop'
+              <template v-for="(cv, index) in columnViews">
+              <el-table-column v-if='cv.display' :prop='cv.prop'
                                :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'
                                :min-width='cv.miniWidth+"px"' :width='cv.width+"px"' header-align='center'
                                :column-key='index.toString()' :render-header="renderHeader">
@@ -137,6 +138,7 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType) }}</span>
                 </template>
               </el-table-column>
+              </template>
               <!--Nút thao tác theo dòng-->
               <el-table-column label='Thao tác' header-align='center' :width='140 + "px"' :key="'operate'">
                 <template slot='header'>

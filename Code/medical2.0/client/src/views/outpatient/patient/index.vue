@@ -71,7 +71,8 @@
               :index="indexMethod"
               align="center">
             </el-table-column>
-              <el-table-column v-for="(cv, index) in columnViews" v-if="cv.display"  :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'   header-align='center' :column-key='index.toString()' :render-header="renderHeader">
+              <template v-for="(cv, index) in columnViews">
+              <el-table-column v-if="cv.display"  :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'   header-align='center' :column-key='index.toString()' :render-header="renderHeader">
                 <template slot-scope='{row}'>
 <!--                  <span v-if='columnViews[index].showType == "Switch" || columnViews[index].showType == "Checkbox" || columnViews[index].showType == "Radio"'>
                     <li v-if='getAttrValue(row, columnViews[index].prop) === "1"' class='el-icon-check' style='color:#F56C6C;'></li>
@@ -80,6 +81,7 @@
                   <span>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType )}}</span>
                 </template>
               </el-table-column>
+              </template>
               <!--Nút thao tác theo dòng-->
               <el-table-column  label='Thao tác'  header-align='center' :key="'operate'" :width='140' >
 <!--                <template slot='header' slot-scope="scope">

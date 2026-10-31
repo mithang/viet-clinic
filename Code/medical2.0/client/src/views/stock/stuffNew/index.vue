@@ -95,7 +95,8 @@
               :header-cell-class-name='headerCellClassName' highlight-current-row>
               <el-table-column label="Số thứ tự" type="index" :index="indexMethod" align="center">
               </el-table-column>
-              <el-table-column v-for="(cv, index) in columnViews" v-if='cv.display' :prop='cv.prop'
+              <template v-for="(cv, index) in columnViews">
+              <el-table-column v-if='cv.display' :prop='cv.prop'
                 :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'
                 :min-width='cv.miniWidth + "px"' :width='cv.width + "px"' header-align='center'
                 :column-key='index.toString()' :render-header="renderHeader">
@@ -109,6 +110,7 @@
                   <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType) }}</span>
                 </template>
               </el-table-column>
+              </template>
               <el-table-column prop="inventory" label="Tồn kho khả dụng" sortable="custom" width="80px">
                 <template slot-scope="scope">
                   <span v-if="scope.row.stock.surplusStock != null">

@@ -116,8 +116,8 @@
                 :index="indexMethod"
                 align="center">
               </el-table-column>
+              <template v-for="(cv, index) in columnViews">
               <el-table-column
-                v-for="(cv, index) in columnViews"
                 v-if="cv.display"
                 :prop="cv.prop"
                 :key="cv.prop"
@@ -152,6 +152,7 @@
                     }}</span>
                 </template>
               </el-table-column>
+              </template>
               <el-table-column
                 prop="stockNumber"
                 sortable="custom"
@@ -208,8 +209,8 @@
                 :index="indexMethod"
                 align="center">
               </el-table-column>
+              <template v-for="(cv, index) in versionList">
               <el-table-column
-                v-for="(cv, index) in versionList"
                 v-if="cv.display"
                 :prop="cv.prop"
                 :key="cv.prop"
@@ -247,6 +248,7 @@
                   </template>
                 </template>
               </el-table-column>
+              </template>
             </el-table>
           </template>
             <!-- Thanh phân trang     Bắt đầu -->

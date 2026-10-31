@@ -65,7 +65,8 @@
               :header-cell-class-name="headerCellClassName" highlight-current-row ref="tableRef">
               <el-table-column label="Số thứ tự" type="index" :index="indexMethod" align="center">
               </el-table-column>
-              <el-table-column v-for="(cv, index) in columnViews" v-if="cv.display" :prop="cv.prop"
+              <template v-for="(cv, index) in columnViews">
+              <el-table-column v-if="cv.display" :prop="cv.prop"
                 :key="`columnViews_${index}`" :label="cv.label" sortable="custom" :align="cv.align"
                 :min-width="cv.miniWidth + 'px'" :width="cv.width + 'px'" header-align="center"
                 :column-key="index.toString()" :render-header="renderHeader">
@@ -86,6 +87,7 @@
   }}</span>
                 </template>
               </el-table-column>
+              </template>
               <!--Nút thao tác theo dòng-->
               <el-table-column label="Thao tác" header-align="center" :width="130 + 'px'" :key="Math.random()">
                 <template slot="header">

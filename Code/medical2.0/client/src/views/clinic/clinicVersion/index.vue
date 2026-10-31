@@ -102,8 +102,8 @@
               :header-cell-class-name="headerCellClassName"
               highlight-current-row
             >
+              <template v-for="(cv, index) in columnViews">
               <el-table-column
-                v-for="(cv, index) in columnViews"
                 v-if="cv.display"
                 :prop="cv.prop"
                 :key="`columnViews_${index}`"
@@ -139,6 +139,7 @@
                   }}</span>
                 </template>
               </el-table-column>
+              </template>
               <!--Nút thao tác theo dòng-->
               <el-table-column
                 label="Thao tác"

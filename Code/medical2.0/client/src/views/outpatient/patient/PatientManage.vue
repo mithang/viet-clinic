@@ -68,11 +68,13 @@
                 :index="indexMethod"
                 align="center">
               </el-table-column>
-              <el-table-column v-for="(cv, index) in columnViews" v-if="cv.display"  :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'   header-align='center' :column-key='index.toString()'>
+              <template v-for="(cv, index) in columnViews">
+              <el-table-column v-if="cv.display"  :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'   header-align='center' :column-key='index.toString()'>
                 <template slot-scope='{row}'>
                   <span>{{ getAttrValue(row, cv.prop, cv.javaType )}}</span>
                 </template>
               </el-table-column>
+              </template>
               <el-table-column  label='Thao tác'  header-align='center' key="operationColumn" width='160' >
                 <template slot-scope='scope'>
                   <OperationIcon type='info' content='Xem' placement='top-start' icon-name='el-icon-view'
