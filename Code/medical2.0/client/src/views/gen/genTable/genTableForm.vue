@@ -603,9 +603,6 @@ export default {
       getDictItemsByCode('showType').then((data) => {
         this.showType_GenTableColumn_List = data
       })
-      let interaction_search = {
-        params: []
-      }
     },
     setRowClassName({row, rowIndex}) {
       row.sort = (rowIndex + 1) * 10
