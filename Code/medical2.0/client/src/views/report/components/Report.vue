@@ -38,7 +38,7 @@
 
   import bus from '@/views/report/utils/bus'
   // Tiêm (inject) component báo cáo
-  import store from '@/store'
+  import '@/store'
   import { UxGrid } from 'umy-ui'
   Vue.use(window['vue-dataviewer']).use(UxGrid)
 

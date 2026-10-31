@@ -65,7 +65,7 @@
         this.newList=[];
 				this.loadMedicinalStorageList();
 			},
-			searchName(newVal, oldVal) {
+			searchName() {
 				this.filterList();
 			}
 		},

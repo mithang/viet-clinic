@@ -64,7 +64,7 @@
       handleToTop() {
         this.$emit('handleToTop')
       },
-      handleClick(e) {}
+      handleClick() {}
     }
 	}
 </script>

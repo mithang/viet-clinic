@@ -249,7 +249,7 @@ export default {
       this.manufactureFactoryTotal = responseData.data.total
       this.manufactureFactoryList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

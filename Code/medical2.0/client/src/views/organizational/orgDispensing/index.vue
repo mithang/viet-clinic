@@ -186,7 +186,7 @@ import DispensingForm from "./dispensingForm";
 import QueryForm from "@/views/components/queryForm";
 import MainUI from "@/views/components/mainUI";
 import OperationIcon from "@/components/OperationIcon";
-import { listDictItemAll } from "@/api/sys/dictItem";
+import "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { getOrganizationList,getAmount } from "@/api/stock/dispensing";
 import { BigNumber } from "bignumber.js";
@@ -483,7 +483,7 @@ export default {
       this.currentPage = val;
       this.init();
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.MEDICAL_TYPE).then((data) => {
         this.type_List = data;
       });

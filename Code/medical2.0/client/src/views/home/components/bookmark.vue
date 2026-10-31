@@ -127,7 +127,7 @@
       }
     },
     watch: {
-      $route(to, from) {
+      $route(to) {
         this.fly = false
         this.isFavorite(to.meta.routerId)
       },
@@ -323,27 +323,27 @@
         }
 
       },
-      handleCurrentSelect(key, keyPath) {
+      handleCurrentSelect() {
         this.$refs.moreMenu.close('2')
       },
-      handleMoreSelect(key, keyPath) {},
-      onCurrentAdd(e) {
+      handleMoreSelect() {},
+      onCurrentAdd() {
         const currentLast = this.collectList.pop()
         this.collectMoreList.unshift(currentLast)
       },
-      onMoreAdd(e) {
+      onMoreAdd() {
         const moreFirst = this.collectMoreList.shift()
         this.collectList.push(moreFirst)
       },
       // Bắt đầu kéo thả
-      onCurrentStart(e) {},
+      onCurrentStart() {},
       // Kết thúc kéo thả
-      onCurrentEnd(e) {
+      onCurrentEnd() {
         if (this.collectMoreList.length > 10) {
           this.initMoreList()
         }
       },
-      onSort(e) {
+      onSort() {
         const userId = this.getUserId()
         this.staticList = [...this.collectList, ...this.collectMoreList]
         updateCollect(userId, this.staticList).then(responseData => {
@@ -351,9 +351,9 @@
       },
 
       // Bắt đầu kéo thả
-      onMoreStart(e) {},
+      onMoreStart() {},
       // Kết thúc kéo thả
-      onMoreEnd(e) {},
+      onMoreEnd() {},
 
       deleteCollect(currentId) {
         const id = currentId? currentId : this.getCollectId()

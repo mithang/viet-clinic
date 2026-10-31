@@ -147,7 +147,7 @@ export default {
       this.memberItemTotal = responseData.data.total
       this.memberItemList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

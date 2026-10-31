@@ -241,7 +241,7 @@ export default {
           }
           this.isLoaded = true;
         })
-        .catch((error) => {
+        .catch(() => {
           this.isLoaded = true;
         });
     },

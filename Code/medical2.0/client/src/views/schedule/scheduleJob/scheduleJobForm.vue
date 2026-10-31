@@ -77,7 +77,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { saveScheduleJob,startTask,endTask,restartTask } from '@/api/schedule/scheduleJob'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -280,7 +280,7 @@ export default {
         this.$refs['scheduleJobForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -295,7 +295,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     openViewScheduleJobDialog(scheduleJob) {
       this.dialogProps.action = 'view'

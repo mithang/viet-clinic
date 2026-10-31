@@ -61,7 +61,7 @@
       }
     },
     methods: {
-      handleExceed(files, fileList) {
+      handleExceed() {
         this.$message.warning(`Giới hạn chỉ được chọn 1 tệp`)
       },
       submit() {

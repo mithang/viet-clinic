@@ -51,8 +51,8 @@
 
 <script>
   import { validatenull } from '@/utils/validate'
-  import { fileUploadById, deleteSysFile, listSysFileAll } from '@/api/sys/sysFile'
-  import { getPhotoById,getFiled } from "@/api/sys/sysSeting"
+import { listSysFileAll } from '@/api/sys/sysFile';
+import { getFiled } from "@/api/sys/sysSeting";
   import OperationIcon from '@/components/OperationIcon'
   import BaseUI from '@/views/components/baseUI'
   import { getLocalToken } from '@/utils/auth'
@@ -159,9 +159,9 @@
       }
       return new Blob([u8arr], { type: mime })
     },
-      onPreviewFile(file) {
+      onPreviewFile() {
       },
-      onExceedFile(file, fileList) {
+      onExceedFile() {
         this.$message.warning(`Hiện giới hạn tải lên 7 tệp`);
       },
       beforeRemoveFile(file, fileList) {
@@ -171,7 +171,7 @@
           this.$emit("beforeRemove",file,fileList)
         }
       },
-      fileSuccess(res, file){                 // Tải tệp lên thành công
+      fileSuccess(){                 // Tải tệp lên thành công
       },
       onChangeFileList(file, fileList) {
         this.fileList = fileList
@@ -252,7 +252,7 @@
       }
     },
     watch: {
-      'objectId'(newVal, oldVal) {
+      'objectId'() {
         if (!validatenull(this.objectId)) {
           this.getSysFileAll()
         }else{

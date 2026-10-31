@@ -85,7 +85,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { listCompanyAll } from '@/api/org/company'
 import { listRegistrationAll } from '@/api/outpatient/registration'
 import { listSupplierStockAll } from '@/api/stock/supplierStock'
@@ -165,7 +165,7 @@ export default {
         this.$refs['dispensingForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -186,7 +186,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let company_search = {
         params: []
       }

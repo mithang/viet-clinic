@@ -97,7 +97,7 @@
         this.setCardLoad(true)
         loadTree({}).then(responseData => {
           if(responseData.success) {
-            responseData.data.forEach((item, index) => {
+            responseData.data.forEach((item) => {
               this.reportList = [...item.children]
             })
             this.setCardLoad(false)

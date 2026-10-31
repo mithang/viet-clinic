@@ -128,7 +128,7 @@
         get() {
           return this.settings.style
         },
-        set(val) {}
+        set() {}
       },
 
       currentHeaderColor: {

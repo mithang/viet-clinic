@@ -192,7 +192,7 @@ export default {
       this.$emit('deletePanelItemEvent', this.panelId)
     },
     // Chọn một việc cần làm cụ thể
-    getMemorandum (memoItem) {
+    getMemorandum () {
     },
     // Nhấn vào ô lịch
     calendarOnClick(data) {

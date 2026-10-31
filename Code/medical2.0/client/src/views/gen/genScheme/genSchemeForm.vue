@@ -112,10 +112,10 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { generateCode } from '@/api/gen/genCode'
-import { listDictItemAll } from '@/api/sys/dictItem'
-import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
+import '@/api/sys/dictItem';
+import { getDictItemsByCode } from '@/utils/dictCache';
 import { listGenTableAll } from '@/api/gen/genTable'
 import { saveGenScheme } from '@/api/gen/genScheme'
 import BaseUI from '@/views/components/baseUI'
@@ -216,7 +216,7 @@ export default {
         this.$refs['genSchemeForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'name': '',   // Tên
         'category': {     // Phân loại mẫu
@@ -239,7 +239,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode('template').then((data) => {
         this.category_List = data
       })

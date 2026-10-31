@@ -352,7 +352,7 @@ pickerOptions: {
     })
   },
     methods: {
-      stateFormat(row, column) {
+      stateFormat(row) {
         if (row.fl ==="medicalType_0") {
           return 'Thuốc tây'
         }

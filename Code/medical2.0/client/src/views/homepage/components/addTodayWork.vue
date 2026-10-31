@@ -50,7 +50,7 @@
   </el-dialog>
 </template>
 <script>
-  import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
   import BaseUI from '@/views/components/baseUI'
   import OperationIcon from '@/components/OperationIcon'
   import propertyCustom from  '@/views/sys/propertySet/components/propertyCustom'
@@ -111,7 +111,7 @@
           this.$refs['addTodayWorkForm'].clearValidate()
         })
       },
-      initFormModel(This) {
+      initFormModel() {
         return {
           'name': '',   // Tên thiết bị
           'remarks': '',   // Thông tin ghi chú
@@ -120,9 +120,9 @@
           'toDade': null
         }
       },
-      initOptions(This) {
+      initOptions() {
       },
-      openAddGroupDeviceDialog(parent, type) {
+      openAddGroupDeviceDialog(parent) {
         this.dialogProps.action = 'add'
         this.dialogProps.title = 'Thêm lịch trình'
         this.bizFormModel = this.initFormModel(parent)

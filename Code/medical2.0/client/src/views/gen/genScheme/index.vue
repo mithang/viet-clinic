@@ -158,7 +158,7 @@ export default {
       this.genSchemeTotal = responseData.data.total
       this.genSchemeList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

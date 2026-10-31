@@ -6,11 +6,7 @@
 </template>
 
 <script>
-  import {
-    listSupplierPage,
-    getSupplierById,
-    listSupplierAll
-  } from "@/api/stock/supplier";
+import { listSupplierAll } from "@/api/stock/supplier";
   import BaseUI from "@/views/components/baseUI";
   export default {
     extends: BaseUI,

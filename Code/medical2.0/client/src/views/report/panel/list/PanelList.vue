@@ -114,7 +114,7 @@
         loadTree({}).then(responseData => {
           if(responseData.success) {
             let list = responseData.data
-            list.forEach((item, index) => {
+            list.forEach((item) => {
               this.reportList = [...this.reportList, ...item.children]
             })
           } else {
@@ -123,7 +123,7 @@
           this.resetPageLoad()
         })
       },
-      onStoreClick(row, column, event) {
+      onStoreClick(row) {
         this.isHighLight = 'store'
         this.currentRowIndex = row.rowIndex
         this.setPageLoad()
@@ -134,7 +134,7 @@
           this.resetPageLoad()
         })
       },
-      onShareClick(row, column, event) {
+      onShareClick(row) {
         this.isHighLight = 'share'
         this.setPageLoad()
         get('panel/group/findOne/' + row.id).then(response => {

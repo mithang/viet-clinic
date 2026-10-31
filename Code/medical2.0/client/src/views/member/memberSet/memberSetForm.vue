@@ -164,7 +164,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { getDictItemsByCode, DICT_CODE } from "@/utils/dictCache";
 import { listCompanyAll } from '@/api/org/company'
 import { saveMemberSet } from '@/api/member/memberSet'
@@ -343,7 +343,7 @@ export default {
         this.$refs['memberSetForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -362,7 +362,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       this.getType()
       this.getCostItem()
       this.memberData=[

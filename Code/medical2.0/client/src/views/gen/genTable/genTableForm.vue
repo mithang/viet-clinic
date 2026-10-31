@@ -363,9 +363,9 @@ import { validatenull } from '@/utils/validate'
 import StringMultiSelect from '@/components/StringMultiSelect'
 
 import { listGenTableAll } from '@/api/gen/genTable'
-import { listGenTableColumnAll } from '@/api/gen/genTableColumn'
-import { listDictItemAll } from '@/api/sys/dictItem'
-import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
+import '@/api/gen/genTableColumn';
+import '@/api/sys/dictItem';
+import { getDictItemsByCode } from '@/utils/dictCache';
 import { listGenSchemeAll } from '@/api/gen/genScheme'
 
 import { saveGenTable } from '@/api/gen/genTable'
@@ -541,7 +541,7 @@ export default {
       this.dialogProps.title = 'Sửa bảng nghiệp vụ'
       this.initOptions(this.bizFormModel)
     },
-    initFormModel(parent) {
+    initFormModel() {
       return {
         'name': '',   // Tên
         'comments': '',   // Giải thích
@@ -654,7 +654,7 @@ export default {
     },
     onFkChange(newValue) {
       if(newValue && newValue !== 'id') {
-        this.bizFormModel.genTableColumnList.forEach(function(item, index, array){
+        this.bizFormModel.genTableColumnList.forEach(function(item){
           if(item.name === newValue && item.javaType.value !== 'Custom') {
             item.javaType = {value: 'Custom', name:'Custom'}
             item.javaField = item.simpleJavaField + '.id|name'

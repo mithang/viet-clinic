@@ -204,7 +204,7 @@
 </template>
 
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { listMemberManagementPage, getMemberManagementById, deleteMemberManagement} from '@/api/member/memberManagement'
 import listViewMixin from '@/mixins/listViewMixin'
 import MemberManagementForm from './memberManagementForm'

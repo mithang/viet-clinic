@@ -243,7 +243,7 @@
 
 <script>
 import { validatenull } from '@/utils/validate'
-import { listMyTaskPage, saveMyTask, deleteMyTask } from '@/api/myTask/myTask'
+import { listMyTaskPage, saveMyTask } from '@/api/myTask/myTask';
 import { getClinicOfficeById, deleteClinicOffice } from '@/api/org/clinicOffice'
 import { listResourcePermission } from '@/api/admin/common/permission'
 import MyTask from "./myTask.vue"
@@ -255,7 +255,7 @@ import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 import UploadFile from '../../components/uploadFile.vue'
 import UploadFile1 from '../../components/uploadFile.vue'
-import { getPhotoById,getFiled } from "@/api/sys/sysSeting"
+import { getFiled } from "@/api/sys/sysSeting";
 export default {
   extends: MainUI,
   components: {
@@ -385,7 +385,7 @@ export default {
           this.executeDialogVisible=false
           this.resetLoad()
           this.flagsTask=false
-      }).catch((error)=>{
+      }).catch(()=>{
         this.$message.error("Thực hiện thất bại, vui lòng liên hệ quản trị viên để xử lý!")
         this.flagsTask=false
         this.resetLoad()
@@ -405,7 +405,7 @@ export default {
             this.getMyTaskList("1")
           }
           this.resetLoad()
-      }).catch((error)=>{
+      }).catch(()=>{
         this.flagsTask=false
         this.$message.error("Thực hiện thất bại, Vui lòng liên hệ quản trị viên xử lý!")
         this.resetLoad()
@@ -464,7 +464,7 @@ export default {
       }
     },
     //Thực hiện công việc
-    execute(row,index){
+    execute(row){
       this.fileIds=[]
       this.fileIdsTask=[]
       this.bizFormModel={
@@ -491,7 +491,7 @@ export default {
       this.executeDialogVisible = true
     },
     //Xem chi tiết
-    viewDetails(row,index){
+    viewDetails(row){
        this.fileIds=[]
       this.fileIdsTask=[]
       this.bizFormModel={
@@ -711,7 +711,7 @@ export default {
 
       this.getMyTaskList()
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

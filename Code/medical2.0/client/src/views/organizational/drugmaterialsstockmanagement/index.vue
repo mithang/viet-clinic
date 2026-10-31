@@ -392,7 +392,7 @@ pickerOptions: {
           },
 
 
-      stateFormat(row, column) {
+      stateFormat(row) {
         if (row.lx ==="stuffType_0") {
           return 'Vật tư y tế'
         }
@@ -411,7 +411,7 @@ pickerOptions: {
           return ''
         }
       },
-      shztFormat(row, column) {
+      shztFormat(row) {
         if (row.shzt ==="supplierStorageExamineStatus_0") {
           return 'Qua'
         }

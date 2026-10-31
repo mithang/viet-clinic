@@ -60,12 +60,12 @@
       },
       methods:{
         onEditorBlur(){},  // Sự kiện mất focus
-        onEditorFocus(event){
+        onEditorFocus(){
         }, // Sự kiện nhận focus
         onEditorChange(){  // Sự kiện nội dung thay đổi
 
         },
-        updateValue(value) {
+        updateValue() {
           this.$emit("input", this.content);
         },
       }

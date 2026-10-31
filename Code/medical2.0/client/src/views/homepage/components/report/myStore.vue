@@ -32,7 +32,7 @@
 <script>
   import { isLightOrDark } from '@/utils/common'
   import { get } from '@/api/report/panel/panel'
-  import { loadTree } from '@/api/report/panel/share'
+import '@/api/report/panel/share';
   import { deleteEnshrine, enshrineList } from '@/api/report/panel/enshrine'
   import { getPanelAllLinkageInfo } from '@/api/report/panel/linkage'
   import { queryPanelJumpInfo } from '@/api/report/panel/linkJump'

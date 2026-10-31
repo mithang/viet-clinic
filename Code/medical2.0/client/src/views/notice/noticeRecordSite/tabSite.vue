@@ -116,7 +116,7 @@
       handleClose(){
         this.contentVisible = false;
       },
-      onOpen(row,index){    //Nhấn liên kết để chuyển trang
+      onOpen(row){    //Nhấn liên kết để chuyển trang
         this.$nextTick(()=> {
           let msg = document.getElementById(this.activeName);         //Nội dung chính
           msg.innerHTML = row.siteContent;
@@ -164,7 +164,7 @@
             return false;
           }
       },*/
-      handleClick(tab, event) {
+      handleClick(tab) {
         if(tab.name !== "all"){
           tab.name === "unread" ? this.readStatus = "0":this.readStatus = "1";
           this.currentPage = 1;

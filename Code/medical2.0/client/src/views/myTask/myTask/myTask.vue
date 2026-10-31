@@ -294,7 +294,7 @@ export default {
         address: "", // Địa chỉ
       };
     },
-    initOptions(This) {
+    initOptions() {
       let company_search = {
         params: [],
       };

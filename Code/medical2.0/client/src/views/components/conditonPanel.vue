@@ -267,7 +267,7 @@ export default {
       }
     },
     'groupOne.0.value': {
-      handler(val, oldVal) {
+      handler(val) {
         if(val) {
           if(this.groupOne[0].column) {
               this.watchValueHandler(this.groupOne, 0)
@@ -276,7 +276,7 @@ export default {
       }
     },
     'groupOne.1.value': {
-      handler(val, oldVal) {
+      handler(val) {
         if(val) {
           if(this.groupOne[1].column) {
               this.watchValueHandler(this.groupOne, 1)
@@ -285,7 +285,7 @@ export default {
       }
     },
     'groupOne.2.value': {
-      handler(val, oldVal) {
+      handler(val) {
         if(val) {
           if(this.groupOne[2].column) {
               this.watchValueHandler(this.groupOne, 2)
@@ -294,7 +294,7 @@ export default {
       }
     },
     'groupTwo.0.value': {
-      handler(val, oldVal) {
+      handler(val) {
         if(val) {
           if(this.groupTwo[0].column) {
               this.watchValueHandler(this.groupTwo, 0)
@@ -303,7 +303,7 @@ export default {
       }
     },
     'groupTwo.1.value': {
-      handler(val, oldVal) {
+      handler(val) {
         if(val) {
           if(this.groupTwo[1].column) {
               this.watchValueHandler(this.groupTwo, 1)
@@ -312,7 +312,7 @@ export default {
       }
     },
     'groupTwo.2.value': {
-      handler(val, oldVal) {
+      handler(val) {
         if(val) {
           if(this.groupTwo[2].column) {
               this.watchValueHandler(this.groupTwo, 2)
@@ -425,7 +425,7 @@ export default {
     },
     init() {
       this.setLoad()
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         columnQuery(this.schemeId, this.tableId, this.exclude).then(responseData => {
           if(responseData.code === 100) {
             this.columns = responseData.data

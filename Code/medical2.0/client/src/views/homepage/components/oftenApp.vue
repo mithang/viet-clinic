@@ -54,7 +54,7 @@ export default {
     ...Vuex.mapGetters(['settings', 'menus']),
     routers() {
       return function () {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           let items = [];
           let routers = getLocalRouters()
           // Tăng trải nghiệm người dùng
@@ -107,7 +107,7 @@ export default {
       this.isCardLoading = true
       this.routers().then(result => {
         this.isCardLoading = false
-        result.forEach((item, index) => {
+        result.forEach((item) => {
           if (!item.code && (item.parentId === '0' || item.parentId === '')) {
             this.appLists.push(item)
           }

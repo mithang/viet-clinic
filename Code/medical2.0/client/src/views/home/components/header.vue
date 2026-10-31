@@ -312,10 +312,10 @@ import {
 } from "@/utils/auth";
 import { routerTree, handleFamily } from "@/utils/routerTree";
 import {getUserIndateWarning} from "@/api/admin/router";
-import backImg from "@/assets/images/KCI8nCoKFf.jpg";
+import "@/assets/images/KCI8nCoKFf.jpg";
 
 const _import = require("@/router/_import_" + process.env.NODE_ENV);
-import axios from 'axios'
+import 'axios';
 
 export default {
   name: "NavHeader",
@@ -352,7 +352,7 @@ export default {
       this.$alert("Tài khoản này chưa được phân quyền, vui lòng liên hệ quản trị viên!", "", {
         confirmButtonText: "Đã biết",
         type: "warning",
-        callback: (action) => {},
+        callback: () => {},
       });
     }
     getUserById(this.currentUser.id).then(res => {
@@ -385,7 +385,7 @@ export default {
     "$store.state.notices.stuffInventoryWarningTotal"(val){
       this.stuffIndateWarningTotal = val+this.$store.state.notices.stuffIndateWarningTotal
     },
-    "settings.size"(val, old) {
+    "settings.size"(val) {
       if (val) {
         this.sizeKey += 1;
       }
@@ -460,7 +460,7 @@ export default {
     // ✅ Thêm mới: Cập nhật dữ liệu router đã cache
     updateCachedRouters() {
       let routers = [];
-      this.routers.forEach((item, index) => {
+      this.routers.forEach((item) => {
         if (!item.code && (item.parentId === '0' || item.parentId === '')) {
           routers.push(item);
         }
@@ -696,7 +696,7 @@ export default {
       this.$nextTick(() => {
         const menus = [...this.$refs.menuUl.$el.children || []];
         let menuUlWidth = 0;
-        menus.forEach((item, index) => {
+        menus.forEach((item) => {
           menuUlWidth += item.offsetWidth;
         });
         const width = document.body.getBoundingClientRect().width;

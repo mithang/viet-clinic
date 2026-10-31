@@ -56,7 +56,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { saveClinicVersion } from '@/api/clinic/clinicVersion'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -140,7 +140,7 @@ export default {
         this.$refs['clinicVersionForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'name': '',   // Tên phiên bản
         'code': '',   // Mã phiên bản
@@ -150,7 +150,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     openViewClinicVersionDialog(clinicVersion) {
       this.dialogProps.action = 'view'

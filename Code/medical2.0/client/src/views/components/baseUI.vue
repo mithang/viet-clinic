@@ -51,7 +51,7 @@ export default {
       let groupTwo = []
 
       if(moreParm.groupOne) {
-        moreParm.groupOne.forEach((item, index) => {
+        moreParm.groupOne.forEach((item) => {
           if(item.column && item.queryType && item.value && (!(item.value instanceof Array) || (item.value instanceof Array && item.value.length > 0))) {
             if(groupOne.length === 0) {
               groupOne.push({logic: '', columnName: item.column.name, queryType: item.queryType, value: item.value})
@@ -62,7 +62,7 @@ export default {
         })
       }
       if(moreParm.groupTwo) {
-        moreParm.groupTwo.forEach((item, index) => {
+        moreParm.groupTwo.forEach((item) => {
           if(item.column && item.queryType && item.value && (!(item.value instanceof Array) || (item.value instanceof Array && item.value.length > 0))) {
             if(groupTwo.length === 0) {
               groupTwo.push({logic: '', columnName: item.column.name, queryType: item.queryType, value: item.value})
@@ -207,7 +207,7 @@ export default {
     }
   },
   watch: {
-    loadcount: function(val, oldVal) {
+    loadcount: function(val) {
       if(val === 0) {
         this.isAlert = false
       }

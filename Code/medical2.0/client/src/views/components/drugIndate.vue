@@ -211,7 +211,7 @@ export default {
             row ? this.expands.push(row.id) : ''
             }
         },
-        handleClick(tab, event){  //tabChuyển trang
+        handleClick(tab){  //tabChuyển trang
             if(tab.name!=='all'){
                 if(tab.name === 'drugIndate'){
                     this.currentPage =1

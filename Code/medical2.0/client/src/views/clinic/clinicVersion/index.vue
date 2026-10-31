@@ -331,7 +331,7 @@ export default {
     initOptions() {},
   },
   watch: {
-    clinicVersionList(val) {
+    clinicVersionList() {
       this.$nextTick(() => {
         if (this.$refs.mutipleTable) {
           this.$refs.mutipleTable.doLayout();

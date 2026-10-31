@@ -163,7 +163,7 @@ export default {
       this.genTableTotal = responseData.data.total
       this.genTableList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     },
     checkFile() {
       document.querySelector('#fileinput').click()

@@ -156,7 +156,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from "@/utils/validate";
+import "@/utils/validate";
 import { saveManufactureFactory } from "@/api/basicdata/manufactureFactory";
 import BaseUI from "@/views/components/baseUI";
 import OperationIcon from "@/components/OperationIcon";
@@ -244,7 +244,7 @@ export default {
         this.$refs["manufactureFactoryForm"].clearValidate();
       });
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         company: {
           // Phòng khámid
@@ -261,7 +261,7 @@ export default {
         remarks: "", // Thông tin ghi chú
       };
     },
-    initOptions(This) {},
+    initOptions() {},
     // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện
     onChangeProvince(data) {
       this.province = data.value;

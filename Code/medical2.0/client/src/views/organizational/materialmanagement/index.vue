@@ -331,7 +331,7 @@ pickerOptions: {
     })
   },
     methods: {
-      stateFormat(row, column) {
+      stateFormat(row) {
         if (row.fl ==="stuffType_0") {
           return 'Vật tư y tế'
         }

@@ -116,7 +116,7 @@ export default {
       })
     },
     // drag_table được gọi khi render tiêu đề bảng
-    renderHeader (h, { column, $index }) {
+    renderHeader (h, { column }) {
       // Có thể sửa đổi theo nhu cầu dựa trên giá trị $index,
       return h('span', {
           'class': ['thead-cell'],
@@ -263,12 +263,12 @@ export default {
     },
 
     // Thêm class động cho ô tiêu đề bảng, tạo hiệu ứng đường nét đứt khi đang kéo
-    headerCellClassName ({ column, columnIndex }) {
+    headerCellClassName ({ columnIndex }) {
       return columnIndex === this.getShowIndex(this.dragState.afterMoveIndex) ? `drag_active_${this.dragState.direction}` : ''
     },
 
     // Thêm class động cho th ô tiêu đề bảng, tạo nền khi đang kéo
-    cellClassName ({ column, columnIndex }) {
+    cellClassName ({ columnIndex }) {
        return (columnIndex === this.dragState.startShowIndex ? `dragging_column` : '')
     },
 
@@ -284,7 +284,7 @@ export default {
     },
 
     /* Sự kiện đáp ứng khoảng cách biên cột kéo */
-    onChangeWidth(newWidth, oldWidth, column, event) {
+    onChangeWidth(newWidth, oldWidth, column) {
       if(column.columnKey) {
         this.columnViews[column.columnKey].width = newWidth
         this.saveColumn(this.columnViews[column.columnKey])

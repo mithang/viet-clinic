@@ -153,7 +153,7 @@ export default {
       this.noticeSendTotal = responseData.data.total
       this.noticeSendList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

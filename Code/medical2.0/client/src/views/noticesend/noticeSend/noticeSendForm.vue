@@ -118,7 +118,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { saveNoticeSend } from '@/api/noticesend/noticeSend'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -161,7 +161,7 @@ export default {
   },
   watch: {
     'bizFormModel.isSite':{     // Tin nhắn trong hệ thống
-      handler(newValue,old){
+      handler(newValue){
         if(newValue === "0"){
           this.bizFormModel.siteContent = "";
           this.$refs.editorSite.content = "";
@@ -169,7 +169,7 @@ export default {
       }
     },
     'bizFormModel.isEmail':{     // Tin nhắn email
-      handler(newValue,old){
+      handler(newValue){
         if(newValue === "0"){
           this.bizFormModel.emailContent = "";
           this.$refs.editorEmail.content = "";
@@ -177,14 +177,14 @@ export default {
       }
     },
     'bizFormModel.isWechat':{     // Tin nhắn WeChat
-      handler(newValue,old){
+      handler(newValue){
         if(newValue === "0"){
           this.bizFormModel.wechatContent = "";
         }
       }
     },
     'bizFormModel.isSms':{        // Tin nhắn SMS
-      handler(newValue,old){
+      handler(newValue){
         if(newValue === "0"){
           this.bizFormModel.smsContent = "";
         }
@@ -238,7 +238,7 @@ export default {
         this.$refs['noticeSendForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'senderId': currentUser.id,   // Id người gửi tin nhắn
         'title': '',   // Tiêu đề

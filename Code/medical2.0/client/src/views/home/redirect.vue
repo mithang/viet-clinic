@@ -6,7 +6,7 @@
 export default {
   name: 'Redirect',
   beforeCreate() {
-    const { params, query } = this.$route
+    const { query } = this.$route
     const { to } = query
 
     // Nếu có tham số to, chuyển đến đường dẫn chỉ định

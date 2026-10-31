@@ -608,7 +608,7 @@
 
 <script>
 import MainUI from "@/views/components/mainUI";
-import {listDictItemAll} from "@/api/sys/dictItem";
+import "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import {getjglist, listTollInfoAll, orgtollDetailForm} from "@/api/toll/tollInfo";
 import {listUserAll} from "@/api/admin/user";
