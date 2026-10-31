@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'Redirect',
+  name: 'HomeRedirect',
   beforeCreate() {
     const { query } = this.$route
     const { to } = query

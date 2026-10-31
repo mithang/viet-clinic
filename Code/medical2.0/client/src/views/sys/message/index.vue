@@ -72,7 +72,7 @@
 
 <script>
     export default {
-      name: 'tabs',
+      name: 'MessageTabs',
       data() {
         return {
           message: 'first',

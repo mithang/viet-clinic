@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'redirect',
+  name: 'RedirectPage',
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.$router.replace(from.path)

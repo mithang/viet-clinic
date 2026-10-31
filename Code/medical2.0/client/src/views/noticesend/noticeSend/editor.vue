@@ -22,7 +22,7 @@
             default: true
           }
         },
-        name: "editor",
+        name: "NoticeEditor",
         components:{quillEditor},
         data(){
           return{

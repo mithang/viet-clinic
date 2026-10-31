@@ -8,7 +8,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 export default {
 
-name: 'Editor',
+name: 'ArticleEditor',
 props: {
 
 /* Nội dung của trình soạn thảo */

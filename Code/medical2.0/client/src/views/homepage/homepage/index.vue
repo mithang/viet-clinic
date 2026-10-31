@@ -29,7 +29,7 @@
 <script>
 import { getLocalCurrentUser } from '@/utils/auth'
 export default {
-  name: 'Home',
+  name: 'HomepageView',
   data() {
     return {
       currentUser: {}
