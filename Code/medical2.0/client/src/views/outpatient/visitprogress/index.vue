@@ -277,7 +277,7 @@ selectvisiprogresslist(this.visitprogresspara).then((responseData)=>{
         case "registrationStatus_5":
           item.jzzt="Chờ phân loại khám"
           break;
-      };
+      }
       switch(item.jzlx){
         case "treatType_0":
           item.jzlx="Khám lần đầu"
@@ -285,7 +285,7 @@ selectvisiprogresslist(this.visitprogresspara).then((responseData)=>{
           case "treatType_1":
           item.jzlx="Tái khám"
           break;
-      };
+      }
           let birthday = item.sr;
           if (birthday) {
                 const duration = moment.duration(moment().diff(birthday));

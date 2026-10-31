@@ -285,7 +285,7 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
     countDown(row,index) {
      if( !this.setIntervaltime.length>0){
         this.setIntervaltime = new Array(this.tableData.length);
-     };
+     }
       clearInterval(this.setIntervaltime[index]);
     // acceptanceOverTime là thời hạn chót backend trả về
       if(row.sttime >0 ){

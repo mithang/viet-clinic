@@ -293,7 +293,7 @@
           this.bizFormModel.month = ""
           return
         }
-        ;
+        
         const duration = this.$moment.duration(this.$moment().diff(this.bizFormModel.birthday));
         this.bizFormModel.age = duration.years();
         this.bizFormModel.month = duration.months();

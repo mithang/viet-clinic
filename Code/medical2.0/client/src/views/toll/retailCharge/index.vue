@@ -1165,7 +1165,7 @@ export default {
                 this.bizFormModel.age="";
                 this.bizFormModel.month=""
                 return
-                };
+                }
             const duration =  this.$moment.duration(this.$moment().diff(this.bizFormModel.birthday));
             this.bizFormModel.age = duration.years();
             this.bizFormModel.month = duration.months();
@@ -1174,7 +1174,7 @@ export default {
                 this.stuffBizFormModel.age="";
                 this.stuffBizFormModel.month=""
                 return
-                };
+                }
             const stuffation =  this.$moment.duration(this.$moment().diff(this.stuffBizFormModel.birthday));
             this.stuffBizFormModel.age = stuffation.years();
             this.stuffBizFormModel.month = stuffation.months();

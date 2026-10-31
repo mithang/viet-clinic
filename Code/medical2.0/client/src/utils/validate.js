@@ -101,7 +101,7 @@ export function isMobileNumber (rule, value, callback) {
   } else {
     callback();
   }
-};
+}
 
 /**
  * Ký tự không hợp lệ
