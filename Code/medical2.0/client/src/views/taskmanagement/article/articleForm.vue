@@ -157,16 +157,6 @@ export default {
   },
   props: ["closeValue"],
   data() {
-    const validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("Vui lòng nhập nội dung"));
-      } else {
-        if (this.articleForm.content !== "") {
-          this.$refs.articleForm.validateField("content");
-        }
-        callback();
-      }
-    };
     return {
       dialogProps: {
         visible: false,
@@ -204,7 +194,7 @@ export default {
     };
   },
   methods: {
-    tableRowClassName({ row, rowIndex }) {
+    tableRowClassName({ rowIndex }) {
       if (rowIndex === 1) {
         return "warning-row";
       } else if (rowIndex === 3) {

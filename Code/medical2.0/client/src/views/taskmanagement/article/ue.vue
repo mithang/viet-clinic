@@ -132,7 +132,7 @@ if(editoroption!=null){
 this.Quill = new Quill(editor, this.options);
 
 this.Quill.pasteHTML(this.currentValue)
-this.Quill.on('text-change', (delta, oldDelta, source) => {
+this.Quill.on('text-change', () => {
 
 const html = this.$refs.editor.children[0].innerHTML
 const text = this.Quill.getText()

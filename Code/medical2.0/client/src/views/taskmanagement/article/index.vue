@@ -247,7 +247,7 @@ export default {
         this.loadData()
     },
 
-    getcontenttext(evt) {
+    getcontenttext() {
       // let reft=await  this.$refs.quilleditorref;
       // this.content=reft.handleGetHtml();
     },
