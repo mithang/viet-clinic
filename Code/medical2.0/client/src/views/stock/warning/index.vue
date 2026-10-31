@@ -45,14 +45,9 @@
 </template>
 
 <script>
-import { validatenull } from "@/utils/validate";
 import MainUI from "@/views/components/mainUI";
 import drugWarning from "./components/drugWarning";
 import stuffWarning from "./components/stuffWarning"
-import {listSupplierAll} from "@/api/stock/supplier"
-import { listDictItemAll } from "@/api/sys/dictItem";
-import { BigNumber } from "bignumber.js";
-import { getDrug,getDrugSalesStat,getBatchNumberDrug,getStuff,getStuffSalesStat,getBatchNumberStuff} from "@/api/stock/currentInventory";
 
 export default {
   extends: MainUI,
@@ -79,7 +74,7 @@ export default {
         this.dispensingTotal = total
     },
 
-    handleClick(tab, event){
+    handleClick(tab){
         this.activeName = tab.name
     },
 

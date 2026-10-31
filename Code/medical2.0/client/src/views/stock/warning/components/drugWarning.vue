@@ -300,9 +300,7 @@
 import { validatenull } from "@/utils/validate";
 import MainUI from "@/views/components/mainUI";
 import {listSupplierAll} from "@/api/stock/supplier"
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
-import { BigNumber } from "bignumber.js";
 import {getDrugIndateWarning,getDrugInventoryWarning,exportTable} from "@/api/stock/warning";
 export default {
   extends: MainUI,
@@ -675,7 +673,7 @@ export default {
 
     //Lấy tổng cộng
     getTotal(param){
-      let { columns, data } = param;
+      let { columns } = param;
       let arr = []
       columns.forEach((column, index) => {
           if (index === 0) {
@@ -765,7 +763,7 @@ export default {
         })
     },
 
-    handleClick(tab, event){
+    handleClick(tab){
         this.type = tab.name
     },
     changStatus(){
@@ -777,10 +775,10 @@ export default {
     },
   },
   watch: {
-    drugActiveName:function(newVal,oldVal){
+    drugActiveName:function(newVal){
           this.tabPosition = newVal
     },
-    getSizeChange:function(newVal,oldVal){
+    getSizeChange:function(newVal){
       this.sizeChange = newVal
       this.currentPage = 1
 
@@ -794,7 +792,7 @@ export default {
         this.inventoryInit()
       }
     },
-    getCurrentPage:function(newVal,oldVal){
+    getCurrentPage:function(newVal){
 
       this.currentPage = newVal
 
@@ -807,7 +805,7 @@ export default {
       }
     },
     tabPosition:{
-      handler(newVal,oldVal){
+      handler(newVal){
         this.tabPosition = newVal
         if(this.tabPosition==='0'){
           this.currentPage = 1
