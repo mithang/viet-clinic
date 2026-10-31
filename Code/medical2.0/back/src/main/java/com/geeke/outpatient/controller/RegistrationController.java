@@ -94,7 +94,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson(res));
     }
 
-    // Hủy đăng ký (退号): frontend gọi POST với params
+    // Hủy đăng ký (trảsố): frontend gọi POST với params
     // (api/outpatient/registration.js: refundRegistrationPay dùng method
     // 'post'), nhưng trước đây backend chỉ có @GetMapping nên Spring trả
     // 405 "Phương thức không hỗ trợ: POST". Giữ GET cho các caller cũ,

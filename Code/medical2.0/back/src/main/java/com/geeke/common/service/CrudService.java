@@ -162,8 +162,8 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * tenantqualọc兜底: NếuTham số trong Không có company_id, thìtự độnginjectHiện tạiĐăng nhậptenant của  company_id
-	 * chỉđối vớithực thểLớpbản thânkhai báorồi company Trường của nghiệp vụthực thểsinh效(排除chỉTừ  DataEntity kế thừa của Hệ thốngthực thể)
+	 * tenantqualọcdự phòng: NếuTham số trong Không có company_id, thìtự độnginjectHiện tạiĐăng nhậptenant của  company_id
+	 * chỉđối vớithực thểLớpbản thânkhai báorồi company Trường của nghiệp vụthực thểsinhhiệu lực(xếptrừchỉTừ  DataEntity kế thừa của Hệ thốngthực thể)
 	 * @param parameters Danh sách tham số truy vấn
 	 */
 	protected void ensureCompanyFilter(List<Parameter> parameters) {
@@ -180,9 +180,9 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			logger.debug("ensureCompanyFilter check failed: {}", e.getMessage());
 			return;
 		}
-		// Loại bỏ ở frontendtruyền vào của  company_id, Tránh越权Truy vấn/thao táccủa nónótenantDữ liệu(IDOR)
+		// Loại bỏ ở frontendtruyền vào của  company_id, Tránhvượt quyềnTruy vấn/thao táccủa nónótenantDữ liệu(IDOR)
 		Parameter.extractAndRemoveCompanyId(parameters);
-		// thống nhấtbằng[phiênĐăng nhậptenant]làm là cách ly边界,  và  verifyTenantOwnership Giữ nhất quán
+		// thống nhấtbằng[phiênĐăng nhậptenant]làm là cách lybênranh giới,  và  verifyTenantOwnership Giữ nhất quán
 		String tenantId = SessionUtils.getLoginTenantId();
 		if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
 			parameters.add(new Parameter("company_id", "=", tenantId));
@@ -200,7 +200,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 			return;
 		}
 		String tenantId = SessionUtils.getLoginTenantId();
-		// vượtquản lý / 哨兵(tenantId  là trống hoặc  "null")khônggiới hạn
+		// vượtquản lý / sentinel(tenantId  là trống hoặc  "null")khônggiới hạn
 		if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
 			return;
 		}
@@ -211,7 +211,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		// Phòng khámcấpDữ liệucách ly: nghiệp vụDữ liệuchỉthuộctạiĐăng nhậpPhòng khámbản thân(Với danh sách ensureCompanyFilter  của chính xác company_id Nhất quán). 
 		if (!tenantId.equals(entityCompanyId)) {
 			// Cơ sởtừ điển dùng chungthực thể(Thuốc/vật tư tiêu hao/Chi phíhạng mục v.v. , Danh sách SQL  là  company_id=#{id} or #{institution}): 
-			// cho phéptruy cậpthuộc về"Cơ sởPhòng khám"(cùng parent dưới is_institution=1) Dữ liệu của, Với danh sáchcó thể见范围Giữ nhất quán
+			// cho phéptruy cậpthuộc về"Cơ sởPhòng khám"(cùng parent dưới is_institution=1) Dữ liệu của, Với danh sáchcó thểthấyphạmviGiữ nhất quán
 			if (isInstitutionShared()) {
 				String institution = companyService.getInstitution(tenantId);
 				if (StringUtils.isNotBlank(institution) && institution.equals(entityCompanyId)) {
@@ -224,8 +224,8 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
 	/**
 	 * thực thểCó hay không là "Cơ sởtừ điển dùng chung"(Dữ liệu cơ bản theo phòng khám của cơ sở được chia sẻ cho các phòng khám thuộc cùng cơ sở). 
-	 * Mặc định false(nghiệp vụDữ liệu严ôPhòng khámcấpcách ly); chỉtừ điểnLớp Service(Drug/Stuff/CostItem  v.v. )viết lại là  true, 
-	 *  và của nóDanh sách SQL(company_id = #{id} or company_id = #{institution}) của có thể见范围Giữ nhất quán. 
+	 * Mặc định false(nghiệp vụDữ liệunghiêmôPhòng khámcấpcách ly); chỉtừ điểnLớp Service(Drug/Stuff/CostItem  v.v. )viết lại là  true, 
+	 *  và của nóDanh sách SQL(company_id = #{id} or company_id = #{institution}) của có thểthấyphạmviGiữ nhất quán. 
 	 */
 	protected boolean isInstitutionShared() {
 		return false;
@@ -253,7 +253,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	/**
 	 * Xây dựng yêu cầu phân trang kèm thông tin tenant(kèm phúttrangTham số)
 	 * @param parameters Tham số truy vấn
-	 * @param offset 偏移lượng
+	 * @param offset độ lệchlượng
 	 * @param limit mỗitrangSố lượng
 	 * @param orderby Sắp xếp
 	 * @return PageRequest
@@ -416,7 +416,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
-	 * conbảngđồng bộ: so với较cũDanh sách và mớiDanh sách, hành nghề dòngXóa, Cập nhật, Thêm mớithao tác
+	 * conbảngđồng bộ: so vớisocũDanh sách và mớiDanh sách, hành nghề dòngXóa, Cập nhật, Thêm mớithao tác
 	 * @param oldList cũDữ liệuDanh sách
 	 * @param newList mớiDữ liệuDanh sách
 	 * @param childDao Bảng conDAO
@@ -429,7 +429,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		List<E> toInsert = new java.util.ArrayList<>();
 		List<E> toUpdate = new java.util.ArrayList<>();
 
-		// dùng Set Bộ nhớ đệm newList  của  ID, Sẽ  O(n*m) 降 là  O(n+m)
+		// dùng Set Bộ nhớ đệm newList  của  ID, Sẽ  O(n*m) giảm là  O(n+m)
 		java.util.Set<String> newIds = new java.util.HashSet<>();
 		for (E newItem : newList) {
 			if (newItem instanceof DataEntity) {

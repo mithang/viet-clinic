@@ -123,7 +123,7 @@ public class Ypjxc {
     private Integer zj;
     private String zxdw;
     /**
-     * 猜测 giờ Đơn thuốcChi tiếtsử dụng ngàysố mục từ điển của name(nàyCáitừ điển của name có Số)
+     * đoánđo giờ Đơn thuốcChi tiếtsử dụng ngàysố mục từ điển của name(nàyCáitừ điển của name có Số)
      */
     private String dw;
 

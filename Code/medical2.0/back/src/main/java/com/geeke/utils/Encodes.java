@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 /**
  * đóng góiđủ loạiđịnh dạng của MãGiải mãLớp công cụ.
  * 1.Commons-Codec của  hex/base64 Mã
- * 2.tự制 của base62 Mã
+ * 2.tựchế của base62 Mã
  * 3.Commons-Lang của xml/html escape
  * 4.JDKcung cấp của URLEncoder
  * @author calvin
@@ -63,7 +63,7 @@ public class Encodes {
 	}
 
 //	/**
-//	 * Base64Mã, URLan toàn(Sẽ Base64TrongURLkhông phảiphương phápchữký tự'+' và '/'chuyển là '-' và '_', 见RFC3548).
+//	 * Base64Mã, URLan toàn(Sẽ Base64TrongURLkhông phảiphương phápchữký tự'+' và '/'chuyển là '-' và '_', thấyRFC3548).
 //	 */
 //	public static String encodeUrlSafeBase64(byte[] input) {
 //		return Base64.encodeBase64URLSafe(input);

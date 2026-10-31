@@ -19,7 +19,7 @@ public class ScreenService{
     @Autowired
     private ScreenDao screenDao;
 
-    /** Lấylớn屏cơ bảnDữ liệu */
+    /** Lấylớnmàn hìnhcơ bảnDữ liệu */
     public Basics getBasics(String parentId) {
         Basics basics = new Basics();
         basics.setQuest(screenDao.getQuest(parentId));

@@ -1,7 +1,7 @@
 package com.geeke.common.service;
 
 /**
- * Servicetầng公dùng của Exception, Từ doSpringKhi ném ra trong hàm quản lý giao dịch sẽ kích hoạt rollback giao dịch.
+ * Servicetầngchungdùng của Exception, Từ doSpringKhi ném ra trong hàm quản lý giao dịch sẽ kích hoạt rollback giao dịch.
  * @author lys
  */
 public class ServiceException extends RuntimeException {

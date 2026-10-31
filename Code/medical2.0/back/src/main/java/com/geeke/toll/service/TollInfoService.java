@@ -138,7 +138,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     /**
      * Sẽ  SearchParams Chuyển đổi thành PageRequest
-     * 简hóabáo cáoTruy vấnPhương thứcTrongtrùng lặpmã
+     * đơn giảnhóabáo cáoTruy vấnPhương thứcTrongtrùng lặpmã
      */
     private PageRequest toPageRequest(SearchParams searchParams) {
         return new PageRequest(searchParams.getOffset(), searchParams.getLimit(),
@@ -242,7 +242,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * Kiểm trakiểm kêTrạng thái: kiểm kê trong 禁dừngThu phí/hoàn phíthao tác
+     * Kiểm trakiểm kêTrạng thái: kiểm kê trong cấmdừngThu phí/hoàn phíthao tác
      */
     private void validateInventoryNotInProgress(String companyId, String amountStatus) {
         List<InventoryVerification> inventoryVerifications = inventoryVerificationService.getByCompanyId(companyId);
@@ -484,25 +484,25 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * khámtrị liệuĐơn thuốchoàn phíKiểm tra: Kiểm trahành nghề dòngTrạng thái và Xét nghiệm và kiểm trabáo告
+     * khámtrị liệuĐơn thuốchoàn phíKiểm tra: Kiểm trahành nghề dòngTrạng thái và Xét nghiệm và kiểm trabáocáo
      */
     private void validateRefundForTreatmentRecipel(RecipelInfo recipelInfo) {
         List<RecipelDetail> recipelDetails = recipelDetailService.getByRecipelInfoId(recipelInfo.getId());
         for (RecipelDetail recipelDetail : recipelDetails) {
             if (recipelDetail.getExecutions().compareTo(BigDecimal.valueOf(0)) != 0) {
-                throw new ServiceException("hạng mục khám chữa bệnhĐãhành nghề dòng划扣, Không thể hoàn phí!");
+                throw new ServiceException("Hạng mục khám chữa bệnh đã thực hiện khấu trừ, không thể hoàn phí!");
             }
         }
         List<InspectionCheck> inspectionChecks = inspectionCheckService.getByRecipelInfoId(recipelInfo.getId());
         for (InspectionCheck inspectionCheck : inspectionChecks) {
             if ("1".equals(inspectionCheck.getStatus())) {
-                throw new ServiceException("Xét nghiệm và kiểm trabáo告Đãđiền, Không thể hoàn phí!");
+                throw new ServiceException("Xét nghiệm và kiểm tra đã có báo cáo, không thể hoàn phí!");
             }
         }
         inspectionCheckService.deleteByRecipelInfoId(recipelInfo.getId());
     }
 
-    //LưuXét nghiệm检测
+    //LưuXét nghiệmkiểmđo
     @Transactional(readOnly = false)
     public void addInspectionCheck(RecipelInfo recipelInfo) {
         //QuaĐơn thuốcid, điLấyhạng mục khám chữa bệnh
@@ -519,7 +519,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
-     * LưuXét nghiệm và kiểm traBản ghi(hợpvàXét nghiệm và Kiểm tra của 公Tổng logic)
+     * LưuXét nghiệm và kiểm traBản ghi(hợpvàXét nghiệm và Kiểm tra của chungTổng logic)
      */
     private void saveInspectionCheck(RecipelInfo recipelInfo, CostItem costItem, String type) {
         //Theođăng kýThông tinLấyThông tin bệnh nhân
@@ -652,7 +652,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             for (RecipelDetail recipelDetail : recipelInfoEvt.getRecipelDetailEvtList()) {
                 recipelDetail.setRecipelInfo(recipelInfo);
                 recipelDetail.setCompany(recipelInfo.getCompany());
-                //mụctrướcchỉ考虑Thuốc
+                //mụctrướcchỉkiểm traxem xétThuốc
                 DrugStuffEvt drugStuffEvt = new DrugStuffEvt();
                 if(Objects.equals("4",recipelDetail.getStuffType())){
                     Stuff stuff = stuffService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
@@ -1194,7 +1194,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                         new ExcelExportBuilder.Column("tổngSố tiền( đồng)", "grossAmount"),
                         new ExcelExportBuilder.Column("Phí đăng ký khám( đồng)", "registrationCost"),
                         new ExcelExportBuilder.Column("Tâythuốcphí( đồng)", "westCost"),
-                        new ExcelExportBuilder.Column(" trong 草thuốcphí( đồng)", "chineseCost"),
+                        new ExcelExportBuilder.Column("Trong đó tiền thuốc Đông y (đồng)", "chineseCost"),
                         new ExcelExportBuilder.Column(" trong thànhthuốcphí( đồng)", "chinesePatentCost"),
                         new ExcelExportBuilder.Column("Phí vật tư( đồng)", "stuffCost"),
                         new ExcelExportBuilder.Column("Xét nghiệmphí( đồng)", "examinesCost"),
@@ -1283,7 +1283,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     /**
      * Ánh xạ chi tiết chi phí theo loại sang trường tương ứng của đối tượng thống kê
-     * Xóa bỏ getWorkload/getWorkLoadStat/getdoctorDetailstatistics  trong trùng lặp của  if-else 链
+     * Xóa bỏ getWorkload/getWorkLoadStat/getdoctorDetailstatistics  trong trùng lặp của  if-else chuỗi
      *
      * @param items Chi phíChi tiếtDanh sách(mỗihạng mụcbao gồm types  và  temporaryCost)
      * @param setter Loại→Chi phí  của Đặtcallback

@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * ExcelNhậpTrườngánh xạannotation
- * 标注thực thểTrường và  Excel Cột của ánh xạquan hệ
+ * tiêuchúthực thểTrường và  Excel Cột của ánh xạquan hệ
  *
  * <p>Ví dụ sử dụng:</p>
  * <pre>{@code

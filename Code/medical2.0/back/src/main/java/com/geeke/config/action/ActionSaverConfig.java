@@ -19,7 +19,7 @@ public class ActionSaverConfig {
 	private boolean enableMq;		// Có bật khôngmq
 
 	/**
-	 * spring.rabbitmq.enable=true giờ, Bậtthông báo队Cộtnhập kho; =false giờ, trực tiếpnhập kho
+	 * spring.rabbitmq.enable=true giờ, Bậtthông báohàng đợiCộtnhập kho; =false giờ, trực tiếpnhập kho
 	 * @return
 	 */
 	@Bean(name = "actionSaver")

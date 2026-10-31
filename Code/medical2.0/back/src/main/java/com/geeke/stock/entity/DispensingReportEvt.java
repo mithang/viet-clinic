@@ -51,7 +51,7 @@ public class DispensingReportEvt {
     private BigDecimal packagePrice;
     //bán hàngtổng giá
     private BigDecimal priceTotal;
-    //利润
+    //lợi nhuận
     private BigDecimal profit;
     //Nhà sản xuất
     private String factory;

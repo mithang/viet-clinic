@@ -209,7 +209,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
 
         if (CollectionUtils.isEmpty(list))
         {
-            //TODO: tạiBậtđộngTồn khokiểm soátchức năng giờ, củatrước của lịch sửsảnsinhDữ liệuNhư 何Xử lý???   khôngquản lý, còn có 手công việc补录Dữ liệuĐếnDữ liệukho
+            //TODO: tạiBậtđộngTồn khokiểm soátchức năng giờ, củatrước của lịch sửsảnsinhDữ liệuNhư như thế nàoXử lý???   khôngquản lý, còn có taycông việcbùghiDữ liệuĐếnDữ liệukho
             return;
         }else {
             throw new ServiceException("đóThuốcTồn tạiTồn khoKhông thểXóa!");

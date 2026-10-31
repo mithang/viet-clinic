@@ -89,7 +89,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * đượcĐếnHiện tạithứchuỗi Định dạng(E)thứ几
+	 * đượcĐếnHiện tạithứchuỗi Định dạng(E)thứmấy
 	 */
 	public static String getWeek() {
 		return formatDate(new Date(), "E");
@@ -333,7 +333,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			endDayYear.setTime(endDayOfYear);
 
 			int distanceYear = 0;
-			// haiCáiNgày là tương邻Năm, khôngCần trong giữavượtNămTính
+			// haiCáiNgày là tươngliền kềNăm, khôngCần trong giữavượtNămTính
 			if (endDayYear.get(Calendar.YEAR) - startDayYear.get(Calendar.YEAR) > 1) {
 				startDayYear.add(Calendar.YEAR, 1);
 				endDayYear.add(Calendar.YEAR, -1);

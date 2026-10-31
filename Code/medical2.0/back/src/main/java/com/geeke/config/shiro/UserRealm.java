@@ -50,13 +50,13 @@ public class UserRealm extends AuthorizingRealm {
     }
 
     /**
-     * Mật khẩubămlặp lầnsố — đề xuất升đến10000 lầnbằngtăng强an toàntính(gốc là 6 lần)
+     * Mật khẩubămlặp lầnsố — đề xuấtnângđến10000 lầnbằngtăngmạnhan toàntính(gốc là 6 lần)
      *  và  ShiroConfiguration Trong HashedCredentialsMatcher Giữ nhất quán
      */
     private static final int PASSWORD_HASH_ITERATIONS = 10000;
 
     /**
-     * cũbảnMật khẩubămlặp lầnsố — dùng để渐tiến hànhkiểuMật khẩuchuyển đổi
+     * cũbảnMật khẩubămlặp lầnsố — dùng đểdầntiến hànhkiểuMật khẩuchuyển đổi
      * Đăng nhập giờtrướcdùngmớilặp lầnsốXác thực, Thất bạisautrả lạitrảĐếnlần lặp cũ lầnsốXác thực; 
      * lần lặp cũ lầnsốXác thựcThành côngsau, Băm lại mật khẩu với số lần lặp mới và cập nhật cơ sở dữ liệu. 
      */
@@ -74,7 +74,7 @@ public class UserRealm extends AuthorizingRealm {
 
         User user = this.getUserByLoginName(loginName);
         if (user == null) {
-            //没tìmĐến帐số
+            //khôngtìmĐếntài khoảnsố
             throw new UnknownAccountException();
         }
 
@@ -124,7 +124,7 @@ public class UserRealm extends AuthorizingRealm {
 
         }
 
-        //Sẽ Người dùngThông tinđặt入session trong 
+        //Sẽ Người dùngThông tinđặtvàosession trong 
         SessionUtils.setUser(user);
         return authenticationInfo;
     }

@@ -5,7 +5,7 @@ import com.geeke.outpatient.entity.Registration;
 
 public interface MdCommonService {
     /**
-     * 冲đúngDữ liệugiao dịch
+     * xungđúngDữ liệugiao dịch
      * Description
      * khả dụnggiao dịchmã: [2101]Bác sĩQuyết toán, [2102]nhà thuốcQuyết toán, [2103]nhà thuốcQuyết toánhủy, [2207]Quyết toán ngoại trú, 
      * [2208]Hủy quyết toán ngoại trú, [2304]Quyết toán nhập viện, [2305]Quyết toán nhập việnhủy, [2401]nhập việnlàm thủ tục, 

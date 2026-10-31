@@ -165,7 +165,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
      * @param sysFile
      * @param sysFileContent
      * Để thời gian cập nhật của tệp đính kèm hệ thống và bảng byte hệ thống được nhất quán khi lưu, Người dùngẢnh hiển thị lại làm cho trình duyệtBộ nhớ đệmsử dụng
-     * dùnggốcđến của tạotệp đính kèm, hơnsửatệp đính kèmdùng của  có preInsert ,preUpdatePhương pháp mỗi张bảngCập nhậtđềusẽnew date() sẽdẫn đếnThời giankhác nhau
+     * dùnggốcđến của tạotệp đính kèm, hơnsửatệp đính kèmdùng của  có preInsert ,preUpdatePhương pháp mỗitrươngbảngCập nhậtđềusẽnew date() sẽdẫn đếnThời giankhác nhau
      */
 
     private void preInsert(SysFile sysFile, SysFileContent sysFileContent) {

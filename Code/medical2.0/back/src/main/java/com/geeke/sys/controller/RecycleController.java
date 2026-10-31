@@ -15,7 +15,7 @@ import com.geeke.utils.ResultUtil;
 
 /**
  * Nhật ký thao tácController
- * @author lys   手công việcbiênviết
+ * @author lys   taycông việcbiênviết
  * @version 2019-12-12
  */
 @RestController

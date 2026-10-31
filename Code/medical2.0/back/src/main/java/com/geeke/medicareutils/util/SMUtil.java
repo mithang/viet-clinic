@@ -17,9 +17,9 @@ public class SMUtil {
      * @return
      */
     public static String encrypt(String data, String appId, String appSecret) {
-        // dùng appId Mã hóa appSecret Lấymới秘钥
+        // dùng appId Mã hóa appSecret Lấymớibí mậtkhóa
         byte[] appSecretEncData = EasyGmUtils.sm4Encrypt(appId.substring(0, 16).getBytes(StandardCharsets.UTF_8), appSecret.getBytes(StandardCharsets.UTF_8));
-        // mới秘钥串
+        // mớibí mậtkhóachuỗi
         byte[] secKey = Hex.toHexString(appSecretEncData).toUpperCase().substring(0, 16).getBytes(StandardCharsets.UTF_8);
         // Mã hóaDữ liệu
         return Hex.toHexString(EasyGmUtils.sm4Encrypt(secKey, data.getBytes(StandardCharsets.UTF_8))).toUpperCase();
@@ -48,7 +48,7 @@ public class SMUtil {
      * @return
      */
     public static String sign(JSONObject jsonObject, String appSecret, String privateKey) {
-        // Lấychữ ký串
+        // Lấychữ kýchuỗi
         byte[] signText = SignUtil.getSignText(jsonObject, appSecret).getBytes(StandardCharsets.UTF_8);
         byte[] userId = appSecret.getBytes(StandardCharsets.UTF_8);
         byte[] prvkey = Base64.getDecoder().decode(privateKey);

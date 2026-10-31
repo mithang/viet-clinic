@@ -125,9 +125,9 @@ public class ResultUtil {
         return resultJson;
     }
 
-    // ==================== R<T> genericphản hồi桥tiếpPhương thức ====================
+    // ==================== R<T> genericphản hồicầutiếpPhương thức ====================
     // Code mới nên dùng trực tiếp R.ok() / R.warning() / R.error()
-    // này些Phương thứclàm là qua渡kỳ của 兼容桥tiếp
+    // nàymột sốPhương thứclàm là quachuyển tiếpkỳ của tương thíchcầutiếp
 
     /**
      * Thành côngphản hồi(Bản generic)

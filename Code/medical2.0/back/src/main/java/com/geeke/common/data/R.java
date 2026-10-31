@@ -5,7 +5,7 @@ import com.geeke.utils.constants.ErrorEnum;
 
 /**
  * Đóng gói generic thống nhất cho thân phản hồi
- * từng步thaythay ResultUtil Trả về của  JSONObject, cung cấpLoạian toàn của phản hồicấu trúc. 
+ * từngbướcthaythay ResultUtil Trả về của  JSONObject, cung cấpLoạian toàn của phản hồicấu trúc. 
  *
  * <p>Ví dụ sử dụng:
  * <pre>

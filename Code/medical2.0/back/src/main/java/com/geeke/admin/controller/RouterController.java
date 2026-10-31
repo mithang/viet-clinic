@@ -43,7 +43,7 @@ public class RouterController extends CrudController<RouterService, Router> {
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
-    //LấyNgười dùngCó hay không拥cóThời hạn hiệu lựctrướccảnh báoQuyền
+    //LấyNgười dùngCó hay khôngsở hữucóThời hạn hiệu lựctrướccảnh báoQuyền
     @GetMapping("getUserIndateWarning/{userId}")
     public ResponseEntity<JSONObject> getUserIndateWarning(@PathVariable("userId") String userId){
         List<String> userIndateWarning = routerService.getUserIndateWarning(userId);

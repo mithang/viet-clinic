@@ -22,11 +22,11 @@ public class MdFeeDetail {
     private String chrgitmLv; // Hạng mục thu phí v.v. cấp
     private String medChrgitmType; // y tếHạng mục thu phíLớploại
     private String basMednFlag; // Cờ thuốc cơ bản
-    private String hiNegoDrugFlag; // BHYT谈判Thuốccờ
-    private String chldMedcFlag; // 儿童dùngthuốccờ
+    private String hiNegoDrugFlag; // BHYTđàm phánThuốccờ
+    private String chldMedcFlag; // trẻ emdùngthuốccờ
     private String listSpItemFlag; // Cờ hạng mục đặc biệt trong danh mục
     private String lmtUsedFlag; // giới hạnsử dụngcờ
-    private String drtReimFlag; // 直báocờ
+    private String drtReimFlag; // trực tiếpbáocờ
     private String memo; // Ghi chú
     private String expContent; // Trườngmở rộng
 }

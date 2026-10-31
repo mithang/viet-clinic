@@ -61,7 +61,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
         try {
             id = stuffService.save(entity).getId();
         } catch (Exception e) {
-            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_50001, "材料信息重复"));
+            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_50001, "Thông tin vật tư trùng lặp"));
         }
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }

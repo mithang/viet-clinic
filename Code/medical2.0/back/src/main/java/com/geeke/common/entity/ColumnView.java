@@ -17,7 +17,7 @@ public class ColumnView extends BaseEntity<ColumnView> implements Comparable<Col
 	
 	private String prop;		// thuộc tínhtên
 	private String label;		// Cộttiêu đề	
-	private String align;		// đơn đồngôđối với齐cách
+	private String align;		// đơn đồngôđối vớiđềucách
 	private Integer miniWidth;		// Nhỏ nhấtrộngđộ
 	private Integer width;		// Độ rộng cột
 	private Boolean display;		// Danh sách trong Có hay khônghiển thị 	

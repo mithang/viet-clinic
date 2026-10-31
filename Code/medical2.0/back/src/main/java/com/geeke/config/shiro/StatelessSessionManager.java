@@ -75,7 +75,7 @@ public class StatelessSessionManager extends DefaultWebSessionManager {
             logger.info("Request {} get tokenId from request header {}", httpRequest.getRequestURI(), token);
             return token;
         }
-        // nếuheaderLấykhôngĐếntokenthì尝试Từ cookie trong Lấy
+        // nếuheaderLấykhôngĐếntokenthìthửthửTừ cookie trong Lấy
         // Serializable serializable = super.getSessionId(servletRequest, servletResponse);
         Serializable serializable = UUID.randomUUID();  // Hỗ trợ trình duyệt mở hai trang đăng nhập bằng người dùng khác nhau
         logger.info("Request {} get sessionId from super get getSessionId {}", httpRequest.getRequestURI(), serializable.toString());
@@ -93,7 +93,7 @@ public class StatelessSessionManager extends DefaultWebSessionManager {
     }
 
     /**
-     * Lấytất cảsống动TrongSession
+     * Lấytất cảsốngđộngTrongSession
      * @return
      */
     public Collection<Session> getActiveSessions() {

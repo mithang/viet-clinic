@@ -50,19 +50,19 @@ public class MdPsnVisitData {
         /** Loại nhân viên */
         private String psnType;
 
-        /** y tế救giúpĐối tượngcờ */
+        /** y tếcứugiúpĐối tượngcờ */
         private String mafPsnFlag;
 
         /** Cờ công chức */
         private String cvlservFlag;
 
-        /** 灵sốngthìnghiệp vụcờ */
+        /** linhsốngthìnghiệp vụcờ */
         private String flxempeFlag;
 
         /** mớitrẻ sơ sinhcờ */
         private String nwbFlag;
 
-        /** tham gia bảo hiểmCơ sởBHYTQuận划 */
+        /** tham gia bảo hiểmCơ sởBHYTQuậnkhấu */
         private String insuOptins;
 
         /** Tên đơn vị */
@@ -122,7 +122,7 @@ public class MdPsnVisitData {
         /** xuất việngiườngvị */
         private String dscgBed;
 
-        /** 离院cách */
+        /** xuất việncách */
         private String dscgWay;
 
         /** Mô tả chính về tình trạng bệnh */
@@ -143,10 +143,10 @@ public class MdPsnVisitData {
         /** ngoại trúThông tin chẩn đoán */
         private String otpDiagInfo;
 
-        /** tại院Trạng thái */
+        /** tạiviệnTrạng thái */
         private String inhospStas;
 
-        /** chết亡Ngày */
+        /** chếtvongNgày */
         private java.util.Date dieDate;
 
         /** Nhập viện ngàysố */
@@ -161,19 +161,19 @@ public class MdPsnVisitData {
         /** kế hoạchsinhsinhPhẫu thuậtLớploại */
         private String birctrlType;
 
-        /** 晚sinhcờ */
+        /** muộnsinhcờ */
         private String latechbFlag;
 
-        /** 孕tuầnsố */
+        /** thaituầnsố */
         private int gesoVal;
 
-        /** 胎 lần */
+        /** thai lần */
         private int fetts;
 
-        /** 胎儿số */
+        /** thaitrẻsố */
         private int fetusCnt;
 
-        /** 早sảncờ */
+        /** sớmsảncờ */
         private String pretFlag;
 
         /** kế hoạchsinhsinhPhẫu thuật hoặc sinhsinhNgày */
@@ -188,7 +188,7 @@ public class MdPsnVisitData {
         /** Tên người thực hiện */
         private String opterName;
 
-        /** qua办Thời gian */
+        /** qualàmThời gian */
         private java.util.Date optTime;
 
         /** Ghi chú */

@@ -1797,7 +1797,7 @@
         </where>
     </select>
 
-    <!-- ========== khôi phụcbịDòng 16轮Tối ưu hóasai删 của  count Truy vấn ========== -->
+    <!-- ========== khôi phụcbịDòng 16vòngTối ưu hóasaixóa của  count Truy vấn ========== -->
 
     <sql id="siblingCompanyFilter">
         oc.parent_id = (SELECT parent_id FROM org_company WHERE id = #{companyId})
@@ -1975,7 +1975,7 @@
         left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
         <where>
         su.name!=''
-        <!-- Dữ liệuchuyển đổicắtdừngThời gian, qualọcchuyển đổitrước của lịch sửDữ liệu, đừng删 -->
+        <!-- Dữ liệuchuyển đổicắtdừngThời gian, qualọcchuyển đổitrước của lịch sửDữ liệu, đừngxóa -->
         and a.update_date > '2022-08-05 17:20:07'
         and a.amount_status = 'amountStatus_1' and a.return_type=0 and ri.charge_status=1 and r.status = 'registrationStatus_1'
         AND su.name IN

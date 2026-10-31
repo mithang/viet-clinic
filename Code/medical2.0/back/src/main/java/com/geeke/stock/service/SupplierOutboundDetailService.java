@@ -137,7 +137,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
-     * SửaXuất kho旱Chi tiết, sửađóng băngSố lượng tồn kho
+     * SửaXuất khohạnChi tiết, sửađóng băngSố lượng tồn kho
      *
      * @param detail
      */

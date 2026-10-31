@@ -84,7 +84,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
         }
        String id = costItemService.save(costItemDTO.getCostItem()).getId();
 
-        //trướcSẽ hạng mục conđiDữ liệukhotra看Có tồn tại không
+        //trướcSẽ hạng mục conđiDữ liệukhotraxemCó tồn tại không
         List<CostItemPackage> costItemPackages = costItemPackageService.findById(costItemDTO.getCostItemPackage());
         if(costItemPackages.size()!=0&&costItemDTO.getCostItemPackage().get(0).getReferenceUnit()==null){
             for (int i = 0; i < costItemDTO.getCostItemPackage().size(); i++) {

@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 public interface MdDirService {
 
     /**
-     * danh mụcđối với照Tải lên
+     * danh mụcđối vớichiếuTải lên
      * @return
      */
     JSONObject upDirData_3301();

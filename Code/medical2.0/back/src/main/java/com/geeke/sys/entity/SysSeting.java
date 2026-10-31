@@ -15,20 +15,20 @@ public class SysSeting extends DataEntity<SysSeting> {
 	private static final long serialVersionUID = 1L;
 	private String sysName;		// Hệ thốngTên
 	private String sysAbbrname;		// Hệ thốnggiới thiệu
-	private String loginBgcolor;		// Đăng nhập背景色
+	private String loginBgcolor;		// Màu nền đăng nhập
 	private String loginLayout;		// đăng nhậpphát hànhcục
 	private SysFile projectLogo;      // Cờ hạng mục 
 	private SysFile loginLogo;      // Cờ đăng nhập 
 	private SysFile sysLogo;      // Cờ hệ thống 
 	private SysFile favicon;      // Biểu tượng hệ thống 
 	private SysFile loginBg;      // Ảnh nền đăng nhập 
-	private SysFile loginGraph;      // Đăng nhậpphối图 
+	private SysFile loginGraph;      // Đăng nhậpphốihình 
     private Integer projectLogoIndex;      // Cờ hạng mục
     private Integer loginLogoIndex;      // Cờ đăng nhập
     private Integer sysLogoIndex;      // Cờ hệ thống
     private Integer faviconIndex;      // Biểu tượng hệ thống
     private Integer loginBgIndex;      // Ảnh nền đăng nhập
-    private Integer loginGraphIndex;      // Đăng nhậpphối图
+    private Integer loginGraphIndex;      // Đăng nhậpphốihình
 
     public Integer getProjectLogoIndex() {
         return projectLogoIndex;
@@ -105,7 +105,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 	
-	@Length(min=0, max=20, message="Đăng nhập背景色Độ dài phải nằm trong khoảng 0 đến 20 ")
+	@Length(min=0, max=20, message="Độ dài màu nền đăng nhập phải nằm trong khoảng 0 đến 20 ")
 	public String getLoginBgcolor() {
 		return loginBgcolor;
 	}

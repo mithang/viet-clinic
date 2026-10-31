@@ -81,7 +81,7 @@ public class ChronicDiseaseEvt implements Serializable {
 	 */
 	private String tollCollector = "Nhân viên thu phí: ";
 	/**
-	 * 注射phí
+	 * chútiêmphí
 	 */
 	private String injectionFee;
 	/**
@@ -113,7 +113,7 @@ public class ChronicDiseaseEvt implements Serializable {
 	 */
 	private String smallType ="Đơn thuốc bệnh mạn tính";
 
-	private String tips = "(Thu phíphiếudữ liệuVui lòng贴附Đơn thuốc背mặt)";
+	private String tips = "(Phiếu thu phí, vui lòng dán vào mặt sau đơn thuốc)";
 	public ChronicDiseaseEvt(Patient patient, Registration registration,
 							 MedicalRecord medicalRecord,RecipelInfo recipelInfo,
 							 List<RecipelDetail> detailList) {
@@ -151,7 +151,7 @@ public class ChronicDiseaseEvt implements Serializable {
 		this.name = "Tên bệnh nhân: " + patient.getName();
 		this.gender = "Giới tính: " + patient.getGender().getName();
 		this.age = "Tuổi: " + (StrUtil.isBlank(patient.getAge()) ? "" : patient.getAge());
-		this.address = "Số điện thoại liên hệ hoặc Địa chỉ(Bệnh nhântự愿điền): " + patient.getAddress();
+		this.address = "Số điện thoại liên hệ hoặc Địa chỉ (Bệnh nhân tự nguyện điền): " + patient.getAddress();
 		this.clinicName = patient.getCompany().getName()+"Đơn thuốcgiấy";
 	}
 	private void buildRegistration(Registration registration){

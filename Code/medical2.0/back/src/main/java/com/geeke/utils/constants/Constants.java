@@ -2,7 +2,7 @@ package com.geeke.utils.constants;
 
 /**
  * @author: LYS
- * @description: ChungthườnglượngLớp, đơnCáinghiệp vụ của thườnglượngVui lòngđơnmởmộtCáiLớp, 方便thườnglượng của  phútLớpQuản lý
+ * @description: ChungthườnglượngLớp, đơnCáinghiệp vụ của thườnglượngVui lòngđơnmởmộtCáiLớp, phươngtiệnthườnglượng của  phútLớpQuản lý
  * @date: 2017/10/24 10:15
  */
 public class Constants {

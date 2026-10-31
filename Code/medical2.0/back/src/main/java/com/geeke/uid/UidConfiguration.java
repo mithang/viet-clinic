@@ -22,8 +22,8 @@ public class UidConfiguration {
     @Bean
     public UidGenerator uidGenerator(WorkerIdAssigner workerIdAssigner) {
     	DefaultUidGenerator generator = new CachedUidGenerator();
-    	generator.setTimeBits(29);  // 28vịTối đacó thểhỗ trợ约8.7Năm
-    	generator.setWorkerBits(21); // 22vịTối đacó thểhỗ trợ420万 lầnkhởi động lại
+    	generator.setTimeBits(29);  // 28 vị tối đa có thể hỗ trợ khoảng 8,7 năm
+    	generator.setWorkerBits(21); // 22 vị tối đa có thể hỗ trợ 4,2 triệu lần khởi động lại
     	generator.setSeqBits(13);   // 13bit có thể hỗ trợ mỗi giây8192Cáivàphát
     	generator.setEpochStr("2020-07-23");
     	   	

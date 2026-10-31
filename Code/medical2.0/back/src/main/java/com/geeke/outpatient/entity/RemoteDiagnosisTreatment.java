@@ -47,11 +47,11 @@ public class RemoteDiagnosisTreatment extends DataEntity<RemoteDiagnosisTreatmen
     private String recipientPhone;		// người nhậnSố điện thoại
     private String province;		// người nhậnTỉnh
     private String market;		// người nhậnThành phố
-    private String distinguish;		// người nhậnQuận县
+    private String distinguish;		// người nhậnQuậnhuyện
     private String recipientAddress;	// người nhậnĐịa chỉ
-    private String conferenceId;		// sẽ议số
+    private String conferenceId;		// sẽhội nghịsố
     private String cardNo;		// hiskhám bệnhthẻsố
-    private String orderNo;		// Chi phí订đơnsố
+    private String orderNo;		// Chi phíđặtđơnsố
     private String payFee;		// Chi phí
 
 	/**

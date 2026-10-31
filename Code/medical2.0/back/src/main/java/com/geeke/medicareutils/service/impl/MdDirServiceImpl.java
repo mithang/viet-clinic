@@ -14,7 +14,7 @@ public class MdDirServiceImpl implements MdDirService {
     private  final MdRequestUtil mdRequestUtil;
 
     /**
-     * danh mụcđối với照Tải lên
+     * danh mụcđối vớichiếuTải lên
      *
      * @return
      */
@@ -29,8 +29,8 @@ public class MdDirServiceImpl implements MdDirService {
         data.put("enddate", ""); // Ngày kết thúc
         data.put("aprvno", ""); // Số phê duyệt
         data.put("dosform", ""); // liềukiểu
-        data.put("exct_cont", ""); // 除ngoàinội dung
-        data.put("item_cont", ""); // hạng mụctrong涵
+        data.put("exct_cont", ""); // trừngoàinội dung
+        data.put("item_cont", ""); // hạng mụctrongbao hàm
         data.put("prcunt", ""); // tínhgiáĐơn vị
         data.put("spec", ""); // Quy cách
         data.put("pacspec", ""); // Quy cách đóng gói

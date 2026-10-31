@@ -68,7 +68,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 左mờTruy vấn
+     * tráimờTruy vấn
      */
     public SearchParamsBuilder leftLike(String columnName, Object value) {
         if (value != null && !"".equals(value.toString().trim())) {
@@ -78,7 +78,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 右mờTruy vấn
+     * phảimờTruy vấn
      */
     public SearchParamsBuilder rightLike(String columnName, Object value) {
         if (value != null && !"".equals(value.toString().trim())) {
@@ -177,7 +177,7 @@ public class SearchParamsBuilder {
     }
 
     /**
-     * 右mờkhớp(dùng đểcâyhìnhcấu trúcTruy vấn)
+     * phảimờkhớp(dùng đểcâyhìnhcấu trúcTruy vấn)
      */
     public SearchParamsBuilder rightLikeForTree(String columnName, Object value) {
         if (value != null && !"".equals(value.toString().trim())) {

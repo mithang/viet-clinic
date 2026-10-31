@@ -114,7 +114,7 @@
         </where>
         <choose>
             <!--Sử dụngmysql của RAND()Triển khaingẫu nhiênsắp xếp, Ở đây NOW() Trả vềHiện tạiThời giandấu, Đảm bảo mỗi lần truy vấn đều cung cấp seed ngẫu nhiên khác nhau, Từ màđượcĐếnkhác nhau của Kết quả. Kết quả mỗi lần truy vấn đều khác nhau do giá trị seed khác nhau. 
-        Nếubằngsaudo là Dữ liệulượnglớnrồi, Truy vấn很chậm, Có thểđổithànhjavamãđếnngẫu nhiên  của cách-->
+        Nếubằngsaudo là Dữ liệulượnglớnrồi, Truy vấn rất chậm, Có thểđổithànhjavamãđếnngẫu nhiên  của cách-->
             <when test="order == '`RAND(NOW())`'">
                 ORDER BY RAND(NOW())
             </when>

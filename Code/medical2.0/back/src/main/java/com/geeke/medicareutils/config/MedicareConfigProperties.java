@@ -27,7 +27,7 @@ public  class MedicareConfigProperties {
     //khóa riêng
     private String privateKey;
 
-    //đầu口số
+    //đầumiệngsố
     private String webPort;
 
     private String isDemo;

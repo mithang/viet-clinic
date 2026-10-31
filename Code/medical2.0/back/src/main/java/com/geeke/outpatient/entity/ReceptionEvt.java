@@ -12,7 +12,7 @@ public class ReceptionEvt implements Serializable
 {
     private static final long serialVersionUID = -4774843195581832448L;
     /**
-     * hoàn thành tiếp nhậnDữ liệuID(Tiếp nhận thông thường必truyền)
+     * hoàn thành tiếp nhậnDữ liệuID(Tiếp nhận thông thườngbắt buộctruyền)
      */
     private String id;
     /**

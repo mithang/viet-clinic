@@ -130,7 +130,7 @@ public final class PageRequest implements java.io.Serializable {
 	}
 
 	
-	/* Dữ liệuTồn kho储Trạng thái */
+	/* Dữ liệuTồn khotrữTrạng thái */
 	public String getDEL_FLAG_NORMAL() {
 		return BaseEntity.DEL_FLAG_NORMAL;
 	}

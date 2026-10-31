@@ -56,7 +56,7 @@ public class OutpatientLogController extends BaseController {
     }
 
     /**
-     * Truy vấn贫困户
+     * Truy vấnhộ nghèo
      */
     @PostMapping(value = "getPoverty/{patientId}")
     public ResponseEntity<JSONObject> getPoverty(@PathVariable("patientId") String patientId) {

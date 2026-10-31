@@ -63,7 +63,7 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
         @CacheEvict(value = "dict:itemsByCode", allEntries = true)
     })
     public DictItem save(DictItem entity) {
-        // Từ điển đã được tối ưu thành dùng chung toàn cục, Không còn cách ly theo tenant, 故khônglạiĐặt company
+        // Từ điển đã được tối ưu thành dùng chung toàn cục, Không còn cách ly theo tenant, do đókhônglạiĐặt company
         return super.save(entity);
     }
 

@@ -23,7 +23,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	@JsonSerialize(using= ToStringSerializer.class)
 	private Long routerId;		//Định tuyếnid
 	private String gridInfo;		// Bố cục tùy chỉnhThông tin
-	private String defaultCheck;		// chọn trong 展hiển thị của mô-đun
+	private String defaultCheck;		// chọn trong hiển thịhiển thị của mô-đun
 
 	
 	public UserGrid() {
@@ -53,7 +53,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	}
 	
 	
-	@Length(min=0, max=200, message="chọn trong 展hiển thị của mô-đunĐộ dài phải nằm trong khoảng 0 đến 200 ")
+	@Length(min=0, max=200, message="Độ dài mô-đun được chọn hiển thị phải nằm trong khoảng 0 đến 200 ")
 	public String getDefaultCheck() {
 		return defaultCheck;
 	}

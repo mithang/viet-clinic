@@ -33,13 +33,13 @@ public class SearchParams implements Serializable {
 	private static String[] LOGIC_LIST = {"and", "or", ""}; // logicthao tácký tự
 	private static String[] QUERY_TYPE_LIST = {"(", ")", "=", "<=>", "between", "left_like",
 			"like", "right_like","<=", "!=", "<>", ">", ">=", "<", "in", "not in", "not between",
-			"not left_like", "not like", "not right_like", "is null", "is not null"}; // 运tínhthao tácký tự
+			"not left_like", "not like", "not right_like", "is null", "is not null"}; // vậntínhthao tácký tự
 
 
 	private List<Parameter> params = null;
 
 	public String getOrderby() {
-		// sắp xếpchỉTồn tại三loạitình hình: “”,  ASC, DESC
+		// sắp xếpchỉTồn tạibaloạitình hình: “”,  ASC, DESC
 		if (StringUtils.isNotBlank(this.columnName)) {
 			String columnName = this.columnName.trim();
 			if (columnName.indexOf("`") >= 0) {

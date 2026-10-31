@@ -117,7 +117,7 @@ public class UserController extends CrudController<UserService, User> {
         User user = SessionUtils.getUser();
         //Truy vấntất cảDữ liệu
         Page<User> userPage;
-        //Nhà cung cấpnhân viên走cũlogic
+        //Nhà cung cấpnhân viêntheocũlogic
         if("1000".equals(user.getId()) || "1001".equals(user.getId())) {
             userPage = service.listPage(searchParams.getParams(),
                     searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());

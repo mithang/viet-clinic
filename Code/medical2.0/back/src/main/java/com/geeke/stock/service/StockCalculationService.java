@@ -16,7 +16,7 @@ public class StockCalculationService {
 
     /**
      * TínhvàĐặtthực thể của Số lượng tồn kho
-     * Tồn kho = Tổng lượng nhập kho - Đãsử dụngTồn kho - báo损Tồn kho
+     * Tồn kho = Tổng lượng nhập kho - Đãsử dụngTồn kho - báohỏngTồn kho
      *
      * @param entity Thuốc hoặc Vật tưthực thể
      */

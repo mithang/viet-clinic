@@ -78,7 +78,7 @@ public class Registration extends DataEntity<Registration> {
     private  DictItem medType; //Loại hình y tế
 	private  DictItem cardType; //Loại giấy tờ khám bệnh
 	private  String iptOtpNo;// Nhập viện/Số khám ngoại trú Số thứ tự duy nhất trong viện
-	private  String mdtrtCertNo;//Số giấy tờ khám bệnh 03社bảothẻ giờmớiđiền
+	private  String mdtrtCertNo;//Số giấy tờ khám bệnh, chỉ điền khi là thẻ bảo hiểm xã hội 03
 	private  String setlId;//BHYTQuyết toánid
 	private  Boolean isPre;//Có hay khôngđiện tửĐơn thuốc
 

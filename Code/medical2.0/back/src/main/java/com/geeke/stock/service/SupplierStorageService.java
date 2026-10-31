@@ -75,7 +75,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         //gọiđộngTồn khokiểm soát
         this.medicinalStorageControlService.invalidStorageStock(supplierStorage);
 
-        // hủytrừTồn kho - Đãchuyển đổiđếnđộngTồn khokiểm soát机制
+        // hủytrừTồn kho - Đãchuyển đổiđếnđộngTồn khokiểm soátmáychế
     }
 
 

@@ -214,7 +214,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         }
     }
 
-    //村phiếu nhập kho và Tồn kho
+    //thônphiếu nhập kho và Tồn kho
     @Transactional(readOnly = false)
     public void savesTo(StorageEvt storageEvt) {
         //trướcLưuphiếu nhập kho

@@ -86,7 +86,7 @@ public class JwtUtils {
 	 */
 	public Claims parseJWT(String jwt) {
 		SecretKey key = generalKey();
-		// khônglại吞rơi ExpiredJwtException — hết hạntokennênbịxem là không hợp lệ
+		// khônglạinuốtrơi ExpiredJwtException — hết hạntokennênbịxem là không hợp lệ
 		Claims claims = Jwts.parser()
 				.setSigningKey(key)
 				.parseClaimsJws(jwt)
@@ -96,7 +96,7 @@ public class JwtUtils {
 
 	/**
 	 * Giải mãjwt, hết hạn giờTrả vềnullmàkhông phảiném rangoại lệ
-	 * dùng đểCần静默Xử lýhết hạntoken của trường hợp(Như Từ hết hạntoken trong đề xuấtlấysessionIdlàmsạchlý)
+	 * dùng đểCầnlặngimXử lýhết hạntoken của trường hợp(Như Từ hết hạntoken trong đề xuấtlấysessionIdlàmsạchlý)
 	 *
 	 * @param jwt
 	 * @return claims, hết hạn giờTrả vềnull

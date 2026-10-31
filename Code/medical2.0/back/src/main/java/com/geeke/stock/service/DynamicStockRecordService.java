@@ -33,7 +33,7 @@ public class DynamicStockRecordService
 
     /**
      * Trả thuốcTồn khothao tác
-     * thuốc房thực tếTồn khotăng, khả dụngTồn khotạm giờtrướckhôngtăng,  v.v. hoàn phísaukhả dụngTồn kholạităng
+     * thuốcphòngthực tếTồn khotăng, khả dụngTồn khotạm giờtrướckhôngtăng,  v.v. hoàn phísaukhả dụngTồn kholạităng
      */
     public void backMedicine() {
         //trực tiếpĐưathực tếchiếm dụng của Tồn khocòntrả lạiđi

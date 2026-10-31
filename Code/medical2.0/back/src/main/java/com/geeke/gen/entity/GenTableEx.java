@@ -78,7 +78,7 @@ public class GenTableEx extends GenTable {
 				}
 			}
 			
-			// LongLoạiTrườngthứ tựCộthóaXử lý, giải quyếtchuyểntrướcđầujs溢ravấn đề
+			// LongLoạiTrườngthứ tựCộthóaXử lý, giải quyếtchuyểntrướcđầujstrànravấn đề
 			if("Long".equals(column.getJavaType().getValue())) {
 				if (!importList.contains("com.fasterxml.jackson.databind.annotation.JsonSerialize")){
 					importList.add("com.fasterxml.jackson.databind.annotation.JsonSerialize");

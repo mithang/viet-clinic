@@ -17,7 +17,7 @@ import com.geeke.common.entity.ColumnView;
 public interface ColumnViewDao {
 
 	/**
-	 * Theoxem图, bảng, Người dùng Truy vấnbảngCộttiêu đềTriển khaiTrạng thái
+	 * Theoxemhình, bảng, Người dùng Truy vấnbảngCộttiêu đềTriển khaiTrạng thái
 	 * @param userId
 	 * @param routerId
 	 * @param tableId

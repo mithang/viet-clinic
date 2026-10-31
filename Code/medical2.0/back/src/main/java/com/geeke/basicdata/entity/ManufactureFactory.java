@@ -22,7 +22,7 @@ public class ManufactureFactory extends DataEntity<ManufactureFactory> {
 	private String area;		// Quận
 	private String address;		// Địa chỉ
 	private String status;      //Cờ bật
-	private String type;       //xưởng家Loạicờ
+	private String type;       //xưởngnhàLoạicờ
 
 	
 	public ManufactureFactory() {

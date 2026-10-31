@@ -160,7 +160,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         Registration bindedRegistration;
         MedicalRecord medicalRecord = medicalRecipelEvt.getMedicalRecord();
         List<RecipelStastics> recipelStasticsList = new ArrayList<>();
-        // có 快速
+        // có nhanhtốc
         if (InstantPatient.INSTANT.getCode() == medicalRecipelEvt.getIsInstant()) {
             //mộtkhóalưu vàoNgười dùngThông tin
             Patient patient = medicalRecipelEvt.getPatient();
@@ -226,7 +226,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
 //                        recipelDetail.setStuffType("0");
 
                         recipelDetailService.save(recipelDetail);
-                        //搜集Đơn thuốcThông tin
+                        //tìmtậpĐơn thuốcThông tin
                         String value = recipelDetail.getStuffType();
                         RecipelStastics recipelStastics = RecipelStastics.builder().id(recipelDetail.getDrugStuffId().getDrugStuffId())
                                 .stuffType(value)
@@ -675,7 +675,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                     recipelInfo.setChargeStatus(0);
                     recipelInfo.setIsPay("0");
                 }
-                //ĐặtĐơn thuốcThu phí và phát thuốcTrạng thái điện tửĐơn thuốckhông走sautiếp tụcluồngquy trình
+                //ĐặtĐơn thuốcThu phí và phát thuốcTrạng thái điện tửĐơn thuốckhôngtheosautiếp tụcluồngquy trình
                 recipelInfo.setChargeStatus(2);
                 recipelInfo.setIsPay("2");
                 recipelInfo.setDispensionStatus(2);

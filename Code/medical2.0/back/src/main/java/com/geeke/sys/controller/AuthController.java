@@ -114,7 +114,7 @@ public class AuthController {
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
             }
             User user = SessionUtils.getUser();
-            //xác nhậnCó hay không có Phòng khámtạilàm切đổi
+            //xác nhậnCó hay không có Phòng khámtạilàmchuyểnđổi
             if (!StringUtils.isNullOrEmpty(companyId)) {
                 //nhiềuPhòng khámĐăng nhập
                 user = changeClinics(user, companyId);
@@ -223,7 +223,7 @@ public class AuthController {
                 u.setLoginDuration("--");
             }
         }
-        //TODO: Trả vềGiá trị另ngoàidùngĐối tượngđóng gói
+        //TODO: Trả vềGiá trịkhácngoàidùngĐối tượngđóng gói
         return userList;
     }
     /**
@@ -305,7 +305,7 @@ public class AuthController {
 
 
     /**
-     * 切đổiPhòng khám
+     * chuyểnđổiPhòng khám
      *
      * @param user
      * @param wantCompanyId
@@ -367,7 +367,7 @@ public class AuthController {
                 return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
             }
             User user = SessionUtils.getUser();
-            //xác nhậnCó hay không có Phòng khámtạilàm切đổi
+            //xác nhậnCó hay không có Phòng khámtạilàmchuyểnđổi
             if (!StringUtils.isNullOrEmpty(companyId)) {
                 //nhiềuPhòng khámĐăng nhập
                 user = changeClinics(user, companyId);

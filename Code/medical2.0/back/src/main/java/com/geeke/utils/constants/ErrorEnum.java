@@ -12,16 +12,16 @@ public enum ErrorEnum {
 	E_50001("50001", "LưuDữ liệutrùng lặp"),
 
     //by glh 20230722
-    E_50002("60001", "违反nghiệp vụquy tắc"),
+    E_50002("60001", "Vi phạm quy tắc nghiệp vụ"),
 	
     /*
      * Thông tin lỗi
      * */
-    E_400("400", "Vui lòngyêu cầuXử lýngoại lệ, Vui lòng稍saulại试"),
+    E_400("400", "Xử lý yêu cầu gặp ngoại lệ, vui lòng thử lại sau"),
     E_500("500", "Vui lòngyêu cầucáchcósai,Vui lòng kiểm tra GET/POST"),
     E_501("501", "Vui lòngyêu cầuđường dẫnKhông tồn tại"),
     E_502("502", "Quyềnkhông đủ"),
-    E_10008("10008", "Vai tròXóaThất bại,尚cóNgười dùngthuộctạinàyVai trò"),
+    E_10008("10008", "Xóa vai trò thất bại, vẫn còn người dùng thuộc vai trò này"),
     E_10009("10009", "tài khoảnĐã tồn tại"),
     E_10010("10010", "Đăng nhậpTài khoản hoặc Mật khẩuLỗi"),
     E_10011("10011", "Tài khoảnĐãVô hiệu hóa"),

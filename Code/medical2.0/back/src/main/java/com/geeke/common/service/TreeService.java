@@ -58,7 +58,7 @@ public abstract class TreeService<D extends TreeDao<T>, T extends TreeEntity<T>>
 		}
 
 		
-		// LấySửatrước của parentIds, dùng đểCập nhậtconNút của parentIds, Nếu có Thêm mới模kiểudưới, bỏ quanó của ids
+		// LấySửatrước của parentIds, dùng đểCập nhậtconNút của parentIds, Nếu có Thêm mớimẫukiểudưới, bỏ quanó của ids
 		String oldIds = null;
 		if (StringUtils.isNotBlank(entity.getId())) {
 			oldIds = entity.getIds();

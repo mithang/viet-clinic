@@ -80,7 +80,7 @@ public class MdRequestUtil {
         HttpEntity<String> request = new HttpEntity<>(JSON.toJSONString(requestData) ,headers);
         //phátgửiBHYTVui lòngyêu cầu
         String response = restTemplate.postForObject(medicareConfigProperties.getUrl(), request,String.class);
-        //Mã hóa密văn bảnTrả vềGiải mã
+        //Mã hóamậtvăn bảnTrả vềGiải mã
         String encData=SMUtil.decrypt (JSONObject.parseObject(response).getJSONObject("output").getString("encData"),medicareConfigProperties.getAppId(),medicareConfigProperties.getAppSecret());
         JSONObject.parseObject(response).getJSONObject("output").put("data",encData);
         //BHYTThông tinNgàynhật kýlưu trữ
@@ -142,7 +142,7 @@ public class MdRequestUtil {
         String FixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
         String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
         requestData.setInfno(infoNo);
-        //顺số thứ tự(4)
+        //thuậnsố thứ tự(4)
         String orderNum =  "1234";
         //Bên gửiid
         String MsgId =  FixmedinsCode + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))+ orderNum;
@@ -199,13 +199,13 @@ public class MdRequestUtil {
             jsonObject.put("signType","SM2");
             //Hiện tạiThời giandấu
             json.put("timestamp",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-            //gốc始Vui lòngyêu cầuTham số
+            //gốcbắt đầuVui lòngyêu cầuTham số
             JSONObject data = jsonObject.getJSONObject("data");
             String encData = SMUtil.encrypt(data.toJSONString(), medicareConfigProperties.getAppId(), medicareConfigProperties.getAppSecret());
             String signData = SMUtil.sign(jsonObject, medicareConfigProperties.getAppSecret(), medicareConfigProperties.getPrivateKey());
             jsonObject.put("encData",encData);
             jsonObject.put("signData",signData);
-            //Xóagốc始Vui lòngyêu cầuTham số
+            //Xóagốcbắt đầuVui lòngyêu cầuTham số
             jsonObject.remove("data");
         }
         json.put("input",jsonObject);
@@ -298,7 +298,7 @@ RequestData requestData = new RequestData();
         // Sẽ  additionalData ThêmĐến jsonObject  trong làm là  "input" Nút
         jsonObject.put("input", additionalData);
 
-        // Chuyển đổi thànhnhất终 của  JSON Chuỗi ký tự
+        // Chuyển đổi thànhnhấtcuối của  JSON Chuỗi ký tự
         String finalJsonString = jsonObject.toJSONString();
 
         System.err.println(finalJsonString);

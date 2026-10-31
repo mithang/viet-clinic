@@ -24,7 +24,7 @@ import com.geeke.utils.constants.ErrorEnum;
 
 /**
  * @author: lys
- * @description: đối vớiKhông cóĐăng nhậpYêu cầutiến hành dòngchặn, Tất cảTrả vềjsonThông tin. ghi đèrơishirogốcnày của 跳chuyểnlogin.jsp của chặncách
+ * @description: đối vớiKhông cóĐăng nhậpYêu cầutiến hành dòngchặn, Tất cảTrả vềjsonThông tin. ghi đèrơishirogốcnày của nhảychuyểnlogin.jsp của chặncách
  * @date: 2017/10/24 10:11
  */
 @Component

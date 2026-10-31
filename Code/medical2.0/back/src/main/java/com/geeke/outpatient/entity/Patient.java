@@ -160,7 +160,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=0, max=45, message="详细Độ dài địa chỉ phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="Độ dài địa chỉ chi tiết phải nằm trong khoảng 0 đến 45 ")
 	public String getAddress() {
 		return address;
 	}

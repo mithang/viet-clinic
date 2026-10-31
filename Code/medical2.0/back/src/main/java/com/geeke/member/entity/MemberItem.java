@@ -19,7 +19,7 @@ public class MemberItem extends DataEntity<MemberItem> {
 	private Company company;      // Phòng khámid 
 	private MemberSet member;      // Thẻ hội viênid 
 	private CostItem costItem;      // tương ứng của hạng mụcid 
-	private Integer number;		// 赠gửihạng mụcSố lượng
+	private Integer number;		// tặnggửihạng mụcSố lượng
     private String name;    //tạmlưuhạng mụcTên
     private Integer useNumber;  //sử dụngSố lượng
 	

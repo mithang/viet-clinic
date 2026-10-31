@@ -10,7 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
 /**
- * 利dùngluồng池Triển khaitác vụđiềuđộ
+ * lợidùngluồngnhómTriển khaitác vụđiềuđộ
  * TaskBộ lập lịch tác vụ có thể thực hiện lập lịch và xóa tác vụ
  * gốclý:
  * Triển khaimộtCáiLớp: ThreadPoolTaskSchedulerBộ lập lịch tác vụ của pool luồng, Có thể mở pool luồng để tiến hành dòngtác vụđiềuđộ

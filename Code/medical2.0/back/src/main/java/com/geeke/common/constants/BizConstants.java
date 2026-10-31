@@ -4,7 +4,7 @@ package com.geeke.common.constants;
  * nghiệp vụTrạng thái/Loạithườnglượngđịnh nghĩa
  *  và  sys_dict_item bảngTrong value TrườngNhất quán
  *
- * Xóa bỏmã trong phân tánphát hành của 魔phương phápchuỗi(Như  "amountStatus_1", "tollType_0"  v.v. )
+ * Xóa bỏmã trong phân tánphát hành của ma thuậtphương phápchuỗi(Như  "amountStatus_1", "tollType_0"  v.v. )
  * Nếutừ điểnGiá trịphátsinhthay đổi, chỉcầnSửanàyTệp
  */
 public final class BizConstants {

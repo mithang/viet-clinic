@@ -30,7 +30,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
 	private Date cancelDate;		// hủyNgày
 	private DictItem examine;      // Trạng thái xét duyệt 
 	private Date examineDate;		// phê duyệtThời gian
-	private String withGoodsNo;		// 随hàngđơn
+	private String withGoodsNo;		// theohàngđơn
 	private String invoiceNumber;		// Số hóa đơn
 	private int initial;     //Tồn kho ban đầu
 	private String type;    //nhập khoLoại
@@ -128,7 +128,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
 	}
 	
 	
-	@Length(min=0, max=64, message="随hàngđơnĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="Độ dài đơn hàng kèm theo phải nằm trong khoảng 0 đến 64 ")
 	public String getWithGoodsNo() {
 		return withGoodsNo;
 	}

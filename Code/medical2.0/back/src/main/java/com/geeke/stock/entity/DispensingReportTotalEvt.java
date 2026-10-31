@@ -23,6 +23,6 @@ public class DispensingReportTotalEvt {
     private String bidTotalAmount;
 	//bán hàngtổng giáTổng cộng
     private String priceTotalAmount;
-    //利润Tổng cộng
+    //lợi nhuậnTổng cộng
     private String profitAmount;
 }

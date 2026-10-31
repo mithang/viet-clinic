@@ -78,7 +78,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
         return tollInfoService.tollDetailForm(searchParams);
     }
 
-    //Theo缴phíThông tinTruy vấnThông tin đăng ký khám
+    //TheonộpphíThông tinTruy vấnThông tin đăng ký khám
     @GetMapping("registration/{chargeStatus}")
     public ResponseEntity<JSONObject> listRegistrationPage(@PathVariable("chargeStatus") String chargeStatus) {
         List<MedicalRecord> medicalRecords = medicalRecordService.listMedicalRecordByChargeStatus(chargeStatus);
@@ -277,7 +277,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     }
 
     /*
-    Lấytenant底dưới của Phòng khám
+    Lấy các phòng khám thuộc tenant
      */
     @PostMapping(value = "getjglist")
     public ResponseEntity<JSONObject> getjglist(@RequestBody YpjxcRc ypjxcRc){

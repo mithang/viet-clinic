@@ -69,14 +69,14 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<JSONObject> runtimeExceptionHandler(RuntimeException e) {
-        logger.error("运 dòng giờngoại lệ: {}", e.getMessage(), e);
+        logger.error("Ngoại lệ khi vận hành: {}", e.getMessage(), e);
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Hệ thốngtrongbộLỗi", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
 
     /**
      * @Valid Tham sốKiểm traThất bạichặn
-     * khi @RequestBody trên của thực thểTrườngkhông满đủ @NotNull  v.v. ràng buộc giờkích hoạt
+     * khi @RequestBody trên của thực thểTrườngkhôngđủđủ @NotNull  v.v. ràng buộc giờkích hoạt
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<JSONObject> validationExceptionHandler(MethodArgumentNotValidException e) {

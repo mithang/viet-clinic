@@ -25,7 +25,7 @@ public class RoleService extends CrudService<RoleDao, Role>{
     }
 
     /**
-     * Truy vấnHiện tạiPhòng khámnơi拥có của Vai trò
+     * Truy vấnHiện tạiPhòng khámnơisở hữucó của Vai trò
      * @param tenantId
      * @return
      */

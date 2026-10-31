@@ -65,7 +65,7 @@ public class RecipelTempletEvt implements Serializable {
     private String checkAgain ="Đối chiếu: ";
     //Phát thuốc
     private String dispensing;
-    //Dược sĩ/士(Pha chế)
+    //Dược sĩ/sĩ(Pha chế)
     private String deploy;
     //Lưu ý
     private String medicalRemark;

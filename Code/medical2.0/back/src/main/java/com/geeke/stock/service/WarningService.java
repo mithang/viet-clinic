@@ -231,7 +231,7 @@ public class WarningService {
     }
 
     /**
-     * định dạnghóaThuốcSố lượng còn lại, theoĐơn vị đóng góiquy đổihiển thị(Như "2盒3片")
+     * định dạnghóaThuốcSố lượng còn lại, theoĐơn vị đóng góiquy đổihiển thị(như "2 hộp 3 viên")
      */
     private String formatDrugNumber(Drug drug) {
         int inventory = drug.getInventory();

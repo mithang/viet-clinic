@@ -463,11 +463,11 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         caseinfo.put("chfcomp", "");                 // Lý do khám chính
         caseinfo.put("attk_date_time", "");         // Ngày phát bệnhThời gian
         caseinfo.put("mdtrt_rea", "");               // khám bệnhgốcdo
-        caseinfo.put("illhis", "");                  // bệnh史
+        caseinfo.put("illhis", "");                  // bệnhsử
         caseinfo.put("algs", "");                    // Tiền sử dị ứng
-        caseinfo.put("aise_code", "");              // qua敏nguồnmã
+        caseinfo.put("aise_code", "");              // quadị ứngnguồnmã
         caseinfo.put("phex", "");                    // trathể
-        caseinfo.put("disa_info_code", "");         // 残疾tình hìnhmã
+        caseinfo.put("disa_info_code", "");         // khuyết tậttậttình hìnhmã
         caseinfo.put("symp_name", "");              // triệu chứngTên
         caseinfo.put("symp_code", "");              // triệu chứngmã
         caseinfo.put("dspo_opnn", "");               // nơiđặtý kiến
@@ -506,15 +506,15 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         rxinfo.put("drug_used_dosunt", "");              // Sử dụng thuốc-Đơn vị liều lượng
         rxinfo.put("drug_used_way_code", "");            // Sử dụng thuốc-đườngmã
         rxinfo.put("drug_medc_way", "");                 // Sử dụng thuốc-đường
-        rxinfo.put("skintst_dicm", "");                  // Test da判loại
+        rxinfo.put("skintst_dicm", "");                  // Test daphánloại
         rxinfo.put("medc_begntime", "");         // dùngthuốcThời gian bắt đầu
         rxinfo.put("medc_endtime", "");          // dùngthuốcdừngdừngThời gian
         rxinfo.put("medc_days", 0);                       // Số ngày dùng thuốc
         rxinfo.put("main_medc_flag", "");                // Cờ thuốc dùng chính
-        rxinfo.put("urgt_flag", "");                      // thêm急cờ
+        rxinfo.put("urgt_flag", "");                      // thêmcấpcờ
         rxinfo.put("unif_purc_drug", "");                // thống nhấtMua hàngThuốc
         rxinfo.put("drug_purc_code", "");                // ThuốcMua hàngmã
-        rxinfo.put("drug_mgt_plaf_code", "");            // ThuốcQuản lý平máymã
+        rxinfo.put("drug_mgt_plaf_code", "");            // ThuốcQuản lýbìnhmáymã
         rxinfo.put("bas_medn_flag", "");                 // Cờ thuốc cơ bản
         rxinfo.put("vali_flag", "");                     // Cờ hiệu lực
         JSONObject jsonObject = new JSONObject();

@@ -135,7 +135,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
         try {
             id = drugService.save(entity).getId();
         } catch (Exception e) {
-            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_50001, "药品信息重复"));
+            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_50001, "Thông tin thuốc trùng lặp"));
         }
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }

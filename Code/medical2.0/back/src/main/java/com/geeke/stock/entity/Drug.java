@@ -197,7 +197,7 @@ public class Drug extends DataEntity<Drug> {
         this.factory = factory;
     }
     
-	@Length(min=0, max=64, message="国thuốcchuẩnchữĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="Độ dài số chuẩn thuốc quốc gia phải nằm trong khoảng 0 đến 64 ")
 	public String getStandardCode() {
 		return standardCode;
 	}

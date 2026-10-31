@@ -53,7 +53,7 @@ public class ColumnViewController extends BaseController {
     } 
     
     /**
-     * chọn择Mặc địnhhiển thịCột
+     * chọnchọnMặc địnhhiển thịCột
      * @param routerId
      * @param tableId
      * @return

@@ -1,6 +1,6 @@
 server:
   tomcat:
-    max-http-post-size: 104857600  # 100MB, phòngdừng恶ýlớnVui lòngthân yêu cầu攻击
+    max-http-post-size: 104857600  # 100MB, phòngdừngđộc hạiýlớnVui lòngthân yêu cầutấn côngđánh
 spring:
   profiles:
     active: demo
@@ -22,7 +22,7 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
   main:
-    allow-bean-definition-overriding: true    #khi遇Đếncùngnhưtênchữ của  giờchờ, Có hay khôngCho phép ghi đè đăng ký
+    allow-bean-definition-overriding: true    #khigặpĐếncùngnhưtênchữ của  giờchờ, Có hay khôngCho phép ghi đè đăng ký
     allow-circular-references: true
   cache:
     type: none
@@ -37,7 +37,7 @@ spring:
     check: false #mởCấu hình BHYT
     province:     #Tỉnh BHYT
     url:          #giao diệnĐịa chỉ
-    #web-url: http://prescription-service:8101/api/YibaoWeb    #bộ署Địa chỉlấydùngBHYT trong giữatruy cập tệp và docker trong dịch vụTênbộ署tươngtương ứng
+    #web-url: http://prescription-service:8101/api/YibaoWeb    #bộtriển khaiĐịa chỉlấydùngBHYT trong giữatruy cập tệp và docker trong dịch vụTênbộtriển khaitươngtương ứng
     web-url: http://127.0.0.1:8101/api/YibaoWeb    # trong giữatệpĐịa chỉ
     isDemo: false #Có hay khôngdemomôi trường
     #Đơn thuốc điện tử

@@ -39,7 +39,7 @@ import java.util.*;
 @Component
 public class DataBean {
 
-    private static final String MEDICAL_REMARK = "特loạiđề xuấthiển thị: theo卫sinhbộ, quốc gia trong y dượcQuản lýcục卫yphát[2002]24sốTệp规chỉ định: " +
+    private static final String MEDICAL_REMARK = "Lưu ý thuốc đặc biệt: Theo văn bản số 24 năm 2002 của Bộ Y tế và Cục Quản lý Y dược cổ truyền quốc gia: " +
             " là bảochứngBệnh nhândùngthuốcan toàn, Thuốcmộtquaphátra, khôngđượctrảđổi. ";
 
     private static final String CHARGE_REMARK = "Lời nhắc thân thiện: \nPhiếu này không dùng để thanh toán bảo hiểm. Vui lòng giữ cẩn thận biên lai nộp phí. Khi khám bệnh, hoàn phí, vui lòng xuất trình biên lai này. " +
@@ -151,8 +151,8 @@ public class DataBean {
         recipelTempletEvt.setDoctor("Bác sĩ: " + registration.getDoctor().getName());
         recipelTempletEvt.setFee("thuốcphí: " + recipelInfo.getFee() + " đồng");
         recipelTempletEvt.setEntrust(StringUtils.isBlank(recipelInfo.getEntrust()) ? "" : "Hạng mục y lệnh: " + recipelInfo.getEntrust());
-        recipelTempletEvt.setBlack("················bằngdướitrống白················");
-        recipelTempletEvt.setApothecary("审phối: ");
+        recipelTempletEvt.setBlack("················Phần dưới để trống················");
+        recipelTempletEvt.setApothecary("Duyệt phát: ");
         recipelTempletEvt.setDeploy("Pha chế: ");
         recipelTempletEvt.setMedicalRemark(MEDICAL_REMARK);
         outList.add(recipelTempletEvt);
@@ -275,7 +275,7 @@ public class DataBean {
                     outList.add(infuseEvt);
                     useMethod.setName("Sig: " + recipelDetail.getInfuseUse().getName());
                     useMethod.setSkinTest(recipelDetail.getFrequency().getRemarks());
-                    useMethod.setSingleDosage(recipelDetail.getDrippingSpeed() + "滴/Phút");
+                    useMethod.setSingleDosage(recipelDetail.getDrippingSpeed() + "giọt/phút");
                 }
             }
             outList.add(useMethod);
@@ -503,7 +503,7 @@ public class DataBean {
         Registration registration = registrationService.get(registrationId);
         Patient patient = patientService.get(registration.getPatientId().getId());
         ChargeTicketEvt chargeTicketEvt = new ChargeTicketEvt();
-        chargeTicketEvt.setClinicName(registration.getCompany().getName() + "Đăng ký khámchứng từ(Khách hàng联)");
+        chargeTicketEvt.setClinicName(registration.getCompany().getName() + "Chứng từ đăng ký khám (Liên khách hàng)");
         chargeTicketEvt.setName("Họ tên: " + patient.getName());
         chargeTicketEvt.setGender("Giới tính: " + patient.getGender().getName());
         chargeTicketEvt.setAge("Tuổi: " + patient.getAge());

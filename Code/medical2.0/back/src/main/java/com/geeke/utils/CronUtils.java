@@ -13,7 +13,7 @@ import org.quartz.CronExpression;
  */
 public class CronUtils {
     /**
-     * Trả vềmộtCáiphát hành尔Giá trịthaybảngmộtCáichochỉ định của Cronbiểu thức của Hiệu lựctính
+     * Trả vềmộtCáiphát hànhnhĩGiá trịthaybảngmộtCáichochỉ định của Cronbiểu thức của Hiệu lựctính
      *
      * @param cronExpression CronBiểu thức
      * @return boolean biểu thứcCó hay khôngHiệu lực

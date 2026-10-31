@@ -216,7 +216,7 @@ public class HosCollectDataController extends BaseController {
         try {
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            logger.error("Dữ liệulấy集luồng trong 断", e);
+            logger.error("Luồng thu thập dữ liệu bị gián đoạn", e);
             Thread.currentThread().interrupt();
         }
         JSONObject result = new JSONObject();

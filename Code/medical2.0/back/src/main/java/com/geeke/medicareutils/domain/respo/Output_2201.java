@@ -8,7 +8,7 @@ public class Output_2201 {
     @Data
     public static class data2201_out {
         /**
-         * Khám bệnh ID Kiểu ký tự 30 Y BHYTTrả vềduy nhất luồng水
+         * Khám bệnh ID Kiểu ký tự 30 Y BHYTTrả vềduy nhất luồngnước
          */
         private String mdtrt_id;
 

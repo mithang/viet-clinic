@@ -37,7 +37,7 @@ public class MdPsnDataServiceImpl  implements MdPsnDataService {
         data.put("mdtrt_cert_type",registration.getCardType().getValue());
         //“01” thì điền chứng từ điện tử Token,  là “02” thì điền số CMND/CCCD,  là “03” thì điền số thẻ an sinh xã hội
         data.put("mdtrt_cert_no",registration.getMdtrtCertNo());
-        //thẻ识loạimã 03 giờbắt buộc
+        //thẻnhận dạngloạimã 03 giờbắt buộc
         data.put("card_sn","");
         if("03".equals(registration.getCardType().getValue())){
             data.put("card_sn",patientTemp.getCard());
@@ -72,7 +72,7 @@ public class MdPsnDataServiceImpl  implements MdPsnDataService {
         patientMdData.setExpcontent("");
         // Lấy InsuInfo LớpTrongThông tin
         if (output1101.getInsuinfo() != null && !output1101.getInsuinfo().isEmpty()) {
-            Output_1101.InsuInfo insuInfo = output1101.getInsuinfo().get(0); // 假đặtchỉlấyDòng mộtCáitham gia bảo hiểmThông tin
+            Output_1101.InsuInfo insuInfo = output1101.getInsuinfo().get(0); // giả địnhđặtchỉlấyDòng mộtCáitham gia bảo hiểmThông tin
             patientMdData.setBalc(insuInfo.getBalc());
             patientMdData.setInsutype(insuInfo.getInsutype());
             patientMdData.setPsnType(insuInfo.getPsn_type());

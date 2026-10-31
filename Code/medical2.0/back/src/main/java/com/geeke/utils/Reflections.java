@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
 
 /**
  * reflectionLớp công cụ.
- * cung cấpgọigetter/setterPhương pháp, truy cậpriêngcóthay đổilượng, gọiriêngcóPhương thức, LấygenericLoạiClass, bịAOPqua của 真thựcLớp v.v. công việccụ thểHàm.
+ * cung cấpgọigetter/setterPhương pháp, truy cậpriêngcóthay đổilượng, gọiriêngcóPhương thức, LấygenericLoạiClass, bịAOPqua của thậtthựcLớp v.v. công việccụ thểHàm.
  * @author calvin
  * @version 2013-01-15
  */

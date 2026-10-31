@@ -20,7 +20,7 @@ class TestBuildinDatasource implements BuildinDatasource {
         return "trongđặtDữ liệunguồnDEMO";
     }
     /**
-     * @return Trả vềHiện tạilấydùngDữ liệunguồn của mộtCái连tiếp
+     * @return Trả vềHiện tạilấydùngDữ liệunguồn của mộtCáiliêntiếp
      */
     @Override
     public Connection getConnection() {

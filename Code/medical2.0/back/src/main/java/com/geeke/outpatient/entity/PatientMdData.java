@@ -24,7 +24,7 @@ public class PatientMdData implements Serializable {
 
 
     /**
-     * nhóm织id
+     * nhómchứcid
      */
     private Long OrganizeId;
 

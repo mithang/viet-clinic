@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 
 /**
- * BHYTtiến hành销lưukiểm soátTriển khaiLớp
+ * BHYTtiến hànhtiêulưukiểm soátTriển khaiLớp
  */
 @RequiredArgsConstructor
 @Service
@@ -503,13 +503,13 @@ public class MdInventoryServiceImpl implements MdInventoryService {
         selinfo.put("trdn_flag", "");               // Cờ bán lẻ
         selinfo.put("finl_trns_pric", 0.0);        // Đơn giá giao dịch cuối cùng
         selinfo.put("rxno", "");                    // Số đơn thuốc
-        selinfo.put("rx_circ_flag", "");           // ngoài购Đơn thuốccờ
+        selinfo.put("rx_circ_flag", "");           // ngoàimuaĐơn thuốccờ
         selinfo.put("rtal_docno", "");              // bán lẻđơndữ liệusố
         selinfo.put("stoout_no", "");               // bán hàngXuất khođơndữ liệusố
         selinfo.put("bchno", "");                   // Số lô
         selinfo.put("drug_trac_codg", "");         // Mã truy xuất thuốc
         selinfo.put("drug_prod_barc", "");         // Thuốcmã vạch
-        selinfo.put("shelf_posi", "");              // hàng架vị
+        selinfo.put("shelf_posi", "");              // hàngkệvị
         selinfo.put("sel_retn_cnt", 0);             // Bán hàng/Số lượng trả hàng
         selinfo.put("sel_retn_time", "");           // Bán hàng/Thời gian trả hàng
         selinfo.put("sel_retn_opter_name", "");     // Bán hàng/Tên người thực hiện trả hàng
@@ -560,13 +560,13 @@ public class MdInventoryServiceImpl implements MdInventoryService {
         selinfo.put("trdn_flag", "");               // Cờ bán lẻ
         selinfo.put("finl_trns_pric", 0.0);        // Đơn giá giao dịch cuối cùng
         selinfo.put("rxno", "");                    // Số đơn thuốc
-        selinfo.put("rx_circ_flag", "");           // ngoài购Đơn thuốccờ
+        selinfo.put("rx_circ_flag", "");           // ngoàimuaĐơn thuốccờ
         selinfo.put("rtal_docno", "");              // bán lẻđơndữ liệusố
         selinfo.put("stoout_no", "");               // bán hàngXuất khođơndữ liệusố
         selinfo.put("bchno", "");                   // Số lô
         selinfo.put("drug_trac_codg", "");         // Mã truy xuất thuốc
         selinfo.put("drug_prod_barc", "");         // Thuốcmã vạch
-        selinfo.put("shelf_posi", "");              // hàng架vị
+        selinfo.put("shelf_posi", "");              // hàngkệvị
         selinfo.put("sel_retn_cnt", 0);             // Bán hàng/Số lượng trả hàng
         selinfo.put("sel_retn_time", "");           // Bán hàng/Thời gian trả hàng
         selinfo.put("sel_retn_opter_name", "");     // Bán hàng/Tên người thực hiện trả hàng
@@ -794,7 +794,7 @@ public class MdInventoryServiceImpl implements MdInventoryService {
         data.put("med_list_codg", ""); // Mã danh mục y tế
         data.put("medins_list_name", ""); // Tên danh mục của cơ sở y tế
         data.put("dynt_no", ""); // Số phiếu kèm hàng
-        data.put("spler_name", ""); // 供hàng商Tên
+        data.put("spler_name", ""); // cung cấphàngnhà cung cấpTên
         data.put("spler_pmtno", ""); // Số giấy phép nhà cung cấp
         data.put("manu_lotnum", ""); // Số lô sản xuất
         data.put("prodentp_name", ""); // sinhsảndoanh nghiệpnghiệp vụTên

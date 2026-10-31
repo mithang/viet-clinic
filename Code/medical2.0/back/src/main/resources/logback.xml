@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
     <!-- màu sắcNgàynhật ký -->
-    <!-- màu sắcNgàynhật ký依dựa vào của 渲染Lớp -->
+    <!-- màu sắcNgàynhật kýtheodựa vào của kết xuấtLớp -->
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
                     converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
@@ -33,7 +33,7 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
         </filter>
-        <!-- có thểđểmỗi ngàysảnsinhmộtCáiNgàynhật kýTệp, Tối đa 180 Cái, tự độngtrả lại滚 -->
+        <!-- có thểđểmỗi ngàysảnsinhmộtCáiNgàynhật kýTệp, Tối đa 180 Cái, tự độngtrả lạicuộn -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_HOME}/%d{yyyy-MM,aux}/geeke-%d{yyyy-MM-dd}.log
             </fileNamePattern>
@@ -59,7 +59,7 @@
         <appender-ref ref="AsyncRollingFile"/>
     </root>
 
-    <!-- Dưới đây cấu hình mức lọc nhật ký cho một số package bên thứ ba, dùng đểTránh刷屏 -->
+    <!-- Dưới đây cấu hình mức lọc nhật ký cho một số package bên thứ ba, dùng đểTránhtràn màn hình -->
 <!--     <logger name="org.mybatis" level="INFO"/>
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.apache" level="WARN"/> -->

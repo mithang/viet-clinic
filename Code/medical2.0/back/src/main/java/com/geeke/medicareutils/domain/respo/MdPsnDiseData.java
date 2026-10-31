@@ -27,7 +27,7 @@ public class MdPsnDiseData {
     /** Cờ chẩn đoán chính */
     private String maindiagFlag;  // Kiểu ký tự, 3Ký tự
 
-    /** Chẩn đoán排số thứ tự */
+    /** Chẩn đoánxếpsố thứ tự */
     private Integer diagSrtNo;  // Kiểu số, 2Ký tự
 
     /** Mã chẩn đoán */
@@ -36,7 +36,7 @@ public class MdPsnDiseData {
     /** Tên chẩn đoán */
     private String diagName;  // Kiểu ký tự, 100Ký tự
 
-    /** nhập việnbệnh情 */
+    /** nhập việnbệnhtình */
     private String admCond;  // Kiểu ký tự, 500Ký tự
 
     /** Chẩn đoánKhoa */
@@ -57,6 +57,6 @@ public class MdPsnDiseData {
     /** Tên người thực hiện */
     private String opterName;  // Kiểu ký tự, 50Ký tự
 
-    /** qua办Thời gian */
+    /** qualàmThời gian */
     private LocalDateTime optTime;  // Kiểu ngày giờ, Định dạng: yyyy-MM-dd HH:mm:ss
 }

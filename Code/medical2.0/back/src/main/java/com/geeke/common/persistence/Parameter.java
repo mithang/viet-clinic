@@ -25,7 +25,7 @@ public class Parameter extends HashMap<String, Object> {
 	
 	/**
 	 * xây dựngLớp, ví dụ: new Parameter(new Object[][]{{"id", id}, {"ids", ids}})
-	 * @param parameters Tham số二维mảng
+	 * @param parameters Tham sốhaichiềumảng
 	 */
 	public Parameter(Object[][] parameters) {
 		if (parameters != null){

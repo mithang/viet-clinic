@@ -78,7 +78,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
         supplierStockService.saves(storageEvt);
         supplierStockService.savesTo(storageEvt);
         if("true".equals(medicareConfigProperties.getCheck())){
-            //mởBHYTgọi Thuốc tạmvàMặc định điều拨nhập kho
+            //mởBHYTgọi Thuốc tạmvàMặc định điềuđiều chuyểnnhập kho
             if(storageEvt.getSupplierStorage().getBreed().equals(1)){
                 mdInventoryService.updateInventoryList_3502A(storageEvt,"101");
             }

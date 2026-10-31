@@ -38,7 +38,7 @@ public class CorsFilter implements Filter {
         // cho phép của đếnnguồnDanh sách
         List<String> allowedOriginList = Arrays.asList(allowedOrigins.split(","));
 
-        // Nếucấu hình là  * Thì cho phép mọi nguồn(không推荐 và  Allow-Credentials mộtbắt đầusử dụng)
+        // Nếucấu hình là  * Thì cho phép mọi nguồn(khôngđẩykhuyến nghị và  Allow-Credentials mộtbắt đầusử dụng)
         if ("*".equals(allowedOrigins.trim())) {
             response.setHeader("Access-Control-Allow-Origin", "*");
         } else if (origin != null && allowedOriginList.contains(origin.trim())) {
@@ -51,7 +51,7 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Token, Authorization");
 
-        // trước检Vui lòngyêu cầutrực tiếpTrả về
+        // trướckiểmVui lòngyêu cầutrực tiếpTrả về
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;

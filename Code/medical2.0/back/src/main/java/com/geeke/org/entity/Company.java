@@ -40,7 +40,7 @@ public class Company extends TreeEntity<Company> {
 	private String appId; // appid
 	private String appSecret; //khóa bí mật
 	private String privateKey; //khóa riêng
-	private String publicKey;  //公钥
+	private String publicKey;  //Khóa công khai
 
 
 

@@ -95,12 +95,12 @@ public class PresDrug implements Serializable {
     private String poolareano;
 
     /**
-     * 统筹QuậnTên
+     * điều phốiQuậnTên
      */
     private String poolareaname;
 
     /**
-     * Có hay không双通道cờ (0 -  không , 1 -  có )
+     * Có hay khônghai kênhcờ (0 -  không , 1 -  có )
      */
     private String dualchnlflag;
 

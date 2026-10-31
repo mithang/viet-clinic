@@ -17,7 +17,7 @@ public class IdGen {
 	private static UidGenerator uidGenerator;
 
 	/**
-	 * đóng góiJDKtựkèm của UUID, QuaRandomSốTạo,  trong giữakhông- phút割.
+	 * đóng góiJDKtựkèm của UUID, QuaRandomSốTạo,  trong giữakhông- phútcắt.
 	 */
 	public static String uuid() {
 		// return UUID.randomUUID().toString().replaceAll("-", "");

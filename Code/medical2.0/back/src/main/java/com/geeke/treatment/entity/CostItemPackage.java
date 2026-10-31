@@ -23,7 +23,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     private String isDeduct;		// Có thực hiện khấu trừ không
     private int quantity;    //hạng mục conSố lượng
     private String costItemId; //Hạng mục khám chữa bệnhid
-    private String costItemPkgId; //套餐id
+    private String costItemPkgId; //góisuấtid
     private String referenceValue;  //tham khảoGiá trị
     private String referenceUnit;  //tham khảoĐơn vị
 
@@ -121,7 +121,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
         this.costItemId = costItemId;
     }
 
-    @NotNull(message="套餐idKhông được để trống")
+    @NotNull(message="Id gói không được để trống")
     public String getCostItemPkgId() {
         return costItemPkgId;
     }

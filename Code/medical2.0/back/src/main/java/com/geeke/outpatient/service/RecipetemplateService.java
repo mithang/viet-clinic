@@ -220,7 +220,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         if (detail == null || companyId == null) {
             return false;
         }
-        // 优trướcKiểm traChi tiếtbản thân của company_id
+        // ưu tiêntrướcKiểm traChi tiếtbản thân của company_id
         if (detail.getCompany() != null && companyId.equals(detail.getCompany().getId())) {
             return true;
         }

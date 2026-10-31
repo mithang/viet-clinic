@@ -32,18 +32,18 @@ public class MdSeltInfo {
     private BigDecimal cvlservPay; // Quỹ trợ cấp y tế cho công chứcChi tiêu
     private BigDecimal hifesPay; // Quỹ BHYT bổ sung của doanh nghiệpChi tiêu
     private BigDecimal hifmiPay; // Quỹ bảo hiểm bệnh nặng cho dân cưChi tiêu
-    private BigDecimal hifobPay; // chức vụcông việclớnsố tiềny tếChi phí补giúp基金Chi tiêu
-    private BigDecimal mafPay; // y tế救giúp基金Chi tiêu
+    private BigDecimal hifobPay; // chức vụcông việclớnsố tiềny tếChi phíbùgiúpcơ sởquỹChi tiêu
+    private BigDecimal mafPay; // y tếcứugiúpcơ sởquỹChi tiêu
     private BigDecimal othPay; // khácChi tiêu
     private BigDecimal fundPaySumAmt; // thanh toán từ quỹtổngsố tiền
-    private BigDecimal psnPartAmt; // Cá nhânâm担tổngSố tiền
+    private BigDecimal psnPartAmt; // Cá nhânâmgánhtổngSố tiền
     private BigDecimal acctPay; // Cá nhântài khoảnChi tiêu
     private BigDecimal psnCashPay; // Cá nhântiền mặtChi tiêu
-    private BigDecimal hospPartAmt; // Bệnh việnâm担Số tiền
+    private BigDecimal hospPartAmt; // Bệnh việnâmgánhSố tiền
     private BigDecimal balc; // Số dư
-    private BigDecimal acctMulaidPay; // Cá nhântài khoảnTổng 济thanh toánSố tiền
+    private BigDecimal acctMulaidPay; // Cá nhântài khoảnTổng trợ giúpthanh toánSố tiền
     private String medinsSetlId; // y dượcCơ sởQuyết toán ID
-    private String clrOptins; // thanh toánqua办Cơ sở
+    private String clrOptins; // thanh toánqualàmCơ sở
     private String clrWay; // thanh toáncách
     private String clrType; // thanh toánLớploại
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 
 /**
- * lớn屏cơ bảnDữ liệu
+ * lớnmàn hìnhcơ bảnDữ liệu
  * @author zhanghan
  * @version 2023-09-05
  */

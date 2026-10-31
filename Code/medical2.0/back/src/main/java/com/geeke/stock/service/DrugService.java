@@ -83,7 +83,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // Kiểm traThuốcCó hay khôngtrùng lặp
         int repeat = this.repeat(drug);
         if (repeat!=0){
-            throw new ServiceException("药品信息重复");
+            throw new ServiceException("Thông tin thuốc trùng lặp");
 
         }
         // Khi thêm mới, Xử lý trường tự động đánh số
@@ -275,7 +275,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                     .read();
         }
 
-        // Step 2: Lạimởcông việclàm簿, đọcTên nhà sản xuất(Cột6) và Ghi chú(Cột20)
+        // Step 2: Lạimởcông việclàmsổ, đọcTên nhà sản xuất(Cột6) và Ghi chú(Cột20)
         List<String> manufacturerNames = new ArrayList<>();
         List<String> remarksList = new ArrayList<>();
         try (InputStream is2 = file.getInputStream(); XSSFWorkbook workbook = new XSSFWorkbook(is2)) {
@@ -351,14 +351,14 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                     drug.setRemarks(remarksList.get(i));
                 }
 
-                // Xử lýCó bán lẻ không: "是" -> "1", Khác -> "0"
+                // Xử lý có bán lẻ không: giá trị khẳng định trong file Excel -> "1", khác -> "0"
                 if ("是".equals(drug.getIsUnpackSell())) {
                     drug.setIsUnpackSell("1");
                 } else {
                     drug.setIsUnpackSell("0");
                 }
 
-                // Xử lýTrạng thái: "是" -> "1", Khác -> "0"
+                // Xử lý trạng thái: giá trị khẳng định trong file Excel -> "1", khác -> "0"
                 if ("是".equals(drug.getStatus())) {
                     drug.setStatus("1");
                 } else {
@@ -371,7 +371,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 logger.warn("NhậpDòng {} dòng thất bại", rowNum, e);
                 String a = "";
                 if (e.getMessage() != null) {
-                    a = e.getMessage().equals("药品信息重复") ? "Thông tin thuốctrùng lặp," : "";
+                    a = e.getMessage().equals("Thông tin thuốc trùng lặp") ? "Thông tin thuốc trùng lặp," : "";
                 }
                 siBai++;
                 mistake.append("Bảng dòng ").append(rowNum).append(" dòng[").append(drugName).append("]Thông tin thuốcngoại lệ, ").append(a).append("Vui lòng đối chiếu rồi nhập lại\n");

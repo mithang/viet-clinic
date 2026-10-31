@@ -17,7 +17,7 @@ public class Dict extends DataEntity<Dict> {
 
 	private static final long serialVersionUID = 1L;
 	private String value;	// Dữ liệuGiá trị
-	private String label;	// 标chữ ký
+	private String label;	// Nhãn
 	private String type;	// Loại
 	private String description;// Mô tả
 	private Integer sort;	// Sắp xếp

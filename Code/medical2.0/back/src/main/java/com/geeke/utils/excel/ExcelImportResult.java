@@ -61,7 +61,7 @@ public class ExcelImportResult<T> {
     }
 
     /**
-     * Lấytất cảThông tin lỗi của văn bảnnày摘cần
+     * Lấytất cảThông tin lỗi của văn bảnnàytríchcần
      */
     public String getErrorSummary() {
         StringBuilder sb = new StringBuilder();
@@ -72,7 +72,7 @@ public class ExcelImportResult<T> {
     }
 
     /**
-     * Chuyển đổi thànhtrướcđầukỳ望 của định dạng [Thành côngsố, Thất bạisố, Thông tin lỗi]
+     * Chuyển đổi thànhtrướcđầukỳmong muốn của định dạng [Thành côngsố, Thất bạisố, Thông tin lỗi]
      */
     public List<String> toResponseList() {
         List<String> response = new ArrayList<>();

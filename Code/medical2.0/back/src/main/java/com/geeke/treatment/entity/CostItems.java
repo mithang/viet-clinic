@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CostItems extends CostItem{
-    private String sign; //cao低chỉsốđánh dấu
-    private String conclusion;   //结论
+    private String sign; //caothấpchỉsốđánh dấu
+    private String conclusion;   //kếtluận
     private String describe;    //Mô tả
 }

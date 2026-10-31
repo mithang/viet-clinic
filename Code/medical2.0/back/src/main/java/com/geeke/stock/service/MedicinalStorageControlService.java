@@ -88,7 +88,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 Drug drug = this.drugService.get(supplierStock.getDrug().getId());
                 if (Objects.isNull(drug) || StringUtils.isBlank(drug.getId()))
                 {
-                    throw new ServiceException("Nhập kho thất bại,Lấynhập kho của Thuốccơ bản维护Thông tinThất bại!");
+                    throw new ServiceException("Nhập kho thất bại, lấy thông tin cơ bản của thuốc nhập kho thất bại!");
                 }
                 this.medicinalStockControlService.initStock(drug);
 
@@ -101,7 +101,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 Stuff stuff = this.stuffService.get(supplierStock.getStuff().getId());
                 if (Objects.isNull(stuff) || StringUtils.isBlank(stuff.getId()))
                 {
-                    throw new ServiceException("Nhập kho thất bại,Lấynhập kho của Vật tưcơ bản维护Thông tinThất bại!");
+                    throw new ServiceException("Nhập kho thất bại, lấy thông tin cơ bản của vật tư nhập kho thất bại!");
                 }
                 this.medicinalStockControlService.initStock(stuff);
 
@@ -300,7 +300,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
             medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
             medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
-            //TODO: Trả lại đúng lúc gặp chi tiết nhập kho hết hạn thì xử lý thế nào?    giải quyếtPhương thức: khôngXử lý, củatrước怎么chiếm dụng của Bây giờ trả lại như thế nào
+            //TODO: Trả lại đúng lúc gặp chi tiết nhập kho hết hạn thì xử lý thế nào?    giải quyếtPhương thức: khôngXử lý, củatrướcnhư thế nàogìchiếm dụng của Bây giờ trả lại như thế nào
             super.save(medicinalStorageControl);
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
@@ -348,7 +348,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         for (RecipelDetail recipelDetail:recipelDetailList)
         {
             String drugStuffId = recipelDetail.getDrugStuffId().getDrugStuffId();
-            BigDecimal calculationBigDecimal = BigDecimal.ZERO;                       //dùng đểTính, nhấtsau và  totalBigDecimal làmso với较tiến hành dòngkiểm soát
+            BigDecimal calculationBigDecimal = BigDecimal.ZERO;                       //dùng đểTính, nhấtsau và  totalBigDecimal làmso vớisotiến hành dòngkiểm soát
             
             MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
             medicinalStockRecord.setCompany(recipelDetail.getCompany());
@@ -383,7 +383,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             }
             
             // Tồn khobảnglưu trữ của  có Đơn vị đóng gói
-            // - khôngbán lẻ giờ: trực tiếpsử dụng total(Đơn vị đóng gói) và Tồn khoso với较, chiếm dụngcũngdùngĐơn vị đóng gói
+            // - khôngbán lẻ giờ: trực tiếpsử dụng total(Đơn vị đóng gói) và Tồn khoso vớiso, chiếm dụngcũngdùngĐơn vị đóng gói
             // - bán lẻ giờ: CầnĐưatổng lượng(Đơn vị bào chế)Chuyển đổi thànhĐơn vị đóng góiđếnchiếm dụngTồn kho
             BigDecimal totalBigDecimal;
             boolean isUnpackSell = recipelDetail.getIsUnpackSell() != null && recipelDetail.getIsUnpackSell() == 1;
@@ -416,7 +416,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             // bán lẻ giờ, CầnĐưatổng lượng(Đơn vị bào chế)Chuyển đổi thànhĐơn vị đóng gói
             BigDecimal stockToOccupy = totalBigDecimal;
             if (isUnpackSell && drug != null && drug.getPreparation() != null && Integer.valueOf(drug.getPreparation()) > 0) {
-                // Đơn vị bào chếchuyển là Đơn vị đóng gói: hướng tớitrênLàm tròn(确bảocóđủđủ của bào chếSố lượng)
+                // Đơn vị bào chếchuyển là Đơn vị đóng gói: hướng tớitrênLàm tròn(chắc chắnbảocóđủđủ của bào chếSố lượng)
                 BigDecimal preparationBD = new BigDecimal(drug.getPreparation());
                 stockToOccupy = totalBigDecimal.divide(preparationBD, 0, BigDecimal.ROUND_UP);
             }
@@ -511,7 +511,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
-        //Lạitrướcchiếm dụngTồn khomộtĐưa,  là rồihơntốt của kiểm soátTồn khoKhông cóvấn đề, NếuLạichiếm dụngcóvấn đề, mộtthông thườngGiải thíchkiểm soátcó我呢đề xuất
+        //Lạitrướcchiếm dụngTồn khomộtĐưa,  là rồihơntốt của kiểm soátTồn khoKhông cóvấn đề, NếuLạichiếm dụngcóvấn đề, mộtthông thườngGiải thíchkiểm soátcótôiđâyđề xuất
         this.preOccupyStock(recipelInfo);
 
         //Chuyển tồn kho chiếm dụng trước thành tồn kho chiếm dụng thực tế
@@ -776,7 +776,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
     //----------------------------
     /**
-     * kho房真thựcTồn kholượng=Tổng lượng nhập kho - Số lượng tồn kho đã sử dụng - Số lượng tồn kho báo hỏng
+     * khophòngthậtthựcTồn kholượng=Tổng lượng nhập kho - Số lượng tồn kho đã sử dụng - Số lượng tồn kho báo hỏng
      * mởthuốckhả dụngTồn kholượng=Số lượng tồn kho còn khả dụng
      * Số lượng tồn kho đang bị chiếm dụng=Số lượng tồn kho đang bị chiếm dụng
      * Số lượng tồn kho báo hỏng=Số lượng tồn kho báo hỏng

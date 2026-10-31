@@ -93,7 +93,7 @@
         WHERE t.company_id = '1639720158872479714'
     </select>
 
-    <!-- nayNgày们ngoại trúBản ghi -->
+    <!-- nayNgàycácngoại trúBản ghi -->
     <select id="outpatientRecord" resultType="String">
         select IFNULL(status.name, '')    as status,
                IFNULL(p.name, '')         as name,

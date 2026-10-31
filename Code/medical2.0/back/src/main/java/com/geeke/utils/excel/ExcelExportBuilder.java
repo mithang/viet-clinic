@@ -28,7 +28,7 @@ import java.util.*;
  * }</pre>
  *
  * <p>Hỗ trợ truy cập thuộc tính lồng nhau, Ví dụ "company.name" Sẽ gọi getCompany().getName(). </p>
- * <p>Dựa trên EasyExcel, bộ nhớchiếm dụng低, phù hợphợplớnDữ liệulượngXuất. </p>
+ * <p>Dựa trên EasyExcel, bộ nhớchiếm dụngthấp, phù hợphợplớnDữ liệulượngXuất. </p>
  */
 public class ExcelExportBuilder implements Closeable {
 
@@ -83,7 +83,7 @@ public class ExcelExportBuilder implements Closeable {
 
     private void buildAndWrite(OutputStream os) {
         if (columns.isEmpty()) {
-            throw new IllegalStateException("Chưađịnh nghĩa任何Cột, Vui lòngtrướcgọi addColumns() Phương pháp");
+            throw new IllegalStateException("Chưa định nghĩa bất kỳ cột nào, vui lòng gọi phương thức addColumns() trước");
         }
 
         // xây dựngbảngtiêu đề

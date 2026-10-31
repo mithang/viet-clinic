@@ -33,7 +33,7 @@ public class MdCommonServiceImpl implements MdCommonService {
 
 
     /**
-     * 冲đúngDữ liệugiao dịch
+     * xungđúngDữ liệugiao dịch
      * Description
      * khả dụnggiao dịchmã: [2101]Bác sĩQuyết toán, [2102]nhà thuốcQuyết toán, [2103]nhà thuốcQuyết toánhủy, [2207]Quyết toán ngoại trú, 
      * [2208]Hủy quyết toán ngoại trú, [2304]Quyết toán nhập viện, [2305]Quyết toán nhập việnhủy, [2401]nhập việnlàm thủ tục, 
@@ -82,19 +82,19 @@ public class MdCommonServiceImpl implements MdCommonService {
         adminfo.put("dept_name", clinicOffice.getName()); // Tên khoa
         adminfo.put("bedno", ""); // bệnhgiườngsố
         adminfo.put("adm_time", registration.getCreateDate()); // nhập việnThời gian
-        adminfo.put("illhis_stte_name", patientMdData.getPsnName()); // bệnh史trình bàyngườiTên Mặc địnhnàyngười
+        adminfo.put("illhis_stte_name", patientMdData.getPsnName()); // bệnhsửtrình bàyngườiTên Mặc địnhnàyngười
         adminfo.put("illhis_stte_rl", ""); // trình bàyngười và Bệnh nhânquan hệmã
         if (Objects.nonNull(patient.getWithPatientNexus())) {
             //cóngười giám hộtrình bày
-            adminfo.put("illhis_stte_name", patient.getGuardianName()); // bệnh史trình bàyngườiTên Mặc địnhnàyngười
+            adminfo.put("illhis_stte_name", patient.getGuardianName()); // bệnhsửtrình bàyngườiTên Mặc địnhnàyngười
             adminfo.put("illhis_stte_rl",patient.getWithPatientNexus() ); // trình bàyngười và Bệnh nhânquan hệmã
         }
-        adminfo.put("stte_rele", ""); // trình bàynội dungCó hay khôngcó thể靠định danh
+        adminfo.put("stte_rele", ""); // trình bàynội dungCó hay khôngcó thểdựađịnh danh
         adminfo.put("chfcomp",medicalRecord.getPatientTell()); // Lý do khám chính
         adminfo.put("dise_now", medicalRecord.getNowHistory()); // Bệnh sử hiện tại
         adminfo.put("hlcon", ""); // sức khỏetrạngtình hình
-        adminfo.put("dise_his", medicalRecord.getDiseaseHistory()); // Tiền sử bệnh(chứangoài伤)
-        adminfo.put("ifet",registration.getInfectType()); // TODO khôngtừ điển Bệnh nhântruyền染tínhcờ
+        adminfo.put("dise_his", medicalRecord.getDiseaseHistory()); // Tiền sử bệnh(chứangoàichấn thương)
+        adminfo.put("ifet",registration.getInfectType()); // TODO khôngtừ điển Bệnh nhântruyềnnhiễmtínhcờ
         adminfo.put("ifet_his", medicalRecord.getInfectiousHistory()); // Tiền sử bệnh truyền nhiễm
         adminfo.put("prev_vcnt", ""); // Tiền sử tiêm chủng phòng ngừa
         adminfo.put("oprn_his", medicalRecord.getSurgeryHistory()); // Tiền sử phẫu thuật
@@ -105,30 +105,30 @@ public class MdCommonServiceImpl implements MdCommonService {
         adminfo.put("mena_his", medicalRecord.getLunariaHistory()); // Tiền sử kinh nguyệt
         adminfo.put("fmhis", medicalRecord.getFamilyHistory()); // Tiền sử gia đình
         adminfo.put("physexm_tprt", registration.getTemperature()); // Khám thực thể--Nhiệt độ cơ thể (℃)
-        adminfo.put("physexm_pule", registration.getPulse()); // Khám thực thể -- 脉tỷ lệ
+        adminfo.put("physexm_pule", registration.getPulse()); // Khám thực thể -- mạchtỷ lệ
         adminfo.put("physexm_vent_frc", registration.getBreathe()); // Khám thực thể--hô hấptần suấttỷ lệ
         //TODO   thểôKiểm trahiệnHệ thống là nguyênthểNhập
-        adminfo.put("physexm_systolic_pre", ""); // Khám thực thể -- 收缩压 (mmHg)
-        adminfo.put("physexm_dstl_pre", ""); // Khám thực thể -- 舒张压 (mmHg)
+        adminfo.put("physexm_systolic_pre", ""); // Khám thực thể -- thucoáp (mmHg)
+        adminfo.put("physexm_dstl_pre", ""); // Khám thực thể -- giãntrươngáp (mmHg)
         adminfo.put("physexm_height", ""); // Khám thực thể--thâncao (cm)
         adminfo.put("physexm_wt", ""); // Khám thực thể--thểtrọng (kg)
         adminfo.put("physexm_ordn_stas", ""); // Khám thực thể -- mộtthông thườngtrạng tình hình Kiểm traKết quả
-        adminfo.put("physexm_skin_musl", ""); // Khám thực thể -- 皮肤 và 黏膜Kiểm traKết quả
+        adminfo.put("physexm_skin_musl", ""); // Khám thực thể -- da và niêm mạcKiểm traKết quả
         adminfo.put("physexm_spef_lymph", ""); // Khám thực thể -- Hạch bạch huyết nông toàn thânKiểm traKết quả
-        adminfo.put("physexm_head", ""); // Khám thực thể -- tiêu đềbộvàcủa nóthiết bị官Kiểm traKết quả
-        adminfo.put("physexm_neck", ""); // Khám thực thể -- 颈bộKiểm traKết quả
-        adminfo.put("physexm_chst", ""); // Khám thực thể -- 胸bộKiểm traKết quả
-        adminfo.put("physexm_abd", ""); // Khám thực thể -- 腹bộKiểm traKết quả
-        adminfo.put("physexm_finger_exam", ""); // Khám thực thể -- 肛门chỉkhámKiểm traKết quảMô tả
-        adminfo.put("physexm_genital_area", ""); // Khám thực thể -- ngoàisinh殖thiết bịKiểm traKết quả
-        adminfo.put("physexm_spin", ""); // Khám thực thể -- 脊柱Kiểm traKết quả
-        adminfo.put("physexm_all_fors", ""); // Khám thực thể -- 四肢Kiểm traKết quả
-        adminfo.put("nersys", ""); // Khám thực thể -- 神quaHệ thốngKiểm traKết quả
-        adminfo.put("spcy_info", ""); // 专科tình hình
+        adminfo.put("physexm_head", ""); // Khám thực thể -- tiêu đềbộvàcủa nóthiết bịcơ quanKiểm traKết quả
+        adminfo.put("physexm_neck", ""); // Khám thực thể -- cổbộKiểm traKết quả
+        adminfo.put("physexm_chst", ""); // Khám thực thể -- ngựcbộKiểm traKết quả
+        adminfo.put("physexm_abd", ""); // Khám thực thể -- bụngbộKiểm traKết quả
+        adminfo.put("physexm_finger_exam", ""); // Khám thực thể -- hậu mônchỉkhámKiểm traKết quảMô tả
+        adminfo.put("physexm_genital_area", ""); // Khám thực thể -- ngoàisinhsinh dụcthiết bịKiểm traKết quả
+        adminfo.put("physexm_spin", ""); // Khám thực thể -- cột sốngKiểm traKết quả
+        adminfo.put("physexm_all_fors", ""); // Khám thực thể -- tứ chiKiểm traKết quả
+        adminfo.put("nersys", ""); // Khám thực thể -- thầnquaHệ thốngKiểm traKết quả
+        adminfo.put("spcy_info", ""); // chuyên khoatình hình
         adminfo.put("asst_exam_rslt", ""); // Kiểm tra hỗ trợKết quả
-        adminfo.put("tcm4d_rslt", ""); // Đông y“四khám”quan sátKết quảMô tả
-        adminfo.put("syddclft", ""); // 辨chứng phútkiểumã
-        adminfo.put("syddclft_name", ""); // 辩chứng phútkiểuTên
+        adminfo.put("tcm4d_rslt", ""); // Đông y“bốnkhám”quan sátKết quảMô tả
+        adminfo.put("syddclft", ""); // biệnchứng phútkiểumã
+        adminfo.put("syddclft_name", ""); // biệnchứng phútkiểuTên
         adminfo.put("prnp_trt", ""); // điều trịthìđiều trịphương pháp
 
         adminfo.put("rec_doc_code", doctor.getUserExt().getPracPsnCode()); // tiếp nhậnBác sĩmã số
@@ -142,27 +142,27 @@ public class MdCommonServiceImpl implements MdCommonService {
         adminfo.put("main_symp", ""); // chínhcầntriệu chứng
         adminfo.put("adm_rea", ""); // nhập việngốcdo
         adminfo.put("adm_way", ""); // nhập việnđường
-        adminfo.put("apgr", ""); // 评 phútGiá trị(Apgar)
-        adminfo.put("diet_info", ""); // 饮食tình hình
+        adminfo.put("apgr", ""); // đánh giá phútGiá trị(Apgar)
+        adminfo.put("diet_info", ""); // ăn uốngtình hình
         adminfo.put("growth_deg", ""); // phátsinhquy trìnhđộ
-        adminfo.put("mtl_stas_norm", ""); // 精神Trạng tháibình thườngcờ
-        adminfo.put("slep_info", ""); // 睡眠trạngtình hình
+        adminfo.put("mtl_stas_norm", ""); // tinh thầnTrạng tháibình thườngcờ
+        adminfo.put("slep_info", ""); // giấc ngủtrạngtình hình
         adminfo.put("sp_info", ""); // đặc biệttình hình
-        adminfo.put("mind_info", ""); // 心lýTrạng thái
-        adminfo.put("nurt", ""); // 营养Trạng thái
-        adminfo.put("self_ablt", ""); // tựlýcó thể力
+        adminfo.put("mind_info", ""); // tâmlýTrạng thái
+        adminfo.put("nurt", ""); // dinh dưỡngTrạng thái
+        adminfo.put("self_ablt", ""); // tựlýcó thểlực
         adminfo.put("nurscare_obsv_item_name", ""); // Hạng mục quan sát điều dưỡngTên
         adminfo.put("nurscare_obsv_rslt", ""); // điều dưỡngquan sátKết quả
         adminfo.put("smoke", ""); // hút thuốccờ
         adminfo.put("stop_smok_days", ""); // dừngdừnghút thuốc ngàysố
         adminfo.put("smok_info", ""); // hút thuốctrạngtình hình
-        adminfo.put("smok_day", ""); // Ngàyhút thuốclượng(支)
+        adminfo.put("smok_day", ""); // Ngàyhút thuốclượng(chi)
         adminfo.put("drnk", ""); // uống rượucờ
         adminfo.put("drnk_frqu", ""); // uống rượutần suấttỷ lệ
         adminfo.put("drnk_day", ""); // Ngàyuống rượulượng(mL)
-        adminfo.put("eval_time", ""); // 评估NgàyThời gian
-        adminfo.put("resp_nurs_code", ""); // 责任Y táMã
-        adminfo.put("resp_nurs_name", ""); // 责任Y táTên
+        adminfo.put("eval_time", ""); // đánh giáNgàyThời gian
+        adminfo.put("resp_nurs_code", ""); // trách nhiệmY táMã
+        adminfo.put("resp_nurs_name", ""); // trách nhiệmY táTên
         adminfo.put("vali_flag", ""); // Cờ hiệu lực
 
         //Thông tin chẩn đoánxây dựng
@@ -187,9 +187,9 @@ public class MdCommonServiceImpl implements MdCommonService {
         coursrinfo.put("bedno", ""); // bệnhgiườngsố
         coursrinfo.put("rcd_time", ""); // Bản ghiNgàyThời gian
         coursrinfo.put("chfcomp", ""); // Lý do khám chính
-        coursrinfo.put("cas_ftur", ""); // ca bệnh特điểm
-        coursrinfo.put("tcm4d_rslt", ""); // Đông y“四khám”quan sátKết quả
-        coursrinfo.put("dise_evid", ""); // Chẩn đoán依dữ liệu
+        coursrinfo.put("cas_ftur", ""); // ca bệnhđặc biệtđiểm
+        coursrinfo.put("tcm4d_rslt", ""); // Đông y“bốnkhám”quan sátKết quả
+        coursrinfo.put("dise_evid", ""); // Chẩn đoántheodữ liệu
         coursrinfo.put("prel_wm_diag_code", ""); // Chẩn đoán sơ bộ-Mã chẩn đoán Tây y
         coursrinfo.put("prel_wm_dise_name", ""); // Chẩn đoán sơ bộ-Tên chẩn đoán Tây y
         coursrinfo.put("prel_tcm_diag_code", ""); // Chẩn đoán sơ bộ-Mã tên bệnh Đông y
@@ -208,7 +208,7 @@ public class MdCommonServiceImpl implements MdCommonService {
         coursrinfo.put("ipdr_name", ""); // Nhập việnBác sĩTên
         coursrinfo.put("prnt_doc_name", ""); // trêncấpBác sĩTên
         coursrinfo.put("vali_flag", ""); // Cờ hiệu lực
-        //Phẫu thuậtBản ghi, bệnh情抢救, chết亡Bản ghi, xuất việnnhỏ结xây dựng TODO Phòng khámtạmvàtrước留
+        //Phẫu thuậtBản ghi, bệnhtìnhcấp cứu, chếtvongBản ghi, xuất việnnhỏkếtxây dựng TODO Phòng khámtạmvàtrướcgiữ
         JSONObject oprninfo = new JSONObject();
         JSONObject rescinfo = new JSONObject();
         JSONObject dieinfo = new JSONObject();

@@ -110,7 +110,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         // Kiểm traVật tưCó hay khôngtrùng lặp
         final int repeat = this.repeat(stuff);
         if (repeat!=0){
-            throw new NegativeArraySizeException("材料信息重复");
+            throw new NegativeArraySizeException("Thông tin vật tư trùng lặp");
 
         }
         // Khi thêm mới, Xử lý trường tự động đánh số
@@ -145,7 +145,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         return list;
     }
 
-    // Đã废弃 — stuffDao.updateInventory Phương thứcKhông tồn tại, vàtất cảgọiĐã注释
+    // Đãhủy bỏbỏ — stuffDao.updateInventory Phương thứcKhông tồn tại, vàtất cảgọiĐãchúgiải thích
 //    @Transactional(readOnly = false)
 //    public void updateInventory(int inventory, String id) {
 //        Stuff stuff = this.dao.get(id);
@@ -249,7 +249,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                     .read();
         }
 
-        // Step 2: Lạimởcông việclàm簿, đọcVật tưTên(Cột0) và Tên nhà sản xuất(Cột4)
+        // Step 2: Lạimởcông việclàmsổ, đọcVật tưTên(Cột0) và Tên nhà sản xuất(Cột4)
         List<String> nameList = new ArrayList<>();
         List<String> manufacturerNames = new ArrayList<>();
         try (InputStream is2 = file.getInputStream(); XSSFWorkbook workbook = new XSSFWorkbook(is2)) {
@@ -326,21 +326,21 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                     stuff.setFactory(manufactureFactory);
                 }
 
-                // Xử lýCó hay khôngbán ra ngoài: "是" -> "1", Khác -> "0"
+                // Xử lý có bán ra ngoài không: giá trị khẳng định trong file Excel -> "1", khác -> "0"
                 if ("是".equals(stuff.getIsOutSell())) {
                     stuff.setIsOutSell("1");
                 } else {
                     stuff.setIsOutSell("0");
                 }
 
-                // Xử lýCó bán lẻ không: "是" -> "1", Khác -> "0"
+                // Xử lý có bán lẻ không: giá trị khẳng định trong file Excel -> "1", khác -> "0"
                 if ("是".equals(stuff.getIsUnpackSell())) {
                     stuff.setIsUnpackSell("1");
                 } else {
                     stuff.setIsUnpackSell("0");
                 }
 
-                // Xử lýTrạng thái: "是" -> "1", Khác -> "0"
+                // Xử lý trạng thái: giá trị khẳng định trong file Excel -> "1", khác -> "0"
                 if ("是".equals(stuff.getStatus())) {
                     stuff.setStatus("1");
                 } else {
@@ -353,7 +353,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 logger.warn("NhậpDòng {} dòng thất bại", rowNum, e);
                 String a = "";
                 if (e.getMessage() != null) {
-                    a = e.getMessage().equals("材料信息重复") ? "Thông tin vật tưtrùng lặp," : "";
+                    a = e.getMessage().equals("Thông tin vật tư trùng lặp") ? "Thông tin vật tư trùng lặp," : "";
                 }
                 siBai++;
                 mistake.append("Bảng dòng ").append(rowNum).append(" dòng[").append(stuffName).append("]Thông tin vật tưngoại lệ, ").append(a).append("Vui lòng đối chiếu rồi nhập lại\n");

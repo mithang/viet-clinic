@@ -34,7 +34,7 @@ public class ShiroConfiguration {
     @Bean(name = "shiroFilter")
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, AjaxPermissionsAuthorizationFilter ajaxFilter) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-        //Shiro của 核心an toàngiao diện,nàyCáithuộc tính có Phải của 
+        //Shiro của cốt lõian toàngiao diện,nàyCáithuộc tính có Phải của 
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("authc", ajaxFilter);
@@ -42,12 +42,12 @@ public class ShiroConfiguration {
         
         /*định nghĩashiroquachuỗi filter  Mapcấu trúc
          * Map trong key(xml trong  có chỉvalueGiá trị) của Dòng mộtCái'/'thaybảng của đường dẫn có tươngđối vớitạiHttpServletRequest.getContextPath() của Giá trịđến của 
-         * anon: nótương ứng của Bên trong filter có trống của ,Không làm gì cả,Ở đây.do và .jspsaumặt của *cho biếtTham số,so với方说login.jsp?mainnàyloại
+         * anon: nótương ứng của Bên trong filter có trống của ,Không làm gì cả,Ở đây.do và .jspsaumặt của *cho biếtTham số,so vớiphươngnóilogin.jsp?mainnàyloại
          * authc: Trang thuộc filter này phải được xác thực mới được truy cập,nó có Shirotrongđặt của mộtCáiinterceptororg.apache.shiro.web.filter.authc.FormAuthenticationFilter
          */
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-         /* quachuỗi filterđịnh nghĩa, Từ trênhướng tớidướithứ tựhành nghề dòng, mộtthông thườngSẽ  / ** đặttạinhất là dưới边:này có mộtCái坑呢, Sơ ý một chút là code không chạy được nữa;
-          authc:Tất cảurlđềuPhảinhậnchứngQuamớiCó thểtruy cập; anon:Tất cảurlđềuđềuCó thể匿têntruy cập */
+         /* quachuỗi filterđịnh nghĩa, Từ trênhướng tớidướithứ tựhành nghề dòng, mộtthông thườngSẽ  / ** đặttạinhất là dướibên:này có mộtCáibẫyđây, Sơ ý một chút là code không chạy được nữa;
+          authc:Tất cảurlđềuPhảinhậnchứngQuamớiCó thểtruy cập; anon:Tất cảurlđềuđềucó thể truy cập ẩn danh */
 
 		// camunda Tải sơ đồ quy trình
         filterChainDefinitionMap.put("/rest/process-definition/*/diagram", "anon");
@@ -117,9 +117,9 @@ public class ShiroConfiguration {
         sessionManager.setSessionDAO(sessionDAO);
 // Vô hiệu hóaphiênXác thựcthiết bịđiềuđộThời gian
         sessionManager.setSessionValidationSchedulerEnabled(false);
-// phiênvượt giờĐặt là 24nhỏ giờ(86400000Mili giây), phòngdừngRedisbộ nhớ泄漏
+// phiênvượt giờĐặt là 24nhỏ giờ(86400000Mili giây), phòngdừngRedisbộ nhớrò rỉrò
         sessionManager.setGlobalSessionTimeout(86400000);
-// Có hay khôngGọi sau khi phiên hết hạn SessionDAO  của XóaPhương thức, bảo持 là  true khôngsẽ影响hết hạn
+// Có hay khôngGọi sau khi phiên hết hạn SessionDAO  của XóaPhương thức, bảogiữ là  true khôngsẽảnh hưởnghưởnghết hạn
         sessionManager.setDeleteInvalidSessions(true);
 // Vô hiệu hóa URL viết lại
         sessionManager.setSessionIdUrlRewritingEnabled(false);
@@ -185,7 +185,7 @@ public class ShiroConfiguration {
 
     
     /**
-     * mởShiro của annotation(Như @RequiresRoles,@RequiresPermissions),cần借giúpSpringAOPquétsử dụngShiroannotation của Lớp,vàtại必cần giờtiến hành dòngan toànlogicXác thực
+     * mởShiro của annotation(Như @RequiresRoles,@RequiresPermissions),cầnnhờgiúpSpringAOPquétsử dụngShiroannotation của Lớp,vàtạibắt buộccần giờtiến hành dòngan toànlogicXác thực
      * cấu hìnhbằngdướihaiCáibean(DefaultAdvisorAutoProxyCreator(Tùy chọn) và AuthorizationAttributeSourceAdvisor)tức làcó thểTriển khainàychức năng
      */
 

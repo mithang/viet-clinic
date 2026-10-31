@@ -23,7 +23,7 @@ public class taskmanagement {
     private String updatedBy ;
     /** Thời gian cập nhật */
     private Date updatedTime ;
-    private  String tasktype;//'tác vụLoại;tasktype_0: Tác vụ thông thường, tasktype_1: 宣truyềnsống动' ,
+    private  String tasktype;//'tác vụLoại;tasktype_0: Tác vụ thông thường, tasktype_1: tuyên truyềntruyềnsốngđộng' ,
     private  String taskname;
     private  String taskdescribe;
     private  String taskaccessory;

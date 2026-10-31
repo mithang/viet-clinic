@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Mybatis của mapperTệpTrongsqlcâu lệnhbịSửasau, Chỉ có thể được tải khi khởi động lại server, không phảithường耗 giờ,vì vậythìviếtrồimộtCáitự độngtải của Lớp,
+ * Mybatis của mapperTệpTrongsqlcâu lệnhbịSửasau, Chỉ có thể được tải khi khởi động lại server, không phảithườngtốn giờ,vì vậythìviếtrồimộtCáitự độngtải của Lớp,
  * cấu hìnhsauKiểm traxmlTệphơnsửa,Nếuphátthay đổi,Lạitảixmlbên trong của nội dung.
  */
 //@Service
@@ -62,7 +62,7 @@ public class MapperLoader implements DisposableBean, InitializingBean, Applicati
 			field.setAccessible(true);
 			basePackage = (String) field.get(config);
 			
-			// kích hoạtTệpgiám sát听việctệp
+			// kích hoạtTệpgiám sátngheviệctệp
 			scanner = new Scanner();
 			scanner.scan();
 

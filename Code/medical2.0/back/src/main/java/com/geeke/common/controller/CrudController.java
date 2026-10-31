@@ -101,7 +101,7 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
-     * Lưusauhookcon — Lớp con có thể ghi đè để thêm logic hậu xử lý(Như phátgửi通biết, đồng bộDữ liệu)
+     * Lưusauhookcon — Lớp con có thể ghi đè để thêm logic hậu xử lý(Như phátgửithôngbiết, đồng bộDữ liệu)
      */
     protected void afterSave(T entity) {
     }

@@ -88,21 +88,21 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         data.put("mdtrtCertType", registration.getCardType());  // Loại giấy tờ khám bệnh, Giá trịcó thể là  01, 02  hoặc  03
         // Số giấy tờ khám bệnh
         data.put("mdtrtCertNo", registration.getCard());  // Số giấy tờ khám bệnh, nếuchứng từLoại là 03thì là Số thẻ an sinh xã hội
-        // thẻ识loạimã(điện tửchứng từToken)
+        // thẻnhận dạngloạimã(điện tửchứng từToken)
         data.put("cardSn", "");  // TODO Bắt buộc, điện tửchứng từToken, độ dài32Ký tự
         // Xác minh danh tính cho trường hợp ngoại tuyến của chứng từ điện tử TODO
-        data.put("ecToken", "");  // Bắt buộc, Trường hợp trực tuyến qua internetBệnh viện问khám giờsử dụng
+        data.put("ecToken", "");  // Bắt buộc, Trường hợp trực tuyến qua internetBệnh việnhỏikhám giờsử dụng
         // Số thứ tự
-        data.put("authNo", "");  // Bắt buộc, dùng đểthânphần核验, Loại là số thứ tự, 100Ký tự
+        data.put("authNo", "");  // Bắt buộc, dùng đểthânphầnhạchnghiệm, Loại là số thứ tự, 100Ký tự
         // nghiệp vụLoạimã
-        data.put("bizTypeCode", "01");  // Bắt buộc, 01 là y tế được chỉ địnhCơ sởkhám bệnh, 02 là 互联网Bệnh viện问khám
+        data.put("bizTypeCode", "01");  // Bắt buộc, 01 là y tế được chỉ địnhCơ sởkhám bệnh, 02 là internetBệnh việnhỏikhám
         // tham gia bảo hiểmđịa phươngmã số, Người tham gia bảo hiểm khác địa phương bắt buộc phải truyền
         data.put("insuPlcNo", patientMdData.getInsuplcAdmdvs());  // Bắt buộc, tham gia bảo hiểmđịa phươngmã số, 6Ký tự
         // y tế được chỉ địnhCơ sởĐơn thuốcmã số
         data.put("hospRxno", recipelInfo.getCode());  // Bắt buộc, y tế được chỉ địnhCơ sở của Đơn thuốcmã số, Lớn nhất40Ký tự
         // kê tiếp đơn của gốcĐơn thuốcmã số
         data.put("initRxno", "");  // không phảibắt buộc, kê tiếp đơn của gốcĐơn thuốcmã số, Lớn nhất40Ký tự
-        // Đơn thuốcLớpmã loại TODO trước留cụ thểPhòng khámcụ thểhơnsửa
+        // Đơn thuốcLớpmã loại TODO trướcgiữcụ thểPhòng khámcụ thểhơnsửa
         if(BizConstants.RECIPEL_TYPE_WESTERN.equals(recipelInfo.getRecipelType().getValue())){
             //Thuốc tây
             data.put("rxTypeCode", "1");
@@ -159,7 +159,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
             // Mã danh mục y tế
             rxdrug.put("medListCodg", presDrug.getMedlistcodg());  // Bắt buộc, BHYTMã thuốc
             // Mã danh mục của cơ sở y tế được chỉ định
-            rxdrug.put("fixmedinsHilistId", "1");  // Bắt buộc, 院trongMã thuốc
+            rxdrug.put("fixmedinsHilistId", "1");  // Bắt buộc, việntrongMã thuốc
             // y tếCơ sởbào chếcờ
             rxdrug.put("hospPrepFlag", "");  // Bắt buộc, 0- không , 1- có , Mặc định không 
             if(BizConstants.RECIPEL_TYPE_WESTERN.equals(recipelInfo.getRecipelType().getValue())){
@@ -185,11 +185,11 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
             rxdrug.put("mednTypeName", presDrug.getDosformname());  // thuốcLoạiTên
             // Cờ thuốc dùng chính
             rxdrug.put("mainMedcFlag", "");  // Bắt buộc, 0- không , 1- có 
-            // thêm急cờ
+            // thêmcấpcờ
             rxdrug.put("urgtFlag", "");  // Bắt buộc, 0- không , 1- có 
             // Cờ thuốc cơ bản
             rxdrug.put("basMednFlag", "");  // Bắt buộc, 0- không , 1- có 
-            // Có hay khôngtiến hành口Thuốc
+            // Có hay khôngtiến hànhmiệngThuốc
             rxdrug.put("impDrugFlag", "");  // Bắt buộc, 0- không , 1- có 
             // Tên thương mại của thuốc
             rxdrug.put("drugProdname","");  // Tên thương mại của thuốc
@@ -199,8 +199,8 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
             rxdrug.put("drugDosform", item.getPresDrug().getDosformname());  // Bắt buộc, Dạng bào chế của thuốc
             // Quy cách thuốc
             rxdrug.put("drugSpec", item.getPresDrug().getSpecname() +'*'+item.getPresDrug().getMinpaccnt()+item.getPresDrug().getMinprepunt()+'/'+item.getPresDrug().getMinpacunt());  // Bắt buộc, Quy cách thuốc
-            // sinhxưởngxưởng家
-            rxdrug.put("prdrName", item.getPresDrug().getPrdrname());  // sinhxưởngxưởng家
+            // sinhxưởngxưởngnhà
+            rxdrug.put("prdrName", item.getPresDrug().getPrdrname());  // sinhxưởngxưởngnhà
             rxdrug.put("medcWayCodg", item.getWesternMedicineUse().getValue());  // Mô tả đường dùng thuốc
             // Mô tả đường dùng thuốc
             rxdrug.put("medcWayDscr", item.getWesternMedicineUse().getName());  // Mô tả đường dùng thuốc
@@ -261,10 +261,10 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         mdtrtinfo.put("patnHgt", "");             // Bệnh nhânthâncao (Kiểu số 6,2)
         mdtrtinfo.put("patnWt", "");              // Bệnh nhânthểtrọng (Kiểu số 6,2)
         mdtrtinfo.put("gend", patientMdData.getGend());                 // Giới tính (Kiểu ký tự 6)
-        mdtrtinfo.put("gesoVal", "");               // 妊娠(孕tuần) (Kiểu số 2)
+        mdtrtinfo.put("gesoVal", "");               // mang thai(thaituần) (Kiểu số 2)
         mdtrtinfo.put("nwbFlag", "");              // mớitrẻ sơ sinhcờ (Kiểu ký tự 3)
-        mdtrtinfo.put("nwbAge", "");               // mớitrẻ sơ sinhNgày, Tháng龄 (Kiểu ký tự 20)
-        mdtrtinfo.put("suckPrdFlag", "");           // 哺乳kỳcờ (Kiểu số 3)
+        mdtrtinfo.put("nwbAge", "");               // mớitrẻ sơ sinhNgày, Thángtuổi (Kiểu ký tự 20)
+        mdtrtinfo.put("suckPrdFlag", "");           // cho con búkỳcờ (Kiểu số 3)
         mdtrtinfo.put("algsHis", "");              // Tiền sử dị ứng (Kiểu ký tự 1000)
         mdtrtinfo.put("prscDeptName",registration.getClinicOffice().getName() );         // kê đơnTên khoa (Kiểu ký tự 50)
         mdtrtinfo.put("prscDeptCode", registration.getClinicOffice().getCode());         // kê đơnKhoamã số (Kiểu ký tự 30)
@@ -318,7 +318,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
             diseinfo.put("tcmsympCode", xtZyzh.getZhcode());     //  trong chứng bệnhchờmã (Kiểu ký tự, Độ dài tối đa9)
             diseinfo.put("tcmsymp",xtZyzh.getZhmc() );         //  trong chứng bệnhchờ (Kiểu ký tự, Độ dài tối đa100)
         }
-        mdtrtinfo.put("diseCondDscr", "");         // Bệnhbệnh情Mô tả (Kiểu ký tự 2000)
+        mdtrtinfo.put("diseCondDscr", "");         // BệnhbệnhtìnhMô tả (Kiểu ký tự 2000)
         mdtrtinfo.put("hiFeesetlType", "");        // Loại quyết toán chi phí BHYT (Kiểu ký tự 6)
         mdtrtinfo.put("hiFeesetlName", "");        // BHYTChi phíLớpTên khácgọi là (Kiểu ký tự 20)
         mdtrtinfo.put("rgstFee", "");             // Phí đăng ký khám (Kiểu số 16,2)
@@ -327,7 +327,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         mdtrtinfo.put("extras", "");               // mở rộngDữ liệu (Đối tượngkiểu)
       //Chẩn đoánNút
         diseinfo.put("maindiagFlag", "1");    // Cờ chẩn đoán chính (0- không , 1- có , Kiểu ký tự, Độ dài tối đa3)
-        diseinfo.put("diagSrtNo", "1");       // Chẩn đoán排số thứ tự (Kiểu số, Độ dài tối đa2)
+        diseinfo.put("diagSrtNo", "1");       // Chẩn đoánxếpsố thứ tự (Kiểu số, Độ dài tối đa2)
         diseinfo.put("diagCode", xtZd.getIcd10());        // Mã chẩn đoán (sử dụngquốc giaBHYTMã chẩn đoán, Kiểu ký tự, Độ dài tối đa30)
         diseinfo.put("diagName", xtZd.getZdmc());        // Tên chẩn đoán (Kiểu ký tự, Độ dài tối đa100)
         diseinfo.put("diagDept", registration.getClinicOffice().getName());        // Chẩn đoánKhoa (Kiểu ký tự, Độ dài tối đa50)
@@ -345,7 +345,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         JSONObject ld7801 = JSONObject.parseObject("{\"rxtracecode\":12345678901234567890,\"hirxno\":987654321098765432109876543210}");
 
         //JSONObject ld7801 = mdRequestUtil.dzcfUpload("Ld7801", jsonObject);
-        //Ngàynhật ký落địa phươngbảng
+        //Ngàynhật kýlưuđịa phươngbảng
         DzcfD001Output dzcfD001Output = new DzcfD001Output();
         dzcfD001Output.setMzh(registration.getId());
         dzcfD001Output.setCfh(recipelInfo.getId());

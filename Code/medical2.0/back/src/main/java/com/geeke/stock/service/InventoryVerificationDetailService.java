@@ -165,7 +165,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
             }
         }
 
-        // trướcTính各 dòngDữ liệu(drug/stuff phút支logic, Quy cáchnối, Tồn khoTính v.v. )
+        // trướcTínhcác dòngDữ liệu(drug/stuff phútchilogic, Quy cáchnối, Tồn khoTính v.v. )
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         List<Map<String, Object>> exportData = new ArrayList<>();
         for (InventoryVerificationDetail detail : rows) {
@@ -211,7 +211,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                         new ExcelExportBuilder.Column("Thời hạn hiệu lực", "endDate"),
                         new ExcelExportBuilder.Column("Hiện tạiSố lượng tồn kho", "currentInventory"),
                         new ExcelExportBuilder.Column("Tồn kho kiểm kê", "checkInventory"),
-                        new ExcelExportBuilder.Column("bàn盈bàn亏", "profitAndLoss"),
+                        new ExcelExportBuilder.Column("Lãi lỗ kiểm kê", "profitAndLoss"),
                         new ExcelExportBuilder.Column("Ghi chú", "remarks"),
                         new ExcelExportBuilder.Column("lãi lỗSố tiền( đồng)", "profitAndLossPrice")
                 )
@@ -286,7 +286,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         }
     }
 
-    //bàn盈bàn亏
+    //Lãi lỗ kiểm kê
     public String getProfitAndLoss(InventoryVerificationDetail inventoryVerificationDetail){
         String checkInventory="";
         if(inventoryVerificationDetail.getCheckInventory()>0){

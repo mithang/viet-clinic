@@ -104,7 +104,7 @@ public class EasyGmUtils {
         try {
             // Khởi tạo SM2 chữ kýthiết bị
             SM2Signer signer = new SM2Signer();
-            signer.init(false, publicKey); // false cho biếtKhởi tạo là Xác thực模kiểu
+            signer.init(false, publicKey); // false cho biếtKhởi tạo là Xác thựcmẫukiểu
             signer.update(msg, 0, msg.length); // Cập nhậtthông báo
 
             // Xác thựcchữ ký
@@ -382,7 +382,7 @@ public class EasyGmUtils {
 
     public static byte[] zeroIv(String algo) {
         try {
-            // tạophù hợpkhi của Mã hóathiết bị, Theothuật toánTênchọn择tươngnên của engine
+            // tạophù hợpkhi của Mã hóathiết bị, Theothuật toánTênchọnchọntươngnên của engine
             PaddedBufferedBlockCipher cipher;
             if (algo.equals("AES/ECB/PKCS7Padding")) {
                 cipher = new PaddedBufferedBlockCipher(new AESEngine());

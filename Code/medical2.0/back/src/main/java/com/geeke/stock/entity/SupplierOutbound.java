@@ -30,7 +30,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
 	private Date examineDate;		// phê duyệtThời gian
 	//private Integer initial;     //Tồn kho ban đầu
 	private String type;    //Xuất khoLoại 1-Thuốc 2-Vật tư
-	private String method;    //Xuất khocách 1-Thuốcbáo损 2-trảcòn供方 3-điều拔Xuất kho
+	private String method;    //Xuất khocách 1-Thuốcbáohỏng 2-trảcòncung cấpphương 3-điềurútXuất kho
 	private String reason;    //Xuất khogốcdo
 	private  Integer status;//Trạng thái 1-Chưaxét duyệt  2-Đãxét duyệt 3-Đãhủy
 

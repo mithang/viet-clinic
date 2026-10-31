@@ -30,7 +30,7 @@ public class TollInfo extends DataEntity<TollInfo> {
 	private BigDecimal amountReceivable;		// phải thu(trả)Số tiền
 	private BigDecimal amountReceived;		// Số tiền thực thu
 	private BigDecimal amountDiscounted;		// Số tiền ưu đãi
-	private Float discount;		// 折扣số tiềnđộ 
+	private Float discount;		// chiết khấukhấusố tiềnđộ 
 	private DictItem paymentType;      // thanh toánLoại
 	private DictItem amountStatus;      // đơndữ liệuTrạng thái, enum tham khảo 
 	private String tollNumber;		// Số phiếu thu phí

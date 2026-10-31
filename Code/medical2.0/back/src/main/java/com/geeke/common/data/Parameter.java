@@ -20,8 +20,8 @@ public final class Parameter {
 
 	/**
 	 * Truy vấnLoạidanh sách trắng. 
-	 * Giải thích:  và  SearchParams.QUERY_TYPE_LIST Giữ nhất quán, số tiềnngoài纳入 "<=>", "not left_like", "not right_like", 
-	 * Đảm bảo mọi loại truy vấn hợp lệ đều qua được kiểm tra, Tránhhợp lệVui lòngyêu cầubịsai判 là định dạngLỗi. 
+	 * Giải thích:  và  SearchParams.QUERY_TYPE_LIST Giữ nhất quán, số tiềnngoàiđưavào "<=>", "not left_like", "not right_like", 
+	 * Đảm bảo mọi loại truy vấn hợp lệ đều qua được kiểm tra, Tránhhợp lệVui lòngyêu cầubịsaiphán là định dạngLỗi. 
 	 */
 	private static final java.util.Set<String> ALLOWED_QUERY_TYPES = new java.util.HashSet<>(java.util.Arrays.asList(
 			"=", "!=", "<>", "<=>", ">", "<", ">=", "<=",
@@ -35,9 +35,9 @@ public final class Parameter {
 
 	/**
 	 * Danh sách trắng ký tự nối logic. 
-	 * chú ý: Phảibao gồmtrống串 "" —— trướcđầunhómhợpĐiều kiện giờ(baseUI.compositeCondition / pushDataPermissions)
-	 * sẽĐưaDòng mộtCáiĐiều kiệnbằngvà括sốLớpĐiều kiện(queryType  là  '('  hoặc  ')') của  logic đặt là  '', 
-	 * nếukhôngchứa '', hợp lệVui lòngyêu cầusẽtại反thứ tựCộthóagiai đoạnbịchặn, kích hoạt 400「Định dạng thân yêu cầu sai, Vui lòng kiểm traJSONĐịnh dạng」. 
+	 * chú ý: Phảibao gồmtrốngchuỗi "" —— trướcđầunhómhợpĐiều kiện giờ(baseUI.compositeCondition / pushDataPermissions)
+	 * sẽĐưaDòng mộtCáiĐiều kiệnbằngvàngoặcsốLớpĐiều kiện(queryType  là  '('  hoặc  ')') của  logic đặt là  '', 
+	 * nếukhôngchứa '', hợp lệVui lòngyêu cầusẽtạingượcthứ tựCộthóagiai đoạnbịchặn, kích hoạt 400「Định dạng thân yêu cầu sai, Vui lòng kiểm traJSONĐịnh dạng」. 
 	 */
 	private static final java.util.Set<String> ALLOWED_LOGIC = new java.util.HashSet<>(java.util.Arrays.asList(
 			"AND", "OR", "and", "or", ""
@@ -71,7 +71,7 @@ public final class Parameter {
 
 
 	public void setLogic(String logic) {
-		// Giá trị trống(null hoặc chuỗi rỗng)Cho qua trực tiếp,  và  ALLOWED_LOGIC  trong giữ lại của  '' 语义Giữ nhất quán
+		// Giá trị trống(null hoặc chuỗi rỗng)Cho qua trực tiếp,  và  ALLOWED_LOGIC  trong giữ lại của  '' ngữ nghĩaGiữ nhất quán
 		if (logic != null && !logic.trim().isEmpty() && !ALLOWED_LOGIC.contains(logic)) {
 			throw new IllegalArgumentException("Invalid logic value: " + logic);
 		}
@@ -121,7 +121,7 @@ public final class Parameter {
 
 
 	public void setQueryType(String queryType) {
-		// Giá trị trống(null hoặc chuỗi rỗng)Cho qua trực tiếp; SearchParams 侧Đãđối với queryType làm trim Kiểm tra
+		// Giá trị trống(null hoặc chuỗi rỗng)Cho qua trực tiếp; SearchParams phíaĐãđối với queryType làm trim Kiểm tra
 		if (queryType != null && !queryType.trim().isEmpty() && !ALLOWED_QUERY_TYPES.contains(queryType.trim().toLowerCase())) {
 			throw new IllegalArgumentException("Invalid query type: " + queryType);
 		}
@@ -140,7 +140,7 @@ public final class Parameter {
 
 	/**
 	 * Từ Tham sốDanh sách trong đề xuấtlấyvàloại bỏ company_id Tham số, Trả vềcủa nóGiá trị. 
-	 * 兼容 company_id  và  `company_id` hailoạiviếtphương pháp. 
+	 * tương thích company_id  và  `company_id` hailoạiviếtphương pháp. 
 	 * @param parameters Danh sách tham số truy vấn
 	 * @return company_id  của Giá trị, NếuKhông tồn tạiThì trả về null
 	 */

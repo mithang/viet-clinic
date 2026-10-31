@@ -93,7 +93,7 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
-    /* ThêmBệnh nhân档案Thông tinvàĐăng ký khám */
+    /* ThêmBệnh nhânhồ sơánThông tinvàĐăng ký khám */
     @PostMapping(value = "add")
     public ResponseEntity<JSONObject> add(@RequestBody Patient patient) {
         // ThêmThông tin bệnh nhân

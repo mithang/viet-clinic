@@ -100,7 +100,7 @@ public class HosDepartmentStorageController {
                                 Collectors.groupingBy(HisDrugs::getCode), // Theocode phútnhóm
                                 map -> map.values().stream()            // lấyramỗiCáicodetương ứng của Giá trị(tức làĐối tượngDanh sách)
                                         .map(list -> list.get(0))           // Lấy phần tử đầu tiên từ mỗi danh sách làm đại diện
-                                        .collect(Collectors.toList())      // 收集ĐếnmộtCáimới của Danh sách
+                                        .collect(Collectors.toList())      // thutậpĐếnmộtCáimới của Danh sách
                         )));
 
             }
@@ -167,7 +167,7 @@ public class HosDepartmentStorageController {
             totalNumber += supplierStock.getNumber();
         }
         //Bắt đầuThêmTồn khoThông tin
-        supplierStorage.setNumber(totalNumber); // Sẽ 累thêm của Kết quảgánGiá trịchosupplierStorage
+        supplierStorage.setNumber(totalNumber); // Sẽ cộng dồnthêm của Kết quảgánGiá trịchosupplierStorage
         //Thuốc 2
         supplierStorage.setBreed(2);
         supplierStorage.setExamineDate(new Date());

@@ -7,7 +7,7 @@ import com.geeke.stock.entity.OutboundEvt;
 import com.geeke.stock.entity.StorageEvt;
 
 /**
- * BHYTtiến hành销lưuQuản lý
+ * BHYTtiến hànhtiêulưuQuản lý
  */
 public interface MdInventoryService {
 

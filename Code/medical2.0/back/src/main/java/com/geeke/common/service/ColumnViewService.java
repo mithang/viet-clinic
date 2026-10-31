@@ -36,7 +36,7 @@ public class ColumnViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ColumnViewService.class);
 	
-	final private static String OPERATE_COLUMN_NAME = "operate_column";	// 固chỉ định của Cột, dùng đểlưuđặtthao tácCột của Người dùngtùy chỉnhCộtrộng
+	final private static String OPERATE_COLUMN_NAME = "operate_column";	// cố địnhchỉ định của Cột, dùng đểlưuđặtthao tácCột của Người dùngtùy chỉnhCộtrộng
 	
 	@Autowired
 	private ColumnViewDao dao;
@@ -115,7 +115,7 @@ public class ColumnViewService {
 						column.setUserId(userId);
 						if("name".equals(c.getName())) {
 							column.setMiniWidth(cc.getWidth());   // thuộc tínhbảngTrường là name giờ, sử dụngHiện tạibảngcấu hình của Cộtrộng
-							// mục từ điển của TênCột, đơn đồngô居 trong 
+							// mục từ điển của TênCột, đơn đồngôgiữa trong 
 							if("6006".equals(scheme.getId())) {
 								column.setAlign("center");
 							}

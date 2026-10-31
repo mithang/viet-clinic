@@ -107,7 +107,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 			logger.debug("Sao chép tệp thất bại: " + e.getMessage());
 			return false;
 		} finally {
-			// đóngNhậpLuồng xuất, 首trướcđóngLuồng xuất, nhưngsaulạiđóngNhậpluồng
+			// đóngNhậpLuồng xuất, đầu tiêntrướcđóngLuồng xuất, nhưngsaulạiđóngNhậpluồng
 			if (outs != null) {
 				try {
 					outs.close();
@@ -451,7 +451,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 	}*/
 
 	/**
-	 * 解nénZIPTệp, Sẽ ZIPTệptrong của nội dunggiải nénĐếndescFileNamedanh mụcdưới
+	 * giảinénZIPTệp, Sẽ ZIPTệptrong của nội dunggiải nénĐếndescFileNamedanh mụcdưới
 	 * @param zipFileName Cầngiải nén của ZIPTệp
 	 * @param descFileName đíchTệp
 	 */
@@ -533,7 +533,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 					FileUtils
 							.zipFilesToZipFile(dirPath, files[i], zouts);
 				} else {
-					// Nếu có danh mục, thì递归gọi
+					// Nếu có danh mục, thìchuyểnquygọi
 					FileUtils.zipDirectoryToZipFile(dirPath, files[i],
 							zouts);
 				}
@@ -704,7 +704,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				error = "đóTệp có mộtCáiTệpkẹp. ";
 			}
 		} else {
-			error = "TệpĐã丢失 hoặc Không tồn tại!";
+			error = "Tệp đã mất hoặc không tồn tại!";
 		}
 		if (error != null){
 			logger.debug("---------------" + file + " " + error);
@@ -717,9 +717,9 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		long toLength = 0; 		// Ghi lại độ lệch byte cuối cùng của đoạn byte mà client cần tải xuống(so vớiNhư bytes=27000-39000, thìnàyCáiGiá trị có  là 39000)
 		long contentLength = 0; // Khách hàngđầuVui lòngyêu cầu của bytetổng lượng
 		String rangeBytes = ""; // Bản ghiKhách hàngđầutruyềnđến của hìnhNhư “bytes=27000-” hoặc người“bytes=27000-39000” của nội dung
-		RandomAccessFile raf = null; // âm责đọcDữ liệu
+		RandomAccessFile raf = null; // âmtráchđọcDữ liệu
 		OutputStream os = null; 	// viếtraDữ liệu
-		OutputStream out = null; 	// 缓冲
+		OutputStream out = null; 	// đệmxung
 		byte b[] = new byte[1024]; 	// tạmlưucontainer
 
 		if (request.getHeader("Range") != null) { // Byte bắt đầu của khối tệp mà client yêu cầu tải xuống
@@ -749,7 +749,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		response.reset(); // Thông báo cho client được phép tải xuống nối tiếp đa luồng với điểm ngắt,Định dạng của phản hồi là:Accept-Ranges: bytes
 		if (pastLength != 0) {
 			response.setHeader("Accept-Ranges", "bytes");// Nếu có Dòng một lầndưới,cònKhông cótải tiếp khi đứt đoạn,Trạng thái có Mặc định của  200,khôngcầnhiển thịkiểuĐặt;Định dạng của phản hồi là:HTTP/1.1 200 OK
-			// không có Từ nhấtBắt đầuTải xuống, Định dạng của phản hồi là: Content-Range: bytes [Tệp块 của Bắt đầubyte]-[Tổng kích thước tệp - 1]/[Tổng kích thước tệp]
+			// không có Từ nhấtBắt đầuTải xuống, Định dạng của phản hồi là: Content-Range: bytes [Tệpkhối của Bắt đầubyte]-[Tổng kích thước tệp - 1]/[Tổng kích thước tệp]
 			logger.debug("---------------không có Từ Bắt đầutiến hành dòngTải xuống!dịch vụthiết bịtức làSẽ Bắt đầutải tiếp khi đứt đoạn...");
 			switch (rangeSwitch) {
 				case 1: { // Đối với bytes=27000- Yêu cầu
@@ -801,7 +801,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 							readLength += 1024;
 							out.write(b, 0, n);
 						}
-						if (readLength <= contentLength) { // 余dưới của không đủ 1024 bytetạiỞ đâyđọc
+						if (readLength <= contentLength) { // còn lạidưới của không đủ 1024 bytetạiỞ đâyđọc
 							n = raf.read(b, 0, (int) (contentLength - readLength));
 							out.write(b, 0, n);
 						}
@@ -818,11 +818,11 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				 * tạiviếtDữ liệu của  giờchờ,  đối vớitại ClientAbortException củaLớp của ngoại lệ, 
 				 *  có do là Khách hàngđầulấyhủyrồiTải xuống, Và khi phía server tiếp tục ghi dữ liệu cho trình duyệt,  ném ranàyCáingoại lệ, nàyCái có bình thường của . 
 				 * Đặc biệt đối với phần mềm client hút băng thông như Xunlei,  rõrõĐãcómộtCáiluồngtạiđọc bytes=1275856879-1275877358, 
-				 * Nếu短Thời giantrongKhông cóđọcxong, Xunlei sẽ khởi động lạiDòng 二Cái, Dòng 三Cái. . . Luồng để đọc cùng một thứ của byteđoạn,  直ĐếncómộtCáiluồngđọcxong, 迅雷sẽ KILL
-				 * rơikhácđúngtạiTải xuốngcùngmộtbyteđoạn của luồng,  强 dòng trong dừngbyteđọcra, gây radịch vụthiết bị抛 ClientAbortException. 
+				 * NếungắnThời giantrongKhông cóđọcxong, Xunlei sẽ khởi động lạiDòng haiCái, Dòng baCái. . . Luồng để đọc cùng một thứ của byteđoạn,  trực tiếpĐếncómộtCáiluồngđọcxong, nhanhsấmsẽ KILL
+				 * rơikhácđúngtạiTải xuốngcùngmộtbyteđoạn của luồng,  mạnh dòng trong dừngbyteđọcra, gây radịch vụthiết bịném ClientAbortException. 
 				 * vì vậy, Chúng ta bỏ qua ngoại lệ này
 				 */
-				logger.debug("đề xuất醒: hướng tớiKhách hàngđầutruyền输 giờrahiệnIOngoại lệ, nhưngnàyngoại lệ có cho phép của , cócó thểKhách hàngđầulấyhủyrồiTải xuống, dẫn đếnnàyngoại lệ, khôngdùngđóng心!");
+				logger.debug("Nhắc nhở: khi truyền tới máy khách xuất hiện ngoại lệ IO, nhưng ngoại lệ này là cho phép, có thể máy khách đã hủy tải xuống, dẫn đến ngoại lệ này, không cần lo lắng!");
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
