@@ -10,6 +10,7 @@
   let alldicitemList = null;
 
   export default {
+    name: 'ComponentsDictItemViewIndex',
     props: {
       dictValue: {
         type: String,

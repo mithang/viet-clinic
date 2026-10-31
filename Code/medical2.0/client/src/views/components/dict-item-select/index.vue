@@ -13,6 +13,7 @@
   let alldicitemSelectList = null;
 
   export default {
+    name: 'ComponentsDictItemSelectIndex',
     props: {
       value: {
         type: String,

@@ -35,6 +35,7 @@
 	} from "@/api/stock/medicinalStorageControl";
 	import BaseUI from "@/views/components/baseUI";
 	export default {
+		name: 'ComponentsDrugStuffStorageSelectIndex',
 		extends: BaseUI,
 		props: {
 			supplierId: {
