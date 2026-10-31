@@ -10,7 +10,7 @@
 
 <script>
 	export default {
-		name: "Clipboard",
+		name: "ClipboardCopy",
     props: {
       content: {
         type: String

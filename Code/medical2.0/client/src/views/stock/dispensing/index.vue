@@ -215,6 +215,7 @@
   import XLSXD from 'xlsx-style'
 
   export default {
+    name: 'StockDispensingIndex',
     extends: MainUI,
     components: {
       DispensingForm,

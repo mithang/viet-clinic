@@ -673,6 +673,7 @@ import { BigNumber } from "bignumber.js";
 import { getDrug,getDrugSalesStat,getBatchNumberDrug,getStuff,getStuffSalesStat,getBatchNumberStuff,getDrugSalesStatByNumber,getStuffSalesStatNumber,exportTable} from "@/api/stock/currentInventory";
 import { downloadBlob } from '@/utils/downloadBlob'
 export default {
+  name: 'StockCurrentInventoryIndex',
   extends: MainUI,
   data() {
     return {

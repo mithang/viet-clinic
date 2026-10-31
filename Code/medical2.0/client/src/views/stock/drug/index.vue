@@ -446,6 +446,7 @@
 
 
   export default {
+    name: 'StockDrugIndex',
     extends: MainUI,
     mixins: [listViewMixin],
     components: {

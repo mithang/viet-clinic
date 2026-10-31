@@ -56,7 +56,7 @@
   import { getLocalToken } from '@/utils/auth'
   import SidebarItem from './SidebarItem'
   export default {
-    name: 'sidebar',
+    name: 'AppSidebar',
     components: { SidebarItem },
     props: ['isCollapse', 'routers'],
     data() {

@@ -1108,6 +1108,7 @@ import History from "@/views/components/history";
 import {getByPatientId} from "@/api/member/memberManagement"
 import { getCurrentUser, getCurrentUserId, getCurrentCompany } from "@/utils/userCache";
 export default {
+  name: 'StockSupplierStockIndex',
   extends: MainUI,
   components: {
     SupplierStockForm,

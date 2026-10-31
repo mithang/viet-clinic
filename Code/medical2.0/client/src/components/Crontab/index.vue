@@ -134,7 +134,7 @@ export default {
       },
     };
   },
-  name: "vcrontab",
+  name: "AppCrontab",
   props: ["expression", "hideComponent"],
   methods: {
     shouldHide(key) {
