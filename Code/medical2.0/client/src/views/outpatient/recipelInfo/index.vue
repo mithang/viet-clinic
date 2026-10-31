@@ -104,6 +104,7 @@ import MainUI from '@/views/components/mainUI'
 import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 export default {
+  name: 'OutpatientRecipelInfoIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

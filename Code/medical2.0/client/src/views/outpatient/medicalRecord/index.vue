@@ -1052,6 +1052,7 @@ import VisitRecords from "./components/VisitRecords.vue";
 import uploadFile from "@/views/components/uploadFile";
 import { getCurrentUser, getCurrentUserId } from "@/utils/userCache";
 export default {
+  name: 'OutpatientMedicalRecordIndex',
   extends: MainUI,
   components: {
     uploadFile,

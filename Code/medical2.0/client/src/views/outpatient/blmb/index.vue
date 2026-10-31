@@ -107,6 +107,7 @@ import MainUI from '@/views/components/mainUI'
 import History from '@/views/components/history'
 import {getblmblist,deletembbm} from '@/api/outpatient/blmb'
   export default {
+    name: 'OutpatientBlmbIndex',
     extends: MainUI,
   components: { 
     BlmbForm,

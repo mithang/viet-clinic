@@ -674,6 +674,7 @@
 
 
   export default {
+    name: 'OutpatientRegistrationIndex',
 
     extends: MainUI,
     mixins: [listViewMixin],

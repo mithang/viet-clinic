@@ -20,6 +20,7 @@ import RandomReview from "./components/randomReview"
 import listViewMixin from '@/mixins/listViewMixin'
 import MainUI from '@/views/components/mainUI'
 export default {
+  name: 'OutpatientRecipelInfoReviewIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

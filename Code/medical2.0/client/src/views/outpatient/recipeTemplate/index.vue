@@ -229,6 +229,7 @@
   import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 
   export default {
+    name: 'OutpatientRecipeTemplateIndex',
     extends: MainUI,
     mixins: [listViewMixin],
     components: {
