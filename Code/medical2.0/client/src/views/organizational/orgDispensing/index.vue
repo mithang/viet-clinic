@@ -296,7 +296,7 @@ export default {
        return (this.currentPage-1)*this.search.limit+index +1;
     },
     getTotal(param){
-      let { columns, data } = param;
+      let { columns } = param;
       let arr = []
       columns.forEach((column, index) => {
           if (index === 0) {
