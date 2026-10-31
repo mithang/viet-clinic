@@ -287,6 +287,7 @@
 
 
   export default {
+  name: 'StockStuffIndex',
     extends: MainUI,
     mixins: [listViewMixin],
     components: {

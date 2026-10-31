@@ -241,6 +241,7 @@ import synchronous from './synchronous.vue'
 
 
 export default {
+  name: 'StockStuffNewIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

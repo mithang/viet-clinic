@@ -193,6 +193,7 @@ import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
 import History from '@/views/components/history'
 export default {
+  name: 'StockInventoryVerificationIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

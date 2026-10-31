@@ -87,6 +87,7 @@ import MainUI from '@/views/components/mainUI'
 
 
 export default {
+  name: 'StockHospitalDispensingIndex',
   extends: MainUI,
   components: {
     QueryForm,

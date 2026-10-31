@@ -158,6 +158,7 @@ import MainUI from '@/views/components/mainUI'
 import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 export default {
+  name: 'StockSupplierIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

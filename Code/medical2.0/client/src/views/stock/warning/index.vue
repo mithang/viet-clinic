@@ -50,6 +50,7 @@ import drugWarning from "./components/drugWarning";
 import stuffWarning from "./components/stuffWarning"
 
 export default {
+  name: 'StockWarningIndex',
   extends: MainUI,
   components:{drugWarning,stuffWarning},
   data() {
