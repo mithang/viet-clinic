@@ -130,6 +130,7 @@ import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
 import OperationIcon from '@/components/OperationIcon'
 export default {
+  name: 'SysActionIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

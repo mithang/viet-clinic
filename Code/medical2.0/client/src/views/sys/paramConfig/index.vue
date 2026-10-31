@@ -48,6 +48,7 @@
   import {getLocalCurrentCompany} from "@/utils/auth";
 
   export default {
+  name: 'SysParamConfigIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

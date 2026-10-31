@@ -109,6 +109,7 @@ import MainUI from '@/views/components/mainUI'
 import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 export default {
+  name: 'SysThemeIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {
