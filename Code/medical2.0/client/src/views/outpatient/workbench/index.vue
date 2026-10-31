@@ -123,7 +123,6 @@
 import WorkbenchForm from './workbenchForm'
 import MainUI from '@/views/components/mainUI'
 import { updateNotShowById } from '@/api/outpatient/recipelInfo'
-import History from '@/views/components/history'
 import {
   listdispensingPages,
   listSchedulesPage,
@@ -141,7 +140,6 @@ export default {
   extends: MainUI,
   components: {
     WorkbenchForm: WorkbenchForm,
-    History: History
   },
 
   data() {

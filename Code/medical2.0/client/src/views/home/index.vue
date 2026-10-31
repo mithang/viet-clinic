@@ -92,7 +92,6 @@
 </template>
 
 <script>
-import Sidebar from '@/components/sidebar'
 import BaseUI from '@/views/components/baseUI'
 import RightPanel from '@/components/RightPanel'
 import Settings from '../components/Settings'
@@ -527,7 +526,7 @@ export default {
       document.title = title
     },
   },
-  components: { Sidebar, RightPanel, Settings, Sys, NavHeader, PersonalInfo, BookMark }
+components: { RightPanel, Settings, Sys, NavHeader, PersonalInfo, BookMark }
 };
 </script>
 

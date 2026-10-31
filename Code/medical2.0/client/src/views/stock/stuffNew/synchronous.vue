@@ -202,7 +202,6 @@ import { listResourcePermission } from '@/api/admin/common/permission'
 import synchronousStuffForm from './synchronousStuffForm'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import MainUI from '@/views/components/mainUI'
-import History from '@/views/components/history'
 import { getLocalCurrentCompany } from "@/utils/auth";
 import fileurl from "@/assets/file/stuff.xlsx";
 
@@ -212,7 +211,6 @@ export default {
   name: "stuff-form",
   components: {
     synchronousStuffForm,
-    History,
   },
   data() {
     return {

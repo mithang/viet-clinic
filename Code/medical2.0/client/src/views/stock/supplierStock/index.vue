@@ -1102,17 +1102,13 @@ import { listRegistrationPages } from "@/api/outpatient/registration";
 import { listPatientAll } from "@/api/outpatient/patient";
 import {listDictItemAll} from "@/api/sys/dictItem";
 import { updateStockStockList } from "@/api/stock/supplierStock";
-import SupplierStockForm from "./supplierStockForm";
 import MainUI from "@/views/components/mainUI";
-import History from "@/views/components/history";
 import {getByPatientId} from "@/api/member/memberManagement"
 import { getCurrentUser, getCurrentUserId, getCurrentCompany } from "@/utils/userCache";
 export default {
   name: 'StockSupplierStockIndex',
   extends: MainUI,
   components: {
-    SupplierStockForm,
-    History,
   },
   data() {
     return {

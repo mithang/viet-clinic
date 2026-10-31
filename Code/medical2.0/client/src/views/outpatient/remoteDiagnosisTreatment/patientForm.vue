@@ -158,7 +158,6 @@
   import {getPatient as getRemotePatient, patientSelfReg, remoteTreatedApplyZfOnly} from "@/api/remoteApis";
   import BaseUI from "@/views/components/baseUI";
   import OperationIcon from "@/components/OperationIcon";
-  import VDistpicker from 'v-distpicker'
   import {getLocalToken} from '@/utils/auth';
   import axios from 'axios'
   import Vue from "vue";
@@ -176,7 +175,6 @@
     name: "patient-form",
     components: {
       OperationIcon,
-      VDistpicker
     },
     data() {
       return {

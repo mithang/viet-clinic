@@ -71,13 +71,11 @@ import { listMemberSetAll } from '@/api/member/memberSet'
 import { listCostItemAll } from '@/api/treatment/costItem'
 import { saveMemberItem } from '@/api/member/memberItem'
 import BaseUI from '@/views/components/baseUI'
-import OperationIcon from '@/components/OperationIcon'
 import { getCurrentCompanyId } from "@/utils/userCache";
 export default {
   extends: BaseUI,
   name: 'memberItem-form',
   components: {
-    OperationIcon
   },  
   data() {
     return {

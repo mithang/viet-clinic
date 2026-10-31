@@ -282,7 +282,6 @@
 
 <script>
   import BaseUI from "@/views/components/baseUI";
-  import VDistpicker from 'v-distpicker';
   import {saveblmb, selectmbbm, updatembbm} from '@/api/outpatient/blmb'
 
 
@@ -290,7 +289,6 @@
     extends: BaseUI,
     name: "blmb-form",
     components: {
-      VDistpicker
     },
     props: ['closeValue'],
     data() {

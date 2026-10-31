@@ -130,8 +130,6 @@
 import { listPatientPage, getPatientById, deletePatient } from '@/api/outpatient/patient'
 import listViewMixin from '@/mixins/listViewMixin'
 import PatientForm from './patientForm'
-import ExportExcelButton from '@/components/ExportExcelButton'
-import ViewColumnsSelect from '@/views/components/ViewColumnsSelect'
 import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -142,8 +140,6 @@ export default {
   mixins: [listViewMixin],
   components: {
     PatientForm,
-    ExportExcelButton,
-    ViewColumnsSelect,
     QueryForm,
     OperationIcon,
     History

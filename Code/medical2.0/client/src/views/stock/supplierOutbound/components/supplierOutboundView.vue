@@ -153,10 +153,6 @@
     listByBoutbound
   } from "@/api/stock/supplierOutboundDetail";
   import SearchItem from "@/views/components/search-item/index.vue";
-  import SupplierSelect from "@/views/components/supplier-select/index.vue";
-  import DrugStuffStorageSelect from "@/views/components/drug-stuff-storage-select/index.vue";
-  import SupplierOutboundMethodSelect from "@/views/components/supplier-outbound-method-select/index.vue";
-  import DictItemSelect from "@/views/components/dict-item-select/index.vue";
 
   export default {
     props: {
@@ -167,10 +163,6 @@
     },
     components: {
       SearchItem,
-      SupplierSelect,
-      DrugStuffStorageSelect,
-      SupplierOutboundMethodSelect,
-      DictItemSelect,
       DictItemView,
       SupplierOutboundStatusView
     },

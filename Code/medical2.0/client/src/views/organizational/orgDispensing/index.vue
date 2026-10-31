@@ -182,10 +182,7 @@
 
 <script>
 import { validatenull } from "@/utils/validate";
-import DispensingForm from "./dispensingForm";
-import QueryForm from "@/views/components/queryForm";
 import MainUI from "@/views/components/mainUI";
-import OperationIcon from "@/components/OperationIcon";
 import "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { getOrganizationList,getAmount } from "@/api/stock/dispensing";
@@ -198,9 +195,6 @@ export default {
   name: 'OrganizationalOrgDispensingIndex',
   extends: MainUI,
   components: {
-    DispensingForm,
-    QueryForm,
-    OperationIcon,
   },
   data() {
     return {

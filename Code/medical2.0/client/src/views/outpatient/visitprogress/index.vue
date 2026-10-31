@@ -132,7 +132,6 @@
 
 <script>
 import MainUI from '@/views/components/mainUI'
-import History from '@/views/components/history'
 import {
   selectvisiprogresslist,
 }  from "@/api/workbench/Schedules";
@@ -141,7 +140,6 @@ import moment from "moment";
   name: 'OutpatientVisitprogressIndex',
     extends: MainUI,
   components: {
-    History
   },
     data() {
       return {

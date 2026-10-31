@@ -123,7 +123,6 @@ import { listActionPage, getActionById, deleteAction } from '@/api/sys/action'
 import listViewMixin from '@/mixins/listViewMixin'
 import ActionForm from './actionForm'
 import DataRangePicker from '@/components/DataRangePicker'
-import NumberRangeInput from '@/components/NumberRangeInput'
 import '@/api/sys/dictItem';
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import ExportExcelButton from '@/components/ExportExcelButton'
@@ -137,7 +136,6 @@ export default {
   mixins: [listViewMixin],
   components: {
     DataRangePicker,
-    NumberRangeInput,
     ActionForm,
     ExportExcelButton,
     ViewColumnsSelect,

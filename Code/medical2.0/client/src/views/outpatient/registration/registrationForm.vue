@@ -737,7 +737,6 @@ import {getPatientById, listPatientAll, savePatient,} from "@/api/outpatient/pat
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import {listDoctorsAll, saveRegistration} from "@/api/outpatient/registration";
 import BaseUI from "@/views/components/baseUI";
-import OperationIcon from "@/components/OperationIcon";
 import {saveTollInfo} from "@/api/toll/tollInfo";
 
 // Hàm khởi tạo cấp module — tránh gọi this.Phương pháp trong data() của Vue (lúc này methods chưa được khởi tạo)
@@ -798,7 +797,6 @@ export default {
   extends: BaseUI,
   name: "registration-form",
   components: {
-    OperationIcon,
   },
   data() {
     return {

@@ -573,13 +573,11 @@
 import {listInventoryVerificationDetailPage,saveAll,exportExcel} from '@/api/stock/inventoryVerificationDetail'
 import { saveInventoryVerification,accomplishInventoryVerification } from '@/api/stock/inventoryVerification'
 import BaseUI from '@/views/components/baseUI'
-import OperationIcon from '@/components/OperationIcon'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 export default {
   extends: BaseUI,
   name: 'inventoryVerification-form',
   components: {
-    OperationIcon
   },
   data() {
     return {

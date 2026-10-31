@@ -251,7 +251,6 @@ import ExportExcelButton from '@/components/ExportExcelButton'
 import ViewColumnsSelect from '@/views/components/ViewColumnsSelect'
 import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
-import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 import UploadFile from '../../components/uploadFile.vue'
 import UploadFile1 from '../../components/uploadFile.vue'
@@ -263,7 +262,6 @@ export default {
     ExportExcelButton,
     ViewColumnsSelect,
     QueryForm,
-    OperationIcon,
     History,
     MyTask,
     UploadFile,

@@ -151,7 +151,6 @@
   } from "@/api/stock/supplierOutbound";
 
   import DrugStuffTypeSelect from "@/views/components/drug-stuff-type-select/index.vue";
-  import SupplierOutboundMethodSelect from "@/views/components/supplier-outbound-method-select/index.vue";
   import SupplierOutboundStatusSelect from "@/views/components/supplier-outbound-status-select/index.vue";
   import SupplierOutboundStatusView from "@/views/components/supplier-outbound-status-view/index.vue";
   import SearchItem from "@/views/components/search-item/index.vue";
@@ -167,7 +166,6 @@ import OperationIcon from '@/components/OperationIcon'
       SupplierOutboundView,
       AddStorageTo,
       DrugStuffTypeSelect,
-      SupplierOutboundMethodSelect,
       SupplierOutboundStatusSelect,
       SupplierOutboundStatusView,
       SearchItem,

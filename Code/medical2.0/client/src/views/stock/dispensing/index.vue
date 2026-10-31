@@ -205,7 +205,6 @@
 
 <script>
   import {validatenull} from "@/utils/validate";
-  import DispensingForm from "./dispensingForm";
   import MainUI from "@/views/components/mainUI";
   import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
   import {getList, getAmount} from "@/api/stock/dispensing";
@@ -218,7 +217,6 @@
     name: 'StockDispensingIndex',
     extends: MainUI,
     components: {
-      DispensingForm,
     },
     data() {
       return {

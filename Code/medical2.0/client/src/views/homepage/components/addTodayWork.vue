@@ -53,13 +53,11 @@
 import '@/utils/validate';
   import BaseUI from '@/views/components/baseUI'
   import OperationIcon from '@/components/OperationIcon'
-  import propertyCustom from  '@/views/sys/propertySet/components/propertyCustom'
   export default {
     extends: BaseUI,
     name: 'addTodayWork-form',
     components: {
       OperationIcon,
-      propertyCustom
     },
     data() {
       return {

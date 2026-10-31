@@ -831,7 +831,6 @@
   import {listManufactureFactoryAll} from "@/api/basicdata/manufactureFactory";
   import {saveDrug} from "@/api/stock/drug";
   import BaseUI from "@/views/components/baseUI";
-  import OperationIcon from "@/components/OperationIcon";
   import {BigNumber} from "bignumber.js";
 
 
@@ -841,7 +840,6 @@
     extends: BaseUI,
     name: "drug-form",
     components: {
-      OperationIcon,
     },
     data() {
       return {

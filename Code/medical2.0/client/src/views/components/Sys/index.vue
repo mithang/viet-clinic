@@ -170,14 +170,12 @@
 </template>
 
 <script>
-  import ThemePicker from '@/components/ThemePicker'
   import imageUpload from './imageUpload'
   
   import { listSysSetingAll, saveSysSeting } from '@/api/sys/sysSeting.js'
   export default {
     name: "AppSys",
     components: {
-      ThemePicker,
       imageUpload
     },
     data() {

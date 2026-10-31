@@ -129,7 +129,6 @@
 <script>
 import MainUI from "@/views/components/mainUI";
 import listViewMixin from '@/mixins/listViewMixin'
-import History from "@/views/components/history";
 import ArticleForm from "./articleForm";
 import { listarticlepage } from "@/api/taskmanagement/article";
 export default {
@@ -137,7 +136,6 @@ export default {
   extends: MainUI,
   mixins: [listViewMixin],
   components: {
-    History,
     ArticleForm,
   },
   data() {

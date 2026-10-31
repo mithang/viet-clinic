@@ -106,23 +106,15 @@ import { listResourcePermission } from "@/api/admin/common/permission";
 import CostItemForm from "./costItemForm";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { listCostItemAll } from "@/api/treatment/costItem";
-import ExportExcelButton from "@/components/ExportExcelButton";
-import ViewColumnsSelect from "@/views/components/ViewColumnsSelect";
 import QueryForm from "@/views/components/queryForm";
 import MainUI from "@/views/components/mainUI";
-import OperationIcon from "@/components/OperationIcon";
-import History from "@/views/components/history";
 
 
 export default {
   extends: MainUI,
   name: "stuff-form",
   components: {
-    ExportExcelButton,
-    ViewColumnsSelect,
     QueryForm,
-    OperationIcon,
-    History,
     CostItemForm
   },
   data() {

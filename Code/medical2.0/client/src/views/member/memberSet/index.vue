@@ -205,7 +205,6 @@ import ExportExcelButton from '@/components/ExportExcelButton'
 import ViewColumnsSelect from '@/views/components/ViewColumnsSelect'
 import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
-import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 export default {
@@ -217,7 +216,6 @@ export default {
     ExportExcelButton,
     ViewColumnsSelect,
     QueryForm,
-    OperationIcon,
     History
   },
   data() {

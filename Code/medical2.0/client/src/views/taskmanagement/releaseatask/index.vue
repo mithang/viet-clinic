@@ -165,7 +165,6 @@ import AddtaskForm from './addtaskForm'
 import TaskdetailsForm from './taskdetailsForm'
 import listViewMixin from '@/mixins/listViewMixin'
 import MainUI from '@/views/components/mainUI'
-import History from '@/views/components/history'
 import {selecttasklist,release,deleteTask} from "@/api/taskmanagement/taskmanagement"
 import { getjglist} from "@/api/toll/tollInfo";
   export default {
@@ -175,7 +174,6 @@ import { getjglist} from "@/api/toll/tollInfo";
   components: {
     AddtaskForm,
     TaskdetailsForm,
-    History
   },
     data() {
       return {

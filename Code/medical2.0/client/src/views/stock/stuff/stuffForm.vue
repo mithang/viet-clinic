@@ -441,14 +441,12 @@ import { getDictItemsByCode, DICT_CODE } from "@/utils/dictCache";
 import { listManufactureFactoryAll } from "@/api/basicdata/manufactureFactory";
 import { saveStuff } from "@/api/stock/stuff";
 import BaseUI from "@/views/components/baseUI";
-import OperationIcon from "@/components/OperationIcon";
 
 let pinyin = require('js-pinyin');
 export default {
   extends: BaseUI,
   name: "stuff-form",
   components: {
-    OperationIcon,
   },
   data() {
     return {

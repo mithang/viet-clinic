@@ -1043,7 +1043,6 @@ import {
   allSaveMedicalRecord,
   allQueryMedicalRecord,
 } from "@/api/outpatient/medicalRecord";
-import MedicalRecordForm from "./medicalRecordForm";
 import MainUI from "@/views/components/mainUI";
 import History from "@/views/components/history";
 import ChineseMedicine from "./components/ChineseMedicine";
@@ -1056,7 +1055,6 @@ export default {
   extends: MainUI,
   components: {
     uploadFile,
-    MedicalRecordForm,
     History,
     ChineseMedicine,
     InfusionPrescription,
