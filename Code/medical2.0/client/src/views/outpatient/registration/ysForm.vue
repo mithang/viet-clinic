@@ -49,9 +49,8 @@
 
 <script>
 import BaseUI from "@/views/components/baseUI";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
-import { saveRegistration,listDoctorsAll,listDoctorsAllnew,registationupdatenew } from "@/api/outpatient/registration";
+import { listDoctorsAllnew,registationupdatenew } from "@/api/outpatient/registration";
 export default {
   extends: BaseUI,
   name: "ys-form",
@@ -186,7 +185,7 @@ export default {
         }); 
 
     },
-    openViewysDialog(item, types) {
+    openViewysDialog(item) {
       this.arrlistcreat();
       this.dialogProps.action = "view";
       this.dialogProps.title = "Phân khoa";

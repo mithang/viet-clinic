@@ -210,11 +210,8 @@
 
 <script>
 import BaseUI from "@/views/components/baseUI";
-import { listDictItemAll } from "@/api/sys/dictItem";
 import {
-  saveRegistration,
   listDoctorsAll,
-  listDoctorsAllnew,
   registationupdatenew,
 } from "@/api/outpatient/registration";
 export default {
@@ -283,7 +280,7 @@ export default {
     };
   },
   methods: {
-    handleClick(tab, event) {
+    handleClick(tab) {
       //this.$message.success(this.tabPosition);
 
       if (tab.name === "tzxx") {

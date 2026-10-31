@@ -731,12 +731,11 @@
 </template>
 <script>
 import {validatenull} from "@/utils/validate";
-import {listSysParamConfigAll, saveSysParamConfigList} from '@/api/sys/sysParamConfig'
+import {listSysParamConfigAll} from '@/api/sys/sysParamConfig'
 import {listClinicOfficeAll} from "@/api/org/clinicOffice";
 import {getPatientById, listPatientAll, savePatient,} from "@/api/outpatient/patient";
-import {listDictItemAll} from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
-import {listDoctorsAllnew, listDoctorsAll, saveRegistration} from "@/api/outpatient/registration";
+import {listDoctorsAll, saveRegistration} from "@/api/outpatient/registration";
 import BaseUI from "@/views/components/baseUI";
 import OperationIcon from "@/components/OperationIcon";
 import {saveTollInfo} from "@/api/toll/tollInfo";
@@ -1268,7 +1267,7 @@ export default {
         chargeDate: "", // Thời gian thu phí
       };
     },
-    initOptions(This) {
+    initOptions() {
       //Truy vấn giới tính bệnh nhân
       getDictItemsByCode(DICT_CODE.GENDER).then((data) => {
         this.gender_List = data;
@@ -1560,12 +1559,12 @@ export default {
         });
       }
     },
-    "bizFormModel.freeRegistrationFee": function (newValue, oldValue) {
+    "bizFormModel.freeRegistrationFee": function (newValue) {
       if (newValue === '1') {
         this.bizFormModel.registrationFee = 0
       }
     },
-    "bizFormModel.age": function (newValue, oldValue) {
+    "bizFormModel.age": function (newValue) {
       if (newValue < 12) {
         this.formRules.guardianName[0].required = true
         this.formRules.guardianPhone[0].required = true

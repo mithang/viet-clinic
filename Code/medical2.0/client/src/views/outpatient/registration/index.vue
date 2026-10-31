@@ -650,15 +650,13 @@
   import QueryForm from "@/views/components/queryForm";
   import MainUI from "@/views/components/mainUI";
   import History from "@/views/components/history";
-  import {listDictItemAll} from "@/api/sys/dictItem";
-  import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
-  import {getTollInfoByRegistrationId, saveTollInfo} from "@/api/toll/tollInfo";
+    import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
+  import {saveTollInfo} from "@/api/toll/tollInfo";
   import axios from 'axios'
   import Vue from "vue";
   Vue.prototype.$axios = axios;
   import { getLocalToken } from '@/utils/auth';
-  import request from '@/utils/request'
-  import PatientManage from "../patient/PatientManage.vue";
+    import PatientManage from "../patient/PatientManage.vue";
 
   const loginForm = {Data:"API.Manage",AppId:"Oh_Newtouch_Clinic"}
   const config = {
@@ -674,14 +672,6 @@
 
 
 
-  const doctors = {
-    appId: "Oh_Newtouch_Clinic",
-    organizeId: "6d5752a7-234a-403e-aa1c-df8b45d3469f",
-    timestamp: new Date(),
-    data: {
-      ks:""
-  }
-  }
 
   export default {
 
@@ -820,7 +810,7 @@
       };
     },
     methods: {
-      handleClick(tab, event) {
+      handleClick(tab) {
         if (tab.name === "djxx") {
           this.pageInit();
         } else if (tab.name === "yyfz") {
@@ -859,7 +849,7 @@
           .then((response) => {
             this.tokenData = response.data.BusData.data.Token
           })
-          .catch((error) => {
+          .catch(() => {
           });
 
         // Lấy bệnh viện phòng khám từ xa
@@ -872,7 +862,7 @@
             this.bizFormModel.hospital = response.data.BusData.data
             this.selects_mechanism = this.bizFormModel.hospital
           })
-          .catch((error) => {
+          .catch(() => {
           });
 
         // Lấy khoa của phòng khám từ xa
@@ -889,7 +879,7 @@
           .then((response) => {
             this.departments_List = response.data.BusData.data
           })
-          .catch((error) => {
+          .catch(() => {
           });
 
         // Lấy bác sĩ phòng khám từ xa
@@ -908,7 +898,7 @@
           .then((response) => {
             this.doctors_List = response.data.BusData.data
           })
-          .catch((error) => {
+          .catch(() => {
           });
 
         await getRegistrationById(row.id)
@@ -965,7 +955,7 @@
           .then((response) => {
             this.departments_List = response.data.BusData.data
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -986,7 +976,7 @@
           .then((response) => {
             this.doctors_List = response.data.BusData.data
           })
-          .catch((error) => {
+          .catch(() => {
           });
       },
 
@@ -1002,7 +992,7 @@
         this.returnToll = refundData
         this.refundRegistrationPayClick()
       },
-      sortDoc(clinicOffice, officename) {
+      sortDoc(clinicOffice) {
         if (this.doctors_List.length !== 0) {
           //Lọc bác sĩ
           this.selects_doctor = this.doctors_List.filter(doctor => doctor.office === clinicOffice)
@@ -1283,7 +1273,7 @@
           this.outputError(error)
         })
       },
-      initOptions(This) {
+      initOptions() {
         this.key_department++;
         let department_search = {
           params: [
@@ -1478,7 +1468,6 @@
     watch: {
       "queryModel.department.id"(val, oldVal) {
         if (val !== oldVal) {
-          let This = this.queryModel;
           this.queryModel.doctor = {
             // Bác sĩ
             id: null,
@@ -1513,7 +1502,7 @@
           });
         }
       },
-      registrationList(val) {
+      registrationList() {
         // if(val){
         //   this.$nextTick(() => {
         //       this.$refs.mutipleTable.doLayout();
