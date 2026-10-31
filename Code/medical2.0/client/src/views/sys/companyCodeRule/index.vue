@@ -157,7 +157,7 @@ export default {
       this.companyCodeRuleTotal = responseData.data.total
       this.companyCodeRuleList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

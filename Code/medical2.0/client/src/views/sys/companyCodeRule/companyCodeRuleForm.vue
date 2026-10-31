@@ -31,7 +31,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { saveCompanyCodeRule } from '@/api/sys/companyCodeRule'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -105,7 +105,7 @@ export default {
       this.dialogProps.title = 'Xem quy tắc mã công ty'
       this.initOptions(this.bizFormModel)
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Công ty
           'id': null,
@@ -122,7 +122,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     openViewCompanyCodeRuleDialog(companyCodeRule) {
       this.dialogProps.action = 'view'

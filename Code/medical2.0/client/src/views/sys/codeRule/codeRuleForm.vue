@@ -45,7 +45,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { saveCodeRule } from '@/api/sys/codeRule'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -153,7 +153,7 @@ export default {
         this.$refs['codeRuleForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'code': '',   // Mã
         'name': '',   // Tên
@@ -162,7 +162,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     openViewCodeRuleDialog(codeRule) {
       this.dialogProps.action = 'view'

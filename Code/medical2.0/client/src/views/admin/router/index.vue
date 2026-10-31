@@ -226,7 +226,7 @@ export default {
         this.outputError(error)
       })
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

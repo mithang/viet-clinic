@@ -168,7 +168,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
 
     },
     openViewResourceDialog(resource) {

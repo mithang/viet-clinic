@@ -153,7 +153,7 @@ export default {
       this.codeRuleTotal = responseData.data.total
       this.codeRuleList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   mounted() {

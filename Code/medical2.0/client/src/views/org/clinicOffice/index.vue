@@ -224,7 +224,7 @@ export default {
       this.clinicOfficeTotal = responseData.data.total
       this.clinicOfficeList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

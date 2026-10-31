@@ -156,7 +156,7 @@ export default {
       this.administrativeDivisionTotal = responseData.data.total
       this.administrativeDivisionList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

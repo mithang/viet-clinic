@@ -114,7 +114,7 @@
 <script>
 import { validatenull } from '@/utils/validate'
 
-import { listDictItemAll } from '@/api/sys/dictItem'
+import '@/api/sys/dictItem';
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { listGenTableAll } from '@/api/gen/genTable'
 
@@ -213,7 +213,7 @@ export default {
       this.dialogProps.title = 'Sửa nhật ký thao tác'
       this.initOptions(this.actionModel)
     },
-    initFormModel(parent) {
+    initFormModel() {
       return {
         'actionType': {     // Thao tác
           'value': '',

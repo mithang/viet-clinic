@@ -297,7 +297,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       this.key_parent++
       let parent_search = {
         params: []

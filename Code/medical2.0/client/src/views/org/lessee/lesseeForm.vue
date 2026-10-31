@@ -90,7 +90,7 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { saveLessee } from '@/api/org/lessee'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -168,7 +168,7 @@ export default {
         this.$refs['lesseeForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'userName': '',   // Tên đơn vị thuê
         'phoneNumber': '',   // Số điện thoại
@@ -183,7 +183,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     openViewLesseeDialog(lessee) {
       this.dialogProps.action = 'view'

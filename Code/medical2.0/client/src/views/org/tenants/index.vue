@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { validatenull } from '@/utils/validate'
+import '@/utils/validate';
 import { listTenantPage, getTenantById, deleteTenant } from '@/api/tenant/tenant'
 import listViewMixin from '@/mixins/listViewMixin'
 import LesseeForm from './lesseeForm'
@@ -186,7 +186,7 @@ export default {
       this.lesseeTotal = responseData.data.total
       this.lesseeList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

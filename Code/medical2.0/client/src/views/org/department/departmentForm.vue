@@ -76,7 +76,7 @@
 </template>
 <script>
 import { validatenull } from '@/utils/validate'
-import { treeCompany } from '@/api/org/company'
+import '@/api/org/company';
 import { treeDepartment } from '@/api/org/department'
 import { listUserAll } from '@/api/admin/user'
 import { saveDepartment } from '@/api/org/department'

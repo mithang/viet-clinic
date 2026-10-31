@@ -133,7 +133,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
       let parten_search = {
         params: []
       }

@@ -267,7 +267,7 @@ export default {
         this.outputError(error)
       })
     },
-    initOptions(This) {
+    initOptions() {
       let version_search = {
         params: []
       }

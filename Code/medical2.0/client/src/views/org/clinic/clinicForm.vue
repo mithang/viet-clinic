@@ -368,7 +368,7 @@
           'publicKey': '',       // Đơn thuốc điện tử - khoá công khai
         }
       },
-      initOptions(This) {
+      initOptions() {
         let lesseeId_search = {
           params: []
         }

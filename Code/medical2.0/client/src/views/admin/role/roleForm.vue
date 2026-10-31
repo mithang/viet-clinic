@@ -48,7 +48,7 @@
 </template>
 <script>
 import { validatenull } from '@/utils/validate'
-import { treeCompany } from '@/api/org/company'
+import '@/api/org/company';
 import { saveRole } from '@/api/admin/role'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
@@ -142,7 +142,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
 
     },
     openViewRoleDialog(role) {

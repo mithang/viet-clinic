@@ -122,7 +122,7 @@ import listViewMixin from '@/mixins/listViewMixin'
 import ActionForm from './actionForm'
 import DataRangePicker from '@/components/DataRangePicker'
 import NumberRangeInput from '@/components/NumberRangeInput'
-import { listDictItemAll } from '@/api/sys/dictItem'
+import '@/api/sys/dictItem';
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import ExportExcelButton from '@/components/ExportExcelButton'
 import ViewColumnsSelect from '@/views/components/ViewColumnsSelect'
@@ -216,7 +216,7 @@ export default {
         this.outputError(error)
       })
     },
-    initOptions(This) {
+    initOptions() {
       getDictItemsByCode(DICT_CODE.ACTION_TYPE).then((data) => {
         this.actionType_List = data
       })

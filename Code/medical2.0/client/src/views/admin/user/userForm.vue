@@ -424,8 +424,8 @@
 import { validatenull } from "@/utils/validate";
 import { listClinicOfficeAll } from "@/api/org/clinicOffice";
 import { getPhotoById } from "@/api/sys/sysSeting";
-import { treeCompany } from "@/api/org/company";
-import { treeDepartment } from "@/api/org/department";
+import "@/api/org/company";
+import "@/api/org/department";
 import { listRoleAll } from "@/api/admin/role";
 import { saveUser, updateUser, changemylist } from "@/api/admin/user";
 import BaseUI from "@/views/components/baseUI";
@@ -875,11 +875,6 @@ export default {
 
       const company_id = (This && This.company && This.company.id) ? This.company.id : formCompanyId;
       this.key_department++;
-      let department_search = {
-        params: [
-          { columnName: "company_id", queryType: "=", value: company_id },
-        ],
-      };
       // // Trên bảng tương ứng của trườngfilterĐiều kiện
       // department_search.params.push.apply(department_search.params, []);
       // // Quyền dữ liệu: Phòng banorg_department
@@ -1019,7 +1014,7 @@ export default {
   },
   watch: {
     //Theo dõi số chữ số của số điện thoại trong ô nhập
-    "bizFormModel.phone"(newValue, oldValue) {
+    "bizFormModel.phone"(newValue) {
       //  if( this.dialogProps.action == 'edit' ){
       if (newValue.length === 11 && this.dialogProps.action === "add") {
         this.byPhoneGetList(newValue);

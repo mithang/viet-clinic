@@ -316,7 +316,7 @@ export default {
       }
     },
 
-    initOptions(This) {
+    initOptions() {
     }
   },
   computed: {

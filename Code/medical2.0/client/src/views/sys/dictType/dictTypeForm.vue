@@ -266,7 +266,7 @@ export default {
         this.$refs['dictTypeForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'code': '',   // Mã loại từ điển
         'name': '',   // Tên loại từ điển

@@ -191,7 +191,7 @@
      */
     getSaveData(){
       let saveDatas = [];
-      this.saveMap.forEach((value, key) => {
+      this.saveMap.forEach((value) => {
         saveDatas.push(value);
       })
       return saveDatas;

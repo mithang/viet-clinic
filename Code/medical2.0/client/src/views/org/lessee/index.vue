@@ -182,7 +182,7 @@ export default {
       this.lesseeTotal = responseData.data.total
       this.lesseeList = responseData.data.rows
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {
