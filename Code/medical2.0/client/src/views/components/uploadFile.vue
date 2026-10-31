@@ -237,15 +237,11 @@ import { getFiled } from "@/api/sys/sysSeting";
         }
         if (typeof this.action === 'boolean') {
           if (this.action) {
-            this.fileList = []  // Danh sách tệp đính kèm đã tải lên
             return "view";
           } else {
             return "add";
           }
         } else {
-          if (this.action !== "add") {
-            this.fileList = []  // Danh sách tệp đính kèm đã tải lên
-          }
           return this.action;
         }
       }
@@ -262,6 +258,18 @@ import { getFiled } from "@/api/sys/sysSeting";
       },
       'action'(newVal,oldVal){
         this.action=newVal
+        // Trước đây việc dọn fileList nằm trong computed authority (side effect);
+        // nay chuyển sang watcher này, giữ đúng điều kiện cũ: chỉ dọn khi
+        // action là boolean true hoặc chuỗi khác "add".
+        if (!validatenull(newVal)) {
+          if (typeof newVal === 'boolean') {
+            if (newVal) {
+              this.fileList = []
+            }
+          } else if (newVal !== "add") {
+            this.fileList = []
+          }
+        }
         if (newVal !== oldVal) {
           this.getSysFileAll()
         }

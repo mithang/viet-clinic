@@ -394,6 +394,16 @@ export default {
     // $route(val, old) {
     //   this.menuKey += 1;
     // },
+    // Chuyển hướng "/" -> "/homepage": trước đây nằm trong computed
+    // defaultActive (side effect), nay chuyển sang watcher $route.
+    $route: {
+      immediate: true,
+      handler(val) {
+        if (val.path === "/") {
+          this.$router.push({ path: "/homepage" });
+        }
+      },
+    },
     // ✅ Thêm: Lắng nghe thay đổi routers, cập nhật cache
     routers: {
       immediate: true,
@@ -439,9 +449,6 @@ export default {
         this.getMenus(route.meta.family[0]);
         return route.meta.family[0];
       } else {
-        if (route.path === "/") {
-          this.$router.push({ path: "/homepage" });
-        }
         if (!this.menus.topMenuId) {
           if (parentRouters.length > 0) {
             this.getMenus(parentRouters[0].id);

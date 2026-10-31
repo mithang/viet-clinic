@@ -92,6 +92,30 @@ export default {
 
 	},
 	watch: {
+		'cycle01'(val) {
+			const checked = this.checkNum(val, 0, 59)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.cycle01 = checked
+			}
+		},
+		'cycle02'(val) {
+			const checked = this.checkNum(val, 0, 59)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.cycle02 = checked
+			}
+		},
+		'average01'(val) {
+			const checked = this.checkNum(val, 0, 59)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.average01 = checked
+			}
+		},
+		'average02'(val) {
+			const checked = this.checkNum(val, 1, 59)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.average02 = checked
+			}
+		},
 		"radioValue": "radioChange",
 		'cycleTotal': 'cycleChange',
 		'averageTotal': 'averageChange',
@@ -100,15 +124,15 @@ export default {
 	computed: {
 		// Tính hai giá trị chu kỳ
 		cycleTotal: function () {
-			this.cycle01 = this.checkNum(this.cycle01, 0, 59)
-			this.cycle02 = this.checkNum(this.cycle02, 0, 59)
-			return this.cycle01 + '-' + this.cycle02;
+			const cycle01 = this.checkNum(this.cycle01, 0, 59)
+			const cycle02 = this.checkNum(this.cycle02, 0, 59)
+			return cycle01 + '-' + cycle02;
 		},
 		// Giá trị dùng để tính trung bình
 		averageTotal: function () {
-			this.average01 = this.checkNum(this.average01, 0, 59)
-			this.average02 = this.checkNum(this.average02, 1, 59)
-			return this.average01 + '/' + this.average02;
+			const average01 = this.checkNum(this.average01, 0, 59)
+			const average02 = this.checkNum(this.average02, 1, 59)
+			return average01 + '/' + average02;
 		},
 		// Tính các giá trị đã chọncheckboxtập hợp giá trị
 		checkboxString: function () {

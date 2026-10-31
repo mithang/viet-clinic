@@ -1819,19 +1819,6 @@
       };
     },
     computed: {
-      // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện
-      onChangeProvince(data) {
-        this.province = data.value
-
-      },
-      onChangeCity(data) {
-        this.city = data.value
-
-      },
-      onChangeArea(data) {
-        this.area = data.value
-      },
-
       Company() {
         let company = JSON.parse(sessionStorage.getItem("currentUser")).company;
         return {
@@ -1862,6 +1849,19 @@
       },
     },
     methods: {
+      // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện: trước đây
+      // nằm nhầm trong computed (vừa side effect vừa không trả giá trị);
+      // template dùng chúng làm handler @province/@city/@area của v-distpicker
+      // nên chuyển sang methods để handler thật sự chạy.
+      onChangeProvince(data) {
+        this.province = data.value
+      },
+      onChangeCity(data) {
+        this.city = data.value
+      },
+      onChangeArea(data) {
+        this.area = data.value
+      },
 
       // Lấy phòng khám từ xatoken
       async getToken() {

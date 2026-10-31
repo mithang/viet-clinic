@@ -133,6 +133,36 @@ export default {
 		},
 	},
 	watch: {
+		'cycle01'(val) {
+			const checked = this.checkNum(val, 1, 7)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.cycle01 = checked
+			}
+		},
+		'cycle02'(val) {
+			const checked = this.checkNum(val, 1, 7)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.cycle02 = checked
+			}
+		},
+		'average01'(val) {
+			const checked = this.checkNum(val, 1, 4)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.average01 = checked
+			}
+		},
+		'average02'(val) {
+			const checked = this.checkNum(val, 1, 7)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.average02 = checked
+			}
+		},
+		'weekday'(val) {
+			const checked = this.checkNum(val, 1, 7)
+			if (checked !== val && !(Number.isNaN(checked) && Number.isNaN(val))) {
+				this.weekday = checked
+			}
+		},
 		"radioValue": "radioChange",
 		'cycleTotal': 'cycleChange',
 		'averageTotal': 'averageChange',
@@ -142,20 +172,20 @@ export default {
 	computed: {
 		// Tính hai giá trị chu kỳ
 		cycleTotal: function () {
-			this.cycle01 = this.checkNum(this.cycle01, 1, 7)
-			this.cycle02 = this.checkNum(this.cycle02, 1, 7)
-			return this.cycle01 + '-' + this.cycle02;
+			const cycle01 = this.checkNum(this.cycle01, 1, 7)
+			const cycle02 = this.checkNum(this.cycle02, 1, 7)
+			return cycle01 + '-' + cycle02;
 		},
 		// Giá trị dùng để tính trung bình
 		averageTotal: function () {
-			this.average01 = this.checkNum(this.average01, 1, 4)
-			this.average02 = this.checkNum(this.average02, 1, 7)
-			return this.average01 + '#' + this.average02;
+			const average01 = this.checkNum(this.average01, 1, 4)
+			const average02 = this.checkNum(this.average02, 1, 7)
+			return average01 + '#' + average02;
 		},
 		// Ngày làm việc gần nhất (Định dạng)
 		weekdayCheck: function () {
-			this.weekday = this.checkNum(this.weekday, 1, 7)
-			return this.weekday;
+			const weekday = this.checkNum(this.weekday, 1, 7)
+			return weekday;
 		},
 		// Tính các giá trị đã chọncheckboxtập hợp giá trị
 		checkboxString: function () {
