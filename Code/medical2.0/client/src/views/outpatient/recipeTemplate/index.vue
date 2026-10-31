@@ -226,9 +226,7 @@
   import MainUI from '@/views/components/mainUI'
   import OperationIcon from '@/components/OperationIcon'
   import History from '@/views/components/history'
-  import {listDictItemAll} from '@/api/sys/dictItem'
   import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
-  import { getCurrentUser } from "@/utils/userCache";
 
   export default {
     extends: MainUI,
@@ -449,8 +447,7 @@
           this.type_List = this.type_List.filter((item) => item.name !== 'Phí phụ thêm')
         })
       },
-      initOptions(This) {
-        let company = getCurrentUser().company;
+      initOptions() {
       }
     },
     watch: {

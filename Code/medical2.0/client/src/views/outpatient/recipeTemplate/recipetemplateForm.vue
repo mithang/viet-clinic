@@ -1615,41 +1615,18 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
 import { getFrequencyCount } from "@/utils/dataUtils"
 import { listCompanyAll } from '@/api/org/company'
 import { listDictItemAll } from '@/api/sys/dictItem'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
-import { saveRecipetemplate,allSave } from '@/api/outpatient/recipetemplate'
+import { allSave } from '@/api/outpatient/recipetemplate'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
-import { listAllStock,listAllStock2 } from "@/api/stock/drug";
+import { listAllStock2 } from "@/api/stock/drug";
 import { listCostItemAll } from "@/api/treatment/costItem";
 import { listStuffAll } from "@/api/stock/stuff";
-import {
-  listRegistrationPage,
-  getRegistrationById,
-  updateStatus,
-} from "@/api/outpatient/registration";
-import {
-  allSaveMedicalRecord,
-  allQueryMedicalRecord,
-  ureport,
-  editSave,
-  getHistoryRecipel,
-} from "@/api/outpatient/medicalRecord";
-import {
-  listRecipelInfoAll,
-  invalidStatus,
-} from "@/api/outpatient/recipelInfo";
 
-import {
- getByRecipelInfoId,
-} from "@/api/outpatient/recipelDetail";
-import { getPatientById } from "@/api/outpatient/patient";
-import NP from "number-precision";
 import { BigNumber } from "bignumber.js";
-import moment from "moment";
 export default {
   extends: BaseUI,
   name: 'recipetemplate-form',
@@ -2012,7 +1989,7 @@ export default {
         this.$refs['recipetemplateForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': "",
@@ -2044,7 +2021,7 @@ export default {
         }
       }
     },
-    initOptions(This) {
+    initOptions() {
       let company_search = {
         params: []
       }
@@ -2239,14 +2216,10 @@ export default {
       let recipelDetailEvtList =
         this.bizFormModel.infusion.infusionProject[index];
       let count = 0;
-      let hasFlag = false;
 
       recipelDetailEvtList.forEach((element) => {
         if (element.isExtra === 0) {
           count++;
-          if (row.id === element.drugStuffId.drugStuffId) {
-            hasFlag = true;
-          }
         }
       });
       if (count === 5) {
@@ -2401,7 +2374,7 @@ export default {
       }, 0);
 
     },
-    changeSingleDosage(row,index,item){
+    changeSingleDosage(row,index){
 
       //  this.medicalEditTabs.forEach((tabElement) => {
       //    if (tabElement.type === "recipelType_1"&&tabElement.key===item.key) {
@@ -2644,7 +2617,7 @@ export default {
     changeUse(row){
       this.changeData = row
     },
-     DeleteMedicalRow(index,row,item) {
+     DeleteMedicalRow(index,row) {
 
       this.bizFormModel.recipeTemplateDetail =
         this.bizFormModel.recipeTemplateDetail.filter(
@@ -3231,7 +3204,6 @@ export default {
         this.SearchInfusion.push("")
       }
       //this.excharge=null
-      let arr=[]
        for (let i = 0; i < row.recipeTemplateDetail.length; i++) {
 
 
