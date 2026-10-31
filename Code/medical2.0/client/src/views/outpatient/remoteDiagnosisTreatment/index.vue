@@ -194,6 +194,7 @@
     }
   }
   export default {
+  name: 'OutpatientRemoteDiagnosisTreatmentIndex',
     extends: MainUI,
     components: {
       PatientForm,

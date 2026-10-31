@@ -279,6 +279,7 @@ import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import XLSXD from 'xlsx-style'
 import {listSysParamConfigAll} from "../../../api/sys/sysParamConfig";
 export default {
+  name: 'StockAuditWarehousingIndex',
   components: { AddStorage },
   data() {
     return {

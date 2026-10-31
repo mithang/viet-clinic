@@ -346,6 +346,7 @@
   import fileurl from "@/assets/file/inventory.xlsx";
 
   export default {
+  name: 'StockAuditWarehousingAddstorage',
     extends: BaseUI,
     props: {
       supplierList: null,

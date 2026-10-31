@@ -11,6 +11,7 @@ import listViewMixin from '@/mixins/listViewMixin'
 import MainUI from '@/views/components/mainUI'
 import ReviewResultPre from "./components/reviewResultPre.vue";
 export default {
+  name: 'OutpatientRecipelInfoReviewResultPreIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

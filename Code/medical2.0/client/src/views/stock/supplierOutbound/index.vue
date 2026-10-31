@@ -162,6 +162,7 @@ import OperationIcon from '@/components/OperationIcon'
   //import XLSX from 'xlsx'
   import XLSXD from 'xlsx-style'
   export default {
+  name: 'StockSupplierOutboundIndex',
     components: {
       SupplierOutboundView,
       AddStorageTo,

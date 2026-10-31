@@ -15,6 +15,7 @@
 
 <script>
 export default {
+  name: 'HomepagePerson',
   props: ['id', 'editPersonStyle'],
   data () {
     return {

@@ -137,6 +137,7 @@ import { Loading } from 'element-ui'
 import { getCurrentUser, getCurrentUserId } from "@/utils/userCache";
 
 export default {
+  name: 'OutpatientWorkbenchIndex',
   extends: MainUI,
   components: {
     WorkbenchForm: WorkbenchForm,
