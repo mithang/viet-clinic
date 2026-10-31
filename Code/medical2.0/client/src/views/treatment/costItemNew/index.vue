@@ -143,6 +143,7 @@ import OperationIcon from "@/components/OperationIcon";
 import History from "@/views/components/history";
 import syncCostItemForm from "./syncCostItemForm.vue";
 export default {
+  name: 'TreatmentCostItemNewIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

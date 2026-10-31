@@ -207,6 +207,7 @@ import OperationIcon from '@/components/OperationIcon'
 import History from '@/views/components/history'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 export default {
+  name: 'MemberMemberSetIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

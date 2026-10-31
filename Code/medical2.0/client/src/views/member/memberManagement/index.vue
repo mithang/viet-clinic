@@ -217,6 +217,7 @@ import History from '@/views/components/history'
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import { listMemberSetAll } from '@/api/member/memberSet'
 export default {
+  name: 'MemberMemberManagementIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {
