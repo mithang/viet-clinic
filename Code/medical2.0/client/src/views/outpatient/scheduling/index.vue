@@ -469,6 +469,7 @@ import MainUI from "@/views/components/mainUI";
 import History from "@/views/components/history";
 import TestForm from "./schedulingForm";
 export default {
+  name: 'OutpatientSchedulingIndex',
   extends: MainUI,
   components: {
     TestForm,

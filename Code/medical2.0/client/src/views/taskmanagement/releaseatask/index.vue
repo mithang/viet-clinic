@@ -169,6 +169,7 @@ import History from '@/views/components/history'
 import {selecttasklist,release,deleteTask} from "@/api/taskmanagement/taskmanagement"
 import { getjglist} from "@/api/toll/tollInfo";
   export default {
+  name: 'TaskmanagementReleaseataskIndex',
     extends: MainUI,
   mixins: [listViewMixin],
   components: {

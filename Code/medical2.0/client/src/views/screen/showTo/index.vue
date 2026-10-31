@@ -3,6 +3,7 @@
 <script>
 import 'vue';
   export default {
+  name: 'ScreenShowToIndex',
     methods: {
       openRegistration(){
         let page = window.open(process.env.FOLLOW_UP_URL || 'http://61.172.179.73:5019')

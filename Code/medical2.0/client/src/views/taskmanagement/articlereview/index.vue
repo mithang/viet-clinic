@@ -148,6 +148,7 @@ import ArticleForm from "../article/articleForm";
 import { listarticlepages } from "@/api/taskmanagement/article";
 import {getCompanys} from "@/api/org/company"
 export default {
+  name: 'TaskmanagementArticlereviewIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {

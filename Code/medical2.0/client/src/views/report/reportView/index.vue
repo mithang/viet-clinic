@@ -23,6 +23,7 @@
   import PanelList from '@/views/report/panel/list/PanelList'
   import Preview from '@/views/report/components/Preview'
   export default {
+  name: 'ReportReportViewIndex',
     extends: MainUI,
     components: {
       PanelList,

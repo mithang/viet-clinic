@@ -133,6 +133,7 @@ import History from "@/views/components/history";
 import ArticleForm from "./articleForm";
 import { listarticlepage } from "@/api/taskmanagement/article";
 export default {
+  name: 'TaskmanagementArticleIndex',
   extends: MainUI,
   mixins: [listViewMixin],
   components: {
