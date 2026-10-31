@@ -2,6 +2,7 @@ package com.geeke.sys.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.CrudController;
+import com.geeke.common.controller.SearchParams;
 import com.geeke.sys.entity.SysFile;
 import com.geeke.sys.entity.SysFileContent;
 import com.geeke.sys.entity.SysSeting;
@@ -10,7 +11,9 @@ import com.geeke.sys.service.SysFileService;
 import com.geeke.sys.service.SysSetingService;
 import com.geeke.utils.ResultUtil;
 import com.geeke.utils.StringUtils;
+import com.geeke.utils.constants.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,8 +51,30 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         return sysSetingService;
     }
 
+    /**
+     * Ngoại lệ anon duy nhất của sàn CrudController: trang login gọi listAll
+     * này TRƯỚC khi đăng nhập (logo/cấu hình hiển thị), và Shiro cũng để anon
+     * cho đường này. Override tường minh để sàn generic không chặn nhầm trang
+     * login. Các method generic khác của controller này vẫn chịu sàn.
+     */
+    @Override
+    @PostMapping(value = "listAll")
+    public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        java.util.List<SysSeting> result = getService().listAll(searchParams.getParams(), searchParams.getOrderby());
+        return ResponseEntity.ok(ResultUtil.successJson(result));
+    }
+
+    /**
+     * Lưu cấu hình hệ thống: không có resource sysSeting:* trong DB để gắn cụ
+     * thể nên gắn sàn — tài khoản 0-resource bị 403. Trước đây mọi token hợp
+     * lệ đều đổi được cấu hình hệ thống.
+     */
     @PostMapping(value = "saveWithFile")
     public ResponseEntity<JSONObject> saveWithFile(@RequestParam("sysSeting") String sysSeting, @RequestParam("attachments") MultipartFile[] files) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         SysSeting entity = JSONObject.parseObject(sysSeting, SysSeting.class);
         String id = sysSetingService.save(entity, files).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));

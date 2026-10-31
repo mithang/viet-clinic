@@ -55,9 +55,20 @@ public class UserController extends CrudController<UserService, User> {
         return service;
     }
 
+    /**
+     * Đọc hồ sơ user: chính mình, hoặc tài khoản có "user:read" (trang quản
+     * trị user). Trước đây mọi token hợp lệ đều đọc được hồ sơ bất kỳ.
+     * Trang header chỉ gọi id của chính mình nên không gãy.
+     */
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        User sessionUser = SessionUtils.getUser();
+        boolean self = sessionUser != null && id != null && id.equals(sessionUser.getId());
+        if (!self && !hasSessionPermission("user:read")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         User entity = service.get(id);
         UserExt extByUserId = userExtService.getExtByUserId(id);
         entity.setUserExt(extByUserId);
@@ -66,8 +77,17 @@ public class UserController extends CrudController<UserService, User> {
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
+    /**
+     * Tra user theo phone: chỉ userForm quản trị gọi (kiểm tra trùng phone khi
+     * tạo/sửa user) nên yêu cầu "user:read". Tra phone là tra cứu PII, không
+     * phải lookup của luồng nghiệp vụ chính.
+     */
     @GetMapping("/phone/{phone}")
     public ResponseEntity<JSONObject> getByPhone(@PathVariable("phone") String phone) {
+        if (!hasSessionPermission("user:read")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         User entity = service.CheckNewUserByPhone(phone);
         if(null!=entity)
         {
@@ -84,9 +104,16 @@ public class UserController extends CrudController<UserService, User> {
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
+    /**
+     * Bảng quản trị user: chỉ "user:list". Chỉ admin/user/index.vue gọi.
+     */
     @Override
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasSessionPermission("user:list")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         User user = SessionUtils.getUser();
         //Truy vấntất cảDữ liệu
         Page<User> userPage;
@@ -121,9 +148,23 @@ public class UserController extends CrudController<UserService, User> {
         return ResponseEntity.ok(ResultUtil.successJson(userPage));
     }
 
+    /**
+     * Lookup chọn bác sĩ ở form khám, form duyệt đơn, tollDetail…: ĐÃ REVERT
+     * gate "user:list" ở vòng này vì kiểm chứng cho thấy vai trò bác sĩ cũ
+     * (testdoctor, 34 router gồm cả outpatient/medicalRecord) KHÔNG có
+     * user:list nên form khám của nó gãy (403 ở dropdown bác sĩ). Thay bằng
+     * sàn hasAnySessionPermission như CrudController generic: tài khoản
+     * 0-resource vẫn bị 403, mọi vai trò có menu đều qua được. Muốn chặn
+     * đúng bằng user:list thì phải cấp user:list cho vai trò bác sĩ cũ —
+     * quyết định cấp quyền vai trò, ngoài phạm vi vòng code này.
+     */
     @Override
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         List<User> result = service.listAll(searchParams.getParams(), searchParams.getOrderby());
         // Không trả về mật khẩu
         if(result != null) {
@@ -252,10 +293,20 @@ public class UserController extends CrudController<UserService, User> {
 
 
     /**
-     * Sửa Mật khẩu
+     * Sửa Mật khẩu: chỉ chính mình hoặc tài khoản có "user:update" (quản trị
+     * reset mật khẩu). Trước đây mọi token hợp lệ đều đổi được mật khẩu của
+     * bất kỳ user nào vì service không kiểm tra ownership. Đường đổi mật khẩu
+     * chính của UI là PUT /person/me (service đã ép về session user) nên
+     * chặn ở đây không gãy luồng tự đổi mật khẩu.
      */
     @PutMapping("/{id}/loginPassword")
     public ResponseEntity<JSONObject> changeLoginPassword(@PathVariable("id") String id, String password) {
+        User sessionUser = SessionUtils.getUser();
+        boolean self = sessionUser != null && id != null && id.equals(sessionUser.getId());
+        if (!self && !hasSessionPermission("user:update")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         int rows = 0;
          if(medicareConfigProperties.getIsDemo().equals("true")){
              throw new ServiceException("demoHệ thốngVui lòngđừngSửaMật khẩu!");

@@ -42,6 +42,26 @@ public class BaseController {
 	}
 
 	/**
+	 * Sàn fail-closed cho các endpoint generic chưa có permission riêng theo
+	 * entity (xem CrudController): phiên phải có ít nhất một resource thì mới
+	 * được gọi. Tài khoản 0-resource (0 router, 0 resource, vd testflag) bị
+	 * chặn; mọi vai trò nghiệp vụ đều có hàng chục resource nên sàn này không
+	 * thay đổi luồng chính. Đây là sàn, không phải RBAC đầy đủ theo entity:
+	 * tài khoản có 1 resource lẻ vẫn qua sàn, permission cụ thể theo entity
+	 * là việc của vòng map 61 controller riêng. Trả về false khi không lấy
+	 * được danh sách quyền (fail closed).
+	 */
+	protected boolean hasAnySessionPermission() {
+		try {
+			List<String> permissions = SessionUtils.getUserPermission();
+			return permissions != null && !permissions.isEmpty();
+		} catch (Exception e) {
+			logger.debug("Không kiểm tra được quyền phiên: {}", e.getMessage());
+			return false;
+		}
+	}
+
+	/**
 	 * Từ jwt trong LấysubjectThông tin
 	 * @param jwtUtils
 	 * @param jwt

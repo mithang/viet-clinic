@@ -36,6 +36,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
 
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Stuff> result = stuffService.listPages(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -48,12 +49,14 @@ public class StuffController extends CrudController<StuffService, Stuff> {
 
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<Stuff> result = stuffService.listAlls(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody Stuff entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String id = null;
         try {
             id = stuffService.save(entity).getId();
@@ -65,12 +68,14 @@ public class StuffController extends CrudController<StuffService, Stuff> {
 
     @PostMapping(value = "updateAllIndate")
     public ResponseEntity<JSONObject> updateAllIndate(@RequestBody Stuff stuff){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         int i =stuffService.updateAllIndate(stuff.getIndate(),stuff.getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }
 
     @PostMapping(value = "updateAllInventory")
     public ResponseEntity<JSONObject> updateAllInventory(@RequestBody Stuff stuff){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         int i =stuffService.updateAllInventory(stuff.getInventoryFloor(),stuff.getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }

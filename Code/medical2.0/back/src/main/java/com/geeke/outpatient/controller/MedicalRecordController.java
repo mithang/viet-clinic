@@ -69,6 +69,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     public ResponseEntity<JSONObject> saveWithFile(@RequestParam("entity") String strEntity,
       @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Tải lên tệp đính kèm
       @RequestParam("deleteIds")String strDeleteIds) throws java.io.IOException {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         MedicalRecord entity = JSONObject.parseObject(strEntity, MedicalRecord.class);
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
         String id = medicalRecordService.save(entity,
@@ -80,6 +81,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
 
     @PostMapping(value = "saveAdd")
     public ResponseEntity<JSONObject> save(@RequestBody MedicalRecord entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         RemoteDiagnosisTreatment remote = remoteDiagnosisTreatmentService.diagnosisById(entity.getDiagnosisId());
         Registration registration = new Registration();
         registration.setId(remote.getRegistrationId());
@@ -93,6 +95,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     public ResponseEntity<JSONObject> allSave(@RequestParam("entity") String strEntity,
                                               @RequestParam(name = "fileIdUploads",required=false) MultipartFile[] fileIdUploads,  // Tệp: Tải lên tệp đính kèm
                                               @RequestParam(name = "deleteIds",required=false)String strDeleteIds) throws java.io.IOException {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         MedicalRecipelEvt medicalRecipelEvt = JSONObject.parseObject(strEntity, MedicalRecipelEvt.class);
         Registration registration = medicalRecordService.allSave(medicalRecipelEvt, fileIdUploads, strDeleteIds);
         return ResponseEntity.ok(ResultUtil.successJson(registration));
@@ -171,6 +174,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     // QuaĐăng ký khámidThêmca bệnhThông tin
     @PostMapping(value = "registerSave")
     public ResponseEntity<JSONObject> registerSave(@RequestBody MedicalRecord entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Registration medicalRecord = registrationService.get(entity.getRegistration().getId());
         entity.setCompany(medicalRecord.getCompany());
         String id = medicalRecordService.save(entity).getId();

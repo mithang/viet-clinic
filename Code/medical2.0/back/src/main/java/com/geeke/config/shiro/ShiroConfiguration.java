@@ -61,8 +61,10 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/auth/loginedtocken", "anon");
         filterChainDefinitionMap.put("/auth/wxToken", "anon");
 
-        //bản việnLấyPhòng khámThông tinđặt dòng
-        filterChainDefinitionMap.put("/hosdata/HosCollectData/listAll", "anon");
+        // HosCollectData/listAll KHONG con anon (da xoa): truoc day khong can
+        // login cung liet ke duoc toan bo company; nay roi ve "/**" -> authc,
+        // cong them san hasAnySessionPermission trong controller. Client
+        // khong goi listAll nay (chi goi getHos*/His*ToClinic, von da authc).
 
 //        đóngtạiWeChatNgười dùngđăng nhập
         filterChainDefinitionMap.put("/wxUser/initLogin","anon");

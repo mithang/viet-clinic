@@ -57,6 +57,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     @Override
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody TollInfo entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         if(BizConstants.AMOUNT_STATUS_REFUNDED.equals(entity.getAmountStatus().getValue())){
             TollInfo tollInfoByRegistrationId = tollInfoService.getTollInfoByRegistrationId(entity.getRegistrationFeeId());
             tollInfoByRegistrationId.setReturnType(1);
@@ -103,6 +104,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     @PostMapping(value = "save/toll/{type}")
     public ResponseEntity<JSONObject> saveToll(@RequestBody @NotNull TollEvt tollEvt,
                                                @PathVariable("type") String type) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         tollInfoService.saveToll(tollEvt,type);
         return ResponseEntity.ok(ResultUtil.successJson(""));
     }

@@ -179,6 +179,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
     @Override
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Registration> result = registrationService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         registrationService.updateExpiredStatusFromPage(result, row -> row.getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -210,6 +211,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
 
     @PostMapping(value = "registationupdate")
     public ResponseEntity<JSONObject> registationupdate(@RequestBody RegistrationMedicalrecordlist entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         entitys.getRegistration().setUpdateDate(new Date());
         int row = registrationService.registrationupdate(entitys.getRegistration());
         if(entitys.getMedicalRecord()!=null) {
@@ -223,6 +225,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
 
     @PostMapping(value = {"conditionList", ""})
     public ResponseEntity<JSONObject> conditionList(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<Parameter> params = searchParams.getParams();
         Page<Registration> result;
         if (null != params && 0 != params.size()) {
@@ -250,6 +253,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
     //LấyBệnh nhânđăng kýThông tin
     @PostMapping("/v2/list")
     public ResponseEntity<JSONObject> listPages(@RequestBody PageRegistration pageRegistration) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Registration> result = registrationService.listPages(pageRegistration);
         registrationService.updateExpiredStatusFromPage(result, row -> row.getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(result));

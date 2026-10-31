@@ -69,6 +69,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     @Override
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody RecipelInfoReview entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         //Lấyxongnguyên của Đơn thuốc, bệnh án, Thông tin đăng ký khám
         RecipelInfo recipelInfo = recipelInfoService.get(entity.getRecipelInfo().getId());
         MedicalRecord medicalRecord = medicalRecordService.get(entity.getMedicalRecord().getId());
@@ -91,6 +92,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
 
     @PostMapping(value = "save/list")
     public ResponseEntity<JSONObject> saveList(@RequestBody List<RecipelInfoReview> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         if (CollectionUtil.isNotEmpty(entitys)) {
             entitys.forEach(recipelInfoReviewService::save);
         }
@@ -101,6 +103,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     @Override
     @DeleteMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody RecipelInfoReview entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         int rows = recipelInfoReviewService.delete(entity);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }

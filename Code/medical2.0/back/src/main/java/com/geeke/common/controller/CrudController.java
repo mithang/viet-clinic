@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.geeke.utils.constants.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,10 +42,27 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
     }
 
     /**
+     * Sàn fail-closed cho mọi method generic chưa bị override: phiên phải có
+     * ít nhất một resource (BaseController.hasAnySessionPermission). Các
+     * controller override method nào thì method đó tự chịu trách nhiệm kiểm
+     * tra quyền của nó (vd role/listAll đã chặn bằng role:list); controller
+     * KHÔNG override thì trước đây mọi token hợp lệ đều gọi được, kể cả tài
+     * khoản 0 quyền. Ngoại lệ duy nhất được giữ tường minh ở controller con:
+     * SysSeting/listAll phải anon cho trang login (xem ShiroConfiguration).
+     */
+    protected ResponseEntity<JSONObject> forbidden() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ResultUtil.errorJson(ErrorEnum.E_502));
+    }
+
+    /**
      * TheoIDLấythực thể
      */
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         T entity = getService().get(id);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
@@ -54,6 +72,9 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
      */
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         Page<T> result = getService().listPage(searchParams.getParams(), searchParams.getOffset(),
                 searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -64,6 +85,9 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
      */
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<T> result = getService().listAll(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -101,6 +125,9 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
      */
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@Valid @RequestBody T entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         if (!beforeSave(entity)) {
             return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
         }
@@ -117,6 +144,9 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
         if (entity == null) {
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
         }
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         if (!beforeDelete(entity)) {
             return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "XóatrướcKiểm traChưaQua"));
         }
@@ -130,6 +160,9 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
      */
     @PostMapping(value = "bulkInsert")
     public ResponseEntity<JSONObject> bulkInsert(@RequestBody List<T> entitys) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<String> ids = getService().bulkInsert(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
     }
@@ -139,6 +172,9 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
      */
     @PostMapping(value = "bulkUpdate")
     public ResponseEntity<JSONObject> bulkUpdate(@RequestBody List<T> entitys) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<String> ids = getService().bulkUpdate(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
     }
@@ -148,6 +184,9 @@ public abstract class CrudController<S extends CrudService<?, T>, T extends Data
      */
     @PostMapping(value = "bulkDelete")
     public ResponseEntity<JSONObject> bulkDelete(@RequestBody List<T> entitys) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         int rows = getService().bulkDelete(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }

@@ -58,6 +58,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody SupplierStock entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         logger.info("dayin:", entity);
         String id = supplierStockService.save(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
@@ -65,6 +66,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
     @PostMapping(value = "inStorage")
     public ResponseEntity<JSONObject> inStorage(@RequestBody StorageEvt storageEvt) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         //Khi nhập kho hàng loạt mà không có thông tin thuốc thì thêm thông tin thuốc
         storageEvt.getSupplierStockList().forEach(item -> {
             Drug drug = drugService.getByNameAndPrice(item.getDrug().getGoodsName(),item.getRetailPrice());
@@ -86,12 +88,14 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
     @PostMapping(value = "cancel")
     public ResponseEntity<JSONObject> cancel(@RequestBody String id) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         supplierStorageService.cancel(id);
         return ResponseEntity.ok(ResultUtil.successJson());
     }
 
     @PostMapping(value = "updateStock")
     public ResponseEntity<JSONObject> updateStock(@RequestBody DispensingEvt dispensingEvt) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         //Phát thuốc, Trả thuốc
         if (null != dispensingEvt.getDispensingDetailEvtList() && !dispensingEvt.getDispensingDetailEvtList().isEmpty()) {
             supplierStockService.updateStock(dispensingEvt);
@@ -113,6 +117,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
      */
     @PostMapping(value = "inStorageByCompany")
     public ResponseEntity<JSONObject> inStorageByCompany(@RequestBody StorageEvt storageEvt) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         supplierStockService.saves(storageEvt);
         supplierStockService.savesToAudit(storageEvt);
         return ResponseEntity.ok(ResultUtil.successJson());
@@ -126,6 +131,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
      */
     @PostMapping(value = "auditStorage")
     public ResponseEntity<JSONObject> auditStorage(@RequestBody StorageEvt storageEvt) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         supplierStockService.auditStorage(storageEvt);
         return ResponseEntity.ok(ResultUtil.successJson());
     }

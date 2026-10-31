@@ -39,6 +39,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
 
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Drug> result = drugService.listPages(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         if (result.getRows() != null) {
             //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
@@ -62,6 +63,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
      */
     @PostMapping(value = {"listByInstitution"})
     public ResponseEntity<JSONObject> listByInstitution(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Drug> result = drugService.listByInstitution(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         if (result.getRows() != null) {
             //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
@@ -84,6 +86,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
      */
     @PostMapping(value = {"listByCompany"})
     public ResponseEntity<JSONObject> listByCompany(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Drug> result = drugService.listByCompany(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         if (result.getRows() != null) {
             //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
@@ -106,24 +109,28 @@ public class DrugController extends CrudController<DrugService, Drug> {
      */
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<Drug> result = drugService.listAllDrug(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "listAllStock")
     public ResponseEntity<JSONObject> listAllStock(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<Drug> result = drugService.listAllStock(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "listAllStock2")
     public ResponseEntity<JSONObject> listAllStock2(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<Drug> result = drugService.listAllStock2(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody Drug entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String id = null;
         try {
             id = drugService.save(entity).getId();
@@ -135,6 +142,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
 
     @PostMapping(value = "updateAllIndate")
     public ResponseEntity<JSONObject> updateAllIndate(@RequestBody Drug drug) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         int i = drugService.updateAllIndate(drug.getIndate(), drug.getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }

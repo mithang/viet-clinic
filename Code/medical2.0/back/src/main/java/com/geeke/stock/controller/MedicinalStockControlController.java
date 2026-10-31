@@ -33,6 +33,7 @@ public class MedicinalStockControlController extends CrudController<MedicinalSto
 
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<MedicinalStockControl> result = null;
         if("false".equals(searchParams.getIsPre()) || "0".equals(searchParams.getIsPre()) || searchParams.getIsPre() == null) {
            result = medicinalStockControlService.listAllByCompany(searchParams.getParams(), searchParams.getOrderby());

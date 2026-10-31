@@ -17,6 +17,7 @@ import com.geeke.hosdata.util.HttpUtil;
 import com.geeke.org.entity.Company;
 import com.geeke.org.service.CompanyService;
 import com.geeke.stock.entity.Drug;
+import com.geeke.sys.controller.BaseController;
 import com.geeke.stock.service.DrugService;
 import com.geeke.sys.utils.SessionUtils;
 import com.geeke.utils.ResultUtil;
@@ -43,7 +44,7 @@ import static com.geeke.hosdata.config.FieldMappingConfig.readFieldMappingFromXM
 @RestController
 @RequestMapping("/hosdata/HosCollectData")
 @RequiredArgsConstructor
-public class HosCollectDataController {
+public class HosCollectDataController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(HosCollectDataController.class);
 
@@ -59,9 +60,19 @@ public class HosCollectDataController {
 
     private final HisInstitutionService hisInstitutionService;
 
-    //tất cảPhòng khám
+    /**
+     * tất cảPhòng khám. Trước đây Shiro để anon cho đường này nên không cần
+     * login cũng liệt kê được toàn bộ company; đã bỏ anon (xem
+     * ShiroConfiguration) và gắn sàn: phiên phải có ít nhất một resource,
+     * ngược lại 403. Không có caller nào trong client gọi listAll này (client
+     * chỉ gọi các endpoint getHos và HisToClinic, vốn đã authc).
+     */
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         List<Company> companies = companyService.listAll(searchParams.getParams(), searchParams.getOrder());
         return ResponseEntity.ok(ResultUtil.successJson(companies));
     }
