@@ -5,7 +5,7 @@
   import Base from './Base'
   export default {
     extends: Base,
-    name: 'Preview',
+    name: 'ReportPreview',
     components: {
     },
     data() {

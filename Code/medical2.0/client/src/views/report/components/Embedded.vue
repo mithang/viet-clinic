@@ -14,7 +14,7 @@
   import Base from './Base'
   export default {
     extends: Base,
-    name: 'Embedded',
+    name: 'ReportEmbedded',
     props: {
       dashboardId: {
         type: String,

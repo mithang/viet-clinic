@@ -45,7 +45,7 @@
   const reportMixin = window['vue-dataviewer'].reportMixin
 
   export default {
-    name: "Report",
+    name: "ReportViewer",
     mixins: [reportMixin],
     props: {
       // Chế độ hiển thị báo cáo: 1 chế độ nhúng; 2 chế độ xem báo cáo; 3 chế độ mở trang bằng trình duyệt

@@ -3,7 +3,7 @@
 <script>
   import Cookies from 'js-cookie'
   export default {
-    name: 'Base',
+    name: 'ReportBase',
     data() {
       return {
         existDataView: false,
