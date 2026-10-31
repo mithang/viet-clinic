@@ -185,7 +185,6 @@
 
 <script>
 import { listInventoryVerificationPage, getInventoryVerificationById, deleteInventoryVerification,saveInventoryVerification } from '@/api/stock/inventoryVerification'
-import {getInventoryVerificationDetailByInventoryId,listInventoryVerificationDetailPage} from '@/api/stock/inventoryVerificationDetail'
 import listViewMixin from '@/mixins/listViewMixin'
 import InventoryVerificationForm from './inventoryVerificationForm'
 import ExportExcelButton from '@/components/ExportExcelButton'
@@ -267,7 +266,7 @@ export default {
       }
       this.loadData()
     },
-    onViewInventoryVerification(row, index) {
+    onViewInventoryVerification(row) {
       this.$refs.inventoryVerificationForm.openViewInventoryVerificationDialog(row)
     },
     onCreateInventoryVerification(sign) {
@@ -302,7 +301,7 @@ export default {
         }
       }).catch()
     },
-    onDeleteInventoryVerification(row, index) {
+    onDeleteInventoryVerification(row) {
       this.$confirm('Bạn có chắc muốn xóa không？', 'Xác nhận', {
         confirmButtonText: 'Xác nhận',
         cancelButtonText: 'Hủy',
@@ -322,7 +321,7 @@ export default {
         })
       }).catch(() => {})
     },
-    initOptions(This) {
+    initOptions() {
     }
   },
   watch: {

@@ -570,12 +570,10 @@
   </el-dialog>
 </template>
 <script>
-import { validatenull } from '@/utils/validate'
-import {getInventoryVerificationDetailByInventoryId,listInventoryVerificationDetailPage,saveAll,exportExcel} from '@/api/stock/inventoryVerificationDetail'
+import {listInventoryVerificationDetailPage,saveAll,exportExcel} from '@/api/stock/inventoryVerificationDetail'
 import { saveInventoryVerification,accomplishInventoryVerification } from '@/api/stock/inventoryVerification'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
-import { listDictItemAll } from "@/api/sys/dictItem";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 export default {
   extends: BaseUI,
@@ -716,7 +714,7 @@ export default {
         }else{
           this.$message.error("Hoàn thành kiểm kê thất bại, vui lòng liên hệ quản trị viên hệ thống!")
         }
-      }).catch((error)=>{
+      }).catch(()=>{
         this.outputError()
       })
       })
@@ -779,7 +777,6 @@ export default {
      if(this.inventoryVerifications.type==='0'){
         let figure1=this.pack[index]*row.drug.preparation
         let figure2=this.preparation[index]-0
-        let figure3=figure1+figure2
         let num=0
         num = (figure1+figure2)-row.currentInventory
         this.inventoryVerificationDetail[index].profitAndLoss=num
@@ -1067,7 +1064,7 @@ export default {
         this.$refs['inventoryVerificationForm'].clearValidate()
       })
     },
-    initFormModel(This) {
+    initFormModel() {
       return {
         'company': {     // Phòng khámid
           'id': currentUser.company.id,
@@ -1078,7 +1075,7 @@ export default {
 
       }
     },
-    initOptions(This) {
+    initOptions() {
     },
     getDrugType(){
       getDictItemsByCode(DICT_CODE.MEDICAL_TYPE).then((data) => {
