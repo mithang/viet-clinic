@@ -147,40 +147,16 @@
   import DictItemView from "@/views/components/dict-item-view/index.vue";
   import SupplierOutboundStatusView from "@/views/components/supplier-outbound-status-view/index.vue";
   import {
-    listDrugAll
-  } from "@/api/stock/drug";
-  import {
-    listStuffAll,
-    listStuffPage,
-    listDrug
-  } from "@/api/stock/stuff";
-  import {
-    saveSupplierStockList
-  } from "@/api/stock/supplierStock";
-  import {
-    listSupplierPage,
-    getSupplierById,
-    listSupplierAll
-  } from "@/api/stock/supplier";
-  import {
-    saveSupplierOutbound,
     getSupplierOutbound
   } from "@/api/stock/supplierOutbound";
   import {
     listByBoutbound
   } from "@/api/stock/supplierOutboundDetail";
-  import {
-    BigNumber
-  } from "bignumber.js";
-  import BaseUI from "@/views/components/baseUI";
   import SearchItem from "@/views/components/search-item/index.vue";
   import SupplierSelect from "@/views/components/supplier-select/index.vue";
   import DrugStuffStorageSelect from "@/views/components/drug-stuff-storage-select/index.vue";
   import SupplierOutboundMethodSelect from "@/views/components/supplier-outbound-method-select/index.vue";
   import DictItemSelect from "@/views/components/dict-item-select/index.vue";
-  import {
-    listDictItemAll
-  } from "@/api/sys/dictItem";
 
   export default {
     props: {
@@ -240,7 +216,6 @@
         this.loadSupplierOutboundDetail();
       },
       loadSupplierOutbound() {
-        let that = this;
         getSupplierOutbound(this.outboundId).then((res) => {
           if (res.code === 100) {
             let data = res.data;

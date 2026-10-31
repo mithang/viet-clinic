@@ -188,40 +188,17 @@
 <script>
   import DictItemView from "@/views/components/dict-item-view/index.vue";
   import {
-    listDrugAll
-  } from "@/api/stock/drug";
-  import {
-    listStuffAll,
-    listStuffPage,
-    listDrug
-  } from "@/api/stock/stuff";
-  import {
-    saveSupplierStockList
-  } from "@/api/stock/supplierStock";
-  import {
-    listSupplierPage,
-    getSupplierById,
-    listSupplierAll
-  } from "@/api/stock/supplier";
-  import {
     saveSupplierOutbound,
     getSupplierOutbound
   } from "@/api/stock/supplierOutbound";
   import {
     listByBoutbound
   } from "@/api/stock/supplierOutboundDetail";
-  import {
-    BigNumber
-  } from "bignumber.js";
-  import BaseUI from "@/views/components/baseUI";
   import SearchItem from "@/views/components/search-item/index.vue";
   import SupplierSelect from "@/views/components/supplier-select/index.vue";
   import DrugStuffStorageSelect from "@/views/components/drug-stuff-storage-select/index.vue";
   import SupplierOutboundMethodSelect from "@/views/components/supplier-outbound-method-select/index.vue";
   import DictItemSelect from "@/views/components/dict-item-select/index.vue";
-  import {
-    listDictItemAll
-  } from "@/api/sys/dictItem";
 
   export default {
     props: {
@@ -322,7 +299,7 @@
         this.thisType = this.addType;
       },
       storageDetailTable: {
-        handler(newVal, oldVal) {
+        handler(newVal) {
           if (newVal.length !== 0) {
             newVal.forEach((i, ind) => {
               if (
@@ -553,7 +530,6 @@
           return;
         }
 
-        const day = new Date();
         const saveInfo = {
           supplierOutbound: {
             id: this.otherInfo.id,
@@ -658,7 +634,7 @@
           reason: null
         };
       },
-      deleteRow(index, tb) {
+      deleteRow(index) {
         this.storageDetailTable.splice(index, 1);
       },
       calcTotalInPrice(row) {
