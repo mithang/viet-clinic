@@ -93,7 +93,7 @@
         <el-col>
     <el-table ref='genTable' :data='bizFormModel.constraintList' border @current-change='(currentRow, oldCurrentRow) => {constraintCurrentRow = currentRow}'>
       <el-table-column prop='name' label='Tên' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên</template>
+        <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === constraintCurrentRow' :prop="`constraintList.${$index}.name`" :rules='formRules.constraint_name' label-width=0>
             <el-input v-model='row.name'  :maxlength='200' clearable placeholder='Vui lòng nhập tên'></el-input>
@@ -102,7 +102,7 @@
         </template>
       </el-table-column>
       <el-table-column prop='comments' label='Mô tả' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Mô tả</template>
+        <template slot='header'>Mô tả</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === constraintCurrentRow' :prop="`constraintList.${$index}.comments`" :rules='formRules.constraint_comments' label-width=0>
             <el-input v-model='row.comments'  :maxlength='500' clearable placeholder='Vui lòng nhập mô tả'></el-input>
@@ -111,7 +111,7 @@
         </template>
       </el-table-column>
       <el-table-column prop='constraintColumn' label='Trường ràng buộc' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Trường ràng buộc</template>
+        <template slot='header'>Trường ràng buộc</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === constraintCurrentRow' :prop="`constraintList.${$index}.constraintColumn`" :rules='formRules.constraint_constraintColumn' label-width=0>
             <StringMultiSelect v-model='row.constraintColumn' :opts='constraintColumn_Constraint_List' valKey='name' label='name' placeholder='Vui lòng chọn trường ràng buộc'></StringMultiSelect>
@@ -148,7 +148,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="3"' key='comments' prop='comments' label='Giải thích' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Giải thích</template>
+        <template slot='header'>Giải thích</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.comments`" :rules='formRules.genTableColumn_comments' label-width=0>
             <el-input v-model='row.comments'  :maxlength='500' clearable placeholder='Vui lòng nhập giải thích'></el-input>
@@ -158,7 +158,7 @@
       </el-table-column>
       <el-table-column v-if='tabIndex==="3"' key='jdbcType' prop='jdbcType' label='Kiểu dữ liệu vật lý' min-width='160px' header-align='center'></el-table-column>
       <el-table-column v-if='tabIndex==="4"' key='javaType.value' prop='javaType.value' label='JAVALoại' min-width='100px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>JAVALoại</template>
+        <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>JAVALoại</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.javaType`" :rules='formRules.genTableColumn_javaType' label-width=0>
             <el-select v-model='row.javaType' value-key='value' @change='onJavaTypeChange' filterable clearable placeholder='Vui lòng chọnJAVALoại' @focus='setCurrentFocus(row)'>
@@ -169,7 +169,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="4"' key='customType.id' prop='customType.id' label='Loại tùy chỉnh' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Loại tùy chỉnh</template>
+        <template slot='header'>Loại tùy chỉnh</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.customType`" :rules='formRules.genTableColumn_customType' label-width=0>
             <el-select v-model='row.customType' value-key='id' filterable clearable placeholder='Vui lòng chọn kiểu tuỳ chỉnh' @focus='setCurrentFocus(row)'>
@@ -180,7 +180,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="4"' key='javaField' prop='javaField' label='Tên thuộc tính' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên thuộc tính</template>
+        <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Tên thuộc tính</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.javaField`" :rules='formRules.genTableColumn_javaField' label-width=0>
             <el-input v-model='row.javaField'  :maxlength='1024' clearable placeholder='Vui lòng nhập tên thuộc tính'></el-input>
@@ -189,7 +189,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="4"' key='defVal' prop='defVal' label='Giá trị mặc định' min-width='160px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Giá trị mặc định</template>
+        <template slot='header'>Giá trị mặc định</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.defVal`" :rules='formRules.genTableColumn_defVal' label-width=0>
             <el-input v-model='row.defVal'  :maxlength='2000' clearable placeholder='Vui lòng nhập giá trị mặc định'></el-input>
@@ -198,7 +198,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="3"' key='isPk' prop='isPk' label='Khóa chính' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Khóa chính</template>
+        <template slot='header'>Khóa chính</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isPk`" :rules='formRules.genTableColumn_isPk' label-width=0>
             <el-switch v-model='row.isPk' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -207,7 +207,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="3"' key='isNull'  prop='isNull' label='Có thể trống' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Có thể trống</template>
+        <template slot='header'>Có thể trống</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isNull`" :rules='formRules.genTableColumn_isNull' label-width=0>
             <el-switch v-model='row.isNull' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -216,7 +216,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="3"' key='isInsert' prop='isInsert' label='Có thể chèn' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Có thể chèn</template>
+        <template slot='header'>Có thể chèn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isInsert`" :rules='formRules.genTableColumn_isInsert' label-width=0>
             <el-switch v-model='row.isInsert' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -225,7 +225,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="6"' key='isEdit' prop='isEdit' label='Có thể sửa' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Có thể sửa</template>
+        <template slot='header'>Có thể sửa</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isEdit`" :rules='formRules.genTableColumn_isEdit' label-width=0>
             <el-switch v-model='row.isEdit' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -234,7 +234,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="5"' key='isList' prop='isList' label='Hiển thị cột' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Hiển thị cột</template>
+        <template slot='header'>Hiển thị cột</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isList`" :rules='formRules.genTableColumn_isList' label-width=0>
             <el-switch v-model='row.isList' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -243,7 +243,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="5"' key='width' prop='width' label='Độ rộng cột' min-width='80px' header-align='center' align='right'>
-        <template slot='header' slot-scope='{row,$index}'><span style="color:#F56C6C;margin-right: 4px">*</span>Độ rộng cột</template>
+        <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>Độ rộng cột</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.width`" :rules='formRules.genTableColumn_width' label-width=0>
             <el-input-number v-model='row.width' controls-position='right' :controls='false' style='width:100%;' placeholder='Vui lòng nhập độ rộng cột'></el-input-number>
@@ -252,7 +252,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="5"' key='isQuery' prop='isQuery' label='Truy vấn' min-width='60px' header-align='center' align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Truy vấn</template>
+        <template slot='header'>Truy vấn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view"' :prop="`genTableColumnList.${$index}.isQuery`" :rules='formRules.genTableColumn_isQuery' label-width=0>
             <el-switch v-model='row.isQuery' active-color='#13ce66' inactive-color='#dbdfe6' active-value='1' inactive-value='0'></el-switch>
@@ -261,7 +261,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="5"' key='queryType.value' prop='queryType.value' label='Cách truy vấn' min-width='120px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Cách truy vấn</template>
+        <template slot='header'>Cách truy vấn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.queryType`" :rules='formRules.genTableColumn_queryType' label-width=0>
             <el-select v-model='row.queryType' value-key='value' filterable clearable placeholder='Vui lòng chọn cách truy vấn' @focus='setCurrentFocus(row)'>
@@ -272,7 +272,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="5"' key='queryVal' prop='queryVal' label='Điều kiện truy vấn' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Điều kiện truy vấn</template>
+        <template slot='header'>Điều kiện truy vấn</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.queryVal`" :rules='formRules.genTableColumn_queryVal' label-width=0>
             <el-input v-model='row.queryVal'  :maxlength='2000' clearable placeholder='Vui lòng nhập điều kiện truy vấn'></el-input>
@@ -281,7 +281,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="6"' key='showType.value' prop='showType.value' label='Điều khiển' min-width='180px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Điều khiển</template>
+        <template slot='header'>Điều khiển</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.showType`" :rules='formRules.genTableColumn_showType' label-width=0>
             <el-select v-model='row.showType' value-key='value' filterable clearable placeholder='Vui lòng chọn loại điều khiển' @focus='setCurrentFocus(row)'>
@@ -292,7 +292,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="6"' key='interaction' prop='interaction' label='Biến liên kết' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Biến liên kết</template>
+        <template slot='header'>Biến liên kết</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.interaction`" :rules='formRules.genTableColumn_interaction' label-width=0>
             <StringMultiSelect v-model='row.interaction' :opts='interaction_GenTableColumn_List' valKey='name' label='comments' placeholder='Vui lòng chọn biến liên động'></StringMultiSelect>
@@ -301,7 +301,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="6"' key='interactionVal' prop='interactionVal' label='Giá trị liên kết' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Giá trị liên kết</template>
+        <template slot='header'>Giá trị liên kết</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.interactionVal`" :rules='formRules.genTableColumn_interactionVal' label-width=0>
             <el-input v-model='row.interactionVal'  :maxlength='2000' clearable placeholder='Vui lòng nhập giá trị liên động'></el-input>
@@ -310,7 +310,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="6"' key='parameters' prop='parameters' label='Tham số liên kết' min-width='200px' header-align='center'>
-        <template slot='header' slot-scope='{row,$index}'>Tham số liên kết</template>
+        <template slot='header'>Tham số liên kết</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.parameters`" :rules='formRules.genTableColumn_parameters' label-width=0>
             <el-input v-model='row.parameters'  :maxlength='2000' clearable placeholder='Vui lòng nhập tham số liên động'></el-input>
@@ -319,7 +319,7 @@
         </template>
       </el-table-column>
         <el-table-column v-if='tabIndex==="5"' key='sort' prop='sort' label='Sắp xếp' min-width='80px' header-align='center' align='right'>
-        <template slot='header' slot-scope='{row,$index}'>Sắp xếp</template>
+        <template slot='header'>Sắp xếp</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.sort`" :rules='formRules.genTableColumn_sort' label-width=0>
             <el-input-number v-model='row.sort' controls-position='right' :controls='false' style='width:100%;' placeholder='Vui lòng nhập thứ tự'></el-input-number>
