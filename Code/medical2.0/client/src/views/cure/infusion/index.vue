@@ -1325,7 +1325,6 @@ export default {
 
           }
        }
-      item.executions=item.executions
       item.delType='1'
       item.recipelDetail.executions=count1-count2-item.addNumber
       //return

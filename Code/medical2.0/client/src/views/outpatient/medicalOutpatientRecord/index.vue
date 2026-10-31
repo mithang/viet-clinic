@@ -6091,7 +6091,6 @@
         }
 
         this.MedicalCalculate();
-        this.medicalEditTabs = this.medicalEditTabs;
       },
 
       //Sự kiện kích hoạt khi chuyển Tab kê đơn thuốc
@@ -8087,7 +8086,6 @@
       },
       Getblmbtable() {
         this.blmbtableData = [];
-        this.blmbcxrc.mbmc = this.blmbcxrc.mbmc;
         getblmblist(this.blmbcxrc)
           .then((responseData) => {
             if (responseData.code === 100) {

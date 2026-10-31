@@ -425,11 +425,11 @@ export default {
               if(initalArr[i].drug.goodsName!==''){
                   initalArr[i].inventory = initalArr[i].number
                   initalArr[i].number=Math.floor(initalArr[i].number/initalArr[i].drug.preparation) >= 0 ? Math.floor(initalArr[i].number/initalArr[i].drug.preparation)+(initalArr[i].drug.pack.name)+((initalArr[i].number%initalArr[i].drug.preparation > 0) ? (initalArr[i].number%initalArr[i].drug.preparation) + initalArr[i].drug.preparationUnit.name:""):initalArr[i].number+initalArr[i].drug.preparationUnit.name
-                  initalArr[i].allRetailPrice=initalArr[i].allRetailPrice//initalArr[i].retailPrice/initalArr[i].drug.preparation
+                  //initalArr[i].retailPrice/initalArr[i].drug.preparation
                }else if(initalArr[i].stuff.name!==''){
                   initalArr[i].inventory = initalArr[i].number
                   initalArr[i].number=Math.floor(initalArr[i].number/initalArr[i].stuff.packNumber) >= 0 ? Math.floor(initalArr[i].number/initalArr[i].stuff.packNumber)+initalArr[i].stuff.packUnit.name+((initalArr[i].number%initalArr[i].stuff.packNumber > 0) ? (initalArr[i].number%initalArr[i].stuff.packNumber)+initalArr[i].stuff.minUnit.name:""):initalArr[i].number+initalArr[i].stuff.minUnit.name
-                  initalArr[i].allRetailPrice=initalArr[i].allRetailPrice//initalArr[i].retailPrice/initalArr[i].stuff.packNumber
+                  //initalArr[i].retailPrice/initalArr[i].stuff.packNumber
               }
             }
             this.storageDetailTable.push(...initalArr);

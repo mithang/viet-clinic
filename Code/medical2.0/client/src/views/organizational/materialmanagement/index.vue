@@ -453,7 +453,6 @@ this.Getypjxclist();
     this.YpjxcRc.jgid=this.formInline.jgid==="qb"?null:this.formInline.jgid;
 this.YpjxcRc.spm=this.formInline.spm;
 this.YpjxcRc.ph=this.formInline.ph;
-this.YpjxcRc.orderby=this.YpjxcRc.orderby;
 getmaterialmanagement(this.YpjxcRc).then((responseData)=>{
 if (responseData.code === 100){
   this.patientTotal=responseData.data.total;

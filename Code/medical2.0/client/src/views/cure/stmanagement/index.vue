@@ -346,8 +346,6 @@ import {stmanagementlist,updatestresult,updatesttime} from '@/api/cure/stmanagem
         this.strc.kssj=this.TimeInterval[0];
         this.strc.jssj=this.TimeInterval[1];
         this.strc.zxzt=this.strc.zxzt==="qb"?"":this.strc.zxzt;
-        this.strc.kdys=this.strc.kdys;
-        this.strc.hzxm=this.strc.hzxm;
         stmanagementlist(this.strc).then((responseData)=>{
             if (responseData.code === 100){
                 this.patientTotal=responseData.data.total;

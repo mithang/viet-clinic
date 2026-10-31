@@ -479,7 +479,6 @@ export default {
       this.YpjxcRc.lx = this.formInline.lx === "qb" ? "" : this.formInline.lx;
       this.YpjxcRc.spm = this.formInline.spm;
       this.YpjxcRc.ph = this.formInline.ph;
-      this.YpjxcRc.orderby = this.YpjxcRc.orderby;
       getypjxcmanagementlist(this.YpjxcRc).then((responseData) => {
         if (responseData.code === 100) {
           this.patientTotal = responseData.data.total;

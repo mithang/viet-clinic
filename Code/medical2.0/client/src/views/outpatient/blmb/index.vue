@@ -185,8 +185,6 @@ import {getblmblist,deletembbm} from '@/api/outpatient/blmb'
       this.tableData=[];
       this.blmbcxrc.mblx=this.blmbcxrc.mblx==="qb"?"":this.blmbcxrc.mblx;
     this.blmbcxrc.bllx=this.blmbcxrc.bllx==="qb"?"":this.blmbcxrc.bllx;
-    this.blmbcxrc.mbmc=this.blmbcxrc.mbmc;
-    this.blmbcxrc.cjr=this.blmbcxrc.cjr;
       getblmblist(this.blmbcxrc).then((responseData)=>{
          if (responseData.code === 100) {
            this.patientTotal=responseData.data.total;
