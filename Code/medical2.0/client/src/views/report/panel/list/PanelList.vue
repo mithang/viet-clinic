@@ -165,7 +165,6 @@
             bus.$emit('setNowPanelJumpInfo', rsp.data)
           })
         } else {
-          let _this = this
           setTimeout(() => { this.openStore(row, response) }, 50)
         }
       },
@@ -186,12 +185,11 @@
             bus.$emit('setNowPanelJumpInfo', rsp.data)
           })
         } else {
-          let _this = this
           setTimeout(() => { this.openShare(row, response) }, 50)
         }
       },
       remove(row) {
-        deleteEnshrine(row.panelGroupId).then(res => {
+        deleteEnshrine(row.panelGroupId).then(() => {
           this.collectList.splice(row.rowIndex, 1)
           if (row.rowIndex === this.currentRowIndex) {
             this.clearPanel()
