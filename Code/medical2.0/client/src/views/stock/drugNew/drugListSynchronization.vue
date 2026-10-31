@@ -129,7 +129,7 @@
                 :column-key="index.toString()"
                 :render-header="renderHeader"
               >
-                <template slot-scope="{ row, $index }">
+                <template slot-scope="{ row }">
                   <span
                     v-if="
                       columnViews[index].showType === 'Switch' ||
@@ -221,7 +221,7 @@
                 :column-key="index.toString()"
                 :render-header="renderHeader"
               >
-                <template slot-scope="{ row, $index }">
+                <template slot-scope="{ row }">
                   <template v-if="cv.prop === 'dosis'">
                     <span>{{ row.dosis }} {{ row.dosisUnit }}</span>
                   </template>

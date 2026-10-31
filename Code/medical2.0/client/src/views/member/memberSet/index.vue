@@ -147,7 +147,7 @@
               </el-table-column>
               <!--Nút thao tác theo dòng-->
               <el-table-column label='Thao tác' header-align='center' :width='oprColumnWidth + "px"' :key="'operate'">        
-                <template slot='header' slot-scope="scope">
+                <template slot='header'>
                   <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn' v-on:show-all-column='showAllColumn' v-on:show-default-column='showDefaultColumn'></view-columns-select>
                   <export-excel-button v-show='permission.export' :data='memberSetList' :tHeader='getHeads()' :filterVal='getFilterVal()' :plain='true'></export-excel-button>

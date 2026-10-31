@@ -63,7 +63,7 @@
             <el-menu-item
               ref="menuItem"
               class="book-mark-item"
-              v-for="(item, index) in collectMoreList"
+              v-for="item in collectMoreList"
               :key="item.id"
               :index="moreKey + '-' + item.id">
               <router-link :to="handleRouterLink(item.routerId)">

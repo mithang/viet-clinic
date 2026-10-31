@@ -520,7 +520,7 @@
                 @tab-click="clickMedicalEditTab"
               >
                 <el-tab-pane
-                  v-for="(item, index) in medicalEditTabs"
+                  v-for="item in medicalEditTabs"
                   :key="item.key"
                   :label="item.title"
                   :name="item"

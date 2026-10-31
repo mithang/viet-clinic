@@ -217,7 +217,7 @@
                     header-align="center"
                     :column-key="index.toString()"
                   >
-                    <template slot-scope="{ row, $index }">
+                    <template slot-scope="{ row }">
                   <span
                     v-if="
                       columnViews[index].showType === 'Switch' ||
@@ -259,7 +259,7 @@
                   
                     key="operationColumn"
                   >
-                    <template slot="header" slot-scope="scope">
+                    <template slot="header">
                       <span>Thao tác</span>
                       <view-columns-select
                         v-model="columnViews"

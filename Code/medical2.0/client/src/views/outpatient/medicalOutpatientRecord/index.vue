@@ -578,7 +578,7 @@
 											<el-button type="text" slot="reference"><i
                         class="el-icon-plus el-icon--right"></i>Kê đơn</el-button>
 											<ul class="medical-type-ul">
-												<li v-for="(item, index) in medicalTypeList" :key="item.type">
+												<li v-for="item in medicalTypeList" :key="item.type">
 													<el-button @click="confirmAllergyBeforePrescribe(item)" plain size="mini"
                                      style="border: none">{{ item.name }}</el-button>
 												</li>

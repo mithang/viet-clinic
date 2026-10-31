@@ -118,7 +118,7 @@
                                :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'
                                :min-width='cv.miniWidth+"px"' :width='cv.width+"px"' header-align='center'
                                :column-key='index.toString()' :render-header="renderHeader">
-                <template slot-scope='{row,$index}'>
+                <template slot-scope='{row}'>
                   <span
                     v-if='columnViews[index].showType === "Switch" || columnViews[index].showType === "Checkbox" || columnViews[index].showType === "Radio"'>
                     <!-- <li v-if='getAttrValue(row, columnViews[index].prop) == "1"' class='el-icon-check' style='color:#F56C6C;'>
@@ -139,7 +139,7 @@
               </el-table-column>
               <!--Nút thao tác theo dòng-->
               <el-table-column label='Thao tác' header-align='center' :width='140 + "px"' :key="'operate'">
-                <template slot='header' slot-scope="scope">
+                <template slot='header'>
                   <span>Thao tác</span>
                   <view-columns-select v-model='columnViews' v-on:save-column-view='saveColumn'
                                        v-on:show-all-column='showAllColumn'

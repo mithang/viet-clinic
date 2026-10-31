@@ -69,7 +69,7 @@
                 align="center">
               </el-table-column>
               <el-table-column v-for="(cv, index) in columnViews" v-if="cv.display"  :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'   header-align='center' :column-key='index.toString()'>
-                <template slot-scope='{row,$index}'>
+                <template slot-scope='{row}'>
                   <span>{{ getAttrValue(row, cv.prop, cv.javaType )}}</span>
                 </template>
               </el-table-column>
