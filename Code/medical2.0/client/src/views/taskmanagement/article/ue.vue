@@ -127,7 +127,7 @@ if(editoroption!=null){
     this.options=editoroption;
     //this.Quill = new Quill(editor, this.options)
 }else {
-
+  // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
 }
 this.Quill = new Quill(editor, this.options);
 

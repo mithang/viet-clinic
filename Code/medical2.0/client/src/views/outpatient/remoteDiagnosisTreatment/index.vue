@@ -516,7 +516,7 @@
             if (response.data.BusData.code === 20000) {
               this.$message.warning("Thông tin đề nghị khám chữa bệnh bất thường, vui lòng gửi lại yêu cầu!")
             }else if (response.data.BusData.code === 10000){
-
+              // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
             }
           })
           .catch(() => {

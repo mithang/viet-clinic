@@ -762,7 +762,7 @@ export default {
               //Chèn dữ liệu vào bảng thu phí
               saveTollInfo(toll).then((res) => {
                 if (res.code === 100) {
-
+                  // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
                 }
               }).catch(() => {
               })

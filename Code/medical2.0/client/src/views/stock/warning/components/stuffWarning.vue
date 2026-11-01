@@ -765,9 +765,9 @@ export default {
     },
     changStatus(){
       if(this.tabPosition==='0'){
-
+        // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
       }else{
-
+        // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
       }
     },
   },

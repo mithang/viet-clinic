@@ -4174,6 +4174,7 @@
               });
               this.templateRecipelList = responseData.data.rows;
             } else {
+              // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
             }
             this.resetLoad();
           })
@@ -5052,6 +5053,7 @@
                   item.days &&
                   item.days.name
                 ) {
+                  // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
                 } else {
                   this.$message.error(tabElement.title + "Thông tin chưa điền đầy đủ");
                   infuseFlage = true;

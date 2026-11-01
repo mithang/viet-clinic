@@ -603,6 +603,7 @@ this.ruleForm.taskregion=[];
         this.flags = false
 
         if (row !== "" && row != null) {
+          // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
         } else {
           this.mblx = "0",
           this.bllx = "0",

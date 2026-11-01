@@ -389,6 +389,7 @@
         this.bizFormModel.status = index
         saveDiagnosis(this.bizFormModel).then(responseData => {
           if (responseData.code === 100) {
+            // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
           } else {
             this.showMessage(responseData)
           }
@@ -449,6 +450,7 @@
               this.$message.success("Lưu thành công!")
               modifiedState(this.bizFormModel).then(responseData => {
                 if (responseData.code === 100) {
+                  // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
                 } else {
                   this.showMessage(responseData)
                 }

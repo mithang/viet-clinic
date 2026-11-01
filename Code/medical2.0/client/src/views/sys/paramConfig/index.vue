@@ -175,13 +175,16 @@
         // Nếu chữ số đầu lớn hơn 0 (khác 0 thì chắc chắn lớn hơn 0), chỉ cần xét trường hợp chữ số thứ hai là dấu chấm thập phân
         if (amount.indexOf(".") !== -1) {
           if (amount.substring(0, 1) > 0) {
+            // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
           } else {
             if (amount.substring(2, 3) > 0) {
+              // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
             } else {
               amount = "0.";
             }
           }
         } else {
+          // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
         }
       }
       this.sysParamConfigForm[field] = amount;

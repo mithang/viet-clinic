@@ -284,12 +284,12 @@ export default {
       //this.$message.success(this.tabPosition);
 
       if (tab.name === "tzxx") {
-
+        // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
       } else if (tab.name === "schedulingmx") {
-
+        // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
 
       } else if (tab.name === "schedulingzl") {
-
+        // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
       }
 
     },

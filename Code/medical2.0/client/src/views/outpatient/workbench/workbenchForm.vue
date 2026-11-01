@@ -536,6 +536,7 @@ selectpatientdjyjclist(){
           })
           
         } else {
+          // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
         }
         this.resetLoad()
       }).catch(error => {

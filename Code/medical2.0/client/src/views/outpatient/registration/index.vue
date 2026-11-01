@@ -1053,7 +1053,7 @@
             if (this.returnToll.freeRegistrationFee !== "1") {
               saveTollInfo(toll).then((res) => {
                 if (res.code === 100) {
-
+                  // Nhánh này cố ý để trống, giữ nguyên hành vi hiện tại.
                 }
               }).catch(() => {
               })
