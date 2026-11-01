@@ -77,13 +77,38 @@
           </template>
         </el-table-column>
         <el-table-column prop="rejectReason" label="Lý do từ chối" width="200" />
+        <el-table-column label="Thao tác" width="140">
+          <template slot-scope="scope">
+            <el-button v-if="scope.row.status === '1'" size="mini" type="primary" @click="openSlip(scope.row)">In phiếu hẹn</el-button>
+          </template>
+        </el-table-column>
       </el-table>
+    </el-dialog>
+
+    <el-dialog title="Phiếu hẹn khám" :visible.sync="slipDialogVisible" width="560px" append-to-body>
+      <div id="appointment-slip-print" class="appointment-slip">
+        <h3 v-if="slipClinicName" style="text-align: center; margin: 0 0 4px;">{{ slipClinicName }}</h3>
+        <h3 style="text-align: center; margin: 0 0 16px;">PHIẾU HẸN KHÁM</h3>
+        <el-row class="slip-row"><el-col :span="7"><strong>Bệnh nhân:</strong></el-col><el-col :span="17">{{ slipItem ? slipItem.patientName : '' }}</el-col></el-row>
+        <el-row class="slip-row"><el-col :span="7"><strong>Số điện thoại:</strong></el-col><el-col :span="17">{{ slipItem ? slipItem.phone : '' }}</el-col></el-row>
+        <el-row class="slip-row"><el-col :span="7"><strong>Ngày hẹn:</strong></el-col><el-col :span="17">{{ slipItem ? formatDate(slipItem.wantedDate) : '' }}</el-col></el-row>
+        <el-row class="slip-row"><el-col :span="7"><strong>Dịch vụ:</strong></el-col><el-col :span="17">{{ slipItem ? slipItem.service : '' }}</el-col></el-row>
+        <el-row class="slip-row"><el-col :span="7"><strong>Bác sĩ:</strong></el-col><el-col :span="17"></el-col></el-row>
+        <el-row class="slip-row"><el-col :span="7"><strong>Phòng:</strong></el-col><el-col :span="17"></el-col></el-row>
+        <el-row class="slip-row"><el-col :span="7"><strong>Ghi chú:</strong></el-col><el-col :span="17"></el-col></el-row>
+        <el-row class="slip-row"><el-col :span="7"><strong>Mã phiếu đăng ký:</strong></el-col><el-col :span="17">{{ slipItem ? slipItem.registrationId : '' }}</el-col></el-row>
+      </div>
+      <span slot="footer">
+        <el-button @click="slipDialogVisible = false">Đóng</el-button>
+        <el-button type="primary" @click="printSlip">In phiếu</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
+import { getCurrentCompany } from '@/utils/userCache'
 import {
   submitBookingRequest,
   listPendingBookingRequests,
@@ -110,7 +135,22 @@ export default {
       },
       selected: null,
       rejectReason: '',
-      priorList: []
+      priorList: [],
+      slipDialogVisible: false,
+      slipItem: null
+    }
+  },
+  computed: {
+    // Tên phòng khám lấy từ payload yêu cầu nếu có (thực tế API chỉ
+    // trả company.id, không trả name), nếu không lấy từ phiên đăng
+    // nhập (currentCompany do login ghi từ DB); không có thì bỏ trống
+    // tiêu đề phòng khám, không bịa tên/địa chỉ/số điện thoại.
+    slipClinicName() {
+      if (this.slipItem && this.slipItem.company && this.slipItem.company.name) {
+        return this.slipItem.company.name
+      }
+      const company = getCurrentCompany()
+      return company && company.name ? company.name : ''
     }
   },
   created() {
@@ -173,11 +213,25 @@ export default {
       confirmBookingRequest(item.id).then((responseData) => {
         if (responseData.code === 100) {
           this.$message.success('Đã tạo lịch hẹn, mã phiếu đăng ký: ' + responseData.data)
+          // Phiếu in dùng đúng dữ liệu yêu cầu vừa xác nhận (đã có trong
+          // tay): tên, SĐT, ngày, dịch vụ, mã phiếu đăng ký trả về.
+          // Bác sĩ/phòng/ghi chú không được lưu lúc xác nhận (backend
+          // chỉ đếm lịch trực ngày đó, không gán bác sĩ; yêu cầu không
+          // có trường ghi chú) nên các dòng đó để trống, không bịa.
+          this.slipItem = Object.assign({}, item, { status: '1', registrationId: responseData.data })
+          this.slipDialogVisible = true
           this.loadPending()
         }
       }).catch(() => {
         this.loadPending()
       })
+    },
+    openSlip(item) {
+      this.slipItem = item
+      this.slipDialogVisible = true
+    },
+    printSlip() {
+      window.print()
     },
     openRejectDialog(item) {
       this.selected = item
@@ -209,3 +263,25 @@ export default {
   }
 }
 </script>
+
+<style>
+.appointment-slip .slip-row {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #appointment-slip-print,
+  #appointment-slip-print * {
+    visibility: visible !important;
+  }
+  #appointment-slip-print {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+</style>
