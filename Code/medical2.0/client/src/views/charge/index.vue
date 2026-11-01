@@ -306,6 +306,38 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <!-- VietQR (G4): chỉ hiện khi chọn "Chuyển khoản ngân hàng".
+               Mã QR vẽ từ cấu hình của chính phòng khám + số tiền thực thu
+               + nội dung DK<mã đăng ký>; chỉ hiển thị, không tự động xác
+               nhận thanh toán — thu ngân vẫn bấm "Xác nhận thu phí" sau
+               khi nhận được tiền như quy trình hiện tại. -->
+          <el-row v-if="chargeForm.paymentType === 'payType_5'">
+            <el-col :span="24">
+              <el-form-item label="VietQR">
+                <div v-if="vietqrLoading">Đang tải cấu hình VietQR…</div>
+                <div v-else-if="!vietqrConfigured">
+                  <span>Phòng khám chưa cấu hình tài khoản nhận VietQR nên chưa hiển thị được mã QR. </span>
+                  <el-button type="text" @click="openVietqrConfig">Cấu hình VietQR</el-button>
+                </div>
+                <div v-else-if="vietqrAmount <= 0">
+                  <span>Nhập số tiền thực thu lớn hơn 0 để hiển thị mã QR.</span>
+                </div>
+                <div v-else>
+                  <div id="vietqrCode"></div>
+                  <div>
+                    {{ vietqrConfig.bankName ? vietqrConfig.bankName + " — " : "" }}Số tài khoản: {{ vietqrConfig.accountNo }} — Chủ tài khoản: {{ vietqrConfig.accountName }}
+                  </div>
+                  <div>
+                    Số tiền: {{ formatVND(vietqrAmount) }} — Nội dung: {{ vietqrContent }}
+                  </div>
+                  <div style="color: #909399">
+                    Bệnh nhân quét mã để chuyển khoản đúng số tiền; thu ngân vẫn xác nhận đã nhận tiền rồi mới bấm "Xác nhận thu phí".
+                  </div>
+                  <el-button type="text" @click="openVietqrConfig">Đổi tài khoản VietQR</el-button>
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-row>
             <el-col :span="15">
               <el-form-item label="Ghi chú">
@@ -324,6 +356,37 @@
           @click="confirmCharge"
           >Xác nhận thu phí</el-button
         >
+      </div>
+    </el-dialog>
+    <!-- Cấu hình tài khoản nhận VietQR (G4): chỉ lưu ngân hàng + số tài
+         khoản + tên chủ tài khoản của phòng khám, không lưu mật khẩu hay
+         credential ngân hàng nào; mã QR chỉ hiển thị sau khi đã cấu hình. -->
+    <el-dialog
+      title="Cấu hình tài khoản VietQR"
+      :visible.sync="vietqrDialogVisible"
+      :close-on-click-modal="false"
+      width="50%"
+    >
+      <el-form :model="vietqrForm" label-width="160px">
+        <el-form-item label="Mã BIN ngân hàng">
+          <el-input v-model="vietqrForm.bankBin" placeholder="6 chữ số, ví dụ 970422" maxlength="6"></el-input>
+        </el-form-item>
+        <el-form-item label="Tên ngân hàng">
+          <el-input v-model="vietqrForm.bankName" placeholder="Tùy chọn, ví dụ MB Bank" maxlength="50"></el-input>
+        </el-form-item>
+        <el-form-item label="Số tài khoản nhận tiền">
+          <el-input v-model="vietqrForm.accountNo" placeholder="Chỉ chữ số, 6–20 ký tự" maxlength="20"></el-input>
+        </el-form-item>
+        <el-form-item label="Tên chủ tài khoản">
+          <el-input v-model="vietqrForm.accountName" placeholder="Tên in trên mã QR" maxlength="50"></el-input>
+        </el-form-item>
+      </el-form>
+      <div style="color: #909399">
+        Chỉ dùng để hiển thị mã QR cho bệnh nhân quét và chuyển khoản; hệ thống không tự động xác nhận thanh toán và không lưu mật khẩu ngân hàng.
+      </div>
+      <div slot="footer">
+        <el-button @click="vietqrDialogVisible = false">Hủy</el-button>
+        <el-button type="primary" :loading="vietqrSaving" @click="saveVietqrConfigForm">Lưu cấu hình</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -425,6 +488,9 @@
 import { listRegistrationPages } from "@/api/outpatient/registration";
 import { allQueryMedicalRecord } from "@/api/outpatient/medicalRecord";
 import { saveTollTollInfo } from "@/api/toll/tollInfo";
+import { getVietqrConfig, saveVietqrConfig } from "@/api/vietqr";
+import { buildVietqrPayload } from "@/utils/vietqr";
+import QRCode from "qrcodejs2";
 import { getLocalRouters } from "@/utils/auth";
 
 // Tab trang thu phí -> recipel_info.charge_status, cùng quy ước với trang
@@ -472,6 +538,19 @@ export default {
         paymentType: "payType_0",
       },
       chargeSubmitting: false,
+      // VietQR (G4): cấu hình của tenant đang đăng nhập; mặc định chưa
+      // cấu hình thì không vẽ mã QR nào (không hard-code tài khoản).
+      vietqrConfig: null,
+      vietqrConfigured: false,
+      vietqrLoading: false,
+      vietqrDialogVisible: false,
+      vietqrForm: {
+        bankBin: "",
+        bankName: "",
+        accountNo: "",
+        accountName: "",
+      },
+      vietqrSaving: false,
       refundDialogVisible: false,
       patientList: [], // Lấy từ registration/v2/list, không còn dữ liệu mẫu
       patientTotalCount: 0, // Bệnh nhân tổng số
@@ -542,6 +621,45 @@ export default {
         (sum, item) => sum + this.toNum(item.totalCost),
         0
       );
+    },
+    // Số tiền mã VietQR mang theo = số tiền thực thu trong dialog (đã
+    // trừ ưu đãi), làm tròn xuống VNĐ nguyên; <= 0 thì không vẽ mã.
+    vietqrAmount() {
+      return Math.floor(this.toNum(this.chargeForm.actualAmount));
+    },
+    // Nội dung chuyển khoản: mã đăng ký đang thu phí, để thu ngân đối
+    // soát với đúng lượt khám; không dùng tên bệnh nhân (tránh dấu).
+    vietqrContent() {
+      return this.selectedRegistration && this.selectedRegistration.id
+        ? "DK" + this.selectedRegistration.id
+        : "";
+    },
+    // Payload EMV VietQR; rỗng khi chưa cấu hình, chưa chọn bệnh nhân
+    // hoặc số tiền <= 0 — template chỉ vẽ mã khi payload khác rỗng.
+    vietqrPayload() {
+      try {
+        if (!this.vietqrConfigured || !this.vietqrConfig || !this.vietqrContent) {
+          return "";
+        }
+        return buildVietqrPayload(this.vietqrConfig, this.vietqrAmount, this.vietqrContent);
+      } catch (e) {
+        return "";
+      }
+    },
+  },
+  watch: {
+    // Vẽ lại mã QR khi mở dialog thu phí, đổi phương thức sang chuyển
+    // khoản, hoặc sửa số tiền thực thu (QR mang đúng số tiền đó).
+    chargeDialogVisible(visible) {
+      if (visible) {
+        this.loadVietqrConfig();
+      }
+    },
+    "chargeForm.paymentType"() {
+      this.renderVietqr();
+    },
+    "chargeForm.actualAmount"() {
+      this.renderVietqr();
     },
   },
   created() {
@@ -758,6 +876,100 @@ export default {
         _takeFrequencyName: (recipel.takeFrequency && recipel.takeFrequency.name) || "",
         _singleDosage: recipel.singleDosage || "",
       };
+    },
+    /* VietQR (G4): tải cấu hình của tenant; lỗi tải không chặn thu phí
+       (lễ tân vẫn thu bằng các phương thức khác), chỉ ẩn mã QR.
+       Vẽ mã trong .finally, SAU khi vietqrLoading về false: nếu vẽ
+       trong .then, nhánh v-if="vietqrLoading" vẫn đang hiển thị nên
+       div #vietqrCode chưa tồn tại, callback $nextTick trả về sớm và
+       mã không bao giờ được vẽ lại (đã gặp thực tế ở nhánh lưu qua UI). */
+    loadVietqrConfig() {
+      this.vietqrLoading = true;
+      return getVietqrConfig()
+        .then((responseData) => {
+          const data = (responseData && responseData.data) || {};
+          this.vietqrConfigured = !!data.configured && !!data.config;
+          this.vietqrConfig = data.config || null;
+        })
+        .catch(() => {
+          this.vietqrConfigured = false;
+          this.vietqrConfig = null;
+        })
+        .finally(() => {
+          this.vietqrLoading = false;
+          this.renderVietqr();
+        });
+    },
+    /* Vẽ (lại) mã QR vào div #vietqrCode khi dialog đang mở, đã chọn
+       chuyển khoản và đã có payload; các trường hợp còn lại xóa mã cũ. */
+    renderVietqr() {
+      this.$nextTick(() => {
+        const el = document.getElementById("vietqrCode");
+        if (!el) {
+          return;
+        }
+        el.innerHTML = "";
+        if (
+          this.chargeDialogVisible &&
+          this.chargeForm.paymentType === "payType_5" &&
+          this.vietqrPayload
+        ) {
+          new QRCode(el, {
+            text: this.vietqrPayload,
+            width: 200,
+            height: 200,
+            correctLevel: QRCode.CorrectLevel.M,
+          });
+        }
+      });
+    },
+    openVietqrConfig() {
+      this.vietqrForm = {
+        bankBin: (this.vietqrConfig && this.vietqrConfig.bankBin) || "",
+        bankName: (this.vietqrConfig && this.vietqrConfig.bankName) || "",
+        accountNo: (this.vietqrConfig && this.vietqrConfig.accountNo) || "",
+        accountName: (this.vietqrConfig && this.vietqrConfig.accountName) || "",
+      };
+      this.vietqrDialogVisible = true;
+    },
+    saveVietqrConfigForm() {
+      const form = {
+        bankBin: (this.vietqrForm.bankBin || "").trim(),
+        bankName: (this.vietqrForm.bankName || "").trim(),
+        accountNo: (this.vietqrForm.accountNo || "").trim(),
+        accountName: (this.vietqrForm.accountName || "").trim(),
+      };
+      if (!/^\d{6}$/.test(form.bankBin)) {
+        this.$message.error("Mã BIN ngân hàng phải đúng 6 chữ số.");
+        return;
+      }
+      if (!/^\d{6,20}$/.test(form.accountNo)) {
+        this.$message.error("Số tài khoản phải là 6–20 chữ số.");
+        return;
+      }
+      if (!form.accountName) {
+        this.$message.error("Tên chủ tài khoản không được để trống.");
+        return;
+      }
+      this.vietqrSaving = true;
+      saveVietqrConfig(form)
+        .then((responseData) => {
+          if (responseData.code !== 100) {
+            this.$message.error(responseData.msg || "Không lưu được cấu hình VietQR");
+            return;
+          }
+          this.vietqrDialogVisible = false;
+          this.$message.success("Đã lưu cấu hình VietQR");
+          this.loadVietqrConfig();
+        })
+        .catch((error) => {
+          this.$message.error(
+            (error && (error.msg || error.message)) || "Không lưu được cấu hình VietQR"
+          );
+        })
+        .finally(() => {
+          this.vietqrSaving = false;
+        });
     },
     /* Nhấn nút thu phí / hoàn phí. */
     chargeClick() {

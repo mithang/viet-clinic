@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.vietqr.dao.VietqrConfigDao">
+
+    <sql id="vietqrConfigColumns">
+        a.id AS "id",
+        a.company_id AS "company.id",
+        IFNULL(company.name,'') AS "company.name",
+        a.bank_bin AS "bankBin",
+        a.bank_name AS "bankName",
+        a.account_no AS "accountNo",
+        a.account_name AS "accountName",
+        a.remarks AS "remarks",
+        a.create_by AS "createBy",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag"
+    </sql>
+
+    <sql id="vietqrConfigJoins">
+        LEFT JOIN org_company company ON company.id = a.company_id
+    </sql>
+
+    <select id="get" resultType="com.geeke.vietqr.entity.VietqrConfig">
+        SELECT
+            <include refid="vietqrConfigColumns"/>
+        FROM vietqr_config a
+        <include refid="vietqrConfigJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <!--
+        Bài học G1: #{DEL_FLAG_NORMAL} chỉ resolve khi tham số là
+        PageRequest; với Map thuần MyBatis bind thành NULL -> del_flag =
+        NULL -> 0 dòng. Service luôn đưa DEL_FLAG_NORMAL tường minh.
+    -->
+    <select id="findActive" resultType="com.geeke.vietqr.entity.VietqrConfig">
+        SELECT
+            <include refid="vietqrConfigColumns"/>
+        FROM vietqr_config a
+        <include refid="vietqrConfigJoins"/>
+        WHERE a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.company_id = #{companyId}
+        ORDER BY a.update_date DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insert">
+        INSERT INTO vietqr_config(
+            id,
+            company_id,
+            bank_bin,
+            bank_name,
+            account_no,
+            account_name,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES (
+            #{id},
+            #{company.id},
+            #{bankBin},
+            #{bankName},
+            #{accountNo},
+            #{accountName},
+            #{remarks},
+            #{createBy},
+            #{createDate},
+            #{updateBy},
+            #{updateDate},
+            #{delFlag}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE vietqr_config SET
+            bank_bin = #{bankBin},
+            bank_name = #{bankName},
+            account_no = #{accountNo},
+            account_name = #{accountName},
+            remarks = #{remarks},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
+        UPDATE vietqr_config SET
+            update_by = #{updateBy},
+            update_date = #{updateDate},
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
