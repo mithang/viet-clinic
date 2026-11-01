@@ -470,7 +470,7 @@
               <el-form-item label="Chẩn đoán tây y" prop="westernDiagnose" v-if="medicalType === 'western'">
                 <span slot="label" >
                       Chẩn đoán tây y
-                    <el-popover v-model:visible="WMpopoverVisible" placement="bottom-start"
+                    <el-popover v-model="WMpopoverVisible" placement="bottom-start"
                                 width="700" trigger="manual"
                            >
                       <el-table :data="diagnosesList" @row-click="selectDiagnosis"
@@ -493,7 +493,7 @@
               <el-form-item label="Chẩn đoán đông y" prop="chinaDiagnose" v-if="medicalType === 'chinese'">
                 <span slot="label" >
                       Chẩn đoán đông y
-                    <el-popover v-model:visible="TCMpopoverVisible" placement="top-start"
+                    <el-popover v-model="TCMpopoverVisible" placement="top-start"
                                 width="700" trigger="focus"
                     >
                       <el-table :data="diagnosesList" @row-click="selectDiagnosis"
@@ -515,7 +515,7 @@
                   <el-form-item label="Chứng hậu Đông y" prop="chinaSyndrome" v-if="medicalType === 'chinese'">
                     <span slot="label" >
                       Chứng hậu Đông y
-                    <el-popover v-model:visible="ZHpopoverVisible" placement="top-start"
+                    <el-popover v-model="ZHpopoverVisible" placement="top-start"
                                 width="700" trigger="focus"
                     >
                       <el-table :data="zyzhList" @row-click="selectZH"
