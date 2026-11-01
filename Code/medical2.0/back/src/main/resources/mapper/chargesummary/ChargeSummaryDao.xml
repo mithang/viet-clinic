@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.chargesummary.dao.ChargeSummaryDao">
+
+    <!--
+        Tổng kết thu phí cuối ngày (G6, read-only, không migration).
+
+        Múi giờ — đọc kỹ trước khi sửa cửa sổ ngày:
+        JDBC dùng serverTimezone=GMT+8 và Jackson dùng time-zone GMT+8,
+        nên create_date lưu trong DB là giờ tường GMT+8, KHÔNG phải giờ
+        phòng khám (+07) cũng không phải UTC. Đã kiểm chứng thực nghiệm
+        2026-11-02: phiếu tạo lúc 02:58 giờ phòng khám (+07) lưu thành
+        03:58 trong DB (tức 19:58 UTC hôm trước). Vì vậy một ngày phòng
+        khám [00:00 +07, 24:00 +07) tương đương cửa sổ giờ lưu trữ
+        [01:00 +08 ngày đó, 01:00 +08 ngày hôm sau). Service tính sẵn
+        startDate/endDate theo quy tắc này; SQL chỉ so sánh chuỗi
+        DATETIME trong cửa sổ đó, không tự đổi múi giờ. createDate trả
+        về qua DATE_FORMAT để khớp đúng định dạng Jackson GMT+8 mà
+        endpoint danh sách thu phí đang trả (so sánh đối chiếu 1-1).
+    -->
+    <select id="findCharges" resultType="map">
+        SELECT
+            a.id AS "id",
+            a.toll_number AS "tollNumber",
+            IFNULL(patient.name, '') AS "patientName",
+            a.payment_type AS "paymentType",
+            IFNULL(paymentType.name, '') AS "paymentTypeName",
+            a.toll_type AS "tollType",
+            IFNULL(tollType.name, '') AS "tollTypeName",
+            a.amount_receivable AS "amountReceivable",
+            a.amount_received AS "amountReceived",
+            a.amount_discounted AS "amountDiscounted",
+            a.return_type AS "returnType",
+            DATE_FORMAT(a.create_date, '%Y-%m-%d %H:%i:%s') AS "createDate"
+        FROM toll_info a
+        LEFT JOIN patient patient ON patient.id = a.patient_id
+        LEFT JOIN sys_dict_item paymentType ON paymentType.value = a.payment_type
+        LEFT JOIN sys_dict_item tollType ON tollType.value = a.toll_type
+        WHERE a.company_id = #{companyId}
+            AND a.del_flag = #{delFlag}
+            AND a.create_date &gt;= #{startDate}
+            AND a.create_date &lt; #{endDate}
+        ORDER BY a.create_date ASC, a.toll_number ASC
+    </select>
+
+    <select id="findRefunds" resultType="map">
+        SELECT
+            a.id AS "id",
+            a.toll_id AS "tollId",
+            a.amount_receivable AS "amountReceivable",
+            a.amount_received AS "amountReceived",
+            a.payment_type AS "paymentType",
+            a.create_by AS "createBy",
+            DATE_FORMAT(a.create_date, '%Y-%m-%d %H:%i:%s') AS "createDate"
+        FROM toll_audit_log a
+        WHERE a.company_id = #{companyId}
+            AND a.del_flag = #{delFlag}
+            AND a.action = 'REFUND'
+            AND a.create_date &gt;= #{startDate}
+            AND a.create_date &lt; #{endDate}
+        ORDER BY a.create_date ASC
+    </select>
+
+</mapper>

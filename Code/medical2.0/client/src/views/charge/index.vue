@@ -84,6 +84,7 @@
             >{{ chargeStatusActiveName === "2" ? "Hoàn phí" : "Thu phí" }}</el-button
           >
           <el-button v-if="chargeStatusActiveName === '2'">Xuất hóa đơn</el-button>
+          <el-button @click="openChargeSummary">Xuất tổng kết ngày</el-button>
         </div>
       </div>
       <div class="patientinfo_form">
@@ -481,6 +482,74 @@
         </div>
       </div>
     </el-dialog>
+    <!-- Tổng kết thu phí cuối ngày (G6): chỉ đọc, không ghi DB; CSV
+         tạo phía client từ JSON API (UTF-8 BOM, tiêu đề tiếng Việt). -->
+    <el-dialog
+      title="Tổng kết thu phí cuối ngày"
+      :visible.sync="chargeSummaryDialogVisible"
+      :close-on-click-modal="false"
+      width="80%"
+    >
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span>Ngày phòng khám:</span>
+        <el-date-picker
+          v-model="chargeSummaryDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="Chọn ngày"
+        ></el-date-picker>
+        <el-button type="primary" :loading="chargeSummaryLoading" @click="loadChargeSummary">Xem tổng kết</el-button>
+        <el-button :disabled="!chargeSummaryData" @click="downloadChargeSummaryCsv">Tải CSV</el-button>
+      </div>
+      <div v-if="chargeSummaryData" style="margin-top: 12px">
+        <div>
+          Ngày {{ chargeSummaryData.date }} (giờ phòng khám Asia/Ho_Chi_Minh) —
+          {{ chargeSummaryData.rows.length }} phiếu thu phí,
+          {{ chargeSummaryData.refunds.length }} dòng hoàn phí đã ghi audit.
+        </div>
+        <el-table :data="chargeSummaryData.rows" style="width: 100%; margin-top: 8px">
+          <el-table-column prop="tollNumber" label="Số phiếu thu phí"></el-table-column>
+          <el-table-column prop="patientName" label="Bệnh nhân"></el-table-column>
+          <el-table-column prop="paymentTypeName" label="Phương thức thanh toán"></el-table-column>
+          <el-table-column prop="tollTypeName" label="Loại thu phí"></el-table-column>
+          <el-table-column prop="amountReceivable" label="Phải thu (VNĐ)" :formatter="summaryMoneyFormatter"></el-table-column>
+          <el-table-column prop="amountReceived" label="Thực thu (VNĐ)" :formatter="summaryMoneyFormatter"></el-table-column>
+          <el-table-column prop="amountDiscounted" label="Ưu đãi (VNĐ)" :formatter="summaryMoneyFormatter"></el-table-column>
+          <el-table-column prop="returnType" label="Hoàn phí"></el-table-column>
+          <el-table-column prop="createDate" label="Thời gian tạo"></el-table-column>
+        </el-table>
+        <div style="margin-top: 12px; font-weight: bold">
+          Tổng cộng: {{ chargeSummaryData.totals.chargeCount }} phiếu —
+          Phải thu {{ formatVND(chargeSummaryData.totals.totalReceivable) }} —
+          Thực thu {{ formatVND(chargeSummaryData.totals.totalReceived) }} —
+          Ưu đãi {{ formatVND(chargeSummaryData.totals.totalDiscounted) }}
+        </div>
+        <div style="margin-top: 8px">
+          <div style="font-weight: bold">Theo phương thức thanh toán:</div>
+          <div v-for="item in chargeSummaryData.totals.byPaymentMethod" :key="item.paymentMethod">
+            {{ item.paymentMethod }}: {{ item.count }} phiếu —
+            Phải thu {{ formatVND(item.totalReceivable) }} —
+            Thực thu {{ formatVND(item.totalReceived) }}
+          </div>
+        </div>
+        <div style="margin-top: 8px">
+          <div style="font-weight: bold">
+            Hoàn phí (theo audit log): {{ chargeSummaryData.totals.refundCount }} dòng —
+            Tổng hoàn {{ formatVND(chargeSummaryData.totals.refundTotal) }}
+          </div>
+          <el-table :data="chargeSummaryData.refunds" style="width: 100%; margin-top: 8px">
+            <el-table-column prop="tollId" label="Phiếu hoàn"></el-table-column>
+            <el-table-column prop="amountReceived" label="Số tiền hoàn (VNĐ)" :formatter="summaryMoneyFormatter"></el-table-column>
+            <el-table-column prop="paymentType" label="Phương thức"></el-table-column>
+            <el-table-column prop="createBy" label="Người thực hiện"></el-table-column>
+            <el-table-column prop="createDate" label="Thời gian"></el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button @click="chargeSummaryDialogVisible = false">Đóng</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -489,6 +558,7 @@ import { listRegistrationPages } from "@/api/outpatient/registration";
 import { allQueryMedicalRecord } from "@/api/outpatient/medicalRecord";
 import { saveTollTollInfo } from "@/api/toll/tollInfo";
 import { getVietqrConfig, saveVietqrConfig } from "@/api/vietqr";
+import { getDayChargeSummary } from "@/api/chargeSummary";
 import { buildVietqrPayload } from "@/utils/vietqr";
 import QRCode from "qrcodejs2";
 import { getLocalRouters } from "@/utils/auth";
@@ -552,6 +622,11 @@ export default {
       },
       vietqrSaving: false,
       refundDialogVisible: false,
+      // Tổng kết ngày (G6): mặc định là hôm nay theo giờ phòng khám.
+      chargeSummaryDialogVisible: false,
+      chargeSummaryDate: "",
+      chargeSummaryData: null,
+      chargeSummaryLoading: false,
       patientList: [], // Lấy từ registration/v2/list, không còn dữ liệu mẫu
       patientTotalCount: 0, // Bệnh nhân tổng số
       patientPageSize: 15, // Số bệnh nhân hiển thị mỗi trang
@@ -876,6 +951,97 @@ export default {
         _takeFrequencyName: (recipel.takeFrequency && recipel.takeFrequency.name) || "",
         _singleDosage: recipel.singleDosage || "",
       };
+    },
+
+    summaryMoneyFormatter(row, column, value) {
+      return this.formatVND(value);
+    },
+    // Tổng kết ngày (G6): ngày mặc định là hôm nay theo giờ phòng khám
+    // (Asia/Ho_Chi_Minh), không lấy ngày UTC của máy chủ.
+    openChargeSummary() {
+      if (!this.chargeSummaryDate) {
+        const now = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+        );
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, "0");
+        const d = String(now.getDate()).padStart(2, "0");
+        this.chargeSummaryDate = y + "-" + m + "-" + d;
+      }
+      this.chargeSummaryDialogVisible = true;
+      this.loadChargeSummary();
+    },
+    loadChargeSummary() {
+      if (!this.chargeSummaryDate) {
+        this.$message.error("Vui lòng chọn ngày tổng kết");
+        return;
+      }
+      this.chargeSummaryLoading = true;
+      getDayChargeSummary(this.chargeSummaryDate)
+        .then((res) => {
+          this.chargeSummaryData = res.data || res;
+        })
+        .catch(() => {
+          this.$message.error("Không tải được tổng kết ngày đã chọn");
+        })
+        .finally(() => {
+          this.chargeSummaryLoading = false;
+        });
+    },
+    // CSV tạo phía client từ JSON API: UTF-8 BOM để Excel mở đúng
+    // tiếng Việt; một dòng mỗi phiếu + các dòng tổng kết ở cuối.
+    downloadChargeSummaryCsv() {
+      if (!this.chargeSummaryData) {
+        return;
+      }
+      const esc = (v) => {
+        const text = v === null || v === undefined ? "" : String(v);
+        return '"' + text.replace(/"/g, '""') + '"';
+      };
+      const lines = [];
+      lines.push(
+        [
+          "Số phiếu thu phí",
+          "Bệnh nhân",
+          "Phương thức thanh toán",
+          "Loại thu phí",
+          "Phải thu (VNĐ)",
+          "Thực thu (VNĐ)",
+          "Ưu đãi (VNĐ)",
+          "Hoàn phí",
+          "Thời gian tạo",
+        ].map(esc).join(",")
+      );
+      this.chargeSummaryData.rows.forEach((row) => {
+        lines.push(
+          [
+            row.tollNumber,
+            row.patientName,
+            row.paymentTypeName,
+            row.tollTypeName,
+            row.amountReceivable,
+            row.amountReceived,
+            row.amountDiscounted,
+            row.returnType,
+            row.createDate,
+          ].map(esc).join(",")
+        );
+      });
+      const t = this.chargeSummaryData.totals;
+      lines.push(["", "", "", "TỔNG CỘNG", t.totalReceivable, t.totalReceived, t.totalDiscounted, "", ""].map(esc).join(","));
+      t.byPaymentMethod.forEach((item) => {
+        lines.push(["", "", item.paymentMethod, "Theo phương thức", item.totalReceivable, item.totalReceived, item.totalDiscounted, "", ""].map(esc).join(","));
+      });
+      lines.push(["", "", "", "HOÀN PHÍ (AUDIT)", "", t.refundTotal, "", t.refundCount + " dòng", ""].map(esc).join(","));
+      const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
+        type: "text/csv;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "tong-ket-thu-phi-" + this.chargeSummaryData.date + ".csv";
+      a.click();
+      URL.revokeObjectURL(url);
     },
     /* VietQR (G4): tải cấu hình của tenant; lỗi tải không chặn thu phí
        (lễ tân vẫn thu bằng các phương thức khác), chỉ ẩn mã QR.
