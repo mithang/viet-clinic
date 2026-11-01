@@ -750,6 +750,7 @@
                 @click="DeleteInfusionItem(index)"
               ></i>
               <InfusionPrescription
+                @update:InfoModel="updateInfusionInfoModel(item, $event)"
                 @GetInfusionFee="GetInfusionFee"
                 :InfusionUseOption="InfusionUseOption"
                 :InfusionOption="InfusionOption"
@@ -1586,6 +1587,11 @@ export default {
     // Merge cập nhật từ ChineseMedicine con, giữ nguyên identity của item
     // trong ChooseChineseMedicineTable để GetChineseFee cộng đúng item.allFee.
     updateChineseMedicine(item, updated) {
+      Object.assign(item, updated);
+    },
+    // Merge cập nhật từ InfusionPrescription con, giữ nguyên identity của item
+    // trong InfusionItemList để GetInfusionFee cộng đúng row.allFee.
+    updateInfusionInfoModel(item, updated) {
       Object.assign(item, updated);
     },
     //Lấy tổng giá đơn thuốc

@@ -1,7 +1,7 @@
 <template>
   <div class="InfusionPrescription">
     <div class="topBox">
-      <el-select v-model="InfoModel.infuseUse" :disabled='IsOnlyRead' style="width: 100px" placeholder="">
+      <el-select :value="InfoModel.infuseUse" @change="onInfuseUseChange" :disabled='IsOnlyRead' style="width: 100px" placeholder="">
         <el-option
           v-for="item in InfusionUseOption"
           :key="item.value"
@@ -10,7 +10,7 @@
         >
         </el-option>
       </el-select>
-      <el-select v-model="InfoModel.frequency" @change="GetInfusionFee()" :disabled='IsOnlyRead' style="width: 100px" placeholder="">
+      <el-select :value="InfoModel.frequency" @change="onFrequencyChange" :disabled='IsOnlyRead' style="width: 100px" placeholder="">
         <el-option
           v-for="item in FrequencyOption"
           :key="item.value"
@@ -19,7 +19,7 @@
         >
         </el-option>
       </el-select>
-      <el-select v-model="InfoModel.days" @change="GetInfusionFee()" :disabled='IsOnlyRead' style="width: 100px" placeholder="">
+      <el-select :value="InfoModel.days" @change="onDaysChange" :disabled='IsOnlyRead' style="width: 100px" placeholder="">
         <el-option
           v-for="item in DayNumOption"
           :key="item.value"
@@ -27,7 +27,7 @@
           :value="{ name:item.name, value: item.value }"
         >
         </el-option> </el-select
-      >ngày <el-input v-model="InfoModel.drippingSpeed" :disabled='IsOnlyRead' style="width: 10%"></el-input>giọt/Phút
+      >ngày <el-input :value="InfoModel.drippingSpeed" @input="onDrippingSpeedInput" :disabled='IsOnlyRead' style="width: 10%"></el-input>giọt/Phút
       <el-table
         :data="InfoModel.infusionList"
         :span-method="ObjectSpanMethod"
@@ -318,17 +318,43 @@ export default {
         }
       });
     },
+    // Không mutate prop: emit object mới để cha merge giữ nguyên identity
+    // của phần tử trong InfusionItemList, rồi cha mới tính tổng phí.
+    emitInfoModelUpdate(patch) {
+      this.$emit('update:InfoModel', Object.assign({}, this.InfoModel, patch))
+    },
+    onInfuseUseChange(val) {
+      this.emitInfoModelUpdate({ infuseUse: val })
+    },
+    onFrequencyChange(val) {
+      this.emitInfoModelUpdate({ frequency: val })
+      this.GetInfusionFee()
+    },
+    onDaysChange(val) {
+      this.emitInfoModelUpdate({ days: val })
+      this.GetInfusionFee()
+    },
+    onDrippingSpeedInput(val) {
+      this.emitInfoModelUpdate({ drippingSpeed: val })
+    },
     //Xoá dòng của bảng từng nhóm trong đơn thuốc truyền dịch
     DeleteInfusionItem(index) {
-      this.InfoModel.infusionList.splice(index, 1);
+      this.emitInfoModelUpdate({
+        infusionList: this.InfoModel.infusionList.filter((_, i) => i !== index)
+      });
       this.$emit('GetInfusionFee')
     },
     //Click dòng bảng thuốc tìm kiếm để thêm vào nhóm hiện tại
     RowClickInfusionPrescriptionTable(row) {
       row.infuseGroup = this.GroupNumber
-      this.InfoModel.infusionList.push({
-        allFee: 0,
-        ...JSON.parse(JSON.stringify(row))
+      this.emitInfoModelUpdate({
+        infusionList: [
+          ...this.InfoModel.infusionList,
+          {
+            allFee: 0,
+            ...JSON.parse(JSON.stringify(row))
+          }
+        ]
       });
     },
     //Gộp số nhóm của mục đầu tiên
