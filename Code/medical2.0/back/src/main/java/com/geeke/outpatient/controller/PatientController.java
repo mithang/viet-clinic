@@ -4,10 +4,16 @@ import java.util.List;
 
 import com.geeke.outpatient.entity.Registration;
 import com.geeke.outpatient.service.RegistrationService;
+import com.geeke.recordaudit.service.RecordAccessAuditService;
+import com.geeke.utils.SessionUtils;
 import com.geeke.utils.constants.ErrorEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.outpatient.entity.Patient;
@@ -34,9 +40,49 @@ public class PatientController extends CrudController<PatientService, Patient> {
     @Autowired
     private RegistrationService registrationService;
 
+    @Autowired
+    private RecordAccessAuditService recordAccessAuditService;
+
+    private static final Logger auditLogger = LoggerFactory.getLogger(PatientController.class);
+
+    /**
+     * G8 — Ghi audit truy cập hồ sơ. Ghi audit không bao giờ được làm hỏng
+     * luồng khám chữa: mọi lỗi ghi đều được log lại và nuốt ở đây, response
+     * gốc vẫn trả bình thường. Ghi thất bại thì nhật ký thiếu dòng đó
+     * (lỗi sẽ hiện trong log backend để phát hiện), chứ không trả lỗi cho
+     * người đang xem/sửa hồ sơ.
+     */
+    private void logAccessSafely(String action, String patientId, String patientName) {
+        try {
+            recordAccessAuditService.logAccess(SessionUtils.getLoginTenantId(),
+                    SessionUtils.getUserJson(), patientId, patientName, action);
+        } catch (Exception e) {
+            auditLogger.warn("Ghi nhật ký truy cập hồ sơ thất bại ({} patient {}): {}",
+                    action, patientId, e.getMessage());
+        }
+    }
+
     @Override
     protected PatientService getService() {
         return patientService;
+    }
+
+    /**
+     * G8 — Xem chi tiết 1 bệnh nhân: ghi đúng 1 dòng VIEW (chỉ khi tìm
+     * thấy bệnh nhân). Quyền giữ nguyên như CrudController gốc
+     * (hasAnySessionPermission) để không làm hẹp luồng xem hồ sơ sẵn có.
+     */
+    @Override
+    @GetMapping("/{id}")
+    public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        Patient entity = getService().get(id);
+        if (entity != null) {
+            logAccessSafely(RecordAccessAuditService.ACTION_VIEW, entity.getId(), entity.getName());
+        }
+        return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
     /**
@@ -45,6 +91,10 @@ public class PatientController extends CrudController<PatientService, Patient> {
      * danh sách bệnh nhân, vì filter chỉ kiểm tra xác thực. Lọc theo tenant
      * vẫn do service đảm nhiệm (ensureCompanyFilter: chỉ trả bệnh nhân thuộc
      * phòng khám đang đăng nhập).
+     *
+     * G8 — Mở danh sách ghi ĐÚNG 1 dòng LIST (patientId null), không ghi
+     * theo từng bệnh nhân trong trang, để nhật ký không phình theo số
+     * dòng danh sách.
      */
     @Override
     @PostMapping(value = {"list", ""})
@@ -55,7 +105,50 @@ public class PatientController extends CrudController<PatientService, Patient> {
         }
         Page<Patient> result = getService().listPage(searchParams.getParams(), searchParams.getOffset(),
                 searchParams.getLimit(), searchParams.getOrderby());
+        logAccessSafely(RecordAccessAuditService.ACTION_LIST, null, null);
         return ResponseEntity.ok(ResultUtil.successJson(result));
+    }
+
+    /**
+     * G8 — Danh sách toàn bộ (listAll) cũng ghi đúng 1 dòng LIST như
+     * listPage, vì đây cũng là một lượt xem danh sách, không phải xem
+     * từng hồ sơ.
+     */
+    @Override
+    @PostMapping(value = "listAll")
+    public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        List<Patient> result = getService().listAll(searchParams.getParams(), searchParams.getOrderby());
+        logAccessSafely(RecordAccessAuditService.ACTION_LIST, null, null);
+        return ResponseEntity.ok(ResultUtil.successJson(result));
+    }
+
+    /**
+     * G8 — Lưu hồ sơ: chỉ ghi EDIT khi sửa hồ sơ ĐÃ tồn tại (id khác
+     * trống và get(id) tìm thấy). Tạo mới bệnh nhân không ghi EDIT vì
+     * chưa có hồ sơ trước đó để truy cập. Phần còn lại sao chép đúng
+     * CrudController.save (quyền sàn, beforeSave/afterSave) để không
+     * đổi hành vi lưu sẵn có.
+     */
+    @Override
+    @PostMapping(value = "save")
+    public ResponseEntity<JSONObject> save(@Valid @RequestBody Patient entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        if (!beforeSave(entity)) {
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
+        }
+        boolean wasExisting = entity.getId() != null && !entity.getId().trim().isEmpty()
+                && getService().get(entity.getId()) != null;
+        String id = getService().save(entity).getId();
+        afterSave(entity);
+        if (wasExisting) {
+            logAccessSafely(RecordAccessAuditService.ACTION_EDIT, id, entity.getName());
+        }
+        return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
     //WeChatLưu

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.recordaudit.dao.RecordAccessAuditDao">
+
+    <sql id="recordAccessAuditColumns">
+        a.id AS "id",
+        a.company_id AS "company.id",
+        IFNULL(company.name,'') AS "company.name",
+        a.user_id AS "userId",
+        a.user_login_name AS "userLoginName",
+        a.user_name AS "userName",
+        a.patient_id AS "patientId",
+        a.patient_name AS "patientName",
+        a.action AS "action",
+        a.remarks AS "remarks",
+        a.create_by AS "createBy",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag"
+    </sql>
+
+    <sql id="recordAccessAuditJoins">
+        LEFT JOIN org_company company ON company.id = a.company_id
+    </sql>
+
+    <select id="get" resultType="com.geeke.recordaudit.entity.RecordAccessAudit">
+        SELECT
+            <include refid="recordAccessAuditColumns"/>
+        FROM record_access_audit a
+        <include refid="recordAccessAuditJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <!--
+        Bài học G1: #{DEL_FLAG_NORMAL} chỉ resolve khi tham số là
+        PageRequest; với Map thuần MyBatis bind thành NULL -> del_flag =
+        NULL -> 0 dòng. Service luôn đưa DEL_FLAG_NORMAL tường minh.
+        Không có update/delete ở đây: nhật ký là append-only, service
+        cũng không gọi các thao tác đó.
+    -->
+    <select id="findByTenant" resultType="com.geeke.recordaudit.entity.RecordAccessAudit">
+        SELECT
+            <include refid="recordAccessAuditColumns"/>
+        FROM record_access_audit a
+        <include refid="recordAccessAuditJoins"/>
+        WHERE a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.company_id = #{companyId}
+            <if test="patientId != null and patientId != ''">
+                AND a.patient_id = #{patientId}
+            </if>
+            <if test="action != null and action != ''">
+                AND a.action = #{action}
+            </if>
+        ORDER BY a.create_date DESC, a.id DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO record_access_audit(
+            id,
+            company_id,
+            user_id,
+            user_login_name,
+            user_name,
+            patient_id,
+            patient_name,
+            action,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES (
+            #{id},
+            #{company.id},
+            #{userId},
+            #{userLoginName},
+            #{userName},
+            #{patientId},
+            #{patientName},
+            #{action},
+            #{remarks},
+            #{createBy},
+            #{createDate},
+            #{updateBy},
+            #{updateDate},
+            #{delFlag}
+        )
+    </insert>
+
+</mapper>

@@ -56,7 +56,13 @@
         <!--  Thanh tìm kiếm  Kết thúc -->
 
         <!-- Thanh công cụ Bắt đầu -->
-
+        <div style="margin: 8px 0">
+          <el-button
+            type="info"
+            icon="el-icon-document"
+            @click="openAuditDialog"
+          >Nhật ký truy cập hồ sơ</el-button>
+        </div>
         <!-- Thanh công cụ Kết thúc -->
 
       <!-- Thanh bảng  Bắt đầu -->
@@ -123,11 +129,52 @@
         </el-col>
       </el-row>
       <!-- Thanh phân trang     Kết thúc -->     </el-card>
+    <!-- G8: nhật ký truy cập hồ sơ — chỉ đọc, không thêm router/menu. -->
+    <el-dialog
+      title="Nhật ký truy cập hồ sơ"
+      :visible.sync="auditDialogVisible"
+      width="900px"
+    >
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <el-input
+          v-model="auditPatientId"
+          clearable
+          placeholder="Lọc theo mã bệnh nhân (để trống = tất cả)"
+          style="width:300px"
+        ></el-input>
+        <el-select v-model="auditAction" clearable placeholder="Tất cả hành động" style="width:200px">
+          <el-option label="Xem hồ sơ" value="VIEW"></el-option>
+          <el-option label="Xem danh sách" value="LIST"></el-option>
+          <el-option label="Sửa hồ sơ" value="EDIT"></el-option>
+        </el-select>
+        <el-button type="primary" :loading="auditLoading" @click="loadAudits">Tải lại</el-button>
+      </div>
+      <p style="color:#909399;font-size:13px;margin:0 0 8px">
+        Nhật ký chỉ ghi lại ai đã xem hoặc sửa hồ sơ, và khi nào — không
+        ghi nội dung hồ sơ. Lượt xem danh sách được ghi đúng một dòng
+        cho cả lần mở, không ghi theo từng bệnh nhân.
+      </p>
+      <el-table v-loading="auditLoading" :data="auditList" border style="width:100%" empty-text="Chưa có nhật ký truy cập nào.">
+        <el-table-column label="Thời gian" width="170" align="center">
+          <template slot-scope="scope">{{ formatAuditDate(scope.row.createDate) }}</template>
+        </el-table-column>
+        <el-table-column label="Người truy cập" align="center">
+          <template slot-scope="scope">{{ scope.row.userName || scope.row.userLoginName || scope.row.createBy || '—' }}</template>
+        </el-table-column>
+        <el-table-column label="Hành động" width="140" align="center">
+          <template slot-scope="scope">{{ formatAuditAction(scope.row.action) }}</template>
+        </el-table-column>
+        <el-table-column label="Bệnh nhân" align="center">
+          <template slot-scope="scope">{{ scope.row.patientName || (scope.row.patientId ? scope.row.patientId : '— (danh sách)') }}</template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </el-row>
 </template>
 
 <script>
 import { listPatientPage, getPatientById, deletePatient } from '@/api/outpatient/patient'
+import { listRecordAudits } from '@/api/recordAudit'
 import listViewMixin from '@/mixins/listViewMixin'
 import PatientForm from './patientForm'
 import QueryForm from '@/views/components/queryForm'
@@ -164,12 +211,52 @@ export default {
       patientTotal: 0,
       patientList: [],
 
+      // G8: nhật ký truy cập hồ sơ (dialog chỉ đọc trên trang sẵn có).
+      auditDialogVisible: false,
+      auditLoading: false,
+      auditList: [],
+      auditPatientId: '',
+      auditAction: '',
+
       oprColumnWidth: 140,  // Độ rộng cột thao tác
       tableId: '1008489176147648530',
       schemeId: '1008489176147648553'
     }
   },
   methods: {
+    // G8: mở dialog nhật ký và tải 100 dòng mới nhất của tenant.
+    openAuditDialog() {
+      this.auditDialogVisible = true
+      this.loadAudits()
+    },
+    loadAudits() {
+      this.auditLoading = true
+      listRecordAudits({
+        patientId: this.auditPatientId || undefined,
+        action: this.auditAction || undefined,
+        limit: 100
+      }).then((response) => {
+        this.auditList = response.data || []
+        this.auditLoading = false
+      }).catch(() => {
+        this.auditList = []
+        this.auditLoading = false
+      })
+    },
+    formatAuditAction(action) {
+      if (action === 'VIEW') return 'Xem hồ sơ'
+      if (action === 'LIST') return 'Xem danh sách'
+      if (action === 'EDIT') return 'Sửa hồ sơ'
+      return action || '—'
+    },
+    formatAuditDate(value) {
+      if (!value) return '—'
+      const d = new Date(String(value).replace(' ', 'T'))
+      if (isNaN(d.getTime())) return String(value)
+      const pad = (n) => (n < 10 ? '0' + n : '' + n)
+      return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear()
+        + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes())
+    },
     reset(){
       this.$refs.queryForm.resetFields()
       this.onSearch()
