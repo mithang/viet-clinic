@@ -378,7 +378,7 @@ export default {
       if (company) {
         this.aa=company;
         this.bizFormModel.company={id:company.id,name:company.name};
-      //   this.$set(this.bizFormModel.company,'name',company.name);
+      //   this.$set(this.bizFormModel.company,'name',company.name);
         // this.bizFormModel.company.name = company.name;
         this.isCompanyShow = true;
       }

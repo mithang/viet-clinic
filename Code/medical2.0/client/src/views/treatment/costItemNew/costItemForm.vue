@@ -644,8 +644,8 @@ export default {
       
     },
     fun(val){
-　　　　return Number(val).toFixed(2);
-　　},
+        return Number(val).toFixed(2);
+    },
     handleChange(){ 
        this.bizFormModel.salePrice=this.bizFormModel.salePrice-this.sale
        this.sale=0
