@@ -65,6 +65,24 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
+    /**
+     * G3 — Tra trùng bệnh nhân cho form đăng ký: SĐT trước, rồi CMND/CCCD,
+     * chuẩn hóa ở service. Chỉ đọc, không tạo, không merge — lễ tân chọn
+     * rõ ràng ở frontend hoặc tạo mới. Fail-closed như listPage: tài khoản
+     * không có quyền "patient:list" nhận 403. SĐT/card trống cả hai trả về
+     * danh sách rỗng, không prompt.
+     */
+    @PostMapping(value = "lookupDuplicates")
+    public ResponseEntity<JSONObject> lookupDuplicates(@RequestBody JSONObject body) {
+        if (!hasSessionPermission("patient:list")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        String phone = body == null ? null : body.getString("phone");
+        String card = body == null ? null : body.getString("card");
+        return ResponseEntity.ok(ResultUtil.successJson(patientService.findDuplicates(phone, card)));
+    }
+
     @PostMapping(value = "getByCard")
     public ResponseEntity<JSONObject> getByCard(@RequestBody Patient patient) {
         Patient byCard = patientService.getByCard(patient);

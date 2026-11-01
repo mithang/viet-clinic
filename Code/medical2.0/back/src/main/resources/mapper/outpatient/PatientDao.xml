@@ -47,6 +47,18 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- G3: bệnh nhân còn hiệu lực của một phòng khám, mới nhất trước, để tra trùng ở service. -->
+    <select id="listActiveByCompany" resultType="com.geeke.outpatient.entity.Patient">
+        SELECT
+        <include refid="patientColumns"/>
+        FROM patient a
+        <include refid="patientJoins"/>
+        WHERE a.company_id = #{companyId}
+        AND a.del_flag = #{delFlag}
+        ORDER BY a.create_date DESC
+        LIMIT #{limit}
+    </select>
+
     <select id="getPatientByPhone" resultType="com.geeke.outpatient.entity.Patient">
         SELECT
         <include refid="patientColumns"/>

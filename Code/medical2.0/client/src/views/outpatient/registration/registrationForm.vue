@@ -158,6 +158,7 @@
                     dialogProps.action === 'view' ? '' : 'Vui lòng nhập số CMND/CCCD'
                   "
                   @input="getBirthday"
+                  @blur="checkDuplicates"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -231,8 +232,54 @@
                   :placeholder="
                     dialogProps.action === 'view' ? '' : 'Vui lòng nhập thông tin liên hệ'
                   "
+                  @blur="checkDuplicates"
                 ></el-input>
               </el-form-item>
+            </el-col>
+          </el-row>
+          <!-- G3: prompt bệnh nhân trùng khớp (chỉ ở chế độ thêm mới).
+            Không tự động merge: lễ tân chọn một bệnh nhân để dùng lại,
+            hoặc bấm "Tạo bệnh nhân mới" để tắt prompt với SĐT/card này. -->
+          <el-row v-if="dialogProps.action === 'add' && duplicateMatches.length > 0">
+            <el-col :span="24">
+              <el-alert
+                title="Đã có bệnh nhân trùng khớp — chọn một bệnh nhân để dùng lại thay vì tạo trùng"
+                type="warning"
+                :closable="false"
+                show-icon
+                style="margin-bottom: 10px"
+              ></el-alert>
+              <el-table
+                :data="duplicateMatches"
+                size="mini"
+                style="width: 100%; margin-bottom: 10px"
+              >
+                <el-table-column prop="name" label="Họ tên"></el-table-column>
+                <el-table-column prop="phone" label="SĐT"></el-table-column>
+                <el-table-column prop="card" label="CMND/CCCD"></el-table-column>
+                <el-table-column label="Ngày sinh">
+                  <template slot-scope="scope">
+                    {{ formatDuplicateBirthday(scope.row.birthday) }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="Khớp theo">
+                  <template slot-scope="scope">
+                    {{ scope.row.matchType === 'both' ? 'SĐT + CMND/CCCD' : (scope.row.matchType === 'phone' ? 'SĐT' : 'CMND/CCCD') }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="" width="150">
+                  <template slot-scope="scope">
+                    <el-button
+                      size="mini"
+                      type="primary"
+                      @click="applyDuplicatePatient(scope.row)"
+                    >Dùng bệnh nhân này</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div style="text-align: right; margin-bottom: 10px">
+                <el-button size="mini" @click="dismissDuplicates">Tạo bệnh nhân mới</el-button>
+              </div>
             </el-col>
           </el-row>
           <el-row>
@@ -733,7 +780,7 @@
 import {validatenull} from "@/utils/validate";
 import {listSysParamConfigAll} from '@/api/sys/sysParamConfig'
 import {listClinicOfficeAll} from "@/api/org/clinicOffice";
-import {getPatientById, listPatientAll, savePatient,} from "@/api/outpatient/patient";
+import {getPatientById, listPatientAll, lookupDuplicates, savePatient,} from "@/api/outpatient/patient";
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import {listDoctorsAll, saveRegistration} from "@/api/outpatient/registration";
 import BaseUI from "@/views/components/baseUI";
@@ -827,6 +874,11 @@ export default {
       key_department: 1, // el-cascader key
       department_List: [], // Khoa
       patientId_List: [], // Bệnh nhân
+      // G3: kết quả tra trùng SĐT/CMND-CCCD cho prompt inline (chỉ ở chế độ thêm mới)
+      duplicateMatches: [],
+      duplicateChecking: false,
+      duplicateDismissedKey: "",
+      duplicateAppliedKey: "",
       doctor_List: [], // Bác sĩ
       select_doctor: [],
       treatType_List: [], // Loại điều trị
@@ -949,6 +1001,101 @@ export default {
       if (this.doctor_List.length !== 0) {
         //Lọc bác sĩ
         this.select_doctor = this.doctor_List.filter(doctor => doctor.office === clinicOffice)
+      }
+    },
+    // G3: tra trùng khi rời khỏi ô SĐT hoặc CMND/CCCD (chỉ ở chế độ thêm mới).
+    // Chuẩn hóa giống backend: SĐT chỉ giữ chữ số, +84/84 đầu số quy về 0;
+    // CMND/CCCD chỉ giữ chữ số. Lỗi tra cứu (kể cả 403) không chặn đăng ký:
+    // prompt chỉ ẩn đi, luồng cũ chạy như trước.
+    duplicateLookupKey() {
+      const phone = (this.bizFormModel.phone || "").replace(/[^0-9]/g, "");
+      const card = (this.bizFormModel.card || "").replace(/[^0-9]/g, "");
+      return phone + "|" + card;
+    },
+    checkDuplicates() {
+      if (this.dialogProps.action !== "add" || this.duplicateChecking) {
+        return;
+      }
+      const key = this.duplicateLookupKey();
+      const phone = (this.bizFormModel.phone || "").trim();
+      const card = (this.bizFormModel.card || "").trim();
+      if (!phone && !card) {
+        this.duplicateMatches = [];
+        return;
+      }
+      if (key === this.duplicateDismissedKey || key === this.duplicateAppliedKey) {
+        return;
+      }
+      this.duplicateChecking = true;
+      lookupDuplicates({ phone: phone, card: card })
+        .then((responseData) => {
+          this.duplicateChecking = false;
+          // Bỏ response cũ nếu người dùng đã sửa SĐT/card trong lúc chờ,
+          // và đừng hiện lại prompt cho SĐT/card vừa bị tắt hoặc vừa nạp
+          // (sau khi nạp xong SĐT/card vẫn khớp — đó là hành vi đúng).
+          if (this.duplicateLookupKey() !== key) {
+            return;
+          }
+          if (responseData.code === 100 && Array.isArray(responseData.data)) {
+            if (key !== this.duplicateDismissedKey && key !== this.duplicateAppliedKey) {
+              this.duplicateMatches = responseData.data;
+            }
+          }
+        })
+        .catch(() => {
+          this.duplicateChecking = false;
+          this.duplicateMatches = [];
+        });
+    },
+    dismissDuplicates() {
+      this.duplicateDismissedKey = this.duplicateLookupKey();
+      this.duplicateMatches = [];
+    },
+    formatDuplicateBirthday(birthday) {
+      if (!birthday) {
+        return "";
+      }
+      const parts = birthday.split("-");
+      if (parts.length === 3) {
+        return parts[2] + "/" + parts[1] + "/" + parts[0];
+      }
+      return birthday;
+    },
+    // G3: nạp bệnh nhân đã chọn vào form, KHÔNG tạo bệnh nhân mới.
+    // Chỉ ghi các trường thuộc về bệnh nhân; khoa, bác sĩ, loại điều trị,
+    // loại giấy tờ và các trường của phiếu đăng ký giữ nguyên như đã nhập.
+    // PatientFormModel.id được đặt để savePatient() đi nhánh bệnh nhân đã
+    // có (tạo phiếu đăng ký cho bệnh nhân đó) thay vì gọi savePatient API.
+    applyDuplicatePatient(patient) {
+      const patientModel = {
+        id: patient.id,
+        company: { id: currentUser.company.id, name: null },
+        name: patient.name,
+        gender: { value: patient.genderValue || null, name: patient.genderName || "" },
+        age: patient.age || "",
+        month: patient.month || "",
+        birthday: patient.birthday || "",
+        phone: patient.phone || "",
+        card: patient.card || "",
+        healthCardNo: patient.healthCardNo || "",
+        province: patient.province || "",
+        city: patient.city || "",
+        area: patient.area || "",
+        address: patient.address || "",
+        guardianName: patient.guardianName || "",
+        guardianPhone: patient.guardianPhone || "",
+      };
+      this.PatientFormModel = patientModel;
+      // Giữ nguyên id của phiếu đăng ký (ở chế độ thêm mới là undefined,
+      // ở chế độ copy là null): không để id bệnh nhân lọt thành id phiếu,
+      // theo đúng cách GetPatientInfo() vẫn làm.
+      const registrationId = this.bizFormModel.id;
+      this.bizFormModel = { ...this.bizFormModel, ...patientModel };
+      this.bizFormModel.id = registrationId;
+      this.duplicateAppliedKey = this.duplicateLookupKey();
+      this.duplicateMatches = [];
+      if (this.bizFormModel.birthday) {
+        this.birthdayChanges();
       }
     },
     GetPatientInfo() {
@@ -1490,6 +1637,9 @@ export default {
       this.bizFormModel = this.initFormModel();
       this.PatientFormModel = this.initPatientModel();
       this.bizFormModel = { ...this.bizFormModel, ...this.PatientFormModel };
+      this.duplicateMatches = [];
+      this.duplicateDismissedKey = "";
+      this.duplicateAppliedKey = "";
       this.initOptions(this.bizFormModel);
       this.bizFormModel.treatType.name = "Khám lần đầu"
       if (this.cardTypeList && this.cardTypeList.length > 0) {

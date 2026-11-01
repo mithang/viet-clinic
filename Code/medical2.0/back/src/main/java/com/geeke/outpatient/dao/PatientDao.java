@@ -17,6 +17,15 @@ public interface PatientDao extends CrudDao<Patient> {
 
     Patient getPatientByPhone(@Param("phoneNumber") String phoneNumber,@Param("companyId") String companyId);
 
+    /**
+     * Bệnh nhân còn hiệu lực của một phòng khám, để tra trùng SĐT/card (G3).
+     * delFlag được truyền tường minh (không dùng #{DEL_FLAG_NORMAL} trên Map
+     * thuần — bài học G1: hằng đó không resolve, trả về 0 dòng).
+     */
+    List<Patient> listActiveByCompany(@Param("companyId") String companyId,
+                                      @Param("delFlag") String delFlag,
+                                      @Param("limit") int limit);
+
     List<Patient> countPatientByPhone(@Param("phoneNumber") String phoneNumber,@Param("companyId") String companyId,@Param("id") String id);
 
     List<Patient> getPatientByCard(@Param("card") String card,@Param("companyId") String companyId,@Param("id") String id);
