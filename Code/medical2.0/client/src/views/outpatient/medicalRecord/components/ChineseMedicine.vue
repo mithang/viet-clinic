@@ -2,11 +2,12 @@
   <div class="ChineseMedicine">
     <p>{{ChineseMedicine.goodsName ? ChineseMedicine.goodsName : ChineseMedicine.drugStuffId.name }}</p>
     <div>
-      <el-input v-model="ChineseMedicine.singleDosage" @input="GetChineseFee" :disabled='IsOnlyRead' style="width: 100%" placeholder="Số lượng">
-        
+      <el-input :value="ChineseMedicine.singleDosage" @input="onSingleDosageInput" :disabled='IsOnlyRead' style="width: 100%" placeholder="Số lượng">
+
         <span slot="suffix" style="font-size: 16px" >{{ ChineseMedicine.preparationUnit ? ChineseMedicine.preparationUnit.name : ChineseMedicine.drugStuffId.drug.preparationUnit.name }}</span>
         <el-select
-          v-model="ChineseMedicine.chineseMedicineUse"
+          :value="ChineseMedicine.chineseMedicineUse"
+          @change="onUseChange"
           slot="append"
           :disabled='IsOnlyRead'
           style="width: 120px"
@@ -49,9 +50,19 @@ export default {
     };
   },
   methods: {
-    GetChineseFee() {
-      this.ChineseMedicine.allFee = this.ChineseMedicine.price * this.ChineseMedicine.singleDosage
+    // Không mutate prop: emit object mới để cha merge giữ nguyên identity
+    // của phần tử trong ChooseChineseMedicineTable, rồi cha mới tính tổng phí.
+    onSingleDosageInput(val) {
+      this.$emit('update:ChineseMedicine', Object.assign({}, this.ChineseMedicine, {
+        singleDosage: val,
+        allFee: this.ChineseMedicine.price * val
+      }))
       this.$emit('GetChineseFee')
+    },
+    onUseChange(val) {
+      this.$emit('update:ChineseMedicine', Object.assign({}, this.ChineseMedicine, {
+        chineseMedicineUse: val
+      }))
     }
   }
 };

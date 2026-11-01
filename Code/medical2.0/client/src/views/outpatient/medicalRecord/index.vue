@@ -661,6 +661,7 @@
                   :IsOnlyRead="IsOnlyRead"
                   :ChineseUseTimeOption="ChineseUseTimeOption"
                   :ChineseMedicine="item"
+                  @update:ChineseMedicine="updateChineseMedicine(item, $event)"
                   @GetChineseFee="GetChineseFee"
                 />
               </div>
@@ -1581,6 +1582,11 @@ export default {
         return;
       this.SearchAlreadyModel.offset += 1;
       this.GetAlreadyPatientList();
+    },
+    // Merge cập nhật từ ChineseMedicine con, giữ nguyên identity của item
+    // trong ChooseChineseMedicineTable để GetChineseFee cộng đúng item.allFee.
+    updateChineseMedicine(item, updated) {
+      Object.assign(item, updated);
     },
     //Lấy tổng giá đơn thuốc
     GetChineseFee(type) {
