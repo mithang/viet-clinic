@@ -67,7 +67,7 @@
     <!-- Phần tử giữ chỗ, ngăn nội dung bị che bởi thanh tab cố định -->
     <div class="tabs-placeholder" v-if="visitedViews.length > 0 && layout.fixedHeader"></div>
 
-    <el-container class="body-container" :style="">
+    <el-container class="body-container">
       <!--Khu vực làm việc-->
       <el-main class="main" :style="{backgroundColor: settings.backgroundColor}">
         <div v-show="false" class="mask-layout" :class="isCollapse? 'is-collapse':''" v-loading="true"></div>

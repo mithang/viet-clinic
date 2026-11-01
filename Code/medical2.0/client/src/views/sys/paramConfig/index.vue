@@ -29,8 +29,7 @@
         </el-input>
       </el-form-item>
       <el-form-item label="Giá nhập thuốc là giá bán lẻ">
-        <el-checkbox label="" v-model="sysParamConfigForm.retailPrice === 'true'?true:false"
-                     @change="retailPriceHandleChange"></el-checkbox>
+        <el-checkbox label="" v-model="retailPriceChecked"></el-checkbox>
       </el-form-item>
     </el-form>
 
@@ -74,6 +73,18 @@
         value: getLocalCurrentCompany().id
       },
     };
+  },
+  computed: {
+    // Checkbox lưu dưới dạng chuỗi 'true'/'false' ở backend: v-model cần một LHS hợp lệ,
+    // nên dùng computed get/set thay cho biểu thức ternary (không gán được) trước đây.
+    retailPriceChecked: {
+      get() {
+        return this.sysParamConfigForm.retailPrice === 'true';
+      },
+      set(value) {
+        this.retailPriceHandleChange(value);
+      }
+    }
   },
   methods: {
     /**

@@ -63,7 +63,7 @@ import { getFiled } from "@/api/sys/sysSeting";
     name: "uploadFile",
     props: {
       value: {
-        type: Array,
+        type: Object,
          default(){
             return {uploads:[]}
          }

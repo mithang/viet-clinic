@@ -36,7 +36,7 @@
       },
       data:{
         type: Array,
-        default: []
+        default: () => []
       },
       btnOne:{
         type: String,

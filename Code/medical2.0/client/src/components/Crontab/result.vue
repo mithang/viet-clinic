@@ -289,7 +289,7 @@ export default {
 									continue;
 								}
 								// Vòng lặp"giây"Mảng
-								goSecond: for (let si = sIdx; si <= sDate.length - 1; si++) {
+								for (let si = sIdx; si <= sDate.length - 1; si++) {
 									let ss = sDate[si] < 10 ? '0' + sDate[si] : sDate[si];
 									// Thêm thời gian hiện tại (tính hợp pháp thời gian đã được phán đoán khi vòng lặp ngày)
 									if (MM !== '00' && DD !== '00') {

@@ -939,7 +939,6 @@ export default {
         }
       }
       let contactDot = 0;
-      let contactDot_1 = 0;
       this.spanArr = [];
       this.contentSpanArr = [];
       this.schedulingzlday.forEach((item, index) => {
@@ -957,13 +956,7 @@ export default {
             contactDot = index;
           }
           //Kiểm tra cột thứ ba
-          if (false) {
-            this.contentSpanArr[contactDot_1] += 1;
-            this.contentSpanArr.push(0);
-          } else {
-            this.contentSpanArr.push(1);
-            contactDot_1 = index;
-          }
+          this.contentSpanArr.push(1);
         }
       });
     },
