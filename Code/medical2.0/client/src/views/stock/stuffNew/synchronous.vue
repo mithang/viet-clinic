@@ -88,7 +88,7 @@
                     <span v-else>{{ getAttrValue(row, columnViews[index].prop, columnViews[index].javaType) }}</span>
                   </template>
 </el-table-column> -->
-                <el-table-column v-for="item in columnList" :label="item.label" :prop="item.prop"></el-table-column>
+                <el-table-column v-for="item in columnList" :key="item.prop" :label="item.label" :prop="item.prop"></el-table-column>
                 <el-table-column prop="inventory" label="Tồn kho khả dụng" sortable="custom" width="100px" v-if="source === 1">
                   <template slot-scope="scope">
                     <span v-if="scope.row.stock.surplusStock != null">

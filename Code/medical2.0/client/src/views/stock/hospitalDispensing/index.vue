@@ -57,7 +57,7 @@
               </el-table-column>
               <el-table-column label="Số thứ tự" type="index" :index="indexMethod" align="center">
               </el-table-column>
-              <el-table-column v-for="item in columnList" :label="item.label" :prop="item.prop"></el-table-column>
+              <el-table-column v-for="item in columnList" :key="item.prop" :label="item.label" :prop="item.prop"></el-table-column>
             </el-table>
           </div>
         </el-col>
