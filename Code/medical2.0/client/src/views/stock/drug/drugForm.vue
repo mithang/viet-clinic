@@ -793,7 +793,7 @@
                   :maxlength="64"
                   placeholder="Vui lòng nhập ngưỡng tồn kho tối đa"
                 >
-                  <template style="padding:0 8px" slot="append">{{ bizFormModel.pack.name }}</template>
+                  <template slot="append">{{ bizFormModel.pack.name }}</template>
                 </el-input>
                 <!-- <span class="unit3">/{{ bizFormModel.pack.name }}</span> -->
               </el-form-item>
