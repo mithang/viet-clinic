@@ -1921,7 +1921,7 @@ export default {
             };
 
             break;
-          case "Đơn truyền dịch":
+          case "Đơn truyền dịch": {
             this.IsShowInfusion = true;
             this.InfusionItemList = [];
             let GroupArr = [];
@@ -1954,6 +1954,7 @@ export default {
             this.InfusionFee = prescriptionItem.recipelInfo.fee;
             this.InfusionRemarks = prescriptionItem.recipelInfo.remarks;
             break;
+          }
           case "Hạng mục khám chữa bệnh":
             this.IsShowTreatment = true;
             this.CostItemFee = prescriptionItem.recipelInfo.fee;

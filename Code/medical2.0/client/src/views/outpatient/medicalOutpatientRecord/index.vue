@@ -6744,8 +6744,7 @@
       DeleteMedicalRow(index, row, item) {
         if(item!=null && item.content.recipelInfo.isPre){
           //Chuyển đơn thuốc điện tử, xoá tất cả
-          this.medicalClickTabsValue.content.recipelDetailEvtList.splice
-          (0, this.medicalClickTabsValue.content.recipelDetailEvtList.length);
+          this.medicalClickTabsValue.content.recipelDetailEvtList.splice(0, this.medicalClickTabsValue.content.recipelDetailEvtList.length);
           return
         }
         //   this.chineseTest,

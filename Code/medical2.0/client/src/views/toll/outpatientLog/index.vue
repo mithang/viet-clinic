@@ -463,11 +463,6 @@
         } else {
           return 'Nữ'
         }
-        if (row.initialVisit === "registrationSource_0") {
-          return 'Khám lần đầu'
-        } else {
-          return 'Tái khám'
-        }
       },
       //Đặt ngày mặc định
       getInitializeDate() {

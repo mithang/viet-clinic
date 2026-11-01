@@ -335,7 +335,7 @@ export default {
           case "Đơn thuốc đông y":
             this.ChineseMedicineModel = prescriptionItem;
             break;
-          case "Đơn truyền dịch":
+          case "Đơn truyền dịch": {
             this.InfusionModel = prescriptionItem.recipelInfo;
             this.InfusionItemList = [];
             let GroupArr = [];
@@ -366,6 +366,7 @@ export default {
               });
             });
             break;
+          }
           case "Hạng mục khám chữa bệnh":
             this.CostItemList = prescriptionItem.recipelDetailEvtList;
             break;

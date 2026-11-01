@@ -2611,8 +2611,6 @@ export default {
         }
       }
        return arr.filter((item) => item.isExtra === isExtra);
-       this.MedicalCalculate()
-     return arr
     },
     changeUse(row){
       this.changeData = row

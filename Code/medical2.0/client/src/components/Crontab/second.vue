@@ -87,8 +87,7 @@ export default {
 		},
 		othChange() {
 			// Phân tích ngược
-			let ins = this.cron.second
-			('Phân tích ngược second', ins);
+			let ins = this.cron.second('Phân tích ngược second', ins);
 			if (ins === '*') {
 				this.radioValue = 1;
 			} else if (ins.indexOf('-') > -1) {
