@@ -63,6 +63,19 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	//Trường BHYT
 	private String diagnosisCode; //Mã chẩn đoán
 
+	//H2: dấu hiệu sinh tồn có cấu trúc, gắn với hồ sơ của lượt khám.
+	//Tất cả đều nullable: thiếu trường nào thì NULL, không bao giờ chặn lưu.
+	//Huyết áp là cặp tâm thu/tâm trương; BMI KHÔNG lưu (chỉ tính hiển thị
+	//ở frontend từ vitalWeight/vitalHeight). Không threshold, không alert.
+	private Integer vitalPulse; //Mạch (lần/phút)
+	private Integer vitalBpSys; //Huyết áp tâm thu (mmHg)
+	private Integer vitalBpDia; //Huyết áp tâm trương (mmHg)
+	private BigDecimal vitalTemperature; //Nhiệt độ (°C)
+	private Integer vitalRespRate; //Nhịp thở (lần/phút)
+	private Integer vitalSpo2; //SpO2 (%)
+	private BigDecimal vitalWeight; //Cân nặng (kg)
+	private BigDecimal vitalHeight; //Chiều cao (cm)
+
 
 
 	public String getDiagnosisId() {

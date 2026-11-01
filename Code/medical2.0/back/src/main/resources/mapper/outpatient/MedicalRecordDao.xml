@@ -44,7 +44,15 @@
         a.china_diagnose AS "chinaDiagnose",
         a.china_syndrome As "chinaSyndrome",
         a.disease_id AS "diseaseId",
-        a.syndrome_id AS "syndromeId"
+        a.syndrome_id AS "syndromeId",
+        a.vital_pulse AS "vitalPulse",
+        a.vital_bp_sys AS "vitalBpSys",
+        a.vital_bp_dia AS "vitalBpDia",
+        a.vital_temperature AS "vitalTemperature",
+        a.vital_resp_rate AS "vitalRespRate",
+        a.vital_spo2 AS "vitalSpo2",
+        a.vital_weight AS "vitalWeight",
+        a.vital_height AS "vitalHeight"
     </sql>
     
     <sql id="medicalRecordJoins">
@@ -156,7 +164,15 @@
             china_diagnose,
             china_syndrome,
             disease_id,
-            syndrome_id
+            syndrome_id,
+            vital_pulse,
+            vital_bp_sys,
+            vital_bp_dia,
+            vital_temperature,
+            vital_resp_rate,
+            vital_spo2,
+            vital_weight,
+            vital_height
         ) VALUES (
             #{id},
             #{company.id},                    
@@ -197,7 +213,15 @@
             #{chinaDiagnose},
             #{chinaSyndrome},
             #{diseaseId},
-            #{syndromeId}
+            #{syndromeId},
+            #{vitalPulse},
+            #{vitalBpSys},
+            #{vitalBpDia},
+            #{vitalTemperature},
+            #{vitalRespRate},
+            #{vitalSpo2},
+            #{vitalWeight},
+            #{vitalHeight}
         )
 
     </insert>
@@ -239,6 +263,14 @@
             ,china_syndrome = #{chinaSyndrome}
             ,syndrome_id = #{syndromeId}
             ,disease_id = #{diseaseId}
+            ,vital_pulse = #{vitalPulse}
+            ,vital_bp_sys = #{vitalBpSys}
+            ,vital_bp_dia = #{vitalBpDia}
+            ,vital_temperature = #{vitalTemperature}
+            ,vital_resp_rate = #{vitalRespRate}
+            ,vital_spo2 = #{vitalSpo2}
+            ,vital_weight = #{vitalWeight}
+            ,vital_height = #{vitalHeight}
         WHERE id = #{id}
     </update>
     

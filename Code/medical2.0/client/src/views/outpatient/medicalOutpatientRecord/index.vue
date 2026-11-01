@@ -460,6 +460,113 @@
                   </el-form-item>
                 </el-col>
               </el-row>
+              <!-- H2: dấu hiệu sinh tồn có cấu trúc, gắn với hồ sơ của lượt khám
+                   (MedicalRecordModel, khác hàng BasicInfoModel phía trên vốn gắn
+                   với registration/patient). Tất cả đều optional, không chặn lưu.
+                   Huyết áp là cặp tâm thu/tâm trương; BMI chỉ hiển thị, không lưu.
+                   Dùng el-input (không dùng el-input-number): input-number của
+                   Element UI tự ép giá trị rỗng thành 0 khi mount, khiến sinh hiệu
+                   chưa nhập bị lưu thành 0 thay vì NULL — đã kiểm chứng bằng UI
+                   thật. Chuỗi rỗng gửi lên backend được Jackson chuyển thành NULL
+                   (đã kiểm chứng bằng API). -->
+              <el-divider content-position="left">Dấu hiệu sinh tồn</el-divider>
+              <el-row :gutter="24">
+                <el-col :span="6">
+                  <el-form-item label="Mạch">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalPulse"
+                                @input="setVital('vitalPulse', $event, false)"></el-input>
+                      <span>&nbsp;lần/phút</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="HA tâm thu">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalBpSys"
+                                @input="setVital('vitalBpSys', $event, false)"></el-input>
+                      <span>&nbsp;mmHg</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="HA tâm trương">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalBpDia"
+                                @input="setVital('vitalBpDia', $event, false)"></el-input>
+                      <span>&nbsp;mmHg</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="Nhiệt độ">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalTemperature"
+                                @input="setVital('vitalTemperature', $event, true)"></el-input>
+                      <span>&nbsp;°C</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="6">
+                  <el-form-item label="Nhịp thở">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalRespRate"
+                                @input="setVital('vitalRespRate', $event, false)"></el-input>
+                      <span>&nbsp;lần/phút</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="SpO2">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalSpo2"
+                                @input="setVital('vitalSpo2', $event, false)"></el-input>
+                      <span>&nbsp;%</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="Cân nặng">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalWeight"
+                                @input="setVital('vitalWeight', $event, true)"></el-input>
+                      <span>&nbsp;kg</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="Chiều cao">
+                    <div class="ipt-box">
+                      <el-input :disabled="isReadOnly"
+                                :value="MedicalRecordModel.vitalHeight"
+                                @input="setVital('vitalHeight', $event, true)"></el-input>
+                      <span>&nbsp;cm</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="6">
+                  <el-form-item label="BMI">
+                    <div class="ipt-box">
+                      <el-input :disabled="true" :value="vitalBmi"></el-input>
+                      <span>&nbsp;kg/m²</span>
+                    </div>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="18">
+                  <span style="color: #909399; font-size: 13px;">BMI tự tính từ cân nặng và chiều cao, chỉ hiển thị, không lưu vào hồ sơ.</span>
+                </el-col>
+              </el-row>
               <el-row :gutter="24" v-for="(item, index) in ChooseRecordList" :key="index">
                 <el-col :span="24">
                   <el-form-item :label="item.label" :prop="item.name">
@@ -2857,6 +2964,10 @@
               <el-divider content-position="left">Khám thực thể</el-divider>
               <el-input type="textarea" autosize v-model="props.row.medicalRecord.physiqueCheck" disabled></el-input>
             </el-row>
+            <el-row v-if="vitalsSummary(props.row.medicalRecord)">
+              <el-divider content-position="left">Dấu hiệu sinh tồn</el-divider>
+              <el-input type="textarea" autosize :value="vitalsSummary(props.row.medicalRecord)" disabled></el-input>
+            </el-row>
             <el-row v-if="props.row.medicalRecord.emergencyDiagnose">
               <el-divider content-position="left">Chẩn đoán cấp cứu</el-divider>
               <el-input type="textarea" autosize v-model="props.row.medicalRecord.emergencyDiagnose"
@@ -4484,6 +4595,48 @@
         }, 0);
         this.templateDialogVisible = false;
       },
+      // H2: setter có kiểm soát cho một trường sinh hiệu: chỉ giữ ký tự số
+      // (và một dấu chấm thập phân nếu decimal); chuỗi rỗng được giữ nguyên
+      // để backend lưu NULL. Dùng :value + @input thay cho v-model để thứ
+      // tự khử ký tự lạ là xác định (không phụ thuộc thứ tự listener).
+      setVital(field, val, decimal) {
+        if (val === null || val === undefined || val === '') {
+          this.MedicalRecordModel[field] = val
+          return
+        }
+        let s = String(val).replace(decimal ? /[^0-9.]/g : /[^0-9]/g, '')
+        if (decimal) {
+          const parts = s.split('.')
+          if (parts.length > 2) s = parts[0] + '.' + parts.slice(1).join('')
+        }
+        this.MedicalRecordModel[field] = s
+      },
+      // H2: BMI display-only cho một hồ sơ bất kỳ (dùng chung cho form khám
+      // và khung xem bệnh án cũ). Trả '' khi thiếu cân nặng/chiều cao.
+      vitalBmiOf(medicalRecord) {
+        if (!medicalRecord) return ''
+        const weight = Number(medicalRecord.vitalWeight)
+        const heightCm = Number(medicalRecord.vitalHeight)
+        if (!(weight > 0) || !(heightCm > 0)) return ''
+        const heightM = heightCm / 100
+        return (weight / (heightM * heightM)).toFixed(1)
+      },
+      // H2: chuỗi tóm tắt sinh hiệu cho khung xem bệnh án cũ (chỉ gồm các
+      // trường đã có giá trị; rỗng khi hồ sơ chưa ghi sinh hiệu nào).
+      vitalsSummary(medicalRecord) {
+        if (!medicalRecord) return ''
+        const parts = []
+        if (medicalRecord.vitalPulse != null) parts.push('Mạch ' + medicalRecord.vitalPulse + ' lần/phút')
+        if (medicalRecord.vitalBpSys != null || medicalRecord.vitalBpDia != null) parts.push('Huyết áp ' + (medicalRecord.vitalBpSys != null ? medicalRecord.vitalBpSys : '—') + '/' + (medicalRecord.vitalBpDia != null ? medicalRecord.vitalBpDia : '—') + ' mmHg')
+        if (medicalRecord.vitalTemperature != null) parts.push('Nhiệt độ ' + medicalRecord.vitalTemperature + ' °C')
+        if (medicalRecord.vitalRespRate != null) parts.push('Nhịp thở ' + medicalRecord.vitalRespRate + ' lần/phút')
+        if (medicalRecord.vitalSpo2 != null) parts.push('SpO2 ' + medicalRecord.vitalSpo2 + ' %')
+        if (medicalRecord.vitalWeight != null) parts.push('Cân nặng ' + medicalRecord.vitalWeight + ' kg')
+        if (medicalRecord.vitalHeight != null) parts.push('Chiều cao ' + medicalRecord.vitalHeight + ' cm')
+        const bmi = this.vitalBmiOf(medicalRecord)
+        if (bmi !== '') parts.push('BMI ' + bmi + ' kg/m²')
+        return parts.join(' · ')
+      },
       medicalHistoryInvoking(row) {
         this.ChooseRecordList = [];
         this.MedicalRecordModel = row.medicalRecord
@@ -5926,6 +6079,14 @@
           surgeryHistory: "",
           transfusionHistory: "",
           physiqueCheck: "",
+          vitalPulse: null,
+          vitalBpSys: null,
+          vitalBpDia: null,
+          vitalTemperature: null,
+          vitalRespRate: null,
+          vitalSpo2: null,
+          vitalWeight: null,
+          vitalHeight: null,
           emergencyDiagnose: "",
           emergencyEffect: "",
           familyHistory: "",
@@ -9409,6 +9570,11 @@
       // của ca khám hiện tại, nếu chưa có thì lấy từ hồ sơ khám cũ.
       displayAllergyHistory() {
         return (this.MedicalRecordModel && this.MedicalRecordModel.allergyHistory) || this.patientAllergyHistory || ''
+      },
+      // H2: BMI display-only = cân nặng (kg) / chiều cao (m)^2, chiều cao nhập
+      // theo cm. Thiếu cân nặng hoặc chiều cao thì hiển thị rỗng, không bịa số.
+      vitalBmi() {
+        return this.vitalBmiOf(this.MedicalRecordModel)
       },
       Company() {
         let company = JSON.parse(sessionStorage.getItem("currentUser")).company;
