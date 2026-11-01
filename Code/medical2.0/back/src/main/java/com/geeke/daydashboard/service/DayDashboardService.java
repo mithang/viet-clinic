@@ -44,15 +44,18 @@ import java.util.Map;
  *   (DayDashboardDao.countStuffIndateWarningScoped) với cùng
  *   định nghĩa DATEDIFF(end_date, NOW()) &lt;= stuff.indate.
  *
- * Múi giờ — cùng hiệu chuẩn G6, không tự suy đoán lại:
- * create_date trong DB là giờ tường GMT+8 (JDBC
- * serverTimezone=GMT+8, Jackson time-zone GMT+8; kiểm chứng
- * G6 2026-11-02: tạo lúc 02:58 +07 lưu thành 03:58). Một ngày
- * phòng khám Asia/Ho_Chi_Minh [00:00 +07, 24:00 +07) tương
- * đương cửa sổ giờ lưu trữ [01:00 +08 ngày đó, 01:00 +08 ngày
- * hôm sau), nên service dùng đúng cửa sổ đó cho cả lượt khám
- * (registration.create_date) lẫn thu phí (toll_info.create_date
- * qua G6). Lưu ý: cửa sổ này áp cho các cột create_date; các
+ * Múi giờ — cùng hiệu chuẩn G6, không tự suy đoán lại (H1 2026-11-02):
+ * create_date trong DB là giờ tường GMT+7 (JDBC
+ * serverTimezone=GMT+7, Jackson time-zone GMT+7). Trước H1 cả hai
+ * là GMT+8 nên cửa sổ ngày là [01:00 +08 ngày đó, 01:00 +08 ngày
+ * hôm sau); sau H1, phiếu/lượt mới lưu đúng giờ tường phòng khám
+ * nên một ngày phòng khám Asia/Ho_Chi_Minh [00:00 +07, 24:00 +07)
+ * đúng bằng cửa sổ [00:00 ngày đó, 00:00 ngày hôm sau), và service
+ * dùng đúng cửa sổ đó cho cả lượt khám (registration.create_date)
+ * lẫn thu phí (toll_info.create_date qua G6). Caveat lịch sử như G6:
+ * dòng tạo trước H1 ở giờ 23:00–24:00 +07 sẽ rơi sang ngày hôm sau
+ * dưới cửa sổ mới; DB test đã kiểm chứng không còn dòng nào ở giờ
+ * 00:00–01:00 nên không dòng nào đổi ngày khi đổi cửa sổ. Lưu ý: cửa sổ này áp cho các cột create_date; các
  * đếm tồn kho / sắp hết hạn KHÔNG theo ngày — chúng là trạng
  * thái hiện tại (tồn kho lúc truy vấn, hạn dùng so với NOW()),
  * không phải số liệu của riêng ngày được chọn — và response
@@ -98,9 +101,9 @@ public class DayDashboardService {
             throw new IllegalArgumentException("Ngày phải có dạng YYYY-MM-DD.");
         }
         LocalDate next = date.plusDays(1);
-        // Cửa sổ giờ lưu trữ GMT+8 tương đương ngày phòng khám +07 (hiệu chuẩn G6).
-        String startDate = date.format(DATE_FMT) + " 01:00:00";
-        String endDate = next.format(DATE_FMT) + " 01:00:00";
+        // Cửa sổ giờ lưu trữ GMT+7 = ngày phòng khám +07 (sau H1, hiệu chuẩn G6).
+        String startDate = date.format(DATE_FMT) + " 00:00:00";
+        String endDate = next.format(DATE_FMT) + " 00:00:00";
 
         Map<String, Object> params = new HashMap<>();
         params.put("companyId", companyId);
@@ -179,8 +182,8 @@ public class DayDashboardService {
         JSONObject data = new JSONObject();
         data.put("date", date.format(DATE_FMT));
         data.put("timezone", "Asia/Ho_Chi_Minh");
-        data.put("windowStart", startDate + " (giờ lưu trữ GMT+8)");
-        data.put("windowEnd", endDate + " (giờ lưu trữ GMT+8)");
+        data.put("windowStart", startDate + " (giờ lưu trữ GMT+7)");
+        data.put("windowEnd", endDate + " (giờ lưu trữ GMT+7)");
         data.put("visits", visits);
         data.put("charges", charges);
         data.put("stock", stock);

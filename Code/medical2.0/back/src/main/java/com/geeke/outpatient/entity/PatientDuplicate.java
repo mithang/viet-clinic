@@ -6,8 +6,8 @@ package com.geeke.outpatient.entity;
  * Đây là DTO thuần, KHÔNG phải entity map bảng: form đăng ký chỉ cần các
  * trường hiển thị + id để nạp lại, và không được để một trường phụ (như
  * matchType) lọt vào câu INSERT/UPDATE của bảng patient.
- * birthday là chuỗi yyyy-MM-dd đã chuẩn hóa theo GMT+8 — cột DATE đi qua
- * JDBC/Jackson ở GMT+8 (bài học G2), nên format ở đây, frontend chỉ tách
+ * birthday là chuỗi yyyy-MM-dd đã chuẩn hóa theo GMT+7 — cột DATE đi qua
+ * JDBC/Jackson ở GMT+7 (bài học G2), nên format ở đây, frontend chỉ tách
  * chuỗi để hiển thị dd/MM/yyyy, không parse thành Date (tránh lệch ngày).
  */
 public class PatientDuplicate {

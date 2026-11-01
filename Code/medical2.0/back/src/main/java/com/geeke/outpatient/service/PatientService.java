@@ -165,7 +165,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
      *
      * Validator CMND/CCCD hiện tại không nằm ở đây và không bị động tới.
      */
-    private static final ZoneId DB_ZONE = ZoneId.of("GMT+8");
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final int DUPLICATE_LIMIT = 20;
 
@@ -246,8 +246,8 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         dto.setAge(p.getAge());
         dto.setMonth(p.getMonth());
         if (p.getBirthday() != null) {
-            // Cột DATE: ngày đọc về phải hiểu theo GMT+8 (bài học G2),
-            // không theo giờ phòng khám (+07) — nếu không sẽ lệch 1 ngày.
+            // Cột DATE: ngày đọc về phải hiểu theo GMT+7 (= vùng phiên
+            // JDBC sau H1, bài học G2: vùng hiểu ngày phải bằng vùng phiên).
             dto.setBirthday(p.getBirthday().toInstant().atZone(DB_ZONE).toLocalDate().format(DATE_FMT));
         }
         dto.setHealthCardNo(p.getHealthCardNo());

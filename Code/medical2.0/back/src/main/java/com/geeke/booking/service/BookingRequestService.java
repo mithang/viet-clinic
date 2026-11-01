@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * (bài học G1: không dùng java.sql.Date, không để JDBC/JVM lệch ngày).
  * wanted_date là cột DATE: service luôn chuẩn hóa về đầu ngày theo giờ
  * phòng khám trước khi ghi, nên ngày lưu không bao giờ lệch sang hôm
- * trước/sau dù JDBC đang chạy GMT+8.
+ * trước/sau dù JDBC đang chạy GMT+7 (sau H1).
  *
  * Ranh giới an toàn: intake CHỈ đọc/ghi bảng booking_request (chống
  * trùng cũng chỉ tra bảng này). Intake không đọc/ghi patient,
@@ -52,18 +52,19 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
 
     private static final ZoneId CLINIC_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     /**
-     * Múi giờ mà cột DATE đi qua: JDBC (serverTimezone=GMT+8) và Jackson
-     * (application.yml time-zone GMT+8) đều dùng GMT+8. Một chuỗi ngày
-     * "yyyy-MM-dd" mà người dùng chọn được Jackson parse thành nửa đêm
-     * GMT+8, tức 23:00 hôm trước theo giờ phòng khám (+07) — hiểu instant
-     * đó theo +07 sẽ lùi ngày đi 1 (đã gặp thực tế: chọn 2026-11-05 mà
-     * lưu thành 2026-11-04, khiến confirm trượt lịch trực). Vì vậy ngày
-     * của cột DATE (wanted_date, schedulingtime) luôn được khôi phục
-     * bằng GMT+8 — ngày viết ra bằng ngày đọc về. Quy tắc này CHỈ áp
-     * cho cột DATE; cột datetime (như subscribe_date) vẫn dùng đầu ngày
-     * theo giờ phòng khám như G1.
+     * Múi giờ mà cột DATE đi qua: JDBC (serverTimezone=GMT+7) và Jackson
+     * (application.yml time-zone GMT+7) đều dùng GMT+7 = giờ phòng khám.
+     * Một chuỗi ngày "yyyy-MM-dd" mà người dùng chọn được Jackson parse
+     * thành nửa đêm GMT+7, tức đầu ngày phòng khám; driver đọc cột DATE
+     * về ở nửa đêm GMT+7, nên hiểu instant đó theo GMT+7 sẽ khôi phục
+     * đúng ngày đã viết. Bất biến: vùng hiểu ngày phải bằng vùng phiên
+     * JDBC — trước H1 cả hai là GMT+8 và hiểu theo +07 sẽ lùi ngày đi 1
+     * (đã gặp thực tế: chọn 2026-11-05 mà lưu thành 2026-11-04, khiến
+     * confirm trượt lịch trực). Quy tắc này CHỈ áp cho cột DATE; cột
+     * datetime (như subscribe_date) vẫn dùng đầu ngày theo giờ phòng
+     * khám như G1.
      */
-    private static final ZoneId DB_ZONE = ZoneId.of("GMT+8");
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
@@ -120,8 +121,8 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
 
     /**
      * Ngày dương lịch của một giá trị cột DATE (xem DB_ZONE): instant
-     * được hiểu theo GMT+8 để khôi phục đúng ngày đã viết, không theo
-     * giờ phòng khám (+07) — hiểu theo +07 sẽ lùi ngày đi 1.
+     * được hiểu theo GMT+7 (= giờ phòng khám, = vùng phiên JDBC sau H1)
+     * để khôi phục đúng ngày đã viết.
      */
     public static LocalDate dateColumnDay(Date date) {
         return date.toInstant().atZone(DB_ZONE).toLocalDate();

@@ -30,8 +30,8 @@ import java.util.Map;
  *   log lại và nuốt ở controller (xem PatientController.logSafely);
  *   ở đây logAccess vẫn ném lỗi nếu dữ liệu đầu vào sai để controller
  *   quyết định, nhưng controller đã bọc try/catch.
- * - Múi giờ: giữ nguyên giờ lưu trữ GMT+8 như mọi create_date khác
- *   (preInsert dùng new Date() của JVM, JDBC lưu theo GMT+8 — giống G6);
+ * - Múi giờ: giữ nguyên giờ lưu trữ như mọi create_date khác
+ *   (sau H1: new Date() của JVM, JDBC lưu theo GMT+7 — giống G6);
  *   không tự đổi múi giờ, frontend hiển thị đúng giờ lưu trữ đó.
  */
 @Service("recordAccessAuditService")

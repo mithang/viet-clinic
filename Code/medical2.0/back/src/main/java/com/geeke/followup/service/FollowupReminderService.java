@@ -28,7 +28,9 @@ import java.util.Map;
  *
  * Múi giờ phòng khám cố định Asia/Ho_Chi_Minh cho mọi phép tính "hôm
  * nay / quá hạn bao nhiêu ngày", không phụ thuộc múi giờ của JVM hay
- * MySQL (backend hiện lưu GMT+8 — xem H1 iteration 2, chưa sửa toàn cục).
+ * MySQL (sau H1: backend lưu giờ tường GMT+7 — JDBC serverTimezone
+ * GMT+7 + Jackson time-zone GMT+7; cột next_date DATETIME lưu đầu ngày
+ * phòng khám, xem ghi chú H1 trong ChargeSummaryService).
  */
 @Service("followupReminderService")
 @Transactional(readOnly = true)

@@ -41,10 +41,10 @@ public class OutpatientLog {
 
     /** Ngày khám bệnh */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+7", pattern = "yyyy-MM-dd HH:mm:ss")
 /*
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(timezone = "GMT+7", pattern = "yyyy-MM-dd'T'HH:mm:ss")
 */
     private Date visitDate;
     /** ban đầu/Tái khám */
@@ -91,7 +91,7 @@ public class OutpatientLog {
 
     /** Ngày phát bệnh */
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(timezone = "GMT+7", pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date morbidityDate;
 
     /** Kết quả dương tính trong phòng thí nghiệm */

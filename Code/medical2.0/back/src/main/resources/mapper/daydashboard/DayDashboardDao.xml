@@ -5,12 +5,12 @@
     <!--
         Tổng quan ngày (H5, read-only, không migration).
 
-        Múi giờ — đọc kỹ trước khi sửa cửa sổ ngày (hiệu chuẩn G6):
-        JDBC dùng serverTimezone=GMT+8 và Jackson dùng time-zone GMT+8,
-        nên create_date lưu trong DB là giờ tường GMT+8, KHÔNG phải giờ
-        phòng khám (+07) cũng không phải UTC. Một ngày phòng khám
-        [00:00 +07, 24:00 +07) tương đương cửa sổ giờ lưu trữ
-        [01:00 +08 ngày đó, 01:00 +08 ngày hôm sau). Service tính sẵn
+        Múi giờ — đọc kỹ trước khi sửa cửa sổ ngày (hiệu chuẩn G6, H1):
+        JDBC dùng serverTimezone=GMT+7 và Jackson dùng time-zone GMT+7,
+        nên create_date lưu trong DB là giờ tường phòng khám (+07).
+        Trước H1 cả hai là GMT+8 và cửa sổ ngày là
+        [01:00 +08 ngày đó, 01:00 +08 ngày hôm sau); sau H1 cửa sổ là
+        [00:00 ngày đó, 00:00 ngày hôm sau). Service tính sẵn
         startDate/endDate theo quy tắc này; SQL chỉ so sánh chuỗi
         DATETIME trong cửa sổ đó, không tự đổi múi giờ. Thu phí KHÔNG
         đếm lại ở đây mà tái sử dụng G6 nguyên vẹn, nên cửa sổ thu phí

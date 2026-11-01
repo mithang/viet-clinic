@@ -5,18 +5,19 @@
     <!--
         Tổng kết thu phí cuối ngày (G6, read-only, không migration).
 
-        Múi giờ — đọc kỹ trước khi sửa cửa sổ ngày:
-        JDBC dùng serverTimezone=GMT+8 và Jackson dùng time-zone GMT+8,
-        nên create_date lưu trong DB là giờ tường GMT+8, KHÔNG phải giờ
-        phòng khám (+07) cũng không phải UTC. Đã kiểm chứng thực nghiệm
-        2026-11-02: phiếu tạo lúc 02:58 giờ phòng khám (+07) lưu thành
-        03:58 trong DB (tức 19:58 UTC hôm trước). Vì vậy một ngày phòng
-        khám [00:00 +07, 24:00 +07) tương đương cửa sổ giờ lưu trữ
-        [01:00 +08 ngày đó, 01:00 +08 ngày hôm sau). Service tính sẵn
-        startDate/endDate theo quy tắc này; SQL chỉ so sánh chuỗi
-        DATETIME trong cửa sổ đó, không tự đổi múi giờ. createDate trả
-        về qua DATE_FORMAT để khớp đúng định dạng Jackson GMT+8 mà
-        endpoint danh sách thu phí đang trả (so sánh đối chiếu 1-1).
+        Múi giờ — đọc kỹ trước khi sửa cửa sổ ngày (H1 2026-11-02):
+        JDBC dùng serverTimezone=GMT+7 và Jackson dùng time-zone GMT+7,
+        nên create_date lưu trong DB là giờ tường phòng khám (+07).
+        Trước H1 cả hai là GMT+8: kiểm chứng thực nghiệm 2026-11-02,
+        phiếu tạo lúc 02:58 giờ phòng khám (+07) lưu thành 03:58, và
+        cửa sổ ngày khi đó là [01:00 +08 ngày đó, 01:00 +08 hôm sau).
+        Sau H1, cửa sổ ngày là [00:00 ngày đó, 00:00 ngày hôm sau).
+        Service tính sẵn startDate/endDate theo quy tắc này; SQL chỉ
+        so sánh chuỗi DATETIME trong cửa sổ đó, không tự đổi múi giờ.
+        createDate trả về qua DATE_FORMAT để khớp đúng định dạng
+        Jackson GMT+7 mà endpoint danh sách thu phí đang trả (so sánh
+        đối chiếu 1-1; chuỗi hiển thị của dòng cũ không đổi vì đọc
+        literal theo vùng phiên mới rồi render theo cùng vùng).
     -->
     <select id="findCharges" resultType="map">
         SELECT
