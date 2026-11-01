@@ -212,7 +212,8 @@ export default {
     },
     groupLogic(val, oldVal) {
       if(val!==oldVal){
-        this.value['groupLogic'] = val    // Không phải đối tượng, cần theo dõi thay đổi
+        // Không mutate prop value: emit object mới để cha v-model cập nhật.
+        this.$emit('input', Object.assign({}, this.value, { groupLogic: val }))
       }
     },
     curNode(val, oldVal) {

@@ -106,7 +106,8 @@ import { getFiled } from "@/api/sys/sysSeting";
         document.getElementById(this.uploadBtnId).click()
       },
       onRemoveFileList(file, fileList) { // Xoá tệp
-        this.value.uploads = fileList
+        // Không mutate prop value: emit object mới để cha v-model cập nhật.
+        this.$emit('input', Object.assign({}, this.value, { uploads: fileList }))
       },
       onUploadViewFile(index, row) { // Tải xuống
         // fileUploadById(row.id).then(responseData => {
@@ -174,7 +175,8 @@ import { getFiled } from "@/api/sys/sysSeting";
       },
       onChangeFileList(file, fileList) {
         this.fileList = fileList
-       this.value.uploads = fileList
+       // Không mutate prop value: emit object mới để cha v-model cập nhật.
+       this.$emit('input', Object.assign({}, this.value, { uploads: fileList }))
        this.$emit("getFileList",this.fileList)
       },
       onViewFileList(index, row) { // Xem trước
