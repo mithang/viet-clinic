@@ -722,6 +722,25 @@
                                  @click="saveTemplate(item.type, index)">Lưu thành mẫu
                       </el-button>
                     </el-row>
+<!-- G5: kiểm tra tương tác thuốc — chỉ cảnh báo, không chặn lưu đơn.
+                         Cảnh báo chỉ bao phủ các quy tắc do chính phòng khám cấu hình. -->
+                    <el-row style="margin-bottom: 10px" v-if="!isReadOnly">
+                      <el-button type="warning" plain :loading="drugInteractionLoading"
+                                 @click="checkDrugInteractionsFor(item, index)">Kiểm tra tương tác thuốc</el-button>
+                      <span style="margin-left: 10px; color: #909399; font-size: 12px">Chỉ cảnh báo theo các quy tắc do phòng khám tự cấu hình; không chặn lưu đơn.</span>
+                    </el-row>
+                    <el-row v-if="drugInteractionCheckedIndex === index" style="margin-bottom: 10px">
+                      <el-alert v-if="drugInteractionError" :title="drugInteractionError" type="error" :closable="false" show-icon></el-alert>
+                      <el-alert v-else-if="drugInteractionCheckedCount < 2" title="Cần ít nhất 2 thuốc trong đơn để kiểm tra tương tác." type="info" :closable="false" show-icon></el-alert>
+                      <div v-else-if="drugInteractionMatches.length > 0">
+                        <el-alert v-for="match in drugInteractionMatches" :key="match.ruleId"
+                                  :title="(match.severity === 'TRANH' ? 'Tránh phối hợp: ' : 'Thận trọng: ') + match.drugA + ' + ' + match.drugB"
+                                  :description="match.message"
+                                  :type="match.severity === 'TRANH' ? 'error' : 'warning'"
+                                  :closable="false" show-icon style="margin-bottom: 5px"></el-alert>
+                      </div>
+                      <el-alert v-else title="Không phát hiện tương tác theo quy tắc đã cấu hình." type="success" :closable="false" show-icon></el-alert>
+                    </el-row>
 <!--                    Chi tiết đơn thuốc-->
                     <el-row  >
                       <el-table   :data="
@@ -3917,6 +3936,9 @@
     getByRecipelInfoId
   } from "@/api/outpatient/recipelDetail";
   import {
+    checkDrugInteractions,
+  } from "@/api/drugInteraction";
+  import {
     getPatientById
   } from "@/api/outpatient/patient";
   import {
@@ -3941,6 +3963,36 @@
     },
     name: "MedicalOutpatientRecord",
     methods: {
+      // G5: kiểm tra tương tác thuốc cho đơn tây y đang xem. Thu thập tên
+      // thuốc từ các dòng recipelDetailEvtList (drugStuffId.name, bỏ null),
+      // gọi API so khớp với quy tắc của tenant; chỉ cảnh báo, không chặn lưu.
+      checkDrugInteractionsFor(item, index) {
+        const names = [];
+        const details = (item && item.content && item.content.recipelDetailEvtList) || [];
+        details.forEach((row) => {
+          const name = row && row.drugStuffId && row.drugStuffId.name;
+          if (name) {
+            names.push(name);
+          }
+        });
+        this.drugInteractionCheckedIndex = index;
+        this.drugInteractionCheckedCount = names.length;
+        this.drugInteractionMatches = [];
+        this.drugInteractionError = "";
+        this.drugInteractionLoading = true;
+        return checkDrugInteractions(names)
+          .then((responseData) => {
+            const data = (responseData && responseData.data) || {};
+            this.drugInteractionMatches = data.matches || [];
+          })
+          .catch((error) => {
+            this.drugInteractionError =
+              (error && (error.msg || error.message)) || "Không kiểm tra được tương tác thuốc.";
+          })
+          .finally(() => {
+            this.drugInteractionLoading = false;
+          });
+      },
       // Xử lý chuyển đổi loại hình y tế
       handleMedicalTypeChange() {
         // Điều chỉnh trường bắt buộc theo loại mẫu
@@ -8754,6 +8806,13 @@
         // id bệnh nhân đã xác nhận cảnh báo dị ứng khi kê đơn (mỗi bệnh nhân
         // chỉ hỏi xác nhận một lần trong một ca khám).
         allergyWarningPatientId: '',
+        // G5: kết quả kiểm tra tương tác thuốc của đơn tây y đang xem
+        // (chỉ bao phủ quy tắc phòng khám tự cấu hình; cảnh báo không chặn lưu đơn).
+        drugInteractionCheckedIndex: -1,
+        drugInteractionCheckedCount: 0,
+        drugInteractionMatches: [],
+        drugInteractionLoading: false,
+        drugInteractionError: '',
         permission: {
           view: false,
           add: false,
