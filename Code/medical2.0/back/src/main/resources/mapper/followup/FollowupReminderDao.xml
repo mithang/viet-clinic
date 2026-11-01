@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.followup.dao.FollowupReminderDao">
+
+    <sql id="followupReminderColumns">
+        a.id AS "id",
+        a.company_id AS "company.id",
+        IFNULL(company.name,'') AS "company.name",
+        a.patient_id AS "patientId",
+        a.patient_name AS "patientName",
+        a.followup_type AS "followupType",
+        a.next_date AS "nextDate",
+        a.status AS "status",
+        a.last_notice_date AS "lastNoticeDate",
+        a.remarks AS "remarks",
+        a.create_by AS "createBy",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag"
+    </sql>
+
+    <sql id="followupReminderJoins">
+        LEFT JOIN org_company company ON company.id = a.company_id
+    </sql>
+
+    <select id="get" resultType="com.geeke.followup.entity.FollowupReminder">
+        SELECT
+            <include refid="followupReminderColumns"/>
+        FROM followup_reminder a
+        <include refid="followupReminderJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM followup_reminder a
+        <include refid="followupReminderJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+    </select>
+
+    <select id="listPage" resultType="com.geeke.followup.entity.FollowupReminder">
+        SELECT
+            <include refid="followupReminderColumns"/>
+        FROM followup_reminder a
+        <include refid="followupReminderJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+        <choose>
+            <when test="order != null and order != ''">
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="listAll" resultType="com.geeke.followup.entity.FollowupReminder">
+        SELECT
+            <include refid="followupReminderColumns"/>
+        FROM followup_reminder a
+        <include refid="followupReminderJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+        <choose>
+            <when test="order != null and order != ''">
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="listDue" resultType="com.geeke.followup.entity.FollowupReminder">
+        SELECT
+            <include refid="followupReminderColumns"/>
+        FROM followup_reminder a
+        <include refid="followupReminderJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.status = '0'
+            AND a.next_date IS NOT NULL
+            AND a.next_date &lt; #{dueBefore}
+            <if test="companyId != null and companyId != ''">
+                AND a.company_id = #{companyId}
+            </if>
+        </where>
+        ORDER BY a.next_date ASC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countDue" resultType="int">
+        SELECT COUNT(*) FROM followup_reminder a
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.status = '0'
+            AND a.next_date IS NOT NULL
+            AND a.next_date &lt; #{dueBefore}
+            <if test="companyId != null and companyId != ''">
+                AND a.company_id = #{companyId}
+            </if>
+        </where>
+    </select>
+
+    <update id="acknowledge">
+        UPDATE followup_reminder SET
+            status = '1',
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+            AND company_id = #{companyId}
+            AND del_flag = '0'
+            AND status = '0'
+    </update>
+
+    <update id="markNoticed">
+        UPDATE followup_reminder SET
+            last_notice_date = #{today},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+            AND company_id = #{companyId}
+            AND del_flag = '0'
+            AND (last_notice_date IS NULL OR last_notice_date &lt; #{today})
+    </update>
+
+    <insert id="insert">
+        INSERT INTO followup_reminder(
+            id,
+            company_id,
+            patient_id,
+            patient_name,
+            followup_type,
+            next_date,
+            status,
+            last_notice_date,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES (
+            #{id},
+            #{company.id},
+            #{patientId},
+            #{patientName},
+            #{followupType},
+            #{nextDate},
+            #{status},
+            #{lastNoticeDate},
+            #{remarks},
+            #{createBy},
+            #{createDate},
+            #{updateBy},
+            #{updateDate},
+            #{delFlag}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE followup_reminder SET
+            company_id = #{company.id},
+            patient_id = #{patientId},
+            patient_name = #{patientName},
+            followup_type = #{followupType},
+            next_date = #{nextDate},
+            status = #{status},
+            last_notice_date = #{lastNoticeDate},
+            remarks = #{remarks},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
+        UPDATE followup_reminder SET
+            update_by = #{updateBy},
+            update_date = #{updateDate},
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="bulkInsert" parameterType="java.util.List">
+        INSERT INTO followup_reminder(
+            id,
+            company_id,
+            patient_id,
+            patient_name,
+            followup_type,
+            next_date,
+            status,
+            last_notice_date,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES
+        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
+        (
+            #{entity.id},
+            #{entity.company.id},
+            #{entity.patientId},
+            #{entity.patientName},
+            #{entity.followupType},
+            #{entity.nextDate},
+            #{entity.status},
+            #{entity.lastNoticeDate},
+            #{entity.remarks},
+            #{entity.createBy},
+            #{entity.createDate},
+            #{entity.updateBy},
+            #{entity.updateDate},
+            #{entity.delFlag}
+        )
+        </foreach>
+    </insert>
+
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE followup_reminder
+        <set>
+            <trim prefix="followup_type=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.followupType}
+                </foreach>
+            </trim>
+            <trim prefix="next_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.nextDate}
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.status}
+                </foreach>
+            </trim>
+            <trim prefix="remarks=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.remarks}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <update id="bulkDelete" parameterType="java.util.List">
+        UPDATE followup_reminder
+        <set>
+            <trim prefix="del_flag=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then 1
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+</mapper>

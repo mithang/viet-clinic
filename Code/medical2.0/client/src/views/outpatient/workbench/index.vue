@@ -115,12 +115,16 @@
           </div>
         </el-card>
       </el-col>
+      <el-col :lg="6" :xs="12" :sm="6">
+        <followup-reminder-card />
+      </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
 import WorkbenchForm from './workbenchForm'
+import FollowupReminderCard from './components/FollowupReminderCard'
 import MainUI from '@/views/components/mainUI'
 import { updateNotShowById } from '@/api/outpatient/recipelInfo'
 import {
@@ -140,6 +144,7 @@ export default {
   extends: MainUI,
   components: {
     WorkbenchForm: WorkbenchForm,
+    FollowupReminderCard: FollowupReminderCard,
   },
 
   data() {

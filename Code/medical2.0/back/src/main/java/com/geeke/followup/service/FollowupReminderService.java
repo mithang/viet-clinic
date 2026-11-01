@@ -1,0 +1,225 @@
+package com.geeke.followup.service;
+
+import com.geeke.common.data.Page;
+import com.geeke.common.persistence.BaseEntity;
+import com.geeke.common.service.CrudService;
+import com.geeke.followup.dao.FollowupReminderDao;
+import com.geeke.followup.entity.FollowupReminder;
+import com.geeke.noticesend.entity.NoticeSend;
+import com.geeke.noticesend.service.NoticeSendService;
+import com.geeke.org.entity.Company;
+import com.geeke.sys.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Nhắc lịch tái khám Service (G1 research loop).
+ *
+ * Múi giờ phòng khám cố định Asia/Ho_Chi_Minh cho mọi phép tính "hôm
+ * nay / quá hạn bao nhiêu ngày", không phụ thuộc múi giờ của JVM hay
+ * MySQL (backend hiện lưu GMT+8 — xem H1 iteration 2, chưa sửa toàn cục).
+ */
+@Service("followupReminderService")
+@Transactional(readOnly = true)
+@Slf4j
+public class FollowupReminderService extends CrudService<FollowupReminderDao, FollowupReminder> {
+
+    private static final ZoneId CLINIC_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+
+    @Autowired
+    private NoticeSendService noticeSendService;
+
+    @Override
+    @Transactional(readOnly = false)
+    public FollowupReminder save(FollowupReminder entity) {
+        if (entity.getStatus() == null) {
+            entity.setStatus("0");
+        }
+        return super.save(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(FollowupReminder entity) {
+        return super.delete(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<FollowupReminder> entitys) {
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<FollowupReminder> entitys) {
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<FollowupReminder> entitys) {
+        return super.bulkDelete(entitys);
+    }
+
+    /**
+     * Ngày hôm nay theo giờ phòng khám.
+     */
+    public static LocalDate clinicToday() {
+        return LocalDate.now(CLINIC_ZONE);
+    }
+
+    /**
+     * Đầu ngày mai theo giờ phòng khám (mốc "đến hạn": next_date trước
+     * mốc này tức là đến hạn hôm nay hoặc đã quá hạn).
+     */
+    public static Date dueBefore() {
+        return Date.from(clinicToday().plusDays(1).atStartOfDay(CLINIC_ZONE).toInstant());
+    }
+
+    /**
+     * Số ngày quá hạn của một ngày hẹn (0 = đến hạn hôm nay). Ngày hẹn
+     * NULL không bao giờ được gọi tới (đã lọc ở SQL).
+     */
+    public static int daysOverdue(Date nextDate) {
+        LocalDate due = nextDate.toInstant().atZone(CLINIC_ZONE).toLocalDate();
+        long days = java.time.temporal.ChronoUnit.DAYS.between(due, clinicToday());
+        return (int) Math.max(0, days);
+    }
+
+    private void fillDaysOverdue(List<FollowupReminder> rows) {
+        if (rows == null) {
+            return;
+        }
+        for (FollowupReminder row : rows) {
+            if (row.getNextDate() != null) {
+                row.setDaysOverdue(daysOverdue(row.getNextDate()));
+            }
+        }
+    }
+
+    /**
+     * Trang đến hạn/quá hạn, lọc theo tenant đang đăng nhập.
+     * companyId null = mọi tenant (chỉ job hệ thống dùng).
+     */
+    public Page<FollowupReminder> duePage(String companyId, int offset, int limit) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("companyId", companyId);
+        params.put("dueBefore", dueBefore());
+        params.put("offset", offset);
+        params.put("limit", limit);
+        // Mapper XML dùng #{DEL_FLAG_NORMAL}; biến này chỉ có sẵn khi
+        // tham số là PageRequest (getter của nó), còn Map thuần thì
+        // MyBatis bind thành NULL -> del_flag = NULL -> 0 dòng. Vì vậy
+        // phải đưa tường minh vào Map (giá trị = BaseEntity.DEL_FLAG_NORMAL).
+        params.put("DEL_FLAG_NORMAL", BaseEntity.DEL_FLAG_NORMAL);
+        int total = dao.countDue(params);
+        List<FollowupReminder> rows = total > 0 ? dao.listDue(params) : Collections.emptyList();
+        fillDaysOverdue(rows);
+        return new Page<>(total, rows);
+    }
+
+    /**
+     * Xác nhận một nhắc lịch. Trả về số dòng cập nhật (0 = không tìm
+     * thấy, đã xác nhận trước đó, hoặc sai tenant).
+     */
+    @Transactional(readOnly = false)
+    public int acknowledge(String id, String companyId) {
+        String updateBy = currentUserLabel();
+        return dao.acknowledge(id, companyId, updateBy, new Date());
+    }
+
+    /**
+     * Tạo thông báo nội bộ cho mọi nhắc lịch đến hạn chưa có thông báo
+     * trong ngày. Idempotent: chạy lại cùng ngày không tạo trùng
+     * (khóa bằng last_notice_date ở cả SQL markNoticed và kiểm tra trước
+     * khi insert). companyId null = mọi tenant (job hệ thống); khác null
+     * = chỉ tenant đó (nút chạy tay của nhân viên).
+     * Trả về số thông báo đã tạo. Không gửi SMS/Zalo, không ra ngoài.
+     * Nội dung thông báo chỉ có tên bệnh nhân + loại tái khám + ngày hẹn.
+     */
+    @Transactional(readOnly = false)
+    public int createDueNotices(String companyId) {
+        LocalDate today = clinicToday();
+        // Chuỗi ngày phòng khám, dùng cho cả claim SQL lẫn giá trị lưu.
+        // Không dùng java.sql.Date: driver JDBC chuyển nó theo múi giờ
+        // JVM/server làm lệch ngày (đã gặp thực tế: lưu 2026-10-31 cho
+        // ngày phòng khám 2026-11-01, và vì insert chạy trước claim nên
+        // job chạy lần 2 vẫn insert trùng dù trả về 0).
+        String todayStr = today.toString();
+        Map<String, Object> params = new HashMap<>();
+        params.put("companyId", companyId);
+        params.put("dueBefore", dueBefore());
+        params.put("offset", 0);
+        params.put("limit", 5000);
+        params.put("DEL_FLAG_NORMAL", BaseEntity.DEL_FLAG_NORMAL);
+        List<FollowupReminder> due = dao.listDue(params);
+        int created = 0;
+        for (FollowupReminder reminder : due) {
+            // Claim trước, insert sau: chỉ dòng nào giành được claim
+            // (chưa có thông báo trong ngày) mới được insert thông báo.
+            // Nhờ đó chạy lại cùng ngày, kể cả đồng thời, cũng không
+            // bao giờ tạo trùng.
+            int marked = dao.markNoticed(reminder.getId(), reminder.getCompany().getId(),
+                    todayStr, currentUserLabel(), new Date());
+            if (marked <= 0) {
+                continue;
+            }
+            NoticeSend notice = new NoticeSend();
+            Company company = new Company();
+            company.setId(reminder.getCompany().getId());
+            notice.setCompany(company);
+            notice.setSenderId(currentUserId());
+            String title = "Nhắc tái khám: " + reminder.getPatientName();
+            if (title.length() > 50) {
+                title = title.substring(0, 50);
+            }
+            notice.setTitle(title);
+            notice.setIsSite("1");
+            notice.setIsWechat("0");
+            notice.setIsEmail("0");
+            notice.setIsSms("0");
+            notice.setSiteContent(reminder.getPatientName() + " | " + reminder.getFollowupType()
+                    + " | Hạn: " + new java.text.SimpleDateFormat("dd/MM/yyyy").format(reminder.getNextDate()));
+            noticeSendService.save(notice);
+            created++;
+        }
+        log.info("followup-reminder job: date={} company={} created={}", today, companyId, created);
+        return created;
+    }
+
+    private String currentUserLabel() {
+        try {
+            com.alibaba.fastjson.JSONObject user = SessionUtils.getUserJson();
+            if (user != null && StringUtils.isNotBlank(user.getString("id"))) {
+                return user.getString("name") + "(" + user.getString("loginName") + ")";
+            }
+        } catch (Exception e) {
+            log.debug("followup-reminder: no session user", e);
+        }
+        return "system";
+    }
+
+    private String currentUserId() {
+        try {
+            com.alibaba.fastjson.JSONObject user = SessionUtils.getUserJson();
+            if (user != null) {
+                return user.getString("id");
+            }
+        } catch (Exception e) {
+            log.debug("followup-reminder: no session user id", e);
+        }
+        return null;
+    }
+}
