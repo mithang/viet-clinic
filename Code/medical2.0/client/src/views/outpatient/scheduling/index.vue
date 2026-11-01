@@ -400,6 +400,10 @@
               </el-table>
             </el-row>
           </el-tab-pane>
+          <el-tab-pane label="Yêu cầu đặt lịch" name="bookingRequests">
+            <span slot="label">Yêu cầu đặt lịch </span>
+            <booking-request-queue />
+          </el-tab-pane>
         </el-tabs>
       </el-main>
     </el-container>
@@ -467,11 +471,13 @@ import {
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import MainUI from "@/views/components/mainUI";
 import TestForm from "./schedulingForm";
+import BookingRequestQueue from "./components/BookingRequestQueue";
 export default {
   name: 'OutpatientSchedulingIndex',
   extends: MainUI,
   components: {
     TestForm,
+    BookingRequestQueue,
   },
   data() {
     return {

@@ -99,6 +99,13 @@ public class ShiroConfiguration {
         // vào "/**" -> authc, và còn bị chặn ở tầng web exposure trong application.yml
         // (management.endpoints.web.exposure.include chỉ có health).
         filterChainDefinitionMap.put("/actuator/health", "anon");
+        // G2: CHỈ intake đặt lịch là anon (bệnh nhân gửi yêu cầu không cần
+        // tài khoản). Endpoint này chỉ INSERT bảng booking_request và chỉ
+        // đọc lại chính bảng đó để chống trùng; không đọc/ghi dữ liệu
+        // clinical, không có trường chẩn đoán. Mọi endpoint /booking/**
+        // còn lại (pending/prior/confirm/reject + CRUD) vẫn rơi vào
+        // "/**" -> authc và fail-closed trong controller.
+        filterChainDefinitionMap.put("/booking/requests/intake", "anon");
 
         filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);

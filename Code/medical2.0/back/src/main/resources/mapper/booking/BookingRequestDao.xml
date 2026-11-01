@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.booking.dao.BookingRequestDao">
+
+    <sql id="bookingRequestColumns">
+        a.id AS "id",
+        a.company_id AS "company.id",
+        IFNULL(company.name,'') AS "company.name",
+        a.patient_name AS "patientName",
+        a.phone AS "phone",
+        a.wanted_date AS "wantedDate",
+        a.service AS "service",
+        a.status AS "status",
+        a.reject_reason AS "rejectReason",
+        a.registration_id AS "registrationId",
+        a.remarks AS "remarks",
+        a.create_by AS "createBy",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag"
+    </sql>
+
+    <sql id="bookingRequestJoins">
+        LEFT JOIN org_company company ON company.id = a.company_id
+    </sql>
+
+    <select id="get" resultType="com.geeke.booking.entity.BookingRequest">
+        SELECT
+            <include refid="bookingRequestColumns"/>
+        FROM booking_request a
+        <include refid="bookingRequestJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM booking_request a
+        <include refid="bookingRequestJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+    </select>
+
+    <select id="listPage" resultType="com.geeke.booking.entity.BookingRequest">
+        SELECT
+            <include refid="bookingRequestColumns"/>
+        FROM booking_request a
+        <include refid="bookingRequestJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+        <choose>
+            <when test="order != null and order != ''">
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="listAll" resultType="com.geeke.booking.entity.BookingRequest">
+        SELECT
+            <include refid="bookingRequestColumns"/>
+        FROM booking_request a
+        <include refid="bookingRequestJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+        <choose>
+            <when test="order != null and order != ''">
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!--
+        Bài học G1: #{DEL_FLAG_NORMAL} chỉ resolve khi tham số là
+        PageRequest; với Map thuần MyBatis bind thành NULL -> del_flag =
+        NULL -> 0 dòng. Mọi select tự viết dưới đây đều nhận
+        DEL_FLAG_NORMAL tường minh từ service (BaseEntity.DEL_FLAG_NORMAL).
+    -->
+    <select id="listPending" resultType="com.geeke.booking.entity.BookingRequest">
+        SELECT
+            <include refid="bookingRequestColumns"/>
+        FROM booking_request a
+        <include refid="bookingRequestJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.status = '0'
+            <if test="companyId != null and companyId != ''">
+                AND a.company_id = #{companyId}
+            </if>
+        </where>
+        ORDER BY a.wanted_date ASC, a.create_date ASC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countPending" resultType="int">
+        SELECT COUNT(*) FROM booking_request a
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.status = '0'
+            <if test="companyId != null and companyId != ''">
+                AND a.company_id = #{companyId}
+            </if>
+        </where>
+    </select>
+
+    <select id="listPriorByPhone" resultType="com.geeke.booking.entity.BookingRequest">
+        SELECT
+            <include refid="bookingRequestColumns"/>
+        FROM booking_request a
+        <include refid="bookingRequestJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.phone = #{phone}
+            <if test="companyId != null and companyId != ''">
+                AND a.company_id = #{companyId}
+            </if>
+        </where>
+        ORDER BY a.create_date DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countPriorByPhone" resultType="int">
+        SELECT COUNT(*) FROM booking_request a
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.phone = #{phone}
+            <if test="companyId != null and companyId != ''">
+                AND a.company_id = #{companyId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findPendingDuplicate" resultType="com.geeke.booking.entity.BookingRequest">
+        SELECT
+            <include refid="bookingRequestColumns"/>
+        FROM booking_request a
+        <include refid="bookingRequestJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.status = '0'
+            AND a.company_id = #{companyId}
+            AND a.phone = #{phone}
+            AND a.wanted_date = #{wantedDate}
+        </where>
+        ORDER BY a.create_date ASC
+        LIMIT 1
+    </select>
+
+    <update id="claimConfirm">
+        UPDATE booking_request SET
+            status = '1',
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+            AND company_id = #{companyId}
+            AND del_flag = '0'
+            AND status = '0'
+    </update>
+
+    <update id="linkRegistration">
+        UPDATE booking_request SET
+            registration_id = #{registrationId},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+            AND company_id = #{companyId}
+            AND del_flag = '0'
+            AND status = '1'
+    </update>
+
+    <update id="reject">
+        UPDATE booking_request SET
+            status = '2',
+            reject_reason = #{rejectReason},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+            AND company_id = #{companyId}
+            AND del_flag = '0'
+            AND status = '0'
+    </update>
+
+    <select id="countRosterForDate" resultType="int">
+        SELECT COUNT(*) FROM scheduling_data
+        WHERE company_id = #{companyId}
+            AND schedulingtime = #{wantedDate}
+            AND del_flag = '0'
+            AND is_locked = '0'
+    </select>
+
+    <insert id="insert">
+        INSERT INTO booking_request(
+            id,
+            company_id,
+            patient_name,
+            phone,
+            wanted_date,
+            service,
+            status,
+            reject_reason,
+            registration_id,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES (
+            #{id},
+            #{company.id},
+            #{patientName},
+            #{phone},
+            #{wantedDate},
+            #{service},
+            #{status},
+            #{rejectReason},
+            #{registrationId},
+            #{remarks},
+            #{createBy},
+            #{createDate},
+            #{updateBy},
+            #{updateDate},
+            #{delFlag}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE booking_request SET
+            company_id = #{company.id},
+            patient_name = #{patientName},
+            phone = #{phone},
+            wanted_date = #{wantedDate},
+            service = #{service},
+            status = #{status},
+            reject_reason = #{rejectReason},
+            registration_id = #{registrationId},
+            remarks = #{remarks},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
+        UPDATE booking_request SET
+            update_by = #{updateBy},
+            update_date = #{updateDate},
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
