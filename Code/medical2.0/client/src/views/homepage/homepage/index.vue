@@ -23,13 +23,20 @@
         </div>
       </div>
     </div>
+    <!-- Tổng quan ngày cho chủ phòng khám (H5): chỉ đọc, không ghi DB;
+         hiển thị dưới thẻ chào mừng, không thêm router/menu mới. -->
+    <div class="day-dashboard-wrapper">
+      <DayDashboard />
+    </div>
   </div>
 </template>
 
 <script>
 import { getLocalCurrentUser } from '@/utils/auth'
+import DayDashboard from '../components/DayDashboard'
 export default {
   name: 'HomepageView',
+  components: { DayDashboard },
   data() {
     return {
       currentUser: {}
@@ -65,6 +72,10 @@ export default {
   display: flex;
   justify-content: center;
   padding: 0 20px;
+}
+
+.day-dashboard-wrapper {
+  padding: 0 20px 40px;
 }
 
 .user-info-card {

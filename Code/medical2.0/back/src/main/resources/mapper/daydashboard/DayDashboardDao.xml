@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.daydashboard.dao.DayDashboardDao">
+
+    <!--
+        Tổng quan ngày (H5, read-only, không migration).
+
+        Múi giờ — đọc kỹ trước khi sửa cửa sổ ngày (hiệu chuẩn G6):
+        JDBC dùng serverTimezone=GMT+8 và Jackson dùng time-zone GMT+8,
+        nên create_date lưu trong DB là giờ tường GMT+8, KHÔNG phải giờ
+        phòng khám (+07) cũng không phải UTC. Một ngày phòng khám
+        [00:00 +07, 24:00 +07) tương đương cửa sổ giờ lưu trữ
+        [01:00 +08 ngày đó, 01:00 +08 ngày hôm sau). Service tính sẵn
+        startDate/endDate theo quy tắc này; SQL chỉ so sánh chuỗi
+        DATETIME trong cửa sổ đó, không tự đổi múi giờ. Thu phí KHÔNG
+        đếm lại ở đây mà tái sử dụng G6 nguyên vẹn, nên cửa sổ thu phí
+        và cửa sổ lượt khám là một.
+
+        Đếm sắp hết hạn vật tư có giới hạn tenant:
+        truy vấn cảnh báo gốc SupplierStockDao.countStuffWarning KHÔNG
+        có điều kiện company nào (chỉ del_flag + DATEDIFF <=
+        stuff.indate), nên dùng nguyên vẹn sẽ đếm cả tenant khác trên
+        dữ liệu đa tenant. Đếm ở đây giữ nguyên định nghĩa DATEDIFF
+        và thêm điều kiện tenant/institution y hệt đếm sắp hết hạn
+        thuốc (countWarning). Hệ quả cần biết khi đối chiếu: trên
+        dữ liệu đa tenant, tổng này có thể khác total trang cảnh
+        báo vật tư gốc; trên phòng khám đơn tenant thì bằng nhau.
+    -->
+    <select id="countVisits" resultType="int">
+        SELECT COUNT(*)
+        FROM registration a
+        WHERE a.company_id = #{companyId}
+            AND a.del_flag = #{delFlag}
+            AND a.is_pre IS NULL
+            AND a.status != 'registrationStatus_4'
+            AND a.create_date &gt;= #{startDate}
+            AND a.create_date &lt; #{endDate}
+    </select>
+
+    <select id="countPendingCharges" resultType="int">
+        SELECT COUNT(*)
+        FROM registration a
+        WHERE a.company_id = #{companyId}
+            AND a.del_flag = #{delFlag}
+            AND a.is_pre IS NULL
+            AND a.status != 'registrationStatus_4'
+            AND a.charge_status IN ('0', '1')
+            AND a.create_date &gt;= #{startDate}
+            AND a.create_date &lt; #{endDate}
+    </select>
+
+    <select id="countStuffIndateWarningScoped" resultType="int">
+        SELECT COUNT(*)
+        FROM supplier_stock a
+        LEFT JOIN org_company company ON company.id = a.company_id
+        LEFT JOIN stuff stuff ON stuff.id = a.stuff_id
+        WHERE a.id > 0
+            AND a.del_flag = #{delFlag}
+            AND IF(company.is_institution = 0, company.id = #{companyId},
+                (company.id = #{institution} OR company.id = #{companyId}))
+            AND DATEDIFF(a.end_date, NOW()) &lt;= stuff.indate
+    </select>
+
+</mapper>
