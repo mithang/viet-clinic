@@ -69,10 +69,10 @@ import { getFiled } from "@/api/sys/sysSeting";
          }
       },
       action: {
-        type: Boolean | String
+        type: [Boolean, String]
       },
       objectId: {
-        type: String | Number
+        type: [String, Number]
       },
       title: {
         type: String,

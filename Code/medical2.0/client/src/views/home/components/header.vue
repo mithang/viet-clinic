@@ -323,7 +323,7 @@ export default {
   props: {
     isCollapse: Boolean,
     routers: Array,
-    sysLogo: "",
+    sysLogo: String,
   },
   data() {
     return {

@@ -50,7 +50,7 @@
     props: {
       // Chế độ hiển thị báo cáo: 1 chế độ nhúng; 2 chế độ xem báo cáo; 3 chế độ mở trang bằng trình duyệt
       reportType: {
-        type: String | Number,
+        type: [String, Number],
         required: true
       },
       // Chỉ có hiệu lực trong báo cáo nhúng

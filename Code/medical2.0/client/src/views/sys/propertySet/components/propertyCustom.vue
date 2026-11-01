@@ -144,7 +144,7 @@
         default: () => { return "add"}
       },
       dataNum: {
-        type: String | Number,
+        type: [String, Number],
         required: true
       }
      },

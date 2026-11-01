@@ -26,7 +26,7 @@ export default {
     },
     // Loại tiền tệ
     currency: {
-      type: String | Object,
+      type: [String, Object],
       default: null
     },
     // Số chữ số thập phân

@@ -28,7 +28,7 @@
     },
     props: {
       value: {
-        type: Number | String
+        type: [Number, String]
       },
       // Ngôn ngữ định dạng số. Mặc định vi-VN để dấu phân cách đúng chuẩn
       // Việt Nam: "." phân tách hàng nghìn, "," phân tách phần thập phân.
@@ -38,7 +38,7 @@
       },
       // Loại tiền tệ
       currency: {
-        type: String | Object,
+        type: [String, Object],
         default: null
       },
       // Số chữ số thập phân

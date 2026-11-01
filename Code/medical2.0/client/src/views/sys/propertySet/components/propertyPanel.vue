@@ -104,7 +104,7 @@ export default {
     },
     // Tập thuộc tínhId
     propertiesId: {
-      type: String | Number
+      type: [String, Number]
     },
     //Định nghĩa thuộc tínhjsonChuỗi ký tự
     propertyDef: {
@@ -117,7 +117,7 @@ export default {
     },
     // Số cột bố cục khung sửa
     cols: {
-      type: Number | String,
+      type: [Number, String],
       default: () => { return 1}
     }
   },
