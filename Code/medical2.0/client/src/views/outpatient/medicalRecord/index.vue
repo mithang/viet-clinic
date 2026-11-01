@@ -147,6 +147,7 @@
           v-if="IsShowRecords"
           :NowVisitInfo="NowVisitInfo"
           :checkedForm="checkedForm"
+          @update:checkedForm="updateCheckedForm($event)"
           :InfusionUseOption="InfusionUseOption"
           :InfusionOption="InfusionOption"
           :DayNumOption="DayNumOption"
@@ -1593,6 +1594,11 @@ export default {
     // trong InfusionItemList để GetInfusionFee cộng đúng row.allFee.
     updateInfusionInfoModel(item, updated) {
       Object.assign(item, updated);
+    },
+    // Merge cập nhật từ VisitRecords con, giữ nguyên identity của checkedForm
+    // để UseRecord đọc đúng record/Prescription khi bấm "Gọi".
+    updateCheckedForm(updated) {
+      Object.assign(this.checkedForm, updated);
     },
     //Lấy tổng giá đơn thuốc
     GetChineseFee(type) {

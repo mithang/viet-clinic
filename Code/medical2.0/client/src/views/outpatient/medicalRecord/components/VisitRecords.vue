@@ -9,7 +9,7 @@
       <li>Bác sĩ khoa: {{ NowVisitInfo.medicalRecord.createBy }}</li>
     </ul>
     <div class="titleBox">
-      <h4><el-checkbox v-model="checkedForm.record">Bệnh án</el-checkbox></h4>
+      <h4><el-checkbox :value="checkedForm.record" @change="onRecordChange">Bệnh án</el-checkbox></h4>
       <el-button class="titleBtn">{{ NowVisitInfo.info.treatType }}</el-button>
     </div>
     <ul class="infoItem">
@@ -24,7 +24,7 @@
     </ul>
     <div class="titleBox" v-if="NowVisitInfo.recipelInfoEvtList.length">
       <h4>
-        <el-checkbox v-model="checkedForm.Prescription">Đơn thuốc</el-checkbox>
+        <el-checkbox :value="checkedForm.Prescription" @change="onPrescriptionChange">Đơn thuốc</el-checkbox>
       </h4>
     </div>
     <ul class="translateBox" v-if="NowVisitInfo.recipelInfoEvtList.length">
@@ -107,6 +107,7 @@
             :IsOnlyRead="IsOnlyRead"
             :GroupNumber="index + 1"
             :key="index"
+            @update:InfoModel="v => Object.assign(item, v)"
           />
         </div>
         <p class="userTypeBox">{{ InfusionModel.remarks }}</p>
@@ -307,6 +308,18 @@ export default {
     this.InitData();
   },
   methods: {
+    // Không mutate prop: emit object mới để cha merge giữ nguyên identity
+    // của checkedForm, rồi cha mới đọc record/Prescription khi bấm "Gọi".
+    onRecordChange(val) {
+      this.$emit('update:checkedForm', Object.assign({}, this.checkedForm, {
+        record: val
+      }))
+    },
+    onPrescriptionChange(val) {
+      this.$emit('update:checkedForm', Object.assign({}, this.checkedForm, {
+        Prescription: val
+      }))
+    },
     InitData() {
       this.WesternMedicineModel = {
         recipelInfo: {},
