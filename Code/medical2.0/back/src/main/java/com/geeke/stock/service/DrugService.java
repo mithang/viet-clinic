@@ -119,7 +119,8 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
      * @return
      */
     public List<Drug> listAllDrug(List<Parameter> parameters, String orderby) {
-        PageRequest pageRequest = new PageRequest(parameters, orderby);
+        // Z2b: ép tenant session (trước đây PageRequest trần, listAlls chỉ lọc khi institution != null)
+        PageRequest pageRequest = buildTenantPageRequest(parameters, orderby);
 
         return dao.listAlls(pageRequest);
     }
@@ -131,7 +132,8 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     }
 
     public List<Drug> listAllStock(List<Parameter> parameters, String orderby) {
-        PageRequest pageRequest = new PageRequest(parameters, orderby);
+        // Z2b: ép tenant session (trước đây PageRequest trần, SQL không có lọc tenant nào)
+        PageRequest pageRequest = buildTenantPageRequest(parameters, orderby);
         return this.dao.listAllStock(pageRequest);
     }
 
@@ -151,7 +153,9 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
      * @return
      */
     public Page<Drug> getDrugNew(List<Parameter> params, int offset, int limit, String orderby) {
-        PageRequest pageRequest = new PageRequest(offset, limit, params, orderby,SessionUtils.getLoginTenantId());
+        // Z2b: ép tenant session đầy đủ (trước đây chỉ truyền id, không strip body,
+        // listPages/count chỉ lọc khi institution != null nên testfull không được lọc)
+        PageRequest pageRequest = buildTenantPageRequest(params, offset, limit, orderby);
         return paginate(
             () -> this.dao.count(pageRequest),
             () -> {

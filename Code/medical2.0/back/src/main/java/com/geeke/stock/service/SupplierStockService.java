@@ -318,7 +318,15 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
     public Page<SupplierStock> getStuffIndateWarning(List<Parameter> parameters, int offset, int limit,
                                                      String orderby) {
-        PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
+        // Z2b: cùng mẫu getDrugIndateWarning — strip company_id body, ép tenant session
+        Parameter.extractAndRemoveCompanyId(parameters);
+        String id = SessionUtils.getLoginTenantId();
+        if ("null".equals(id)) {
+            id = null;
+        }
+        String institution = companyService.getInstitution(id);
+
+        PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby, id, institution);
         return paginate(
             () -> this.dao.countStuffWarning(pageRequest),
             () -> {

@@ -513,6 +513,9 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             AND DATEDIFF(a.end_date, DATE(CONVERT_TZ(NOW(), 'SYSTEM', '+07:00'))) &lt;= stuff.indate
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, company.id = #{id}, (company.id = #{institution} or company.id = #{id}))
+            </if>
             <include refid="Common.whereParams"/>
         </where>
     </select>
@@ -527,6 +530,9 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             AND DATEDIFF(a.end_date, DATE(CONVERT_TZ(NOW(), 'SYSTEM', '+07:00'))) &lt;= stuff.indate
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, company.id = #{id}, (company.id = #{institution} or company.id = #{id}))
+            </if>
             <include refid="Common.whereParams"/>
         </where>
         <choose>
