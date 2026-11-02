@@ -129,10 +129,12 @@
         >
           <span class="visitRecordTime"
             ><i class="el-icon-timer"></i
-            >{{ item.medicalRecord.diagnoseDate }}</span
+            >{{
+              item.medicalRecord ? item.medicalRecord.diagnoseDate : ""
+            }}</span
           >
           Chẩn đoán: <span class="diagnosisTitel">{{
-            item.medicalRecord.diagnose
+            item.medicalRecord ? item.medicalRecord.diagnose : ""
           }}</span>
         </li>
       </ul>
@@ -1902,20 +1904,22 @@ export default {
     //Lấy dữ liệu chỉ đọc
     GetOnlyReadData(allData) {
       this.ClearMedicineCofigure();
-      //Lấy bệnh án và y lệnh
-      this.DoctorAdvice = allData.medicalRecord.doctorAdvice;
-      this.MedicalRecordModel.patientTell = allData.medicalRecord.patientTell;
-      this.MedicalRecordModel.nowHistory = allData.medicalRecord.nowHistory;
-      this.MedicalRecordModel.beforeHistory =
-        allData.medicalRecord.beforeHistory;
-      this.MedicalRecordModel.otherCheck = allData.medicalRecord.otherCheck;
-      this.MedicalRecordModel.diagnose = allData.medicalRecord.diagnose;
+      //Lấy bệnh án và y lệnh — lượt chưa có bản ghi trả medicalRecord null
+      // (allNewQuery chỉ set khi có dòng medical_record): coi như bản ghi
+      // rỗng thay vì vỡ, vẫn import đơn thuốc nếu có.
+      const record = allData.medicalRecord || {};
+      this.DoctorAdvice = record.doctorAdvice;
+      this.MedicalRecordModel.patientTell = record.patientTell;
+      this.MedicalRecordModel.nowHistory = record.nowHistory;
+      this.MedicalRecordModel.beforeHistory = record.beforeHistory;
+      this.MedicalRecordModel.otherCheck = record.otherCheck;
+      this.MedicalRecordModel.diagnose = record.diagnose;
       this.MedicineRecordLabelList.map((item) => {
-        item.value = allData.medicalRecord[`${item.name}`];
+        item.value = record[`${item.name}`];
         if (item.value) this.ChooseRecordList.push(item);
       });
       //Lấy đơn thuốc
-      allData.recipelInfoEvtList.map((prescriptionItem) => {
+      (allData.recipelInfoEvtList || []).map((prescriptionItem) => {
         // Nhãn dict khác literal cũ ('Đơn thuốc Tây y'/'Đơn thuốc Đông y'
         // thay vì 'Đơn thuốc tây'/'Đơn thuốc đông y'): so theo mã ổn định
         // recipelType.value, fallback về tên cho bản ghi thiếu mã.

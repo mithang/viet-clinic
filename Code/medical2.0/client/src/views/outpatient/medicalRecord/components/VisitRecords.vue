@@ -5,8 +5,18 @@
         Tên bệnh nhân: {{ NowVisitInfo.info.name }} ({{ NowVisitInfo.info.age }}tuổi)
       </li>
       <li>Giới tính: {{ NowVisitInfo.info.gender.name }}</li>
-      <li>Thời gian khám: {{ NowVisitInfo.medicalRecord.diagnoseDate }}</li>
-      <li>Bác sĩ khoa: {{ NowVisitInfo.medicalRecord.createBy }}</li>
+      <li>
+        Thời gian khám:
+        {{
+          NowVisitInfo.medicalRecord
+            ? NowVisitInfo.medicalRecord.diagnoseDate
+            : ""
+        }}
+      </li>
+      <li>
+        Bác sĩ khoa:
+        {{ NowVisitInfo.medicalRecord ? NowVisitInfo.medicalRecord.createBy : "" }}
+      </li>
     </ul>
     <div class="titleBox">
       <h4><el-checkbox :value="checkedForm.record" @change="onRecordChange">Bệnh án</el-checkbox></h4>
@@ -337,10 +347,13 @@ export default {
       this.InfusionModel = {};
       this.CostItemList = [];
       this.SurchargeList = [];
+      // Lượt chưa có bản ghi: medicalRecord null (cùng luồng I2 với trang
+      // khám) — coi như bản ghi rỗng thay vì vỡ ở dialog xem trước.
+      const record = this.NowVisitInfo.medicalRecord || {};
       this.AllMedicineRecordLabelList.map((item) => {
-        item.value = this.NowVisitInfo.medicalRecord[`${item.name}`];
+        item.value = record[`${item.name}`];
       });
-      this.NowVisitInfo.recipelInfoEvtList.map((prescriptionItem) => {
+      (this.NowVisitInfo.recipelInfoEvtList || []).map((prescriptionItem) => {
         // Nhãn dict khác literal cũ ('Đơn thuốc Tây y'/'Đơn thuốc Đông y'
         // thay vì 'Đơn thuốc tây'/'Đơn thuốc đông y'): so theo mã ổn định
         // recipelType.value, fallback về tên cho bản ghi thiếu mã.
