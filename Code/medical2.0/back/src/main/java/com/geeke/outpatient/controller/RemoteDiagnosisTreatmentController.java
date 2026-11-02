@@ -78,13 +78,17 @@ public class RemoteDiagnosisTreatmentController extends BaseController {
      * tenant như W2 — ép company theo session tại đây: xóa company_id của
      * body rồi thêm tenant phiên. Trang thật vốn chỉ gửi companyId của
      * chính mình nên không đổi luồng chính.
+     * Fix sau X2 (phát hiện khi làm Y1): dùng getNewParams() (danh sách thô)
+     * thay vì getParams() — getParams() bọc backtick vào tên cột, gọi lần 2
+     * ở đối số service sẽ văng 400 "tên trường chứa ký tự không hợp lệ"
+     * với mọi param có dấu chấm; getParams() chỉ được chạy đúng một lần.
      */
     private void forceSessionCompany(SearchParams searchParams) {
         String tenantId = sessionTenantId();
         if (tenantId == null) {
             return;
         }
-        List<Parameter> params = searchParams.getParams();
+        List<Parameter> params = searchParams.getNewParams();
         if (params == null) {
             params = new ArrayList<>();
             searchParams.setParams(params);
