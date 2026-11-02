@@ -141,8 +141,14 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * đơn giảnhóabáo cáoTruy vấnPhương thứcTrongtrùng lặpmã
      */
     private PageRequest toPageRequest(SearchParams searchParams) {
+        // W2 (iteration 17): body khong duoc dieu khien tenant nua — strip
+        // company_id cua body roi ep tenant session, theo mau
+        // CrudService.ensureCompanyFilter (nhu T2/V1). Session rong/"null"
+        // (luong noi bo khong session) moi giu nguyen nhu cu.
+        List<Parameter> params = searchParams.getParams();
+        ensureCompanyFilter(params);
         return new PageRequest(searchParams.getOffset(), searchParams.getLimit(),
-                searchParams.getParams(), searchParams.getOrderby());
+                params, searchParams.getOrderby());
     }
 
     @Override
@@ -882,11 +888,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public List<TollInfo> getCreateBy(List<Parameter> parameters, String orderby) {
+        // W2: ep tenant session nhu toPageRequest (body company_id khong duoc
+        // dieu khien bao cao; xem toPageRequest).
+        ensureCompanyFilter(parameters);
         PageRequest pageRequest = new PageRequest(parameters, orderby);
         return this.dao.getCreateBy(pageRequest);
     }
 
     public Page<WorkLoad> getWorkload(List<Parameter> params,int offset,int limit, String orderby) {
+        // W2: ep tenant session (mutate in-place nen ca batchPageRequest sau
+        // cung mang filter session, khong chi query chinh).
+        ensureCompanyFilter(params);
         List<Parameter> parameters = new ArrayList<>();
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
         List<WorkLoad> count = this.dao.countWorkload(pageRequest);
@@ -933,6 +945,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public WorkLoadStat getWorkLoadStat(List<Parameter> params,int offset,int limit, String orderby){
+        // W2: ep tenant session nhu getWorkload.
+        ensureCompanyFilter(params);
         List<Parameter> parameters = new ArrayList<>();
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
         WorkLoadStat workLoadStat = this.dao.getWorkLoadStat(pageRequest);
@@ -956,6 +970,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public Page<DrugSales> getDrugSales(List<Parameter> params, int offset, int limit, String orderby) {
+        // W2: ep tenant session (getdrugmarketstatistics uy thac qua day nen
+        // cung duoc bao phu, goi lap lai van idempotent: strip roi them lai).
+        ensureCompanyFilter(params);
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
         List<DrugSales> count = this.dao.countDrugSales(pageRequest);
         int total=0;
@@ -970,6 +987,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public DrugSales getDrugSalesStat(List<Parameter> params, int offset, int limit, String orderby){
+        // W2: ep tenant session nhu getDrugSales.
+        ensureCompanyFilter(params);
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
         DrugSales drugSalesStat = this.dao.getDrugSalesStat(pageRequest);
         return drugSalesStat;
@@ -1171,6 +1190,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
 
     public Page<WorkLoad> getdoctorDetailstatistics(List<Parameter> params,int offset,int limit, String orderby) {
+        // W2: ep tenant session (doctorParams copy sau cung ke thua filter).
+        ensureCompanyFilter(params);
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
         List<WorkLoad> count = this.dao.countWorkload(pageRequest);
         int total=0;
@@ -1199,6 +1220,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public WorkLoadStat getdoctorDetailstatisticsStat(List<Parameter> params,int offset,int limit, String orderby){
+        // W2: ep tenant session nhu getdoctorDetailstatistics.
+        ensureCompanyFilter(params);
         List<Parameter> parameters = new ArrayList<>();
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
         List<WorkLoadStat> workLoadStat = this.dao.getWorkLoadStats(pageRequest);
