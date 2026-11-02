@@ -6,6 +6,7 @@ import com.geeke.booking.entity.BookingRequest;
 import com.geeke.common.data.Page;
 import com.geeke.common.persistence.BaseEntity;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.org.entity.Company;
 import com.geeke.outpatient.entity.Registration;
 import com.geeke.outpatient.service.RegistrationService;
@@ -82,9 +83,50 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     @Autowired
     private RegistrationService registrationService;
 
+    /**
+     * AA4: chan ghi xuyen tenant qua bay getter getCompany(). CrudService
+     * chi verify company tren payload, ma getter BookingRequest tu tong hop
+     * tenant session khi field null (va UPDATE con viet lai company_id
+     * thanh tenant own) nen payload id dong la + khong company luon lot.
+     * Check dong cu bang company_id tho; dong khong ton tai / session rong
+     * giu hanh vi cu (mau Z3k NoticeSend).
+     */
+    private void checkRowOwnership(String id) {
+        if (StringUtils.isBlank(id)) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        String oldCompanyId = dao.getCompanyIdById(id);
+        if (StringUtils.isNotBlank(oldCompanyId) && !tenantId.equals(oldCompanyId)) {
+            throw new ServiceException("Yêu cầu đặt lịch không thuộc phòng khám hiện tại");
+        }
+    }
+
+    /**
+     * AA4: duong tao moi ep company = tenant session, ke ca khi payload
+     * ghi tuong minh company la (save-insert khong qua verify vi id rong).
+     */
+    private void forceSessionCompany(BookingRequest entity) {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        Company company = new Company();
+        company.setId(tenantId);
+        entity.setCompany(company);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public BookingRequest save(BookingRequest entity) {
+        if (StringUtils.isNotBlank(entity.getId())) {
+            checkRowOwnership(entity.getId());
+        } else {
+            forceSessionCompany(entity);
+        }
         if (entity.getStatus() == null) {
             entity.setStatus("0");
         }
@@ -94,24 +136,34 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     @Override
     @Transactional(readOnly = false)
     public int delete(BookingRequest entity) {
+        checkRowOwnership(entity.getId());
         return super.delete(entity);
     }
 
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<BookingRequest> entitys) {
+        for (BookingRequest entity : entitys) {
+            forceSessionCompany(entity);
+        }
         return super.bulkInsert(entitys);
     }
 
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<BookingRequest> entitys) {
+        for (BookingRequest entity : entitys) {
+            checkRowOwnership(entity.getId());
+        }
         return super.bulkUpdate(entitys);
     }
 
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<BookingRequest> entitys) {
+        for (BookingRequest entity : entitys) {
+            checkRowOwnership(entity.getId());
+        }
         return super.bulkDelete(entitys);
     }
 

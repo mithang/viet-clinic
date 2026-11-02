@@ -33,6 +33,11 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- AA4: company_id tho, xem ghi chu o BookingRequestDao.getCompanyIdById -->
+    <select id="getCompanyIdById" resultType="java.lang.String">
+        SELECT company_id FROM booking_request WHERE id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM booking_request a
         <include refid="bookingRequestJoins"/>

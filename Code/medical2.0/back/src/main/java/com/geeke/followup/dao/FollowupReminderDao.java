@@ -25,6 +25,14 @@ public interface FollowupReminderDao extends CrudDao<FollowupReminder> {
     int countDue(Map<String, Object> params);
 
     /**
+     * AA4: company_id tho cua mot dong, de check chu so huu truoc khi ghi.
+     * Khong dung dao.get(id).getCompany() vi getter FollowupReminder tu tong
+     * hop tenant session khi field null (bay nhu NoticeSend o Z3k) nen
+     * check qua entity se luon pass voi dong tenant la.
+     */
+    String getCompanyIdById(String id);
+
+    /**
      * Xác nhận một nhắc lịch. Chỉ thành công khi bản ghi còn chờ xử lý
      * và thuộc đúng tenant (trả về số dòng cập nhật, 0 = không tìm thấy
      * hoặc đã được xử lý / sai tenant).

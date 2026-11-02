@@ -32,6 +32,11 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- AA4: company_id tho, xem ghi chu o FollowupReminderDao.getCompanyIdById -->
+    <select id="getCompanyIdById" resultType="java.lang.String">
+        SELECT company_id FROM followup_reminder WHERE id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM followup_reminder a
         <include refid="followupReminderJoins"/>

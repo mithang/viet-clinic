@@ -3,6 +3,7 @@ package com.geeke.followup.service;
 import com.geeke.common.data.Page;
 import com.geeke.common.persistence.BaseEntity;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.followup.dao.FollowupReminderDao;
 import com.geeke.followup.entity.FollowupReminder;
 import com.geeke.noticesend.entity.NoticeSend;
@@ -42,9 +43,45 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     @Autowired
     private NoticeSendService noticeSendService;
 
+    /**
+     * AA4: chan ghi xuyen tenant qua bay getter getCompany(), mau Z3k.
+     * File nay da import com.geeke.sys.utils.SessionUtils (chi co
+     * getUserJson) nen dung fully-qualified com.geeke.utils.SessionUtils
+     * cho getLoginTenantId. Dong khong ton tai / session rong giu hanh vi cu.
+     */
+    private void checkRowOwnership(String id) {
+        if (StringUtils.isBlank(id)) {
+            return;
+        }
+        String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        String oldCompanyId = dao.getCompanyIdById(id);
+        if (StringUtils.isNotBlank(oldCompanyId) && !tenantId.equals(oldCompanyId)) {
+            throw new ServiceException("Nhắc lịch tái khám không thuộc phòng khám hiện tại");
+        }
+    }
+
+    /** AA4: duong tao moi ep company = tenant session (mau Z3k bulkInsert). */
+    private void forceSessionCompany(FollowupReminder entity) {
+        String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        Company company = new Company();
+        company.setId(tenantId);
+        entity.setCompany(company);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public FollowupReminder save(FollowupReminder entity) {
+        if (StringUtils.isNotBlank(entity.getId())) {
+            checkRowOwnership(entity.getId());
+        } else {
+            forceSessionCompany(entity);
+        }
         if (entity.getStatus() == null) {
             entity.setStatus("0");
         }
@@ -54,24 +91,34 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     @Override
     @Transactional(readOnly = false)
     public int delete(FollowupReminder entity) {
+        checkRowOwnership(entity.getId());
         return super.delete(entity);
     }
 
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<FollowupReminder> entitys) {
+        for (FollowupReminder entity : entitys) {
+            forceSessionCompany(entity);
+        }
         return super.bulkInsert(entitys);
     }
 
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<FollowupReminder> entitys) {
+        for (FollowupReminder entity : entitys) {
+            checkRowOwnership(entity.getId());
+        }
         return super.bulkUpdate(entitys);
     }
 
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<FollowupReminder> entitys) {
+        for (FollowupReminder entity : entitys) {
+            checkRowOwnership(entity.getId());
+        }
         return super.bulkDelete(entitys);
     }
 

@@ -31,6 +31,14 @@ public interface BookingRequestDao extends CrudDao<BookingRequest> {
     int countPriorByPhone(Map<String, Object> params);
 
     /**
+     * AA4: company_id tho cua mot dong, de check chu so huu truoc khi ghi.
+     * Khong dung dao.get(id).getCompany() vi getter BookingRequest tu tong
+     * hop tenant session khi field null (bay nhu NoticeSend o Z3k) nen
+     * check qua entity se luon pass voi dong tenant la.
+     */
+    String getCompanyIdById(String id);
+
+    /**
      * Yêu cầu pending trùng (cùng tenant, SĐT, ngày muốn khám) — intake
      * trả lại bản ghi này thay vì tạo trùng.
      */
