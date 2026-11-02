@@ -193,19 +193,29 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         //dùng đểLưuThu phí
         List<RecipelInfo> recipelInfos = new ArrayList<>();
         if (null != recipelInfoEvtList && !recipelInfoEvtList.isEmpty()) {
-            for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvtList) {
+            for (int recipelIdx = 0; recipelIdx < recipelInfoEvtList.size(); recipelIdx++) {
+                RecipelInfoEvt recipelInfoEvt = recipelInfoEvtList.get(recipelIdx);
                 //Lưu thông tin đơn thuốc
                 RecipelInfo recipelInfo = recipelInfoEvt.getRecipelInfo();
                 //recipelInfo.setMedicalRecord(medicalRecordSave);
                 recipelInfo.setRegistration(bindedRegistration);
                 //hoàn thànhkhám bệnh của  giờchờđềuKhông cóthanh toán
                 recipelInfo.setIsPay("0");
-                //Các trường sau đã được frontend hoặc giá trị mặc định xử lý
-//                recipelInfo.setSeq(0);
-//                DictItem dictItem = new DictItem();
-//                dictItem.setValue("smallType_0");
-//                recipelInfo.setSmallType(dictItem);
-//                recipelInfo.setIsFollowUp(0);
+                //K3: frontend FinishVisit không gửi seq/isFollowUp, nhưng 2 cột
+                //này NOT NULL (seq không có default) nên insert vỡ 500 với
+                //Column 'seq' cannot be null. Đặt mặc định ở server khi thiếu,
+                //giữ nguyên giá trị nếu caller đã gửi (không ghi đè):
+                //seq theo vị trí đơn trong danh sách (như các đường save khác
+                //đặt setSeq(i + 1)), isFollowUp = 0 (đúng default của cột).
+                //smallType vẫn để nguyên: cột nullable, không gây lỗi, và dữ
+                //liệu hiện hữu không thống nhất giá trị mặc định (39/40 dòng
+                //là recipelSmallType_1, chỉ 1 dòng smallType_0) nên không bịa.
+                if (null == recipelInfo.getSeq()) {
+                    recipelInfo.setSeq(recipelIdx + 1);
+                }
+                if (null == recipelInfo.getIsFollowUp()) {
+                    recipelInfo.setIsFollowUp(0);
+                }
 
                 //ĐặtMã
                 String recipelNo = serialNoUtils.generateSerialNo("");
