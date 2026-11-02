@@ -1916,15 +1916,24 @@ export default {
       });
       //Lấy đơn thuốc
       allData.recipelInfoEvtList.map((prescriptionItem) => {
-        switch (prescriptionItem.recipelInfo.recipelType.name) {
+        // Nhãn dict khác literal cũ ('Đơn thuốc Tây y'/'Đơn thuốc Đông y'
+        // thay vì 'Đơn thuốc tây'/'Đơn thuốc đông y'): so theo mã ổn định
+        // recipelType.value, fallback về tên cho bản ghi thiếu mã.
+        const recipelType = prescriptionItem.recipelInfo.recipelType || {};
+        const recipelTypeKey = recipelType.value || recipelType.name;
+        switch (recipelTypeKey) {
+          case "recipelType_0":
           case "Đơn thuốc tây":
+          case "Đơn thuốc Tây y":
             this.IsShowWestern = true;
             this.WesternRemarks = prescriptionItem.recipelInfo.remarks;
             this.WesternFee = prescriptionItem.recipelInfo.fee;
             this.ChooseWesternMedicineTable =
               prescriptionItem.recipelDetailEvtList;
             break;
+          case "recipelType_1":
           case "Đơn thuốc đông y":
+          case "Đơn thuốc Đông y":
             this.IsShowChinese = true;
             this.ChooseChineseMedicineTable =
               prescriptionItem.recipelDetailEvtList;
@@ -1939,6 +1948,7 @@ export default {
             };
 
             break;
+          case "recipelType_2":
           case "Đơn truyền dịch": {
             this.IsShowInfusion = true;
             this.InfusionItemList = [];
@@ -1973,11 +1983,13 @@ export default {
             this.InfusionRemarks = prescriptionItem.recipelInfo.remarks;
             break;
           }
+          case "recipelType_3":
           case "Hạng mục khám chữa bệnh":
             this.IsShowTreatment = true;
             this.CostItemFee = prescriptionItem.recipelInfo.fee;
             this.ChooseTreatmentTable = prescriptionItem.recipelDetailEvtList;
             break;
+          case "recipelType_4":
           case "Phí phụ thêm":
             this.SurchargeFee = prescriptionItem.recipelInfo.fee;
             this.ChooseSurchargeTable = prescriptionItem.recipelDetailEvtList;
