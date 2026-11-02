@@ -371,8 +371,20 @@
                   }"
                   filterable
                   clearable
-                  placeholder="Vui lòng chọn khoa/phòng"
+                  :placeholder="departmentLoaded && department_List.length === 0 ? 'Chưa có khoa/phòng' : 'Vui lòng chọn khoa/phòng'"
                 />
+                <!-- H7: trạng thái rỗng tường minh — khi danh sách khoa đã tải xong mà rỗng
+                     (hoặc tải lỗi), đừng để dropdown trống lặng lẽ; lượt vẫn lưu được không khoa. -->
+                <div
+                  v-if="departmentLoaded && department_List.length === 0"
+                  class="h7-empty-dept-note"
+                >
+                  {{
+                    departmentLoadFailed
+                      ? "Không tải được danh sách khoa/phòng — vẫn có thể lưu lượt đăng ký mà không chọn khoa."
+                      : "Chưa có khoa/phòng nào — liên hệ quản trị để thêm khoa; vẫn có thể lưu lượt đăng ký mà không chọn khoa."
+                  }}
+                </div>
               </el-form-item>
             </el-col>
             <el-col :span="24 / 2">
@@ -873,6 +885,10 @@ export default {
       withPatientNexus_List: [], // Quan hệ với bệnh nhân
       key_department: 1, // el-cascader key
       department_List: [], // Khoa
+      // H7: trạng thái tải danh sách khoa — chỉ hiện ghi chú rỗng khi đã tải xong
+      // (đang tải thì chưa kết luận), để dropdown trống không bị hiểu lầm là lỗi hiển thị.
+      departmentLoaded: false,
+      departmentLoadFailed: false,
       patientId_List: [], // Bệnh nhân
       // G3: kết quả tra trùng SĐT/CMND-CCCD cho prompt inline (chỉ ở chế độ thêm mới)
       duplicateMatches: [],
@@ -924,8 +940,11 @@ export default {
         "doctor.name": [
           { required: true, message: "Vui lòng chọn bác sĩ", trigger: "change" },
         ],
+        // H7: bắt buộc chọn khoa chỉ khi danh sách khoa tải được và không rỗng.
+        // Khi danh sách rỗng (hoặc tải lỗi), ép bắt buộc sẽ kẹt form ở trạng thái
+        // không thể lưu — trong khi backend vốn chấp nhận lượt không khoa.
         "clinicOffice.id": [
-          { required: true, message: "Vui lòng chọn khoa/phòng", trigger: "change" },
+          { validator: this.validateClinicOffice, trigger: "change" },
         ],
         // "birthday": [
         //   {required: true, message: "Vui lòng chọn ngày sinh", trigger: "change"},
@@ -989,6 +1008,18 @@ export default {
           name: null,
         }
         this.birthdayChanges()
+      }
+    },
+    // H7: validator cho ô Khoa — xem ghi chú ở formRules. Khi danh sách khoa
+    // đã tải xong mà rỗng (hoặc tải lỗi) thì cho qua, vì không có lựa chọn nào
+    // để bắt người dùng chọn; ngược lại giữ đúng luật cũ (bắt buộc chọn khoa).
+    validateClinicOffice(rule, value, callback) {
+      if (this.departmentLoaded && this.department_List.length === 0) {
+        callback();
+      } else if (value === null || value === undefined || value === "") {
+        callback(new Error("Vui lòng chọn khoa/phòng"));
+      } else {
+        callback();
       }
     },
     sortDoc(clinicOffice, officename) {
@@ -1424,6 +1455,10 @@ export default {
       });
 
       //Truy vấn khoa/phòng có thể đăng ký khám
+      // H7: reset trạng thái tải mỗi lần mở form — ghi chú rỗng chỉ hiện sau
+      // khi lượt tải này kết thúc, không hiện từ lượt tải cũ.
+      this.departmentLoaded = false;
+      this.departmentLoadFailed = false;
       this.key_department++;
       let department_search = {
         params: [
@@ -1497,14 +1532,34 @@ export default {
         this.doctor_List = responseData.data;
         listClinicOfficeAll(department_search).then((responseData) => {
           this.department_List = responseData.data;
+          // H7: danh sách khoa đã tải xong — từ đây ghi chú rỗng (nếu rỗng)
+          // và validator nới lỏng (nếu rỗng) mới có hiệu lực.
+          this.departmentLoaded = true;
+          // H7: khoa rỗng thì không lọc bác sĩ theo khoa nữa — nếu giữ
+          // select_doctor rỗng, form vẫn kẹt ở ô Bác sĩ (bắt buộc) dù khoa
+          // đã được nới; hiện toàn bộ bác sĩ để lượt không khoa lưu được.
+          if (this.department_List.length === 0) {
+            this.select_doctor = this.doctor_List;
+          }
           for (let i = 0; i < this.department_List.length; i++) {
             if (this.department_List[i].isDefault === '1' && this.dialogProps.action === "add") {
               this.bizFormModel.clinicOffice.id = this.department_List[i].id
               this.sortDoc(this.department_List[i].id, 'no')
             }
           }
+        }).catch(() => {
+          // H7: tải khoa lỗi cũng là trạng thái kết thúc — hiện ghi chú
+          // tường minh thay vì dropdown trống lặng lẽ, và không kẹt form.
+          this.departmentLoaded = true;
+          this.departmentLoadFailed = true;
+          this.select_doctor = this.doctor_List;
         });
 
+      }).catch(() => {
+        // H7: tải bác sĩ lỗi thì lượt tải khoa cũng không chạy — đánh dấu
+        // kết thúc để form không ở trạng thái "đang tải" mãi.
+        this.departmentLoaded = true;
+        this.departmentLoadFailed = true;
       });
 
       //Loại điều trị
@@ -1792,6 +1847,14 @@ export default {
 .ipt-box {
   display: flex;
   align-items: center;
+}
+
+/* H7: ghi chú trạng thái rỗng của ô Khoa — chữ nhỏ, không chiếm chỗ của dropdown. */
+.h7-empty-dept-note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #e6a23c;
+  margin-top: 4px;
 }
 
 ::v-deep .el-dialog__body {
