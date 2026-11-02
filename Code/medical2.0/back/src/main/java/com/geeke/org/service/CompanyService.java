@@ -16,6 +16,7 @@ import com.geeke.org.entity.Company;
 import com.geeke.sys.service.SysFileService;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.utils.IdGen;
+import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -142,6 +143,14 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
 
     @Transactional(readOnly = true)
     public List<Company> getCompanys(String id) {
+        // Z3b: ep tenant theo session — caller hop le (articlereview) luon
+        // truyen currentUser.company.id, nen hanh vi hop le khong doi; id
+        // body la chi tra ve sibling cua tenant khac (cung parent) neu
+        // khong ep. Session rong/"null" giu hanh vi cu, dung mau Z1/Z2.
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
+            id = tenantId;
+        }
         return this.dao.getCompanys(id);
     }
 
