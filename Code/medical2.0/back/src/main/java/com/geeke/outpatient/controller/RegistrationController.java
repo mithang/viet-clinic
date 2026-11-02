@@ -67,18 +67,21 @@ public class RegistrationController extends CrudController<RegistrationService, 
      */
     @GetMapping("/doctor")
     public ResponseEntity<JSONObject> getDocByCompanyId() {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC nhu cac duong doc cung controller (T1); co caller UI that listDoctorsAll.
         List<User> doctors = userService.getUserByCompanyIdAndJob(SessionUtils.getLoginTenantId(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
 
     @GetMapping("/doctornew")
     public ResponseEntity<JSONObject> doctornew() {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; hien 500 ca 2 token (loi cu) nhung san van phai giu, theo mau T1.
         List<User> doctors = userService.getUserByCompanyIdAndJobV2(SessionUtils.getLoginTenantId(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
 
     @PostMapping("/wxDoctor")
     public ResponseEntity<JSONObject> getWxDocByCompanyId(@RequestBody User user) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; companyId lay tu body nen khong co san la lo hong tang API (khong caller client).
         List<User> doctors = userService.getUserByWxCompanyIdAndJob(user.getCompany().getId(), user.getOffice(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
@@ -266,6 +269,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
     //LấyChi phíThông tin
     @PostMapping("/wx/list")
     public ResponseEntity<JSONObject> wxListPages(@RequestBody PageRegistration pageRegistration) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; companyId/openId lay tu body, tra toan bo ReceptionEvt khi co dong.
         Page<ReceptionEvt> result = registrationService.wxListPages(pageRegistration);
         registrationService.updateExpiredStatusFromPage(result, row -> row.getRegistration().getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -274,6 +278,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
     //Lấyphát thuốcBản ghi
     @PostMapping("/wx/dispensingList")
     public ResponseEntity<JSONObject> wxDispensingListPages(@RequestBody PageRegistration pageRegistration) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC, nhu wx/list.
         Page<ReceptionEvt> result = registrationService.wxDispensingListPages(pageRegistration);
         registrationService.updateExpiredStatusFromPage(result, row -> row.getRegistration().getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -282,6 +287,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
     //WeChatđầuQuaopenidLấykhám bệnhThông tin
     @PostMapping("getRegistrationByOpenId")
     public ResponseEntity<JSONObject> getRegistrationByOpenId(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; hien 500 ca 2 token (loi cu) nhung san van phai giu, theo mau T1.
         Page<Registration> registrationByOpenId = registrationService.getRegistrationByOpenId(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(registrationByOpenId));
     }
