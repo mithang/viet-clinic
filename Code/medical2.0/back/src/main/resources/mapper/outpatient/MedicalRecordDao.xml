@@ -337,7 +337,13 @@
             vital_resp_rate,
             vital_spo2,
             vital_weight,
-            vital_height
+            vital_height,
+            handling_situation,
+            epidemic_disease,
+            health_education,
+            china_syndrome,
+            disease_id,
+            syndrome_id
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
         (
@@ -383,7 +389,13 @@
             #{entity.vitalRespRate},
             #{entity.vitalSpo2},
             #{entity.vitalWeight},
-            #{entity.vitalHeight}
+            #{entity.vitalHeight},
+            #{entity.handlingSituation},
+            #{entity.epidemicDisease},
+            #{entity.healthEducation},
+            #{entity.chinaSyndrome},
+            #{entity.diseaseId},
+            #{entity.syndromeId}
         )
         </foreach>
     </insert>
@@ -559,6 +571,36 @@
             <trim prefix="vital_height=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.vitalHeight}
+                </foreach>
+            </trim>
+            <trim prefix="handling_situation=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.handlingSituation}
+                </foreach>
+            </trim>
+            <trim prefix="epidemic_disease=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.epidemicDisease}
+                </foreach>
+            </trim>
+            <trim prefix="health_education=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.healthEducation}
+                </foreach>
+            </trim>
+            <trim prefix="china_syndrome=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.chinaSyndrome}
+                </foreach>
+            </trim>
+            <trim prefix="disease_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.diseaseId}
+                </foreach>
+            </trim>
+            <trim prefix="syndrome_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.syndromeId}
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
