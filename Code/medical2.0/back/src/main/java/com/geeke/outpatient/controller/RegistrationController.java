@@ -90,6 +90,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
     // thích các caller cũ, thêm POST cho frontend web.
     @RequestMapping(value = "/status", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<JSONObject> updateStatus(@RequestParam("id") String id, @RequestParam("status") String status, @RequestParam("departmentId") String departmentId, @RequestParam("doctorId") String doctorId) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(a): san RBAC nhu cac duong ghi cung controller.
         int res = registrationService.updateStatus(id, status, departmentId, doctorId);
         return ResponseEntity.ok(ResultUtil.successJson(res));
     }
@@ -113,6 +114,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
     public ResponseEntity<JSONObject> refundRegistrationPay(String id, String status,
                                                             String refundRegistrationPayType, String refundRegistrationRemarks
     ) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(a): san RBAC nhu cac duong ghi cung controller.
         int res;
         Date exitNumberDate = new Date();
         if (BizConstants.REG_STATUS_REFUNDED.equals(refundRegistrationRemarks)) {
@@ -148,6 +150,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
 
     @PostMapping("/wxReturnPay")
     public ResponseEntity<JSONObject> wxReturnPay(@RequestBody Registration registration) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(a): san RBAC nhu cac duong ghi cung controller, truoc khi service chay.
         int res;
         Date exitNumberDate = new Date();
         Registration registrations = registrationService.get(registration.getId());
