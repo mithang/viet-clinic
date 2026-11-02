@@ -91,10 +91,38 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    /**
+     * N2: gán bác sĩ sau (đường điểm danh /status) cũng cấp số thứ tự.
+     * Booking đã xác nhận được tạo không có bác sĩ nên confirm không gán
+     * số (đúng H4); khi nhân viên gán bác sĩ qua đường này mà lượt vẫn
+     * chưa có số thì cấp số theo cùng counter (phòng khám, bác sĩ, ngày
+     * phòng khám hiện tại). Ngày hiện tại là đúng vì điểm danh ở frontend
+     * đã chặn lượt có subscribeDate khác hôm nay ("Chưa đến giờ hẹn").
+     * Idempotent: lượt đã có số thì giữ nguyên, không đánh lại; doctorId
+     * rỗng thì giữ nguyên hành vi cũ (không gán, không bịa số).
+     */
     @Transactional(readOnly = false)
     public int updateStatus(String id,String status,String departmentId,String doctorId)
     {
-        return dao.updateStatus(id,status,departmentId,doctorId);
+        int res = dao.updateStatus(id,status,departmentId,doctorId);
+        if (res > 0 && StringUtils.isNotBlank(doctorId)) {
+            Registration existing = dao.get(id);
+            if (existing != null && existing.getQueueNumber() == null) {
+                String companyId = existing.getCompany() != null ? existing.getCompany().getId() : null;
+                if (StringUtils.isBlank(companyId)) {
+                    companyId = SessionUtils.getLoginTenantId();
+                }
+                if (StringUtils.isNotBlank(companyId)) {
+                    String queueDate = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")).toString();
+                    registrationDao.advanceQueueCounter(companyId, doctorId, queueDate);
+                    Integer number = registrationDao.getQueueCounter(companyId, doctorId, queueDate);
+                    if (number != null) {
+                        registrationDao.updateQueueNumber(id, number);
+                    }
+                }
+            }
+        }
+        return res;
     }
     @Transactional(readOnly = false)
     public int updateStatusByCompanyId(String companyId){

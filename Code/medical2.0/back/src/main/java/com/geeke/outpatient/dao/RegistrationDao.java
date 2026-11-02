@@ -25,6 +25,10 @@ public interface RegistrationDao extends CrudDao<Registration> {
     @Update("update registration set status = #{status},department_id=#{departmentId},doctor_id=#{doctorId} where id = #{id}")
     int updateStatus(@Param("id") String id,@Param("status") String status,@Param("departmentId")String departmentId,@Param("doctorId")String doctorId);
 
+    /** N2: cấp số thứ tự cho lượt đã gán bác sĩ sau (chỉ khi queue_number còn NULL, do service kiểm tra trước). */
+    @Update("update registration set queue_number = #{queueNumber} where id = #{id}")
+    int updateQueueNumber(@Param("id") String id, @Param("queueNumber") Integer queueNumber);
+
     @Update("update registration set status = #{status},refund_registration_pay_type = #{refund_registration_pay_type}" +
             ",refund_registration_remarks=#{refund_registration_remarks},exit_number_date=#{exit_number_date} where id = #{id}")
     int refundRegistrationPay(@Param("id") String id, @Param("status") String status,
