@@ -113,12 +113,15 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         List<Patient> patientByCard = this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);
 
         //NếuTồn tạiđóNgười dùng, nhưng có Không cóliên kếtchỉ địnhopenid của nóithìtiến hành dòngliên kếtchỉ địnhthao tác
-        if(!ObjectUtils.isEmpty(patientByCard.get(0)) && patientByCard.get(0).getOpenId()==null || Objects.equals(patientByCard.get(0).getOpenId(),"") && !ObjectUtils.isEmpty(patientByCard.get(0))){
+        //C2 — list rỗng (CCCD chưa tồn tại) không được deref get(0): guard
+        //rỗng ở cả hai nhánh để rơi về nhánh insert bên dưới, giữ nguyên
+        //điều kiện &&/|| cũ cho list không rỗng, không đổi getByCard.
+        if(!CollectionUtils.isEmpty(patientByCard) && (!ObjectUtils.isEmpty(patientByCard.get(0)) && patientByCard.get(0).getOpenId()==null || Objects.equals(patientByCard.get(0).getOpenId(),"") && !ObjectUtils.isEmpty(patientByCard.get(0)))){
             patient.setId(patientByCard.get(0).getId());
             patient.setUpdateDate(new Date());
             this.dao.wxUpdate(patient);
             return patient;
-        }else if(!ObjectUtils.isEmpty(patientByCard.get(0)) && !ObjectUtils.isEmpty(patientByCard.get(0).getOpenId())){
+        }else if(!CollectionUtils.isEmpty(patientByCard) && !ObjectUtils.isEmpty(patientByCard.get(0)) && !ObjectUtils.isEmpty(patientByCard.get(0).getOpenId())){
             if(Objects.equals(patient.getOpenId(),patientByCard.get(0).getOpenId())){
                 throw new ServiceException("đóBệnh nhânsố CMND/CCCDĐãliên kếtchỉ định!");
             }else {

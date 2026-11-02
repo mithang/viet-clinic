@@ -332,7 +332,9 @@
         phone,
         card,
         open_id,
+        create_by,
         create_date,
+        update_by,
         update_date
         ) VALUES (
         #{id},
@@ -345,7 +347,9 @@
         #{phone},
         #{card},
         #{openId},
+        #{createBy},
         #{createDate},
+        #{updateBy},
         #{updateDate}
         )
     </insert>
