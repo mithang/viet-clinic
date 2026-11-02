@@ -597,6 +597,60 @@
                 >
                 </el-input>
               </el-form-item>
+              <!-- H3: mã ICD-10 + picker chẩn đoán (tìm kiếm phía server, ghim theo bác sĩ).
+                   Luồng picker XtZd cũ phía trên giữ nguyên (đông y); khối này chỉ thêm
+                   cho tây y: chọn 1 dòng điền cùng lúc tên (westernDiagnose) + mã
+                   (diagnosisCode). Mã là ô nhập tự do: catalog trống hay thiếu mã thì
+                   vẫn lưu được (để trống hoặc gõ tay), không bao giờ chặn lưu. -->
+              <el-form-item label="Mã ICD-10" prop="diagnosisCode" v-if="medicalType === 'western'">
+                <el-input
+                  v-model="MedicalRecordModel.diagnosisCode"
+                  placeholder="Mã ICD-10, ví dụ I10 (để trống nếu chẩn đoán tự do)"
+                >
+                </el-input>
+              </el-form-item>
+              <el-form-item label="Tìm chẩn đoán ICD-10" v-if="medicalType === 'western'">
+                <el-input
+                  v-model="icd10Query"
+                  placeholder="Gõ mã hoặc tên bệnh tiếng Việt, ví dụ I10 hoặc tăng huyết áp"
+                  @input="onIcd10QueryInput"
+                  @focus="onIcd10QueryFocus"
+                  clearable
+                >
+                </el-input>
+                <div v-if="icd10Pinned.length > 0" style="margin-top: 8px;">
+                  <span style="color: #909399; font-size: 13px;">Hay dùng (bấm 1 lần để điền tên + mã, bấm × để bỏ ghim): </span>
+                  <el-tag
+                    v-for="item in icd10Pinned"
+                    :key="item.id"
+                    closable
+                    @click="selectIcd10(item)"
+                    @close="unpinIcd10(item)"
+                    style="cursor: pointer; margin-right: 6px; margin-bottom: 4px;"
+                  >{{ item.code }} — {{ item.nameVi }}</el-tag>
+                </div>
+                <el-table
+                  v-if="icd10Results.length > 0"
+                  :data="icd10Results"
+                  @row-click="selectIcd10"
+                  style="width: 100%; margin-top: 8px;"
+                  size="small"
+                >
+                  <el-table-column label="Mã ICD-10" prop="code" width="120"></el-table-column>
+                  <el-table-column label="Tên bệnh" prop="nameVi"></el-table-column>
+                  <el-table-column label="" width="90">
+                    <template slot-scope="scope">
+                      <el-button type="text" @click.stop="pinIcd10(scope.row)">Ghim</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div v-else-if="icd10Searched && icd10Query" style="color: #909399; font-size: 13px; margin-top: 4px;">
+                  Không tìm thấy trong danh mục — vẫn lưu được chẩn đoán tự do, mã để trống hoặc gõ tay ở ô trên.
+                </div>
+                <div v-else-if="icd10Searched" style="color: #909399; font-size: 13px; margin-top: 4px;">
+                  Danh mục ICD-10 hiện chưa có dữ liệu (chờ file danh mục chính thức của BYT) — vẫn lưu được chẩn đoán tự do.
+                </div>
+              </el-form-item>
               <el-form-item label="Chẩn đoán đông y" prop="chinaDiagnose" v-if="medicalType === 'chinese'">
                 <span slot="label" >
                       Chẩn đoán đông y
@@ -2879,6 +2933,8 @@
         <el-table-column prop="name" label="Tên đơn thuốc"></el-table-column>
         <el-table-column prop="medicalRecord.westernDiagnose" label="Chẩn đoán tây y">
         </el-table-column>
+        <el-table-column prop="medicalRecord.diagnosisCode" label="Mã ICD-10">
+        </el-table-column>
         <el-table-column prop="medicalRecord.chinaDiagnose" label="Chẩn đoán đông y">
         </el-table-column>
         <el-table-column prop="updateDate" label="Thời gian tiếp nhận khám"></el-table-column>
@@ -3034,6 +3090,8 @@
         </el-table-column>
         <el-table-column prop="patient.age" label="Tuổi"></el-table-column>
         <el-table-column prop="medicalRecord.westernDiagnose" label="Chẩn đoán tây y">
+        </el-table-column>
+        <el-table-column prop="medicalRecord.diagnosisCode" label="Mã ICD-10">
         </el-table-column>
         <el-table-column prop="medicalRecord.chinaDiagnose" label="Chẩn đoán đông y">
         </el-table-column>
@@ -4049,6 +4107,12 @@
   import {
     checkDrugInteractions,
   } from "@/api/drugInteraction";
+  import {
+    searchDiagnoses,
+    getPinnedDiagnoses,
+    pinDiagnosis,
+    unpinDiagnosis,
+  } from "@/api/diagnosis";
   import {
     getPatientById
   } from "@/api/outpatient/patient";
@@ -6061,6 +6125,7 @@
           },
           patientTell: "",
           westernDiagnose: "",
+          diagnosisCode: "",
           chinaDiagnose: "",
           chinaSyndrome:"",
           diseaseId: "",
@@ -8919,6 +8984,73 @@
         }
         this.diagnosesList = [];
       },
+      // H3: picker ICD-10 — tìm kiếm phía server (phân trang, debounce
+      // 300ms), chọn điền cùng lúc tên + mã, ghim theo bác sĩ.
+      // Không bao giờ chặn lưu: catalog trống hay thiếu mã thì bác sĩ
+      // vẫn gõ tự do tên/mã ở các ô trên.
+      onIcd10QueryFocus() {
+        if (!this.icd10PinnedLoaded) {
+          this.loadIcd10Pinned();
+        }
+        if (this.icd10Query) {
+          this.searchIcd10();
+        }
+      },
+      onIcd10QueryInput() {
+        if (this.icd10SearchTimer) {
+          clearTimeout(this.icd10SearchTimer);
+        }
+        this.icd10SearchTimer = setTimeout(() => {
+          this.searchIcd10();
+        }, 300);
+      },
+      searchIcd10() {
+        searchDiagnoses(this.icd10Query, 1, 20).then((responseData) => {
+          const data = (responseData && responseData.data) || {};
+          this.icd10Results = data.records || [];
+          this.icd10Searched = true;
+        }).catch(() => {
+          this.icd10Results = [];
+          this.icd10Searched = true;
+        });
+      },
+      loadIcd10Pinned() {
+        getPinnedDiagnoses().then((responseData) => {
+          this.icd10Pinned = (responseData && responseData.data) || [];
+          this.icd10PinnedLoaded = true;
+        }).catch(() => {
+          this.icd10Pinned = [];
+          this.icd10PinnedLoaded = true;
+        });
+      },
+      selectIcd10(row) {
+        if (!row) {
+          return;
+        }
+        this.MedicalRecordModel.westernDiagnose = row.nameVi;
+        this.MedicalRecordModel.diagnosisCode = row.code;
+        this.icd10Results = [];
+      },
+      pinIcd10(row) {
+        if (!row) {
+          return;
+        }
+        pinDiagnosis(row.id).then(() => {
+          this.loadIcd10Pinned();
+        }).catch(() => {
+          // Ghim lỗi thì giữ nguyên danh sách, không chặn khám.
+        });
+      },
+      unpinIcd10(row) {
+        if (!row) {
+          return;
+        }
+        unpinDiagnosis(row.id).then(() => {
+          this.loadIcd10Pinned();
+        }).catch(() => {
+          // Bỏ ghim lỗi thì giữ nguyên danh sách, không chặn khám.
+        });
+      },
       selectZH(row){
         this.MedicalRecordModel.chinaSyndrome = row.zhmc;  // Điền tên chẩn đoán vào ô nhập
         this.MedicalRecordModel.syndromeId = row.zhid;
@@ -8989,6 +9121,13 @@
         syndromePopoverVisible:false,
         diagnosesList: [],//Chẩn đoán
         zyzhList:[],//Chứng hậu Đông y
+        //H3: picker chẩn đoán ICD-10 (tìm kiếm phía server + ghim theo bác sĩ)
+        icd10Query: '',
+        icd10Results: [],
+        icd10Pinned: [],
+        icd10PinnedLoaded: false,
+        icd10Searched: false,
+        icd10SearchTimer: null,
         syndromesList:[],//Danh sách chứng hậu Đông y
         //Loại y tế: western-Tây y, chinese-Đông y, mặc định Tây y
         medicalType: 'western',

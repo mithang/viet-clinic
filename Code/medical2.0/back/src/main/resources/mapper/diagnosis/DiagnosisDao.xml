@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geeke.diagnosis.dao.DiagnosisDao">
+
+    <!--
+        Chẩn đoán ICD-10 (H3, chỉ đọc catalog + ghim theo bác sĩ).
+
+        - Catalog dùng chung mọi tenant (chuẩn chung), chỉ lọc
+          del_flag = '0'. Không có điều kiện company nào ở đây — cố
+          tình, không phải thiếu: mã ICD-10 không thuộc về một phòng
+          khám.
+        - Tìm kiếm: code HOẶC name_vi chứa pattern. Pattern do service
+          escape ký tự LIKE (%, _) rồi bọc % hai đầu, và SQL dùng
+          ESCAPE '\\' nên từ khóa chứa %/_ không biến thành wildcard.
+          Phân trang bằng LIMIT offset,limit — client không tải toàn
+          bộ catalog (~15.800 mã ở danh mục BYT đầy đủ).
+        - Ghim: khóa (doctor_id, diagnosis_id). INSERT IGNORE để ghim
+          lại không lỗi, không trùng dòng; DELETE để bỏ ghim, vắng
+          cũng không lỗi. create_date dùng NOW() chỉ để xếp "mới
+          ghim trước" — không phải số liệu ngày phòng khám nên không
+          chịu cửa sổ ngày G6/H5 (xem caveat H1 về NOW()).
+        - Bài học G1: #{DEL_FLAG_NORMAL} chỉ resolve khi tham số là
+          PageRequest; service đưa delFlag tường minh qua Map (giống
+          G5: params.put("DEL_FLAG_NORMAL", ...) — ở đây service đặt
+          key "delFlag" và SQL dùng #{delFlag}).
+    -->
+
+    <select id="search" resultType="com.geeke.diagnosis.entity.DiagnosisCatalog">
+        SELECT
+            a.id AS "id",
+            a.code AS "code",
+            a.name_vi AS "nameVi",
+            a.chapter AS "chapter"
+        FROM diagnosis_catalog a
+        WHERE a.del_flag = #{delFlag}
+            AND (a.code LIKE #{pattern} ESCAPE '\\'
+                OR a.name_vi LIKE #{pattern} ESCAPE '\\')
+        ORDER BY a.code ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countSearch" resultType="int">
+        SELECT COUNT(*)
+        FROM diagnosis_catalog a
+        WHERE a.del_flag = #{delFlag}
+            AND (a.code LIKE #{pattern} ESCAPE '\\'
+                OR a.name_vi LIKE #{pattern} ESCAPE '\\')
+    </select>
+
+    <select id="getById" resultType="com.geeke.diagnosis.entity.DiagnosisCatalog">
+        SELECT
+            a.id AS "id",
+            a.code AS "code",
+            a.name_vi AS "nameVi",
+            a.chapter AS "chapter"
+        FROM diagnosis_catalog a
+        WHERE a.id = #{diagnosisId}
+            AND a.del_flag = #{delFlag}
+    </select>
+
+    <select id="listPinned" resultType="com.geeke.diagnosis.entity.DiagnosisCatalog">
+        SELECT
+            a.id AS "id",
+            a.code AS "code",
+            a.name_vi AS "nameVi",
+            a.chapter AS "chapter"
+        FROM diagnosis_catalog a
+        INNER JOIN diagnosis_pin p ON p.diagnosis_id = a.id
+        WHERE p.doctor_id = #{doctorId}
+            AND p.del_flag = '0'
+            AND a.del_flag = #{delFlag}
+        ORDER BY p.create_date DESC, a.code ASC
+    </select>
+
+    <insert id="insertPin">
+        INSERT IGNORE INTO diagnosis_pin(
+            doctor_id,
+            diagnosis_id,
+            create_date,
+            update_date,
+            del_flag
+        ) VALUES (
+            #{doctorId},
+            #{diagnosisId},
+            NOW(),
+            NOW(),
+            '0'
+        )
+    </insert>
+
+    <delete id="deletePin">
+        DELETE FROM diagnosis_pin
+        WHERE doctor_id = #{doctorId}
+            AND diagnosis_id = #{diagnosisId}
+    </delete>
+
+</mapper>

@@ -61,6 +61,11 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	private String register; // Đăng ký khám
 
 	//Trường BHYT
+	//H3: trường này trước đây chỉ tồn tại trên entity mà KHÔNG có cột
+	//trong bảng medical_record và mapper không persist nó, nên mã chẩn
+	//đoán không bao giờ được lưu. Migration v11 thêm cột diagnosis_code
+	//và MedicalRecordDao.xml đã nối select/insert/update (đường lưu
+	//allSave, v2/allSave, saveWithFile) — xem h3-impl-report.md.
 	private String diagnosisCode; //Mã chẩn đoán
 
 	//H2: dấu hiệu sinh tồn có cấu trúc, gắn với hồ sơ của lượt khám.
