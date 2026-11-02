@@ -376,6 +376,45 @@
             </div>
           </el-col>
         </el-row>
+        <!-- O2: prompt cảnh báo-only ở chế độ SỬA hồ sơ (phần còn lại của
+          N1). KHÔNG có nút "Dùng bệnh nhân này": apply ở chế độ sửa sẽ
+          thay toàn bộ bizFormModel bằng hồ sơ khác rồi savePatient cập
+          nhật nhầm hồ sơ đó. Chỉ cảnh báo + giữ lại hoặc hoàn lại
+          SĐT/CCCD cũ; không chặn lưu. -->
+        <el-row v-if="dialogProps.action === 'edit' && duplicateMatches.length > 0">
+          <el-col :span="24">
+            <el-alert
+              title="SĐT/CMND-CCCD này đã thuộc về bệnh nhân khác — lưu tiếp sẽ tạo 2 hồ sơ cùng liên hệ"
+              type="warning"
+              :closable="false"
+              show-icon
+              style="margin-bottom: 10px"
+            ></el-alert>
+            <el-table
+              :data="duplicateMatches"
+              size="mini"
+              style="width: 100%; margin-bottom: 10px"
+            >
+              <el-table-column prop="name" label="Họ tên"></el-table-column>
+              <el-table-column prop="phone" label="SĐT"></el-table-column>
+              <el-table-column prop="card" label="CMND/CCCD"></el-table-column>
+              <el-table-column label="Ngày sinh">
+                <template slot-scope="scope">
+                  {{ formatDuplicateBirthday(scope.row.birthday) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Khớp theo">
+                <template slot-scope="scope">
+                  {{ scope.row.matchType === 'both' ? 'SĐT + CMND/CCCD' : (scope.row.matchType === 'phone' ? 'SĐT' : 'CMND/CCCD') }}
+                </template>
+              </el-table-column>
+            </el-table>
+            <div style="text-align: right; margin-bottom: 10px">
+              <el-button size="mini" @click="restoreDuplicateOriginals">Hoàn lại SĐT/CCCD cũ</el-button>
+              <el-button size="mini" type="primary" @click="dismissDuplicates">Đã hiểu, giữ SĐT/CCCD này</el-button>
+            </div>
+          </el-col>
+        </el-row>
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
@@ -416,6 +455,9 @@ export default {
       duplicateChecking: false,
       duplicateDismissedKey: "",
       duplicateAppliedKey: "",
+      // O2: SĐT/CCCD gốc của hồ sơ đang sửa (để nút "Hoàn lại" khôi phục).
+      duplicateOriginalPhone: "",
+      duplicateOriginalCard: "",
       withPatientNexus_List: [], // Quan hệ với bệnh nhân
       dialogProps: {
         visible: false,
@@ -612,13 +654,20 @@ export default {
     // N1: tra trùng khi rời khỏi ô SĐT hoặc CMND/CCCD (chỉ ở chế độ thêm
     // mới, chưa có id). Tái dùng lookupDuplicates của G3; lỗi tra cứu
     // (kể cả 403) không chặn lưu: prompt chỉ ẩn đi, luồng cũ chạy như trước.
+    // O2: mở thêm cho chế độ sửa — nhưng phải lọc hồ sơ đang sửa ra khỏi
+    // kết quả (findDuplicates trả mọi hồ sơ khớp, kể cả chính nó), nếu
+    // không hồ sơ sẽ tự báo trùng với chính mình khi SĐT/CCCD không đổi.
     duplicateLookupKey() {
       const phone = (this.bizFormModel.phone || "").replace(/[^0-9]/g, "");
       const card = (this.bizFormModel.card || "").replace(/[^0-9]/g, "");
       return phone + "|" + card;
     },
     checkDuplicates() {
-      if (this.dialogProps.action !== "add" || this.bizFormModel.id || this.duplicateChecking) {
+      const action = this.dialogProps.action;
+      if ((action !== "add" && action !== "edit") || this.duplicateChecking) {
+        return;
+      }
+      if (action === "add" && this.bizFormModel.id) {
         return;
       }
       const key = this.duplicateLookupKey();
@@ -640,7 +689,12 @@ export default {
           }
           if (responseData.code === 100 && Array.isArray(responseData.data)) {
             if (key !== this.duplicateDismissedKey && key !== this.duplicateAppliedKey) {
-              this.duplicateMatches = responseData.data;
+              // O2: ở chế độ sửa, loại hồ sơ đang sửa khỏi kết quả
+              // (so sánh dạng chuỗi vì id có thể là số hoặc chuỗi).
+              const selfId = this.bizFormModel.id;
+              this.duplicateMatches = responseData.data.filter((row) => {
+                return selfId === null || selfId === undefined || String(row.id) !== String(selfId);
+              });
             }
           }
         })
@@ -651,6 +705,14 @@ export default {
     },
     dismissDuplicates() {
       this.duplicateDismissedKey = this.duplicateLookupKey();
+      this.duplicateMatches = [];
+    },
+    // O2: hoàn lại SĐT/CCCD gốc của hồ sơ đang sửa, rồi xóa prompt.
+    // Lần blur sau sẽ tra lại nhưng chỉ còn chính hồ sơ này nên bị lọc,
+    // không hiện prompt nữa.
+    restoreDuplicateOriginals() {
+      this.bizFormModel.phone = this.duplicateOriginalPhone;
+      this.bizFormModel.card = this.duplicateOriginalCard;
       this.duplicateMatches = [];
     },
     formatDuplicateBirthday(birthday) {
@@ -684,6 +746,8 @@ export default {
       this.duplicateMatches = [];
       this.duplicateDismissedKey = "";
       this.duplicateAppliedKey = "";
+      this.duplicateOriginalPhone = "";
+      this.duplicateOriginalCard = "";
     },
     onSubmit(formName) {
       this.flag = true
@@ -753,6 +817,10 @@ export default {
       })
     },
     switchEdit() {
+      // O2: chuyển từ xem sang sửa cũng phải chụp SĐT/CCCD gốc để nút
+      // "Hoàn lại" có giá trị khôi phục.
+      this.duplicateOriginalPhone = this.bizFormModel.phone || "";
+      this.duplicateOriginalCard = this.bizFormModel.card || "";
       this.dialogProps.action = "edit";
       this.dialogProps.title = "Sửa thông tin bệnh nhân";
       this.initOptions(this.bizFormModel);
@@ -855,6 +923,9 @@ export default {
       this.dialogProps.action = 'edit'
       this.dialogProps.title = 'Sửa thông tin bệnh nhân'
       this.bizFormModel = {...this.initFormModel(), ...patient}
+      // O2: chụp SĐT/CCCD gốc trước khi người dùng sửa.
+      this.duplicateOriginalPhone = this.bizFormModel.phone || "";
+      this.duplicateOriginalCard = this.bizFormModel.card || "";
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
       this.dialogProps.visible = true
