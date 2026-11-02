@@ -28,4 +28,13 @@ public interface UserExtDao extends CrudDao<UserExt> {
      * @return
      */
     List<UserExt> getAllUserExtByUserId(@Param("userId")String userId);
+
+    /**
+     * E1 (iteration 25): danh sach dong ext ACTIVE cua (user, tenant),
+     * moi nhat truoc — dung de tai dung id khi payload update thieu
+     * userExt.id, thay vi de CrudService.save insert dong moi. Khac
+     * getUserExtByUserId (selectOne, nem TooManyResults khi da trung)
+     * va getAllUserExtByUserId (khong loc tenant/del_flag).
+     */
+    List<UserExt> listActiveUserExtByUserId(@Param("userId")String userId,@Param("companyId")String companyId);
 }

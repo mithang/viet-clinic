@@ -55,6 +55,16 @@
         WHERE a.user_id = #{userId}
     </select>
 
+    <select id="listActiveUserExtByUserId" resultType="com.geeke.admin.entity.UserExt">
+        SELECT
+        <include refid="userExtColumns"/>
+        FROM sys_user_ext a
+        WHERE a.user_id = #{userId}
+        and a.company_id = #{companyId}
+        and a.del_flag != 1
+        ORDER BY a.update_date DESC
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM sys_user_ext a
         <include refid="userExtJoins"/>

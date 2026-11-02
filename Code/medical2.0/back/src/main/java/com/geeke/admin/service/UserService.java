@@ -287,6 +287,17 @@ public class UserService extends CrudService<UserDao, User>{
             }
             userExt.setUserId(user.getId());
             userExt.setCompanyId(SessionUtils.getLoginTenantId());
+            // E1 (iteration 25): payload thieu userExt.id thi tai dung dong
+            // ext active hien co cua (user, tenant) thay vi insert dong moi
+            // — neu khong, moi lan update them 1 dong active va
+            // getUserExtByUserId (selectOne) nem TooManyResults lam
+            // getById/delete user 500. Khong doi hanh vi khi id da du.
+            if (StringUtils.isBlank(userExt.getId())) {
+                List<UserExt> existingExts = userExtDao.listActiveUserExtByUserId(user.getId(), SessionUtils.getLoginTenantId());
+                if (existingExts != null && !existingExts.isEmpty()) {
+                    userExt.setId(existingExts.get(0).getId());
+                }
+            }
             userExtService.save(userExt);
 
         }
