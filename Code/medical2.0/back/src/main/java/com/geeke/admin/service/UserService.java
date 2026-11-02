@@ -141,13 +141,27 @@ public class UserService extends CrudService<UserDao, User>{
             else
             {
                 //khác nhauPhòng khám của giống hệtNgười dùng
+                // F1 (iteration 26, lỗi thứ ba trong cùng nhánh): payload
+                // tạo mới không có id nên saveUserRoleInfo build
+                // ImmutableMap user_id=null → NPE và rollback cả tenant+ext
+                // vừa chèn. Gán id đã tồn tại cho payload để role sync
+                // đúng user này và controller trả id thật thay vì null.
+                user.setId(existUser.getId());
 
                 //lưu vào người này của Phòng khámThông tin
                 userDao.insertUserTenant(IdGen.uuid(),existUser.getId(),loginTenant,user.getLoginName());
                 //lưu vào người này của mở rộngThông tin
                 UserExt userExt = user.getUserExt();
+                // F1 (iteration 26): nhánh khác-phòng-khám thiếu userId nên
+                // insert ext 500 'user_id cannot be null' — gán đúng id của
+                // user đã tồn tại, như nhánh tạo mới ở dưới. Đồng thời
+                // preInsert trước insert thô (nhánh tạo mới dùng save() nên
+                // có audit, còn insert() thô thì create_by null → 500 tiếp):
+                // preInsert giữ id đã set, chỉ điền create_by/update_by/ngày.
+                userExt.setUserId(existUser.getId());
                 userExt.setCompanyId(SessionUtils.getLoginTenantId());
                 userExt.setId(IdGen.uuid());
+                userExt.preInsert();
                 //nàyngườiNếuTồn tại, không ởKhi thêm mớiSửaảnh
                 userExtService.insert(userExt);
                 //lưu vàoHiện tạiNgười dùngtạiPhòng khám của Vai tròThông tin

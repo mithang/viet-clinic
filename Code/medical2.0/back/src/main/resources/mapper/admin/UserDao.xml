@@ -126,6 +126,12 @@
         FROM sys_user a
         <include refid="userJoins"/>
         WHERE a.login_name = #{loginName} AND a.is_wxuser = "0"
+        <!-- F1 (iteration 26): user đã xóa mềm không tính là "tồn tại" —
+             nếu không, dùng lại SĐT đã xóa rơi vào nhánh khác-phòng-khám
+             và gắn tenant/ext mới cho tài khoản đã xóa (không dùng được),
+             theo cùng mẫu P1/S1. ClinicService tạo clinic dùng SĐT cũ
+             nay đi nhánh tạo admin mới thay vì gắn role cho tài khoản đã xóa. -->
+        AND a.del_flag = 0
     </select>
 
     <select id="getByPhone" resultType="com.geeke.admin.entity.User">
