@@ -160,9 +160,8 @@ public class PatientController extends CrudController<PatientService, Patient> {
      * service trực tiếp, không qua getById nên không ghi thêm VIEW);
      * nếu body xóa đã kèm tên thì dùng tên đó. Ghi qua logAccessSafely
      * nên lỗi ghi không hỏng luồng xóa, như các hook G8 khác.
-     * bulkDelete vẫn kế thừa CrudController (không ghi audit theo từng
-     * hồ sơ vì service chỉ trả tổng rows) — ghi nhận làm item riêng,
-     * không mở rộng lén trong R1.
+     * bulkDelete có override riêng ngay dưới (S2), cũng ghi DELETE theo
+     * từng hồ sơ còn hiệu lực.
      */
     @Override
     @PostMapping(value = "delete")
@@ -201,6 +200,60 @@ public class PatientController extends CrudController<PatientService, Patient> {
         afterDelete(entity);
         if (rows > 0 && wasActive && id != null && !id.trim().isEmpty()) {
             logAccessSafely(RecordAccessAuditService.ACTION_DELETE, id, name);
+        }
+        return ResponseEntity.ok(ResultUtil.successJson(rows));
+    }
+
+    /**
+     * S2 — Xóa hàng loạt: sao chép đúng CrudController.bulkDelete (quyền
+     * sàn hasAnySessionPermission; gốc không có beforeDelete/afterDelete
+     * nên không có hook nào để sao chép), cộng 1 dòng audit DELETE cho
+     * mỗi hồ sơ CÒN HIỆU LỰC trước khi xóa. Ghi theo tập đọc trước,
+     * không ghi theo rows trả về: UPDATE bulk không lọc del_flag nên
+     * rows đếm cả id đã xóa từ trước (như xóa đơn R1 trả rows=1 khi
+     * xóa lại), và 1 id lặp trong body cũng chỉ tính 1 lần (map
+     * LinkedHashMap khử trùng). Tên lấy từ hồ sơ đọc trước qua service
+     * trực tiếp (không qua getById để không ghi thêm VIEW), fallback
+     * tên trong body; lỗi đọc trước được nuốt để bulkDelete gốc tự
+     * quyết quyền sở hữu tenant từng entity. Chỉ là lỗ hổng tầng API:
+     * frontend hiện không có Vue nào gọi bulkDeletePatient (chỉ export
+     * ở api/outpatient/patient.js), không bịa thành nút UI.
+     */
+    @Override
+    @PostMapping(value = "bulkDelete")
+    public ResponseEntity<JSONObject> bulkDelete(@RequestBody List<Patient> entitys) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        java.util.Map<String, String> activeNames = new java.util.LinkedHashMap<>();
+        if (entitys != null) {
+            for (Patient entity : entitys) {
+                if (entity == null || entity.getId() == null || entity.getId().trim().isEmpty()) {
+                    continue;
+                }
+                String id = entity.getId();
+                if (activeNames.containsKey(id)) {
+                    continue;
+                }
+                try {
+                    Patient existing = getService().get(id);
+                    if (existing != null
+                            && com.geeke.common.persistence.BaseEntity.DEL_FLAG_NORMAL
+                                    .equals(existing.getDelFlag())) {
+                        String name = existing.getName();
+                        if (name == null || name.trim().isEmpty()) {
+                            name = entity.getName();
+                        }
+                        activeNames.put(id, name);
+                    }
+                } catch (Exception ignored) {
+                    // Như R1: lỗi đọc trước không đổi hành vi xóa.
+                }
+            }
+        }
+        int rows = getService().bulkDelete(entitys);
+        for (java.util.Map.Entry<String, String> entry : activeNames.entrySet()) {
+            logAccessSafely(RecordAccessAuditService.ACTION_DELETE, entry.getKey(), entry.getValue());
         }
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
