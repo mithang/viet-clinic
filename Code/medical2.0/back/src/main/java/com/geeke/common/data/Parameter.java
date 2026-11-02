@@ -149,14 +149,38 @@ public final class Parameter {
 			return null;
 		}
 		Optional<Parameter> optional = parameters.stream()
-				.filter(item -> "company_id".equals(item.getColumnName()) || "`company_id`".equals(item.getColumnName()))
+				.filter(item -> isCompanyIdColumn(item.getColumnName()))
 				.findFirst();
 		if (optional.isPresent()) {
 			String id = (String) optional.get().getValue();
-			parameters.removeIf(item -> "company_id".equals(item.getColumnName()) || "`company_id`".equals(item.getColumnName()));
+			parameters.removeIf(item -> isCompanyIdColumn(item.getColumnName()));
 			return id;
 		}
 		return null;
+	}
+
+	/**
+	 * AA1: chuẩn hóa tên cột trước khi so sánh company_id.
+	 * SearchParams.getParams() bọc backtick sau khi kiểm tra ký tự, nên
+	 * body "a.company_id" tới đây thành "a.`company_id`" và "COMPANY_ID"
+	 * thành "`COMPANY_ID`" — cả hai đều lọt bộ lọc cũ chỉ khớp đúng
+	 * "company_id" / "`company_id`". Chuẩn hóa: bỏ backtick, lowercase,
+	 * lấy phần sau dấu chấm cuối (bỏ prefix bảng) rồi so sánh; đồng
+	 * thời chặn biến thể "company.id" (thành "company.`id`").
+	 */
+	private static boolean isCompanyIdColumn(String columnName) {
+		if (columnName == null) {
+			return false;
+		}
+		String normalized = columnName.replace("`", "").trim().toLowerCase(java.util.Locale.ROOT);
+		if ("company_id".equals(normalized) || "company.id".equals(normalized)) {
+			return true;
+		}
+		int dot = normalized.lastIndexOf('.');
+		if (dot >= 0) {
+			return "company_id".equals(normalized.substring(dot + 1));
+		}
+		return false;
 	}
 
 }

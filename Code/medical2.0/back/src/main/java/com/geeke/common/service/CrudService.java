@@ -185,8 +185,83 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		// thống nhấtbằng[phiênĐăng nhậptenant]làm là cách lybênranh giới,  và  verifyTenantOwnership Giữ nhất quán
 		String tenantId = SessionUtils.getLoginTenantId();
 		if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
+			wrapBodyParamsForTenantFilter(parameters);
 			parameters.add(new Parameter("company_id", "=", tenantId));
 		}
+	}
+
+	/**
+	 * AA1: bọc toàn bộ tham số body trong cặp ngoặc trước khi AND
+	 * tenant filter. Trước đây SQL có dạng
+	 * "body... OR phone LIKE Y AND company_id = tenant" — do AND kết
+	 * chặt hơn OR nên disjunct OR đứng trước thoát khỏi tenant filter
+	 * và trả về dòng của mọi tenant (đã tái hiện live ở patient/list).
+	 * Sau sửa: "(body...) AND company_id = tenant" nên mọi disjunct
+	 * đều nằm trong tenant. Chỉ bọc khi có ít nhất một tham số thực
+	 * sự render ra SQL dùng logic OR; các trường hợp còn lại giữ
+	 * nguyên hành vi cũ (không bọc khi body rỗng hoặc toàn AND).
+	 * Tham số không render (giá trị rỗng — whereParams bỏ qua) chỉ
+	 * bị loại khi bọc, vì "( )" rỗng sẽ lỗi SQL; loại chúng là
+	 * trung hòa với output SQL. Logic của tham số đầu tiên trong
+	 * nhóm được đặt thành "" vì ở đầu nhóm không có điều kiện nào
+	 * đứng trước nó. Nhóm người dùng mất cân bằng ngoặc vẫn lỗi SQL
+	 * fail-closed như trước, không rò rỉ.
+	 */
+	private void wrapBodyParamsForTenantFilter(List<Parameter> parameters) {
+		List<Parameter> rendering = Lists.newArrayList();
+		boolean hasOr = false;
+		for (Parameter p : parameters) {
+			if (p == null || !isRenderingParam(p)) {
+				continue;
+			}
+			rendering.add(p);
+			String logic = p.getLogic();
+			if (logic != null && "or".equalsIgnoreCase(logic.trim())) {
+				hasOr = true;
+			}
+		}
+		if (rendering.isEmpty() || !hasOr) {
+			return;
+		}
+		rendering.get(0).setLogic("");
+		List<Parameter> wrapped = Lists.newArrayList();
+		wrapped.add(new Parameter(null, "(", null, "AND"));
+		wrapped.addAll(rendering);
+		wrapped.add(new Parameter(null, ")", null, ""));
+		parameters.clear();
+		parameters.addAll(wrapped);
+	}
+
+	/**
+	 * AA1: tham số có render ra SQL trong Common.whereParams hay không.
+	 * "(" / ")" / "is null" / "is not null" luôn render; các nhánh còn
+	 * lại đều bỏ qua khi value null hoặc chuỗi rỗng; "in" bỏ qua khi
+	 * danh sách rỗng. Các dạng value khác giữ nguyên (bảo thủ).
+	 */
+	private boolean isRenderingParam(Parameter p) {
+		String queryType = p.getQueryType();
+		if (queryType == null) {
+			return true;
+		}
+		String q = queryType.trim();
+		if ("(".equals(q) || ")".equals(q)
+				|| "is null".equalsIgnoreCase(q) || "is not null".equalsIgnoreCase(q)) {
+			return true;
+		}
+		Object value = p.getValue();
+		if (value == null) {
+			return false;
+		}
+		if (value instanceof String) {
+			return !((String) value).isEmpty();
+		}
+		if (value instanceof List) {
+			if ("in".equalsIgnoreCase(q) || "not in".equalsIgnoreCase(q)) {
+				return !((List<?>) value).isEmpty();
+			}
+			return true;
+		}
+		return true;
 	}
 
 	/**
