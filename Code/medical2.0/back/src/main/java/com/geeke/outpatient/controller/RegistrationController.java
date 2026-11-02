@@ -20,6 +20,8 @@ import com.geeke.toll.service.TollInfoService;
 import com.geeke.utils.ResultUtil;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
+import com.geeke.utils.constants.ErrorEnum;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +48,9 @@ public class RegistrationController extends CrudController<RegistrationService, 
 
     @Autowired
     private RecipelDetailService recipelDetailService;
+
+    @Autowired
+    private DataBean dataBean;
 
     @Autowired
     private MdRegistrationService mdRegistrationService;
@@ -259,12 +264,24 @@ public class RegistrationController extends CrudController<RegistrationService, 
     //in ấnĐơn thuốc
     @PostMapping("/print")
     public ResponseEntity<JSONObject> print(@RequestBody JSONObject inJson) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // F3: san RBAC nhu cac duong cung controller; truoc day 0 quyen van chay nhu testfull.
         String id = inJson.getString("id");
         if (StringUtils.isNotBlank(id)) {
             RecipelDetail recipelDetail = recipelDetailService.get(id);
+            // F3: get() tra null khi id la (khong phai 500) — id da cho nhung
+            // khong co chi tiet don thi tra 400 loi that, theo mau D1.
+            if (recipelDetail == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResultUtil.errorJson(ErrorEnum.E_400));
+            }
             Map<String, Object> map = new HashMap<>();
             map.put("buildReport", recipelDetail);
-            DataBean dataBean = new DataBean();
+            // F3: dung bean DataBean da inject thay vi new DataBean(): bean
+            // moi co @Autowired service; new lam recipelInfoService null nen
+            // buildReport NPE voi moi id khong rong (tai hien f3-repro.py).
+            // Ket qua buildReport von bi bo qua o day (endpoint chi tra
+            // success rong) nen giu nguyen map/key cu, khong ve them
+            // hanh vi in that — print that la tinh nang, ngoai pham vi F3.
             dataBean.buildReport("", "", map);
         }
         return ResponseEntity.ok(ResultUtil.successJson());
