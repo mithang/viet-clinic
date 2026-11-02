@@ -631,4 +631,8 @@
         Order by a.update_date desc
 
     </select>
+
+    <select id="getRecipelInfoCompanyId" parameterType="String" resultType="String">
+        select a.company_id from recipel_info a where a.id = #{id}
+    </select>
 </mapper>

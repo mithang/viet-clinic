@@ -25,4 +25,6 @@ public interface RecipelInfoDao extends CrudDao<RecipelInfo> {
     List<RecipelInfoDTO> getHistoryRecipel(PageRequest pageRequest);
 
     void updateSchedule(@Param("id")String id, @Param("cureType")int cureType);
+    /** X3: company của đơn thuốc theo id, phục vụ kiểm tra sở hữu ở controller */
+    String getRecipelInfoCompanyId(@Param("id") String id);
 }

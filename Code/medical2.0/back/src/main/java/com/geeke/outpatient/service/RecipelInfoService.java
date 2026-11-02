@@ -89,6 +89,11 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         recipelInfoDao.updateSchedule(id,cureType);
     }
 
+    /** X3: company của đơn thuốc theo id, ủy thác cho DAO (controller kiểm tra sở hữu trước khi gọi service ghi/đọc). */
+    public String getRecipelInfoCompanyId(String id) {
+        return recipelInfoDao.getRecipelInfoCompanyId(id);
+    }
+
     @Transactional(readOnly = false)
     public int updateNotShowById(String id) {
         RecipelInfo recipelInfo = this.get(id);
