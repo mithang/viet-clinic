@@ -10,6 +10,7 @@ import com.geeke.clinic.service.ClinicVersionService;
 import com.geeke.common.data.Page;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.service.ServiceException;
 import com.geeke.common.service.TreeService;
 import com.geeke.org.dao.CompanyDao;
 import com.geeke.org.entity.Company;
@@ -50,10 +51,79 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         company.setSort(0);
         return save(company);
     }
+    /**
+     * Z3h: chan ghi Company xuyen tenant. Company khong co cot company_id
+     * rieng (chinh no la tenant) nen verifyTenantOwnership cua CrudService
+     * khong bao gio tac dung: companyForm khong gui truong company, va
+     * generic save chi kiem tra company body chu khong kiem tra dong dich.
+     * Guard nay kiem tra dong cu + dong cha theo nhom goc cua session
+     * (cung pham vi cay Z3c), truoc ca thao tac file cua saveWithFile.
+     * Tao moi (id rong) giu hanh vi cu de khong pha luong tao phong kham
+     * moi cua Clinic; dong khong ton tai / session rong / khong tim thay
+     * dong tenant giu hanh vi cu, dung mau Z3a-Z3g.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public Company save(Company company) {
+        checkCompanySaveOwnership(company);
+        return super.save(company);
+    }
+
+    private void checkCompanySaveOwnership(Company company) {
+        if (company == null) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        Company tenant = this.dao.get(tenantId);
+        if (tenant == null) {
+            return;
+        }
+        String groupPrefix = groupPrefixFor(tenant);
+        if (groupPrefix == null) {
+            throw new ServiceException("Không xác định được nhóm phòng khám hiện tại");
+        }
+        if (StringUtils.isNotBlank(company.getId())) {
+            Company old = this.dao.get(company.getId());
+            if (old != null && (StringUtils.isBlank(old.getIds()) || !old.getIds().startsWith(groupPrefix))) {
+                throw new ServiceException("Công ty không thuộc phòng khám hiện tại");
+            }
+        }
+        if (company.getParent() != null && StringUtils.isNotBlank(company.getParent().getId())
+                && !"0".equals(company.getParent().getId())) {
+            Company parent = this.dao.get(company.getParent().getId());
+            if (parent != null && (StringUtils.isBlank(parent.getIds()) || !parent.getIds().startsWith(groupPrefix))) {
+                throw new ServiceException("Công ty mẹ không thuộc phòng khám hiện tại");
+            }
+        }
+    }
+
+    private String groupPrefixFor(Company tenant) {
+        String ids = tenant.getIds();
+        if (StringUtils.isBlank(ids)) {
+            return null;
+        }
+        java.util.List<String> tokens = new ArrayList<String>();
+        for (String part : ids.split("\\.")) {
+            if (StringUtils.isNotBlank(part)) {
+                tokens.add(part);
+            }
+        }
+        if (tokens.isEmpty() || (tokens.size() == 1 && "0".equals(tokens.get(0)))) {
+            return null;
+        }
+        return "0".equals(tokens.get(0)) && tokens.size() >= 2
+                ? "0." + tokens.get(1) + "."
+                : tokens.get(0) + ".";
+    }
+
     @Transactional(readOnly = false)
     public Company save(Company company,
                         MultipartFile[] fileIdUploads,
                         String[] deleteIds) throws java.io.IOException {
+        checkCompanySaveOwnership(company);
         if(StringUtils.isBlank(company.getFileId())) {
             company.setFileId(IdGen.uuid());
         }
