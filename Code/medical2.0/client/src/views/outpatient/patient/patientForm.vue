@@ -133,6 +133,7 @@
                   dialogProps.action === 'view' ? '' : 'Vui lòng nhập số CMND/CCCD'
                 "
                 @input="getBirthday"
+                @blur="checkDuplicates"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -145,6 +146,7 @@
                 :placeholder="
                   dialogProps.action === 'view' ? '' : 'Vui lòng nhập thông tin liên hệ'
                 "
+                @blur="checkDuplicates"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -328,6 +330,52 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <!-- N1: prompt bệnh nhân trùng khớp (chỉ ở chế độ thêm mới, như G3 ở
+          form đăng ký). Không tự động merge: người dùng chọn một bệnh nhân
+          để nạp lại hồ sơ có sẵn, hoặc bấm "Tạo bệnh nhân mới" để tắt
+          prompt với SĐT/card này và lưu như trước. -->
+        <el-row v-if="dialogProps.action === 'add' && duplicateMatches.length > 0">
+          <el-col :span="24">
+            <el-alert
+              title="Đã có bệnh nhân trùng khớp — chọn một bệnh nhân để dùng lại thay vì tạo trùng"
+              type="warning"
+              :closable="false"
+              show-icon
+              style="margin-bottom: 10px"
+            ></el-alert>
+            <el-table
+              :data="duplicateMatches"
+              size="mini"
+              style="width: 100%; margin-bottom: 10px"
+            >
+              <el-table-column prop="name" label="Họ tên"></el-table-column>
+              <el-table-column prop="phone" label="SĐT"></el-table-column>
+              <el-table-column prop="card" label="CMND/CCCD"></el-table-column>
+              <el-table-column label="Ngày sinh">
+                <template slot-scope="scope">
+                  {{ formatDuplicateBirthday(scope.row.birthday) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Khớp theo">
+                <template slot-scope="scope">
+                  {{ scope.row.matchType === 'both' ? 'SĐT + CMND/CCCD' : (scope.row.matchType === 'phone' ? 'SĐT' : 'CMND/CCCD') }}
+                </template>
+              </el-table-column>
+              <el-table-column label="" width="150">
+                <template slot-scope="scope">
+                  <el-button
+                    size="mini"
+                    type="primary"
+                    @click="applyDuplicatePatient(scope.row)"
+                  >Dùng bệnh nhân này</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div style="text-align: right; margin-bottom: 10px">
+              <el-button size="mini" @click="dismissDuplicates">Tạo bệnh nhân mới</el-button>
+            </div>
+          </el-col>
+        </el-row>
       </div>
     </el-form>
     <span slot='footer' class='dialog-footer'>
@@ -342,7 +390,7 @@
 <script>
 import { getDictItemsByCode, DICT_CODE } from '@/utils/dictCache'
 import {listAdministrativeDivisionAll} from "@/api/org/administrativeDivision";
-import {savePatient} from "@/api/outpatient/patient";
+import {savePatient, lookupDuplicates, getPatientById} from "@/api/outpatient/patient";
 import BaseUI from "@/views/components/baseUI";
 import OperationIcon from "@/components/OperationIcon";
 import VDistpicker from 'v-distpicker'
@@ -364,6 +412,10 @@ export default {
       city: '',
       area: '',
       flag: false,//Ngăn gửi trùng lặp
+      duplicateMatches: [],
+      duplicateChecking: false,
+      duplicateDismissedKey: "",
+      duplicateAppliedKey: "",
       withPatientNexus_List: [], // Quan hệ với bệnh nhân
       dialogProps: {
         visible: false,
@@ -557,6 +609,82 @@ export default {
         }
       }
     },
+    // N1: tra trùng khi rời khỏi ô SĐT hoặc CMND/CCCD (chỉ ở chế độ thêm
+    // mới, chưa có id). Tái dùng lookupDuplicates của G3; lỗi tra cứu
+    // (kể cả 403) không chặn lưu: prompt chỉ ẩn đi, luồng cũ chạy như trước.
+    duplicateLookupKey() {
+      const phone = (this.bizFormModel.phone || "").replace(/[^0-9]/g, "");
+      const card = (this.bizFormModel.card || "").replace(/[^0-9]/g, "");
+      return phone + "|" + card;
+    },
+    checkDuplicates() {
+      if (this.dialogProps.action !== "add" || this.bizFormModel.id || this.duplicateChecking) {
+        return;
+      }
+      const key = this.duplicateLookupKey();
+      const phone = (this.bizFormModel.phone || "").trim();
+      const card = (this.bizFormModel.card || "").trim();
+      if (!phone && !card) {
+        this.duplicateMatches = [];
+        return;
+      }
+      if (key === this.duplicateDismissedKey || key === this.duplicateAppliedKey) {
+        return;
+      }
+      this.duplicateChecking = true;
+      lookupDuplicates({ phone: phone, card: card })
+        .then((responseData) => {
+          this.duplicateChecking = false;
+          if (this.duplicateLookupKey() !== key) {
+            return;
+          }
+          if (responseData.code === 100 && Array.isArray(responseData.data)) {
+            if (key !== this.duplicateDismissedKey && key !== this.duplicateAppliedKey) {
+              this.duplicateMatches = responseData.data;
+            }
+          }
+        })
+        .catch(() => {
+          this.duplicateChecking = false;
+          this.duplicateMatches = [];
+        });
+    },
+    dismissDuplicates() {
+      this.duplicateDismissedKey = this.duplicateLookupKey();
+      this.duplicateMatches = [];
+    },
+    formatDuplicateBirthday(birthday) {
+      if (!birthday) {
+        return "";
+      }
+      const parts = birthday.split("-");
+      if (parts.length === 3) {
+        return parts[2] + "/" + parts[1] + "/" + parts[0];
+      }
+      return birthday;
+    },
+    // N1: nạp lại hồ sơ đầy đủ của bệnh nhân đã chọn (getPatientById) thay
+    // vì chỉ chép các trường của DTO trùng khớp — tránh ghi đè một phần
+    // lên hồ sơ có sẵn khi lưu (savePatient đi nhánh cập nhật nhờ id).
+    applyDuplicatePatient(patient) {
+      getPatientById(patient.id).then((responseData) => {
+        if (responseData.code === 100 && responseData.data) {
+          this.duplicateAppliedKey = this.duplicateLookupKey();
+          this.duplicateMatches = [];
+          this.bizFormModel = {...this.initFormModel(), ...responseData.data};
+          this.province = this.bizFormModel.province;
+          this.city = this.bizFormModel.city;
+          this.area = this.bizFormModel.area;
+        }
+      }).catch(() => {
+        this.outputError({ message: "Không nạp được hồ sơ bệnh nhân đã chọn" });
+      });
+    },
+    resetDuplicates() {
+      this.duplicateMatches = [];
+      this.duplicateDismissedKey = "";
+      this.duplicateAppliedKey = "";
+    },
     onSubmit(formName) {
       this.flag = true
       this.$refs[formName].validate(valid => {
@@ -711,6 +839,7 @@ export default {
 
     },
     openViewPatientDialog(patient) {
+      this.resetDuplicates()
       this.dialogProps.action = 'view'
       this.dialogProps.title = 'Xem thông tin bệnh nhân'
       this.bizFormModel = {...this.initFormModel(), ...patient}
@@ -722,6 +851,7 @@ export default {
       this.area = this.bizFormModel.area
     },
     openEditPatientDialog(patient) {
+      this.resetDuplicates()
       this.dialogProps.action = 'edit'
       this.dialogProps.title = 'Sửa thông tin bệnh nhân'
       this.bizFormModel = {...this.initFormModel(), ...patient}
@@ -733,6 +863,7 @@ export default {
       this.area = this.bizFormModel.area
     },
     openAddPatientDialog() {
+      this.resetDuplicates()
       this.dialogProps.action = 'add'
       this.dialogProps.title = 'Thêm thông tin bệnh nhân'
       this.bizFormModel = this.initFormModel(this.user)
@@ -744,6 +875,7 @@ export default {
       this.area = ''
     },
     openCopyPatientDialog(patient) {
+      this.resetDuplicates()
       this.dialogProps.action = 'add'
       this.dialogProps.title = 'Thêm thông tin bệnh nhân'
       this.bizFormModel = {...this.initFormModel(this.user), ...patient}

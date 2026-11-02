@@ -131,9 +131,42 @@
                             :placeholder="
                                'Vui lòng nhập thông tin liên hệ'
                             "
+                            @blur="checkRetailDuplicates"
                             ></el-input>
                         </el-form-item>
                         </el-col>
+                </el-row>
+                <!-- N1: prompt trùng bệnh nhân ở bán lẻ (chỉ tra theo SĐT).
+                  Không tự động merge: chọn hồ sơ có sẵn để dùng lại, hoặc
+                  bấm "Vẫn tạo bệnh nhân mới" để tắt prompt với SĐT này. -->
+                <el-row v-if="duplicateMatches.length > 0 && duplicatePhoneKey === retailDuplicateKey()">
+                    <el-col :span="24">
+                        <el-alert
+                          title="Đã có bệnh nhân trùng SĐT — chọn một bệnh nhân để dùng lại thay vì tạo trùng"
+                          type="warning"
+                          :closable="false"
+                          show-icon
+                          style="margin-bottom: 10px"
+                        ></el-alert>
+                        <el-table :data="duplicateMatches" size="mini" style="width: 100%; margin-bottom: 10px">
+                            <el-table-column prop="name" label="Họ tên"></el-table-column>
+                            <el-table-column prop="phone" label="SĐT"></el-table-column>
+                            <el-table-column prop="card" label="CMND/CCCD"></el-table-column>
+                            <el-table-column label="Ngày sinh">
+                                <template slot-scope="scope">
+                                    {{ formatDuplicateBirthday(scope.row.birthday) }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="" width="150">
+                                <template slot-scope="scope">
+                                    <el-button size="mini" type="primary" @click="applyRetailDuplicate(scope.row)">Dùng bệnh nhân này</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <div style="text-align: right; margin-bottom: 10px">
+                            <el-button size="mini" @click="dismissRetailDuplicates">Vẫn tạo bệnh nhân mới</el-button>
+                        </div>
+                    </el-col>
                 </el-row>
             </div>
 
@@ -516,9 +549,40 @@
                             :placeholder="
                                'Vui lòng nhập thông tin liên hệ'
                             "
+                            @blur="checkRetailDuplicates"
                             ></el-input>
                         </el-form-item>
                         </el-col>
+                </el-row>
+                <!-- N1: prompt trùng bệnh nhân ở bán lẻ vật tư (như tab thuốc). -->
+                <el-row v-if="duplicateMatches.length > 0 && duplicatePhoneKey === retailDuplicateKey()">
+                    <el-col :span="24">
+                        <el-alert
+                          title="Đã có bệnh nhân trùng SĐT — chọn một bệnh nhân để dùng lại thay vì tạo trùng"
+                          type="warning"
+                          :closable="false"
+                          show-icon
+                          style="margin-bottom: 10px"
+                        ></el-alert>
+                        <el-table :data="duplicateMatches" size="mini" style="width: 100%; margin-bottom: 10px">
+                            <el-table-column prop="name" label="Họ tên"></el-table-column>
+                            <el-table-column prop="phone" label="SĐT"></el-table-column>
+                            <el-table-column prop="card" label="CMND/CCCD"></el-table-column>
+                            <el-table-column label="Ngày sinh">
+                                <template slot-scope="scope">
+                                    {{ formatDuplicateBirthday(scope.row.birthday) }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="" width="150">
+                                <template slot-scope="scope">
+                                    <el-button size="mini" type="primary" @click="applyRetailDuplicate(scope.row)">Dùng bệnh nhân này</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <div style="text-align: right; margin-bottom: 10px">
+                            <el-button size="mini" @click="dismissRetailDuplicates">Vẫn tạo bệnh nhân mới</el-button>
+                        </div>
+                    </el-col>
                 </el-row>
             </div>
 
@@ -890,6 +954,8 @@
 
 import {
   listPatientAll,
+  lookupDuplicates,
+  getPatientById,
 } from "@/api/outpatient/patient";
 import { getDictItemsByCode, DICT_CODE } from "@/utils/dictCache";
 import {listAll} from "@/api/stock/medicinalStockControl";
@@ -919,6 +985,13 @@ export default {
                 'gender.name': [{ required: true, message: "Vui lòng chọn giới tính", trigger: 'change' }],
             },
             patientId_List:[],  //Lấy thông tin bệnh nhân
+            // N1: prompt trùng bệnh nhân ở bán lẻ (như G3 ở form đăng ký,
+            // nhưng form này không có ô CMND/CCCD nên chỉ tra theo SĐT).
+            duplicateMatches: [],
+            duplicateChecking: false,
+            duplicateDismissedKey: "",
+            duplicateAppliedKey: "",
+            duplicatePhoneKey: "",
             gender_List:[],   //Lấy giới tính
             payType_List:[], // Phương thức thanh toán (dict payType)
             SearchDrugInput:"", //Tìm kiếm thuốc
@@ -1383,8 +1456,93 @@ export default {
                 createDate:''
             };
             },
+        // N1: tra trùng bệnh nhân ở bán lẻ, tái dùng lookupDuplicates của
+        // G3. Chỉ tra theo SĐT (form này không có ô CMND/CCCD), chỉ khi
+        // bệnh nhân hiện tại chưa có id (chưa chọn từ danh sách). Lỗi tra
+        // cứu (kể cả 403) không chặn thu phí: prompt chỉ ẩn đi.
+        retailPatientModel() {
+            return this.activeName === '0' ? this.bizFormModel : this.stuffBizFormModel;
+        },
+        retailDuplicateKey() {
+            const model = this.retailPatientModel();
+            return (model.phone || "").replace(/[^0-9]/g, "");
+        },
+        checkRetailDuplicates() {
+            if (this.duplicateChecking) {
+                return;
+            }
+            const model = this.retailPatientModel();
+            if (model.id) {
+                this.duplicateMatches = [];
+                return;
+            }
+            const key = this.retailDuplicateKey();
+            const phone = (model.phone || "").trim();
+            if (!phone) {
+                this.duplicateMatches = [];
+                return;
+            }
+            if (key === this.duplicateDismissedKey || key === this.duplicateAppliedKey) {
+                return;
+            }
+            this.duplicateChecking = true;
+            lookupDuplicates({ phone: phone })
+                .then((responseData) => {
+                    this.duplicateChecking = false;
+                    if (this.retailDuplicateKey() !== key) {
+                        return;
+                    }
+                    if (responseData.code === 100 && Array.isArray(responseData.data)) {
+                        if (key !== this.duplicateDismissedKey && key !== this.duplicateAppliedKey) {
+                            this.duplicateMatches = responseData.data;
+                            this.duplicatePhoneKey = key;
+                        }
+                    }
+                })
+                .catch(() => {
+                    this.duplicateChecking = false;
+                    this.duplicateMatches = [];
+                });
+        },
+        dismissRetailDuplicates() {
+            this.duplicateDismissedKey = this.retailDuplicateKey();
+            this.duplicateMatches = [];
+        },
+        formatDuplicateBirthday(birthday) {
+            if (!birthday) {
+                return "";
+            }
+            const parts = birthday.split("-");
+            if (parts.length === 3) {
+                return parts[2] + "/" + parts[1] + "/" + parts[0];
+            }
+            return birthday;
+        },
+        // N1: nạp lại hồ sơ đầy đủ của bệnh nhân đã chọn — phiếu bán lẻ
+        // sau đó gửi đúng id nên processRetailCharge dùng hồ sơ có sẵn
+        // thay vì save() tạo trùng. Không merge trường của khách vãng lai
+        // vào hồ sơ có sẵn: toàn bộ form được thay bằng hồ sơ đã nạp.
+        applyRetailDuplicate(patient) {
+            const key = this.retailDuplicateKey();
+            getPatientById(patient.id).then((responseData) => {
+                if (responseData.code === 100 && responseData.data) {
+                    this.duplicateAppliedKey = key;
+                    this.duplicateMatches = [];
+                    if (this.activeName === '0') {
+                        this.PatientFormModel = responseData.data;
+                        this.bizFormModel = {...this.initPatientModel(), ...responseData.data};
+                    } else {
+                        this.StuffPatientForModel = responseData.data;
+                        this.stuffBizFormModel = {...this.initPatientModel(), ...responseData.data};
+                    }
+                }
+            }).catch(() => {
+                this.outputError({ message: "Không nạp được hồ sơ bệnh nhân đã chọn" });
+            });
+        },
         // Về thêm mới bệnh nhân
         GetPatientInfo(){
+            this.duplicateMatches = [];
             if(this.activeName === '0'){
                 if(this.bizFormModel.name.id){
                 this.PatientFormModel = this.bizFormModel.name
