@@ -88,7 +88,7 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         List<RecipelDetail> recipelDetailEvtList = recipelInfoEvt.getRecipelDetailEvtList();
 
         //TheoBệnh nhânidLấycủa nóCó hay khôngliên kếtchỉ địnhrồitrải nghiệmthẻ
-        List<MemberManagement> memberManagements = this.dao.getByPatientId(recipelInfoEvt.getRecipelInfo().getRegistration().getPatientId().getId());
+        List<MemberManagement> memberManagements = filterOwnTenant(this.dao.getByPatientId(recipelInfoEvt.getRecipelInfo().getRegistration().getPatientId().getId()));
         List<MemberManagement> memberManagementList = new ArrayList<>();
 
         //Theo người dùngliên kếtchỉ địnhthẻ, điLấycủa nóliên kếtchỉ định của hạng mục
@@ -147,8 +147,29 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             this.dao.updateStatus(memberManagement);
     }
 
+    // Z1a: the khach hang theo patient_id tran — chi giu the thuoc session
+    // tenant truoc khi nap chi tiet. Truoc day the tenant la chi bi chan
+    // gian tiep (400 tu CrudService.get khi nap MemberItem la), khong chac
+    // chan: the khong co chi tiet hoac MemberItem dung chung se lot qua.
+    // Session rong/"null" (luong noi bo khong session) giu hanh vi cu,
+    // hang company null giu nhu verifyTenantOwnership.
+    private List<MemberManagement> filterOwnTenant(List<MemberManagement> rows) {
+        String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenant == null || tenant.isEmpty() || "null".equals(tenant) || rows == null) {
+            return rows;
+        }
+        List<MemberManagement> kept = new ArrayList<>();
+        for (MemberManagement row : rows) {
+            if (row == null || row.getCompany() == null || row.getCompany().getId() == null
+                    || row.getCompany().getId().isEmpty() || tenant.equals(row.getCompany().getId())) {
+                kept.add(row);
+            }
+        }
+        return kept;
+    }
+
     public List<MemberManagement> getByPatientId(String patientId) {
-        List<MemberManagement> memberManagements=this.dao.getByPatientId(patientId);
+        List<MemberManagement> memberManagements = filterOwnTenant(this.dao.getByPatientId(patientId));
         List<MemberManagement> memberManagementList = new ArrayList<>();
         for (MemberManagement memberManagement : memberManagements) {
             List<MemberManagementDetail> memberManagementDetails = memberManagementDetailService.getByManagementId(memberManagement.getId());

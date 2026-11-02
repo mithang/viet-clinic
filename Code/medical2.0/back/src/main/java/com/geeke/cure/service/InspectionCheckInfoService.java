@@ -69,6 +69,21 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     @Transactional
     public InspectionCheckInfo getByInspecId(String inspecId) {
         InspectionCheckInfo inspectionCheckInfo = this.dao.getByInspecId(inspecId);
+        // Z1a: ket qua xet nghiem theo id tran — id khong ton tai tra null
+        // (truoc day NPE o getId() -> 500); ban ghi tenant la tra null truoc
+        // khi nap chi tiet, khong de lot qua CostItem dung chung. Session
+        // rong/"null" giu hanh vi cu; company null giu nhu verifyTenantOwnership.
+        if (inspectionCheckInfo == null) {
+            return null;
+        }
+        String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)
+                && inspectionCheckInfo.getCompany() != null
+                && inspectionCheckInfo.getCompany().getId() != null
+                && !inspectionCheckInfo.getCompany().getId().isEmpty()
+                && !tenant.equals(inspectionCheckInfo.getCompany().getId())) {
+            return null;
+        }
 
         List<InspectionCheckDetail> inspectionCheckDetails = inspectionCheckDetailService.getByInfoId(inspectionCheckInfo.getId());
 

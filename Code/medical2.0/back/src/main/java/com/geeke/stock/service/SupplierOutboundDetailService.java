@@ -168,6 +168,23 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
      */
     @Transactional(readOnly = false)
     public List<SupplierOutboundDetail> getByOutboundId(String outboundId) {
-        return supplierOutboundDetailDao.getByOutboundId(outboundId);
+        // Z1a: chi tiet phieu xuat theo outbound_id tran — chi giu dong
+        // thuoc session tenant (DAO WHERE duy nhat supplier_outbound_id).
+        // Chi sua method public dung cho API + duyet phieu; cac luong ghi
+        // noi bo goi thang DAO sau khi outbound da qua get() kiem so huu
+        // thi khong doi. Session rong/"null" giu hanh vi cu.
+        List<SupplierOutboundDetail> rows = supplierOutboundDetailDao.getByOutboundId(outboundId);
+        String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenant == null || tenant.isEmpty() || "null".equals(tenant) || rows == null) {
+            return rows;
+        }
+        List<SupplierOutboundDetail> kept = new ArrayList<>();
+        for (SupplierOutboundDetail row : rows) {
+            if (row == null || row.getCompany() == null || row.getCompany().getId() == null
+                    || row.getCompany().getId().isEmpty() || tenant.equals(row.getCompany().getId())) {
+                kept.add(row);
+            }
+        }
+        return kept;
     }
 }

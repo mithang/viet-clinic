@@ -183,7 +183,22 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
     }
 
     public List<SupplierStock> getByStorageId(String id) {
-        return this.dao.getByStorageId(id);
+        // Z1a: ton kho theo storage_id tran — chi giu dong thuoc session
+        // tenant (DAO WHERE duy nhat supplier_storage_id). Session rong/
+        // "null" giu hanh vi cu; company null giu nhu verifyTenantOwnership.
+        List<SupplierStock> rows = this.dao.getByStorageId(id);
+        String tenant = SessionUtils.getLoginTenantId();
+        if (tenant == null || tenant.isEmpty() || "null".equals(tenant) || rows == null) {
+            return rows;
+        }
+        List<SupplierStock> kept = new ArrayList<>();
+        for (SupplierStock row : rows) {
+            if (row == null || row.getCompany() == null || row.getCompany().getId() == null
+                    || row.getCompany().getId().isEmpty() || tenant.equals(row.getCompany().getId())) {
+                kept.add(row);
+            }
+        }
+        return kept;
     }
 
     @Transactional(readOnly = false)
