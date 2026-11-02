@@ -22,7 +22,10 @@
         stuff.indate), nên dùng nguyên vẹn sẽ đếm cả tenant khác trên
         dữ liệu đa tenant. Đếm ở đây giữ nguyên định nghĩa DATEDIFF
         và thêm điều kiện tenant/institution y hệt đếm sắp hết hạn
-        thuốc (countWarning). Hệ quả cần biết khi đối chiếu: trên
+        thuốc (countWarning). L1 (2026-11-02): DATEDIFF ở cả 5 điểm
+        dùng ngày phòng khám DATE(CONVERT_TZ(NOW(),'SYSTEM','+07:00')),
+        vì NOW() theo giờ hệ thống UTC lệch 1 ngày trong cửa sổ
+        00:00–07:00 +07; sửa cùng lúc để dashboard == trang cảnh báo. Hệ quả cần biết khi đối chiếu: trên
         dữ liệu đa tenant, tổng này có thể khác total trang cảnh
         báo vật tư gốc; trên phòng khám đơn tenant thì bằng nhau.
     -->
@@ -58,7 +61,7 @@
             AND a.del_flag = #{delFlag}
             AND IF(company.is_institution = 0, company.id = #{companyId},
                 (company.id = #{institution} OR company.id = #{companyId}))
-            AND DATEDIFF(a.end_date, NOW()) &lt;= stuff.indate
+            AND DATEDIFF(a.end_date, DATE(CONVERT_TZ(NOW(), 'SYSTEM', '+07:00'))) &lt;= stuff.indate
     </select>
 
 </mapper>
