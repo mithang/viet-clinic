@@ -255,6 +255,22 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         bindedRegistration.setReceptionEndDate(new Date());
         bindedRegistration.setTreatType(medicalRecipelEvt.getMedicalRecord().getRegistration().getTreatType());
         bindedRegistration.setInfectType(medicalRecipelEvt.getMedicalRecord().getRegistration().getInfectType());
+        //Q2: hang sinh hieu cu (BasicInfoModel) duoc nap TU registration nen
+        //chi registration moi la noi luu that (bang patient khong co 4 cot
+        //nay, mapper PatientDao cung khong co). Nhanh thuong truoc day
+        //khong copy nen sua o FinishVisit (v1 allSave) mat lang du luu
+        //200 va chuyen Da kham; nhanh v2 allNewSave da copy dung kieu
+        //nay (registration.setTemperature/Pulse/Breathe/BloodPressure tu
+        //patient). Chi copy o nhanh thuong: nhanh instant tao registration
+        //moi rieng, khong dung bindedRegistration nay. Guard patient null
+        //de caller khong gui patient khong NPE; gia tri null/xoa cung duoc
+        //copy nhu v2 (xoa sinh hieu la y do hop le cua nguoi nhap).
+        if (null != medicalRecipelEvt.getPatient()) {
+            bindedRegistration.setTemperature(medicalRecipelEvt.getPatient().getTemperature());
+            bindedRegistration.setPulse(medicalRecipelEvt.getPatient().getPulse());
+            bindedRegistration.setBreathe(medicalRecipelEvt.getPatient().getBreathe());
+            bindedRegistration.setBloodPressure(medicalRecipelEvt.getPatient().getBloodPressure());
+        }
         registrationService.save(bindedRegistration);
 
         //Kiểm traCó hay khôngđủđủ
