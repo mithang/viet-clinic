@@ -171,6 +171,9 @@
         from patient a
             <include refid="patientJoins"/>
         where a.open_id = #{openId} and a.company_id = #{companyId}
+        and a.del_flag = 0
+        <!-- S1: nhu getPatientByCard (P1); ho so da xoa mem khong tra ve,
+             khop voi quet active cua G3/N1/O2 va tranh ghi VIEW cho ho so da xoa (R2). -->
     </select>
 
     <insert id="insert">
