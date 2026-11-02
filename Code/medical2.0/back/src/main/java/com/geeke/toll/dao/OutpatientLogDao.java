@@ -17,6 +17,12 @@ import java.util.List;
 @Mapper
 public interface OutpatientLogDao extends CrudDao<OutpatientLog> {
     public OutpatientLog getLogs(String id);
+
+    /** X1: company của lượt khám, để kiểm tra sở hữu trước khi đọc/ghi theo id trần. */
+    String getRegistrationCompanyId(@Param("id") String id);
+
+    /** X1: company của bệnh nhân, để kiểm tra sở hữu trước khi tra hộ nghèo theo id trần. */
+    String getPatientCompanyId(@Param("id") String id);
     /** Truy vấn */
     int logCount(PageRequest var1);
 

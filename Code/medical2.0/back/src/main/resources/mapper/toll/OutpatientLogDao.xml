@@ -136,6 +136,15 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- X1: chỉ lấy company_id để kiểm tra sở hữu, không trả dữ liệu nghiệp vụ. -->
+    <select id="getRegistrationCompanyId" parameterType="String" resultType="String">
+        select a.company_id from registration a where a.id = #{id}
+    </select>
+
+    <select id="getPatientCompanyId" parameterType="String" resultType="String">
+        select a.company_id from patient a where a.id = #{id}
+    </select>
+
     <select id="logCount" resultType="int">
         SELECT COUNT(*)
         <include refid="OutpatientLogVo"/>

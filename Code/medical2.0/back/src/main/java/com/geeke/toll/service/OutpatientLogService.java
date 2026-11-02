@@ -30,6 +30,15 @@ public class OutpatientLogService {
         return outpatientLogDao.getLogs(id);
     }
 
+    /** X1: company của lượt khám / bệnh nhân, phục vụ kiểm tra sở hữu ở controller. */
+    public String getRegistrationCompanyId(String id) {
+        return outpatientLogDao.getRegistrationCompanyId(id);
+    }
+
+    public String getPatientCompanyId(String patientId) {
+        return outpatientLogDao.getPatientCompanyId(patientId);
+    }
+
     public Page<OutpatientLog> listLog(OutpatientLogRc outpatientLogRc){
         List<OutpatientLog> list=outpatientLogDao.getOutpatientLog(outpatientLogRc);
         int total=list.size();
