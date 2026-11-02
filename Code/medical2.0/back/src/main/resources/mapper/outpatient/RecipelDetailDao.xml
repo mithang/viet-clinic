@@ -252,7 +252,7 @@
 
     <update id="updateActualPayment">
         UPDATE recipel_detail
-        SET actual_payment = #{actualPayment}
+        SET actual_payment = #{actualPayment, jdbcType=DECIMAL}
         WHERE id = #{id}
     </update>
 

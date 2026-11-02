@@ -778,8 +778,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * đảo ngược phát thuốc ở đây). Cùng transaction: ghi 1 dòng
      * toll_audit_log action = 'CANCEL' trước, rồi xóa mềm phiếu qua
      * CrudService.delete (del_flag = '1' + sys_action DELETED); lỗi ở
-     * bước nào cũng rollback cả hai. Không chạm recipel/registration:
-     * phiếu chưa thu chưa làm đổi trạng thái thu phí của đơn.
+     * bước nào cũng rollback cả hai. Đảo ngược actualPayment (K2):
+     * saveToll đóng dấu mọi RecipelDetail.actualPayment = allFee ×
+     * discount kể cả phiếu chưa thu, nên hủy phiếu chưa thu phải đưa
+     * actualPayment của các chi tiết thuộc đơn của phiếu này về NULL
+     * (giá trị trước khi thu — chi tiết mới tạo không có actualPayment;
+     * về allFee sẽ bịa thành đã thu đủ, về 0 lẫn với chiết khấu 0).
+     * Chỉ reset khi không còn phiếu nào khác đang hiệu lực cho cùng đơn
+     * (phiếu đã thu/hoàn sau đó vẫn sở hữu dấu thực thu); phiếu không
+     * gắn đơn thì không có chi tiết nào để reset. Không chạm
+     * recipel_info/registration: trạng thái đơn/đăng ký do luồng thu/
+     * hoàn sở hữu, không phải luồng hủy phiếu chưa thu.
      * Tenant được CrudService.get/delete kiểm tra (verifyTenantOwnership).
      */
     @Transactional(readOnly = false)
@@ -826,6 +835,32 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         auditLog.setRemarks("Hủy phiếu chưa thu " + info.getTollNumber());
         auditLog.preInsert();
         tollAuditLogDao.insertAudit(auditLog);
+        // K2: đảo ngược dấu thực thu của saveToll trên các chi tiết
+        // thuộc đơn của phiếu này, về NULL (trước khi thu). Bỏ qua khi
+        // còn phiếu khác đang hiệu lực cho cùng đơn (phiếu đó sở hữu
+        // dấu thực thu), và khi phiếu không gắn đơn. Cùng transaction
+        // với audit + xóa mềm nên lỗi ở bước nào cũng rollback cả ba.
+        if (info.getRecipel() != null && StringUtils.isNotBlank(info.getRecipel().getId())) {
+            String recipelId = info.getRecipel().getId();
+            boolean otherActiveToll = false;
+            for (TollInfo other : this.getByRecipeId(recipelId)) {
+                // getByRecipeId qua listAll vốn đã lọc del_flag='0' nên
+                // danh sách này chỉ gồm phiếu đang hiệu lực; phiếu đang
+                // hủy vẫn còn trong đó nên phải loại đúng id của nó.
+                if (other != null && "0".equals(other.getDelFlag())
+                        && !info.getId().equals(other.getId())) {
+                    otherActiveToll = true;
+                    break;
+                }
+            }
+            if (!otherActiveToll) {
+                for (RecipelDetail detail : recipelDetailService.getRecipelDetail(recipelId)) {
+                    if (detail != null && "0".equals(detail.getDelFlag())) {
+                        recipelDetailDao.updateActualPayment(null, detail.getId());
+                    }
+                }
+            }
+        }
         this.delete(info);
         return info;
     }
