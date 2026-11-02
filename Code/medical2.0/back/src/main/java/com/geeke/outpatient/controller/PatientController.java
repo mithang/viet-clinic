@@ -230,15 +230,42 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return ResponseEntity.ok(ResultUtil.successJson(patientService.findDuplicates(phone, card)));
     }
 
+    /**
+     * R2 — Tra cứu 1 hồ sơ theo CCCD: trả đủ hồ sơ như getById nên ghi
+     * đúng 1 dòng VIEW với patientId đó (chỉ khi tìm thấy; service ném
+     * lỗi khi không khớp nên không có dòng audit cho kết quả rỗng).
+     * Không đổi quyền sàn: 2 endpoint này từ trước đã không kiểm tra
+     * quyền (khác getById/listPage có hasAnySessionPermission /
+     * patient:list) — chỉ thêm audit, không hẹp/nới quyền ở đây.
+     */
     @PostMapping(value = "getByCard")
     public ResponseEntity<JSONObject> getByCard(@RequestBody Patient patient) {
         Patient byCard = patientService.getByCard(patient);
+        if (byCard != null) {
+            logAccessSafely(RecordAccessAuditService.ACTION_VIEW, byCard.getId(), byCard.getName());
+        }
         return ResponseEntity.ok(ResultUtil.successJson(byCard));
     }
 
+    /**
+     * R2 — Tra cứu theo openId: trả danh sách hồ sơ đầy đủ, không phải
+     * trang danh sách duyệt (listPage ghi 1 LIST với patientId null).
+     * Ghi 1 dòng VIEW cho mỗi hồ sơ trả về để giữ patientId truy vết
+     * được hồ sơ nào đã tiết lộ; kết quả rỗng không ghi dòng nào.
+     * Tái hiện R2: openId thực tế trả đúng 1 dòng, nên 1 lần gọi thường
+     * = 1 dòng VIEW như getById; nếu dữ liệu lệch có nhiều hồ sơ cùng
+     * openId thì mỗi hồ sơ vẫn có dòng riêng (đúng mục đích nhật ký).
+     */
     @PostMapping(value = "getByOpenId")
     public ResponseEntity<JSONObject> getByOpenId(@RequestBody Patient patient){
         List<Patient> patients = patientService.getByOpenId(patient.getOpenId(),patient.getCompany().getId());
+        if (patients != null) {
+            for (Patient p : patients) {
+                if (p != null) {
+                    logAccessSafely(RecordAccessAuditService.ACTION_VIEW, p.getId(), p.getName());
+                }
+            }
+        }
         return ResponseEntity.ok(ResultUtil.successJson(patients));
     }
 
