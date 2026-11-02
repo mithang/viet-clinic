@@ -732,6 +732,11 @@
             left join medical_record mr on a.id = mr.registration_id
             left join patient p on a.patient_id = p.id
         WHERE a.id = #{registration}
+        <!-- T2 (a): loc tenant session; session rong thi khong them dieu
+             kien de luong noi bo khong session giu hanh vi cu. -->
+        <if test="companyId != null and companyId != '' and companyId != 'null'">
+            AND a.company_id = #{companyId}
+        </if>
     </select>
 
     

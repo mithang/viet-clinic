@@ -31,5 +31,5 @@ public interface MedicalRecordDao extends CrudDao<MedicalRecord> {
      */
     String getLatestAllergyHistory(@Param("companyId") String companyId, @Param("patientId") String patientId);
 
-    List<MedicalRecord> getByOrder(@Param("registration")String registration);
+    List<MedicalRecord> getByOrder(@Param("registration")String registration, @Param("companyId")String companyId);
 }

@@ -147,7 +147,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
      Đăng ký khámidTruy vấnca bệnhThông tin
      */
     public List<MedicalRecord> getByOrder(String registration) {
-        return medicalRecordDao.getByOrder(registration);
+        // T2 (a): truoc day dao chi WHERE registration id, khong loc tenant
+        // (khac getPatientByPhone truyen company session). Nay ep company
+        // session nhu mau do; session rong ("null"/blank, luong noi bo
+        // khong co session) thi SQL khong them dieu kien, giu hanh vi cu.
+        return medicalRecordDao.getByOrder(registration, SessionUtils.getLoginTenantId());
     }
 
     @Transactional(readOnly = false)
@@ -1125,7 +1129,18 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
     }
     @Transactional(readOnly = false)
     public List<RecipelInfoDTO> getByRegistrationId(List<Parameter> parameters,int limit,int offset,String registrationId) {
-        // K1: tham số này KHÔNG phải mệnh đề ORDER BY mà là id lượt khám mà
+        // T2 (b): truoc day params cua caller (gom company_id) day thang
+        // xuong dao qua PageRequest, khong qua ensureCompanyFilter nhu
+        // listAll/listPage — caller doi company_id la doc duoc don cua
+        // tenant khac. Nay ep company session truoc khi tao PageRequest,
+        // dung mau CrudService.ensureCompanyFilter (strip company_id cua
+        // caller, them company_id = tenant session; MedicalRecord tu khai
+        // bao field company nen khong roi vao nhanh early-return).
+        if (parameters == null) {
+            parameters = new ArrayList<>();
+        }
+        ensureCompanyFilter(parameters);
+        // K1: tham so nay KHONG phai menh de ORDER BY ma la id luot kham ma
         // frontend gửi qua trường order (HistoricalCases/historyRecipel đặt
         // order = clickId). Trước đây nó đi qua PageRequest(order) nên
         // sanitizeOrderBy ném IllegalArgumentException với mọi id số
