@@ -62,6 +62,9 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     public ResponseEntity<JSONObject> getByOrder(@PathVariable("registration") String registration) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         RemoteDiagnosisTreatment entity = remoteDiagnosisTreatmentService.diagnosisById(registration);
+        if (entity == null) { // C1: khong co dong remote_diagnosis -> tra list rong thay vi NPE.
+            return ResponseEntity.ok(ResultUtil.successJson(java.util.Collections.emptyList()));
+        }
         registration = entity.getRegistrationId();
         List<MedicalRecord> result = medicalRecordService.getByOrder(registration);
         return ResponseEntity.ok(ResultUtil.successJson(result));
