@@ -199,6 +199,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
      */
     @PostMapping("/getxtzd")
     public ResponseEntity<JSONObject> getxtzd(String searchParam,String zdType){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2h: danh muc tham chieu nhu cac duong cung controller.
         LambdaQueryWrapper<XtZd> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper
                 .eq(XtZd::getZdlx, zdType)
@@ -222,6 +223,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
      */
     @PostMapping("/getzyzh")
     public ResponseEntity<JSONObject> getxtzd(String searchParam){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2h: danh muc tham chieu nhu cac duong cung controller.
         LambdaQueryWrapper<XtZyzh> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper
                 .eq(XtZyzh::getZt, 1)
