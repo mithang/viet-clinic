@@ -485,7 +485,11 @@ public class DataBean {
             List<TollInfo> tollInfos = tollInfoService.getByRecipeId(recipelInfo.getId());
             if (CollectionUtil.isNotEmpty(tollInfos)) {
                 TollInfo tollInfo = tollInfos.get(0);
-                String name = tollInfo.getCreateBy().substring(0, tollInfo.getCreateBy().indexOf("("));
+                String createBy = tollInfo.getCreateBy();
+                String name = createBy;
+                if (null != createBy && createBy.contains("(")) {
+                    name = createBy.substring(0, createBy.indexOf("("));
+                }
                 evt.setTollCollector("Nhân viên thu phí: "+name);
                 evt.setDeploy("Duyệt/Pha chế: "+name);
             }
@@ -495,8 +499,11 @@ public class DataBean {
                     .build();
             List<Dispensing> dispensings = dispensingService.listAll(dispensingParams, null);
             if (CollectionUtil.isNotEmpty(dispensings)) {
-                String name = dispensings.get(0).getCreateBy()
-                        .substring(0, dispensings.get(0).getCreateBy().indexOf("("));
+                String createBy = dispensings.get(0).getCreateBy();
+                String name = createBy;
+                if (null != createBy && createBy.contains("(")) {
+                    name = createBy.substring(0, createBy.indexOf("("));
+                }
                 evt.setDispensing("Đối chiếu/Phát thuốc: " + name);
             }
             list.add(evt);
