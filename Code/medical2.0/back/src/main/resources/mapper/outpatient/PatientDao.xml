@@ -34,7 +34,7 @@
     </sql>
     
     <sql id="patientJoins">
-        LEFT JOIN org_company company ON company.id = a.company_id and company.parent_id  !=0 and company.is_institution !=1
+        LEFT JOIN org_company company ON company.id = a.company_id and company.parent_id  !=0 and (company.is_institution IS NULL OR company.is_institution !=1)
         LEFT JOIN sys_dict_item gender ON gender.value = a.gender
         LEFT JOIN sys_dict_item withPatientNexus ON withPatientNexus.value = a.with_patient_nexus
     </sql>
