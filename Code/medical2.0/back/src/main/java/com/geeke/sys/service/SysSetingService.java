@@ -110,7 +110,13 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                 logger.info("Cài đặt hệ thốngLưuThất bại");
             }
         } catch (Exception e) {
+            // E3: không nuốt lỗi thành false-success nữa — trước đây NPE ở
+            // setFileAndFileByte (content null) vẫn trả 200 success, trong khi
+            // logo chưa lưu và lần save thứ hai không chạy. Ném lại để
+            // GlobalExceptionHandler trả lỗi 500 và transaction rollback lần
+            // save đầu, giữ nguyên trạng thái cài đặt khi lưu file thất bại.
             logger.error("Cài đặt hệ thốngLưungoại lệ", e);
+            throw new RuntimeException("Cài đặt hệ thốngLưuthất bại", e);
         }
         return entity;
     }
@@ -129,7 +135,34 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
             sysFile = new SysFile();
             sysFileContentList.add(new SysFileContent());
         }else {
-            sysFileContentList.add(sysFileContentService.get(sysFile.getId()));
+            // E3: SysFile có dòng nhưng sys_file_content có thể mất (0 dòng
+            // active sau re-import) → get() trả null, add null rồi get(0)
+            // deref NPE ở :144. Thiếu content thì tạo mới như nhánh id trống:
+            // SysFileService.save sẽ insert với id = id của SysFile.
+            // Kèm theo: preInsert của SysFileService copy create_by từ SysFile
+            // đang lưu; SysFile từ JSON chỉ có id nên createBy null → insert
+            // content mới vi phạm NOT NULL. Kế thừa audit fields từ chính
+            // dòng SysFile đã lưu (dữ liệu của nó, không đổi quyền/tenant).
+            // get() không lọc del_flag nên có thể trả dòng đã xóa mềm:
+            // bulkUpdate của SysFileContent không ghi del_flag nên tái dùng
+            // dòng đó không bao giờ hồi sinh được, còn insert content mới
+            // cùng id sẽ đụng PK của dòng đã xóa mềm. Trường hợp này tạo
+            // dòng SysFile mới như nhánh id trống; caller cập nhật FK của
+            // cài đặt sang file mới, dòng file cũ giữ nguyên không mất.
+            SysFileContent existing = sysFileContentService.get(sysFile.getId());
+            if (existing != null && "0".equals(existing.getDelFlag())) {
+                sysFileContentList.add(existing);
+            } else if (existing != null) {
+                sysFile = new SysFile();
+                sysFileContentList.add(new SysFileContent());
+            } else {
+                sysFileContentList.add(new SysFileContent());
+                SysFile persisted = sysFileService.get(sysFile.getId());
+                if (persisted != null) {
+                    sysFile.setCreateBy(persisted.getCreateBy());
+                    sysFile.setCreateDate(persisted.getCreateDate());
+                }
+            }
         }
         MultipartFile file = multipartFile;
 
