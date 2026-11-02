@@ -100,10 +100,20 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
      * đã chặn lượt có subscribeDate khác hôm nay ("Chưa đến giờ hẹn").
      * Idempotent: lượt đã có số thì giữ nguyên, không đánh lại; doctorId
      * rỗng thì giữ nguyên hành vi cũ (không gán, không bịa số).
+     * O1: blank departmentId/doctorId được chuẩn hóa thành NULL trước khi
+     * gọi DAO, vì @Update của DAO luôn set cả 2 cột số và MySQL báo 500
+     * "Incorrect integer value: ''" khi nhận chuỗi rỗng. NULL mang ngữ
+     * nghĩa "gỡ khoa/bác sĩ", không im lặng giữ giá trị cũ như <if> động.
      */
     @Transactional(readOnly = false)
     public int updateStatus(String id,String status,String departmentId,String doctorId)
     {
+        if (StringUtils.isBlank(departmentId)) {
+            departmentId = null;
+        }
+        if (StringUtils.isBlank(doctorId)) {
+            doctorId = null;
+        }
         int res = dao.updateStatus(id,status,departmentId,doctorId);
         if (res > 0 && StringUtils.isNotBlank(doctorId)) {
             Registration existing = dao.get(id);
