@@ -258,9 +258,21 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
 
+    /**
+     * T3 — Quyền sàn parity với save: wxSave ghi (chèn mới hoặc cập
+     * nhật openId cho hồ sơ đã có) nên tài khoản 0 quyền nhận 403
+     * trước khi service chạy. Không nới lỏng cho luồng mini-program
+     * chưa có bằng chứng: client/src không có caller nào cho đường
+     * này, /auth/wxToken chỉ là login thường và Shiro không anon
+     * /outpatient/**, nên không có bằng chứng luồng hợp lệ nào cần
+     * 0 quyền mà vẫn gọi wxSave.
+     */
     //WeChatLưu
     @PostMapping(value = "wxSave")
     public ResponseEntity<JSONObject> wxSave(@RequestBody Patient entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         String id = patientService.wxSave(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
@@ -333,8 +345,13 @@ public class PatientController extends CrudController<PatientService, Patient> {
     }
 
     /* Tra cứu thông tin bệnh nhân theo họ tên và CMND/CCCD rồi đăng ký khám */
+    // T3 — Quyền sàn parity với save (xem wxSave): inquire tạo lượt
+    // khám thật nên tài khoản 0 quyền nhận 403 trước khi service chạy.
     @PostMapping(value = "inquire")
     public ResponseEntity<JSONObject> inquire(@RequestBody Patient patient) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         // Truy vấnThông tin bệnh nhân
         Patient result = patientService.inquire(patient);
         if (result==null){
@@ -349,8 +366,13 @@ public class PatientController extends CrudController<PatientService, Patient> {
     }
 
     /* ThêmBệnh nhânhồ sơánThông tinvàĐăng ký khám */
+    // T3 — Quyền sàn parity với save (xem wxSave): add tạo bệnh nhân
+    // rồi tạo lượt khám nên tài khoản 0 quyền nhận 403 trước service.
     @PostMapping(value = "add")
     public ResponseEntity<JSONObject> add(@RequestBody Patient patient) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         // ThêmThông tin bệnh nhân
         Patient result = patientService.save(patient);
         // Đăng ký khám
