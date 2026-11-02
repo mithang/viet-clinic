@@ -114,14 +114,31 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     @Transactional(readOnly = false)
     public List<SysFile> changeAndSaveSysFileList(MultipartFile[] multipartFiles, String objectId) throws IOException {
         List<SysFile> fileList = new ArrayList<>(); // Tệptập hợpĐối tượng
+        if (multipartFiles == null) {
+            return fileList;
+        }
         for(MultipartFile file : multipartFiles) {
+            // AA3: part file rỗng (filename="" do input file trống) hoặc không tên
+            // không mang nội dung — bỏ qua thay vì crash ở substring bên dưới.
+            // Part không filename không tới được đây qua Spring (đã kiểm chứng
+            // trả 200), nhưng guard null vẫn giữ để các caller khác không NPE.
+            if (file == null) {
+                continue;
+            }
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || originalFilename.isEmpty()) {
+                continue;
+            }
             List<SysFileContent> fileContentList = new ArrayList<>(); // Tệpnội dungtập hợpĐối tượng
             SysFile sysFile = new SysFile();
-            String originalFilename = file.getOriginalFilename();
+            // AA3: tên không có dấu '.' trước đây indexOf trả -1 rồi
+            // substring(-1) ném StringIndexOutOfBoundsException -> 500.
+            // Giữ nguyên hành vi cũ (lấy từ dấu '.' đầu tiên) khi có dấu '.',
+            // không có dấu '.' thì fileType rỗng thay vì crash.
             int begin = originalFilename.indexOf(".");
             int last = originalFilename.length();
             //Lấy đượcTệpsauhậu tốtên
-            String suffix = originalFilename.substring(begin, last);
+            String suffix = begin >= 0 ? originalFilename.substring(begin, last) : "";
             sysFile.setFileType(suffix); // Loại tệp
 
             sysFile.setObjectId(Long.parseLong(objectId)); // Bảng nghiệp vụID
