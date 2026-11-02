@@ -70,6 +70,9 @@
         where
 <!--        company_id in #{jgid}-->
         a.del_flag = "0"
+        <if test="companyId!=null and companyId!=''">
+            and a.company_id=#{companyId}
+        </if>
         <if test="kssj!='' and jssj!='' and kssj!=null and jssj!=null">
            and a.CREATED_TIME >=#{kssj} and a.CREATED_TIME &lt;=#{jssj}
         </if>
@@ -91,6 +94,9 @@
         where
 <!--        company_id in #{jgid}-->
         a.del_flag = "0"
+        <if test="companyId!=null and companyId!=''">
+            and a.company_id=#{companyId}
+        </if>
         <if test="kssj!='' and jssj!='' and kssj!=null and jssj!=null">
             and  a.CREATED_TIME >=#{kssj} and a.CREATED_TIME &lt;=#{jssj}
         </if>

@@ -56,6 +56,13 @@ public class TaskmanageService {
     }
 
     public Page<taskmanagement> selecttasklist(gettaskrcvo rcvo){
+        // Z3e: force tenant filter from session (DAO filter was commented out,
+        // so any tenant listed every tenant's tasks). Empty session keeps
+        // legacy behaviour, same pattern as Z1/Z2/Z3a-Z3d.
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (tenantId != null && !tenantId.isEmpty() && !"null".equals(tenantId)) {
+            rcvo.setCompanyId(tenantId);
+        }
         List<taskmanagement> listtotal=taskmangementDao.selecttasktotal(rcvo);
         int total=listtotal.size();
         List<taskmanagement> list=null;
