@@ -5,6 +5,7 @@ import com.geeke.common.data.Page;
 import com.geeke.outpatient.entity.Blmb;
 import com.geeke.sys.entity.SysFile;
 import com.geeke.sys.service.SysFileService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.taskmanagement.dao.TaskmangementDao;
 import com.geeke.taskmanagement.dao.taskexecutorDao;
 import com.geeke.taskmanagement.entity.*;
@@ -37,6 +38,27 @@ public class TaskmanageService {
 
     @Autowired
     private com.geeke.taskmanagement.dao.taskexecutorDao taskexecutorDao;
+
+    /*
+     * Z3f: fail-closed ownership check for writes touching an existing task.
+     * release/delete/updateaudit/storage UPDATE by id without checking the
+     * old row's company_id, so any permitted token could rewrite another
+     * tenant's task. Missing row keeps legacy behaviour (DAO returns 0);
+     * empty session keeps legacy behaviour, same pattern as Z3a-Z3e.
+     */
+    private void checkTaskOwnership(String id) {
+        if (id == null || id.isEmpty()) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (tenantId == null || tenantId.isEmpty() || "null".equals(tenantId)) {
+            return;
+        }
+        taskmanagement old = taskmangementDao.getById(id);
+        if (old != null && !tenantId.equals(old.getCompanyId())) {
+            throw new ServiceException("Task không thuộc phòng khám hiện tại");
+        }
+    }
 
     @Transactional
     public int inserttask(taskmanagement task)  {
@@ -109,6 +131,8 @@ public class TaskmanageService {
                 taskmangementDao.insertask(task);
                 return task;
             }else {
+                // Z3f: file attach targets an existing task, so check its owner.
+                checkTaskOwnership(counId);
                 taskmanagement byId = this.taskmangementDao.getById(counId);
                 //Lưu tệp đã tải lên
                 List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, byId.getID());
@@ -176,7 +200,12 @@ public class TaskmanageService {
     /*
     tác vụxét duyệt
      */
+    // Z3f: updateaudit had no @Transactional override, so it inherited the
+    // class-level readOnly=true and every legitimate audit failed with a
+    // read-only-connection 500; the foreign-row guard above runs first.
+    @Transactional
     public int updateaudit(taskmanagement task){
+        checkTaskOwnership(task.getID());
         task.setUpdatedBy(SessionUtils.getUser().getUpdateBy());
         task.setUpdatedTime(new Date());
         task.setTaskstatus("1");
@@ -222,6 +251,8 @@ public class TaskmanageService {
 
         if(task.getID()!=null&&!"".equals(task.getID())){
             if("0".equals(countId)){
+                // Z3f: update branch rewrites the task row + its executors.
+                checkTaskOwnership(task.getID());
                 //Lưu tệp đã tải lên
                 if(null!=fileIdUploads && fileIdUploads.length>0){
                     List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, task.getID());
@@ -240,6 +271,8 @@ public class TaskmanageService {
                 taskmangementDao.update(task);
                 return task;
             }else {
+                // Z3f: file attach targets an existing task, so check its owner.
+                checkTaskOwnership(countId);
                 taskmanagement byId = this.taskmangementDao.getById(countId);
                 //Lưu tệp đã tải lên
                 if(null!=fileIdUploads && fileIdUploads.length>0){
@@ -281,6 +314,8 @@ public class TaskmanageService {
                taskmangementDao.insertask(task);
                return task;
            }else {
+               // Z3f: file attach targets an existing task, so check its owner.
+               checkTaskOwnership(countId);
                taskmanagement byId = this.taskmangementDao.getById(countId);
                //Lưu tệp đã tải lên
                if(null!=fileIdUploads && fileIdUploads.length>0){
@@ -316,6 +351,7 @@ public class TaskmanageService {
      */
     @Transactional
     public taskmanagement release(taskmanagement taskmanagement) {
+        checkTaskOwnership(taskmanagement.getID());
         int i =this.taskmangementDao.release(taskmanagement);
         if(i>0){
             //tác vụphátphát hành
@@ -340,6 +376,7 @@ public class TaskmanageService {
 
     @Transactional
     public taskmanagement delete(taskmanagement taskmanagement) {
+        checkTaskOwnership(taskmanagement.getID());
         int i = taskmangementDao.delete(taskmanagement);
 
         if(i>0){
