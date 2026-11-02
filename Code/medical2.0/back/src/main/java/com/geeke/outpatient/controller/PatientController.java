@@ -287,12 +287,17 @@ public class PatientController extends CrudController<PatientService, Patient> {
      * R2 — Tra cứu 1 hồ sơ theo CCCD: trả đủ hồ sơ như getById nên ghi
      * đúng 1 dòng VIEW với patientId đó (chỉ khi tìm thấy; service ném
      * lỗi khi không khớp nên không có dòng audit cho kết quả rỗng).
-     * Không đổi quyền sàn: 2 endpoint này từ trước đã không kiểm tra
-     * quyền (khác getById/listPage có hasAnySessionPermission /
-     * patient:list) — chỉ thêm audit, không hẹp/nới quyền ở đây.
+     * S3 — Quyền sàn parity với getById: tài khoản 0 quyền nhận 403
+     * trước khi service chạy, nên lượt bị chặn cũng không ghi VIEW.
+     * Không lên patient:list: frontend không có caller nào cho endpoint
+     * này, và mức hasAnySessionPermission đã đúng với getById cùng
+     * mức tiết lộ (khác lookupDuplicates/listPage vốn là đường duyệt).
      */
     @PostMapping(value = "getByCard")
     public ResponseEntity<JSONObject> getByCard(@RequestBody Patient patient) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         Patient byCard = patientService.getByCard(patient);
         if (byCard != null) {
             logAccessSafely(RecordAccessAuditService.ACTION_VIEW, byCard.getId(), byCard.getName());
@@ -308,9 +313,14 @@ public class PatientController extends CrudController<PatientService, Patient> {
      * Tái hiện R2: openId thực tế trả đúng 1 dòng, nên 1 lần gọi thường
      * = 1 dòng VIEW như getById; nếu dữ liệu lệch có nhiều hồ sơ cùng
      * openId thì mỗi hồ sơ vẫn có dòng riêng (đúng mục đích nhật ký).
+     * S3 — Quyền sàn như getByCard ở trên (parity getById, không
+     * patient:list): 0 quyền → 403 trước khi service/audit chạy.
      */
     @PostMapping(value = "getByOpenId")
     public ResponseEntity<JSONObject> getByOpenId(@RequestBody Patient patient){
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<Patient> patients = patientService.getByOpenId(patient.getOpenId(),patient.getCompany().getId());
         if (patients != null) {
             for (Patient p : patients) {
