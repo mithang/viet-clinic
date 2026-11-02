@@ -32,11 +32,14 @@
             a.amount_received AS "amountReceived",
             a.amount_discounted AS "amountDiscounted",
             a.return_type AS "returnType",
+            a.amount_status AS "amountStatus",
+            IFNULL(amountStatus.name, '') AS "amountStatusName",
             DATE_FORMAT(a.create_date, '%Y-%m-%d %H:%i:%s') AS "createDate"
         FROM toll_info a
         LEFT JOIN patient patient ON patient.id = a.patient_id
         LEFT JOIN sys_dict_item paymentType ON paymentType.value = a.payment_type
         LEFT JOIN sys_dict_item tollType ON tollType.value = a.toll_type
+        LEFT JOIN sys_dict_item amountStatus ON amountStatus.value = a.amount_status
         WHERE a.company_id = #{companyId}
             AND a.del_flag = #{delFlag}
             AND a.create_date &gt;= #{startDate}
@@ -57,6 +60,24 @@
         WHERE a.company_id = #{companyId}
             AND a.del_flag = #{delFlag}
             AND a.action = 'REFUND'
+            AND a.create_date &gt;= #{startDate}
+            AND a.create_date &lt; #{endDate}
+        ORDER BY a.create_date ASC
+    </select>
+
+    <select id="findCancels" resultType="map">
+        SELECT
+            a.id AS "id",
+            a.toll_id AS "tollId",
+            a.amount_receivable AS "amountReceivable",
+            a.amount_received AS "amountReceived",
+            a.payment_type AS "paymentType",
+            a.create_by AS "createBy",
+            DATE_FORMAT(a.create_date, '%Y-%m-%d %H:%i:%s') AS "createDate"
+        FROM toll_audit_log a
+        WHERE a.company_id = #{companyId}
+            AND a.del_flag = #{delFlag}
+            AND a.action = 'CANCEL'
             AND a.create_date &gt;= #{startDate}
             AND a.create_date &lt; #{endDate}
         ORDER BY a.create_date ASC

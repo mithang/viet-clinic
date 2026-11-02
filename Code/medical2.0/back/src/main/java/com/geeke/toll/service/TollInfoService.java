@@ -768,6 +768,68 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         return tollInfoDao.getTollInfoByRegistrationId(registrationId);
     }
 
+    /**
+     * Hủy phiếu thu chưa thu (H6 research loop).
+     * Chỉ hủy khi phiếu còn hiệu lực (del_flag = '0'), trạng thái là
+     * amountStatus_0 (chưa thanh toán) và thực thu bằng 0/null — tức
+     * chưa có tiền di chuyển. Phiếu đã thu, đã hoàn hoặc đã có thực thu
+     * bị từ chối: hủy chúng phải đi đường hoàn phí, không phải đường này.
+     * Nếu phiếu gắn đơn thuốc đã phát thuốc thì cũng từ chối (không
+     * đảo ngược phát thuốc ở đây). Cùng transaction: ghi 1 dòng
+     * toll_audit_log action = 'CANCEL' trước, rồi xóa mềm phiếu qua
+     * CrudService.delete (del_flag = '1' + sys_action DELETED); lỗi ở
+     * bước nào cũng rollback cả hai. Không chạm recipel/registration:
+     * phiếu chưa thu chưa làm đổi trạng thái thu phí của đơn.
+     * Tenant được CrudService.get/delete kiểm tra (verifyTenantOwnership).
+     */
+    @Transactional(readOnly = false)
+    public TollInfo cancelUnpaidToll(String id) {
+        if (StringUtils.isBlank(id)) {
+            throw new ServiceException("Không tìm thấy phiếu thu phí cần hủy.");
+        }
+        TollInfo info = this.get(id);
+        if (info == null) {
+            throw new ServiceException("Không tìm thấy phiếu thu phí cần hủy.");
+        }
+        // Dao.get không lọc del_flag nên phải kiểm tra tường minh:
+        // phiếu đã xóa mềm trước đó không được hủy lần hai (tránh audit trùng).
+        if (!"0".equals(info.getDelFlag())) {
+            throw new ServiceException("Phiếu thu phí này đã bị hủy trước đó.");
+        }
+        String status = info.getAmountStatus() != null ? info.getAmountStatus().getValue() : null;
+        if (!BizConstants.AMOUNT_STATUS_UNPAID.equals(status)) {
+            throw new ServiceException("Chỉ hủy được phiếu chưa thu (trạng thái chưa thanh toán).");
+        }
+        BigDecimal received = info.getAmountReceived();
+        if (received != null && received.compareTo(BigDecimal.ZERO) != 0) {
+            throw new ServiceException("Phiếu đã có tiền thực thu, không thể hủy theo diện chưa thu.");
+        }
+        if (info.getRecipel() != null && StringUtils.isNotBlank(info.getRecipel().getId())) {
+            RecipelInfo recipel = recipelInfoService.get(info.getRecipel().getId());
+            if (recipel != null && "1".equals(recipel.getIsDispension())) {
+                throw new ServiceException("Đơn thuốc đã phát thuốc, không thể hủy phiếu thu phí.");
+            }
+        }
+        TollAuditLog auditLog = new TollAuditLog();
+        auditLog.setCompany(info.getCompany() != null
+                ? info.getCompany()
+                : SessionUtils.getUser().getCompany());
+        auditLog.setTollId(info.getId());
+        auditLog.setRecipelId(info.getRecipel() != null ? info.getRecipel().getId() : null);
+        auditLog.setPatientId(info.getPatient() != null ? info.getPatient().getId() : null);
+        auditLog.setAction("CANCEL");
+        auditLog.setAmountReceivable(info.getAmountReceivable());
+        auditLog.setAmountReceived(info.getAmountReceived());
+        auditLog.setPaymentType(info.getPaymentType() != null
+                ? info.getPaymentType().getValue() : null);
+        auditLog.setAmountStatus(status);
+        auditLog.setRemarks("Hủy phiếu chưa thu " + info.getTollNumber());
+        auditLog.preInsert();
+        tollAuditLogDao.insertAudit(auditLog);
+        this.delete(info);
+        return info;
+    }
+
     public List<TollInfo> getCreateBy(List<Parameter> parameters, String orderby) {
         PageRequest pageRequest = new PageRequest(parameters, orderby);
         return this.dao.getCreateBy(pageRequest);

@@ -93,6 +93,31 @@ public class ChargeSummaryService {
         if (refunds == null) {
             refunds = new ArrayList<>();
         }
+        // H6: các phiếu chưa thu đã hủy trong ngày (audit CANCEL). Phiếu
+        // đã hủy không còn trong rows nên không làm lệch totals thu phí;
+        // mục cancels chỉ để đối chiếu, giống mục refunds.
+        List<Map<String, Object>> cancels = chargeSummaryDao.findCancels(params);
+        if (cancels == null) {
+            cancels = new ArrayList<>();
+        }
+        // H6-fix (lỗi tìm ra khi kiểm chứng UI): toll_info.id là BIGINT
+        // nên MyBatis trả Long, Jackson ghi thành số JSON và JS (float64)
+        // làm tròn id tuyết rơi 19 chữ số (…4580 thành …4600), khiến nút
+        // Hủy gọi sai id và backend trả 400 "không tìm thấy". Ép id và
+        // tollId thành chuỗi trước khi trả: frontend nối chuỗi vào URL
+        // nên giữ nguyên từng chữ số. Entity CRUD không bị vì id của
+        // DataEntity là String; chỉ các Map của tổng kết ngày mới bị.
+        for (Map<String, Object> row : rows) {
+            row.put("id", str(row.get("id")));
+        }
+        for (Map<String, Object> audit : refunds) {
+            audit.put("id", str(audit.get("id")));
+            audit.put("tollId", str(audit.get("tollId")));
+        }
+        for (Map<String, Object> audit : cancels) {
+            audit.put("id", str(audit.get("id")));
+            audit.put("tollId", str(audit.get("tollId")));
+        }
 
         BigDecimal totalReceivable = BigDecimal.ZERO;
         BigDecimal totalReceived = BigDecimal.ZERO;
@@ -133,6 +158,11 @@ public class ChargeSummaryService {
             refundTotal = refundTotal.add(toDecimal(refund.get("amountReceived")));
         }
 
+        BigDecimal cancelTotal = BigDecimal.ZERO;
+        for (Map<String, Object> cancel : cancels) {
+            cancelTotal = cancelTotal.add(toDecimal(cancel.get("amountReceivable")));
+        }
+
         JSONObject totals = new JSONObject();
         totals.put("chargeCount", rows.size());
         totals.put("totalReceivable", totalReceivable);
@@ -141,6 +171,8 @@ public class ChargeSummaryService {
         totals.put("byPaymentMethod", new ArrayList<>(byPaymentMethod.values()));
         totals.put("refundCount", refunds.size());
         totals.put("refundTotal", refundTotal);
+        totals.put("cancelCount", cancels.size());
+        totals.put("cancelTotal", cancelTotal);
 
         JSONObject data = new JSONObject();
         data.put("date", date.format(DATE_FMT));
@@ -150,6 +182,7 @@ public class ChargeSummaryService {
         data.put("rows", rows);
         data.put("totals", totals);
         data.put("refunds", refunds);
+        data.put("cancels", cancels);
         return data;
     }
 

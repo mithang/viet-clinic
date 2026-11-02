@@ -20,6 +20,14 @@ export const getTollInfoByRegistrationId = (registrationId) =>
         method: 'get'
     })
 
+// Hủy phiếu thu chưa thu (H6): chỉ phiếu amountStatus_0 + thực thu 0
+export const cancelTollInfo = (id) =>
+    request({
+        url: '/toll/tollInfo/cancel/' + id,
+        method: 'post',
+        data: {}
+    })
+
 export const saveTollTollInfo = (tollInfos, type) =>
     request({
         url: '/toll/tollInfo/save/toll/' + type,

@@ -28,4 +28,12 @@ public interface ChargeSummaryDao {
      * một tenant trong cùng cửa sổ ngày.
      */
     List<Map<String, Object>> findRefunds(Map<String, Object> params);
+
+    /**
+     * Các dòng audit hủy phiếu chưa thu (action = 'CANCEL', del_flag = '0',
+     * H6) của một tenant trong cùng cửa sổ ngày. Phiếu đã hủy không còn
+     * trong findCharges (del_flag = '1') nên mục này là nơi duy nhất
+     * tổng kết ngày còn thấy được phiếu đã hủy.
+     */
+    List<Map<String, Object>> findCancels(Map<String, Object> params);
 }

@@ -109,6 +109,17 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
         return ResponseEntity.ok(ResultUtil.successJson(""));
     }
 
+    // Hủy phiếu thu chưa thu (H6): chỉ phiếu amountStatus_0 + thực thu 0
+    // mới hủy được; các trường hợp khác service ném ServiceException
+    // (global handler trả 400 kèm thông báo tiếng Việt). Fail-closed
+    // như các endpoint tùy chỉnh khác của controller này.
+    @PostMapping(value = "cancel/{id}")
+    public ResponseEntity<JSONObject> cancelUnpaidToll(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
+        TollInfo cancelled = tollInfoService.cancelUnpaidToll(id);
+        return ResponseEntity.ok(ResultUtil.successJson(cancelled.getTollNumber()));
+    }
+
     @PostMapping(value = "getCreateBy")
     public ResponseEntity<JSONObject> getCreateBy(@RequestBody SearchParams searchParams) {
         List<TollInfo> result = tollInfoService.getCreateBy(searchParams.getParams(), searchParams.getOrderby());

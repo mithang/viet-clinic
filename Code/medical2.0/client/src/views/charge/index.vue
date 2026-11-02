@@ -528,7 +528,18 @@
           <el-table-column prop="amountReceived" label="Thực thu (VNĐ)" :formatter="summaryMoneyFormatter"></el-table-column>
           <el-table-column prop="amountDiscounted" label="Ưu đãi (VNĐ)" :formatter="summaryMoneyFormatter"></el-table-column>
           <el-table-column prop="returnType" label="Hoàn phí"></el-table-column>
+          <el-table-column prop="amountStatusName" label="Trạng thái"></el-table-column>
           <el-table-column prop="createDate" label="Thời gian tạo"></el-table-column>
+          <el-table-column label="Thao tác">
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.amountStatus === 'amountStatus_0' && (!scope.row.amountReceived || Number(scope.row.amountReceived) === 0)"
+                size="mini"
+                :type="chargeSummaryCancelConfirmId === scope.row.id ? 'danger' : ''"
+                @click="cancelSummaryRow(scope.row)"
+              >{{ chargeSummaryCancelConfirmId === scope.row.id ? "Xác nhận hủy?" : "Hủy phiếu chưa thu" }}</el-button>
+            </template>
+          </el-table-column>
         </el-table>
         <div style="margin-top: 12px; font-weight: bold">
           Tổng cộng: {{ chargeSummaryData.totals.chargeCount }} phiếu —
@@ -557,6 +568,19 @@
             <el-table-column prop="createDate" label="Thời gian"></el-table-column>
           </el-table>
         </div>
+        <div style="margin-top: 8px">
+          <div style="font-weight: bold">
+            Phiếu chưa thu đã hủy (theo audit log): {{ chargeSummaryData.totals.cancelCount }} dòng —
+            Tổng hủy {{ formatVND(chargeSummaryData.totals.cancelTotal) }}
+          </div>
+          <el-table :data="chargeSummaryData.cancels" style="width: 100%; margin-top: 8px">
+            <el-table-column prop="tollId" label="Phiếu đã hủy"></el-table-column>
+            <el-table-column prop="amountReceivable" label="Phải thu đã hủy (VNĐ)" :formatter="summaryMoneyFormatter"></el-table-column>
+            <el-table-column prop="paymentType" label="Phương thức"></el-table-column>
+            <el-table-column prop="createBy" label="Người thực hiện"></el-table-column>
+            <el-table-column prop="createDate" label="Thời gian"></el-table-column>
+          </el-table>
+        </div>
       </div>
       <div slot="footer">
         <el-button @click="chargeSummaryDialogVisible = false">Đóng</el-button>
@@ -568,7 +592,7 @@
 <script>
 import { listRegistrationPages } from "@/api/outpatient/registration";
 import { allQueryMedicalRecord } from "@/api/outpatient/medicalRecord";
-import { saveTollTollInfo } from "@/api/toll/tollInfo";
+import { saveTollTollInfo, cancelTollInfo } from "@/api/toll/tollInfo";
 import { getVietqrConfig, saveVietqrConfig } from "@/api/vietqr";
 import { getDayChargeSummary } from "@/api/chargeSummary";
 import { buildVietqrPayload } from "@/utils/vietqr";
@@ -638,6 +662,9 @@ export default {
       chargeSummaryDialogVisible: false,
       chargeSummaryDate: "",
       chargeSummaryData: null,
+      // H6: id phiếu đang chờ xác nhận hủy lần 2 (không dùng hộp thoại
+      // xác nhận toàn cục để tránh phụ thuộc đăng ký MessageBox).
+      chargeSummaryCancelConfirmId: null,
       chargeSummaryLoading: false,
       patientList: [], // Lấy từ registration/v2/list, không còn dữ liệu mẫu
       patientTotalCount: 0, // Bệnh nhân tổng số
@@ -1002,6 +1029,34 @@ export default {
           this.chargeSummaryLoading = false;
         });
     },
+    // Hủy phiếu chưa thu (H6) từ bảng tổng kết ngày: bấm lần 1 để xác
+    // nhận, bấm lần 2 mới gọi API; hủy xong tải lại tổng kết để phiếu
+    // biến khỏi bảng phiếu và hiện ở mục "Phiếu chưa thu đã hủy".
+    cancelSummaryRow(row) {
+      if (this.chargeSummaryCancelConfirmId !== row.id) {
+        this.chargeSummaryCancelConfirmId = row.id;
+        return;
+      }
+      this.chargeSummaryCancelConfirmId = null;
+      cancelTollInfo(row.id)
+        .then((res) => {
+          // request mặc định là safeRequest: lỗi HTTP cũng resolve về
+          // error body thay vì reject, nên bắt buộc kiểm tra code 100
+          // trước khi báo thành công (đã gặp toast thành công giả khi
+          // id bị làm tròn và backend trả 400).
+          if (!res || res.code !== 100) {
+            this.$message.error((res && res.msg) || "Không hủy được phiếu chưa thu");
+            return;
+          }
+          this.$message.success("Đã hủy phiếu " + row.tollNumber);
+          this.loadChargeSummary();
+        })
+        .catch((error) => {
+          this.$message.error(
+            (error && error.message) || "Không hủy được phiếu chưa thu"
+          );
+        });
+    },
     // CSV tạo phía client từ JSON API: UTF-8 BOM để Excel mở đúng
     // tiếng Việt; một dòng mỗi phiếu + các dòng tổng kết ở cuối.
     downloadChargeSummaryCsv() {
@@ -1047,6 +1102,7 @@ export default {
         lines.push(["", "", item.paymentMethod, "Theo phương thức", item.totalReceivable, item.totalReceived, item.totalDiscounted, "", ""].map(esc).join(","));
       });
       lines.push(["", "", "", "HOÀN PHÍ (AUDIT)", "", t.refundTotal, "", t.refundCount + " dòng", ""].map(esc).join(","));
+      lines.push(["", "", "", "HỦY PHIẾU CHƯA THU (AUDIT)", t.cancelTotal, "", "", t.cancelCount + " dòng", ""].map(esc).join(","));
       const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
         type: "text/csv;charset=utf-8",
       });
