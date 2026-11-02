@@ -28,7 +28,9 @@ import com.google.common.collect.Maps;
 public class DispensingService extends CrudService<DispensingDao, Dispensing>{
 
     public Page<DispensingReportEvt> reportList(SearchParams searchParams) {
-        PageRequest pageRequest = new PageRequest(searchParams.getOffset(),  searchParams.getLimit(),searchParams.getParams(), searchParams.getOrderby());
+        // Z2a: strip company_id body + ep session tenant (mau buildTenantPageRequest);
+        // SQL DispensingDao.xml loc them theo PageRequest id/institution.
+        PageRequest pageRequest = buildTenantPageRequest(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return paginate(
             () -> this.dao.reportListCount(pageRequest),
             () -> this.dao.reportList(pageRequest)
@@ -36,7 +38,8 @@ public class DispensingService extends CrudService<DispensingDao, Dispensing>{
     }
 
     public DispensingReportTotalEvt reportAmount(SearchParams searchParams) {
-        PageRequest pageRequest = new PageRequest(searchParams.getOffset(),  searchParams.getLimit(),searchParams.getParams(), searchParams.getOrderby());
+        // Z2a: nhu reportList.
+        PageRequest pageRequest = buildTenantPageRequest(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return this.dao.reportAmount(pageRequest);
     }
 
@@ -46,7 +49,8 @@ public class DispensingService extends CrudService<DispensingDao, Dispensing>{
 
     @Transactional(readOnly = true)
     public Page<DispensingReportEvt> getOrganizationList(SearchParams searchParams) {
-        PageRequest pageRequest = new PageRequest(searchParams.getOffset(),  searchParams.getLimit(),searchParams.getParams(), searchParams.getOrderby());
+        // Z2a: nhu reportList.
+        PageRequest pageRequest = buildTenantPageRequest(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return paginate(
             () -> this.dao.getOrganizationListCount(pageRequest),
             () -> this.dao.getOrganizationList(pageRequest)

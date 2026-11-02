@@ -264,6 +264,9 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             AND supplierStock.drug_id is not null
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, a.company_id = #{id}, (a.company_id = #{institution} or a.company_id = #{id}))
+            </if>
             <include refid="Common.whereParams"/>
         </where>
     </select>
@@ -307,6 +310,9 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             AND supplierStock.drug_id is not null
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, a.company_id = #{id}, (a.company_id = #{institution} or a.company_id = #{id}))
+            </if>
             <include refid="Common.whereParams"/>
         </where>
         <choose>
@@ -342,6 +348,9 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             AND supplierStock.drug_id is not null
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, a.company_id = #{id}, (a.company_id = #{institution} or a.company_id = #{id}))
+            </if>
             <include refid="Common.whereParams"/>
         </where>
         <choose>
@@ -370,6 +379,9 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             AND supplierStock.drug_id is not null
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, a.company_id = #{id}, (a.company_id = #{institution} or a.company_id = #{id}))
+            </if>
             <include refid="Common.whereParams"/>
         </where>
     </select>
@@ -408,6 +420,9 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             AND supplierStock.drug_id is not null
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, a.company_id = #{id}, (a.company_id = #{institution} or a.company_id = #{id}))
+            </if>
             <include refid="Common.whereParams"/>
         </where>
         <choose>
