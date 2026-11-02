@@ -3,6 +3,8 @@
     <el-row style="margin-bottom: 12px;">
       <el-button type="primary" @click="openCreateDialog">Ghi nhận yêu cầu mới</el-button>
       <el-button @click="loadPending">Tải lại hàng chờ</el-button>
+      <el-input id="lookupPhoneInput" v-model="lookupPhone" placeholder="Tra cứu / in lại theo SĐT" style="width: 200px; margin-left: 12px;" />
+      <el-button id="lookupPriorButton" @click="lookupPriorByPhone">Tra cứu / in lại</el-button>
       <span style="margin-left: 12px; color: #909399;">
         Yêu cầu pending không ghi dữ liệu khám chữa; xác nhận sẽ tạo lịch hẹn thật
         (phiếu đăng ký với ngày hẹn/dịch vụ), từ chối giữ lại lý do.
@@ -123,6 +125,7 @@ export default {
     return {
       pendingList: [],
       pendingTotal: 0,
+      lookupPhone: '',
       emptyText: 'Không có yêu cầu đặt lịch đang chờ',
       createDialogVisible: false,
       rejectDialogVisible: false,
@@ -258,6 +261,34 @@ export default {
           this.priorList = responseData.data.rows || []
           this.priorDialogVisible = true
         }
+      })
+    },
+    // M1: in lại phiếu đã xác nhận khi SĐT chỉ có 1 booking. Đường
+    // in lại cũ chỉ tới được từ 1 hàng pending khác của cùng SĐT
+    // (nút "Yêu cầu trước đó" trên hàng chờ), nên SĐT chỉ có 1
+    // booking đã xác nhận thì mất đường in lại sau khi đóng dialog
+    // sau xác nhận. Ô này gọi thẳng endpoint prior sẵn có (mọi
+    // trạng thái, tenant-scoped, fail-closed ở backend) rồi mở
+    // dialog trước đó vốn đã có nút in cho status '1'; không nới
+    // listPending nên ngữ nghĩa tab hàng chờ không đổi.
+    lookupPriorByPhone() {
+      if (!this.lookupPhone) {
+        this.$message.warning('Vui lòng nhập số điện thoại cần tra cứu')
+        return
+      }
+      listPriorBookingRequests({ phone: this.lookupPhone, offset: 0, limit: 50 }).then((responseData) => {
+        if (responseData.code === 100) {
+          this.priorList = responseData.data.rows || []
+          if (this.priorList.length === 0) {
+            this.$message.warning('Không tìm thấy yêu cầu nào cho số điện thoại này')
+            return
+          }
+          this.priorDialogVisible = true
+        } else {
+          this.$message.warning('Số điện thoại không hợp lệ hoặc không tra cứu được')
+        }
+      }).catch(() => {
+        this.$message.warning('Số điện thoại không hợp lệ hoặc không tra cứu được')
       })
     }
   }

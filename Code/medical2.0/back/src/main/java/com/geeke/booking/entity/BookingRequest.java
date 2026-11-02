@@ -2,6 +2,8 @@ package com.geeke.booking.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.geeke.common.persistence.DataEntity;
 import com.geeke.org.entity.Company;
 import com.geeke.utils.SessionUtils;
@@ -124,6 +126,11 @@ public class BookingRequest extends DataEntity<BookingRequest> {
         this.rejectReason = rejectReason;
     }
 
+    // M1: registrationId là Snowflake BIGINT — serialize thành chuỗi
+    // như confirm() vốn đã trả String, nếu không JS làm tròn float64
+    // và phiếu in lại từ prior sẽ sai mã (đã tái hiện: ...0970 thành
+    // ...1000). Tiền lệ: ToStringSerializer ở PersonalTheme/SysFile.
+    @JsonSerialize(using = ToStringSerializer.class)
     public Long getRegistrationId() {
         return registrationId;
     }
