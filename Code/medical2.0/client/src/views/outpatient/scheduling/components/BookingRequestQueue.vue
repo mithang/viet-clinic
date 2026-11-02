@@ -2,7 +2,7 @@
   <div>
     <el-row style="margin-bottom: 12px;">
       <el-button type="primary" @click="openCreateDialog">Ghi nhận yêu cầu mới</el-button>
-      <el-button @click="loadPending">Tải lại hàng chờ</el-button>
+      <el-button @click="loadPending(1)">Tải lại hàng chờ</el-button>
       <el-input id="lookupPhoneInput" v-model="lookupPhone" placeholder="Tra cứu / in lại theo SĐT" style="width: 200px; margin-left: 12px;" />
       <el-button id="lookupPriorButton" @click="lookupPriorByPhone">Tra cứu / in lại</el-button>
       <span style="margin-left: 12px; color: #909399;">
@@ -27,7 +27,17 @@
         </template>
       </el-table-column>
     </el-table>
-    <div v-if="pendingTotal > pendingList.length" style="margin-top: 8px; color: #909399;">
+    <el-pagination
+      v-if="pendingTotal > pendingPageSize"
+      id="pendingPagination"
+      style="margin-top: 12px; text-align: right;"
+      :current-page="pendingPage"
+      :page-size="pendingPageSize"
+      layout="total, prev, pager, next"
+      :total="pendingTotal"
+      @current-change="onPendingPageChange"
+    />
+    <div v-else-if="pendingTotal > pendingList.length" style="margin-top: 8px; color: #909399;">
       và {{ pendingTotal - pendingList.length }} yêu cầu khác
     </div>
 
@@ -125,6 +135,8 @@ export default {
     return {
       pendingList: [],
       pendingTotal: 0,
+      pendingPage: 1,
+      pendingPageSize: 10,
       lookupPhone: '',
       emptyText: 'Không có yêu cầu đặt lịch đang chờ',
       createDialogVisible: false,
@@ -175,16 +187,32 @@ export default {
       }
       return 'Chờ xử lý'
     },
-    loadPending() {
-      listPendingBookingRequests({ offset: 0, limit: 10 }).then((responseData) => {
+    // M2: phân trang hàng chờ. Trước đây loadPending hardcode
+    // offset 0/limit 10 nên các hàng từ 11 trở đi không tới được
+    // (chỉ hiện dòng "và N yêu cầu khác"), dù backend đã hỗ trợ
+    // offset/limit. Giữ page size 10 nên giao diện không đổi khi
+    // hàng chờ nhỏ; các thao tác xác nhận/từ chối gọi loadPending()
+    // không tham số để ở lại đúng trang đang xem, và nếu trang đó
+    // trống sau khi xóa thì lùi về trang trước thay vì để bảng rỗng.
+    loadPending(page) {
+      const targetPage = page || this.pendingPage
+      const offset = (targetPage - 1) * this.pendingPageSize
+      listPendingBookingRequests({ offset: offset, limit: this.pendingPageSize }).then((responseData) => {
         if (responseData.code === 100) {
           this.pendingList = responseData.data.rows || []
           this.pendingTotal = responseData.data.total || 0
+          this.pendingPage = targetPage
+          if (this.pendingList.length === 0 && this.pendingPage > 1 && this.pendingTotal > 0) {
+            this.loadPending(this.pendingPage - 1)
+          }
         }
       }).catch(() => {
         this.pendingList = []
         this.pendingTotal = 0
       })
+    },
+    onPendingPageChange(page) {
+      this.loadPending(page)
     },
     openCreateDialog() {
       this.form = {
