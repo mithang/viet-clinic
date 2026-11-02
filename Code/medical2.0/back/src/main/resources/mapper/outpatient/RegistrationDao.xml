@@ -515,7 +515,8 @@
             ipt_otp_no,
             setl_id,
             card_type,
-            is_pre
+            is_pre,
+            queue_number
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
         (
@@ -567,7 +568,8 @@
             #{entity.iptOtpNo},
             #{entity.setlId},
             #{entity.cardType.value},
-            #{entity.isPre}
+            #{entity.isPre},
+            #{entity.queueNumber}
         )
         </foreach>
     </insert>
@@ -713,7 +715,7 @@
             <trim prefix="subscribe_date=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.subscribeDate}
-                </foreach>subscribeProject
+                </foreach>
             </trim>
             <trim prefix="subscribe_project=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
@@ -732,7 +734,12 @@
             </trim>
             <trim prefix="treatment_date=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.treatment_date}
+                    when id=#{entity.id} then #{entity.treatmentDate}
+                </foreach>
+            </trim>
+            <trim prefix="queue_number=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.queueNumber}
                 </foreach>
             </trim>
         </set>

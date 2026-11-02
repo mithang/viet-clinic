@@ -328,7 +328,16 @@
             update_date,
             del_flag,
             western_diagnose,
-            china_diagnose
+            china_diagnose,
+            diagnosis_code,
+            vital_pulse,
+            vital_bp_sys,
+            vital_bp_dia,
+            vital_temperature,
+            vital_resp_rate,
+            vital_spo2,
+            vital_weight,
+            vital_height
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
         (
@@ -365,7 +374,16 @@
             #{entity.updateDate},
             #{entity.delFlag},
             #{entity.westernDiagnose},
-            #{entity.chinaDiagnose}
+            #{entity.chinaDiagnose},
+            #{entity.diagnosisCode},
+            #{entity.vitalPulse},
+            #{entity.vitalBpSys},
+            #{entity.vitalBpDia},
+            #{entity.vitalTemperature},
+            #{entity.vitalRespRate},
+            #{entity.vitalSpo2},
+            #{entity.vitalWeight},
+            #{entity.vitalHeight}
         )
         </foreach>
     </insert>
@@ -496,6 +514,51 @@
             <trim prefix="file_id=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.fileId}
+                </foreach>
+            </trim>
+            <trim prefix="diagnosis_code=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.diagnosisCode}
+                </foreach>
+            </trim>
+            <trim prefix="vital_pulse=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalPulse}
+                </foreach>
+            </trim>
+            <trim prefix="vital_bp_sys=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalBpSys}
+                </foreach>
+            </trim>
+            <trim prefix="vital_bp_dia=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalBpDia}
+                </foreach>
+            </trim>
+            <trim prefix="vital_temperature=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalTemperature}
+                </foreach>
+            </trim>
+            <trim prefix="vital_resp_rate=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalRespRate}
+                </foreach>
+            </trim>
+            <trim prefix="vital_spo2=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalSpo2}
+                </foreach>
+            </trim>
+            <trim prefix="vital_weight=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalWeight}
+                </foreach>
+            </trim>
+            <trim prefix="vital_height=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.vitalHeight}
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
