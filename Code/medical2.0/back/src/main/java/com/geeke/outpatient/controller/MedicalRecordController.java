@@ -124,6 +124,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
                                                  @RequestParam(name = "delFileIds",required=false) String strDelFileIds,
                                                  @RequestParam(name = "medicalFiles",required=false) MultipartFile[] medicalFiles
                                                  ) throws Exception {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC U1: duong ghi nhu cac duong ghi cung controller (v2/allSave tunghi de duoc bang token 0 quyen).
         ReceptionEvt receptionEvt = JSONObject.parseObject(strEntity, ReceptionEvt.class);
 
         for (RecipelInfoEvt recipelInfoEvtList : receptionEvt.getRecipelInfoEvtList()) {
@@ -141,6 +142,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
 
     @PostMapping(value = "addRecipel")
     public ResponseEntity<JSONObject> addRecipel(@RequestBody ReceptionEvt receptionEvt) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC U1: duong ghi nhu cac duong ghi cung controller (hien 500 ca 2 token do remote_diagnosis rong — loi cu, guard van ap nhu T1 instant/getByOrder).
         medicalRecordService.saveRecipelInfoEvtTo(receptionEvt.getRecipelInfoEvtList(), receptionEvt.getId());
         return ResponseEntity.ok(ResultUtil.successJson(receptionEvt.getId()));
     }
