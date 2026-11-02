@@ -1098,8 +1098,16 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         return drugStuffEvt;
     }
     @Transactional(readOnly = false)
-    public List<RecipelInfoDTO> getByRegistrationId(List<Parameter> parameters,int limit,int offset,String order) {
-        PageRequest pageRequest = new PageRequest(offset, limit, parameters, order);
+    public List<RecipelInfoDTO> getByRegistrationId(List<Parameter> parameters,int limit,int offset,String registrationId) {
+        // K1: tham số này KHÔNG phải mệnh đề ORDER BY mà là id lượt khám mà
+        // frontend gửi qua trường order (HistoricalCases/historyRecipel đặt
+        // order = clickId). Trước đây nó đi qua PageRequest(order) nên
+        // sanitizeOrderBy ném IllegalArgumentException với mọi id số
+        // (regex đòi ký tự đầu là chữ/_/backtick) -> history/recipel luôn 500.
+        // Chuyển id sang khe id sẵn có của PageRequest (constructor 5 tham
+        // số), order để "" để không chạm whitelist ORDER BY; SQL dùng #{id}
+        // làm tham số ràng buộc (prepared statement) nên không mở injection.
+        PageRequest pageRequest = new PageRequest(offset, limit, parameters, "", registrationId);
         List<RecipelInfoDTO> recipelInfos = recipelInfoService.getHistoryRecipel(pageRequest);
         if (CollectionUtils.isEmpty(recipelInfos)) {
             return recipelInfos;
