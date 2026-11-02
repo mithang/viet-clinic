@@ -122,9 +122,16 @@ public class DataBean {
                 .build();
         PageRequest pageRequest = new PageRequest(parameters2, "");
         List<MedicalRecord> medicalRecords = medicalRecordDao.listAll(pageRequest);
-        MedicalRecord medicalRecord = medicalRecords.get(0);
-        //MedicalRecord medicalRecord = medicalRecordDao.get(recipelInfo.getMedicalRecord().getId());
-        Registration registration = registrationService.get(medicalRecord.getRegistration().getId());
+        MedicalRecord medicalRecord = null;
+        Registration registration;
+        if (null != medicalRecords && !medicalRecords.isEmpty()) {
+            medicalRecord = medicalRecords.get(0);
+            registration = registrationService.get(medicalRecord.getRegistration().getId());
+        } else {
+            // Lượt khám chưa có hồ sơ: lấy lượt khám từ chính đơn thuốc thay vì crash get(0);
+            // chẩn đoán để trống bên dưới, theo đúng ngữ nghĩa medicalRecord null ở C3.
+            registration = registrationService.get(recipelInfo.getRegistration().getId());
+        }
         Patient patient = patientService.get(registration.getPatientId().getId());
         List<TollInfo> byRecipeId = tollInfoService.getByRecipeId(recipelInfoId);
         TollInfo tollInfo = null;
@@ -140,14 +147,14 @@ public class DataBean {
         recipelTempletEvt.setName("Họ tên: " + patient.getName());
         recipelTempletEvt.setGender("Giới tính: " + patient.getGender().getName());
         recipelTempletEvt.setTreatType(registration.getTreatType().getName());
-        String billDate = DateUtils.formatDate(recipelInfo.getCreateDate(), "yyyyNămMMThángddNgày");
+        String billDate = DateUtils.formatDate(recipelInfo.getCreateDate(), "yyyy'Năm'MM'Tháng'dd'Ngày'");
         recipelTempletEvt.setBillDate("lập đơnNgày: " + billDate);
         recipelTempletEvt.setAge("Tuổi: " + patient.getAge() + " tuổi");
         recipelTempletEvt.setFeeType("Loại phí: " + (null == tollInfo ? "" : tollInfo.getPaymentType().getName()));
         recipelTempletEvt.setDispenseDate("0".equals(type) ? "" : ("Ngày phát thuốc: " + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getDispensionDate())));
         recipelTempletEvt.setIdCard("Số CMND/CCCD: " + patient.getCard());
-        recipelTempletEvt.setDiagnose("Chẩn đoán lâm sàng: " + (StringUtils.isNotBlank(medicalRecord.getWesternDiagnose()) ? "Chẩn đoán tây y: " + medicalRecord.getWesternDiagnose() + ";" : "")
-                + (StringUtils.isNotBlank(medicalRecord.getChinaDiagnose()) ? "Chẩn đoán đông y: " + medicalRecord.getChinaDiagnose() + ";" : ""));
+        recipelTempletEvt.setDiagnose("Chẩn đoán lâm sàng: " + (null != medicalRecord && StringUtils.isNotBlank(medicalRecord.getWesternDiagnose()) ? "Chẩn đoán tây y: " + medicalRecord.getWesternDiagnose() + ";" : "")
+                + (null != medicalRecord && StringUtils.isNotBlank(medicalRecord.getChinaDiagnose()) ? "Chẩn đoán đông y: " + medicalRecord.getChinaDiagnose() + ";" : ""));
         recipelTempletEvt.setDoctor("Bác sĩ: " + registration.getDoctor().getName());
         recipelTempletEvt.setFee("thuốcphí: " + recipelInfo.getFee() + " đồng");
         recipelTempletEvt.setEntrust(StringUtils.isBlank(recipelInfo.getEntrust()) ? "" : "Hạng mục y lệnh: " + recipelInfo.getEntrust());
