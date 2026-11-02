@@ -38,12 +38,14 @@ public class DispensingController extends CrudController<DispensingService, Disp
      */
     @PostMapping(value = "reportList")
     public ResponseEntity<JSONObject> reportList(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
         Page<DispensingReportEvt> result = dispensingService.reportList(searchParams);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "getOrganizationList")
     public ResponseEntity<JSONObject> getOrganizationList(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
         Page<DispensingReportEvt> result = dispensingService.getOrganizationList(searchParams);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -55,6 +57,7 @@ public class DispensingController extends CrudController<DispensingService, Disp
      */
     @PostMapping(value = "reportAmount")
     public ResponseEntity<JSONObject> reportAmount(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
         DispensingReportTotalEvt dispensingReportTotalEvt = dispensingService.reportAmount(searchParams);
         return ResponseEntity.ok(ResultUtil.successJson(dispensingReportTotalEvt));
     }

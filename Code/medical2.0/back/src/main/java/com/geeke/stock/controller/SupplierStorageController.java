@@ -29,6 +29,7 @@ public class SupplierStorageController extends CrudController<SupplierStorageSer
 
     @PostMapping(value = "cancel")
     public ResponseEntity<JSONObject> cancel(@RequestBody SupplierStorage entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
         supplierStorageService.cancel(entity.getId());
         return ResponseEntity.ok(ResultUtil.successJson());
     }
@@ -45,6 +46,7 @@ public class SupplierStorageController extends CrudController<SupplierStorageSer
                                                  @RequestParam(required = false) String endTime,
                                                  @RequestParam int limit,
                                                  @RequestParam int offset) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
         Page<SupplierStorage> result = supplierStorageService.listByCode(pinyinCode, status, startTime, endTime, limit, offset);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

@@ -33,6 +33,7 @@ public class SupplierOutboundDetailController extends CrudController<SupplierOut
 
     @GetMapping("/listByBoutbound/{outboundId}")
     public ResponseEntity<JSONObject> listByBoutbound(@PathVariable("outboundId")String outboundId) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
         List<SupplierOutboundDetail> result = supplierOutboundDetailService.getByOutboundId(outboundId);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

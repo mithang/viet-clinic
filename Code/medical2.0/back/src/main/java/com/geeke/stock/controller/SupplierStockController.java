@@ -52,6 +52,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
 
     @GetMapping("/stock/{sid}")
     public ResponseEntity<JSONObject> getByStorageId(@PathVariable("sid") String sid) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
         List<SupplierStock> byStorageId = supplierStockService.getByStorageId(sid);
         return ResponseEntity.ok(ResultUtil.successJson(byStorageId));
     }
