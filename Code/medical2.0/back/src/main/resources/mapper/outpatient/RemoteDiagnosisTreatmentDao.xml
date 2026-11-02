@@ -192,4 +192,21 @@
         WHERE id = #{id}
     </update>
 
+    <!-- X2: chỉ SELECT company_id, phục vụ kiểm tra sở hữu ở controller -->
+    <select id="getRemoteDiagnosisCompanyId" parameterType="String" resultType="String">
+        select a.company_id from remote_diagnosis a where a.id = #{id}
+    </select>
+
+    <select id="getRemoteDiagnosisCompanyIdByRegistrationId" parameterType="String" resultType="String">
+        select a.company_id from remote_diagnosis a where a.registration_id = #{registrationId} limit 1
+    </select>
+
+    <select id="getRegistrationCompanyId" parameterType="String" resultType="String">
+        select a.company_id from registration a where a.id = #{id}
+    </select>
+
+    <select id="getRecipelInfoCompanyId" parameterType="String" resultType="String">
+        select a.company_id from recipel_info a where a.id = #{id}
+    </select>
+
 </mapper>

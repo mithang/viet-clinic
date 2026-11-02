@@ -40,5 +40,13 @@ public interface RemoteDiagnosisTreatmentDao extends CrudDao<Patient> {
     int chargeEdit(@Param("id")String id);
     /** XóaBản ghi */
     int diagnosisDelete(@Param("id")String id);
+    /** X2: company của dòng khám từ xa, phục vụ kiểm tra sở hữu */
+    String getRemoteDiagnosisCompanyId(@Param("id")String id);
+    /** X2: company của dòng khám từ xa theo lượt khám */
+    String getRemoteDiagnosisCompanyIdByRegistrationId(@Param("registrationId")String registrationId);
+    /** X2: company của lượt khám, phục vụ chargeState */
+    String getRegistrationCompanyId(@Param("id")String id);
+    /** X2: company của đơn thuốc, phục vụ chargeState */
+    String getRecipelInfoCompanyId(@Param("id")String id);
 
 }

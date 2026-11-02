@@ -101,4 +101,24 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
         return remoteDiagnosisTreatmentDao.diagnosisDelete(id);
     }
 
+    /** X2: ủy thác tra company cho kiểm tra sở hữu ở controller */
+    public String getRemoteDiagnosisCompanyId(String id) {
+        return remoteDiagnosisTreatmentDao.getRemoteDiagnosisCompanyId(id);
+    }
+
+    /** X2: ủy thác tra company theo lượt khám */
+    public String getRemoteDiagnosisCompanyIdByRegistrationId(String registrationId) {
+        return remoteDiagnosisTreatmentDao.getRemoteDiagnosisCompanyIdByRegistrationId(registrationId);
+    }
+
+    /** X2: ủy thác tra company lượt khám cho chargeState */
+    public String getRegistrationCompanyId(String id) {
+        return remoteDiagnosisTreatmentDao.getRegistrationCompanyId(id);
+    }
+
+    /** X2: ủy thác tra company đơn thuốc cho chargeState */
+    public String getRecipelInfoCompanyId(String id) {
+        return remoteDiagnosisTreatmentDao.getRecipelInfoCompanyId(id);
+    }
+
 }
