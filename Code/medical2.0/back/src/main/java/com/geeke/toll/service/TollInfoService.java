@@ -473,6 +473,22 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             } else if (dispensionStatus != null && dispensionStatus == -1 && !BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
                 medicinalStorageControlService.goBackFee(recipelInfo);
             }
+            // Q1: đảo ngược dấu thực thu của saveToll trên các chi tiết
+            // thuộc đơn vừa hoàn phí, về NULL (trước khi thu — như K2
+            // ở nhánh hủy phiếu chưa thu). Vòng lặp đóng dấu ở saveToll
+            // chạy TRƯỚC processRefund trong cùng lần gọi nên reset phải
+            // đặt ở đây, sau nó, nếu không sẽ bị đóng dấu lại. Hoàn phí
+            // đảo ngược toàn bộ đơn (chargeStatus=-1) nên không cần
+            // guard "còn phiếu khác hiệu lực" như K2: phiếu gốc đã bị
+            // đánh dấu trả lại (returnType=1) và phiếu hoàn cũng chỉ là
+            // tiền đã trả lại, không còn tiền thực thu nào sở hữu dấu.
+            // Cùng transaction với audit REFUND nên lỗi ở bước nào cũng
+            // rollback cả ba.
+            for (RecipelDetail detail : recipelDetailService.getRecipelDetail(recipelInfo.getId())) {
+                if (detail != null && "0".equals(detail.getDelFlag())) {
+                    recipelDetailDao.updateActualPayment(null, detail.getId());
+                }
+            }
         }
         // BHYThoàn phí
         if ("true".equals(medicareConfigProperties.getCheck())) {
