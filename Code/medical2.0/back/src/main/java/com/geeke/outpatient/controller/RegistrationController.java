@@ -79,10 +79,21 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
 
+    // V1 (iteration 16): ep tenant theo session, theo mau T2/ensureCompanyFilter.
+    // Body khong duoc dieu khien tenant nua: session rong/"null" (luong noi bo
+    // khong session, nhu verifyTenantOwnership) moi giu gia tri body cu.
+    private String sessionTenantOr(String fallback) {
+        String tenant = SessionUtils.getLoginTenantId();
+        return (StringUtils.isNotBlank(tenant) && !"null".equals(tenant)) ? tenant : fallback;
+    }
+
     @PostMapping("/wxDoctor")
     public ResponseEntity<JSONObject> getWxDocByCompanyId(@RequestBody User user) {
-        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; companyId lay tu body nen khong co san la lo hong tang API (khong caller client).
-        List<User> doctors = userService.getUserByWxCompanyIdAndJob(user.getCompany().getId(), user.getOffice(), "Bác sĩ");
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC.
+        // V1: companyId ep theo session, khong lay tu body (truoc day token tenant A
+        // gui company tenant B la doc duoc bac si cua B — tai hien tools/v1-repro.py).
+        String companyId = sessionTenantOr(user.getCompany() == null ? null : user.getCompany().getId());
+        List<User> doctors = userService.getUserByWxCompanyIdAndJob(companyId, user.getOffice(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
 
@@ -269,7 +280,11 @@ public class RegistrationController extends CrudController<RegistrationService, 
     //LấyChi phíThông tin
     @PostMapping("/wx/list")
     public ResponseEntity<JSONObject> wxListPages(@RequestBody PageRegistration pageRegistration) {
-        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; companyId/openId lay tu body, tra toan bo ReceptionEvt khi co dong.
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC.
+        // V1: companyId ep theo session (truoc day body tenant B + openId that khien
+        // total>0 roi allNewQuery nem 400 verifyTenantOwnership — oracle ton tai
+        // luot don tenant khac; nay body la chi con total 0).
+        pageRegistration.setCompanyId(sessionTenantOr(pageRegistration.getCompanyId()));
         Page<ReceptionEvt> result = registrationService.wxListPages(pageRegistration);
         registrationService.updateExpiredStatusFromPage(result, row -> row.getRegistration().getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -279,6 +294,8 @@ public class RegistrationController extends CrudController<RegistrationService, 
     @PostMapping("/wx/dispensingList")
     public ResponseEntity<JSONObject> wxDispensingListPages(@RequestBody PageRegistration pageRegistration) {
         if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC, nhu wx/list.
+        // V1: nhu wx/list — companyId ep theo session.
+        pageRegistration.setCompanyId(sessionTenantOr(pageRegistration.getCompanyId()));
         Page<ReceptionEvt> result = registrationService.wxDispensingListPages(pageRegistration);
         registrationService.updateExpiredStatusFromPage(result, row -> row.getRegistration().getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -288,7 +305,17 @@ public class RegistrationController extends CrudController<RegistrationService, 
     @PostMapping("getRegistrationByOpenId")
     public ResponseEntity<JSONObject> getRegistrationByOpenId(@RequestBody SearchParams searchParams) {
         if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; hien 500 ca 2 token (loi cu) nhung san van phai giu, theo mau T1.
-        Page<Registration> registrationByOpenId = registrationService.getRegistrationByOpenId(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
+        List<Parameter> params = searchParams.getParams();
+        // V1: company_id ep theo session, giu nguyen vi tri params (service doc
+        // params[0]=companyId, params[1]=openId theo vi tri). Chi co tac dung sau
+        // khi V2 sua NPE o getParams(); hien van 500 nhu truoc sua.
+        String tenant = SessionUtils.getLoginTenantId();
+        if (StringUtils.isNotBlank(tenant) && !"null".equals(tenant) && params != null) {
+            for (Parameter p : params) {
+                if ("company_id".equals(p.getColumnName())) { p.setValue(tenant); }
+            }
+        }
+        Page<Registration> registrationByOpenId = registrationService.getRegistrationByOpenId(params, searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(registrationByOpenId));
     }
 }
