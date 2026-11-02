@@ -240,7 +240,12 @@ public class ColumnViewService {
 			cv.preInsert();
 			rows = dao.insert(cv);
 		} else {
-
+			// Z3d: update SQL chi WHERE theo id, khong loc user — chan ghi de
+			// cau hinh cot cua user khac khi gui id la (fail-closed 400).
+			ColumnView existing = dao.get(cv.getId());
+			if (existing != null && !userId.equals(existing.getUserId())) {
+				throw new ServiceException("Khong co quyen sua cau hinh cot cua nguoi dung khac");
+			}
 			rows = dao.update(cv);
 		}
 		return rows;

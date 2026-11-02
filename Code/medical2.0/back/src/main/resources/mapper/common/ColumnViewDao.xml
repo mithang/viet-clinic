@@ -38,6 +38,14 @@
         )       
     </insert>
 
+    <select id="get" resultType="com.geeke.common.entity.ColumnView">
+        SELECT
+            cv.id        AS     "id",
+            cv.user_id   AS     "userId"
+        FROM sys_column_view cv
+        WHERE cv.id = #{id}
+    </select>
+
     <update id="update">
         UPDATE sys_column_view SET display=#{display}, sort=#{sort}, width=#{width} WHERE id=#{id}
     </update>

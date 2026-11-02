@@ -27,6 +27,8 @@ public interface ColumnViewDao {
 	
 	int insert(ColumnView cv);
 	
+	ColumnView get(String id);
+	
 	int update(ColumnView cv);
 	
 	/**
