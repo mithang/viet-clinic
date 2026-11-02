@@ -30,6 +30,7 @@ public class SysParamConfigController extends CrudController<SysParamConfigServi
 
     @PostMapping(value = "save/list")
     public ResponseEntity<JSONObject> saveList(@RequestBody List<SysParamConfig> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         if (CollectionUtil.isNotEmpty(entitys)) {
             entitys.forEach(sysParamConfigService::save);
         }
@@ -38,6 +39,7 @@ public class SysParamConfigController extends CrudController<SysParamConfigServi
 
     @DeleteMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody SysParamConfig entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         int rows = sysParamConfigService.delete(entity);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }

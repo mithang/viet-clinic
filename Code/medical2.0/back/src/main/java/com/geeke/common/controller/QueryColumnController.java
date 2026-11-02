@@ -3,6 +3,7 @@ package com.geeke.common.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import com.geeke.common.data.Page;
 import com.geeke.common.service.QueryColumnViewService;
 import com.geeke.sys.controller.BaseController;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.constants.ErrorEnum;
 
 /**
  * Điều kiện truy vấn của nghiệp vụTrườngController
@@ -38,6 +40,7 @@ public class QueryColumnController extends BaseController {
 	@GetMapping("")
     public ResponseEntity<JSONObject> listAll(@RequestParam(value="tableId", required = true) String tableId, 
     		@RequestParam(value="schemeId", required = true) String schemeId) {
+        if (!hasAnySessionPermission()) { return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResultUtil.errorJson(ErrorEnum.E_502)); } // San RBAC Y2f.
         List<GenTableColumn> result = queryColumnViewService.listColumn(tableId, schemeId);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }   

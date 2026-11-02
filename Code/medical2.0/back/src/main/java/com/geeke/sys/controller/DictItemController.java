@@ -40,7 +40,7 @@ public class DictItemController extends CrudController<DictItemService, DictItem
 
 	/**
 	 * Theo loại từ điểncodeLấy tất cả mục từ điển.
-	 * CỐ TÌNH KHÔNG chặn bằng permission ở vòng này: trong DB không tồn tại
+	 * CỐ TÌNH KHÔNG chặn bằng dictType:list: trong DB không tồn tại
 	 * resource "dictItem:*", và nếu chặn bằng "dictType:list" thì mọi vai trò
 	 * nghiệp vụ (bác sĩ, dược sĩ, kho, thu ngân) đều gãy vì không ai có
 	 * dictType:* ngoài tài khoản toàn quyền, trong khi đây là lookup bắt buộc
@@ -51,9 +51,13 @@ public class DictItemController extends CrudController<DictItemService, DictItem
 	 * Riêng listPage/listAll generic chịu sàn hasAnySessionPermission của
 	 * CrudController (lookup dict-item-select dùng listAll nên cũng không
 	 * chặn bằng dictType:list).
+	 * Y2f: listByCode chịu cùng sàn ANY đó (không chặn bằng dictType:list,
+	 * lý do như trên): mọi vai trò nghiệp vụ đều có >=1 resource nên qua
+	 * sàn, chỉ tài khoản 0-resource bị 403.
 	 */
 	@GetMapping("/listByCode/{code}")
 	public ResponseEntity<JSONObject> listByCode(@PathVariable String code) {
+		if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f.
 		List<DictItem> items = dictItemService.listByDictTypeCode(code);
 		return ResponseEntity.ok(ResultUtil.successJson(items));
 	}

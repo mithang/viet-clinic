@@ -88,6 +88,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
      */
     @GetMapping("/getPhoto/{id}")
     public ResponseEntity getPhotoById(@PathVariable("id") String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         SysFileContent sysFileContent = sysFileContentService.get(id);
 
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
@@ -103,6 +104,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
      */
     @GetMapping("/getFiled/{id}")
     public ResponseEntity getFiledId(@PathVariable("id") String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         SysFileContent sysFileContent = sysFileContentService.get(id);
         SysFile sysFile = sysFileService.get(id);
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
@@ -123,6 +125,10 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         if (id.indexOf(".") >= 0) {
             id = id.substring(0, id.lastIndexOf("."));
         }
+        // Ngoai le anon Y2f: logo trang login 1-6 (Shiro anon, xem ShiroConfiguration)
+        // phai giu 200 khong token; moi id khac chiu san 403 cho tai khoan 0-resource.
+        if (!"1".equals(id) && !"2".equals(id) && !"3".equals(id) && !"4".equals(id) && !"5".equals(id) && !"6".equals(id)
+                && !hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; }
         String modifiedSice = request.getHeader("if-modified-since");
         //Định dạng ngày
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
@@ -163,6 +169,7 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         if (fileId.indexOf(".") >= 0) {
             fileId = fileId.substring(0, fileId.lastIndexOf("."));
         }
+        if (!hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; } // San RBAC Y2f.
         logger.info("fileId = {}", fileId);
         String modifiedSice = request.getHeader("if-modified-since");
         //Định dạng ngày

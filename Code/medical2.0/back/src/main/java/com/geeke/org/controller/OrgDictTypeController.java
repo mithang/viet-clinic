@@ -26,6 +26,7 @@ public class OrgDictTypeController extends CrudController<OrgDictTypeService, Or
 
     @PostMapping({"importJson"})
     public ResponseEntity<JSONObject> importJson(@RequestBody OrgDictType entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         String id = this.dictTypeService.importJson(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }

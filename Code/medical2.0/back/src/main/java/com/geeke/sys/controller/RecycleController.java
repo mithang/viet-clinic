@@ -32,6 +32,7 @@ public class RecycleController extends CrudController<RecycleService, Action> {
 
     @PostMapping(value = "restor")
     public ResponseEntity<JSONObject> restor(@RequestBody Action entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         int rows = recycleService.restore(entity);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }

@@ -31,6 +31,7 @@ public class SysFileContentController extends BaseController {
 	
     @GetMapping("/{id}")
     public void getById(@PathVariable("id") String id, HttpServletResponse response){
+        if (!hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; } // San RBAC Y2f.
         SysFileContent sysFileContent = sysFileContentService.get(id);
         response.setHeader("Content-Type",sysFileContent.getFileType());
         try {

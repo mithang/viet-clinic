@@ -36,6 +36,7 @@ public class ManufactureFactoryController extends CrudController<ManufactureFact
 	@Override
 	@PostMapping(value = "listAll")
 	public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+		if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
 		List<ManufactureFactory> result = getService().listAlls(searchParams.getParams(), searchParams.getOrderby());
 		return ResponseEntity.ok(ResultUtil.successJson(result));
 	}

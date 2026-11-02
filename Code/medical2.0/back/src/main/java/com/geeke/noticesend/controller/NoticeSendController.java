@@ -47,6 +47,7 @@ public class NoticeSendController extends CrudController<NoticeSendService, Noti
 
     @GetMapping(value = "tree/{code}")
     public ResponseEntity<JSONObject> tree(@PathVariable("code") String code) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         List<Company> result = companyService.tree(Collections.emptyList(), null);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

@@ -43,6 +43,7 @@ public class CompanyCodeRuleController extends CrudController<CompanyCodeRuleSer
 
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
     	initCompanyCodeRule(SessionUtils.getUserJson().getString("companyId"));
 
         Page<CompanyCodeRule> result = companyCodeRuleService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
@@ -51,6 +52,7 @@ public class CompanyCodeRuleController extends CrudController<CompanyCodeRuleSer
 
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
     	initCompanyCodeRule(SessionUtils.getUserJson().getString("companyId"));
 
         List<CompanyCodeRule> result = companyCodeRuleService.listAll(searchParams.getParams(), searchParams.getOrderby());
