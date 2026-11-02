@@ -239,6 +239,12 @@ public class TaskmanageService {
         gettaskrcvo rcvo=new gettaskrcvo();
         rcvo.setCompanyId(gettaskrcvo.getCompanyId());
         List<Sysusertreeentity> fileCatalogs = taskmangementDao.getusertree(rcvo);
+        // AA2: a tenant whose parent_id is NULL (or with no sibling rows)
+        // yields an empty list; the old get(0) crashed with 500. An empty
+        // tree is the correct answer, not an exception.
+        if (fileCatalogs == null || fileCatalogs.isEmpty()) {
+            return new ArrayList<>();
+        }
         List<Sysusertreeentity> tree = createTree(fileCatalogs, fileCatalogs.get(0).getPatid());
         return tree;
     }
@@ -251,7 +257,10 @@ public class TaskmanageService {
     private List<Sysusertreeentity> createTree(List<Sysusertreeentity> lists, String pid) {
         List<Sysusertreeentity> tree = new ArrayList<>();
         for (Sysusertreeentity catelog : lists) {
-            if (catelog.getPatid() == pid) {
+            // AA2: patid/id are Strings from the DB (distinct objects), so
+            // == compared references and children were always empty. Use
+            // null-safe value equality; a null patid matches a null pid.
+            if (Objects.equals(catelog.getPatid(), pid)) {
                 catelog.setChildren(createTree(lists,catelog.getId()));
                 tree.add(catelog);
             }
