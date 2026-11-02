@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,6 +141,58 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         return this.dao.selectClinicsByLoginName(loginName);
     }
 
+
+    /**
+     * Z3c: gioi han cay cong ty theo session tenant. TreeService.tree goi
+     * ensureCompanyFilter nhung ham do bo qua khi entity khong co field
+     * "company" rieng — Company chi co parentId/lesseeId nen truoc day
+     * tree tra TOAN BO org_company cho moi token co quyen (ca POST
+     * /org/company/tree lan GET /noticesend/noticeSend/tree/{code}).
+     * Pham vi hop le: cay con cua goc toi cao cua tenant (ids bat dau
+     * bang "0.<root>."): gom tenant, cac phong kham cung co so va cac
+     * cap duoi — dung pham vi nhom nhu getCompanys (sibling cung parent).
+     * Param caller duoc GIU NGUYEN (ke ca id = own cua trang department)
+     * roi AND them dieu kien ids, nen caller hop le khong doi ket qua,
+     * con id la chi tra rong vi ids cua no khong co prefix nhom own.
+     * Session rong/"null" hoac khong tim thay dong tenant thi giu hanh
+     * vi cu, dung mau Z1/Z2/Z3b. Loi OR trong whereParams van la ton du
+     * rieng (da ghi o checkpoint), khong sua trong nhip nay.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Company> tree(List<Parameter> parameters, String orderby) {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return super.tree(parameters, orderby);
+        }
+        Company tenant = this.dao.get(tenantId);
+        if (tenant == null) {
+            return super.tree(parameters, orderby);
+        }
+        String ids = tenant.getIds();
+        if (StringUtils.isBlank(ids)) {
+            return new ArrayList<Company>();
+        }
+        java.util.List<String> tokens = new ArrayList<String>();
+        for (String part : ids.split("\\.")) {
+            if (StringUtils.isNotBlank(part)) {
+                tokens.add(part);
+            }
+        }
+        if (tokens.isEmpty() || (tokens.size() == 1 && "0".equals(tokens.get(0)))) {
+            return new ArrayList<Company>();
+        }
+        // ids that: "0.<root>.<...tenant>."; neu khong co "0" thi token
+        // dau la goc. Prefix luon kem dau "." cuoi de khop dung segment.
+        String groupPrefix = "0".equals(tokens.get(0)) && tokens.size() >= 2
+                ? "0." + tokens.get(1) + "."
+                : tokens.get(0) + ".";
+        List<Parameter> scoped = parameters == null
+                ? new ArrayList<Parameter>()
+                : new ArrayList<Parameter>(parameters);
+        scoped.add(new Parameter("ids", "right_like", groupPrefix));
+        return super.tree(scoped, orderby);
+    }
 
     @Transactional(readOnly = true)
     public List<Company> getCompanys(String id) {
