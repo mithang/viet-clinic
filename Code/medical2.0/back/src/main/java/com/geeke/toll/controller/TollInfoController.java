@@ -50,6 +50,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
 
     @GetMapping("/getTollInfoByRegistrationId/{registrationId}")
     public ResponseEntity<JSONObject> getTollInfoByRegistrationId(@PathVariable("registrationId") String registrationId) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         TollInfo entity = tollInfoService.getTollInfoByRegistrationId(registrationId);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
@@ -70,17 +71,20 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
 
     @PostMapping(value = "tollTotalForm")
     public ResponseEntity<JSONObject> tollTotalForm(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         return tollInfoService.tollTotalForm(searchParams);
     }
 
     @PostMapping(value = "tollDetailForm")
     public ResponseEntity<JSONObject> tollDetailForm(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         return tollInfoService.tollDetailForm(searchParams);
     }
 
     //TheonộpphíThông tinTruy vấnThông tin đăng ký khám
     @GetMapping("registration/{chargeStatus}")
     public ResponseEntity<JSONObject> listRegistrationPage(@PathVariable("chargeStatus") String chargeStatus) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         List<MedicalRecord> medicalRecords = medicalRecordService.listMedicalRecordByChargeStatus(chargeStatus);
         List<Registration> registrations = medicalRecords.stream().map(m -> m.getRegistration()).collect(Collectors.toList());
         Page<Registration> result = new Page<>(registrations.size(),registrations);
@@ -92,6 +96,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     public ResponseEntity<JSONObject> medicalRecipelEvt(@RequestBody Registration registration,
                                                @PathVariable("chargeStatus") String chargeStatus)
     {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         if(StringUtils.isNullOrEmpty(chargeStatus))
         {
             throw new ServiceException("Tham sốcósai");
@@ -122,30 +127,35 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
 
     @PostMapping(value = "getCreateBy")
     public ResponseEntity<JSONObject> getCreateBy(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         List<TollInfo> result = tollInfoService.getCreateBy(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "getWorkload")
     public ResponseEntity<JSONObject> getWorkload(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<WorkLoad> workload = tollInfoService.getWorkload(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(workload));
     }
 
     @PostMapping(value = "getDrugSales")
     public ResponseEntity<JSONObject> getDrugSales(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         final Page<DrugSales> drugSales = tollInfoService.getDrugSales(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(drugSales));
     }
 
     @PostMapping(value = "getWorkLoadStat")
     public ResponseEntity<JSONObject> getWorkLoadStat(@RequestBody SearchParams searchParams){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         WorkLoadStat workLoadStat = tollInfoService.getWorkLoadStat(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(workLoadStat));
     }
 
     @PostMapping(value = "getDrugSalesStat")
     public ResponseEntity<JSONObject> getDrugSalesStat(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         DrugSales drugSalesStat = tollInfoService.getDrugSalesStat(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(drugSalesStat));
     }
@@ -157,6 +167,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getypjxcmanagement")
     public ResponseEntity<JSONObject> getypjxcmanagement(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getypjxcmanagement(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -168,6 +179,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getypjxcmanagementsums")
     public ResponseEntity<JSONObject> getypjxcmanagementsums(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getypjxcmanagementsums(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -179,6 +191,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getStuffsalessummarylists")
     public ResponseEntity<JSONObject> getStuffsalessummarylists(@RequestBody StuffsalessummaryRc stuffsalessummaryRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Stuffsalessummary> result=tollInfoService.getStuffsalessummarylists(stuffsalessummaryRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -190,6 +203,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getStuffsalessummarysumss")
     public ResponseEntity<JSONObject> getStuffsalessummarysumss(@RequestBody StuffsalessummaryRc stuffsalessummaryRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
 
         Page<Stuffsalessummary> result=tollInfoService.getStuffsalessummarysumss(stuffsalessummaryRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -203,6 +217,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getcljxcmanagement")
     public ResponseEntity<JSONObject> getcljxcmanagement(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getcljxcmanagement(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -214,6 +229,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getcljxcmanagementsums")
     public ResponseEntity<JSONObject> getcljxcmanagementsums(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getcljxcmanagementsums(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -225,6 +241,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getypclrkcxlist")
     public ResponseEntity<JSONObject> getypclrkcxlist(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypclrkcx> result=tollInfoService.getypclrkcxlist(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -236,6 +253,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getypclrkcxsums")
     public ResponseEntity<JSONObject> getypclrkcxsums(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypclrkcx> result=tollInfoService.getypclrkcxsums(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -249,6 +267,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping("exportExcel")
     public void exportExcel(@RequestBody SearchParams searchParams, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        if (!hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; } // San RBAC W1 (void export: 403, khong ghi file).
         tollInfoService.exportExcel(searchParams,response);
     }
 
@@ -261,6 +280,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping("exportDrugOrStuffStock")
     public void exportDrugOrStuffStock(@RequestBody YpjxcRc ypjxcRc,HttpServletResponse response,HttpServletRequest request) throws IOException {
+        if (!hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; } // San RBAC W1 (void export: 403, khong ghi file).
         tollInfoService.exportDrugOrStuffStock(ypjxcRc,response);
     }
 
@@ -272,6 +292,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getpharmaceuticalInventoryManagement")
     public ResponseEntity<JSONObject> getpharmaceuticalInventoryManagement(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getpharmaceuticalInventoryManagement(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -283,6 +304,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getpharmaceuticalInventoryManagementsums")
     public ResponseEntity<JSONObject> getpharmaceuticalInventoryManagementsums(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getpharmaceuticalInventoryManagementsums(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -292,6 +314,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getjglist")
     public ResponseEntity<JSONObject> getjglist(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         List<Ypjxc> result=tollInfoService.getjglist(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -303,6 +326,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getmaterialmanagement")
     public ResponseEntity<JSONObject> getmaterialmanagement(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getmaterialmanagement(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -314,6 +338,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getmaterialmanagementsums")
     public ResponseEntity<JSONObject> getmaterialmanagementsums(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypjxc> result=tollInfoService.getmaterialmanagementsums(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -325,6 +350,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "drugmaterialsstockmanagement")
     public ResponseEntity<JSONObject> drugmaterialsstockmanagement(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypclrkcx> result=tollInfoService.drugmaterialsstockmanagement(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -336,6 +362,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "drugmaterialsstockmanagementsums")
     public ResponseEntity<JSONObject> drugmaterialsstockmanagementsums(@RequestBody YpjxcRc ypjxcRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Ypclrkcx> result=tollInfoService.drugmaterialsstockmanagementsums(ypjxcRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -347,6 +374,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getconsumablemarketstatistics")
     public ResponseEntity<JSONObject> getconsumablemarketstatistics(@RequestBody StuffsalessummaryRc stuffsalessummaryRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Stuffsalessummary> result=tollInfoService.getconsumablemarketstatistics(stuffsalessummaryRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -358,17 +386,20 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getconsumablemarketstatisticssum")
     public ResponseEntity<JSONObject> getconsumablemarketstatisticssum(@RequestBody StuffsalessummaryRc stuffsalessummaryRc){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<Stuffsalessummary> result=tollInfoService.getconsumablemarketstatisticssum(stuffsalessummaryRc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "getdrugmarketstatistics")
     public ResponseEntity<JSONObject> getdrugmarketstatistics(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         final Page<DrugSales> drugSales = tollInfoService.getdrugmarketstatistics(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(drugSales));
     }
     @PostMapping(value = "getdrugmarketstatisticsStat")
     public ResponseEntity<JSONObject> getdrugmarketstatisticsStat(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         DrugSales drugSalesStat = tollInfoService.getdrugmarketstatisticsStat(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(drugSalesStat));
     }
@@ -379,6 +410,7 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getdoctorDetailstatistics")
     public ResponseEntity<JSONObject> getdoctorDetailstatistics(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         Page<WorkLoad> workload = tollInfoService.getdoctorDetailstatistics(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(workload));
     }
@@ -388,18 +420,21 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
      */
     @PostMapping(value = "getdoctorDetailstatisticsStat")
     public ResponseEntity<JSONObject> getdoctorDetailstatisticsStat(@RequestBody SearchParams searchParams){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         WorkLoadStat workLoadStat = tollInfoService.getdoctorDetailstatisticsStat(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(workLoadStat));
     }
 
     @PostMapping(value = "orgtolldetail")
     public ResponseEntity<JSONObject> orgtolldetail(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         return tollInfoService.orgtolldetail(searchParams);
     }
 
 
     @PostMapping(value = "orgtollDetailForm")
     public ResponseEntity<JSONObject> orgtollDetailForm(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         return tollInfoService.orgtollDetailForm(searchParams);
     }
 
