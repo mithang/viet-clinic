@@ -151,6 +151,60 @@ public class PatientController extends CrudController<PatientService, Patient> {
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
+    /**
+     * R1 — Xóa hồ sơ: sao chép đúng CrudController.delete (kiểm tra
+     * entity null, quyền sàn hasAnySessionPermission, beforeDelete /
+     * afterDelete) để không hẹp/nới quyền xóa sẵn có, cộng thêm 1 dòng
+     * audit DELETE — chỉ khi xóa thật sự có hiệu lực (rows > 0, id
+     * khác trống và hồ sơ còn hiệu lực trước khi xóa). Tên bệnh nhân lấy từ hồ sơ đọc trước khi xóa (đường
+     * service trực tiếp, không qua getById nên không ghi thêm VIEW);
+     * nếu body xóa đã kèm tên thì dùng tên đó. Ghi qua logAccessSafely
+     * nên lỗi ghi không hỏng luồng xóa, như các hook G8 khác.
+     * bulkDelete vẫn kế thừa CrudController (không ghi audit theo từng
+     * hồ sơ vì service chỉ trả tổng rows) — ghi nhận làm item riêng,
+     * không mở rộng lén trong R1.
+     */
+    @Override
+    @PostMapping(value = "delete")
+    public ResponseEntity<JSONObject> delete(@RequestBody Patient entity) {
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        if (!beforeDelete(entity)) {
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "XóatrướcKiểm traChưaQua"));
+        }
+        String id = entity.getId();
+        String name = entity.getName();
+        boolean wasActive = false;
+        if (id != null && !id.trim().isEmpty()) {
+            try {
+                Patient existing = getService().get(id);
+                if (existing != null) {
+                    // UPDATE xóa mềm không lọc del_flag nên xóa lại hồ sơ
+                    // đã xóa vẫn trả rows=1: chỉ ghi DELETE khi hồ sơ còn
+                    // hiệu lực trước khi xóa, tránh ghi đúp cho lần xóa lại.
+                    wasActive = com.geeke.common.persistence.BaseEntity.DEL_FLAG_NORMAL
+                            .equals(existing.getDelFlag());
+                    if (name == null || name.trim().isEmpty()) {
+                        name = existing.getName();
+                    }
+                }
+            } catch (Exception ignored) {
+                // Lỗi đọc trước không được đổi hành vi xóa: delete gốc
+                // tự kiểm tra quyền sở hữu tenant, cứ để nó quyết định.
+            }
+        }
+        int rows = getService().delete(entity);
+        afterDelete(entity);
+        if (rows > 0 && wasActive && id != null && !id.trim().isEmpty()) {
+            logAccessSafely(RecordAccessAuditService.ACTION_DELETE, id, name);
+        }
+        return ResponseEntity.ok(ResultUtil.successJson(rows));
+    }
+
     //WeChatLưu
     @PostMapping(value = "wxSave")
     public ResponseEntity<JSONObject> wxSave(@RequestBody Patient entity) {

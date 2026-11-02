@@ -42,10 +42,11 @@ public class RecordAccessAuditService extends CrudService<RecordAccessAuditDao, 
     public static final String ACTION_VIEW = "VIEW";
     public static final String ACTION_LIST = "LIST";
     public static final String ACTION_EDIT = "EDIT";
+    public static final String ACTION_DELETE = "DELETE";
 
     /**
      * Ghi 1 dòng audit. companyId hoặc userJson trống thì bỏ qua lặng
-     * (không ghi dòng vô chủ); action ngoài 3 giá trị cho phép thì
+     * (không ghi dòng vô chủ); action ngoài 4 giá trị cho phép thì
      * ném IllegalArgumentException để caller không ghi nhầm nhãn.
      */
     @Transactional(readOnly = false)
@@ -55,7 +56,8 @@ public class RecordAccessAuditService extends CrudService<RecordAccessAuditDao, 
             log.warn("Bỏ qua ghi audit: chưa xác định được phòng khám.");
             return null;
         }
-        if (!ACTION_VIEW.equals(action) && !ACTION_LIST.equals(action) && !ACTION_EDIT.equals(action)) {
+        if (!ACTION_VIEW.equals(action) && !ACTION_LIST.equals(action) && !ACTION_EDIT.equals(action)
+                && !ACTION_DELETE.equals(action)) {
             throw new IllegalArgumentException("Hành động audit không hợp lệ.");
         }
         RecordAccessAudit audit = new RecordAccessAudit();

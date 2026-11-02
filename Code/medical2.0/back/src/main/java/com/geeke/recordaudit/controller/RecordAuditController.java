@@ -32,7 +32,7 @@ import java.util.List;
  * GET /record-audit/list?patientId=&action=&limit= — các dòng audit của
  * tenant đang đăng nhập, mới nhất trước. patientId/action trống nghĩa
  * là không lọc; limit kẹp [1, 200] ở service. Hành động ngoài
- * VIEW/LIST/EDIT trả 400 (không lộ dữ liệu).
+ * VIEW/LIST/EDIT/DELETE trả 400 (không lộ dữ liệu).
  */
 @RestController
 @RequestMapping(value = "/record-audit")
@@ -53,9 +53,10 @@ public class RecordAuditController extends BaseController {
         if (action != null && !action.trim().isEmpty()
                 && !RecordAccessAuditService.ACTION_VIEW.equals(action.trim())
                 && !RecordAccessAuditService.ACTION_LIST.equals(action.trim())
-                && !RecordAccessAuditService.ACTION_EDIT.equals(action.trim())) {
+                && !RecordAccessAuditService.ACTION_EDIT.equals(action.trim())
+                && !RecordAccessAuditService.ACTION_DELETE.equals(action.trim())) {
             return ResponseEntity.badRequest()
-                    .body(ResultUtil.errorJson(ErrorEnum.E_50002, "Hành động lọc không hợp lệ (chỉ VIEW, LIST hoặc EDIT)."));
+                    .body(ResultUtil.errorJson(ErrorEnum.E_50002, "Hành động lọc không hợp lệ (chỉ VIEW, LIST, EDIT hoặc DELETE)."));
         }
         List<RecordAccessAudit> audits = recordAccessAuditService.listAudits(
                 SessionUtils.getLoginTenantId(), patientId, action, limit);
