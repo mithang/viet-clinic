@@ -702,7 +702,7 @@
                     when id=#{entity.id} then #{entity.guardianPhone}
                 </foreach>
             </trim>
-            <trim prefix="guardian_phone=case" suffix="end,">
+            <trim prefix="recipe_status=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.recipeStatus}
                 </foreach>
