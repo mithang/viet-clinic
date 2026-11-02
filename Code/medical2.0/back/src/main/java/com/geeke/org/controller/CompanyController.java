@@ -34,12 +34,18 @@ public class CompanyController extends CrudController<CompanyService, Company> {
 
     @PostMapping(value = "getCompanys")
     public ResponseEntity<JSONObject> getCompanys(@RequestBody String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<Company> result = companyService.getCompanys(id);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "tree")
     public ResponseEntity<JSONObject> tree(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<Company> result = companyService.tree(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -48,6 +54,9 @@ public class CompanyController extends CrudController<CompanyService, Company> {
     public ResponseEntity<JSONObject> saveWithFile(@RequestParam("entity") String strEntity,
       @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,
       @RequestParam("deleteIds")String strDeleteIds) throws java.io.IOException {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         Company entity = JSONObject.parseObject(strEntity, Company.class);
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
         String id = companyService.save(entity,
@@ -64,6 +73,9 @@ public class CompanyController extends CrudController<CompanyService, Company> {
      */
     @GetMapping(value = "getSubordinateClinic")
     public ResponseEntity<JSONObject> getSubordinateClinic() {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         SessionUserDto userDto = SessionUtils.getUserDto();
         String companyId = userDto.getCompanyId();
         List<Company> result = companyService.getSubordinateClinic(companyId);

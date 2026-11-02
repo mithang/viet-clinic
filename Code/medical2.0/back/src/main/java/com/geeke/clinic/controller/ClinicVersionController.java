@@ -32,6 +32,9 @@ public class ClinicVersionController extends CrudController<ClinicVersionService
     @Override
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody ClinicVersion entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         if (entity == null) {
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
         }
@@ -42,6 +45,9 @@ public class ClinicVersionController extends CrudController<ClinicVersionService
     @Override
     @PostMapping(value = "bulkDelete")
     public ResponseEntity<JSONObject> bulkDelete(@RequestBody List<ClinicVersion> entitys) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         int rows = clinicVersionService.bulkDeleteClinic(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }

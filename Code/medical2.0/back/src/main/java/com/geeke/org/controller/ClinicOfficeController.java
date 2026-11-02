@@ -43,6 +43,9 @@ public class ClinicOfficeController extends CrudController<ClinicOfficeService, 
     @Override
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody ClinicOffice entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         entity.setCompany(SessionUtils.getLoginTenant());
         if("1".equals(entity.getIsDefault())){
             clinicOfficeService.updateDefault(entity.getCompany().getId());

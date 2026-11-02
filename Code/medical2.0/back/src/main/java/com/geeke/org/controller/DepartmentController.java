@@ -35,6 +35,9 @@ public class DepartmentController extends CrudController<DepartmentService, Depa
 
     @PostMapping(value = "tree")
     public ResponseEntity<JSONObject> tree(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<Department> result = departmentService.tree(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

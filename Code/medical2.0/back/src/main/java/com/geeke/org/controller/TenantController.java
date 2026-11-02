@@ -33,6 +33,9 @@ public class TenantController extends CrudController<CompanyService, Company> {
 	@Override
 	@PostMapping(value = {"list", ""})
 	public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+		if (!hasAnySessionPermission()) {
+			return forbidden();
+		}
 		Page<Company> result = companyService.listTenantPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
 		return ResponseEntity.ok(ResultUtil.successJson(result));
 	}
@@ -40,6 +43,9 @@ public class TenantController extends CrudController<CompanyService, Company> {
 	@Override
 	@PostMapping(value = "listAll")
 	public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+		if (!hasAnySessionPermission()) {
+			return forbidden();
+		}
 		List<Company> result = companyService.listAllTenant(searchParams.getParams(), searchParams.getOrderby());
 		return ResponseEntity.ok(ResultUtil.successJson(result));
 	}
@@ -47,6 +53,9 @@ public class TenantController extends CrudController<CompanyService, Company> {
 	@Override
 	@PostMapping(value = "save")
 	public ResponseEntity<JSONObject> save(@RequestBody Company entity) {
+		if (!hasAnySessionPermission()) {
+			return forbidden();
+		}
 		String id = companyService.saveTenant(entity).getId();
 		return ResponseEntity.ok(ResultUtil.successJson(id));
 	}

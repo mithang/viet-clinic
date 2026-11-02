@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.admin.entity.Router;
+import com.geeke.admin.entity.User;
 import com.geeke.admin.service.RouterService;
 import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 
 /**
@@ -39,13 +41,34 @@ public class RouterController extends CrudController<RouterService, Router> {
 
     @PostMapping(value = "tree")
     public ResponseEntity<JSONObject> tree(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
         List<Router> result = routerService.tree(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
+    }
+
+    // Y2b: chỉ chính mình mới được xem cảnh báo hết hạn của mình, mẫu
+    // SysCollectController. Caller duy nhất trong client là header.vue, luôn
+    // gửi currentUser.id — không có luồng admin xem hộ user khác.
+    private boolean isSelf(String userId) {
+        if (userId == null) {
+            return false;
+        }
+        try {
+            User sessionUser = SessionUtils.getUser();
+            return sessionUser != null && userId.equals(sessionUser.getId());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     //LấyNgười dùngCó hay khôngsở hữucóThời hạn hiệu lựctrướccảnh báoQuyền
     @GetMapping("getUserIndateWarning/{userId}")
     public ResponseEntity<JSONObject> getUserIndateWarning(@PathVariable("userId") String userId){
+        if (!hasAnySessionPermission() || !isSelf(userId)) {
+            return forbidden();
+        }
         List<String> userIndateWarning = routerService.getUserIndateWarning(userId);
         return ResponseEntity.ok(ResultUtil.successJson(userIndateWarning));
     }
