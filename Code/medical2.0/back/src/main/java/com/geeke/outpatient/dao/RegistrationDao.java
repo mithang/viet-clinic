@@ -6,8 +6,10 @@ import com.geeke.common.persistence.CrudDao;
 import com.geeke.outpatient.entity.MedicalRecord;
 import com.geeke.outpatient.entity.PageRegistration;
 import com.geeke.outpatient.entity.Registration;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
@@ -69,4 +71,28 @@ public interface RegistrationDao extends CrudDao<Registration> {
     List<String> wxDispensingListPages(PageRegistration pageRegistration);
 
     int registrationupdate(Registration registrations);
+
+    /**
+     * H4: tăng bộ đếm số thứ tự theo ngày của một bác sĩ trong một phòng khám.
+     * Nguyên tử nhờ khóa chính (company_id, doctor_id, queue_date) + ON DUPLICATE
+     * KEY UPDATE: 2 lượt đăng ký đồng thời không nhận cùng số vì upsert giữ
+     * khóa dòng tới hết transaction. KHÔNG dùng LAST_INSERT_ID() để đọc số:
+     * nhánh INSERT của upsert không có cột auto-increment nên không set
+     * LAST_INSERT_ID, đọc nó sẽ ra giá trị cũ còn sót trên connection pool
+     * (lỗi thật gặp ở lượt kiểm chứng đầu: số đầu tiên đọc ra 3314).
+     * Đọc lại bằng SELECT last_number trong cùng transaction — dòng đang bị
+     * khóa bởi chính upsert này nên không có transaction khác chen ngang.
+     */
+    @Insert("INSERT INTO queue_counter(company_id, doctor_id, queue_date, last_number) "
+            + "VALUES(#{companyId}, #{doctorId}, #{queueDate}, 1) "
+            + "ON DUPLICATE KEY UPDATE last_number = last_number + 1")
+    int advanceQueueCounter(@Param("companyId") String companyId,
+                            @Param("doctorId") String doctorId,
+                            @Param("queueDate") String queueDate);
+
+    @Select("SELECT last_number FROM queue_counter WHERE company_id = #{companyId} "
+            + "AND doctor_id = #{doctorId} AND queue_date = #{queueDate}")
+    Integer getQueueCounter(@Param("companyId") String companyId,
+                            @Param("doctorId") String doctorId,
+                            @Param("queueDate") String queueDate);
 }

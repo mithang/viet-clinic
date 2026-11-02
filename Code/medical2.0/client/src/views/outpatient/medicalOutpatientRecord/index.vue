@@ -50,7 +50,8 @@
                       padding-top: 6px;
                     ">
 										<span style="margin-top: 10px">
-											{{ index + 1 }}. {{ item.patientId.name }} /
+											<!-- H4: số thứ tự chờ khám trong ngày của bác sĩ (lưu lúc đăng ký); lượt cũ chưa có số thì không hiện số giả. -->
+											<span v-if="item.queueNumber != null" class="queue-number">Số {{ item.queueNumber }} · </span>{{ item.patientId.name }} /
 											{{ item.patientId.gender.name }} /
 											{{ item.patientId.age }}tuổi
 										</span>

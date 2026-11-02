@@ -73,7 +73,8 @@
         a.med_type as "medType",
         a.setl_id as "setlId",
         a.card_type as "cardType",
-        a.is_pre as "isPre"
+        a.is_pre as "isPre",
+        a.queue_number AS "queueNumber"
     </sql>
     
     <sql id="registrationJoins">
@@ -333,7 +334,8 @@
             ipt_otp_no,
             setl_id,
             card_type,
-            is_pre
+            is_pre,
+            queue_number
         ) VALUES (
             #{id},
             #{company.id},                    
@@ -388,7 +390,8 @@
             #{iptOtpNo},
             #{setlId},
             #{cardType.value},
-            #{isPre}
+            #{isPre},
+            #{queueNumber}
         )
     </insert>
     
@@ -442,6 +445,8 @@
             setl_id=#{setlId},
             card_type=#{cardType.value} ,
             is_pre=#{isPre}
+            <!-- H4: chỉ ghi queue_number khi caller gửi kèm; lượt sửa không kèm số thì giữ số cũ, tránh xóa số thứ tự đã cấp. -->
+            <if test="queueNumber != null">, queue_number = #{queueNumber}</if>
         WHERE id = #{id}
     </update>
 

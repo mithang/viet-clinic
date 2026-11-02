@@ -192,6 +192,7 @@ public class RegistrationController extends CrudController<RegistrationService, 
         if(Objects.equals(entity.getCreateBy(),"WeChat")){
             id = registrationService.wxSave(entity).getId();
         }else {
+            if (!hasAnySessionPermission()) { return forbidden(); } // H4: san RBAC cho duong luu web (lop cha CrudController.save co san, override nay truoc day bo qua).
             //mởBHYTgiao diện
             if("true".equals(medicareConfigProperties.getCheck())){
                 //LưuNgười dùngBHYTThông tin

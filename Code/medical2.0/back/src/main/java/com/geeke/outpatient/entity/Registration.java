@@ -71,6 +71,7 @@ public class Registration extends DataEntity<Registration> {
 	private Date morbidityTime;     //phátbệnhThời gian
 
 	private Date treatmentDate;  //khámtrị liệuhoàn thànhThời gian
+	private Integer queueNumber;  // H4: số thứ tự chờ khám trong ngày của bác sĩ (bộ đếm theo ngày, xem queue_counter)
 	private String overlook;//Có hay khôngbỏ qua
      /**Trường BHYT**/
 	private  String mdtrtId ;// BHYTSố thứ tự duy nhất của giao diện

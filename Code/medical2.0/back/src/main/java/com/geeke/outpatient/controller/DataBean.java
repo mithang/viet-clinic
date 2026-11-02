@@ -448,6 +448,10 @@ public class DataBean {
             String payTypeName = getPayTypeDisplayName(tollInfo.getPaymentType().getValue());
             chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + ": " + recipelInfo.getFee());
         }
+        // H4: phiếu thu phí cũng in số thứ tự chờ khám của lượt đăng ký (nếu có).
+        if (registration.getQueueNumber() != null) {
+            chargeTicketEvt.setNum("Số thứ tự trong ngày: " + registration.getQueueNumber());
+        }
         outList.add(chargeTicketEvt);
         return outList;
     }
@@ -519,6 +523,16 @@ public class DataBean {
         String payTypeName = getPayTypeDisplayName(registration.getPayType().getValue());
         chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + ": " + registration.getRegistrationFee() + " đồng");
         chargeTicketEvt.setTip(REGISTRATION_REMARK);
+        // H4: dùng số thứ tự đã lưu lúc đăng ký (queue_number) thay cho cách đếm
+        // lại theo vị trí bệnh nhân trong danh sách ngày — cách cũ sai khi cùng
+        // bệnh nhân đăng ký 2 lần/ngày với cùng bác sĩ (trùng patientId) và dùng
+        // biên ngày theo múi giờ JVM thay vì ngày phòng khám GMT+7. Chỉ giữ
+        // cách đếm cũ làm fallback cho lượt đăng ký tạo trước H4 (queue_number NULL).
+        if (registration.getQueueNumber() != null) {
+            chargeTicketEvt.setNum("Số thứ tự trong ngày: " + registration.getQueueNumber());
+            outList.add(chargeTicketEvt);
+            return outList;
+        }
         Date zeroTimeOfDate = DateUtils.getZeroTimeOfDate(registration.getCreateDate());
         String todayStart = DateUtils.formatDateTime(zeroTimeOfDate);
         Date endTimeOfDate = DateUtils.getEndTimeOfDate(registration.getCreateDate());
@@ -539,7 +553,7 @@ public class DataBean {
                 }
             }
         }
-        chargeTicketEvt.setNum("nayNgàysố thứ tự: "+todayNum);
+        chargeTicketEvt.setNum("Số thứ tự trong ngày: "+todayNum);
         outList.add(chargeTicketEvt);
         return outList;
     }

@@ -42,6 +42,13 @@
           empty-text="Không có bệnh nhân ở trạng thái này"
         >
           <el-table-column prop="name" label="Họ tên"> </el-table-column>
+          <!-- H4: số thứ tự chờ khám trong ngày của bác sĩ. -->
+          <el-table-column prop="queueNumber" label="Số thứ tự">
+            <template slot-scope="scope">
+              <span v-if="scope.row.queueNumber != null">Số {{ scope.row.queueNumber }}</span>
+              <span v-else>—</span>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="clinicDate"
             label="Thời gian khám"
@@ -69,7 +76,12 @@
     <div class="charge_right">
       
       <div class="flex-space-between" style="margin-top: 10px">
-        <div style="font-weight: bold">Thu phí</div>
+        <div style="font-weight: bold">Thu phí
+          <!-- H4: số thứ tự chờ khám của lượt đăng ký đang chọn (phiếu thu phí). -->
+          <span v-if="selectedRegistration && selectedRegistration.queueNumber != null" class="queue-number">
+            · Số thứ tự: {{ selectedRegistration.queueNumber }}
+          </span>
+        </div>
         <div class="flex-space-between">
           <div v-if="chargeStatusActiveName === '3'" class="goods-back">Đã trả thuốc</div>
           <div style="margin-top: 5px; margin-right: 10px">
@@ -803,6 +815,8 @@ export default {
               : responseData.data.total || 0;
           this.patientList = filtered.map((row) => ({
             id: row.id,
+            // H4: số thứ tự chờ khám trong ngày của bác sĩ (lưu lúc đăng ký).
+            queueNumber: row.queueNumber != null ? row.queueNumber : null,
             name: (row.patientId && row.patientId.name) || "",
             clinicDate: row.receptionEndDate || row.receptionStartDate || "",
             chargeStatus:

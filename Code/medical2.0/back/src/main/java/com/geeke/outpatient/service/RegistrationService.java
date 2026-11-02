@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,42 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         this.patientService = patientService;
         this.medicalRecordService = medicalRecordService;
         this.mdRegistrationService = mdRegistrationService;
+    }
+
+    /**
+     * H4: gán số thứ tự chờ khám trong ngày cho mỗi lượt đăng ký mới.
+     * Số đếm theo (phòng khám, bác sĩ, ngày phòng khám Asia/Ho_Chi_Minh),
+     * bắt đầu từ 1 mỗi ngày nhờ khóa chính của queue_counter theo queue_date;
+     * cửa sổ ngày [00:00, 00:00 hôm sau) khớp quy ước GMT+7 của G6/H5/H1
+     * (create_date lưu theo giờ tường GMT+7). Lượt đăng ký không có bác sĩ
+     * hoặc không xác định được tenant thì không gán số (giữ NULL, không bịa).
+     * Chỉ gán khi tạo mới (id rỗng) và client chưa gửi số: cập nhật sau đó
+     * không đánh lại số, tránh xáo trộn thứ tự gọi khám.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public Registration save(Registration entity) {
+        if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
+            assignQueueNumber(entity);
+        }
+        return super.save(entity);
+    }
+
+    private void assignQueueNumber(Registration entity) {
+        String companyId = entity.getCompany() != null ? entity.getCompany().getId() : null;
+        if (StringUtils.isBlank(companyId)) {
+            companyId = SessionUtils.getLoginTenantId();
+        }
+        String doctorId = entity.getDoctor() != null ? entity.getDoctor().getId() : null;
+        if (StringUtils.isBlank(companyId) || StringUtils.isBlank(doctorId)) {
+            return;
+        }
+        String queueDate = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")).toString();
+        registrationDao.advanceQueueCounter(companyId, doctorId, queueDate);
+        Integer number = registrationDao.getQueueCounter(companyId, doctorId, queueDate);
+        if (number != null) {
+            entity.setQueueNumber(number);
+        }
     }
 
     @Transactional(readOnly = false)
@@ -140,6 +178,9 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     @Transactional(readOnly = false)
     public Registration wxSave(Registration entity) {
         if (StringUtils.isBlank(entity.getId())) {
+            if (entity.getQueueNumber() == null) {
+                assignQueueNumber(entity);
+            }
             entity.preInsert();
             this.doInsert(entity);
             Action created = this.createAction("created", entity);
