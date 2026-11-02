@@ -74,7 +74,9 @@ public class RegistrationController extends CrudController<RegistrationService, 
 
     @GetMapping("/doctornew")
     public ResponseEntity<JSONObject> doctornew() {
-        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; hien 500 ca 2 token (loi cu) nhung san van phai giu, theo mau T1.
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC.
+        // V2: statement getUserByCompanyIdAndJobV2 nay dung SQL NEW (bac si
+        // co lich truc hom nay) — xem UserDao.xml.
         List<User> doctors = userService.getUserByCompanyIdAndJobV2(SessionUtils.getLoginTenantId(), "Bác sĩ");
         return ResponseEntity.ok(ResultUtil.successJson(doctors));
     }
@@ -304,15 +306,18 @@ public class RegistrationController extends CrudController<RegistrationService, 
     //WeChatđầuQuaopenidLấykhám bệnhThông tin
     @PostMapping("getRegistrationByOpenId")
     public ResponseEntity<JSONObject> getRegistrationByOpenId(@RequestBody SearchParams searchParams) {
-        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC; hien 500 ca 2 token (loi cu) nhung san van phai giu, theo mau T1.
+        if (!hasAnySessionPermission()) { return forbidden(); } // U2(b): san RBAC.
         List<Parameter> params = searchParams.getParams();
         // V1: company_id ep theo session, giu nguyen vi tri params (service doc
-        // params[0]=companyId, params[1]=openId theo vi tri). Chi co tac dung sau
-        // khi V2 sua NPE o getParams(); hien van 500 nhu truoc sua.
+        // params[0]=companyId, params[1]=openId theo vi tri).
+        // V2: getParams() da boc columnName trong backtick (`company_id`) nen
+        // phai khop ca hai dang, neu khong vong nay lang lang khong ep duoc
+        // va body lai dieu khien tenant (V1 chi co tac dung sau khi V2 sua NPE).
         String tenant = SessionUtils.getLoginTenantId();
         if (StringUtils.isNotBlank(tenant) && !"null".equals(tenant) && params != null) {
             for (Parameter p : params) {
-                if ("company_id".equals(p.getColumnName())) { p.setValue(tenant); }
+                String col = p.getColumnName();
+                if ("company_id".equals(col) || "`company_id`".equals(col)) { p.setValue(tenant); }
             }
         }
         Page<Registration> registrationByOpenId = registrationService.getRegistrationByOpenId(params, searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());

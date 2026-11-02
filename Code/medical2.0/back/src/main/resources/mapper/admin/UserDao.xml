@@ -90,6 +90,36 @@
         ORDER BY a.update_date DESC
     </select>
 
+    <!-- V2 (iteration 16): statement nay tu truoc toi gio khong ton tai (dao
+         co tu initial commit nhung XML chi co getUserByCompanyIdAndJob va
+         NEWgetUserByCompanyIdAndJob) nen /doctornew luon 500 BindingException.
+         Than SQL copy NEW: chi bac si co lich truc hom nay (scheduling_data
+         schedulingtime = curdate()), dung ngu nghia "new" cua listDoctorsAllnew
+         o ysForm.vue:155. /doctor cu van tra toan bo bac si cua company. -->
+    <select id="getUserByCompanyIdAndJobV2" resultType="com.geeke.admin.entity.User">
+        SELECT DISTINCT
+        <include refid="userColumns"/>,
+        o.id AS office
+        FROM scheduling_data schd
+        left join sys_user a on a.id =schd.userid and a.company_id =schd.company_id
+        LEFT JOIN org_department department ON department.id = a.department_id
+        left join sys_user_ext e on e.user_id = a.id
+        left join clinic_office o on o.name = e.office and o.company_id = e.company_id
+        LEFT JOIN org_company company ON company.id = e.company_id
+        <where>
+            1=1
+            AND a.id > 0
+            and schd.del_flag='0' and schd.is_locked='0'
+            and schd.schedulingtime =curdate()
+            AND a.del_flag = 0
+            AND e.company_id = #{companyId}
+            AND e.job_type = #{jobType}
+            AND a.is_locked = 0
+            AND a.is_wxuser = "0"
+        </where>
+        ORDER BY a.update_date DESC
+    </select>
+
     <select id="getByLoginName" resultType="com.geeke.admin.entity.User">
         SELECT
         <include refid="userColumns"/>

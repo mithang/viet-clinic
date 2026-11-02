@@ -61,10 +61,18 @@ public class SearchParams implements Serializable {
 	public List<Parameter> getParams() {
 		if (null != params && params.size() > 0) {
 			for (int i = 0; i < params.size(); i++) {
-				if (!Arrays.asList(LOGIC_LIST).contains(params.get(i).getLogic().toLowerCase().trim())) {
+				// V2 (iteration 16): JSON khong gui logic/queryType thi Jackson de
+				// null (queryType khong co gia tri mac dinh nhu logic) -> NPE o
+				// dong duoi. Mac dinh ve gia tri hop le trong whitelist, van
+				// chan gia tri khong null ma khong hop le nhu cu.
+				String logic = params.get(i).getLogic();
+				if (logic == null) { logic = "AND"; params.get(i).setLogic("AND"); }
+				if (!Arrays.asList(LOGIC_LIST).contains(logic.toLowerCase().trim())) {
 					throw new ServiceException("Toán tử logic chứa ký tự không hợp lệ");
 				}
-				String queryType = params.get(i).getQueryType().replaceAll(" +"," ").trim();
+				String queryType = params.get(i).getQueryType();
+				if (queryType == null) { queryType = "="; params.get(i).setQueryType("="); }
+				queryType = queryType.replaceAll(" +"," ").trim();
 				if (!Arrays.asList(QUERY_TYPE_LIST).contains(queryType.toLowerCase())) {
 					throw new ServiceException("Toán tử tính toán chứa ký tự không hợp lệ");
 				}

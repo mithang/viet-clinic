@@ -987,4 +987,32 @@
 
         WHERE company_id=#{company.id} and id=#{id} AND status in ('registrationStatus_5')
     </update>
+
+    <!-- V2 (iteration 16): hai statement nay tu truoc toi gio khong ton tai
+         (dao co tu initial commit nhung XML khong co) nen
+         getRegistrationByOpenId luon 500 BindingException sau khi qua NPE
+         o SearchParams. open_id nam o bang patient (join san trong
+         registrationJoins), khong phai cot cua registration; loc ca
+         registration va patient chua xoa mem, theo mau P1/S1. -->
+    <select id="listByOpenId" resultType="com.geeke.outpatient.entity.Registration">
+        SELECT
+            <include refid="registrationColumns"/>
+        FROM registration a
+        <include refid="registrationJoins"/>
+        WHERE a.company_id = #{companyId}
+            AND a.del_flag = '0'
+            AND patientId.del_flag = '0'
+            AND patientId.open_id = #{openId}
+        ORDER BY a.update_date DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByOpenId" resultType="int">
+        SELECT COUNT(*) FROM registration a
+        LEFT JOIN patient patientId ON patientId.id = a.patient_id
+        WHERE a.company_id = #{companyId}
+            AND a.del_flag = '0'
+            AND patientId.del_flag = '0'
+            AND patientId.open_id = #{openId}
+    </select>
 </mapper>
