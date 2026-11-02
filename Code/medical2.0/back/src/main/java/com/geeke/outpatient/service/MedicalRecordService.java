@@ -322,8 +322,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 .eq("registration_id", registration.getId())
                 .build();
         List<MedicalRecord> medicalRecords = super.listAll(parameters, "");
-        MedicalRecord medicalRecord = medicalRecords.get(0);
-        outEvt.setMedicalRecord(medicalRecord);
+        // C3: luot kham chua co ho so -> list rong, khong get(0) (500 truoc sua);
+        // de medicalRecord null nhu nhanh allNewQuery da guard, frontend I2 da chiu null.
+        if (!CollectionUtils.isEmpty(medicalRecords)) {
+            outEvt.setMedicalRecord(medicalRecords.get(0));
+        }
         //Truy vấnĐơn thuốcThông tin
         SearchParamsBuilder recipelParams = SearchParamsBuilder.create()
                 .eq("company_id", registration.getCompany().getId())
