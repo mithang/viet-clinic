@@ -88,6 +88,10 @@
         WHERE recipelInfo.id = #{id}
     </select>
 
+    <select id="getCompanyParentId" parameterType="String" resultType="String">
+        select parent_id from org_company where id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM recipel_info recipelInfo
          left join recipel_info_review a on recipelInfo.id = a.recipel_info_id

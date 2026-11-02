@@ -19,6 +19,9 @@ import java.util.List;
 public interface RecipelInfoReviewDao extends CrudDao<RecipelInfoReview> {
     RecipelInfoReview getByRecipelInfoId(String recipelInfoId);
 
+    /** Y1: parent_id của một company (để ép phạm vi thống kê theo session). */
+    String getCompanyParentId(@Param("id") String companyId);
+
     List<StatementVO> listPageStatement(@Param("params") List<Parameter> params,@Param("groupByColumns") List<String> groupByColumns);
 
     PrescriptionStatisticsVO prescriptionStatistics(String id,String startTime,String endTime);
