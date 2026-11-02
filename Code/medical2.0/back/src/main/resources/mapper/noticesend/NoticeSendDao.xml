@@ -37,6 +37,10 @@
         WHERE a.id = #{id}
     </select>
 
+    <select id="getCompanyIdById" resultType="java.lang.String">
+        SELECT company_id FROM notice_send WHERE id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM notice_send a
         <include refid="noticeSendJoins"/>
