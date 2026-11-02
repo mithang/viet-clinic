@@ -45,6 +45,10 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         Recipetemplate entity = recipetemplateService.getById(id);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
@@ -52,6 +56,10 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
     @Override
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         Page<Recipetemplate> result = recipetemplateService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         List<Recipetemplate> recipetemplates = result.getRows();
         if(!CollectionUtils.isEmpty(recipetemplates)){
@@ -72,6 +80,10 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
 
     @PostMapping(value = "allSave")
     public ResponseEntity<JSONObject> allSave(@RequestBody Recipetemplate entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         recipetemplateService.allSave(entity);
 //        String id = recipetemplateService.save(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(""));
@@ -80,6 +92,10 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
     // aimẫuLưu
     @PostMapping("aiSave")
     public ResponseEntity<JSONObject> aiSave(@RequestBody Recipetemplate entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         final String s = recipetemplateService.aiSave(entity);
         return ResponseEntity.ok(ResultUtil.successJson(s));
     }
@@ -87,6 +103,10 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
     // aimẫuTruy vấn
     @PostMapping(value = "listAi")
     public ResponseEntity<JSONObject> listAi(@RequestBody String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         List<Recipetemplate> result = recipetemplateService.listAi(id);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

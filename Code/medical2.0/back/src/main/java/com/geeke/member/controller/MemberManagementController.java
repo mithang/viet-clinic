@@ -50,6 +50,10 @@ public class MemberManagementController extends CrudController<MemberManagementS
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         MemberManagement entity = memberManagementService.get(id);
         MemberSet memberSet = memberSetService.get(entity.getMemberSet().getId());
         List<MemberItem> byMemberSetId = memberItemService.getByMemberSetId(memberSet.getId());
@@ -64,6 +68,10 @@ public class MemberManagementController extends CrudController<MemberManagementS
     @Override
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody MemberManagement entity) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         int rows = memberManagementService.delete(entity);
         //Vô hiệu hóathẻThành côngsauCầnSẽ thẻcòntrả lạiHội viênthẻ
         if(rows>0){
@@ -75,12 +83,20 @@ public class MemberManagementController extends CrudController<MemberManagementS
     //Lấy thông tin thẻ hội viên theo chi tiết đơn thuốc và chi tiết đơn thuốc
     @PostMapping(value = "getMember")
     public ResponseEntity<JSONObject> getMember(@RequestBody RecipelInfoEvt recipelInfoEvt){
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         List<MemberManagement> member = memberManagementService.getMember(recipelInfoEvt);
         return ResponseEntity.ok(ResultUtil.successJson(member));
     }
 
     @GetMapping(value = "getByPatientId/{patientId}")
     public ResponseEntity<JSONObject> getByPatientId(@PathVariable("patientId") String patientId){
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         List<MemberManagement> memberManagements=memberManagementService.getByPatientId(patientId);
         return ResponseEntity.ok(ResultUtil.successJson(memberManagements));
     }

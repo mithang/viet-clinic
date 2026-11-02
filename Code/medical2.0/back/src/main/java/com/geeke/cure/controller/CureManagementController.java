@@ -13,10 +13,13 @@ import com.geeke.utils.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.geeke.sys.controller.BaseController;
+import org.springframework.http.HttpStatus;
+import com.geeke.utils.constants.ErrorEnum;
 
 @RestController
 @RequestMapping("/cure/cureManagement")
-public class CureManagementController {
+public class CureManagementController extends BaseController {
     @Autowired
     private CureManagementService cureManagementService;
     @Autowired
@@ -25,6 +28,11 @@ public class CureManagementController {
     private RecipelInfoService recipelInfoService;
     @PostMapping("save")
     public ResponseEntity<JSONObject> save(@RequestBody CureManagement entity){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         String crueId=entity.getId();
         String id="";
         if("3".equals(entity.getRecipelDetail().getStuffType())){
@@ -53,6 +61,11 @@ public class CureManagementController {
     }
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         Page<CureManagement> result = cureManagementService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

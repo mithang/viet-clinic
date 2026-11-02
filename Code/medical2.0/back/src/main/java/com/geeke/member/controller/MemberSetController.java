@@ -40,6 +40,10 @@ public class MemberSetController extends CrudController<MemberSetService, Member
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         MemberSet entity = memberSetService.get(id);
         //TheoHội viênthẻLấytương ứng của hạng mụcChi tiết
         List<MemberItem> memberItemList=memberItemService.getByMemberSetId(id);
@@ -50,6 +54,10 @@ public class MemberSetController extends CrudController<MemberSetService, Member
     @Override
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         Page<MemberSet> result = memberSetService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
        if(!CollectionUtils.isEmpty(result.getRows())){
            List<MemberSet> memberSets = result.getRows();
@@ -67,6 +75,10 @@ public class MemberSetController extends CrudController<MemberSetService, Member
     @Override
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         List<MemberSet> result = memberSetService.listAll(searchParams.getParams(), searchParams.getOrderby());
         for (MemberSet memberSet : result) {
             //Lấytương ứng của Chi tiết

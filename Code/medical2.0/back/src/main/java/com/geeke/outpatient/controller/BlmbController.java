@@ -1,6 +1,8 @@
 package com.geeke.outpatient.controller;
 
 
+import com.geeke.utils.constants.ErrorEnum;
+import org.springframework.http.HttpStatus;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.data.Page;
 import com.geeke.outpatient.entity.Blmb;
@@ -26,30 +28,55 @@ public class BlmbController extends BaseController {
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody Blmb blmb){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         int result=blmbService.insert(blmb);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "getblmblist")
     public ResponseEntity<JSONObject> getblmblist(@RequestBody Blmcxrc blmcxrc){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         Page<Blmb> result=blmbService.getblmblist(blmcxrc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "deletembbm")
     public ResponseEntity<JSONObject> deletembbm(@RequestBody Blmcxrc blmcxrc){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         int result=blmbService.deletembbm(blmcxrc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "selectmbbm")
     public ResponseEntity<JSONObject> selectmbbm(@RequestBody Blmcxrc blmcxrc){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         List<Blmb> result=blmbService.selectmbbm(blmcxrc);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "updatembbm")
     public ResponseEntity<JSONObject> updatembbm(@RequestBody Blmb blmb){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         int result=blmbService.updatembbm(blmb);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

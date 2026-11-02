@@ -44,6 +44,10 @@ public class InspectionCheckInfoController extends CrudController<InspectionChec
 
     @GetMapping("/info/{inspecId}")
     public ResponseEntity<JSONObject> getByInspecId(@PathVariable("inspecId") String inspecId) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         InspectionCheckInfo entity = inspectionCheckInfoService.getByInspecId(inspecId);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
@@ -52,6 +56,10 @@ public class InspectionCheckInfoController extends CrudController<InspectionChec
     public ResponseEntity<JSONObject> saveWithFile(@RequestParam("entity") String strInspection,
                                                @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,
                                            @RequestParam(value = "deleteIds",required = false)String strDeleteIds) throws IOException {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+
         InspectionCheckInfo inspectionCheckInfo = JSONObject.parseObject(strInspection, InspectionCheckInfo.class);
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
         logger.debug("LưuChi tiết xét nghiệm và kiểm tra: {}", inspectionCheckInfo);

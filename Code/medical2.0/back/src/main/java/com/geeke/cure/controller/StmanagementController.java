@@ -1,6 +1,8 @@
 package com.geeke.cure.controller;
 
 
+import com.geeke.utils.constants.ErrorEnum;
+import org.springframework.http.HttpStatus;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.data.Page;
 import com.geeke.cure.entity.Stmanagement;
@@ -27,24 +29,44 @@ public class StmanagementController extends BaseController {
 
     @PostMapping(value = "stmanagementlist")
     public ResponseEntity<JSONObject> stmanagementlist(@RequestBody Stparameter stparameter){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         Page<Stmanagement> result=service.stmanagementlist(stparameter);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "updatestresult")
     public ResponseEntity<JSONObject> updatestresult(@RequestBody Stparameter stparameter){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         int result=service.updatestresult(stparameter);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "updatesttime")
     public ResponseEntity<JSONObject> updatesttime(@RequestBody Stparameter stparameter){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         int result=service.updatesttime(stparameter);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "selectdetailid")
     public ResponseEntity<JSONObject> selectdetailid(@RequestBody Stparameter stparameter){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         List<Stmanagement> result=service.selectdetailid(stparameter);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

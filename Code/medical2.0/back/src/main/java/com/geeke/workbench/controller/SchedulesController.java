@@ -1,6 +1,8 @@
 package com.geeke.workbench.controller;
 
 
+import com.geeke.utils.constants.ErrorEnum;
+import org.springframework.http.HttpStatus;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
@@ -48,6 +50,11 @@ public class SchedulesController extends BaseController {
      */
     @PostMapping(value = {"tobeseelist", ""})
     public ResponseEntity<JSONObject> schedules(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         Page<Registration> result = registrationService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -59,6 +66,11 @@ public class SchedulesController extends BaseController {
      */
     @PostMapping(value = "/dispensing")
     public ResponseEntity<JSONObject> allNewQuery(@RequestBody PageRegistration pageRegistration,@RequestParam(name = "recipelInfoIds",required=false) String strRecipelInfoIds) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         Page<Registration> result = registrationService.listPages(pageRegistration);
         ArrayList<ReceptionEvt> registrations=new ArrayList<ReceptionEvt>();
         if(!Objects.isNull(result.getRows())){
@@ -73,6 +85,11 @@ public class SchedulesController extends BaseController {
 
     @PostMapping(value = "/patidwsflist")
     public ResponseEntity<JSONObject> patidwsflist(@RequestBody PageRegistration pageRegistration) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         Page<Registration> result = registrationService.listPages(pageRegistration);
         ArrayList<List<MemberManagement>> memberManagements=new ArrayList<>();
         for (Registration item:result.getRows()) {
@@ -88,12 +105,22 @@ public class SchedulesController extends BaseController {
      */
     @GetMapping("/{strRecipelInfoIds}")
     public ResponseEntity<JSONObject> updateoverlookid(@PathVariable("strRecipelInfoIds") String strRecipelInfoIds){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         int data=schedulesService.updateoverlookid(strRecipelInfoIds);
         return ResponseEntity.ok(ResultUtil.successJson(data));
     }
 
         @PostMapping("/updateoverlookidlist")
     public ResponseEntity<JSONObject> updateoverlookidlist(@RequestBody PageRegistration pageRegistration){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         if(pageRegistration.getStatus().equals("0")){
             List<String> result=schedulesService.listPagesjyjc(pageRegistration);
             for(String item:result){
@@ -112,6 +139,11 @@ public class SchedulesController extends BaseController {
 
     @PostMapping("/schedulelists")
     public ResponseEntity<JSONObject> visitprogresslist(@RequestBody Visitprogresspara visitprogresspara){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
         Page<VisitProgress> result=schedulesService.visitProgressPage(visitprogresspara);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
