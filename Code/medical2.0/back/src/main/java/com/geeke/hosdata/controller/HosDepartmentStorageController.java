@@ -11,6 +11,7 @@ import com.geeke.hosdata.constant.ApiUrl;
 import com.geeke.hosdata.entity.HisDrugs;
 import com.geeke.hosdata.entity.HisDrugsStorage;
 import com.geeke.hosdata.util.HttpUtil;
+import com.geeke.sys.controller.BaseController;
 import com.geeke.org.entity.Company;
 import com.geeke.stock.entity.*;
 import com.geeke.stock.service.DrugService;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/hosdata/HosDepartmentStorage")
 @RequiredArgsConstructor
-public class HosDepartmentStorageController {
+public class HosDepartmentStorageController extends BaseController {
 
     private final HttpUtil httpUtil;
     
@@ -58,6 +59,10 @@ public class HosDepartmentStorageController {
      */
     @PostMapping(value = "getHosDrugsStorage")
     public ResponseEntity<JSONObject> getHosMaterials(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         List<Parameter> params = searchParams.getNewParams();
         List<Parameter> newParams = new ArrayList<>();
         params.forEach(item ->{
@@ -117,6 +122,10 @@ public class HosDepartmentStorageController {
      */
     @PostMapping(value = "auditHosDrugsStorage")
     public ResponseEntity<JSONObject> auditHosMaterials(@RequestBody List<HisDrugsStorage> hisDrugsStorages) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         StorageEvt storageEvt = new StorageEvt();
         SupplierStorage supplierStorage = new SupplierStorage();
         List<SupplierStock> supplierStockList = new ArrayList<>();

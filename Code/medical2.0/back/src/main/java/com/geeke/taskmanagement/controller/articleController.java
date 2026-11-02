@@ -30,6 +30,10 @@ public class articleController extends BaseController{
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody article entity) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         entity.setIsLocked("0");
         entity.setAricledate(new Date());
         String refdata = articleService.save(entity).getId();
@@ -37,6 +41,10 @@ public class articleController extends BaseController{
     }
     @PostMapping(value = "update")
     public ResponseEntity<JSONObject> update(@RequestBody article entity) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         JSONObject userObj = SessionUtils.getUserJson();
         if (userObj != null && StringUtils.isNotBlank(userObj.getString("id"))) {
             entity.setUpdateBy(userObj.getString("name") + "(" + userObj.getString("loginName") + ")");
@@ -49,6 +57,10 @@ public class articleController extends BaseController{
     }
     @PostMapping(value = "audit")
     public ResponseEntity<JSONObject> audit(@RequestBody article entity) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         JSONObject userObj = SessionUtils.getUserJson();
         if (userObj != null && StringUtils.isNotBlank(userObj.getString("id"))) {
             entity.setAuditor(userObj.getString("name") + "(" + userObj.getString("loginName") + ")");
@@ -59,23 +71,39 @@ public class articleController extends BaseController{
     }
     @PostMapping(value = "list")
     public ResponseEntity<JSONObject> list(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         Page<article> result = articleService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "lists")
     public ResponseEntity<JSONObject> lists(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         Page<article> result = articleService.listPages(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listall(@RequestBody SearchParams searchParams){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         List<article> result = articleService.listAll(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
     @PostMapping(value = "listgetid")
     public ResponseEntity<JSONObject> listgetid(@RequestBody article entity){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         article result = articleService.listgetid(entity);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }

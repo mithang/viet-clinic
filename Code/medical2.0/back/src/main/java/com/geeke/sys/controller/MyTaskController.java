@@ -19,31 +19,47 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/myTask/myTask")
-public class MyTaskController {
+public class MyTaskController extends BaseController {
 
     @Autowired
     private MyTaskService myTaskService;
 
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         MyTask entity = myTaskService.get(id);
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
     @PostMapping("update")
     public ResponseEntity<JSONObject> update(@RequestBody MyTask myTask){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         MyTask myTask1 =myTaskService.update(myTask);
         return ResponseEntity.ok(ResultUtil.successJson(myTask1));
     }
 
     @PostMapping(value = {"list", ""})
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         Page<MyTask> result = myTaskService.listPage(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "listAll")
     public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         List<MyTask> result = myTaskService.listAll(searchParams.getParams(), searchParams.getOrderby());
 
         return ResponseEntity.ok(ResultUtil.successJson(result));
@@ -53,6 +69,10 @@ public class MyTaskController {
     public ResponseEntity<JSONObject> save(@RequestParam("entity") String strTask,
                                            @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                            @RequestParam(value = "deleteIds", required = false) String strDeleteIds) throws IOException {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         MyTask myTask = JSONObject.parseObject(strTask, MyTask.class);
         // MultipartFile[] multipartFiles = JSONObject.parseObject(fileIdUploads, MultipartFile[].class);
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);

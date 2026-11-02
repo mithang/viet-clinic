@@ -84,6 +84,10 @@ public class HosCollectDataController extends BaseController {
      */
     @PostMapping(value = "getHosDrugs")
     public ResponseEntity<JSONObject> getHosDrugs(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         JSONObject result = getJsonObject(searchParams);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -95,6 +99,10 @@ public class HosCollectDataController extends BaseController {
      */
     @PostMapping(value = "getHosMaterials")
     public ResponseEntity<JSONObject> getHosMaterials(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         JSONObject hosData = httpUtil.getHosData(searchParams, ApiUrl.HOS_GET_MATERIAL_ITEM_PAGE);
         List<String> codeList = hisMaterialService.getcCodeList(SessionUtils.getUserJson().getString("companyId"));
         JSONArray jsonArray = hosData.getJSONObject("BusData").getJSONObject("data").getJSONArray("rows");
@@ -116,6 +124,10 @@ public class HosCollectDataController extends BaseController {
      */
     @PostMapping(value = "getHosInstitutions")
     public ResponseEntity<JSONObject> getHosInstitutions(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         JSONObject hosData = httpUtil.getHosData(searchParams, ApiUrl.HOS_GET_CHARGE_ITEM_PAGE);
         JSONArray jsonArray = hosData.getJSONObject("BusData").getJSONObject("data").getJSONArray("rows");
         List<String> codeList = hisInstitutionService.getcCodeList(SessionUtils.getUserJson().getString("companyId"));
@@ -134,18 +146,30 @@ public class HosCollectDataController extends BaseController {
 
     @PostMapping(value = "HisInstitutionsToClinic")
     public ResponseEntity<JSONObject> HisHisInstitutionsToClinic( @RequestBody  List<HisInstitutions> entitys) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         List<String> ids = hisInstitutionService.bulkInsert(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
 
     }
     @PostMapping(value = "HisMaterialsToClinic")
     public ResponseEntity<JSONObject> HisMaterialsToClinic( @RequestBody  List<HisMaterials> entitys) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         List<String> ids = hisMaterialService.bulkInsert(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
 
     }
     @PostMapping(value = "HisDrugsToClinic")
     public ResponseEntity<JSONObject> HisDrugToClinic( @RequestBody  List<HisDrugs> entitys) {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         List<String> ids =  getStrings(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
 

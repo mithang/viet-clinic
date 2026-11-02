@@ -33,6 +33,10 @@ public class TaskmanageController extends BaseController {
      */
     @PostMapping(value = "inserttask")
     public ResponseEntity<JSONObject> inserttask(@RequestBody taskmanagement task)  {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         return ResponseEntity.ok(ResultUtil.successJson(taskmanageService.inserttask(task)));
     }
 
@@ -41,6 +45,10 @@ public class TaskmanageController extends BaseController {
      */
     @PostMapping(value = "selecttasklist")
     public ResponseEntity<JSONObject> selecttasklist(@RequestBody gettaskrcvo rcvo){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         return ResponseEntity.ok(ResultUtil.successJson(taskmanageService.selecttasklist(rcvo)));
     }
 
@@ -51,6 +59,10 @@ public class TaskmanageController extends BaseController {
                                            @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                            @RequestParam(value = "deleteIds",required = false)String strDeleteIds,
                                            @RequestParam("countId") String countId) throws IOException {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         taskmanagement task = JSONObject.parseObject(strInspection, taskmanagement.class);
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
 
@@ -69,6 +81,10 @@ public class TaskmanageController extends BaseController {
     public ResponseEntity<JSONObject> storage(@RequestParam("entity") String strInspection,
                                            @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Ảnh người dùng
                                            @RequestParam(value = "deleteIds",required = false)String strDeleteIds , @RequestParam("countId") String countId) throws IOException {
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         taskmanagement task = JSONObject.parseObject(strInspection, taskmanagement.class);
         String[] strings = JSONObject.parseObject(strDeleteIds, String[].class);
 
@@ -82,6 +98,10 @@ public class TaskmanageController extends BaseController {
      */
     @PostMapping(value = "release")
     public ResponseEntity<JSONObject> release(@RequestBody taskmanagement taskmanagement){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         taskmanagement taskmanagement1 = taskmanageService.release(taskmanagement);
         return ResponseEntity.ok(ResultUtil.successJson(taskmanagement1));
     }
@@ -93,6 +113,10 @@ public class TaskmanageController extends BaseController {
      */
     @PostMapping("delete")
     public ResponseEntity delete(@RequestBody taskmanagement taskmanagement){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
        taskmanagement taskmanagement1 =  taskmanageService.delete(taskmanagement);
        return ResponseEntity.ok(ResultUtil.successJson(taskmanagement1));
     }
@@ -102,6 +126,10 @@ public class TaskmanageController extends BaseController {
     */
     @PostMapping(value = "getusertree")
     public ResponseEntity<JSONObject> getusertree(@RequestBody gettaskrcvo rcvo){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         return ResponseEntity.ok(ResultUtil.successJson(taskmanageService.getusertree(rcvo)));
     }
 
@@ -111,6 +139,10 @@ public class TaskmanageController extends BaseController {
        */
     @PostMapping(value = "getfeedbacktable")
     public ResponseEntity<JSONObject> getfeedbacktable(@RequestBody gettaskrcvo rcvo){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         return ResponseEntity.ok(ResultUtil.successJson(taskmanageService.getfeedbacktable(rcvo)));
     }
 
@@ -119,6 +151,10 @@ public class TaskmanageController extends BaseController {
      */
     @PostMapping(value = "updateaudit")
     public ResponseEntity<JSONObject> updateaudit(@RequestBody taskmanagement task){
+        if (!hasAnySessionPermission()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
         return ResponseEntity.ok(ResultUtil.successJson(taskmanageService.updateaudit(task)));
     }
 
