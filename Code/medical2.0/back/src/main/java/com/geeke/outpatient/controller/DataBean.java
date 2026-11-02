@@ -319,6 +319,11 @@ public class DataBean {
         List<String> chineseMedicalNames = new ArrayList<>();
         RecipelDetailEvt recipelDetailEvt = new RecipelDetailEvt();
         BigDecimal count = new BigDecimal(0);
+        if (null == recipelInfo) {
+            // Đơn lạ (template charge render dataset này trước charge):
+            // trả dataset rỗng thay vì NPE ở :336, đúng ngữ nghĩa E2.
+            return outList;
+        }
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
                 if (1 == recipelDetail.getIsExtra()) {
@@ -434,10 +439,20 @@ public class DataBean {
         //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
+        if (null == recipelInfo || null == recipelInfo.getRegistration()) {
+            // Đơn lạ hoặc đơn mồ côi (đúng ngữ nghĩa E2 cho buildReport):
+            // trả dataset rỗng thay vì NPE.
+            return outList;
+        }
         //MedicalRecord medicalRecord = medicalRecordDao.get(recipelInfo.getMedicalRecord().getId());
         //Registration registration = registrationService.get(medicalRecord.getRegistration().getId());
         Registration registration = registrationService.get(recipelInfo.getRegistration().getId());
-        Patient patient = patientService.get(registration.getPatientId().getId());
+        if (null == registration) {
+            // Lượt khám mà đơn trỏ tới đã mất (đơn mồ côi): trả rỗng.
+            return outList;
+        }
+        Patient patient = null == registration.getPatientId() ? null
+                : patientService.get(registration.getPatientId().getId());
         List<TollInfo> byRecipeId = tollInfoService.getByRecipeId(recipelInfoId);
         TollInfo tollInfo = null;
         if (null != byRecipeId && !byRecipeId.isEmpty()) {
@@ -445,24 +460,24 @@ public class DataBean {
         }
 
         ChargeTicketEvt chargeTicketEvt = new ChargeTicketEvt();
-        chargeTicketEvt.setClinicName(recipelInfo.getCompany().getName());
-        chargeTicketEvt.setName("Họ tên: " + patient.getName());
-        chargeTicketEvt.setGender("Giới tính: " + patient.getGender().getName());
-        chargeTicketEvt.setAge("Tuổi: " + patient.getAge());
+        chargeTicketEvt.setClinicName(null == recipelInfo.getCompany() ? "" : recipelInfo.getCompany().getName());
+        chargeTicketEvt.setName("Họ tên: " + (null == patient ? "" : patient.getName()));
+        chargeTicketEvt.setGender("Giới tính: " + (null == patient || null == patient.getGender() ? "" : patient.getGender().getName()));
+        chargeTicketEvt.setAge("Tuổi: " + (null == patient ? "" : patient.getAge()));
         chargeTicketEvt.setTip(CHARGE_REMARK);
         if (null != tollInfo) {
             chargeTicketEvt.setCode("Số phiếu thu phí: " + tollInfo.getId());
-            chargeTicketEvt.setType("Loại thu phí: " + tollInfo.getPaymentType().getName());
-            chargeTicketEvt.setProject("Hạng mục thu phí: " + recipelInfo.getRecipelType().getName());
+            chargeTicketEvt.setType("Loại thu phí: " + (null == tollInfo.getPaymentType() ? "" : tollInfo.getPaymentType().getName()));
+            chargeTicketEvt.setProject("Hạng mục thu phí: " + (null == recipelInfo.getRecipelType() ? "" : recipelInfo.getRecipelType().getName()));
             String createBy = tollInfo.getCreateBy();
-            if (createBy.contains("(")) {
+            if (null != createBy && createBy.contains("(")) {
                 createBy = createBy.substring(0,createBy.indexOf("("));
             }
-            chargeTicketEvt.setPeople("Người thu phí: " + createBy);
-            chargeTicketEvt.setDate("Ngày khám bệnh: " + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getCreateDate()));
-            chargeTicketEvt.setOffice("Khoa khám: " + registration.getClinicOffice().getName());
+            chargeTicketEvt.setPeople("Người thu phí: " + (null == createBy ? "" : createBy));
+            chargeTicketEvt.setDate("Ngày khám bệnh: " + (null == recipelInfo.getCreateDate() ? "" : new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getCreateDate())));
+            chargeTicketEvt.setOffice("Khoa khám: " + (null == registration.getClinicOffice() ? "" : registration.getClinicOffice().getName()));
             chargeTicketEvt.setFee("Số tiền thu phí: " + recipelInfo.getFee());
-            String payTypeName = getPayTypeDisplayName(tollInfo.getPaymentType().getValue());
+            String payTypeName = getPayTypeDisplayName(null == tollInfo.getPaymentType() ? null : tollInfo.getPaymentType().getValue());
             chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + ": " + recipelInfo.getFee());
         }
         // H4: phiếu thu phí cũng in số thứ tự chờ khám của lượt đăng ký (nếu có).
@@ -529,22 +544,27 @@ public class DataBean {
         //Đơn thuốcid
         String registrationId = (String) parameters.get("registrationId");
         Registration registration = registrationService.get(registrationId);
-        Patient patient = patientService.get(registration.getPatientId().getId());
+        if (null == registration) {
+            // Lượt khám lạ/mất: trả dataset rỗng thay vì NPE, đúng ngữ nghĩa E2.
+            return outList;
+        }
+        Patient patient = null == registration.getPatientId() ? null
+                : patientService.get(registration.getPatientId().getId());
         ChargeTicketEvt chargeTicketEvt = new ChargeTicketEvt();
-        chargeTicketEvt.setClinicName(registration.getCompany().getName() + "Chứng từ đăng ký khám (Liên khách hàng)");
-        chargeTicketEvt.setName("Họ tên: " + patient.getName());
-        chargeTicketEvt.setGender("Giới tính: " + patient.getGender().getName());
-        chargeTicketEvt.setAge("Tuổi: " + patient.getAge());
-        chargeTicketEvt.setDate("Đăng ký khámThời gian: " + new SimpleDateFormat(DATE_FORMAT).format(registration.getCreateDate()));
+        chargeTicketEvt.setClinicName((null == registration.getCompany() ? "" : registration.getCompany().getName()) + "Chứng từ đăng ký khám (Liên khách hàng)");
+        chargeTicketEvt.setName("Họ tên: " + (null == patient ? "" : patient.getName()));
+        chargeTicketEvt.setGender("Giới tính: " + (null == patient || null == patient.getGender() ? "" : patient.getGender().getName()));
+        chargeTicketEvt.setAge("Tuổi: " + (null == patient ? "" : patient.getAge()));
+        chargeTicketEvt.setDate("Đăng ký khámThời gian: " + (null == registration.getCreateDate() ? "" : new SimpleDateFormat(DATE_FORMAT).format(registration.getCreateDate())));
         String createBy = registration.getCreateBy();
-        if (createBy.contains("(")) {
+        if (null != createBy && createBy.contains("(")) {
             createBy = createBy.substring(0,createBy.indexOf("("));
         }
-        chargeTicketEvt.setPeople("Người thu phí: " + createBy);
-        chargeTicketEvt.setOffice("Đăng ký khámKhoa: " + registration.getClinicOffice().getName());
-        chargeTicketEvt.setProject("Đăng ký khámBác sĩ: " + registration.getDoctor().getName());
+        chargeTicketEvt.setPeople("Người thu phí: " + (null == createBy ? "" : createBy));
+        chargeTicketEvt.setOffice("Đăng ký khámKhoa: " + (null == registration.getClinicOffice() ? "" : registration.getClinicOffice().getName()));
+        chargeTicketEvt.setProject("Đăng ký khámBác sĩ: " + (null == registration.getDoctor() ? "" : registration.getDoctor().getName()));
         chargeTicketEvt.setFee("Đăng ký khámSố tiền: " + registration.getRegistrationFee() + " đồng");
-        String payTypeName = getPayTypeDisplayName(registration.getPayType().getValue());
+        String payTypeName = getPayTypeDisplayName(null == registration.getPayType() ? null : registration.getPayType().getValue());
         chargeTicketEvt.setFeeType(payTypeName.isEmpty() ? "" : payTypeName + ": " + registration.getRegistrationFee() + " đồng");
         chargeTicketEvt.setTip(REGISTRATION_REMARK);
         // H4: dùng số thứ tự đã lưu lúc đăng ký (queue_number) thay cho cách đếm
@@ -557,23 +577,27 @@ public class DataBean {
             outList.add(chargeTicketEvt);
             return outList;
         }
-        Date zeroTimeOfDate = DateUtils.getZeroTimeOfDate(registration.getCreateDate());
-        String todayStart = DateUtils.formatDateTime(zeroTimeOfDate);
-        Date endTimeOfDate = DateUtils.getEndTimeOfDate(registration.getCreateDate());
-        String todayEnd = DateUtils.formatDateTime(endTimeOfDate);
-        List<Parameter> regParameters = SearchParamsBuilder.create()
-                .eq("a.doctor_id", registration.getDoctor().getId())
-                .ge("a.create_date", todayStart)
-                .le("a.create_date", todayEnd)
-                .build();
-        List<Registration> registrations = registrationService.listAll(regParameters, "a.create_date asc");
         String todayNum = "0";
-        if (CollectionUtils.isNotEmpty(registrations)) {
-            String patientId = registration.getPatientId().getId();
-            for (int i = 0; i < registrations.size(); i++) {
-                Registration docRegistration = registrations.get(i);
-                if (patientId.equals(docRegistration.getPatientId().getId())) {
-                    todayNum = (i + 1) + "";
+        if (null != registration.getDoctor() && null != registration.getCreateDate()
+                && null != registration.getPatientId()) {
+            Date zeroTimeOfDate = DateUtils.getZeroTimeOfDate(registration.getCreateDate());
+            String todayStart = DateUtils.formatDateTime(zeroTimeOfDate);
+            Date endTimeOfDate = DateUtils.getEndTimeOfDate(registration.getCreateDate());
+            String todayEnd = DateUtils.formatDateTime(endTimeOfDate);
+            List<Parameter> regParameters = SearchParamsBuilder.create()
+                    .eq("a.doctor_id", registration.getDoctor().getId())
+                    .ge("a.create_date", todayStart)
+                    .le("a.create_date", todayEnd)
+                    .build();
+            List<Registration> registrations = registrationService.listAll(regParameters, "a.create_date asc");
+            if (CollectionUtils.isNotEmpty(registrations)) {
+                String patientId = registration.getPatientId().getId();
+                for (int i = 0; i < registrations.size(); i++) {
+                    Registration docRegistration = registrations.get(i);
+                    if (null != docRegistration.getPatientId()
+                            && patientId.equals(docRegistration.getPatientId().getId())) {
+                        todayNum = (i + 1) + "";
+                    }
                 }
             }
         }
