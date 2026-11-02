@@ -6,6 +6,11 @@
         update registration set overlook='1',update_date=now() where id=#{recipelInfoIds}
     </update>
 
+    <!-- Z1b: chi lay company_id de kiem tra so huu truoc khi ghi overlook. -->
+    <select id="getRegistrationCompanyId" resultType="String">
+        select company_id from registration where id=#{id}
+    </select>
+
     <select id="visitprogresspage" resultType="com.geeke.workbench.entity.VisitProgress" >
         select a.name xm,(case when a.gender='gender_0' then 'Nam' when a.gender='gender_1' then 'Nữ' else '' end) xb,
         a.birthday sr,a.phone ,c.name ks,b.treat_type jzlx,b.status jzzt,e.name ys,

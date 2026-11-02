@@ -16,6 +16,9 @@ public interface SchedulesDao  {
 
     int updateoverlookid(@Param("recipelInfoIds") String recipelInfoIds);
 
+    // Z1b: chi SELECT company_id de kiem tra so huu truoc khi ghi overlook.
+    String getRegistrationCompanyId(@Param("id") String id);
+
 //    List<VisitProgress> visitprogresspage(Visitprogresspara visitprogresspara);
 
       List<VisitProgress> visitprogresspage(Visitprogresspara visitprogresspara);

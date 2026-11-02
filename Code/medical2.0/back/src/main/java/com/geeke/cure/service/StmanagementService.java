@@ -20,6 +20,9 @@ public class StmanagementService {
     private StmanagementDao managementdao;
 
     public Page<Stmanagement> stmanagementlist(Stparameter stparameter){
+        // Z1b: SQL loc a.company_id=#{companyId} truc tiep tu body — ghi
+        // de bang session tenant; session rong/"null" giu hanh vi cu.
+        forceSessionTenant(stparameter);
         List<Stmanagement> list=managementdao.stmanagementtotal(stparameter);
         int total=list.size();
         List<Stmanagement> list2=null;
@@ -39,6 +42,17 @@ public class StmanagementService {
         return managementdao.updatesttime(stparameter);
     }
     public List<Stmanagement> selectdetailid(Stparameter stparameter){
+        forceSessionTenant(stparameter);
         return managementdao.selectdetailid(stparameter);
+    }
+
+    // Z1b: dung chung cho stmanagementlist/selectdetailid (xem ghi chu o
+    // stmanagementlist). Khong ap cho updatestresult/updatesttime —
+    // duong ghi, de nhip Z3.
+    private void forceSessionTenant(Stparameter stparameter) {
+        String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
+            stparameter.setCompanyId(tenant);
+        }
     }
 }

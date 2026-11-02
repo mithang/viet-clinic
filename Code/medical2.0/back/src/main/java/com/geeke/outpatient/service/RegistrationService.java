@@ -185,6 +185,12 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     @Transactional(readOnly = true)
     public Page<Registration> listPages(PageRegistration pageRegistration) {
+        // Z1b: companyId tu body khong duoc phep lai tenant khac — SQL
+        // countId/listPages loc a.company_id=#{companyId} truc tiep, nen
+        // body tenant la truoc day tra ve dang ky cua tenant do (duong
+        // patidwsflist/dispensing//v2/list dung chung method nay).
+        // Session rong/\"null\" giu hanh vi cu nhu verifyTenantOwnership.
+        forceSessionTenant(pageRegistration);
         if (!pageRegistration.isValidColumnName()) {
             throw new IllegalArgumentException("Invalid column name: " + pageRegistration.getColumnName());
         }
@@ -200,6 +206,15 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
 
         return new Page<>((long)total, list);
+    }
+
+    // Z1b: ghi de companyId body bang session tenant (dung chung cho
+    // listPages; xem ghi chu o listPages).
+    private void forceSessionTenant(PageRegistration pageRegistration) {
+        String tenant = SessionUtils.getLoginTenantId();
+        if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
+            pageRegistration.setCompanyId(tenant);
+        }
     }
 
 
