@@ -20,8 +20,10 @@ import com.geeke.sys.controller.BaseController;
 import com.geeke.utils.ResultUtil;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
+import com.geeke.utils.constants.ErrorEnum;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,10 +50,26 @@ public class PermissionController extends BaseController {
 
     @Autowired
     private CompanyService companyService;
-    
-    
+
+    /**
+     * Y2a: sàn RBAC cho mặt phẳng phân quyền. Controller này extends
+     * BaseController nên không thừa hưởng guard nào của CrudController.
+     * Các đường đọc dùng sàn ANY (mọi trang danh sách đều gọi
+     * /permission/resources khi tải để xác định nút hiển thị — khóa SPEC
+     * ở đây sẽ vỡ mọi trang danh sách của tài khoản không có role:*).
+     * Đường ghi savePermission là leo thang đặc quyền nếu để mở (ghi lại
+     * quyền của role bất kỳ), nên yêu cầu quyền sửa của đúng 2 dialog thật
+     * gọi nó: role:update (trang vai trò) hoặc clinicVersion:update
+     * (trang phiên bản phòng khám); không bịa tên quyền mới.
+     */
+    private ResponseEntity<JSONObject> forbidden() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ResultUtil.errorJson(ErrorEnum.E_502));
+    }
+
     @GetMapping("/resources")
     public ResponseEntity<JSONObject> listResourcePermission(@RequestParam(required = false) String routerId) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
     	User user = SessionUtils.getUser();
     	
     	List<Resource> list = this.permissionService.listResourcePermission(user.getId(), routerId);
@@ -60,6 +78,7 @@ public class PermissionController extends BaseController {
     
     @GetMapping("/permissions")
     public ResponseEntity<JSONObject> treePermission() {
+        if (!hasAnySessionPermission()) { return forbidden(); }
     	List<Router> listRouter = this.listUnlockedRouter();
 
     	List<Resource> listResource = this.listUnlockedResource();
@@ -92,18 +111,21 @@ public class PermissionController extends BaseController {
     
     @GetMapping("/{roleId}/resourcePermissions")
     public ResponseEntity<JSONObject> listResourcePermissionByRoleId(@PathVariable("roleId") String roleId) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
     	List<String> list = this.permissionService.listResourcePermission(roleId);
     	return ResponseEntity.ok(ResultUtil.successJson(list));
     }
     
     @PostMapping("/{roleId}/savePermission")
     public ResponseEntity<JSONObject> savePermission(@PathVariable("roleId") String roleId, @RequestBody Permission permission) {
+        if (!hasSessionPermission("role:update") && !hasSessionPermission("clinicVersion:update")) { return forbidden(); }
         int rows = this.permissionService.savePermission(roleId, permission);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
     
     @GetMapping("/{roleId}/dataPermissions")
     public ResponseEntity<JSONObject> listDataPermissionByRoleId(@PathVariable("roleId") String roleId) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
     	List<DataPermission> list = this.permissionService.listDataPermissionByRoleId(roleId);
     	return ResponseEntity.ok(ResultUtil.successJson(list));
     }
