@@ -985,11 +985,20 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
 
     public DrugStuffEvt getDrugStuffEvt(RecipelDetail recipelDetail) {
         DrugStuffEvt drugStuffEvt = new DrugStuffEvt();
+        // I1: chi tiết đơn có stuffType nhưng drugStuffId null (dữ liệu cũ/lệch) trước
+        // đây dereference getDrugStuffId().getDrugStuffId() không guard -> NPE -> 500
+        // ở mọi đường đọc đơn (controller/review/4 chỗ trong service này). Trả evt rỗng
+        // thay vì 500: đường đọc vẫn trả được chi tiết, không bịa tên/giá thuốc.
+        if (recipelDetail == null || recipelDetail.getDrugStuffId() == null
+                || recipelDetail.getDrugStuffId().getDrugStuffId() == null) {
+            return drugStuffEvt;
+        }
         String stuffType = recipelDetail.getStuffType();        // Loại vật liệu:0-Thuốc tây 1-Thuốc đông y  2-Truyền dịch 3-Hạng mục khám chữa bệnh  4-Vật tư
         if ("0".equals(stuffType) || "1".equals(stuffType) || "2".equals(stuffType)) {
             //Thuốc đông y, Thuốc tây, Đơn truyền dịch tra cứu thông tin thuốc
             PresDrug presDrug = presDrugService.getById(recipelDetail.getDrugStuffId().getDrugStuffId());
-            if( recipelDetail.getRecipelInfo().getIsPre() != null &&
+            if( recipelDetail.getRecipelInfo() != null &&
+                    recipelDetail.getRecipelInfo().getIsPre() != null &&
                     recipelDetail.getRecipelInfo().getIsPre() &&
                     presDrug != null ){
                 //Thuốc trong đơn thuốc điện tử
@@ -1027,6 +1036,10 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 drugStuffEvt.setDrug(drug);
             }else{
                 Drug drug = this.drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                // I1: thuốc gốc đã xóa -> drug null, tránh NPE ở drug.getId() dưới đây.
+                if (drug == null) {
+                    return drugStuffEvt;
+                }
                 drugStuffEvt.setDrugStuffId(drug.getId());
                 drugStuffEvt.setName(drug.getGoodsName());
                 drugStuffEvt.setPrice(drug.getPrice());
@@ -1040,6 +1053,10 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         } else if ("3".equals(stuffType)) {
             //Truy vấn thông tin hạng mục khám chữa bệnh
             CostItem costItem = this.costItemService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+            // I1: hạng mục đã xóa -> costItem null, tránh NPE ở costItem.getId() dưới đây.
+            if (costItem == null) {
+                return drugStuffEvt;
+            }
 
 
             //TheoĐơn thuốcChi tiếtidLấycủa nóXét nghiệm và kiểm traKết quả
