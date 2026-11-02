@@ -242,11 +242,18 @@ public class UserController extends CrudController<UserService, User> {
                 .eq("company_id", user.getCompany().getId())
                 .eq("name", user.getUserExt().getOffice())
                 .build();
-        String departmentId = clinicOfficeService.listAll(list, "").get(0).getId();
+        // D1 (iteration 24): ten khoa khong khop bat ky dong nao -> tra 400
+        // thay vi IndexOutOfBounds 500 o get(0); chi truy van mot lan.
+        List<ClinicOffice> offices = clinicOfficeService.listAll(list, "");
+        if (offices == null || offices.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        String departmentId = offices.get(0).getId();
         Department department = new Department();
         department.setId(departmentId);
         user.setDepartment(department);
-        user.getUserExt().setOfficeCode(clinicOfficeService.listAll(list, "").get(0).getCode());
+        user.getUserExt().setOfficeCode(offices.get(0).getCode());
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
         String id = service.save(user,fileIdUploads,deleteIds).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
@@ -265,7 +272,13 @@ public class UserController extends CrudController<UserService, User> {
                 .eq("company_id", user.getCompany().getId())
                 .eq("name", user.getUserExt().getOffice())
                 .build();
-        ClinicOffice clinicOffice = clinicOfficeService.listAll(list, "").get(0);
+        // D1 (iteration 24): nhu saveWithFile, ten khoa khong khop -> 400, khong 500.
+        List<ClinicOffice> offices = clinicOfficeService.listAll(list, "");
+        if (offices == null || offices.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        ClinicOffice clinicOffice = offices.get(0);
         user.getUserExt().setOfficeCode(clinicOffice.getCode());
         //user.setLoginName(user.getPhone());
         String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
