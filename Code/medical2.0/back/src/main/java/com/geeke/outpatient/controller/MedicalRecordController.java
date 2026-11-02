@@ -53,12 +53,14 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
 
     @GetMapping("/instant/{phone}")
     public ResponseEntity<JSONObject> getByPhone(@PathVariable("phone") String phone) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         Patient patient = patientService.getPatientByPhone(phone);
         return ResponseEntity.ok(ResultUtil.successJson(patient));
     }
 
     @GetMapping("/medical/{registration}")
     public ResponseEntity<JSONObject> getByOrder(@PathVariable("registration") String registration) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         RemoteDiagnosisTreatment entity = remoteDiagnosisTreatmentService.diagnosisById(registration);
         registration = entity.getRegistrationId();
         List<MedicalRecord> result = medicalRecordService.getByOrder(registration);
@@ -103,12 +105,14 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
 
     @PostMapping(value = "allQuery")
     public ResponseEntity<JSONObject> allQuery(@RequestBody Registration registration) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         MedicalRecipelEvt medicalRecipelEvt = medicalRecordService.allQuery(registration,"");
         return ResponseEntity.ok(ResultUtil.successJson(medicalRecipelEvt));
     }
 
     @GetMapping(value = "details/{infoId}")
     public ResponseEntity<JSONObject> recipelInfoEvt(@PathVariable("infoId") String infoId) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         RecipelInfoEvt recipelInfoEvt = medicalRecordService.queryByInfoId(infoId);
         return ResponseEntity.ok(ResultUtil.successJson(recipelInfoEvt));
     }
@@ -144,6 +148,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     @PostMapping(value = "v2/allQuery/{registrationId}")
     public ResponseEntity<JSONObject> allNewQuery(@PathVariable("registrationId") String registrationId,
                                                   @RequestParam(name = "recipelInfoIds",required=false) String strRecipelInfoIds) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         String[] recipelInfoIds = StringUtils.commaDelimitedListToStringArray(strRecipelInfoIds);
         ReceptionEvt receptionEvt = this.medicalRecordService.allNewQuery(registrationId, recipelInfoIds);
 
@@ -151,6 +156,7 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     }
     @PostMapping(value = "history/recipel")
     public ResponseEntity getHistoryRecipel(@RequestBody SearchParams searchParams){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         List<RecipelInfoDTO> byRegistrationId = medicalRecordService.getByRegistrationId(searchParams.getParams(),searchParams.getLimit(),searchParams.getOffset(),searchParams.getOrder());
         return ResponseEntity.ok(ResultUtil.successJson(byRegistrationId));
     }
@@ -161,12 +167,14 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
      */
     @GetMapping(value = "/allergy/{patientId}")
     public ResponseEntity allergy(@PathVariable("patientId") String patientId) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         String allergyHistory = medicalRecordService.getLatestAllergyHistory(patientId);
         return ResponseEntity.ok(ResultUtil.successJson(allergyHistory));
     }
 
     @GetMapping(value = "/recordpat/{id}")
     public ResponseEntity recordpat(@PathVariable("id") String id){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC T1: duong doc nhu duong ghi cung controller.
         List<Recordpatvo> result = medicalRecordService.recordpatlist(id);
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
