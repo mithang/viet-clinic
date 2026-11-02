@@ -79,7 +79,12 @@
             AND a.del_flag = 0
             AND a.phone = #{phoneNumber}
             and a.company_id = #{companyId}
+            <!-- P1: id null (tao moi) thi bo dieu kien loai tru; a.id != NULL
+                 luon UNKNOWN nen truoc day truy van tao moi khong bao gio
+                 tra ve dong nao, khien kiem tra trung o server chet. -->
+            <if test="id != null">
             and a.id != #{id}
+            </if>
         </where>
     </select>
 
@@ -145,7 +150,12 @@
         <include refid="patientJoins"/>
         WHERE a.card = #{card}
         and a.company_id = #{companyId}
+        and a.del_flag = 0
+        <!-- P1: nhu countPatientByPhone; them del_flag = 0 de ho so da xoa
+             mem khong chan tai dung CCCD, khop voi quet active cua G3/N1/O2. -->
+        <if test="id != null">
         and a.id != #{id}
+        </if>
     </select>
     <select id="getPatientByregistrationId" resultType="com.geeke.outpatient.entity.Patient">
         select

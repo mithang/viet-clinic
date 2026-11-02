@@ -80,7 +80,11 @@ public class PatientService extends CrudService<PatientDao, Patient>{
            //Kiểm traSố điện thoạisốCó tồn tại không
            if(!Objects.equals(patient.getPhone(),"") && patient.getPhone()!=null){
                List<Patient> patients = patientDao.countPatientByPhone(patient.getPhone(), patient.getCompany().getId(),patient.getId());
-               if(patients.size()>0&&!Objects.equals(patients.get(0).getPhone(),patient.getPhone())){
+               // P1: dong tra ve (neu co) theo dinh nghia da co cung SDT va
+               // da loai ban than bang id != null, nen chi can co dong la
+               // trung; dieu kien cu so phone cua dong voi chinh phone da
+               // loc nen luon bang va khong bao gio nem.
+               if(patients.size()>0){
                    throw new ServiceException("Thông tin liên hệ của bệnh nhân đã tồn tại");
 
                }
