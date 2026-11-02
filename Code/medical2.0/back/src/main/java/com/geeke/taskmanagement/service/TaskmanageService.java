@@ -170,6 +170,12 @@ public class TaskmanageService {
     Lấyphản hồitình hình
      */
     public List<feedbacktable> getfeedbacktable(gettaskrcvo rcvo){
+        // Z3g: feedback rows are keyed only by taskmanagement_id, so any
+        // permitted token could read another tenant's task feedback.
+        // Reuse the Z3f ownership check: a foreign task fails closed
+        // (ServiceException -> 400); a missing id or empty session keeps
+        // legacy behaviour, same pattern as Z3a-Z3f.
+        checkTaskOwnership(rcvo.getTaskmanagementid());
         return taskmangementDao.getfeedbacktable(rcvo);
     }
 
@@ -221,6 +227,15 @@ public class TaskmanageService {
     public List<Sysusertreeentity> getusertree(gettaskrcvo gettaskrcvo) {
 //        QueryWrapper<FileCatalog> wrapper = new QueryWrapper<>();
 //        wrapper.eq("panels_id", panelsId);
+        // Z3g: the SQL builds the sibling tree from the BODY companyId, so
+        // any permitted token could list another tenant group's companies.
+        // Force the session tenant (Z3e pattern); the legitimate caller
+        // (addtaskForm) already sends currentUser.company.id, so its tree
+        // is unchanged. Empty session keeps legacy behaviour.
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (tenantId != null && !tenantId.isEmpty() && !"null".equals(tenantId)) {
+            gettaskrcvo.setCompanyId(tenantId);
+        }
         gettaskrcvo rcvo=new gettaskrcvo();
         rcvo.setCompanyId(gettaskrcvo.getCompanyId());
         List<Sysusertreeentity> fileCatalogs = taskmangementDao.getusertree(rcvo);
