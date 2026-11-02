@@ -36,12 +36,14 @@ public class InventoryVerificationController extends CrudController<InventoryVer
 
     @GetMapping(value = "save/{type}/{variety}")
     public ResponseEntity<JSONObject> save(@PathVariable("type") String type,@PathVariable("variety") String variety) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String id = inventoryVerificationService.save(type,variety).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody InventoryVerification entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         int rows = inventoryVerificationService.delete(entity);
         if(rows>0){
             inventoryVerificationDetailService.deleteByInventoryVerificationId(entity.getId());
@@ -51,6 +53,7 @@ public class InventoryVerificationController extends CrudController<InventoryVer
 
     @PostMapping(value = "accomplishInventoryVerification")
     public ResponseEntity<JSONObject> accomplishInventoryVerification(@RequestBody InventoryVerification inventoryVerification){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String id = inventoryVerificationService.accomplishInventoryVerification(inventoryVerification).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }

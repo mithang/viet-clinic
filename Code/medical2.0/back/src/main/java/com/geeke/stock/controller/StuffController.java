@@ -43,6 +43,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
 
     @PostMapping(value = {"listForMedical", ""})
     public ResponseEntity<JSONObject> listForMedical(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<MedicalProject> result = stuffService.listPageForMedical(searchParams.getParams(),searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -82,6 +83,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
 
     @PostMapping(value = "inventory")
     public ResponseEntity<JSONObject> inventory(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<Stuff> result = stuffService.inventory(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -89,6 +91,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
     @PostMapping("/uploadExcel")
     @ApiOperation("excel")
     public ResponseEntity taskUploadExcel(@RequestParam(value = "file") MultipartFile file) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<?> excel = null;
         try {
             excel = stuffService.excel(file);
@@ -106,6 +109,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
      */
     @PostMapping(value = {"listByInstitution"})
     public ResponseEntity<JSONObject> listByInstitution(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Stuff> result = stuffService.listByInstitution(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -118,6 +122,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
      */
     @PostMapping(value = {"listByCompany"})
     public ResponseEntity<JSONObject> listByCompany(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<Stuff> result = stuffService.listByCompany(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -130,6 +135,7 @@ public class StuffController extends CrudController<StuffService, Stuff> {
      */
     @PostMapping(value = "syncToClinic")
     public ResponseEntity<JSONObject> syncToClinic(@RequestBody List<Stuff> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<String> ids = stuffService.syncToClinic(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
     }

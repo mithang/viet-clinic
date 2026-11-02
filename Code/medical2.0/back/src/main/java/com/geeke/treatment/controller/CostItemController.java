@@ -44,6 +44,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         //Theohạng mục khám chữa bệnh của idLấyĐếntương ứng của hạng mục khám chữa bệnhThông tin
         CostItem entity = costItemService.get(id);
         //Quahạng mục khám chữa bệnh của idLấyĐếntương ứng của hạng mục con của Thông tin
@@ -70,12 +71,14 @@ public class CostItemController extends CrudController<CostItemService, CostItem
 
     @PostMapping(value = {"listForMedical", ""})
     public ResponseEntity<JSONObject> listForMedical(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<MedicalProject> result = costItemService.listPageForMedical(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
     @PostMapping(value = "saveDto")
     public ResponseEntity<JSONObject> saveDto(@RequestBody CostItemDTO costItemDTO) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         logger.debug("Lưuhạng mục khám chữa bệnh: {}", costItemDTO);
         if(costItemDTO.getCostItemPackage().size()!=0&&costItemDTO.getCostItemPackage().get(0).getReferenceUnit()==null){
             costItemDTO.getCostItem().setIsPackage("1");
@@ -115,6 +118,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
      */
     @PostMapping(value = "listByInstitution")
     public ResponseEntity<JSONObject> listByInstitution(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<CostItem> result = costItemService.listByInstitution(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -127,6 +131,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
      */
     @PostMapping(value = "syncToClinic")
     public ResponseEntity<JSONObject> syncToClinic(@RequestBody List<CostItem> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<String> ids = costItemService.syncToClinic(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
     }

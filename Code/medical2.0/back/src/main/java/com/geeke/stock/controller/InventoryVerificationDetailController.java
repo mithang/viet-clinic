@@ -46,6 +46,7 @@ public class InventoryVerificationDetailController extends CrudController<Invent
 
     @PostMapping(value = "list/{type}")
     public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams,@PathVariable String type) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         Page<InventoryVerificationDetail> result = inventoryVerificationDetailService.listPages(searchParams.getParams(), searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         List<InventoryVerificationDetail> rows = result.getRows();
         if (rows!=null){
@@ -65,12 +66,14 @@ public class InventoryVerificationDetailController extends CrudController<Invent
 
     @PostMapping("saveAll")
     public ResponseEntity<JSONObject> saveAll(@RequestBody List<List<InventoryVerificationDetail>> inventoryVerificationDetailDTOS){
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String s = inventoryVerificationDetailService.saveAll(inventoryVerificationDetailDTOS);
         return ResponseEntity.ok(ResultUtil.successJson(s));
     }
 
     @PostMapping("exportExcel")
     public void exportExcel(@RequestBody InventoryVerification inventoryVerification, HttpServletRequest request,HttpServletResponse response) throws IOException {
+        if (!hasAnySessionPermission()) { response.setStatus(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN); return; }
         inventoryVerificationDetailService.exportExcel(inventoryVerification,response);
     }
 }

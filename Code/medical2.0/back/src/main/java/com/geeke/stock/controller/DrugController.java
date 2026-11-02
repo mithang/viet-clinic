@@ -149,12 +149,14 @@ public class DrugController extends CrudController<DrugService, Drug> {
 
     @PostMapping(value = "updateAllInventory")
     public ResponseEntity<JSONObject> updateAllInventory(@RequestBody Drug drug) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         int i = drugService.updateAllInventory(drug.getInventoryFloor(), drug.getCompany().getId());
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }
 
     @PostMapping(value = "inventory")
     public ResponseEntity<JSONObject> inventory(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<Drug> result = drugService.inventory(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
@@ -162,6 +164,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
     @PostMapping("/uploadExcel")
     @ApiOperation("excel")
     public ResponseEntity taskUploadExcel(@RequestParam(value = "file") MultipartFile file) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         try {
             List<String> error = drugService.excel(file);
             return ResponseEntity.ok(ResultUtil.successJson(error));
@@ -178,6 +181,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
      */
     @PostMapping(value = "syncToClinic")
     public ResponseEntity<JSONObject> syncToClinic(@RequestBody List<Drug> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<String> ids = drugService.syncToClinic(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
     }

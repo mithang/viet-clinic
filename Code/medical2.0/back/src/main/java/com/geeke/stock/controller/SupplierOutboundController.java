@@ -39,6 +39,7 @@ public class SupplierOutboundController extends CrudController<SupplierOutboundS
 
     @PostMapping(value = "saveEvt")
     public ResponseEntity<JSONObject> saveEvt(@RequestBody OutboundEvt entity) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String id = supplierOutboundService.save(entity).getId();
         if("true".equals(medicareConfigProperties.getCheck())){
             //mởBHYTgiao diện Xuất kho
@@ -49,12 +50,14 @@ public class SupplierOutboundController extends CrudController<SupplierOutboundS
 
     @GetMapping("/cancel/{id}")
     public ResponseEntity<JSONObject> cancel(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         supplierOutboundService.cancel(id);
         return ResponseEntity.ok(ResultUtil.successJson());
     }
 
     @GetMapping("/examine/{id}")
     public ResponseEntity<JSONObject> examine(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         supplierOutboundService.examine(id);
         return ResponseEntity.ok(ResultUtil.successJson());
     }
