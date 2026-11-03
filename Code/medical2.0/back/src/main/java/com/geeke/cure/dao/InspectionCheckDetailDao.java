@@ -20,6 +20,11 @@ public interface InspectionCheckDetailDao extends CrudDao<InspectionCheckDetail>
 
     List<InspectionCheckDetail> getByInfoId(String infoId);
 
+    // R2 (iteration 41): lookup gon company cua dong detail da luu, kieu
+    // Q4 (MyTaskDao.getCompanyIdById) — tranh dao.get() nang neu chi can
+    // kiem tra tenant truoc khi ghi detail trong saveWithFile.
+    String getCompanyIdById(String id);
+
     List<InspectionCheckDetailCostItem> getByInfoId2(String infoId);
 
     void deleteBy(String id);

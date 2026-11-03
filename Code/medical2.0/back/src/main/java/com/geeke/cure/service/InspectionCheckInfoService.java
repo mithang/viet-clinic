@@ -51,10 +51,27 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         // dao.get() o day chi LEFT JOIN company/inspection_check/patient
         // don gian, khong co mapping LONG->Timestamp nhu Q4 nen dung duoc
         // helper thua ke. Session rong/"null", dong khong ton tai, company
-        // rong giu hanh vi cu nhu helper goc. Chi R1 (dong info); detail
-        // (R2) va cha InspectionCheck + deleteIds (R3) o iteration sau.
+        // rong giu hanh vi cu nhu helper goc. Detail (R2) guard ngay
+        // duoi; cha InspectionCheck + deleteIds (R3) o iteration sau.
         verifyTenantOwnership(inspectionCheckInfo);
         verifyTenantOwnershipAgainstStoredRow(inspectionCheckInfo);
+        // R2 (iteration 41): guard tenant cho tung detail TRUOC moi thao
+        // tac file/ghi, cung cho nhu R1 — vong detail o duoi goi thang
+        // inspectionCheckDetailService.update() (mapper UPDATE WHERE id
+        // tran, khong company_id) nen info own + detail la van ghi de
+        // VA doi chu dong la ve tenant minh (tai hien live
+        // iter41-r2-repro). verifyTenantOwnership chan company payload
+        // la; verifyStoredRowTenant (lookup gon kieu Q4) chan dong da
+        // luu la du payload co mang company own. UI that gui lai detail
+        // own vua nap qua getByInfoId nen khong doi; detail khong id /
+        // khong ton tai / company rong giu hanh vi cu nhu helper goc.
+        // Cha InspectionCheck + deleteIds (R3) van de iteration sau.
+        if (inspectionCheckInfo.getInspectionCheckDetails() != null) {
+            for (InspectionCheckDetail inspectionCheckDetail : inspectionCheckInfo.getInspectionCheckDetails()) {
+                verifyTenantOwnership(inspectionCheckDetail);
+                inspectionCheckDetailService.verifyStoredRowTenant(inspectionCheckDetail);
+            }
+        }
         //Lưu tệp đã tải lên
         List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, inspectionCheckInfo.getId());
         if(sysFiles!=null&&sysFiles.size()>0){

@@ -11,6 +11,7 @@ import com.geeke.treatment.service.impl.CostItemPackageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.geeke.cure.dao.InspectionCheckDetailDao;
 import com.geeke.cure.entity.InspectionCheckDetail;
@@ -63,6 +64,31 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
     @Transactional(readOnly = false)
     public void update(InspectionCheckDetail inspectionCheckDetail) {
         this.dao.update(inspectionCheckDetail);
+    }
+
+    // R2 (iteration 41): kiem tra tenant cua dong detail da luu bang
+    // lookup gon getCompanyIdById, kieu Q4 — InspectionCheckInfoService
+    // goi truoc moi ghi trong saveWithFile. Dong khong ton tai /
+    // company rong / session rong/"null" giu hanh vi cu (ghi 0 dong);
+    // dong la -> ServiceException -> 400. Detail khong
+    // institution-shared nen khong co nhanh institution nhu helper goc.
+    public void verifyStoredRowTenant(InspectionCheckDetail inspectionCheckDetail) {
+        if (inspectionCheckDetail == null || inspectionCheckDetail.getId() == null
+                || inspectionCheckDetail.getId().isEmpty()) {
+            return;
+        }
+        String storedCompanyId = this.dao.getCompanyIdById(inspectionCheckDetail.getId());
+        if (storedCompanyId == null || storedCompanyId.isEmpty()) {
+            return;
+        }
+        String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenantId == null || tenantId.isEmpty() || "null".equals(tenantId)) {
+            return;
+        }
+        if (tenantId.equals(storedCompanyId)) {
+            return;
+        }
+        throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
     }
 
     @Transactional(readOnly = false)

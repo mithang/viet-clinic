@@ -86,6 +86,11 @@
             </otherwise>
         </choose>
     </select>
+    <!-- R2 (iteration 41): lookup gon company cua dong detail da luu -->
+    <select id="getCompanyIdById" resultType="java.lang.String">
+        SELECT company_id FROM inspection_check_detail WHERE id = #{id}
+    </select>
+
     <select id="getByInfoId" resultType="com.geeke.cure.entity.InspectionCheckDetail">
         SELECT
           <include refid="inspectionCheckDetailColumns"/>
