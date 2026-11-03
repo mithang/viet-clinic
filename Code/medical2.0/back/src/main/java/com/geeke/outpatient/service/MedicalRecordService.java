@@ -168,6 +168,27 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         if (InstantPatient.INSTANT.getCode() == medicalRecipelEvt.getIsInstant()) {
             //mộtkhóalưu vàoNgười dùngThông tin
             Patient patient = medicalRecipelEvt.getPatient();
+            // F1 (iteration 53): allSave nhan entity dang String nen khong @Valid,
+            // va saveAllRecordInfo goi thang patientService.save — truoc day
+            // company lay thang tu payload: token tenant A gui company tenant B
+            // thi tao that benh nhan o B (CrudService.save nhanh insert khong
+            // verify tenant), roi luot kham o A (SessionUtils.getLoginTenant)
+            // tro sang benh nhan B; benh nhan khong company + SDT/CCCD thi
+            // PatientService:64/:74 deref getCompany().getId() NPE 500. Nay ep
+            // company theo session tenant nhu mau C3/C4/D1/E1 (session co tenant
+            // thi bo qua payload); session rong + thieu company thi 400 ro
+            // rang kieu C2, khong de roi toi deref. Chi sua nhanh instant nay,
+            // khong sua PatientService.save generic (quyet E2/plan iter53).
+            if (patient == null) {
+                throw new ServiceException("Thiếu thông tin bệnh nhân, không thể tạo hồ sơ tiếp nhận nhanh");
+            }
+            String f1Tenant = SessionUtils.getLoginTenantId();
+            if (f1Tenant != null && !f1Tenant.trim().isEmpty() && !"null".equals(f1Tenant)) {
+                patient.setCompany(new Company(f1Tenant));
+            } else if (patient.getCompany() == null || patient.getCompany().getId() == null
+                    || patient.getCompany().getId().trim().isEmpty()) {
+                throw new ServiceException("Thiếu thông tin phòng khám (company), không xác định được tenant");
+            }
             Patient savedPatient = patientService.save(patient);
 
             //mộtkhóaĐăng ký khám
