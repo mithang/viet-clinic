@@ -84,6 +84,19 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                 inspectionCheckDetailService.verifyStoredRowTenant(inspectionCheckDetail);
             }
         }
+        // T2 (iteration 42): payload khong co cha -> 400 TRUOC moi thao
+        // tac file/ghi. Truoc sua: save() chay toi dao.update thi DB
+        // bao inspection_check_id NOT NULL -> 500 DataIntegrityViolation
+        // (transaction rollback nen info/file chua doi, nhung client
+        // nhan 500 cho loi nhap lieu); controller sau do cung khong the
+        // chay duoc vi no deref getInspectionCheck().getId() nen
+        // khong-cha khong bao gio thanh cong. Guard o day tra 400 sach,
+        // cung mau R1-R3; cha co id rong coi nhu khong co cha.
+        if (inspectionCheckInfo.getInspectionCheck() == null
+                || inspectionCheckInfo.getInspectionCheck().getId() == null
+                || inspectionCheckInfo.getInspectionCheck().getId().isEmpty()) {
+            throw new ServiceException("Thiếu phiếu kiểm tra");
+        }
         // R3 (iteration 41): guard cha InspectionCheck + deleteIds, cung
         // TRUOC moi thao tac file/ghi.
         // (a) Cha: controller doi cha sang status "1" SAU khi save() tra
