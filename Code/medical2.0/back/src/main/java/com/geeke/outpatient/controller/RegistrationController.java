@@ -214,6 +214,9 @@ public class RegistrationController extends CrudController<RegistrationService, 
     public ResponseEntity<JSONObject> save(@RequestBody Registration entity) {
         String id ="";
         if(Objects.equals(entity.getCreateBy(),"WeChat")){
+            // C1 (iteration 50): san RBAC parity nhanh web — truoc day nhanh
+            // WeChat khong co san, token 0 quyen cung goi duoc wxSave.
+            if (!hasAnySessionPermission()) { return forbidden(); }
             id = registrationService.wxSave(entity).getId();
         }else {
             if (!hasAnySessionPermission()) { return forbidden(); } // H4: san RBAC cho duong luu web (lop cha CrudController.save co san, override nay truoc day bo qua).

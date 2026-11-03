@@ -252,6 +252,16 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     @Transactional(readOnly = false)
     public Registration wxSave(Registration entity) {
+        // C1 (iteration 50): wxSave truoc day goi doInsert/doUpdate truc tiep,
+        // ne ca verifyTenantOwnership lan stored-row check cua CrudService.save
+        // (mapper update chi WHERE id) — token tenant A tao/ghi de luot tenant B.
+        // Ap dung dung ngu nghia CrudService.save: payload company phai khop
+        // session tenant (company rong/session rong giu hanh vi cu); update
+        // them stored-row check de id dong la + company own khong qua duoc.
+        verifyTenantOwnership(entity);
+        if (StringUtils.isNotBlank(entity.getId())) {
+            verifyTenantOwnershipAgainstStoredRow(entity);
+        }
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
