@@ -41,6 +41,20 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     @Transactional(readOnly = false)
     public void save(InspectionCheckInfo inspectionCheckInfo, MultipartFile[] fileIdUploads, String[] deleteIds) throws IOException {
 
+        // R1 (iteration 41): guard tenant TRUOC moi thao tac file/ghi.
+        // Truoc day save() goi thang dao.update (mapper UPDATE WHERE id
+        // tran, khong company_id) nen ne ca hai guard cua CrudService.save:
+        // payload id la + company own ghi de VA doi chu dong la ve tenant
+        // minh (tai hien live o saveWithFile). verifyTenantOwnership chan
+        // company payload la; verifyTenantOwnershipAgainstStoredRow chan
+        // dong da luu la du payload co mang company own (mau Q2/M1-M2).
+        // dao.get() o day chi LEFT JOIN company/inspection_check/patient
+        // don gian, khong co mapping LONG->Timestamp nhu Q4 nen dung duoc
+        // helper thua ke. Session rong/"null", dong khong ton tai, company
+        // rong giu hanh vi cu nhu helper goc. Chi R1 (dong info); detail
+        // (R2) va cha InspectionCheck + deleteIds (R3) o iteration sau.
+        verifyTenantOwnership(inspectionCheckInfo);
+        verifyTenantOwnershipAgainstStoredRow(inspectionCheckInfo);
         //Lưu tệp đã tải lên
         List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, inspectionCheckInfo.getId());
         if(sysFiles!=null&&sysFiles.size()>0){
