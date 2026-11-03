@@ -42,6 +42,11 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- Q4 (iteration 40): chi doc company_id, tranh join/map cua get(). -->
+    <select id="getCompanyIdById" resultType="string">
+        SELECT company_id FROM feedbacktable WHERE id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(a.id) FROM feedbacktable a
         <include refid="myTaskJoins"/>
