@@ -94,9 +94,26 @@ public class UserService extends CrudService<UserDao, User>{
     }
 
 
+    // H3 (iteration 28): doi SDT quan tri phong kham (ClinicService) chi
+    // doi sys_user.login_name; dong bo user_tenant.login_name cung luc
+    // trong cung transaction, neu khong tenant giu ten cu (xem H3).
+    @Transactional(readOnly = false)
     public void updateAdminPhoneAndPass(String loginName,String pass,String userId)
     {
          userDao.updateAdminPhoneAndPass(loginName,pass,userId);
+         if (StringUtils.isNotBlank(loginName)) {
+             userDao.updateUserTenantLoginName(userId, loginName);
+         }
+    }
+
+    // H3 (iteration 28): dong bo ten dang nhap xuong user_tenant cho moi
+    // tenant active cua user (ten la dinh danh chung cua sys_user, khong
+    // rieng tenant hien tai). Goi sau khi sys_user da doi ten thanh cong,
+    // trong cung transaction cua caller.
+    private void syncUserTenantLoginName(String userId, String loginName) {
+        if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(loginName)) {
+            userDao.updateUserTenantLoginName(userId, loginName);
+        }
     }
     @Transactional(readOnly = false)
     public String updatePersonAndPass(User userDetail)
@@ -163,7 +180,12 @@ public class UserService extends CrudService<UserDao, User>{
                 user.setUserRoleList(Lists.newArrayList());
             }
             try {
-                return save(user, new MultipartFile[0], new String[0]);
+                User created = save(user, new MultipartFile[0], new String[0]);
+                // H3: neu user cu da tung doi SDT (tenant cu con ten cu),
+                // gan them tenant moi khong tu sua cac dong cu — dong bo
+                // het ve ten moi sau khi tao/gan xong.
+                syncUserTenantLoginName(created.getId(), user.getLoginName());
+                return created;
             } catch (java.io.IOException e) {
                 throw new ServiceException("Luu nguoi dung that bai: " + e.getMessage());
             }
@@ -177,7 +199,12 @@ public class UserService extends CrudService<UserDao, User>{
                 throw new ServiceException("Đã tồn tại một tên đăng nhập giống hệt. ");
             }
         }
-        return super.save(user);
+        // H3: super.save chi doi sys_user.login_name, user_tenant giu ten
+        // cu lam lech CheckNewUserByPhone/countClinicIdByPhone (dem theo
+        // login_name) va delete fallback theo phone — dong bo sau save.
+        User saved = super.save(user);
+        syncUserTenantLoginName(saved.getId(), user.getLoginName());
+        return saved;
     }
 
     /**
@@ -235,7 +262,12 @@ public class UserService extends CrudService<UserDao, User>{
                 }
             }
         }
-        return super.bulkUpdate(entitys);
+        List<String> ids = super.bulkUpdate(entitys);
+        // H3: bulk SQL chi doi sys_user — dong bo tenant sau khi doi ten.
+        for (User entity : entitys) {
+            syncUserTenantLoginName(entity.getId(), entity.getLoginName());
+        }
+        return ids;
     }
 
     @Override
@@ -434,6 +466,9 @@ public class UserService extends CrudService<UserDao, User>{
     public User update(User user,MultipartFile[] fileIdUploads,
                        String[] deleteIds) throws java.io.IOException {
         String id = super.save(user).getId();
+        // H3: duong sua cua UI (POST /admin/user/update) cung chi doi
+        // sys_user — dong bo tenant ngay sau save, truoc khi xu ly role/ext.
+        syncUserTenantLoginName(id, user.getLoginName());
         if (StringUtils.isNoneBlank(id)) {
             // ĐặtMã hóaTrường   Mật khẩu
             if(user.getLoginPasswordUpdate()) {

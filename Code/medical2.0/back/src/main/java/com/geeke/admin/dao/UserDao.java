@@ -71,6 +71,11 @@ public interface UserDao extends CrudDao<User> {
 
     void updateAdminPhoneAndPass(@Param("loginName") String loginName, @Param("pass") String pass, @Param("id") String id);
 
+    // H3 (iteration 28): dong bo user_tenant.login_name khi sys_user
+    // doi SDT/loginName. Chi dong active (del_flag != '1'); dong tenant
+    // da xoa mem giu ten cu nhu lich su, khi gan lai se insert dong moi.
+    void updateUserTenantLoginName(@Param("userId") String userId, @Param("loginName") String loginName);
+
     User getCompanyIdAndOpenId(String companyId, String openId);
 
     void updateWxUser(User user);

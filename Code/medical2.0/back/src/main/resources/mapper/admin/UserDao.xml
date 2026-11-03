@@ -536,6 +536,13 @@
                 #{loginName},
                 '0')
     </insert>
+    <update id="updateUserTenantLoginName">
+        UPDATE user_tenant
+        SET login_name = #{loginName}
+        WHERE user_id = #{userId}
+        AND del_flag != '1'
+    </update>
+
     <update id="updateUserTenantDelFlag">
         UPDATE user_tenant
         SET del_flag = #{delFlag}
