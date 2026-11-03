@@ -794,6 +794,10 @@ export default {
         // Qua hạng mục có phải hạng mục đóng gói không
         getInspectionCheckInfoByInspecId(row.id).then((res)=>{
           if(res.code===100){
+            if(res.data==null){
+              this.$message.error("Không tìm thấy kết quả kiểm tra, vui lòng thử lại hoặc liên hệ quản trị viên!")
+              return
+            }
             this.bizFormModel.inspectionCheckInfo=res.data
             this.typeName="Nhập kết quả xét nghiệm"
             this.type="0"
@@ -823,6 +827,10 @@ export default {
          // Qua hạng mục có phải hạng mục đóng gói không
         getInspectionCheckInfoByInspecId(row.id).then((res)=>{
           if(res.code===100){
+            if(res.data==null){
+              this.$message.error("Không tìm thấy kết quả kiểm tra, vui lòng thử lại hoặc liên hệ quản trị viên!")
+              return
+            }
             this.bizFormModel.inspectionCheckInfo=res.data
             this.typeName="Nhập kết quả kiểm tra"
             this.type="1"
