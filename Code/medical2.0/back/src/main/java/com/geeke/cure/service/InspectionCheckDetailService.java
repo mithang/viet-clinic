@@ -1,5 +1,6 @@
 package com.geeke.cure.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,25 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
     public List<InspectionCheckDetail> getByInfoId(String infoId) {
         List<InspectionCheckDetail> inspectionCheckDetails = this.dao.getByInfoId(infoId);
         for (InspectionCheckDetail inspectionCheckDetail : inspectionCheckDetails) {
-            CostItem costItem = costItemService.get(inspectionCheckDetail.getCostItem().getId());
+            // U2 (iteration 43): detail co the khong co cost item hop le —
+            // cost_item_id NULL (mapper LEFT JOIN, khong ep NOT NULL) hoac
+            // tro toi cost item da xoa (service.get() tra null). Truoc day
+            // ca hai nhanh deu NPE -> GET /info 500 cho ca form doc. Nay
+            // giu nguyen dong detail, dung placeholder rong (packages [])
+            // de form khong vo o costItem.costItemPackages.length; khong
+            // tra 400 vi day la loi doc, du lieu detail van hop le.
+            CostItem costItem = null;
+            if (inspectionCheckDetail.getCostItem() != null
+                    && inspectionCheckDetail.getCostItem().getId() != null
+                    && !inspectionCheckDetail.getCostItem().getId().isEmpty()) {
+                costItem = costItemService.get(inspectionCheckDetail.getCostItem().getId());
+            }
+            if (costItem == null) {
+                costItem = new CostItem();
+                costItem.setCostItemPackages(new ArrayList<CostItemPackage>());
+                inspectionCheckDetail.setCostItem(costItem);
+                continue;
+            }
             List<CostItemPackage> all = costItemPackageService.getAll(costItem.getId());
             costItem.setCostItemPackages(all);
             inspectionCheckDetail.setCostItem(costItem);
