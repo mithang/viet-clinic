@@ -265,7 +265,15 @@ public class UserService extends CrudService<UserDao, User>{
         User existUser = userDao.getByLoginName(user.getLoginName());
         if(null != existUser)
         {
-            List<String> clinics = userDao.getClinicIdByPhone(existUser.getId());
+            // G1 (iteration 27): getClinicIdByPhone loc theo login_name
+            // nhung caller cu truyen existUser.getId() (id so dai, khong
+            // bao gio trung SDT) nen clinics luon rong va nhanh
+            // cung-phong-kham trong save khong bao gio nem, roi vao
+            // nhanh khac-phong-kham chen trung tenant + ext. Dung
+            // getClinicId theo user_id (nhu LoginService) — mien nhiem
+            // voi user_tenant.login_name cu sau doi SDT. Khong xoa
+            // getClinicIdByPhone o DAO trong commit nay.
+            List<String> clinics = userDao.getClinicId(existUser.getId());
             existUser.setClinics(clinics);
         }
         return existUser;
