@@ -27,6 +27,10 @@ public class BlmbService {
      */
     @Transactional(readOnly = false)
     public int insert(Blmb blmb){
+        // Q3 (iteration 40): ep session tenant cho duong ghi, nhu
+        // getblmblist/selectmbbm — companyId la bi ghi de bang session
+        // tenant nen khong chen duoc mau vao tenant la.
+        forceSessionTenant(blmb);
         blmb.setMbbm(IdGen.uuid());
         blmb.setCreatedTime(new Date());
         return blmbdao.insert(blmb);
@@ -48,6 +52,9 @@ public class BlmbService {
 
     @Transactional(readOnly = false)
     public int deletembbm(Blmcxrc blmcxrc){
+        // Q3 (iteration 40): nhu insert — companyId la bi ghi de bang
+        // session tenant nen WHERE khong khop dong la.
+        forceSessionTenant(blmcxrc);
         blmcxrc.setUpdatedTime(new Date());
         return blmbdao.deletembbm(blmcxrc);
     }
@@ -57,16 +64,28 @@ public class BlmbService {
         return blmbdao.selectmbbm(blmcxrc);
     }
 
-    // Z1b: dung chung cho getblmblist/selectmbbm (xem ghi chu o getblmblist).
-    // Khong ap cho save/deletembbm/updatembbm — duong ghi, de nhip Z3.
+    // Z1b: dung chung cho getblmblist/selectmbbm (xem ghi chu o getblmblist);
+    // tu Q3 (iteration 40) cung ap cho save/deletembbm/updatembbm —
+    // duong ghi truoc day de nhip Z3.
     private void forceSessionTenant(Blmcxrc blmcxrc) {
         String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
         if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
             blmcxrc.setCompanyId(tenant);
         }
     }
+    // Q3: ban nang cho Blmb (save/updatembbm) — cung quy tac session
+    // rong/"null" giu hanh vi cu nhu ban Blmcxrc.
+    private void forceSessionTenant(Blmb blmb) {
+        String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
+            blmb.setCompanyId(tenant);
+        }
+    }
     @Transactional(readOnly = false)
     public int updatembbm(Blmb blmb){
+        // Q3 (iteration 40): nhu deletembbm — companyId la bi ghi de
+        // bang session tenant nen WHERE khong khop dong la.
+        forceSessionTenant(blmb);
         blmb.setUpdatedTime(new Date());
         return blmbdao.updatembbm(blmb);
     }
