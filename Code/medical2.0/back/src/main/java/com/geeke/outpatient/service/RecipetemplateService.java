@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.geeke.common.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.geeke.common.service.ServiceException;
+import com.geeke.outpatient.dao.RecipeTemplateInfoDao;
 import com.geeke.outpatient.dao.RecipetemplateDao;
 import com.geeke.outpatient.entity.Recipetemplate;
 import com.geeke.utils.StringUtils;
@@ -62,6 +64,12 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
     private StuffDao stuffDao;
     @Autowired
     private CostItemDao costItemDao;
+    // Q2 (iteration 40): đọc trực tiếp ownership của info qua DAO (cùng lý
+    // do như trên): updateTemplate cần dòng info đã lưu để đối chiếu
+    // tenant/template trước khi updateInfo/deleteTemplateDetail ghi theo
+    // id trần, mà không dùng Service.get() ném lỗi giữa transaction.
+    @Autowired
+    private RecipeTemplateInfoDao recipeTemplateInfoDao;
 
     // Ghi: entry-point phải là read-write. Lớp này là readOnly=true và
     // saveTemplate()/updateTemplate() được gọi nội bộ (this.*) nên
@@ -77,6 +85,52 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
     }
     @Transactional(readOnly = false)
     private void updateTemplate(Recipetemplate recipetemplate) {
+        // Q2 (iteration 40): đường ghi này gọi dao.updateById trực tiếp
+        // nên né guard generic (M1/M2) — kiểm tra TRƯỚC mọi ghi:
+        // (1) template đã lưu phải thuộc session tenant (dòng lạ → 400,
+        // dòng không tồn tại / session rỗng giữ hành vi cũ: updateById
+        // trả 0, cascade bỏ qua);
+        verifyTenantOwnershipAgainstStoredRow(recipetemplate);
+        // (2) company trong payload phải là session tenant (khi session
+        // hợp lệ) — nếu không mẫu own sẽ bị chuyển company sang lạ.
+        blockForeignPayloadCompany(recipetemplate.getCompany());
+        RecipeTemplateInfo info = recipetemplate.getRecipeTemplateInfo();
+        if (info != null && StringUtils.isNotBlank(info.getId())) {
+            blockForeignPayloadCompany(info.getCompany());
+            // (3) info đã lưu phải thuộc session tenant VÀ thuộc đúng
+            // template này — nếu không updateInfo sẽ ghi đè info lạ.
+            RecipeTemplateInfo storedInfo = recipeTemplateInfoDao.getOwnership(info.getId());
+            if (storedInfo != null) {
+                checkStoredInfoTenant(storedInfo);
+                if (storedInfo.getRecipetemplate() != null
+                        && StringUtils.isNotBlank(storedInfo.getRecipetemplate().getId())
+                        && !storedInfo.getRecipetemplate().getId().equals(recipetemplate.getId())) {
+                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                }
+            }
+        }
+        // (4) detail-info của chi tiết phải khớp info của template (khi
+        // info đã biết) — nếu không deleteTemplateDetail sẽ xóa cứng
+        // chi tiết của info lạ; khi info chưa biết thì chỉ kiểm tra
+        // tenant của detail-info đó.
+        List<RecipeTemplateDetail> details = recipetemplate.getRecipeTemplateDetail();
+        if (details != null && !details.isEmpty()) {
+            RecipeTemplateDetail first = details.get(0);
+            if (first != null && first.getRecipeTemplateInfo() != null
+                    && StringUtils.isNotBlank(first.getRecipeTemplateInfo().getId())) {
+                String detailInfoId = first.getRecipeTemplateInfo().getId();
+                if (info != null && StringUtils.isNotBlank(info.getId())) {
+                    if (!detailInfoId.equals(info.getId())) {
+                        throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    }
+                } else {
+                    RecipeTemplateInfo storedDetailInfo = recipeTemplateInfoDao.getOwnership(detailInfoId);
+                    if (storedDetailInfo != null) {
+                        checkStoredInfoTenant(storedDetailInfo);
+                    }
+                }
+            }
+        }
         JSONObject userObj = SessionUtils.getUserJson();
         if (userObj != null && StringUtils.isNotBlank(userObj.getString("id"))) {
             recipetemplate.setUpdateBy(userObj.getString("name"));
@@ -93,6 +147,9 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
 
     @Transactional(readOnly = false)
     public void saveTemplate(Recipetemplate recipetemplate){
+        // Q2 (iteration 40): create ghi thẳng company từ payload (template
+        // + info + chi tiết) — chặn company lạ trước khi sinh uuid/code.
+        blockForeignPayloadCompany(recipetemplate.getCompany());
         //LưumẫuchínhDữ liệu
         recipetemplate.preInsert();
         recipetemplate.setId(IdGen.uuid());
@@ -143,6 +200,37 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             recipeTemplateDetail.setCompany(templateCompany);
         }
         recipetemplateDetailService.allSave(recipeTemplateDetails);
+    }
+
+    // Q2 (iteration 40): company trong payload phải là session tenant khi
+    // session hợp lệ; company lạ (hoặc thiếu session thì giữ hành vi cũ).
+    private void blockForeignPayloadCompany(Company company) {
+        if (company == null || StringUtils.isBlank(company.getId())) {
+            return;
+        }
+        String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        if (!tenantId.equals(company.getId())) {
+            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+        }
+    }
+
+    // Q2 (iteration 40): dòng info đã lưu phải thuộc session tenant khi
+    // session hợp lệ; dòng không tồn tại / company rỗng giữ hành vi cũ.
+    private void checkStoredInfoTenant(RecipeTemplateInfo storedInfo) {
+        if (storedInfo == null || storedInfo.getCompany() == null
+                || StringUtils.isBlank(storedInfo.getCompany().getId())) {
+            return;
+        }
+        String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        if (!tenantId.equals(storedInfo.getCompany().getId())) {
+            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+        }
     }
 
     public void preInsert() {

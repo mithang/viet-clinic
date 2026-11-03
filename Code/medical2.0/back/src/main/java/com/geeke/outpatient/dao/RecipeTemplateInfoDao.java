@@ -13,4 +13,6 @@ public interface RecipeTemplateInfoDao extends CrudDao<RecipeTemplateInfo> {
 
     void updateInfo(RecipeTemplateInfo recipeTemplateInfo);
 
+    RecipeTemplateInfo getOwnership(String id);
+
 }

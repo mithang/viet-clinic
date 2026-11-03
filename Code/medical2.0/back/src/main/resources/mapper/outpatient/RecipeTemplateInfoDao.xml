@@ -331,4 +331,13 @@
         )
     </insert>
 
+    <select id="getOwnership" resultType="com.geeke.outpatient.entity.RecipeTemplateInfo">
+        SELECT
+            a.id AS "id",
+            a.company_id AS "company.id",
+            a.recipetemplate_id AS "recipetemplate.id"
+        FROM recipetemplate_info a
+        WHERE a.id = #{id}
+    </select>
+
 </mapper>
