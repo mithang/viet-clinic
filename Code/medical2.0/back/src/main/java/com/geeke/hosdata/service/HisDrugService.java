@@ -39,6 +39,12 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
         Map<String, String> packMap = getTypeMap(BizConstants.DICT_TYPE_PACK_SPEC);
         JSONObject userObj = SessionUtils.getUserJson();
         List<String> ids = Lists.newArrayList();
+        // ITER31: truoc day vong lap `continue` khi thuoc da ton tai nhung
+        // dao.bulkInsert(entitys) van chen TOAN BO list goc — dong bi skip
+        // (chua preInsert, chua ep company theo session) van bi ghi, voi
+        // id/companyId do client gui (tai hien: dong dup ghi thang vao
+        // tenant khac voi 200). Chi chen cac dong khong bi skip.
+        List<HisDrugs> toInsert = Lists.newArrayList();
         for(HisDrugs entity: entitys) {
             Drug drug = drugService.getByCode(entity.getStandardCode(),userObj.getString("companyId"));
             if(drug!=null){
@@ -51,8 +57,13 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
             entity.setPack(packMap.getOrDefault(entity.getPack(),entity.getPack()));
            entity.preInsert();
            ids.add(entity.getId());
+           toInsert.add(entity);
         }
-        dao.bulkInsert(entitys);
+        // List rong ma goi bulkInsert se sinh SQL INSERT khong co VALUES
+        // (tat ca deu da dong bo) nen chi chen khi co dong moi that su.
+        if(!toInsert.isEmpty()) {
+            dao.bulkInsert(toInsert);
+        }
         ids.forEach(id->{
             Drug drug = drugService.get(id);
             medicinalStockControlService.initStock(drug);
