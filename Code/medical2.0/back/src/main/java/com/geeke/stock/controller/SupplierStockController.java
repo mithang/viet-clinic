@@ -102,6 +102,37 @@ public class SupplierStockController extends CrudController<SupplierStockService
     @PostMapping(value = "inStorage")
     public ResponseEntity<JSONObject> inStorage(@RequestBody StorageEvt storageEvt) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        // M4 (iteration 60): ep tenant theo session cho phieu + tung dong
+        // nhap kho, mau L5 (save don). Ly do: savesTo() luu phieu/dong
+        // qua CrudService.save nhanh INSERT (khong verify tenant) nen
+        // payload company la ghi thang dong vao tenant la — probe
+        // iter60-m4 V4/V6: dong drug-null + company OTHER -> 200, phieu
+        // + dong hien o OTHER. Truong hop dong co drug that hien bi
+        // chan 400 nho co che ngau nhien (drugTemp bi doi company sang
+        // OTHER roi initStockTo get lai trong cung transaction, cache
+        // MyBatis tra ve dung object da doi nen verify nem 400 truoc
+        // khi ghi) — ep o controller lam cho chan nay xac dinh, khong
+        // dua vao cache. Form that (supplierStorage + auditWarehousing
+        // addstorage) gui company_id = currentUser.company.id nen ep
+        // khong doi hanh vi UI hop le nao. Session rong/"null" giu
+        // payload cu (luong noi bo khong session). Chi duong inStorage
+        // nay doi; inStorageByCompany KHONG ep vi form that cua no
+        // (distributionDrugs addstorage) gui otherInfo.companyId do
+        // nguoi dung chon — nhap kho cho phong kham duoc chi dinh la
+        // dung cross-company theo thiet ke, khong phai lo hong.
+        String tenant = SessionUtils.getLoginTenantId();
+        if (StringUtils.isNotBlank(tenant) && !"null".equals(tenant)) {
+            if (storageEvt.getSupplierStorage() != null) {
+                storageEvt.getSupplierStorage().setCompany(new Company(tenant));
+            }
+            if (storageEvt.getSupplierStockList() != null) {
+                storageEvt.getSupplierStockList().forEach(item -> {
+                    if (item != null) {
+                        item.setCompany(new Company(tenant));
+                    }
+                });
+            }
+        }
         //Khi nhập kho hàng loạt mà không có thông tin thuốc thì thêm thông tin thuốc
         storageEvt.getSupplierStockList().forEach(item -> {
             Drug drug = drugService.getByNameAndPrice(item.getDrug().getGoodsName(),item.getRetailPrice());
