@@ -59,9 +59,18 @@ public abstract class TreeService<D extends TreeDao<T>, T extends TreeEntity<T>>
 
 		
 		// LấySửatrước của parentIds, dùng đểCập nhậtconNút của parentIds, Nếu có Thêm mớimẫukiểudưới, bỏ quanó của ids
+		// ITER36 N3: oldIds phải lấy từ dòng DB đã lưu, KHÔNG lấy từ payload.
+		// Payload ids điều khiển được tiền tố truy vấn con (ids right_like,
+		// không lọc company): lưu 1 dòng own kèm ids lạ đã viết lại ids của
+		// cả cây con tenant khác (tái hiện live /org/department/save).
+		// Dòng không tồn tại -> oldIds null -> bỏ qua khối con (đóng luôn
+		// biến thể phantom-id); guard isNotBlank bên dưới giữ nguyên.
 		String oldIds = null;
 		if (StringUtils.isNotBlank(entity.getId())) {
-			oldIds = entity.getIds();
+			T stored = dao.get(entity.getId());
+			if (stored != null) {
+				oldIds = stored.getIds();
+			}
 		}
 		
 	
