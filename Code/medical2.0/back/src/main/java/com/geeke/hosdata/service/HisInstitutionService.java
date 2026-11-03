@@ -46,6 +46,23 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
                     && synced.contains(entity.getSfxmCode())) {
                 continue;
             }
+            // ITER33 K2: ma da co dong tao tay active (sync_id NULL) thi NHAN
+            // dong do — chi gan sync_id=1, giu nguyen ten/gia cua phong kham —
+            // thay vi chen dong thu 2 cung ma (danh sach UI hien 2 dong cung
+            // ma, gia khac nhau, chon nham se thu sai gia). Skip lang thi
+            // trang dong bo van hien "chua dong bo" mai (syncNum theo
+            // sync_id=1), nen nhan la trang thai cuoi nhat quan duy nhat.
+            // Dong xoa mem khong duoc nhan (find chi loc del_flag=0).
+            if (entity.getSfxmCode() != null && !entity.getSfxmCode().trim().isEmpty()) {
+                String adoptedId = hisInstitutionDao.findUnsyncedIdByCode(
+                        userObj.getString("companyId"), entity.getSfxmCode());
+                if (adoptedId != null) {
+                    hisInstitutionDao.markSynced(adoptedId);
+                    ids.add(adoptedId);
+                    synced.add(entity.getSfxmCode());
+                    continue;
+                }
+            }
             entity.setCompanyId(userObj.getString("companyId"));
             if("挂号项目".equals(entity.getDllx()) || "Hạng mục khám chữa bệnh".equals(entity.getDllx())){
                            entity.setDllx("Khác");

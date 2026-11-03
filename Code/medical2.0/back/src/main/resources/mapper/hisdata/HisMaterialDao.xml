@@ -275,5 +275,17 @@
         select code from stuff where company_id = #{companyId} and sync_id = 1
     </select>
 
+    <!-- ITER33 K2: dong active cung ma chua dong bo (cu nhat), de nhan thay vi chen trung -->
+    <select id="findUnsyncedIdByCode" resultType="java.lang.String">
+        select id from stuff where company_id = #{companyId} and code = #{code}
+        and del_flag = '0' and (sync_id is null or sync_id != 1)
+        order by create_date asc limit 1
+    </select>
+
+    <!-- ITER33 K2: chi gan co dong bo, khong doi ten/gia cua dong tao tay -->
+    <update id="markSynced">
+        update stuff set sync_id = 1, update_date = NOW() where id = #{id}
+    </update>
+
 
 </mapper>

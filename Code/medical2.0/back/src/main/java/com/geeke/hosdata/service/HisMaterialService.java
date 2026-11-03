@@ -48,14 +48,28 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
         // ITER32 J2: nhu HisInstitutionService — skip theo dung ngu nghia
         // UI danh dau da dong bo: getMaterialCode = code cua cac dong
         // stuff sync_id=1 trong tenant session; trung trong cung payload
-        // cung bi skip; code blank khong dedup. Chi initStock cho dong
-        // moi duoc chen that su (ids chi gom dong do).
+        // cung bi skip; code blank khong dedup. ITER33 K2: id duoc nhan
+        // (dong tao tay) cung qua initStock (tai dung stock control da co).
         Set<String> synced = new HashSet<>(getcCodeList(userObj.getString("companyId")));
         List<HisMaterials> toInsert = Lists.newArrayList();
         for(HisMaterials entity : entitys) {
             if (entity.getSfxmCode() != null && !entity.getSfxmCode().trim().isEmpty()
                     && synced.contains(entity.getSfxmCode())) {
                 continue;
+            }
+            // ITER33 K2: nhu HisInstitutionService — ma da co dong tao tay
+            // active thi nhan dong do (chi sync_id=1, giu ten/gia) thay vi
+            // chen trung; id duoc nhan van qua initStock nhu dong moi
+            // (initStock tai dung dong stock control da co neu co).
+            if (entity.getSfxmCode() != null && !entity.getSfxmCode().trim().isEmpty()) {
+                String adoptedId = hisMaterialDao.findUnsyncedIdByCode(
+                        userObj.getString("companyId"), entity.getSfxmCode());
+                if (adoptedId != null) {
+                    hisMaterialDao.markSynced(adoptedId);
+                    ids.add(adoptedId);
+                    synced.add(entity.getSfxmCode());
+                    continue;
+                }
             }
             entity.setCompanyId(userObj.getString("companyId"));
             entity.setDw(preMap.getOrDefault(entity.getDw(), preMap.get("Cái")));
