@@ -20,6 +20,7 @@ import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.StringUtils;
 
 /**
  * Quản lý thẻ hội viênController
@@ -72,10 +73,21 @@ public class MemberManagementController extends CrudController<MemberManagementS
             return forbidden();
         }
 
+        // ITER36 N1: the set id used to come from the payload, so deleting
+        // an own card with a foreign set id credited the FOREIGN set's
+        // stock (reproduced live: 49 -> 50). Take the set from the stored
+        // card instead; get() also tenant-checks the card itself.
+        String storedSetId = null;
+        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+            MemberManagement stored = memberManagementService.get(entity.getId());
+            if (stored != null && stored.getMemberSet() != null) {
+                storedSetId = stored.getMemberSet().getId();
+            }
+        }
         int rows = memberManagementService.delete(entity);
         //Vô hiệu hóathẻThành côngsauCầnSẽ thẻcòntrả lạiHội viênthẻ
-        if(rows>0){
-            memberSetService.addNumber(entity.getMemberSet().getId());
+        if(rows>0 && StringUtils.isNotBlank(storedSetId)){
+            memberSetService.addNumber(storedSetId);
         }
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }

@@ -43,6 +43,12 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
             // (giữ nguyên card, không sinh lại, không trừ số lượng thẻ lại).
             if (StringUtils.isNotBlank(memberManagement.getId())) {
+                // ITER36 N1: this override bypassed the generic save guards
+                // (M1/M2) by calling dao.update directly, so a foreign card id
+                // + own-tenant payload company overwrote + re-homed the card
+                // (reproduced live). Same two checks as generic save.
+                verifyTenantOwnership(memberManagement);
+                verifyTenantOwnershipAgainstStoredRow(memberManagement);
                 memberManagement.preUpdate();
                 this.dao.update(memberManagement);
                 return memberManagement;
@@ -71,7 +77,13 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                 memberManagementDetailService.save(memberManagementDetail);
             }
             //liên kếtthẻThành côngCầnđikhấu trừHội viênthẻSố lượng
+            // ITER36 N1: the set id comes from the payload, so creating a
+            // card against a foreign set used to decrement the FOREIGN
+            // set's stock (reproduced live: 50 -> 49). get() verifies the
+            // stored set's tenant and throws for a foreign set, rolling
+            // this whole save back; an own set passes unchanged.
             if(insert>0){
+                memberSetService.get(memberManagement.getMemberSet().getId());
                 int i = memberSetService.updateNumber(memberManagement.getMemberSet().getId());
             }
             return memberManagement;
