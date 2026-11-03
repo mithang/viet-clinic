@@ -7,9 +7,12 @@ import com.geeke.common.data.Page;
 import com.geeke.stock.entity.Drug;
 import com.geeke.stock.service.DrugService;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import com.geeke.utils.constants.ErrorEnum;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -140,17 +143,37 @@ public class DrugController extends CrudController<DrugService, Drug> {
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
+    /**
+     * Iteration 39 P1: 4 endpoint updateAll ghi hang loat theo company_id cua
+     * payload, truoc day chi co san hasAnySessionPermission nen token tenant
+     * nay gui company tenant khac se ghi de toan bo thuoc/vat tu tenant do.
+     * Chan truoc khi ghi: company payload thieu hoac khac session tenant
+     * -> 400, khong ghi dong nao. Session rong/"null" (luong noi bo khong
+     * session) giu hanh vi cu nhu verifyTenantOwnership. UI that chi gui
+     * company: currentUser.company nen hanh vi own khong doi.
+     */
+    private boolean isForeignCompany(String payloadCompanyId) {
+        if (StringUtils.isBlank(payloadCompanyId)) { return true; }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) { return false; }
+        return !tenantId.equals(payloadCompanyId);
+    }
+
     @PostMapping(value = "updateAllIndate")
     public ResponseEntity<JSONObject> updateAllIndate(@RequestBody Drug drug) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
-        int i = drugService.updateAllIndate(drug.getIndate(), drug.getCompany().getId());
+        String companyId = drug.getCompany() == null ? null : drug.getCompany().getId();
+        if (isForeignCompany(companyId)) { return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.errorJson(ErrorEnum.E_400)); }
+        int i = drugService.updateAllIndate(drug.getIndate(), companyId);
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }
 
     @PostMapping(value = "updateAllInventory")
     public ResponseEntity<JSONObject> updateAllInventory(@RequestBody Drug drug) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
-        int i = drugService.updateAllInventory(drug.getInventoryFloor(), drug.getCompany().getId());
+        String companyId = drug.getCompany() == null ? null : drug.getCompany().getId();
+        if (isForeignCompany(companyId)) { return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.errorJson(ErrorEnum.E_400)); }
+        int i = drugService.updateAllInventory(drug.getInventoryFloor(), companyId);
         return ResponseEntity.ok(ResultUtil.successJson(i));
     }
 
