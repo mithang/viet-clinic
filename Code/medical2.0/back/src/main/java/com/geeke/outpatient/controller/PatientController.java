@@ -140,6 +140,19 @@ public class PatientController extends CrudController<PatientService, Patient> {
         if (!hasAnySessionPermission()) {
             return forbidden();
         }
+        // E1 (iteration 52): ep tenant theo session nhu add (D1) truoc khi
+        // save. Truoc day company lay thang tu payload nen token tenant A
+        // gui company tenant B tao that benh nhan o B (nhanh insert cua
+        // CrudService.save khong verify tenant). Nay: session co tenant thi
+        // bo qua company payload; session rong giu fallback body cu.
+        // Nhanh update van an toan: CrudService.save van verify stored-row
+        // nen sua dong la van bi chan du payload company da bi ep ve OWN.
+        // UI that gui company = currentUser.company.id (own tenant) nen
+        // khong doi hanh vi hop le (registrationForm/schedulingForm).
+        String tenant = sessionTenantOr(entity.getCompany() == null ? null : entity.getCompany().getId());
+        if (tenant != null) {
+            entity.setCompany(new Company(tenant));
+        }
         if (!beforeSave(entity)) {
             return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
         }
