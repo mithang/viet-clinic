@@ -25,7 +25,11 @@ public class PatientMdData implements Serializable {
 
     /**
      * nhómchứcid
+     * Cột DB thật là `OrganizeId` (không gạch dưới); MyBatis-Plus mặc định
+     * map field này thành `organize_id` nên mọi getOne đều lỗi Unknown column
+     * (drift B1, iteration 49). Giữ tên field, chỉ rõ cột thật.
      */
+    @TableField("OrganizeId")
     private Long OrganizeId;
 
     /**
