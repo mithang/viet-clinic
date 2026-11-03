@@ -99,15 +99,6 @@
         WHERE a.inspection_check_info_id = #{infoId}
         ORDER BY a.seq
     </select>
-    <select id="getByInfoId2" resultType="com.geeke.cure.entity.InspectionCheckDetailCostItem">
-        SELECT
-        <include refid="inspectionCheckDetailColumns"/>
-        FROM inspection_check_detail a
-        <include refid="inspectionCheckDetailJoins"/>
-        WHERE a.inspection_check_info_id = #{infoId}
-        ORDER BY a.seq
-    </select>
-
     <insert id="insert">
         INSERT INTO inspection_check_detail(
         id,

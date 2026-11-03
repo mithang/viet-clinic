@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.geeke.cure.entity.InspectionCheckDetail;
-import com.geeke.cure.entity.InspectionCheckDetailCostItem;
-import com.geeke.cure.entity.InspectionCheckInfoCostItem;
 import com.geeke.common.service.ServiceException;
 import com.geeke.cure.dao.InspectionCheckDao;
 import com.geeke.sys.dao.SysFileDao;
@@ -219,17 +217,6 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         inspectionCheckInfo.setInspectionCheckDetails(inspectionCheckDetails);
         return inspectionCheckInfo;
     }
-
-    @Transactional
-    public InspectionCheckInfoCostItem getByInspecId2(String inspecId) {
-        InspectionCheckInfoCostItem inspectionCheckInfoCostItem = this.dao.getByInspecId2(inspecId);
-
-        List<InspectionCheckDetailCostItem> byInfoId2 = inspectionCheckDetailService.getByInfoId2(inspectionCheckInfoCostItem.getId());
-
-        inspectionCheckInfoCostItem.setInspectionCheckDetails(byInfoId2);
-        return inspectionCheckInfoCostItem;
-    }
-
 
     @Transactional(readOnly = false)
     public void deleteBy(InspectionCheckInfo byInspecId) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.geeke.cure.entity.InspectionCheckDetailCostItem;
 import com.geeke.treatment.entity.CostItem;
 import com.geeke.treatment.entity.CostItemPackage;
 import com.geeke.treatment.service.CostItemService;
@@ -68,17 +67,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
         return inspectionCheckDetails;
     }
 
-    public List<InspectionCheckDetailCostItem> getByInfoId2(String infoId) {
-        List<InspectionCheckDetailCostItem> byInfoId2 = this.dao.getByInfoId2(infoId);
-//        for (InspectionCheckDetailCostItem inspectionCheckDetail : byInfoId2) {
-//            CostItem costItem = costItemService.get(inspectionCheckDetail.getCostItem().getId());
-//            List<CostItemPackage> all = costItemPackageService.getAll(costItem.getId());
-//            costItem.setCostItemPackages(all);
-//            inspectionCheckDetail.setCostItem(costItem);
-//        }
 
-        return byInfoId2;
-    }
 
     @Transactional(readOnly = false)
     public void update(InspectionCheckDetail inspectionCheckDetail) {

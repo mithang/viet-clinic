@@ -105,14 +105,6 @@
            <include refid="inspectionCheckInfoJoins"/>
         WHERE a.inspection_check_id = #{inspecId}
     </select>
-    <select id="getByInspecId2" resultType="com.geeke.cure.entity.InspectionCheckInfoCostItem">
-        SELECT
-        <include refid="inspectionCheckInfoColumns"/>
-        FROM inspection_check_info a
-        <include refid="inspectionCheckInfoJoins"/>
-        WHERE a.inspection_check_id = #{inspecId}
-    </select>
-
     <insert id="insert">
         INSERT INTO inspection_check_info(
             id,
