@@ -134,6 +134,21 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         if (StringUtils.isBlank(medicalRecord.getFileId())) {
             medicalRecord.setFileId(IdGen.uuid());
         }
+        // J2 (iteration 57): v1 saveWithFile la diem xoa file thu 4 ngoai v2
+        // (guardExamDeleteFileIds cua I1 chi gan trong allNewSave) — truoc day
+        // sysFileService.delete(deleteIds) chay tran, nen benh an OWN hop le
+        // + deleteIds chua file tenant la -> xoa that file + content cua
+        // tenant la (tai hien live). Tai dung guard I1 tai day, TRUOC moi
+        // upload/xoa/ghi: tap hop hop le = registration id + fileId cua
+        // benh an da luu cho luot nay + fileId dang gui; file khong ton tai
+        // giu hanh vi cu (bo qua); file la -> 400 va giao dich rollback
+        // toan bo. Khong sua SysFileService.delete generic (caller khac dung
+        // object_id theo nghia rieng, bai hoc I1).
+        if (null != deleteIds && deleteIds.length > 0) {
+            String j2RegistrationId = medicalRecord.getRegistration() != null
+                    ? medicalRecord.getRegistration().getId() : null;
+            this.guardExamDeleteFileIds(deleteIds, null, j2RegistrationId, medicalRecord.getFileId());
+        }
         // Lưutệp đính kèm
         sysFileService.changeAndSaveSysFileList(fileIdUploads, medicalRecord.getFileId());
         // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
