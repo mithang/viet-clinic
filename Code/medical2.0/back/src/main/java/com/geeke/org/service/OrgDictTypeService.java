@@ -12,6 +12,7 @@ import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.org.dao.OrgDictItemDao;
 import com.geeke.org.dao.OrgDictTypeDao;
 import com.geeke.org.entity.OrgDictItem;
@@ -97,9 +98,33 @@ public class OrgDictTypeService extends CrudService<OrgDictTypeDao, OrgDictType>
         List<OrgDictItem> deletes = Lists.newArrayList();
         List<OrgDictItem> inserts = Lists.newArrayList();
         List<OrgDictItem> updates = Lists.newArrayList();
-        Iterator var8 = list_DictItem.iterator();
+        // K1: bulkUpdate theo id trần, không có dict_type_id, nên chỉ cho cập
+        // nhật id thuộc đúng loại này; id lạ (của loại khác / tenant khác)
+        // -> 400, rollback cả save, và kiểm tra trước mọi ghi để không xóa
+        // nhầm trước khi ném. Cùng mẫu với nhánh sys DictTypeService.
+        java.util.Set<String> ownedIds = new java.util.HashSet<>();
+        for (OrgDictItem dictItemSaved : list_DictItem) {
+            ownedIds.add(dictItemSaved.getId());
+        }
 
         OrgDictItem dictItem;
+        Iterator var8 = dictType.getDictItemList().iterator();
+        while(var8.hasNext()) {
+            dictItem = (OrgDictItem)var8.next();
+            if (StringUtils.isBlank(dictItem.getId())) {
+                dictItem.setDictType(dictType);
+                dictItem.preInsert();
+                inserts.add(dictItem);
+            } else {
+                if (!ownedIds.contains(dictItem.getId())) {
+                    throw new ServiceException("Mục từ điển không thuộc loại từ điển này");
+                }
+                dictItem.preUpdate();
+                updates.add(dictItem);
+            }
+        }
+
+        var8 = list_DictItem.iterator();
         while(var8.hasNext()) {
             dictItem = (OrgDictItem)var8.next();
             boolean found = false;
@@ -120,20 +145,6 @@ public class OrgDictTypeService extends CrudService<OrgDictTypeDao, OrgDictType>
 
         if (deletes.size() > 0) {
             this.dictItemDao.bulkDelete(deletes);
-        }
-
-        var8 = dictType.getDictItemList().iterator();
-
-        while(var8.hasNext()) {
-            dictItem = (OrgDictItem)var8.next();
-            if (StringUtils.isBlank(dictItem.getId())) {
-                dictItem.setDictType(dictType);
-                dictItem.preInsert();
-                inserts.add(dictItem);
-            } else {
-                dictItem.preUpdate();
-                updates.add(dictItem);
-            }
         }
 
         if (updates.size() > 0) {
