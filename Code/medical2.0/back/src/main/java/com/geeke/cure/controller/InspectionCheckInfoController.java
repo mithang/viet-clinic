@@ -65,11 +65,11 @@ public class InspectionCheckInfoController extends CrudController<InspectionChec
         logger.debug("LưuChi tiết xét nghiệm và kiểm tra: {}", inspectionCheckInfo);
         inspectionCheckInfoService.save(inspectionCheckInfo,fileIdUploads,deleteIds);
         InspectionCheck inspectionCheck = inspectionCheckService.get(inspectionCheckInfo.getInspectionCheck().getId());
-        inspectionCheck.setStatus("1");
+        if (inspectionCheckInfo.getInspectionCheckDetails() != null && !inspectionCheckInfo.getInspectionCheckDetails().isEmpty()) {
+            inspectionCheck.setStatus("1");
+        }
         JSONObject userObj = SessionUtils.getUserJson();
-        inspectionCheck.setCreateBy(userObj.getString("name"));
         inspectionCheck.setUpdateBy(userObj.getString("name"));
-        inspectionCheck.setCreateDate(new Date());
         inspectionCheck.setUpdateDate(new Date());
         inspectionCheckService.save(inspectionCheck);
         return ResponseEntity.ok(ResultUtil.successJson(inspectionCheckInfo.getId()));
