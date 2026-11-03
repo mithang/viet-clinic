@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -109,6 +111,15 @@ public class TaskmanageService {
         }else {
             if(Objects.equals("0",counId)){
                 task.setID(IdGen.uuid());
+                // L3 (iteration 59): guard deleteIds truoc moi upload/xoa/ghi, mau K5/K7.
+                // checkTaskOwnership chi guard DONG task, khong guard file; file dinh kem
+                // co object_id = task id cua nhanh nay, file la -> 400 truoc moi ghi de
+                // transaction rollback toan bo; file khong ton tai giu hanh vi cu (I1/R3).
+                // Guard dat sau setID (id chi co sau setID) nhung truoc moi delete.
+                if (null != deleteIds && deleteIds.length > 0) {
+                    sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                            Collections.singleton(task.getID()));
+                }
                 task.setCompanyId(SessionUtils.getUser().getCompany().getId());
                 task.setCreatedBy(SessionUtils.getUserJson().getString("name"));
                 task.setCreatedTime(new Date());
@@ -134,6 +145,13 @@ public class TaskmanageService {
                 // Z3f: file attach targets an existing task, so check its owner.
                 checkTaskOwnership(counId);
                 taskmanagement byId = this.taskmangementDao.getById(counId);
+                // L3 (iteration 59): guard deleteIds bang {byId id} truoc moi upload/xoa,
+                // mau K5/K7 (xem nhanh tao moi o tren); nhanh attach nay da co
+                // checkTaskOwnership cho DONG task nhung deleteIds van tran truoc day.
+                if (null != deleteIds && deleteIds.length > 0) {
+                    sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                            Collections.singleton(byId.getID()));
+                }
                 //Lưu tệp đã tải lên
                 List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, byId.getID());
                 if(sysFiles!=null&&sysFiles.size()>0){
@@ -277,6 +295,12 @@ public class TaskmanageService {
             if("0".equals(countId)){
                 // Z3f: update branch rewrites the task row + its executors.
                 checkTaskOwnership(task.getID());
+                // L3 (iteration 59): guard deleteIds bang {task id} truoc moi upload/xoa,
+                // mau K5/K7; checkTaskOwnership chi guard DONG task, khong guard file.
+                if (null != deleteIds && deleteIds.length > 0) {
+                    sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                            Collections.singleton(task.getID()));
+                }
                 //Lưu tệp đã tải lên
                 if(null!=fileIdUploads && fileIdUploads.length>0){
                     List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, task.getID());
@@ -298,6 +322,12 @@ public class TaskmanageService {
                 // Z3f: file attach targets an existing task, so check its owner.
                 checkTaskOwnership(countId);
                 taskmanagement byId = this.taskmangementDao.getById(countId);
+                // L3 (iteration 59): guard deleteIds bang {byId id} truoc moi upload/xoa,
+                // mau K5/K7 (nhanh attach da co checkTaskOwnership cho DONG task).
+                if (null != deleteIds && deleteIds.length > 0) {
+                    sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                            Collections.singleton(byId.getID()));
+                }
                 //Lưu tệp đã tải lên
                 if(null!=fileIdUploads && fileIdUploads.length>0){
                     List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, byId.getID());
@@ -315,6 +345,12 @@ public class TaskmanageService {
        }else {
            if(Objects.equals("0",countId)){
                task.setID(IdGen.uuid());
+               // L3 (iteration 59): guard deleteIds bang {task id vua sinh} truoc moi
+               // upload/xoa/ghi, mau K5/K7; guard dat sau setID nhung truoc moi delete.
+               if (null != deleteIds && deleteIds.length > 0) {
+                   sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                           Collections.singleton(task.getID()));
+               }
                //Lưu tệp đã tải lên
                if(null!=fileIdUploads && fileIdUploads.length>0){
                    List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, task.getID());
@@ -341,6 +377,12 @@ public class TaskmanageService {
                // Z3f: file attach targets an existing task, so check its owner.
                checkTaskOwnership(countId);
                taskmanagement byId = this.taskmangementDao.getById(countId);
+               // L3 (iteration 59): guard deleteIds bang {byId id} truoc moi upload/xoa,
+               // mau K5/K7 (nhanh attach da co checkTaskOwnership cho DONG task).
+               if (null != deleteIds && deleteIds.length > 0) {
+                   sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                           Collections.singleton(byId.getID()));
+               }
                //Lưu tệp đã tải lên
                if(null!=fileIdUploads && fileIdUploads.length>0){
                    List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, byId.getID());
