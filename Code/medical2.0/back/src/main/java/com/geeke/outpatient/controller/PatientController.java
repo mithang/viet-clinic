@@ -400,6 +400,16 @@ public class PatientController extends CrudController<PatientService, Patient> {
         if (!hasAnySessionPermission()) {
             return forbidden();
         }
+        // D1 (iteration 51): ep tenant theo session nhu inquire (C4) truoc
+        // khi save. Truoc day company lay thang tu payload nen token tenant
+        // A gui company tenant B tao that ca benh nhan lan luot kham o B
+        // (nhanh insert cua CrudService.save khong verify tenant). Nay:
+        // session co tenant thi bo qua company payload; session rong giu
+        // fallback body cu; company null van giu hanh vi cu o service.
+        String tenant = sessionTenantOr(patient.getCompany() == null ? null : patient.getCompany().getId());
+        if (tenant != null) {
+            patient.setCompany(new Company(tenant));
+        }
         // ThêmThông tin bệnh nhân
         Patient result = patientService.save(patient);
         // Đăng ký khám
