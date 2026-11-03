@@ -28,10 +28,19 @@ public class SysFileContentController extends BaseController {
 
 	@Autowired
 	private SysFileContentService sysFileContentService;
-	
+
+	@Autowired
+	private SysFileService sysFileService;
+
     @GetMapping("/{id}")
     public void getById(@PathVariable("id") String id, HttpServletResponse response){
         if (!hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; } // San RBAC Y2f.
+        // M1 (iteration 60): duong byte tran cung ho L1 — file chu la -> 403,
+        // khong ghi byte (parity SysSetingController.getFile cua L1; khong
+        // dung verifySysFileReadOwnership 400 vi day la endpoint void).
+        // sys_file_content.id chinh la sys_file.id nen resolver L1 ap dung
+        // truc tiep; file khong resolve duoc giu hanh vi cu.
+        if (sysFileService.isSysFileForeignOwned(id)) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; }
         SysFileContent sysFileContent = sysFileContentService.get(id);
         response.setHeader("Content-Type",sysFileContent.getFileType());
         try {

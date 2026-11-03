@@ -179,6 +179,10 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
             fileId = fileId.substring(0, fileId.lastIndexOf("."));
         }
         if (!hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; } // San RBAC Y2f.
+        // M1 (iteration 60): duong byte thu tu cung controller ma L1 bo sot
+        // (getFile da guard, getPhoto/getFiled da guard) — file chu la -> 403,
+        // khong ghi byte, parity getFile; khong sua get generic.
+        if (sysFileService.isSysFileForeignOwned(fileId)) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; }
         logger.info("fileId = {}", fileId);
         String modifiedSice = request.getHeader("if-modified-since");
         //Định dạng ngày
