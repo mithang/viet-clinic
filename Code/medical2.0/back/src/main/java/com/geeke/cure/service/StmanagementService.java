@@ -34,11 +34,17 @@ public class StmanagementService {
 
     @Transactional(readOnly = false)
     public int updatestresult(Stparameter stparameter){
+        // Q1 (iteration 40): ep session tenant cho duong ghi, nhu
+        // stmanagementlist/selectdetailid — companyId la bi ghi de bang
+        // session tenant nen WHERE khong khop dong la.
+        forceSessionTenant(stparameter);
         stparameter.setZxsj(new Date());
         return managementdao.updatestresult(stparameter);
     }
     @Transactional(readOnly = false)
     public int updatesttime(Stparameter stparameter){
+        // Q1 (iteration 40): nhu updatestresult.
+        forceSessionTenant(stparameter);
         return managementdao.updatesttime(stparameter);
     }
     public List<Stmanagement> selectdetailid(Stparameter stparameter){
@@ -47,8 +53,8 @@ public class StmanagementService {
     }
 
     // Z1b: dung chung cho stmanagementlist/selectdetailid (xem ghi chu o
-    // stmanagementlist). Khong ap cho updatestresult/updatesttime —
-    // duong ghi, de nhip Z3.
+    // stmanagementlist); tu Q1 (iteration 40) cung ap cho
+    // updatestresult/updatesttime — duong ghi truoc day de nhip Z3.
     private void forceSessionTenant(Stparameter stparameter) {
         String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
         if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
