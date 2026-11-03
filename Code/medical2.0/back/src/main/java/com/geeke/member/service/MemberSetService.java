@@ -50,6 +50,12 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
                }
            }
        }else {
+           // ITER36 N2: this override bypassed the generic save guards
+           // (M1/M2) by calling dao.update directly, so a foreign set id
+           // + own-tenant payload company overwrote + re-homed the set
+           // (reproduced live). Same two checks as generic save.
+           verifyTenantOwnership(memberSet);
+           verifyTenantOwnershipAgainstStoredRow(memberSet);
            memberSet.preUpdate();
            //Khi sửa số lượng thẻ hội viên cần kiểm tra số lượng thẻ đã phát hành có lớn hơn số lượng phát hành không
            List<MemberManagement> memberManagements = memberManagementService.getByMemberSetId(memberSet.getId());
@@ -79,8 +85,11 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
 
     @Transactional
     public int updateNumber(String id) {
-        //LấyhiệncóHội viênthẻSố lượng
-        MemberSet memberSet = this.dao.get(id);
+        // ITER36 N2: dao.get skipped the tenant check, so decrementing a
+        // foreign set's stock was possible via any caller passing its id
+        // (reproduced live through deleting an own card linked to a
+        // foreign set). get() verifies the stored set's tenant.
+        MemberSet memberSet = this.get(id);
         if(memberSet.getNumber()==0){
             throw new ServiceException("Hội viênthẻSố lượng còn lại là 0, Không thểlạiThêmHội viên!");
 
@@ -93,8 +102,11 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
     }
     @Transactional
     public int addNumber(String id) {
-        //LấyhiệncóHội viênthẻSố lượng
-        MemberSet memberSet = this.dao.get(id);
+        // ITER36 N2: dao.get skipped the tenant check, so crediting a
+        // foreign set's stock was possible via deleting an own card linked
+        // to it (reproduced live: foreign stock 50 -> 51). get() verifies
+        // the stored set's tenant.
+        MemberSet memberSet = this.get(id);
         int newNumber = memberSet.getNumber()+1;
         int i = this.dao.updateNumber(id, newNumber);
         return i;
