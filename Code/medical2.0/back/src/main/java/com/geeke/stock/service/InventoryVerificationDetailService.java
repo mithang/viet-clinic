@@ -149,19 +149,58 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                 }
                 break;
             }
+            // L2 (iteration 34): chong crash ho get(0)/null o duong ghi:
+            // - loc phan tu null truoc khi preUpdate/bulkUpdate (null trong
+            //   nhom truoc day NPE, rollback ca save);
+            // - gia lai/lo null tinh nhu 0 thay vi NPE (duong ghi bi chan oan);
+            // - tong tien lay theo detail dau tien CO phieu cha trong toan bo
+            //   payload, khong phai DTOS.get(0).get(0) (nhom dau rong hoac
+            //   phan tu dau null truoc day IndexOutOfBounds/NPE);
+            // - neu khong detail nao mang phieu cha thi 400 truoc khi ghi
+            //   (khong the xac dinh phieu nao nhan tong tien, fail-closed).
+            String totalParentId = null;
+            boolean hasWritableDetail = false;
+            for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
+                if (CollectionUtils.isEmpty(group)) {
+                    continue;
+                }
+                for (InventoryVerificationDetail detail : group) {
+                    if (detail == null) {
+                        continue;
+                    }
+                    hasWritableDetail = true;
+                    if (totalParentId == null && detail.getInventoryVerification() != null
+                            && StringUtils.isNotBlank(detail.getInventoryVerification().getId())) {
+                        totalParentId = detail.getInventoryVerification().getId();
+                    }
+                }
+            }
+            if (hasWritableDetail && totalParentId == null) {
+                throw new com.geeke.common.service.ServiceException("Thiếu phiếu kiểm kê của dòng chi tiết");
+            }
             for (List<InventoryVerificationDetail> inventoryVerificationDetailDTO : inventoryVerificationDetailDTOS) {
                 if(!CollectionUtils.isEmpty(inventoryVerificationDetailDTO)){
+                    List<InventoryVerificationDetail> rows = new ArrayList<>();
                     for (InventoryVerificationDetail inventoryVerificationDetail : inventoryVerificationDetailDTO) {
-                        inventoryVerificationDetail.preUpdate();
-                        allPrice=allPrice.add(inventoryVerificationDetail.getProfitAndLossPrice());
+                        if (inventoryVerificationDetail != null) {
+                            rows.add(inventoryVerificationDetail);
+                        }
                     }
-                    i = this.dao.bulkUpdate(inventoryVerificationDetailDTO);
+                    if (rows.isEmpty()) {
+                        continue;
+                    }
+                    for (InventoryVerificationDetail inventoryVerificationDetail : rows) {
+                        inventoryVerificationDetail.preUpdate();
+                        BigDecimal price = inventoryVerificationDetail.getProfitAndLossPrice();
+                        allPrice = allPrice.add(price == null ? BigDecimal.ZERO : price);
+                    }
+                    i = this.dao.bulkUpdate(rows);
 
                 }
             }
             //Sau khi thực thi vòng lặp thành công, lưu tổng số tiền vào bảng chính
-            if(i>0){
-                inventoryVerificationService.updateAllPrice(inventoryVerificationDetailDTOS.get(0).get(0).getInventoryVerification().getId(),allPrice);
+            if(i>0 && totalParentId != null){
+                inventoryVerificationService.updateAllPrice(totalParentId,allPrice);
             }
             return "hành nghề dòngThành công";
         }else {
