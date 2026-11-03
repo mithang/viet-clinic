@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
+import com.geeke.common.service.ServiceException;
 import com.geeke.common.data.Page;
 import com.geeke.org.entity.Company;
 import com.geeke.outpatient.entity.*;
@@ -88,10 +89,18 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     public ResponseEntity<JSONObject> save(@RequestBody MedicalRecord entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         RemoteDiagnosisTreatment remote = remoteDiagnosisTreatmentService.diagnosisById(entity.getDiagnosisId());
-        Registration registration = new Registration();
-        registration.setId(remote.getRegistrationId());
+        // K4: dong remote khong ton tai -> 400 truoc moi ghi (truoc day NPE 500 o remote.getRegistrationId()).
+        if (remote == null) {
+            throw new ServiceException("Không tìm thấy chẩn đoán từ xa");
+        }
+        // K4: neo verify nhu J3/registerSave — get() verify tenant cua luot kham, luot la -> 400 truoc moi ghi.
+        // Company cua case ep theo luot da verify, khong lay tu dong remote (mapper diagnosisById khong loc tenant).
+        Registration registration = registrationService.get(remote.getRegistrationId());
+        if (registration == null) {
+            throw new ServiceException("Không tìm thấy lượt khám của chẩn đoán từ xa");
+        }
         entity.setRegistration(registration);
-        entity.setCompany(remote.getCompany());
+        entity.setCompany(registration.getCompany());
         String id = medicalRecordService.save(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
