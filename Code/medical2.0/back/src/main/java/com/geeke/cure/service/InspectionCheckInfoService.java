@@ -92,10 +92,18 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         // iter41-r3-repro: 400 nhung info van doi). Guard o day bang
         // lookup gon getCompanyIdById kieu R2: cha la -> 400 truoc khi
         // ghi bat cu thu gi; cha own -> di tiep, buoc cha sau do van
-        // chay guard CrudService.save nhu cu. Cha khong id / khong ton
-        // tai / company rong / session rong/"null" giu hanh vi cu nhu
-        // helper goc; InspectionCheck khong institution-shared (khong
-        // override isInstitutionShared) nen khong co nhanh institution.
+        // chay guard CrudService.save nhu cu. Cha khong id / company
+        // rong / session rong/"null" giu hanh vi cu nhu helper goc;
+        // InspectionCheck khong institution-shared (khong override
+        // isInstitutionShared) nen khong co nhanh institution.
+        // T1 (iteration 42): getCompanyIdById tra null ca khi cha khong
+        // ton tai lan khi company_id null, nen R3 bo qua ca hai — cha
+        // khong ton tai roi xuong controller get() null -> NPE 500 SAU
+        // khi info commit (tai hien live iter42-t1-repro: 500 nhung info
+        // van doi + file da tao). Guard them o day, cung TRUOC moi ghi:
+        // lookup null + existsById == 0 -> 400, khong ghi mot nua.
+        // Cha co company rong nhung ton tai giu hanh vi cu (controller
+        // van set status duoc) — chi chan dung dong khong ton tai.
         // (b) deleteIds: sys_file KHONG co cot company_id nen khong
         // kiem tra tenant truc tiep duoc; file cua form nay luon co
         // object_id = id dong info (uploadFiles = info.id, file moi luu
@@ -114,6 +122,11 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                         && !tenantId.equals(parentCompanyId)) {
                     throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
                 }
+            } else if (inspectionCheckDao.existsById(
+                    inspectionCheckInfo.getInspectionCheck().getId()) == 0) {
+                // T1: cha khong ton tai -> 400 TRUOC moi ghi (controller
+                // get() null -> NPE 500 sau commit neu khong chan o day).
+                throw new ServiceException("Phiếu kiểm tra không tồn tại");
             }
         }
         if (null != deleteIds && deleteIds.length > 0) {

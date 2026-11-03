@@ -23,6 +23,12 @@ public interface InspectionCheckDao extends CrudDao<InspectionCheck> {
     // status "1" SAU khi save() tra ve, nen guard o buoc cha la qua muon).
     String getCompanyIdById(String id);
 
+    // T1 (iteration 42): getCompanyIdById tra null cho ca hai truong hop
+    // "dong khong ton tai" va "dong co company_id null" nen can lookup
+    // ton tai rieng de chi chan dung truong hop cha khong ton tai (cha
+    // co company rong giu hanh vi cu nhu guard R3).
+    int existsById(String id);
+
     List<InspectionCheck> getByRecipelInfoId(String registrationId);
 
     void deleteByRecipelInfoId(String recipelInfoId);
