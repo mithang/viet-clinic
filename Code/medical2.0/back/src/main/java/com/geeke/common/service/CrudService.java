@@ -89,6 +89,11 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		// Cập nhậtthao tácCầnKiểm tratenantthuộc về
 		if (StringUtils.isNotBlank(entity.getId())) {
 			verifyTenantOwnership(entity);
+			// ITER35 M2: same stored-row cross-check as bulkUpdate (M1).
+			// Payload-only verification let a foreign row id + own-tenant
+			// payload company pass, and doUpdate then overwrote + re-homed
+			// the foreign row (reproduced live on /org/clinicOffice/save).
+			verifyTenantOwnershipAgainstStoredRow(entity);
 		}
 		if (StringUtils.isBlank(entity.getId())){
 			entity.preInsert();
@@ -109,6 +114,11 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	 */
 	public int delete(T entity) {
 		verifyTenantOwnership(entity);
+		// ITER35 M2: stored-row cross-check (same as M1 bulkUpdate).
+		// Payload-only verification let a foreign row id + own-tenant
+		// payload company pass, and doDelete then soft-deleted the
+		// foreign row (reproduced live on /org/clinicOffice/delete).
+		verifyTenantOwnershipAgainstStoredRow(entity);
 		entity.preUpdate();
 		int rows = doDelete(entity);
 		if(rows > 0) {
@@ -211,6 +221,12 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	public int bulkDelete(List<T> entitys) {
 		for(T entity: entitys) {
 			verifyTenantOwnership(entity);
+			// ITER35 M2: stored-row cross-check (same as M1 bulkUpdate).
+			// A mixed list [own, foreign] previously returned 200 and
+			// soft-deleted the foreign row too (reproduced live on
+			// /org/clinicOffice/bulkDelete); the loop runs before
+			// dao.bulkDelete, so a throw writes nothing.
+			verifyTenantOwnershipAgainstStoredRow(entity);
 			entity.preUpdate();
 		}
 		return dao.bulkDelete(entitys);
