@@ -268,6 +268,54 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     }
 
     /**
+     * K3 (iteration 58): guard cho POST /sys/sysFile/delete + bulkDelete
+     * (chi goi tu SysFileController, KHONG doi nghia cua delete(SysFile)
+     * hay delete(String[]) generic). sys_file khong co cot company_id
+     * nen verifyTenantOwnership + stored-row check deu pass; guard nay
+     * resolve chu tenant qua object_id (SysFileDao
+     * .getOwnerCompanyIdsByObjectId, 7 namespace; bang clinic loai khoi
+     * UNION vi khong co company_id va khong co code ghi sys_file bang
+     * Clinic.fileId) roi doi chieu session
+     * tenant. Quyet dinh sau survey: chi chan khi resolve DUOC chu la
+     * (bat ky owner nao != session tenant, ke ca khi vua resolve own
+     * vua resolve la do trung id) -> 400 TRUOC moi ghi; file khong ton
+     * tai hoac khong resolve duoc namespace nao GIU hanh vi cu (cho
+     * phep) nhu tien le I1/R3 — DB live co 116/117 file khong resolve
+     * duoc qua 7 namespace (chi 1 trung sys_user id), fail-closed
+     * o day se pha viec xoa file legacy/moc coi ma khong chung minh
+     * duoc chu la. Session tenant rong/"null" (sentinel) pass nhu
+     * verifyTenantOwnership.
+     */
+    @Transactional(readOnly = true)
+    public void verifySysFileDeleteOwnership(java.util.Collection<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenantId == null || tenantId.isEmpty() || "null".equals(tenantId)) {
+            return;
+        }
+        for (String id : ids) {
+            if (id == null || id.isEmpty()) {
+                continue;
+            }
+            String fileObjectId = dao.getObjectIdById(id);
+            if (fileObjectId == null) {
+                continue;
+            }
+            java.util.List<String> owners = dao.getOwnerCompanyIdsByObjectId(fileObjectId);
+            if (owners == null) {
+                continue;
+            }
+            for (String owner : owners) {
+                if (owner != null && !owner.isEmpty() && !tenantId.equals(owner)) {
+                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                }
+            }
+        }
+    }
+
+    /**
      * Tạo nhật ký thao tác
      * @param actionTypeId  Loại thao tácId
      * @param entity        Đối tượng thực thể được thao tác

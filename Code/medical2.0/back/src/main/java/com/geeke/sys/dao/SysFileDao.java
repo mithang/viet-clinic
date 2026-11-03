@@ -22,4 +22,17 @@ public interface SysFileDao extends CrudDao<SysFile> {
     // nay luon co object_id = id dong info, do uploadFiles = info.id).
     // CAST sang CHAR de so sanh chuoi, tranh ep kieu so BIGINT.
     String getObjectIdById(@Param("id") String id);
+
+    // K3 (iteration 58): resolve chu so huu tenant cua mot object_id qua
+    // tat ca namespace ghi sys_file (xem SysFileService
+    // .verifySysFileDeleteOwnership): registration id, medical_record
+    // .file_id, org_company.file_id (chinh company do la tenant),
+    // sys_user id (avatar), inspection_check_info id,
+    // feedbacktable id (myTask), taskmanagement id. Tra ve danh sach
+    // company_id (chuoi, CAST de dong nhat bigint/varchar); rong neu
+    // khong resolve duoc namespace nao. Khong loc del_flag: chu so huu
+    // khong doi khi dong cha bi xoa mem. Bang clinic loai khoi UNION:
+    // khong co cot company_id va khong co code ghi sys_file bang
+    // Clinic.fileId (xem ghi chu trong mapper).
+    java.util.List<String> getOwnerCompanyIdsByObjectId(@Param("objectId") String objectId);
 }

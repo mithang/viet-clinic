@@ -34,6 +34,26 @@
     <select id="getObjectIdById" resultType="java.lang.String">
         SELECT CAST(object_id AS CHAR) FROM sys_file WHERE id = #{id}
     </select>
+
+    <!-- K3 (iteration 58): resolve chu tenant cua object_id qua tat ca
+         namespace ghi sys_file. org_company.file_id tra ve chinh id cua
+         company do (company la tenant); cac bang khac tra company_id.
+         Bang clinic KHONG co trong UNION: clinic khong co cot company_id
+         (chi lessee_id, lessee cung khong co company id) va khong co
+         code nao ghi sys_file bang Clinic.fileId (ClinicService.save
+         ghi bang Company.fileId -> nhanh org_company); 5 dong live
+         trung clinic.file_id la du lieu legacy khong chung minh duoc
+         chu, nen roi vao nhom khong resolve duoc (giu hanh vi cu).
+         Khong loc del_flag: chu so huu khong doi khi dong cha bi xoa mem. -->
+    <select id="getOwnerCompanyIdsByObjectId" resultType="java.lang.String">
+        SELECT CAST(company_id AS CHAR) FROM registration WHERE id = #{objectId}
+        UNION SELECT CAST(company_id AS CHAR) FROM medical_record WHERE file_id = #{objectId}
+        UNION SELECT CAST(id AS CHAR) FROM org_company WHERE file_id = #{objectId}
+        UNION SELECT CAST(company_id AS CHAR) FROM sys_user WHERE id = #{objectId}
+        UNION SELECT CAST(company_id AS CHAR) FROM inspection_check_info WHERE id = #{objectId}
+        UNION SELECT CAST(company_id AS CHAR) FROM feedbacktable WHERE id = #{objectId}
+        UNION SELECT CAST(company_id AS CHAR) FROM taskmanagement WHERE id = #{objectId}
+    </select>
     
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM sys_file a
