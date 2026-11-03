@@ -177,6 +177,15 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
                               String refundRegistrationPayType, String refundRegistrationRemarks,Date exitNumberDate
     )
     {
+        // O4-37: kiem tra tenant dong DB da luu truoc khi dao ghi (nhu
+        // updateStatus O1-37) — truoc day controller chi get() o nhanh
+        // remarks = ma da hoan phi, nhanh else goi thang dao (WHERE id,
+        // khong loc company) nen token tenant 309 huy duoc luot kham
+        // tenant 297. Dong la -> ServiceException -> 400, khong ghi gi;
+        // id rong/khong ton tai/company rong van qua nhu cu (ghi 0 dong).
+        Registration probe = new Registration();
+        probe.setId(id);
+        verifyTenantOwnershipAgainstStoredRow(probe);
         int i = dao.refundRegistrationPay(id, status, refundRegistrationPayType, refundRegistrationRemarks, exitNumberDate);
         if(i>0){
 
