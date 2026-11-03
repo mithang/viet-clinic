@@ -149,11 +149,58 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		List<String> ids = Lists.newArrayList();
 		for(T entity: entitys) {
 			verifyTenantOwnership(entity);
+			// ITER35 M1: also verify against the STORED row, not only the
+			// payload company. Payload-only verification let a foreign row
+			// id + own-tenant payload company pass, and the bulkUpdate SQL
+			// (WHERE id IN payload ids) then overwrote + re-homed the
+			// foreign row (reproduced live on /org/clinicOffice/bulkUpdate).
+			// The loop runs before dao.bulkUpdate, so a throw here writes
+			// nothing (class-level @Transactional + RuntimeException).
+			verifyTenantOwnershipAgainstStoredRow(entity);
 			entity.preUpdate();
 			ids.add(entity.getId());
 		}
 		dao.bulkUpdate(entitys);
 		return ids;
+	}
+
+	/**
+	 * ITER35 M1: cross-check a write payload against the row already stored
+	 * in the DB, instead of trusting the company the payload carries.
+	 * Rules mirror verifyTenantOwnership, only the company source changes:
+	 * blank id, missing stored row, or blank stored company pass (same as
+	 * today's semantics: a nonexistent id writes 0 rows, and orphan rows
+	 * keep the legacy blank behaviour); a stored company that is neither
+	 * the login tenant nor (for institution-shared services) the tenant's
+	 * institution throws, so a foreign row can no longer be overwritten
+	 * or re-homed by carrying an own-tenant company in the payload.
+	 */
+	protected void verifyTenantOwnershipAgainstStoredRow(T entity) {
+		if (entity == null || StringUtils.isBlank(entity.getId())) {
+			return;
+		}
+		T stored = dao.get(entity.getId());
+		if (stored == null || stored.getCompany() == null) {
+			return;
+		}
+		String storedCompanyId = stored.getCompany().getId();
+		if (StringUtils.isBlank(storedCompanyId)) {
+			return;
+		}
+		String tenantId = SessionUtils.getLoginTenantId();
+		if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+			return;
+		}
+		if (tenantId.equals(storedCompanyId)) {
+			return;
+		}
+		if (isInstitutionShared()) {
+			String institution = companyService.getInstitution(tenantId);
+			if (StringUtils.isNotBlank(institution) && institution.equals(storedCompanyId)) {
+				return;
+			}
+		}
+		throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
 	}
 
 	/**
