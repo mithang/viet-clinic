@@ -52,6 +52,17 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         if(!CollectionUtils.isEmpty(byRecipelInfoId)) {
             for (InspectionCheck inspectionCheck : byRecipelInfoId) {
                 InspectionCheckInfo byInspecId = inspectionCheckInfoService.getByInspecId(inspectionCheck.getId());
+                // W1 (iter44): getByInspecId tra null dung thiet ke Z1a khi
+                // phieu chua co dong info (check status "0" chua nhap ket
+                // qua) — truoc day deref ngay byInspecId.getId() -> NPE,
+                // hoan phi don tri lieu du dieu kien fail 500 thay vi
+                // thanh cong. Khong co info thi khong co gi de xoa o
+                // tang info/detail; dong check van bi xoa cung o cuoi
+                // method (dao.deleteByRecipelInfoId), dung ngu nghia don
+                // phieu khi hoan phi.
+                if (byInspecId == null) {
+                    continue;
+                }
                 List<InspectionCheckDetail> byInfoId = inspectionCheckDetailService.getByInfoId(byInspecId.getId());
                 if (!CollectionUtils.isEmpty(byInfoId)) {
                     for (InspectionCheckDetail inspectionCheckDetail : byInfoId) {
