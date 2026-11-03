@@ -17,8 +17,10 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,14 +45,31 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
         Map<String, String> packMap = getTypeMap(BizConstants.DICT_TYPE_PACK_SPEC);
         List<String> ids = Lists.newArrayList();
         JSONObject userObj = SessionUtils.getUserJson();
+        // ITER32 J2: nhu HisInstitutionService — skip theo dung ngu nghia
+        // UI danh dau da dong bo: getMaterialCode = code cua cac dong
+        // stuff sync_id=1 trong tenant session; trung trong cung payload
+        // cung bi skip; code blank khong dedup. Chi initStock cho dong
+        // moi duoc chen that su (ids chi gom dong do).
+        Set<String> synced = new HashSet<>(getcCodeList(userObj.getString("companyId")));
+        List<HisMaterials> toInsert = Lists.newArrayList();
         for(HisMaterials entity : entitys) {
+            if (entity.getSfxmCode() != null && !entity.getSfxmCode().trim().isEmpty()
+                    && synced.contains(entity.getSfxmCode())) {
+                continue;
+            }
             entity.setCompanyId(userObj.getString("companyId"));
             entity.setDw(preMap.getOrDefault(entity.getDw(), preMap.get("Cái")));
             entity.setGg(packMap.getOrDefault(entity.getGg(), preMap.get("Cái")));
             entity.preInsert();
             ids.add(entity.getId());
+            toInsert.add(entity);
+            if (entity.getSfxmCode() != null && !entity.getSfxmCode().trim().isEmpty()) {
+                synced.add(entity.getSfxmCode());
+            }
         }
-        dao.bulkInsert(entitys);
+        if (!toInsert.isEmpty()) {
+            dao.bulkInsert(toInsert);
+        }
         ids.forEach(id -> {
             Stuff stuff =  stuffService.get(id);
             medicinalStockControlService.initStock(stuff);
