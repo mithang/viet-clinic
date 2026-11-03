@@ -108,6 +108,19 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     @Transactional(readOnly = false)
     public int updateStatus(String id,String status,String departmentId,String doctorId)
     {
+        // ITER37 O1: kiểm tra dòng DB đã lưu trước khi ghi, theo mẫu M1.
+        // Trước đây updateStatus gọi thẳng dao.updateStatus (WHERE id,
+        // không lọc company) nên token tenant 309 đổi được lượt khám của
+        // tenant 297 và còn cấp số từ counter của tenant lạ (tái hiện
+        // tools/iter37-o1-repro.py). Probe chỉ mang id: helper tự đọc
+        // dòng đã lưu qua dao.get, dòng lạ (không phải tenant đăng nhập
+        // và không phải institution-shared) → ServiceException 400,
+        // transaction rollback nên không ghi gì, không tăng counter.
+        // Id rỗng / dòng không tồn tại / company rỗng vẫn qua như
+        // ngữ nghĩa cũ của helper (ghi 0 dòng).
+        Registration probe = new Registration();
+        probe.setId(id);
+        verifyTenantOwnershipAgainstStoredRow(probe);
         if (StringUtils.isBlank(departmentId)) {
             departmentId = null;
         }
