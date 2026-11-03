@@ -500,8 +500,21 @@ public class DataBean {
         //Đơn thuốcid
         String recipelInfoId = (String) parameters.get("recipelInfoId");
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
+        if (null == recipelInfo || null == recipelInfo.getRegistration()) {
+            // Đơn lạ hoặc đơn mồ côi (đúng ngữ nghĩa E2 cho buildReport/charge):
+            // trả dataset rỗng thay vì NPE ở allNewQuery bên dưới.
+            return list;
+        }
         List<RecipelDetail> detailList = recipelDetailDao.getByRecipelInfoId(recipelInfoId);
         ReceptionEvt receptionEvt = medicalRecordService.allNewQuery(recipelInfo.getRegistration().getId(), null);
+        if (null == receptionEvt || null == receptionEvt.getPatient()
+                || null == receptionEvt.getRegistration() || null == receptionEvt.getMedicalRecord()) {
+            // Dữ liệu in chưa đủ (lượt khám thiếu bệnh nhân hoặc bệnh án —
+            // test DB hiện không có đơn nào gắn patient): trả dataset rỗng
+            // thay vì NPE trong ChronicDiseaseEvt, vì buildPatient/
+            // buildRegistration/buildMedicalRecord đều deref không guard.
+            return list;
+        }
         if (ObjectUtil.isNotNull(receptionEvt)) {
             Patient patient = receptionEvt.getPatient();
             Registration registration = receptionEvt.getRegistration();
