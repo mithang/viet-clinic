@@ -84,6 +84,19 @@ public class MemberManagementController extends CrudController<MemberManagementS
                 storedSetId = stored.getMemberSet().getId();
             }
         }
+        // ITER37 O3: delete and addNumber run in two separate
+        // transactions (the controller is not transactional), so the
+        // old order — delete first, credit the set after — committed
+        // the card void (status 0 -> 2) before addNumber threw 400 for
+        // a foreign set: the API failed but the card was already gone
+        // (reproduced live). Check the stored set's tenant BEFORE
+        // deleting: get() throws for a foreign set, so nothing is
+        // written; an own set passes and the old delete + credit order
+        // is unchanged. A missing set (get() null) keeps the old path
+        // and is out of scope for this fix.
+        if (StringUtils.isNotBlank(storedSetId)) {
+            memberSetService.get(storedSetId);
+        }
         int rows = memberManagementService.delete(entity);
         //Vô hiệu hóathẻThành côngsauCầnSẽ thẻcòntrả lạiHội viênthẻ
         if(rows>0 && StringUtils.isNotBlank(storedSetId)){
