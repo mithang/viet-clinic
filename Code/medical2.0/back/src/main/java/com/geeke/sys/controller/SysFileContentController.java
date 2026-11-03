@@ -42,6 +42,9 @@ public class SysFileContentController extends BaseController {
         // truc tiep; file khong resolve duoc giu hanh vi cu.
         if (sysFileService.isSysFileForeignOwned(id)) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; }
         SysFileContent sysFileContent = sysFileContentService.get(id);
+        // M5 (iteration 60): content khong ton tai -> 404, khong ghi byte,
+        // thay vi NPE 500 o getFileType() (caveat L1 #1). Khong doi guard owner.
+        if (sysFileContent == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
         response.setHeader("Content-Type",sysFileContent.getFileType());
         try {
             OutputStream os = response.getOutputStream();

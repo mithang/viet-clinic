@@ -95,6 +95,9 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         sysFileService.verifySysFileReadOwnership(id);
         SysFileContent sysFileContent = sysFileContentService.get(id);
 
+        // M5 (iteration 60): content khong ton tai -> 404 thay vi NPE 500
+        // o getFileByte() (caveat L1 #1). Khong doi guard owner.
+        if (sysFileContent == null) { return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); }
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
         return ResponseEntity.ok(base64Str);
 
@@ -113,6 +116,11 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         sysFileService.verifySysFileReadOwnership(id);
         SysFileContent sysFileContent = sysFileContentService.get(id);
         SysFile sysFile = sysFileService.get(id);
+        // M5 (iteration 60): content hoac file khong ton tai -> 404 thay vi
+        // NPE 500 o getFileByte()/getName() (caveat L1 #1; get() nay nho
+        // guard M5 o SysFileService nen tra null thay vi NPE). Khong doi
+        // guard owner.
+        if (sysFileContent == null || sysFile == null) { return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); }
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
         sysFileContent.setBase64Str(base64Str);
         sysFileContent.setName(sysFile.getName());
@@ -200,6 +208,10 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
             }
         }
         SysFileContent sysFileContent = sysFileContentService.get(fileId);
+        // M5 (iteration 60): content khong ton tai -> 404, khong ghi byte,
+        // thay vi NPE 500 o getFileType() (caveat L1 #1; getFile cung
+        // controller da null-check san nen khong doi). Khong doi guard owner.
+        if (sysFileContent == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
         response.setHeader("Content-Type", sysFileContent.getFileType());
         Date updateDate = sysFileContent.getUpdateDate();
         String format = simpleDateFormat.format(updateDate);

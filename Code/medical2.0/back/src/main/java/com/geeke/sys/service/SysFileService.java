@@ -47,6 +47,15 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     public SysFile get(String id) {
         SysFile sysFile = super.get(id);
 
+        // M5 (iteration 60): id khong ton tai -> super.get tra null, tra
+        // null nhu CrudService.get chuan thay vi NPE o sysFile.getId()
+        // ben duoi (caveat L1 #1; SysFileController.getById khi do tra
+        // successJson(null) = 200 empty nhu CrudController.getById
+        // generic). Khong doi guard owner, khong cham logic list.
+        if (sysFile == null) {
+            return null;
+        }
+
         /*Lấy danh sách bảng con   Bảng byte tệp đính kèm*/
         List<Parameter> params = SearchParamsBuilder.create().eq("id", sysFile.getId()).build();
         PageRequest pageRequest = new PageRequest(params);
