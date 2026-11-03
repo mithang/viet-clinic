@@ -180,6 +180,99 @@ public class UserService extends CrudService<UserDao, User>{
         return super.save(user);
     }
 
+    /**
+     * H1 (iteration 28): bulkInsert/bulkUpdate/bulkDelete cua User truoc
+     * day la CrudService thang, bo qua toan bo guard cua duong don
+     * (G1/G2/E1): bulkInsert khong verify tenant, khong chan trung
+     * loginName, khong tao user_tenant/ext/role; bulkUpdate qua mat
+     * verifyTenantOwnership khi payload thieu company va khong co guard
+     * doi ten trung; bulkDelete bo qua cleanup role/ext/tenant cua
+     * delete don. Khong co Vue nao goi 3 endpoint nay (chi export o
+     * api/admin/user.js) — lo hong tang API, sua o service, khong
+     * doi san quyen controller (user:create/update/delete giu nguyen).
+     * Ca 3 override deu @Transactional de 1 dong loi rollback ca list.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<User> entitys) {
+        List<String> ids = Lists.newArrayList();
+        for (User entity : entitys) {
+            // save(User) da guard G2: create trung cung-tenant -> 400,
+            // cross-tenant -> gan tenant/ext cho id cu, moi -> du
+            // tenant/ext/role. Dong co id san di theo nhanh update
+            // cua save don (guard doi ten), khong insert tho nua.
+            ids.add(this.save(entity).getId());
+        }
+        return ids;
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<User> entitys) {
+        // Guard truoc khi goi bulk SQL: doi ten trung (nhu G2-update)
+        // + tenant theo user_id DA LUU (userDao.getClinicId loc theo
+        // user_id + del_flag, mien nhiem voi user_tenant.login_name cu
+        // sau doi SDT — xem H3). Payload thieu company khong con qua
+        // mat nhu verifyTenantOwnership cua CrudService nua.
+        String loginTenant = SessionUtils.getLoginTenantId();
+        boolean tenantCheck = StringUtils.isNotBlank(loginTenant) && !"null".equals(loginTenant);
+        for (User entity : entitys) {
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Thiếu id người dùng để cập nhật hàng loạt. ");
+            }
+            if (tenantCheck) {
+                List<String> clinics = userDao.getClinicId(entity.getId());
+                if (clinics == null || !clinics.contains(loginTenant)) {
+                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                }
+            }
+            if (StringUtils.isNotBlank(entity.getLoginName())) {
+                User probe = new User();
+                probe.setLoginName(entity.getLoginName());
+                User existUser = getUserByLoginName(probe);
+                if (existUser != null && !existUser.getId().equals(entity.getId())) {
+                    throw new ServiceException("Đã tồn tại một tên đăng nhập giống hệt. ");
+                }
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<User> entitys) {
+        // Theo dung duong delete don cua controller: dem clinic theo
+        // phone cua ban DA LUU, cleanup role/ext/tenant cua tenant
+        // hien tai, chi super.delete (xoa mem sys_user) khi all == 1.
+        // Tenant check nhu bulkUpdate: user khong thuoc tenant hien tai
+        // thi nem, tranh delete(user, int) don tenant khac (H2 se sua
+        // tiep updateUserTenantDelFlag khong loc tenant o trong do).
+        // Tra ve so dong da cleanup (khong phai so dong sys_user khi
+        // user con o tenant khac, vi truong hop do sys_user duoc giu).
+        String loginTenant = SessionUtils.getLoginTenantId();
+        boolean tenantCheck = StringUtils.isNotBlank(loginTenant) && !"null".equals(loginTenant);
+        int processed = 0;
+        for (User entity : entitys) {
+            if (StringUtils.isBlank(entity.getId())) {
+                continue;
+            }
+            User stored = dao.get(entity.getId());
+            if (stored == null) {
+                continue;
+            }
+            if (tenantCheck) {
+                List<String> clinics = userDao.getClinicId(stored.getId());
+                if (clinics == null || !clinics.contains(loginTenant)) {
+                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                }
+            }
+            int all = this.countClinicIdByPhone(stored.getPhone());
+            this.delete(stored, all);
+            processed++;
+        }
+        return processed;
+    }
+
     @Transactional(readOnly = false)
     public User save(User user,MultipartFile[] fileIdUploads,
                      String[] deleteIds) throws java.io.IOException {
