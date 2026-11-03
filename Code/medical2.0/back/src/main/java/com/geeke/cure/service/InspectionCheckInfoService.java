@@ -97,6 +97,19 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                 || inspectionCheckInfo.getInspectionCheck().getId().isEmpty()) {
             throw new ServiceException("Thiếu phiếu kiểm tra");
         }
+        // T3 (iteration 42): details null -> 400 TRUOC moi thao tac
+        // file/ghi, cung mau T2. Truoc sua: guard R2 bo qua null, save()
+        // chay qua file + dao.update roi moi NPE o vong detail cuoi ->
+        // 500 (transaction rollback nen info/file thuc te khong doi,
+        // tai hien pre-fix: 500, info giu nguyen, files=0) nhung client
+        // nhan 500 cho payload thieu truong. Chi null bi chan: list
+        // rong [] van 200 nhu cu (control da kiem chung) vi do la
+        // payload hop le tuong minh, khac null la thieu truong. Chan
+        // som cung ngan controller danh dau cha xong ("1") cho mot
+        // phieu khong co chi tiet nao neu null duoc chap nhan thanh 200.
+        if (inspectionCheckInfo.getInspectionCheckDetails() == null) {
+            throw new ServiceException("Thiếu chi tiết kiểm tra");
+        }
         // R3 (iteration 41): guard cha InspectionCheck + deleteIds, cung
         // TRUOC moi thao tac file/ghi.
         // (a) Cha: controller doi cha sang status "1" SAU khi save() tra
