@@ -514,6 +514,40 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         return this.dao.listMedicalRecordByChargeStatus(chargeStatus, SessionUtils.getLoginTenantId());
     }
 
+    // I1 (iteration 56): sys_file KHONG co cot company_id nen guard xoa file
+    // bang object_id theo mau R3 (iter41), dat TRUOC moi upload/xoa/ghi cua
+    // allNewSave de giao dich @Transactional rollback toan bo khi 400.
+    // Tap hop hop le cua mot luot kham (xac minh DB live: file that khong
+    // con khop benh an hien tai do du lieu cu, nhung code upload chung
+    // minh 2 khoa — fileIdUploads luu object_id = medicalRecord.fileId
+    // (IdGen.uuid so, Long.parseLong duoc), medicalFiles luu object_id =
+    // registration id): fileId dang gui, fileId cua benh an da luu cho
+    // luot nay (UI gui lai fileId cu khi xoa file dinh kem cu), va
+    // registration id. File la co object_id ngoai tap nay -> 400; file
+    // khong ton tai giu hanh vi cu (bo qua, R3). Khong sua
+    // SysFileService.delete generic vi cac caller khac (Clinic/Company/
+    // User/InspectionCheck) dung object_id theo nghia rieng — chi them
+    // SysFileService.verifyDeleteIdsObjectIds moi va goi tai day.
+    private void guardExamDeleteFileIds(String[] delFileIds, List<String> deleteFileIdList, String registrationId, String incomingFileId) {
+        Set<String> allowed = new HashSet<>();
+        if (registrationId != null && !registrationId.isEmpty()) {
+            allowed.add(registrationId);
+            MedicalRecord stored = medicalRecordDao.getByRegistrationId(registrationId);
+            if (stored != null && stored.getFileId() != null && !stored.getFileId().isEmpty()) {
+                allowed.add(stored.getFileId());
+            }
+        }
+        if (incomingFileId != null && !incomingFileId.isEmpty()) {
+            allowed.add(incomingFileId);
+        }
+        if (delFileIds != null && delFileIds.length > 0) {
+            sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(delFileIds), allowed);
+        }
+        if (deleteFileIdList != null && !deleteFileIdList.isEmpty()) {
+            sysFileService.verifyDeleteIdsObjectIds(deleteFileIdList, allowed);
+        }
+    }
+
     @Transactional(readOnly = false)
     public String allNewSave(ReceptionEvt receptionEvt, MultipartFile[] fileIdUploads, String[] delFileIds,MultipartFile[] medicalFiles) throws Exception {
 
@@ -535,6 +569,9 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             if (!(Objects.equals(registration.getStatus().getValue(), BizConstants.REG_STATUS_PENDING) || Objects.equals(registration.getStatus().getValue(), BizConstants.REG_STATUS_VISITED))) {
                 throw new ServiceException("đăng kýtiếp nhậnThông tinkhông có [chờtiếp nhận] hoặc [Đãhoàn thành tiếp nhận]Trạng thái.");
             }
+            // I1: guard ca 2 danh sach xoa cua NORMAL (delFileIds param +
+            // deleteFileIdList trong entity JSON) TRUOC moi upload/xoa/ghi.
+            this.guardExamDeleteFileIds(delFileIds, receptionEvt.getDeleteFileIdList(), receptionEvt.getId(), receptionEvt.getMedicalRecord() == null ? null : receptionEvt.getMedicalRecord().getFileId());
             if (!org.springframework.util.StringUtils.hasText(receptionEvt.getMedicalRecord().getFileId())) {
                 receptionEvt.getMedicalRecord().setFileId(IdGen.uuid());
             }
@@ -673,6 +710,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 if (!org.springframework.util.StringUtils.hasText(receptionEvt.getMedicalRecord().getFileId())) {
                     receptionEvt.getMedicalRecord().setFileId(IdGen.uuid());
                 }
+                // I1: guard delFileIds cua INSTANT TRUOC upload/xoa; luot/
+                // benh nhan vua tao o tren rollback theo giao dich neu 400.
+                // (Nhanh INSTANT khong xoa deleteFileIdList nen chi guard
+                // delFileIds; fileId o day la gia tri sau blank-fill.)
+                this.guardExamDeleteFileIds(delFileIds, null, registration.getId(), receptionEvt.getMedicalRecord().getFileId());
                 if (!ArrayUtils.isEmpty(fileIdUploads)) {
                     //LưuTải lên tệp đính kèmThông tin
                     this.sysFileService.changeAndSaveSysFileList(fileIdUploads, receptionEvt.getMedicalRecord().getFileId());

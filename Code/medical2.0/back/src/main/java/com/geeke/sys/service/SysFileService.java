@@ -240,6 +240,34 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     }
 
     /**
+     * I1 (iteration 56): guard xoa file theo object_id, KHONG thay doi
+     * delete(String[]) generic — cac caller khac (ClinicService,
+     * CompanyService, UserService, InspectionCheckInfoService) dung
+     * object_id theo nghia rieng (avatar/logo/info id), khong phai file
+     * dinh kem luot kham. File khong ton tai giu hanh vi cu (bo qua, nhu
+     * R3 iter41); file co object_id ngoai tap hop cho phep -> 400 truoc
+     * khi caller xoa, de giao dich cua caller rollback toan bo.
+     */
+    @Transactional(readOnly = true)
+    public void verifyDeleteIdsObjectIds(java.util.Collection<String> ids, java.util.Set<String> allowedObjectIds) {
+        if (ids == null || ids.isEmpty() || allowedObjectIds == null) {
+            return;
+        }
+        for (String id : ids) {
+            if (id == null || id.isEmpty()) {
+                continue;
+            }
+            String fileObjectId = dao.getObjectIdById(id);
+            if (fileObjectId == null) {
+                continue;
+            }
+            if (!allowedObjectIds.contains(fileObjectId)) {
+                throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+            }
+        }
+    }
+
+    /**
      * Tạo nhật ký thao tác
      * @param actionTypeId  Loại thao tácId
      * @param entity        Đối tượng thực thể được thao tác
