@@ -2,8 +2,6 @@ package com.geeke.hosdata.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.geeke.basicdata.entity.ManufactureFactory;
-import com.geeke.basicdata.service.ManufactureFactoryService;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Parameter;
 import com.geeke.hosdata.constant.ApiUrl;
@@ -55,8 +53,6 @@ public class HosCollectDataController extends BaseController {
     private  final HisDrugService hisDrugService;
 
     private  final HisMaterialService hisMaterialService;
-    //Nhà sản xuất
-    private final ManufactureFactoryService manufactureService;
 
     private final HisInstitutionService hisInstitutionService;
 
@@ -175,34 +171,13 @@ public class HosCollectDataController extends BaseController {
 
     }
 
+  // ITER32 J3: chi delegate — resolve factory nay nam trong
+  // HisDrugService.bulkInsert, chung transaction voi insert thuoc, nen
+  // bulkInsert loi se rollback ca factory (truoc day getStrings luu
+  // factory o controller truoc, moi save mot tx rieng, de lai mo coi).
+  // HosDepartmentStorageController cung goi qua day nen cung huong loi.
   public  List<String> getStrings(List<HisDrugs> entitys) {
-        for (HisDrugs drug : entitys){
-            ManufactureFactory manufactureFactory = getManufactureFactory(drug);
-            String factory = manufactureService.repeatBy(manufactureFactory);
-            if( factory == null){
-                drug.setFactory(manufactureService.save(manufactureFactory).getId());
-            }else{
-                drug.setFactory(factory);
-            }
-        }
-        List<String> ids = hisDrugService.bulkInsert(entitys);
-        return ids;
-    }
-
-    //đồng bộchènnhập việnbảnNhà sản xuất
-    private  ManufactureFactory getManufactureFactory(HisDrugs drug) {
-        ManufactureFactory manufactureFactory = new ManufactureFactory();
-        Company company = new Company();
-        company.setId(SessionUtils.getUserJson().getString("companyId"));
-        manufactureFactory.setCompany(company);
-        manufactureFactory.setCreateBy(drug.getCreateBy());
-        manufactureFactory.setCreateDate(drug.getCreateDate());
-        manufactureFactory.setUpdateBy(drug.getUpdateBy());
-        manufactureFactory.setUpdateDate(drug.getUpdateDate());
-        manufactureFactory.setName(drug.getFactory());
-        manufactureFactory.setType("1");
-        manufactureFactory.setStatus("1");
-        return manufactureFactory;
+        return hisDrugService.bulkInsert(entitys);
     }
 
 

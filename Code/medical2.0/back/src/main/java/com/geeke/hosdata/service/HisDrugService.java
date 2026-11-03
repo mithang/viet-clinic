@@ -4,9 +4,12 @@ package com.geeke.hosdata.service;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.service.CrudService;
+import com.geeke.basicdata.entity.ManufactureFactory;
+import com.geeke.basicdata.service.ManufactureFactoryService;
 import com.geeke.hosdata.dao.HisDrugDao;
 import com.geeke.hosdata.entity.DistDto;
 import com.geeke.hosdata.entity.HisDrugs;
+import com.geeke.org.entity.Company;
 import com.geeke.stock.entity.Drug;
 import com.geeke.stock.service.DrugService;
 import com.geeke.stock.service.MedicinalStockControlService;
@@ -29,6 +32,8 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
     private  final  MedicinalStockControlService medicinalStockControlService;
 
     private final DrugService drugService;
+
+    private final ManufactureFactoryService manufactureService;
 
     @Override
     public List<String> bulkInsert(List<HisDrugs> entitys) {
@@ -64,6 +69,27 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
             if(dupByCode || dupByStandard){
                 continue;
             }
+            // ITER32 J3: resolve factory chi cho dong that su chen, trong
+            // cung transaction voi bulkInsert (CrudService @Transactional
+            // cap class; save cua ManufactureFactoryService join tx nay
+            // theo REQUIRED). Truoc day controller getStrings luu factory
+            // truoc (moi save la mot tx rieng, commit ngay) roi moi goi
+            // bulkInsert, nen bulkInsert 500 de lai factory mo coi khong
+            // thuoc nao tro toi (tai hien iter32-j3-repro). Dong bi skip
+            // cung khong tao factory nua. Ten factory rong thi giu rong
+            // (cot drug.factory nullable); truoc day ten rong cung save
+            // va lam ca import 500.
+            if(entity.getFactory() != null && !entity.getFactory().trim().isEmpty()){
+                ManufactureFactory manufactureFactory = getManufactureFactory(entity);
+                String factory = manufactureService.repeatBy(manufactureFactory);
+                if(factory == null){
+                    entity.setFactory(manufactureService.save(manufactureFactory).getId());
+                }else{
+                    entity.setFactory(factory);
+                }
+            }else{
+                entity.setFactory(null);
+            }
             entity.setCompanyId(userObj.getString("companyId"));
             entity.setType(typeMap.getOrDefault(entity.getType(),entity.getType()));
             entity.setDosisUnit(dosMap.getOrDefault(entity.getDosisUnit(),entity.getDosisUnit()));
@@ -88,6 +114,23 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
     private Map<String, String> getTypeMap(String type) {
         List<DistDto> dist = hisDrugDao.getDist(type);
         return  dist.stream().collect(Collectors.toMap(DistDto::getDistName,DistDto::getDistValue,(value1, value2) -> value1));
+    }
+
+    // ITER32 J3: chuyen tu HosCollectDataController.getManufactureFactory
+    // (nguyen van logic) vao service de chung transaction voi bulkInsert.
+    private ManufactureFactory getManufactureFactory(HisDrugs drug) {
+        ManufactureFactory manufactureFactory = new ManufactureFactory();
+        Company company = new Company();
+        company.setId(SessionUtils.getUserJson().getString("companyId"));
+        manufactureFactory.setCompany(company);
+        manufactureFactory.setCreateBy(drug.getCreateBy());
+        manufactureFactory.setCreateDate(drug.getCreateDate());
+        manufactureFactory.setUpdateBy(drug.getUpdateBy());
+        manufactureFactory.setUpdateDate(drug.getUpdateDate());
+        manufactureFactory.setName(drug.getFactory());
+        manufactureFactory.setType("1");
+        manufactureFactory.setStatus("1");
+        return manufactureFactory;
     }
 
     public List<String> getDrugList(String companyId) {
