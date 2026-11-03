@@ -156,6 +156,34 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                     }
                 }
             }
+            // O5-37 (iteration 37): moi detail can ghi BAT BUOC mang phieu cha
+            // va company, neu khong 400 truoc khi ghi. Ly do: bulkUpdate ghi
+            // inventory_verification_id/company_id theo payload, nen detail
+            // thieu phieu/company se bi ghi NULL; hien tai chi fail-closed
+            // nho NOT NULL + STRICT_TRANS_TABLES (500 xau + rollback, da
+            // chung minh o repro O5), mong manh neu sql_mode doi. UI that
+            // khong bi anh huong: hang UI luon lay tu listPage loc theo
+            // phieu + company nen luon mang ca hai id (cot listPage
+            // company.id / inventoryVerification.id, ca hai NOT NULL).
+            // Chi caller la form kiem ke Vue, khong co luong tao detail
+            // tay khong phieu/company. Null trong nhom van duoc bo qua
+            // nhu L2 (khong phai detail can ghi).
+            for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
+                if (CollectionUtils.isEmpty(group)) {
+                    continue;
+                }
+                for (InventoryVerificationDetail detail : group) {
+                    if (detail == null) {
+                        continue;
+                    }
+                    if (detail.getInventoryVerification() == null
+                            || StringUtils.isBlank(detail.getInventoryVerification().getId())
+                            || detail.getCompany() == null
+                            || StringUtils.isBlank(detail.getCompany().getId())) {
+                        throw new com.geeke.common.service.ServiceException("Dòng chi tiết thiếu phiếu kiểm kê hoặc phòng khám");
+                    }
+                }
+            }
             // L2 (iteration 34): chong crash ho get(0)/null o duong ghi:
             // - loc phan tu null truoc khi preUpdate/bulkUpdate (null trong
             //   nhom truoc day NPE, rollback ca save);
