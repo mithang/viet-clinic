@@ -540,6 +540,9 @@
         UPDATE user_tenant
         SET del_flag = #{delFlag}
         WHERE user_id = #{userId}
+        <if test="tenantId != null and tenantId != ''">
+            AND tenant_id = #{tenantId}
+        </if>
     </update>
 
     <update id="updateWxUser">

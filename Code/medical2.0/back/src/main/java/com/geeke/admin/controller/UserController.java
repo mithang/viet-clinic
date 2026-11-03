@@ -299,7 +299,11 @@ public class UserController extends CrudController<UserService, User> {
         if(medicareConfigProperties.getIsDemo().equals("true")){
             throw new ServiceException("demoHệ thốngVui lòngđừngXóaNgười dùng!");
         }
-        int all = service.countClinicIdByPhone(entity.getPhone());
+        // H2: dem theo user_id khi co id (mien nhiem login_name cu sau doi
+        // SDT); chi fallback ve dem theo phone khi request khong co id.
+        int all = entity.getId() != null && !entity.getId().isEmpty()
+                ? service.countActiveTenantsByUserId(entity.getId())
+                : service.countClinicIdByPhone(entity.getPhone());
         service.delete(entity,all);
         return ResponseEntity.ok(ResultUtil.successJson(all));
     }

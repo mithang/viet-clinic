@@ -245,8 +245,8 @@ public class UserService extends CrudService<UserDao, User>{
         // phone cua ban DA LUU, cleanup role/ext/tenant cua tenant
         // hien tai, chi super.delete (xoa mem sys_user) khi all == 1.
         // Tenant check nhu bulkUpdate: user khong thuoc tenant hien tai
-        // thi nem, tranh delete(user, int) don tenant khac (H2 se sua
-        // tiep updateUserTenantDelFlag khong loc tenant o trong do).
+        // thi nem, tranh delete(user, int) don tenant khac (H2 da loc
+        // updateUserTenantDelFlag theo tenant cua session).
         // Tra ve so dong da cleanup (khong phai so dong sys_user khi
         // user con o tenant khac, vi truong hop do sys_user duoc giu).
         String loginTenant = SessionUtils.getLoginTenantId();
@@ -266,7 +266,9 @@ public class UserService extends CrudService<UserDao, User>{
                     throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
                 }
             }
-            int all = this.countClinicIdByPhone(stored.getPhone());
+            // H2: dem theo user_id da luu thay vi phone — mien nhiem voi
+            // user_tenant.login_name cu sau doi SDT.
+            int all = this.countActiveTenantsByUserId(stored.getId());
             this.delete(stored, all);
             processed++;
         }
@@ -495,7 +497,9 @@ public class UserService extends CrudService<UserDao, User>{
         {
             userExtDao.delete(userExt);
         }
-        userDao.updateUserTenantDelFlag(user.getId(),"1");
+        // H2: chi danh co tenant cua session hien tai, khong danh co
+        // tenant khac cua cung user (truoc day khong loc tenant).
+        userDao.updateUserTenantDelFlag(user.getId(), "1", SessionUtils.getLoginTenantId());
         int rows = super.delete(user);
         return rows;
     }
@@ -516,7 +520,8 @@ public class UserService extends CrudService<UserDao, User>{
         {
             userExtDao.delete(userExt);
         }
-        userDao.updateUserTenantDelFlag(user.getId(),"1");
+        // H2: nhu delete don — chi danh co tenant cua session hien tai.
+        userDao.updateUserTenantDelFlag(user.getId(), "1", SessionUtils.getLoginTenantId());
         if(1 == number)
         {
             super.delete(user);
@@ -604,6 +609,12 @@ public class UserService extends CrudService<UserDao, User>{
     public int countClinicIdByPhone(String phone)
     {
         return userDao.countClinicIdByPhone(phone);
+    }
+
+    // H2: so tenant con active cua user, dem theo user_id (xem DAO).
+    public int countActiveTenantsByUserId(String userId)
+    {
+        return userDao.countActiveTenantsByUserId(userId);
     }
 
     /**

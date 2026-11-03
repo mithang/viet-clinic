@@ -171,7 +171,9 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
             if (!collect.isEmpty()) {
                 userRoleDao.delete(collect.get(0));
             }
-            userDao.updateUserTenantDelFlag(user.getId(), "1");
+            // H2: xoa phong kham chi danh co tenant cua phong kham bi xoa,
+            // khong danh co tenant khac cua cung user quan tri.
+            userDao.updateUserTenantDelFlag(user.getId(), "1", entity.getId());
         }
     }
 

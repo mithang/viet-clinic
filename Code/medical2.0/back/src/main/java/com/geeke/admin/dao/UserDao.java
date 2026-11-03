@@ -50,6 +50,12 @@ public interface UserDao extends CrudDao<User> {
     @Select("select count(1) from user_tenant where login_name = #{phone} and del_flag != '1' ")
     int countClinicIdByPhone(@Param("phone") String phone);
 
+    // H2 (iteration 28): dem theo user_id, mien nhiem voi
+    // user_tenant.login_name cu sau doi SDT (xem H3) — countClinicIdByPhone
+    // dem theo login_name nen sai khi ten do da loi thoi.
+    @Select("select count(1) from user_tenant where user_id = #{userId} and del_flag != '1' ")
+    int countActiveTenantsByUserId(@Param("userId") String userId);
+
     @Select("select user_id from user_tenant where tenant_id = #{tenantId}")
     List<String> getUserIdByClinicId(@Param("tenantId") String tenantId);
 
@@ -58,7 +64,10 @@ public interface UserDao extends CrudDao<User> {
     void insertUserTenant(@Param("id") String id, @Param("userId") String userId,
                           @Param("tenantId") String tenantId,@Param("loginName") String loginName);
 
-    void updateUserTenantDelFlag(@Param("userId") String userId, @Param("delFlag") String delFlag);
+    // H2 (iteration 28): chi danh co tenant chi dinh. tenantId rong/null
+    // thi giu hanh vi cu (danh co moi tenant) cho session khong co tenant.
+    void updateUserTenantDelFlag(@Param("userId") String userId, @Param("delFlag") String delFlag,
+                                 @Param("tenantId") String tenantId);
 
     void updateAdminPhoneAndPass(@Param("loginName") String loginName, @Param("pass") String pass, @Param("id") String id);
 
