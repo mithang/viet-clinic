@@ -275,4 +275,13 @@
         update member_management_detail set use_number = #{useNumber} where id = #{id}
     </update>
 
+    <select id="getOwnership" resultType="com.geeke.member.entity.MemberManagementDetail">
+        SELECT
+            a.id AS "id",
+            a.company_id AS "company.id",
+            a.member_management_id AS "memberManagement.id"
+        FROM member_management_detail a
+        WHERE a.id = #{id}
+    </select>
+
 </mapper>

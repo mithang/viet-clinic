@@ -21,4 +21,6 @@ public interface MemberManagementDetailDao extends CrudDao<MemberManagementDetai
 
     void updateUseNumber(MemberManagementDetail memberManagementDetail);
 
+    MemberManagementDetail getOwnership(String id);
+
 }
