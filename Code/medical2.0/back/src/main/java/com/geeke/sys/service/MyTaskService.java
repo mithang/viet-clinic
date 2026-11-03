@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +50,21 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
         // nen khong co nhanh institution nhu helper goc).
         verifyTenantOwnership(myTask);
         verifyStoredRowTenant(myTask);
+        // L4 (iteration 59): guard Q4 chi bao ve DONG task, con
+        // deleteIds ben duoi truoc day tran — token own luu task own
+        // kem deleteIds [file la] la xoa duoc file tenant la (tai hien
+        // live iter59-l4 pre-fix). Upload dung object_id = myTask id
+        // nen tap cho phep dung la {myTask id}, mau K7; dat TRUOC
+        // upload/delete/update de 400 xay ra truoc moi ghi (cung
+        // transaction @Transactional nen rollback neu guard nem loi).
+        // Ham nay chi dao.update (khong insert) nen khong co nhanh
+        // tao moi; id rong -> tap {""} (hoac {null}) -> file ton tai
+        // nao cung bi chan (fail-closed, mau K7 nhanh update id
+        // rong); file khong ton tai giu hanh vi cu (guard bo qua).
+        if (null != deleteIds && deleteIds.length > 0) {
+            sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                    Collections.singleton(myTask.getId()));
+        }
         //Lưu tệp đã tải lên
         List<SysFile> sysFiles = sysFileService.changeAndSaveSysFileList(fileIdUploads, myTask.getId());
         if(sysFiles!=null&&sysFiles.size()>0){
