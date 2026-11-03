@@ -48,5 +48,7 @@ public interface DrugDao extends CrudDao<Drug> {
 
     Drug getByCode(String ypdm, String companyId);
 
+    Drug getByStandardCode(String standardCode, String companyId);
+
     Drug getByNameAndPrice(String name, BigDecimal retailPrice, String companyId);
 }

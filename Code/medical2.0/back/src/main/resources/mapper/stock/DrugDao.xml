@@ -1020,6 +1020,12 @@
             where a.code=#{ypdm} and a.company_id=#{companyId}
 
     </select>
+    <select id="getByStandardCode" resultType="com.geeke.stock.entity.Drug">
+        select   *
+        FROM drug a
+            where a.standard_code=#{standardCode} and a.company_id=#{companyId}
+
+    </select>
     <select id="getByNameAndPrice" resultType="com.geeke.stock.entity.Drug">
         select   *
         FROM drug a

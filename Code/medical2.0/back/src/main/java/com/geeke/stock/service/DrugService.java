@@ -486,6 +486,10 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         return  drugDao.getByCode(ypdm,companyId);
     }
 
+    public Drug getByStandardCode(String standardCode, String companyId) {
+        return  drugDao.getByStandardCode(standardCode,companyId);
+    }
+
 
     /**
      * TheoTên và bán lẻgiáTruy vấnThuốcNhập

@@ -46,8 +46,22 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
         // tenant khac voi 200). Chi chen cac dong khong bi skip.
         List<HisDrugs> toInsert = Lists.newArrayList();
         for(HisDrugs entity: entitys) {
-            Drug drug = drugService.getByCode(entity.getStandardCode(),userObj.getString("companyId"));
-            if(drug!=null){
+            // ITER32: dedup cu so nham he ma — getByCode(standardCode)
+            // so standardCode gui len voi cot code (ma thuoc cua vien),
+            // nen import lai cung so dang ky nhung khac ma vien, hay cung
+            // ma vien nhung dang ky lai, deu lot qua va chen trung dong.
+            // Skip khi EITHER trung: code trung (dung getByCode voi
+            // chinh code, dung ngu nghia ypdm; cung la ngu nghia UI
+            // danh dau da dong bo qua getDrugCode) HOAC standard_code
+            // trung (query moi). Moi nhanh chi xet khi gia tri non-blank.
+            // Khong doi getByCode cu: HosDepartmentStorageController
+            // dung no dung ngu nghia ma thuoc.
+            String companyId = userObj.getString("companyId");
+            boolean dupByCode = entity.getCode() != null && !entity.getCode().trim().isEmpty()
+                    && drugService.getByCode(entity.getCode(), companyId) != null;
+            boolean dupByStandard = entity.getStandardCode() != null && !entity.getStandardCode().trim().isEmpty()
+                    && drugService.getByStandardCode(entity.getStandardCode(), companyId) != null;
+            if(dupByCode || dupByStandard){
                 continue;
             }
             entity.setCompanyId(userObj.getString("companyId"));
