@@ -641,6 +641,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 }
 
                 receptionEvt.setRegistration(this.registrationService.save(registrationEntity));
+                // ITER54 G1: khoi INSTANT phia sau dung bien cuc bo registration
+                // (deref :647); voi tiep nhan moi thi registration van null neu
+                // khong gan lai bang luot vua luu. Chi gan trong khoi isNull
+                // nay — duong luot da co giu nguyen dung registration DB.
+                registration = receptionEvt.getRegistration();
             }
 
             if (InstantPatient.INSTANT.getCode() == receptionEvt.getType()) {
