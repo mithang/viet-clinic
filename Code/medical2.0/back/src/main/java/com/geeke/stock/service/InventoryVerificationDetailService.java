@@ -133,21 +133,28 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                     }
                 }
             }
-            // Kiem tra phieu cha se nhan tong tien (nhom dau tien khong rong),
-            // theo dong DB cua phieu, voi cung ngu nghia institution-shared.
+            // O2-37 (iteration 37): kiem tra MOI phieu cha xuat hien trong payload,
+            // theo dong DB cua phieu, voi cung ngu nghia institution-shared nhu L1.
+            // L1 chi xet phan tu dau cua nhom khong rong dau tien, trong khi
+            // totalParentId lay detail dau tien CO phieu trong toan bo payload va
+            // bulkUpdate ghi inventory_verification_id theo tung detail, nen
+            // payload [detail own mang phieu own, detail own mang phieu la] van
+            // lot: detail sau bi re-parent sang phieu la (200). Phieu khong ton
+            // tai (getRaw null) van cho qua nhu ngu nghia L1 cu.
             for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
                 if (CollectionUtils.isEmpty(group)) {
                     continue;
                 }
-                InventoryVerificationDetail first = group.get(0);
-                if (first != null && first.getInventoryVerification() != null
-                        && StringUtils.isNotBlank(first.getInventoryVerification().getId())) {
-                    InventoryVerification parent = inventoryVerificationService.getRaw(first.getInventoryVerification().getId());
+                for (InventoryVerificationDetail detail : group) {
+                    if (detail == null || detail.getInventoryVerification() == null
+                            || StringUtils.isBlank(detail.getInventoryVerification().getId())) {
+                        continue;
+                    }
+                    InventoryVerification parent = inventoryVerificationService.getRaw(detail.getInventoryVerification().getId());
                     if (parent != null) {
                         verifyTenantOwnership(parent);
                     }
                 }
-                break;
             }
             // L2 (iteration 34): chong crash ho get(0)/null o duong ghi:
             // - loc phan tu null truoc khi preUpdate/bulkUpdate (null trong
