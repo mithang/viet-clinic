@@ -186,17 +186,30 @@ public class DataBean {
         List<RecipelDetail> detailList = recipelDetailDao.getByRecipelInfoId(recipelInfoId);
         RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoId);
         BigDecimal count = new BigDecimal(0);
+        if (null == recipelInfo) {
+            // Đơn lạ mà vẫn có detail mồ côi (Z2, đã tái hiện NPE :197):
+            // không quyết được nhánh isPre nên trả dataset rỗng, đúng ngữ nghĩa E2.
+            return outList;
+        }
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
-                if (1 == recipelDetail.getIsExtra()) {
+                if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
                 if ("0".equals(recipelDetail.getStuffType())) {
+                    if (null == recipelDetail.getDrugStuffId() || null == recipelDetail.getDrugStuffId().getDrugStuffId()) {
+                        // Detail không gắn thuốc (Z2, đã tái hiện NPE :220): bỏ dòng, in tiếp.
+                        continue;
+                    }
                     if(recipelInfo.getIsPre() != null&&recipelInfo.getIsPre()){
                         //Thuốc trong đơn thuốc điện tử
                          PresDrug drug = presDrugService.getById(recipelDetail.getDrugStuffId().getDrugStuffId());
+                        if (null == drug) {
+                            // Thuốc điện tử đã xóa (Z2, đã tái hiện NPE :201): bỏ dòng, in tiếp.
+                            continue;
+                        }
                         RecipelDetailEvt recipelDetailEvt = new RecipelDetailEvt();
                         recipelDetailEvt.setName(drug.getRegname());
                         recipelDetailEvt.setNorms(drug.getSpecname() +'*'+drug.getMinpaccnt()+drug.getMinprepunt()+'/'+drug.getMinpacunt());
@@ -218,6 +231,10 @@ public class DataBean {
                         outList.add(recipelDetailEvt1);
                     }else{
                         Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                        if (null == drug) {
+                            // Thuốc đã xóa (Z2, đã tái hiện NPE :222): bỏ dòng, in tiếp.
+                            continue;
+                        }
                         RecipelDetailEvt recipelDetailEvt = new RecipelDetailEvt();
                         recipelDetailEvt.setName(drug.getGoodsName());
                         recipelDetailEvt.setNorms("("+drug.getDosis() + drug.getDosisUnit().getName() + "*" + drug.getPreparation() + drug.getPreparationUnit().getName()+")");
@@ -265,14 +282,26 @@ public class DataBean {
         BigDecimal count = new BigDecimal(0);
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
-                if (1 == recipelDetail.getIsExtra()) {
+                if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
                 if ("2".equals(recipelDetail.getStuffType())) {
+                    if (null == recipelDetail.getDrugStuffId() || null == recipelDetail.getDrugStuffId().getDrugStuffId()) {
+                        // Detail truyền dịch không gắn thuốc: bỏ dòng, in tiếp.
+                        continue;
+                    }
                     Integer infuseGroup = recipelDetail.getInfuseGroup();
+                    if (null == infuseGroup) {
+                        // Nhóm truyền NULL (Z2, đã tái hiện NPE :276): giữ ở nhóm hiện tại thay vì 500.
+                        infuseGroup = num;
+                    }
                     Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                    if (null == drug) {
+                        // Thuốc truyền đã xóa (Z2, đã tái hiện NPE :284): bỏ dòng, in tiếp.
+                        continue;
+                    }
                     if (infuseGroup > num) {
                         //nốidùngphương pháp
                         InfuseEvt use = new InfuseEvt();
@@ -326,13 +355,20 @@ public class DataBean {
         }
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
-                if (1 == recipelDetail.getIsExtra()) {
+                if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
                 if ("1".equals(recipelDetail.getStuffType())) {
+                    if (null == recipelDetail.getDrugStuffId() || null == recipelDetail.getDrugStuffId().getDrugStuffId()) {
+                        continue;
+                    }
                     Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                    if (null == drug) {
+                        // Thuốc Đông y đã xóa (Z2, đã tái hiện NPE :336): bỏ dòng, in tiếp.
+                        continue;
+                    }
                     chineseMedicalNames.add(drug.getGoodsName() + " " + recipelDetail.getTotal() + drug.getDosisUnit().getName());
                 }
             }
@@ -365,7 +401,15 @@ public class DataBean {
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
                 if ("1".equals(recipelDetail.getStuffType())) {
+                    if (null == recipelDetail.getDrugStuffId() || null == recipelDetail.getDrugStuffId().getDrugStuffId()) {
+                        continue;
+                    }
                     Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                    if (null == drug) {
+                        // Thuốc Đông y đã xóa (Z2, cùng điểm với chineseMedicine :336,
+                        // dataset này chạy sau nên stack pre-fix bị che): bỏ dòng, in tiếp.
+                        continue;
+                    }
                     DecimalFormat decimalFormat = new DecimalFormat("0.##");
                     chineseMedicalNames.add(drug.getGoodsName() + " " + decimalFormat.format(recipelDetail.getSingleDosage()) + drug.getDosisUnit().getName());
                 }
@@ -404,13 +448,20 @@ public class DataBean {
         BigDecimal count = new BigDecimal(0);
         if (null != detailList && !detailList.isEmpty()) {
             for (RecipelDetail recipelDetail : detailList) {
-                if (1 == recipelDetail.getIsExtra()) {
+                if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
                     count = count.add(recipelDetail.getAllFee());
                     continue;
                 }
                 if ("3".equals(recipelDetail.getStuffType())) {
+                    if (null == recipelDetail.getDrugStuffId() || null == recipelDetail.getDrugStuffId().getDrugStuffId()) {
+                        continue;
+                    }
                     CostItem costItem = costItemService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                    if (null == costItem) {
+                        // Hạng mục đã xóa (Z2, đã tái hiện NPE :415): bỏ dòng, in tiếp.
+                        continue;
+                    }
                     RecipelDetailEvt recipelDetailEvt = new RecipelDetailEvt();
                     recipelDetailEvt.setName(costItem.getItemName());
                     recipelDetailEvt.setNum(recipelDetail.getTotal() + "");
