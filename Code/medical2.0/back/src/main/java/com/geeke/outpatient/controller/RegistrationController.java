@@ -13,6 +13,7 @@ import com.geeke.medicareutils.domain.respo.Output_2201;
 import com.geeke.medicareutils.service.MdPsnDataService;
 import com.geeke.medicareutils.service.MdRegistrationService;
 import com.geeke.outpatient.entity.*;
+import com.geeke.org.entity.Company;
 import com.geeke.common.data.Parameter;
 import com.geeke.outpatient.service.RecipelDetailService;
 import com.geeke.outpatient.service.RegistrationService;
@@ -220,6 +221,26 @@ public class RegistrationController extends CrudController<RegistrationService, 
             id = registrationService.wxSave(entity).getId();
         }else {
             if (!hasAnySessionPermission()) { return forbidden(); } // H4: san RBAC cho duong luu web (lop cha CrudController.save co san, override nay truoc day bo qua).
+            // K1 (iteration 58): ep tenant theo session cho NHANH INSERT
+            // (id trong), mau D1/E1, truoc moi ghi. Truoc day payload id
+            // trong + company tenant la tao that luot kham o tenant la
+            // (nhanh insert cua CrudService.save khong verify tenant) va
+            // assignQueueNumber con an 1 so cua counter tenant la khi co
+            // doctor (tai hien tools/iter58-k1.py). Session co tenant thi
+            // bo qua company payload; session rong/"null" giu fallback
+            // body cu qua sessionTenantOr. Nhanh UPDATE KHONG ep: guard
+            // stored-row cua CrudService.save van chan payload company la
+            // (case C van 400 + dong van OWN) va dong la van bi chan.
+            // Nhanh WeChat khong doi (C1 da guard wxSave + san).
+            // Booking confirm goi RegistrationService.save truc tiep, khong
+            // qua controller nay, nen khong anh huong. UI that gui company
+            // own nen khong doi hanh vi hop le.
+            if (StringUtils.isBlank(entity.getId())) {
+                String tenant = sessionTenantOr(entity.getCompany() == null ? null : entity.getCompany().getId());
+                if (tenant != null) {
+                    entity.setCompany(new Company(tenant));
+                }
+            }
             //mởBHYTgiao diện
             if("true".equals(medicareConfigProperties.getCheck())){
                 //LưuNgười dùngBHYTThông tin
