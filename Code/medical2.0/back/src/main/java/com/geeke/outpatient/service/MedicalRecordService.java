@@ -212,6 +212,20 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         }
         //Lưuca bệnhThông tin
         medicalRecord.setDiagnoseDate(new Date());
+        // J1 (iteration 57): v1 allSave giong v2 truoc I2 — CrudService.save
+        // nhanh insert khong verify tenant, nen medicalRecord/recipelInfo/
+        // recipelDetail mang company tenant la + id trong se tao that dong
+        // o tenant la gan luot OWN (tai hien live: ca 3 deu ve OTHER).
+        // Ep company theo bindedRegistration (luot da verify OWN o nhanh
+        // thuong, luot moi tao theo session tenant o nhanh instant), CHI
+        // khi insert (id trong): nhanh update giu nguyen guard verify
+        // payload + stored-row (update don/case/chi tiet + company la da
+        // 400 san, khong ghi de thanh 200 am tham). Detail o v1 khong
+        // null id nhu v2 (saveRecipelInfoEvt) nen khong ep luon nhu I2:
+        // ep luon se vo hieu guard 400 cua update detail.
+        if (StringUtils.isBlank(medicalRecord.getId()) && bindedRegistration.getCompany() != null) {
+            medicalRecord.setCompany(bindedRegistration.getCompany());
+        }
         MedicalRecord medicalRecordSave = this.save(medicalRecord);
         //Lấy thông tin đơn thuốc
         List<RecipelInfoEvt> recipelInfoEvtList = medicalRecipelEvt.getRecipelInfoEvtList();
@@ -245,12 +259,20 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 //ĐặtMã
                 String recipelNo = serialNoUtils.generateSerialNo("");
                 recipelInfo.setCode(recipelNo);
+                // J1: chi khi insert (xem ghi chu o medicalRecord tren).
+                if (StringUtils.isBlank(recipelInfo.getId()) && bindedRegistration.getCompany() != null) {
+                    recipelInfo.setCompany(bindedRegistration.getCompany());
+                }
                 RecipelInfo recipelInfoSave = recipelInfoService.save(recipelInfo);
                 List<RecipelDetail> recipelDetailEvtList = recipelInfoEvt.getRecipelDetailEvtList();
                 if (null != recipelDetailEvtList && !recipelDetailEvtList.isEmpty()) {
                     //duyệtĐơn thuốc
                     for (RecipelDetail recipelDetail : recipelDetailEvtList) {
                         //LưuĐơn thuốcChi tiết
+                        // J1: chi khi insert (xem ghi chu o medicalRecord tren).
+                        if (StringUtils.isBlank(recipelDetail.getId()) && bindedRegistration.getCompany() != null) {
+                            recipelDetail.setCompany(bindedRegistration.getCompany());
+                        }
                         recipelDetail.setRecipelInfo(recipelInfoSave);
                         // Nếu frontend không truyềnminTotal(Tổng lượng đơn vị bào chế), Thì dùngtotalLàm giá trị mặc định
                         if (recipelDetail.getMinTotal() == null || recipelDetail.getMinTotal() == 0) {
