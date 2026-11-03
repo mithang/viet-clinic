@@ -518,6 +518,12 @@ public class UserService extends CrudService<UserDao, User>{
     @Override
     @Transactional(readOnly = false)
     public int delete(User user) {
+        // Iteration 29: chan som id rong — neu khong, ImmutableMap.of
+        // ben duoi nem NPE, va listAll khong co loc user_id co the
+        // tra ve role cua ca tenant roi bi bulkDelete theo.
+        if (user == null || StringUtils.isBlank(user.getId())) {
+            throw new ServiceException("Không xác định được người dùng cần xóa. ");
+        }
         /* Xử lý bảng con     Vai trò người dùng, mở rộngThông tin, tenantThông tin */
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(
                 "user_id", user.getId(),
@@ -541,6 +547,10 @@ public class UserService extends CrudService<UserDao, User>{
 
     @Transactional(readOnly = false)
     public void delete(User user,int number) {
+        // Iteration 29: nhu delete don — chan som id rong thay vi NPE.
+        if (user == null || StringUtils.isBlank(user.getId())) {
+            throw new ServiceException("Không xác định được người dùng cần xóa. ");
+        }
         /* Xử lý bảng con     Vai trò người dùng, mở rộngThông tin, tenantThông tin */
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(
                 "user_id", user.getId(),
@@ -650,6 +660,13 @@ public class UserService extends CrudService<UserDao, User>{
     public int countActiveTenantsByUserId(String userId)
     {
         return userDao.countActiveTenantsByUserId(userId);
+    }
+
+    // Iteration 29: giai quyet id cho delete khong id — chi trong
+    // tenant cua session (xem DAO); tra null khi khong thay.
+    public String findActiveUserIdByPhoneInTenant(String phone, String tenantId)
+    {
+        return userDao.findActiveUserIdByPhoneInTenant(phone, tenantId);
     }
 
     /**

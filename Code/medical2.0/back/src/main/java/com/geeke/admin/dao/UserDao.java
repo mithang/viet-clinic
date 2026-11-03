@@ -76,6 +76,15 @@ public interface UserDao extends CrudDao<User> {
     // da xoa mem giu ten cu nhu lich su, khi gan lai se insert dong moi.
     void updateUserTenantLoginName(@Param("userId") String userId, @Param("loginName") String loginName);
 
+    // Iteration 29: giai quyet id cho delete khong id — chi user active
+    // o tenant cua session, khop theo sys_user.phone HOAC
+    // user_tenant.login_name (phong ten doi SDT chua dong bo het).
+    // Khong dung countClinicIdByPhone o day vi no khong loc tenant.
+    @Select("select u.id from sys_user u join user_tenant t on t.user_id = u.id "
+            + "where u.del_flag != '1' and t.del_flag != '1' and t.tenant_id = #{tenantId} "
+            + "and (u.phone = #{phone} or t.login_name = #{phone}) order by u.id limit 1")
+    String findActiveUserIdByPhoneInTenant(@Param("phone") String phone, @Param("tenantId") String tenantId);
+
     User getCompanyIdAndOpenId(String companyId, String openId);
 
     void updateWxUser(User user);

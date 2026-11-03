@@ -299,11 +299,25 @@ public class UserController extends CrudController<UserService, User> {
         if(medicareConfigProperties.getIsDemo().equals("true")){
             throw new ServiceException("demoHệ thốngVui lòngđừngXóaNgười dùng!");
         }
-        // H2: dem theo user_id khi co id (mien nhiem login_name cu sau doi
-        // SDT); chi fallback ve dem theo phone khi request khong co id.
-        int all = entity.getId() != null && !entity.getId().isEmpty()
-                ? service.countActiveTenantsByUserId(entity.getId())
-                : service.countClinicIdByPhone(entity.getPhone());
+        // Iteration 29: request khong id khong con di duong fallback dem
+        // theo phone (countClinicIdByPhone khong loc tenant, roi
+        // delete(user, int) NPE o ImmutableMap vi user_id null). Giai
+        // quyet id trong tenant cua session truoc: khong thay (sai
+        // tenant, da xoa, hoac khong co phone) thi 400, khong xoa gi.
+        // Co id thi giu hanh vi H2: dem theo user_id.
+        String entityId = entity.getId();
+        if (entityId == null || entityId.isEmpty()) {
+            if (entity.getPhone() == null || entity.getPhone().isEmpty()) {
+                return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
+            }
+            entityId = service.findActiveUserIdByPhoneInTenant(
+                    entity.getPhone(), SessionUtils.getLoginTenantId());
+            if (entityId == null) {
+                return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_400));
+            }
+            entity.setId(entityId);
+        }
+        int all = service.countActiveTenantsByUserId(entityId);
         service.delete(entity,all);
         return ResponseEntity.ok(ResultUtil.successJson(all));
     }
