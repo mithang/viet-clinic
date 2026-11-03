@@ -124,6 +124,62 @@ public class UserService extends CrudService<UserDao, User>{
         return userDao.getAdmin(companyId);
     }
 
+    /**
+     * G2 (iteration 27): duong JSON POST /admin/user/save cua
+     * UserController goi save(User) don — truoc day la CrudService.save,
+     * bo qua hoan toan guard tenant/ext/role cua save(User, files,
+     * deleteIds) ma saveWithFile dung: tao moi trung loginName cung
+     * tenant van 200 va chen them dong sys_user trung (login_name chi
+     * co KEY, khong UNIQUE), user moi thi 0 user_tenant + 0 ext.
+     * Override nay dua create ve dung duong da guard, giu update-by-id
+     * o duong cu (CrudService.save, co verifyTenantOwnership) nhung
+     * chan doi loginName sang ten cua user khac — neu khong, update
+     * van tao trung login_name nhu create. updatePersonAndPass goi
+     * save(dto) voi loginName khong doi nen qua duoc guard doi ten.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public User save(User user) {
+        if (StringUtils.isBlank(user.getId())) {
+            // Create: dung duong guard nhu saveWithFile, khong file.
+            if (user.getUserExt() == null) {
+                UserExt ext = new UserExt();
+                ext.setPost("");
+                ext.setOffice("");
+                ext.setCreditNum("");
+                user.setUserExt(ext);
+            } else {
+                if (user.getUserExt().getPost() == null) {
+                    user.getUserExt().setPost("");
+                }
+                if (user.getUserExt().getOffice() == null) {
+                    user.getUserExt().setOffice("");
+                }
+                if (user.getUserExt().getCreditNum() == null) {
+                    user.getUserExt().setCreditNum("");
+                }
+            }
+            if (user.getUserRoleList() == null) {
+                user.setUserRoleList(Lists.newArrayList());
+            }
+            try {
+                return save(user, new MultipartFile[0], new String[0]);
+            } catch (java.io.IOException e) {
+                throw new ServiceException("Luu nguoi dung that bai: " + e.getMessage());
+            }
+        }
+        // Update-by-id: chi chan doi ten sang loginName cua user khac
+        // (cung hoac khac tenant deu chan, vi login tra theo loginName).
+        // Ten khong doi, hoac ten moi chua tung co, thi giu duong cu.
+        if (StringUtils.isNotBlank(user.getLoginName())) {
+            User existUser = getUserByLoginName(user);
+            if (existUser != null && !existUser.getId().equals(user.getId())) {
+                throw new ServiceException("Đã tồn tại một tên đăng nhập giống hệt. ");
+            }
+        }
+        return super.save(user);
+    }
+
     @Transactional(readOnly = false)
     public User save(User user,MultipartFile[] fileIdUploads,
                      String[] deleteIds) throws java.io.IOException {
