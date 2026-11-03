@@ -10,6 +10,8 @@ import com.geeke.outpatient.service.RecipelDetailService;
 import com.geeke.outpatient.service.RecipelInfoService;
 import com.geeke.stock.entity.Drug;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +28,60 @@ public class CureManagementController extends BaseController {
     private RecipelDetailService recipelDetailService;
     @Autowired
     private RecipelInfoService recipelInfoService;
+    /**
+     * M2 (iteration 60): tenant cua phien dang nhap; rong hoac "null"
+     * (luong noi bo khong session) thi giu hanh vi cu, nhu
+     * verifyTenantOwnership / mau X3.
+     */
+    private String sessionTenantId() {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return null;
+        }
+        return tenantId;
+    }
+
+    /**
+     * M2: id tran khong thuoc tenant hien tai thi la. Id khong ton tai
+     * (company null) thi cho qua nhu cu — duong cu van 500 o updateById
+     * (xem bao cao M2 case C), khong doi hanh vi do o day.
+     */
+    private boolean isForeign(String ownerCompanyId) {
+        String tenantId = sessionTenantId();
+        return tenantId != null && ownerCompanyId != null && !tenantId.equals(ownerCompanyId);
+    }
+
     @PostMapping("save")
     public ResponseEntity<JSONObject> save(@RequestBody CureManagement entity){
         if (!hasAnySessionPermission()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+
+        // M2: guard detail + don thuoc bang id TRUOC moi ghi. Controller
+        // khong co @Transactional, moi service call la mot transaction
+        // rieng (cure insert da commit ngay ca khi updateById sau do NPE
+        // — case C pre-fix chung minh), nen guard dat SAU save se khong
+        // cuu duoc cure OWN vua tao; dat truoc save thi foreign -> 400
+        // va khong co ghi nao xay ra. Guard nay phu ca 2 nhanh stuffType
+        // "3" va thuong (cung id detail) + updateSchedule (cung id don).
+        // Khong sua updateById/updateSchedule generic, khong doi guard
+        // cua CureManagementService.save.
+        if (entity.getRecipelDetail() != null) {
+            String detailId = entity.getRecipelDetail().getId();
+            if (StringUtils.isNotBlank(detailId)
+                    && isForeign(recipelDetailService.getRecipelDetailCompanyId(detailId))) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResultUtil.errorJson(ErrorEnum.E_400));
+            }
+            if (entity.getRecipelDetail().getRecipelInfo() != null) {
+                String prescriptionId = entity.getRecipelDetail().getRecipelInfo().getId();
+                if (StringUtils.isNotBlank(prescriptionId)
+                        && isForeign(recipelInfoService.getRecipelInfoCompanyId(prescriptionId))) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(ResultUtil.errorJson(ErrorEnum.E_400));
+                }
+            }
         }
 
         String crueId=entity.getId();

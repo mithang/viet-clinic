@@ -69,6 +69,13 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         return recipelDetail;
     }
 
+    /** M2 (iteration 60): company cua dong detail theo id, uy thac cho DAO
+     * (controller kiem tra so huu truoc khi ghi de executions/schedule);
+     * mau X3 getRecipelInfoCompanyId, tra null khi id khong ton tai. */
+    public String getRecipelDetailCompanyId(String id) {
+        return recipelDetailDao.getCompanyIdById(id);
+    }
+
     //thống kêChưahết hạn của Đãbịchiếm dụng của Thuốc
     public List<RecipelStastics> getDetailStasticsForOccupy(int days)
     {

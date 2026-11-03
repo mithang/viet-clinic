@@ -573,4 +573,9 @@
             infuse_type=#{infuseType}
         where id = #{id}
     </update>
+
+    <!-- M2 (iteration 60): lookup gon company cua dong detail, kieu Q4. -->
+    <select id="getCompanyIdById" resultType="java.lang.String">
+        SELECT company_id FROM recipel_detail WHERE id = #{id}
+    </select>
 </mapper>

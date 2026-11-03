@@ -44,4 +44,10 @@ public interface RecipelDetailDao extends CrudDao<RecipelDetail> {
     int updateById(@Param("executions") BigDecimal executions, @Param("id") String id, @Param("infuseType") int infuseType);
 
     List<RecipelDetail> findByInfoId(@Param("recipelInfoId") String recipelInfoId,@Param("stuffType") String stuffType);
+
+    // M2 (iteration 60): lookup gon company cua dong detail da luu, kieu
+    // Q4 (MyTaskDao.getCompanyIdById) — tranh dao.get() nang neu chi can
+    // kiem tra tenant truoc khi CureManagementController.save ghi de
+    // executions/cureId cua detail + schedule cua don thuoc bang id tran.
+    String getCompanyIdById(@Param("id") String id);
 }
