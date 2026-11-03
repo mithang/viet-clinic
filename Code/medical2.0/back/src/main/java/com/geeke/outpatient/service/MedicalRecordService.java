@@ -798,6 +798,14 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 recipelInfo.setIsPay("2");
                 recipelInfo.setDispensionStatus(2);
 
+                // I2: don thuoc thuoc ve luot kham: insert moi ep company theo
+                // registration (da get-verified OWN); update giu nguyen de guard
+                // payload-company cua CrudService.save van 400 nhu cu.
+                if (!org.springframework.util.StringUtils.hasText(recipelInfo.getId())
+                        && registration.getCompany() != null
+                        && org.springframework.util.StringUtils.hasText(registration.getCompany().getId())) {
+                    recipelInfo.setCompany(registration.getCompany());
+                }
                 //Lưu bảng chính của đơn thuốc
                 RecipelInfo recipelInfoEntity = this.recipelInfoService.save(recipelInfo);
                 //LưuĐơn thuốcChi tiếtbảng
@@ -811,6 +819,13 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                     recipelDetail.setAllFee(BigDecimal.valueOf(0.00));
                     recipelDetail.setId(null);
                     recipelDetail.setRecipelInfo(recipelInfoEntity);
+                    // I2: chi tiet luon insert (id vua null) nen ep company theo
+                    // luot kham, cung mau saveRecipelInfoEvtTo; neu khong, chi
+                    // tiet van roi vao tenant la du recipelInfo da ep.
+                    if (registration.getCompany() != null
+                            && org.springframework.util.StringUtils.hasText(registration.getCompany().getId())) {
+                        recipelDetail.setCompany(registration.getCompany());
+                    }
                     // Nếu frontend không truyềnminTotal(Tổng lượng đơn vị bào chế), Thì dùngtotalLàm giá trị mặc định
                     if (recipelDetail.getMinTotal() == null || recipelDetail.getMinTotal() == 0) {
                         recipelDetail.setMinTotal(recipelDetail.getTotal());
@@ -860,6 +875,12 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                     recipelInfo.setChargeStatus(0);
                     recipelInfo.setIsPay("0");
                 }
+                // I2: nhu nhanh isPre — insert moi ep company theo registration.
+                if (!org.springframework.util.StringUtils.hasText(recipelInfo.getId())
+                        && registration.getCompany() != null
+                        && org.springframework.util.StringUtils.hasText(registration.getCompany().getId())) {
+                    recipelInfo.setCompany(registration.getCompany());
+                }
                 //Lưu bảng chính của đơn thuốc
                 RecipelInfo recipelInfoEntity = this.recipelInfoService.save(recipelInfo);
 
@@ -870,6 +891,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 for (RecipelDetail recipelDetail : recipelDetailEvtList) {
                     recipelDetail.setId(null);
                     recipelDetail.setRecipelInfo(recipelInfoEntity);
+                    // I2: nhu nhanh isPre — chi tiet luon insert nen ep company theo luot kham.
+                    if (registration.getCompany() != null
+                            && org.springframework.util.StringUtils.hasText(registration.getCompany().getId())) {
+                        recipelDetail.setCompany(registration.getCompany());
+                    }
                     // Nếu frontend không truyềnminTotal(Tổng lượng đơn vị bào chế), Thì dùngtotalLàm giá trị mặc định
                     if (recipelDetail.getMinTotal() == null || recipelDetail.getMinTotal() == 0) {
                         recipelDetail.setMinTotal(recipelDetail.getTotal());
