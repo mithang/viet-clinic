@@ -7,6 +7,9 @@ import java.util.Map;
 import com.geeke.cure.entity.InspectionCheckDetail;
 import com.geeke.cure.entity.InspectionCheckDetailCostItem;
 import com.geeke.cure.entity.InspectionCheckInfoCostItem;
+import com.geeke.common.service.ServiceException;
+import com.geeke.cure.dao.InspectionCheckDao;
+import com.geeke.sys.dao.SysFileDao;
 import com.geeke.sys.entity.SysFile;
 import com.geeke.sys.service.SysFileService;
 import com.geeke.treatment.entity.CostItem;
@@ -38,6 +41,15 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     @Autowired
     private InspectionCheckDetailService inspectionCheckDetailService;
 
+    // R3 (iteration 41): lookup truc tiep qua DAO, khong autowire
+    // InspectionCheckService (service do autowire nguoc lai service nay —
+    // vong tron) va khong autowire SysFileService cho lookup (chi can id).
+    @Autowired
+    private InspectionCheckDao inspectionCheckDao;
+
+    @Autowired
+    private SysFileDao sysFileDao;
+
     @Transactional(readOnly = false)
     public void save(InspectionCheckInfo inspectionCheckInfo, MultipartFile[] fileIdUploads, String[] deleteIds) throws IOException {
 
@@ -52,7 +64,8 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         // don gian, khong co mapping LONG->Timestamp nhu Q4 nen dung duoc
         // helper thua ke. Session rong/"null", dong khong ton tai, company
         // rong giu hanh vi cu nhu helper goc. Detail (R2) guard ngay
-        // duoi; cha InspectionCheck + deleteIds (R3) o iteration sau.
+        // duoi; cha InspectionCheck + deleteIds (R3) guard tiep theo,
+        // tat ca deu TRUOC moi thao tac file/ghi.
         verifyTenantOwnership(inspectionCheckInfo);
         verifyTenantOwnershipAgainstStoredRow(inspectionCheckInfo);
         // R2 (iteration 41): guard tenant cho tung detail TRUOC moi thao
@@ -65,11 +78,57 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         // luu la du payload co mang company own. UI that gui lai detail
         // own vua nap qua getByInfoId nen khong doi; detail khong id /
         // khong ton tai / company rong giu hanh vi cu nhu helper goc.
-        // Cha InspectionCheck + deleteIds (R3) van de iteration sau.
         if (inspectionCheckInfo.getInspectionCheckDetails() != null) {
             for (InspectionCheckDetail inspectionCheckDetail : inspectionCheckInfo.getInspectionCheckDetails()) {
                 verifyTenantOwnership(inspectionCheckDetail);
                 inspectionCheckDetailService.verifyStoredRowTenant(inspectionCheckDetail);
+            }
+        }
+        // R3 (iteration 41): guard cha InspectionCheck + deleteIds, cung
+        // TRUOC moi thao tac file/ghi.
+        // (a) Cha: controller doi cha sang status "1" SAU khi save() tra
+        // ve (transaction rieng, da commit) — guard o buoc cha nem loi
+        // nhung dong info/detail/file da doi (ghi mot nua, tai hien live
+        // iter41-r3-repro: 400 nhung info van doi). Guard o day bang
+        // lookup gon getCompanyIdById kieu R2: cha la -> 400 truoc khi
+        // ghi bat cu thu gi; cha own -> di tiep, buoc cha sau do van
+        // chay guard CrudService.save nhu cu. Cha khong id / khong ton
+        // tai / company rong / session rong/"null" giu hanh vi cu nhu
+        // helper goc; InspectionCheck khong institution-shared (khong
+        // override isInstitutionShared) nen khong co nhanh institution.
+        // (b) deleteIds: sys_file KHONG co cot company_id nen khong
+        // kiem tra tenant truc tiep duoc; file cua form nay luon co
+        // object_id = id dong info (uploadFiles = info.id, file moi luu
+        // cung qua changeAndSaveSysFileList(..., info.getId())) nen
+        // guard bang object_id: id file co object_id khac info id (ke
+        // ca file tenant la hay file cua doi tuong khac) -> 400 truoc
+        // khi xoa; id khong ton tai giu hanh vi cu (xoa 0 dong).
+        if (inspectionCheckInfo.getInspectionCheck() != null
+                && inspectionCheckInfo.getInspectionCheck().getId() != null
+                && !inspectionCheckInfo.getInspectionCheck().getId().isEmpty()) {
+            String parentCompanyId = inspectionCheckDao.getCompanyIdById(
+                    inspectionCheckInfo.getInspectionCheck().getId());
+            if (parentCompanyId != null && !parentCompanyId.isEmpty()) {
+                String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+                if (tenantId != null && !tenantId.isEmpty() && !"null".equals(tenantId)
+                        && !tenantId.equals(parentCompanyId)) {
+                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                }
+            }
+        }
+        if (null != deleteIds && deleteIds.length > 0) {
+            String infoId = inspectionCheckInfo.getId();
+            for (String deleteId : deleteIds) {
+                if (deleteId == null || deleteId.isEmpty()) {
+                    continue;
+                }
+                String fileObjectId = sysFileDao.getObjectIdById(deleteId);
+                if (fileObjectId == null) {
+                    continue;
+                }
+                if (infoId == null || infoId.isEmpty() || !infoId.equals(fileObjectId)) {
+                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                }
             }
         }
         //Lưu tệp đã tải lên

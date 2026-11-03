@@ -49,6 +49,11 @@
         <include refid="inspectionCheckJoins"/>
         WHERE a.id = #{id}
     </select>
+
+    <!-- R3 (iteration 41): lookup gon company cua dong cha da luu -->
+    <select id="getCompanyIdById" resultType="java.lang.String">
+        SELECT company_id FROM inspection_check WHERE id = #{id}
+    </select>
     
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM inspection_check a
