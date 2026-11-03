@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -355,6 +357,15 @@ public class UserService extends CrudService<UserDao, User>{
         {
             //không phảigiống hệtNgười dùng  lưu vàongười
             String id = super.save(user).getId();
+            // K7 (iteration 58): guard deleteIds truoc moi upload/xoa
+            // (mau J2): file avatar co object_id = id user vua tao;
+            // file la (object_id khac) -> 400, transaction rollback
+            // ca user vua insert. Nhanh user da ton tai o tenant khac
+            // khong xoa file nen khong can guard.
+            if (null != deleteIds && deleteIds.length > 0) {
+                sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                        Collections.singleton(id));
+            }
             //lưu vào người này của Vai trò
             if (StringUtils.isNoneBlank(id)) {
                 // ĐặtMã hóaTrường   Mật khẩu
@@ -465,6 +476,15 @@ public class UserService extends CrudService<UserDao, User>{
     @Transactional(readOnly = false)
     public User update(User user,MultipartFile[] fileIdUploads,
                        String[] deleteIds) throws java.io.IOException {
+        // K7 (iteration 58): guard deleteIds truoc moi ghi (mau J2):
+        // file avatar co object_id = id user dang sua; file la -> 400
+        // truoc super.save. Id rong (khong phai duong UI) thi tap cho
+        // phep rong -> file ton tai nao cung bi chan, file khong ton
+        // tai giu hanh vi cu nhu I1/R3.
+        if (null != deleteIds && deleteIds.length > 0) {
+            sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
+                    StringUtils.isNotBlank(user.getId()) ? Collections.singleton(user.getId()) : Collections.<String>emptySet());
+        }
         String id = super.save(user).getId();
         // H3: duong sua cua UI (POST /admin/user/update) cung chi doi
         // sys_user — dong bo tenant ngay sau save, truoc khi xu ly role/ext.
