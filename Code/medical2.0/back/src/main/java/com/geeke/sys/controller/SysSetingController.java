@@ -89,6 +89,10 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
     @GetMapping("/getPhoto/{id}")
     public ResponseEntity getPhotoById(@PathVariable("id") String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
+        // L1 (iteration 59): cung ho voi SysFile.getById — content id = file id,
+        // guard owner truoc khi tra base64; file khong ton tai / khong resolve
+        // duoc giu hanh vi cu.
+        sysFileService.verifySysFileReadOwnership(id);
         SysFileContent sysFileContent = sysFileContentService.get(id);
 
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
@@ -105,6 +109,8 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
     @GetMapping("/getFiled/{id}")
     public ResponseEntity getFiledId(@PathVariable("id") String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
+        // L1 (iteration 59): nhu getPhoto — guard owner truoc khi tra content.
+        sysFileService.verifySysFileReadOwnership(id);
         SysFileContent sysFileContent = sysFileContentService.get(id);
         SysFile sysFile = sysFileService.get(id);
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
@@ -129,6 +135,9 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         // phai giu 200 khong token; moi id khac chiu san 403 cho tai khoan 0-resource.
         if (!"1".equals(id) && !"2".equals(id) && !"3".equals(id) && !"4".equals(id) && !"5".equals(id) && !"6".equals(id)
                 && !hasAnySessionPermission()) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; }
+        // L1 (iteration 59): duong byte tran cung ho — file chu la -> 403,
+        // khong ghi byte. Logo anon 1-6 khong session -> tenant rong -> pass.
+        if (sysFileService.isSysFileForeignOwned(id)) { response.setStatus(HttpServletResponse.SC_FORBIDDEN); return; }
         String modifiedSice = request.getHeader("if-modified-since");
         //Định dạng ngày
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);

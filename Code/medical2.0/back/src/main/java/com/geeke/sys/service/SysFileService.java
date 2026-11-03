@@ -316,6 +316,57 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     }
 
     /**
+     * L1 (iteration 59): primitive chia se cho chieu DOC cua sys_file
+     * (SysFileController.getById/listPage/listAll + SysSetingController
+     * .getPhoto/getFiled/getFile). Tai dung resolver owner theo object_id
+     * cua K3 (getOwnerCompanyIdsByObjectId, UNION 7 namespace) nhung tra
+     * boolean thay vi throw, de list loc duoc tung dong. Chi tra true khi
+     * resolve DUOC chu la (bat ky owner nao != session tenant); file
+     * khong ton tai hoac khong resolve duoc namespace nao -> false (giu
+     * hanh vi cu, parity K3) — bang chung: logo he thong 1-6
+     * (object_id 613672228698857510) khong resolve duoc namespace nao
+     * nhung UI login/settings van phai doc; fail-closed o day se pha
+     * logo he thong + logo clinic (clinic loai khoi UNION vi khong co
+     * company_id). Session tenant rong/"null" (sentinel) -> false nhu
+     * verifyTenantOwnership.
+     */
+    @Transactional(readOnly = true)
+    public boolean isSysFileForeignOwned(String fileId) {
+        if (fileId == null || fileId.isEmpty()) {
+            return false;
+        }
+        String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        if (tenantId == null || tenantId.isEmpty() || "null".equals(tenantId)) {
+            return false;
+        }
+        String fileObjectId = dao.getObjectIdById(fileId);
+        if (fileObjectId == null) {
+            return false;
+        }
+        java.util.List<String> owners = dao.getOwnerCompanyIdsByObjectId(fileObjectId);
+        if (owners == null) {
+            return false;
+        }
+        for (String owner : owners) {
+            if (owner != null && !owner.isEmpty() && !tenantId.equals(owner)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * L1 (iteration 59): guard doc don le — file chu la -> 400 (nem
+     * ServiceException nhu K3, handler map thanh HTTP 400), truoc khi
+     * bat ky content nao duoc tra. Khong doi nghia cua get() generic.
+     */
+    @Transactional(readOnly = true)
+    public void verifySysFileReadOwnership(String fileId) {
+        if (isSysFileForeignOwned(fileId)) {
+            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+        }
+    }
+    /**
      * Tạo nhật ký thao tác
      * @param actionTypeId  Loại thao tácId
      * @param entity        Đối tượng thực thể được thao tác
