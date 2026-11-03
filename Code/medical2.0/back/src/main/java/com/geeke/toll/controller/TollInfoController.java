@@ -10,9 +10,11 @@ import com.geeke.outpatient.entity.*;
 import com.geeke.outpatient.service.MedicalRecordService;
 import com.geeke.outpatient.service.RecipelInfoService;
 import com.geeke.outpatient.service.RegistrationService;
+import com.geeke.org.entity.Company;
 import com.geeke.toll.entity.*;
 import com.geeke.toll.service.TollInfoService;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,10 +57,35 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
+    // K2 (iteration 58): ep tenant theo session, theo mau D1/E1/K1.
+    // Body khong duoc dieu khien tenant nua: session rong/"null" (luong
+    // noi bo khong session) moi giu gia tri body cu.
+    private String sessionTenantOr(String fallback) {
+        String tenant = SessionUtils.getLoginTenantId();
+        return (StringUtils.isNotBlank(tenant) && !"null".equals(tenant)) ? tenant : fallback;
+    }
+
     @Override
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody TollInfo entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        // K2 (iteration 58): ep tenant theo session cho NHANH INSERT
+        // (id trong), mau K1/D1/E1, truoc moi ghi ke ca nhanh REFUNDED
+        // ben duoi (nhanh do chi dung registrationFeeId de load dong cu,
+        // khong dung company cua entity, nen ep truoc khong doi hanh vi
+        // cua no — case R kiem chung). Truoc day payload id trong +
+        // company tenant la tao that phieu thu o tenant la (nhanh insert
+        // cua CrudService.save khong verify tenant), trong khi so phieu
+        // lai sinh theo sequence cua SESSION company (tai hien
+        // tools/iter58-k2.py: so ARK-... cua OWN nhung dong o OTHER).
+        // Nhanh UPDATE KHONG ep: guard stored-row cua CrudService.save
+        // van chan payload company la (case C van 400 + dong van OWN).
+        if (StringUtils.isBlank(entity.getId())) {
+            String tenant = sessionTenantOr(entity.getCompany() == null ? null : entity.getCompany().getId());
+            if (tenant != null) {
+                entity.setCompany(new Company(tenant));
+            }
+        }
         if(BizConstants.AMOUNT_STATUS_REFUNDED.equals(entity.getAmountStatus().getValue())){
             TollInfo tollInfoByRegistrationId = tollInfoService.getTollInfoByRegistrationId(entity.getRegistrationFeeId());
             tollInfoByRegistrationId.setReturnType(1);
