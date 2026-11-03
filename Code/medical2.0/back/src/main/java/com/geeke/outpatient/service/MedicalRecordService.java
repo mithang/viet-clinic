@@ -592,7 +592,24 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 //Xử lýcơ bảnThông tin(tức làThông tin bệnh nhân)
                 if (!org.springframework.util.StringUtils.hasText(receptionEvt.getPatient().getId()) || Objects.isNull(this.patientService.get(receptionEvt.getPatient().getId()))) {
                     receptionEvt.getPatient().setId(null);
-                    receptionEvt.setPatient(this.patientService.saveSuper(receptionEvt.getPatient()));
+                    // ITER55 H1: truoc day goi saveSuper (= super.save) nen bo qua
+                    // kiem tra trung SDT/CCCD cua PatientService.save — tiep nhan
+                    // nhanh tao duoc 2 ho so cung SDT/CCCD trong cung tenant,
+                    // trong khi v1/allSave (F1) va /patient/save (E1) deu chan.
+                    // Nay ep company theo session tenant dung mau F1 (luot kham
+                    // phia duoi cung ep session tenant) roi goi save de kiem tra
+                    // trung chay dung tenant; session rong + thieu company thi
+                    // 400 ro rang kieu C2, khong de tao benh nhan company NULL
+                    // nhu pre-fix. Khong doi PatientService.save generic, khong
+                    // doi duong luot da co, khong doi guard get() cua F3.
+                    String h1Tenant = SessionUtils.getLoginTenantId();
+                    if (h1Tenant != null && !h1Tenant.trim().isEmpty() && !"null".equals(h1Tenant)) {
+                        receptionEvt.getPatient().setCompany(new Company(h1Tenant));
+                    } else if (receptionEvt.getPatient().getCompany() == null || receptionEvt.getPatient().getCompany().getId() == null
+                            || receptionEvt.getPatient().getCompany().getId().trim().isEmpty()) {
+                        throw new ServiceException("Thiếu thông tin phòng khám (company), không xác định được tenant");
+                    }
+                    receptionEvt.setPatient(this.patientService.save(receptionEvt.getPatient()));
                 }
                 receptionEvt.setPatient(this.patientService.get(receptionEvt.getPatient().getId()));
 
