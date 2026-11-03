@@ -25,7 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -126,6 +129,27 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         checkCompanySaveOwnership(company);
         if(StringUtils.isBlank(company.getFileId())) {
             company.setFileId(IdGen.uuid());
+        }
+        // K5 (iteration 58): guard deleteIds truoc moi upload/xoa/ghi, mau I1/J2.
+        // checkCompanySaveOwnership chi guard company payload + company cha,
+        // khong guard deleteIds; sys_file khong co company_id nen delete tran
+        // truoc day xoa duoc file logo cua company la. Tap hop cho phep gom
+        // fileId dang gui + fileId da luu cua company (UI xoa logo cu sau
+        // khi doi fileId, nhu I1); file co object_id ngoai tap nay -> 400
+        // truoc moi ghi de transaction rollback toan bo; file khong ton tai
+        // giu hanh vi cu (bo qua, nhu R3).
+        if (deleteIds != null && deleteIds.length > 0) {
+            Set<String> allowedObjectIds = new HashSet<>();
+            if (StringUtils.isNotBlank(company.getFileId())) {
+                allowedObjectIds.add(company.getFileId());
+            }
+            if (StringUtils.isNotBlank(company.getId())) {
+                Company stored = this.dao.get(company.getId());
+                if (stored != null && StringUtils.isNotBlank(stored.getFileId())) {
+                    allowedObjectIds.add(stored.getFileId());
+                }
+            }
+            sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds), allowedObjectIds);
         }
         // Lưutệp đính kèm
         sysFileService.changeAndSaveSysFileList(fileIdUploads, company.getFileId());
