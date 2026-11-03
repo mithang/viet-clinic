@@ -47,7 +47,9 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
     private  final MdRequestUtil mdRequestUtil;
 
     private  final WebServerApplicationContext webServerApplicationContext;
-    private final static String PRESCRIPTION_URL_XML = "/api/ureport/pdf?_u=Newtouch:chronicDisease.ureport.xml&_t=0&recipelInfoId=";
+    // A1: duong dan servlet in that /ureport/pdf (khong qua /api): tien to /api
+    // chi dung nho proxy dev cua frontend, goi truc tiep backend se tra JSON 20011.
+    private final static String PRESCRIPTION_URL_XML = "/ureport/pdf?_u=Newtouch:chronicDisease.ureport.xml&_t=0&recipelInfoId=";
 
     private final PresDrugService presDrugService;
 
@@ -377,7 +379,9 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
         //TheoĐơn thuốcidLấy đượcnốiĐơn thuốcPDFđường dẫn
         JSONObject data = new JSONObject();
-        String url = "http://localhost:" +properties.getWebPort() +PRESCRIPTION_URL_XML+ recipelInfoReview.getRecipelInfo().getId();
+        // A1: lay PDF truc tiep tu backend (cong that cua WebServer, hien la 7016),
+        // khong qua cong frontend webPort (7020) + proxy dev /api nua.
+        String url = "http://localhost:" + webServerApplicationContext.getWebServer().getPort() + PRESCRIPTION_URL_XML + recipelInfoReview.getRecipelInfo().getId();
         //Tệpbase64
          byte[] bytes = HttpUtil.downloadBytes(url);
         String pdfInfo = Base64.getEncoder().encodeToString(bytes);
