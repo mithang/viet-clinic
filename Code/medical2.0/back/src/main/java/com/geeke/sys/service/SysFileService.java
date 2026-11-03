@@ -17,6 +17,7 @@ import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.sys.entity.Action;
 import com.geeke.sys.entity.ActionRecycle;
 import com.geeke.sys.entity.SysFile;
@@ -67,6 +68,24 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
             List<SysFileContent> deleteSysFileContents = Lists.newArrayList(); // Danh sách xóa
             List<SysFileContent> insertSysFileContents = Lists.newArrayList(); // Danh sách thêm
             List<SysFileContent> updateSysFileContents = Lists.newArrayList(); // Danh sách cập nhật
+            // K3 (iteration 33, cùng mẫu K1): bulkUpdate theo id trần, không
+            // kiểm tra content thuộc file nào, nên chỉ cho cập nhật id thuộc
+            // đúng file này (thiết kế con id = cha id, nên thực tế chỉ id của
+            // chính file); id lạ (content của file khác) -> 400, rollback cả
+            // save, và kiểm tra trước mọi ghi để không xóa nhầm content gốc
+            // của file này trước khi ném.
+            java.util.Set<String> ownedIds = new java.util.HashSet<>();
+            for (SysFileContent sysFileContentSaved : list_SysFileContent) {
+                ownedIds.add(sysFileContentSaved.getId());
+            }
+            if (sysFile.getSysFileContentList() != null) {
+                for (SysFileContent sysFileContent : sysFile.getSysFileContentList()) {
+                    if (!StringUtils.isBlank(sysFileContent.getId())
+                            && !ownedIds.contains(sysFileContent.getId())) {
+                        throw new ServiceException("Nội dung tệp không thuộc tệp này");
+                    }
+                }
+            }
             for(SysFileContent sysFileContentSaved: list_SysFileContent) {
                 boolean found = false;   
                 for (SysFileContent sysFileContent : sysFile.getSysFileContentList()){
