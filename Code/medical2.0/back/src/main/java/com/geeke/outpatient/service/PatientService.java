@@ -108,7 +108,20 @@ public class PatientService extends CrudService<PatientDao, Patient>{
     @Transactional(readOnly = false)
     public Patient wxSave(Patient patient) {
 
-
+        // C2 (iteration 50): wxSave truoc day lay company truc tiep tu payload
+        // roi dao.wxUpdate (WHERE id tran, khong loc company) / wxInsert ghi
+        // thang company payload — token tenant A ghi de / tao benh nhan tenant B.
+        // Payload thieu company thi getCompany().getId() NPE 500. Chan truoc
+        // moi ghi, theo dung ngu nghia C1: company null/rong -> 400 (khong
+        // the xac dinh tenant, khong de NPE); company lech session tenant ->
+        // 400 qua verifyTenantOwnership; company rong/session rong giu hanh
+        // vi cu o verifyTenantOwnership nhung khong toi duoc day khi thieu
+        // company vi guard null o tren da chan.
+        if (patient.getCompany() == null || patient.getCompany().getId() == null
+                || patient.getCompany().getId().trim().isEmpty()) {
+            throw new ServiceException("Thiếu thông tin phòng khám (company), không xác định được tenant");
+        }
+        verifyTenantOwnership(patient);
         //Lấy thông tin có người dùng đó không theo số CMND/CCCD của người dùng
         List<Patient> patientByCard = this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);
 
@@ -118,6 +131,10 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         //điều kiện &&/|| cũ cho list không rỗng, không đổi getByCard.
         if(!CollectionUtils.isEmpty(patientByCard) && (!ObjectUtils.isEmpty(patientByCard.get(0)) && patientByCard.get(0).getOpenId()==null || Objects.equals(patientByCard.get(0).getOpenId(),"") && !ObjectUtils.isEmpty(patientByCard.get(0)))){
             patient.setId(patientByCard.get(0).getId());
+            // C2: stored-row check kieu C1/Q4 — id lay tu dong lookup phai
+            // thuoc session tenant, khong chi tin company payload (lookup
+            // da loc theo payload company, day la lop phong thu thu hai).
+            verifyTenantOwnershipAgainstStoredRow(patient);
             patient.setUpdateDate(new Date());
             this.dao.wxUpdate(patient);
             return patient;
