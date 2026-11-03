@@ -1036,6 +1036,14 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 recipelInfo.setIsFollowUp(1);
             }
 
+            // J3: don tao moi (id rong sau khi doi chieu dong cu) ep company
+            // theo luot kham da verify thay vi company dong remote; nhanh
+            // update giu company remote nhu cu de CrudService.save verify.
+            if (!org.springframework.util.StringUtils.hasText(recipelInfo.getId())
+                    && registration.getCompany() != null
+                    && org.springframework.util.StringUtils.hasText(registration.getCompany().getId())) {
+                recipelInfo.setCompany(registration.getCompany());
+            }
             //Lưu bảng chính của đơn thuốc
             RecipelInfo recipelInfoEntity = this.recipelInfoService.save(recipelInfo);
 
@@ -1069,7 +1077,14 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                     drugService.addDurg(drug);
                 }
 
-                recipelDetail.setCompany(entity.getCompany());
+                // J3: chi tiet luon insert (id null ngay sau day) nen ep
+                // company theo luot kham da verify thay vi dong remote.
+                if (registration.getCompany() != null
+                        && org.springframework.util.StringUtils.hasText(registration.getCompany().getId())) {
+                    recipelDetail.setCompany(registration.getCompany());
+                } else {
+                    recipelDetail.setCompany(entity.getCompany());
+                }
                 recipelDetail.setId(null);
                 recipelDetail.setSeq(k);
                 recipelDetail.setRecipelInfo(recipelInfoEntity);
