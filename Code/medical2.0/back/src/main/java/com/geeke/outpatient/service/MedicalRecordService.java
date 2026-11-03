@@ -1074,6 +1074,13 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                     drug.setUpdateDate(new Date());
                     drug.setCreateBy("từ xaBệnh viện");
                     drug.setUpdateBy("từ xaBệnh viện");
+                    // K6: ep company theo luot kham da verify nhu J3 (chi khi
+                    // luot co company id, neu khong giu hanh vi cu); khong doi
+                    // DrugService.add() (duong tao thuoc chinh).
+                    if (registration.getCompany() != null
+                            && org.springframework.util.StringUtils.hasText(registration.getCompany().getId())) {
+                        drug.setCompany(registration.getCompany());
+                    }
                     drugService.addDurg(drug);
                 }
 
