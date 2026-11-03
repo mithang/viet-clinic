@@ -125,6 +125,14 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	public List<String> bulkInsert(List<T> entitys) {
 		List<String> ids = Lists.newArrayList();
 		for(T entity: entitys) {
+			// ITER30: bulkInsert truoc day khong verify tenant (bulkUpdate/
+			// bulkDelete thi co) nen POST bulkInsert voi company cua tenant
+			// khac ghi thang dong vao tenant do (tai hien live o
+			// /org/clinicOffice/bulkInsert). Verify tung dong nhu bulkUpdate:
+			// company rong thi verify bo qua (giong save-create), company
+			// lech tenant thi fail-closed ca list nho @Transactional cap class.
+			// Cac service ghi de bulkInsert rieng (User, His*) khong bi anh huong.
+			verifyTenantOwnership(entity);
 			entity.preInsert();
 			ids.add(entity.getId());
 		}
