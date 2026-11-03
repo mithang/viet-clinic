@@ -6,6 +6,7 @@ import com.geeke.outpatient.entity.Registration;
 import com.geeke.outpatient.service.RegistrationService;
 import com.geeke.recordaudit.service.RecordAccessAuditService;
 import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import com.geeke.utils.constants.ErrorEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -328,12 +329,26 @@ public class PatientController extends CrudController<PatientService, Patient> {
      * S3 — Quyền sàn như getByCard ở trên (parity getById, không
      * patient:list): 0 quyền → 403 trước khi service/audit chạy.
      */
+    // C3 (iteration 50): ep tenant theo session, theo mau V1 cua
+    // RegistrationController.sessionTenantOr. Truoc day company lay thang tu
+    // payload nen token tenant A gui company tenant B + openId cua benh nhan B
+    // la doc duoc toan bo ho so B; payload thieu company thi
+    // getCompany().getId() NPE 500. Nay: session co tenant thi bo qua company
+    // payload (chi tim trong tenant session, tra rong neu openId thuoc tenant
+    // khac); session rong giu fallback body cu; company null khong con NPE
+    // (dao WHERE company_id = session tenant, khong khop thi tra rong).
+    private String sessionTenantOr(String fallback) {
+        String tenant = SessionUtils.getLoginTenantId();
+        return (StringUtils.isNotBlank(tenant) && !"null".equals(tenant)) ? tenant : fallback;
+    }
+
     @PostMapping(value = "getByOpenId")
     public ResponseEntity<JSONObject> getByOpenId(@RequestBody Patient patient){
         if (!hasAnySessionPermission()) {
             return forbidden();
         }
-        List<Patient> patients = patientService.getByOpenId(patient.getOpenId(),patient.getCompany().getId());
+        List<Patient> patients = patientService.getByOpenId(patient.getOpenId(),
+                sessionTenantOr(patient.getCompany() == null ? null : patient.getCompany().getId()));
         if (patients != null) {
             for (Patient p : patients) {
                 if (p != null) {
