@@ -434,7 +434,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         top20.put("pharCertno", "");                // thẩm định đơnSố giấy tờ của dược sĩ
         top20.put("pharName", ysDoctor.getName());                  // thẩm định đơnTên dược sĩ
         top20.put("pharPracCertNo", ysDoctor.getUserExt().getPracPsnCode());            // thẩm định đơnSố chứng chỉ hành nghề của dược sĩ
-        top20.put("pharChkTime", recipelInfoReview.getCreateDate().toInstant()
+        top20.put("pharChkTime", recipelInfoReview.getCreateDate() == null ? "" : recipelInfoReview.getCreateDate().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime().format(outputFormatter));               // thẩm định đơnDược sĩthẩm định đơnThời gian, Kiểu ngày giờ, Mặc định là trốngchuỗi
         String top20base64 = Base64.getEncoder().encodeToString(top20.toString().getBytes());
@@ -528,7 +528,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         data.put("pharCertno", "");                // thẩm định đơnSố giấy tờ của dược sĩ
         data.put("pharName", ysDoctor.getName());                  // thẩm định đơnTên dược sĩ
         data.put("pharPracCertNo", ysDoctor.getUserExt().getPracPsnCode());            // thẩm định đơnSố chứng chỉ hành nghề của dược sĩ
-        data.put("pharChkTime", recipelInfoReview.getCreateDate().toInstant()
+        data.put("pharChkTime", recipelInfoReview.getCreateDate() == null ? "" : recipelInfoReview.getCreateDate().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime().format(outputFormatter));
          data.put("rxFile",output002.getRxfile());
