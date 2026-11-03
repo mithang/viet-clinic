@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import com.alibaba.fastjson.JSONObject;
+import com.geeke.org.entity.Company;
 import com.geeke.outpatient.entity.Patient;
 import com.geeke.outpatient.service.PatientService;
 import com.geeke.common.controller.CrudController;
@@ -366,6 +367,17 @@ public class PatientController extends CrudController<PatientService, Patient> {
     public ResponseEntity<JSONObject> inquire(@RequestBody Patient patient) {
         if (!hasAnySessionPermission()) {
             return forbidden();
+        }
+        // C4 (iteration 50): ep tenant tra cuu theo session, theo mau C3/V1.
+        // Truoc day company lay thang tu payload nen token tenant A gui company
+        // tenant B + ten/CCCD benh nhan B la tao duoc luot kham that trong
+        // tenant B (insert cua CrudService.save khong verify tenant). Nay:
+        // session co tenant thi chi tra cuu trong tenant session; benh nhan
+        // tenant khac -> result null -> warning, khong tao luot. Session rong
+        // giu fallback body cu (sessionTenantOr tra payload/null nhu C3).
+        String tenant = sessionTenantOr(patient.getCompany() == null ? null : patient.getCompany().getId());
+        if (tenant != null) {
+            patient.setCompany(new Company(tenant));
         }
         // Truy vấnThông tin bệnh nhân
         Patient result = patientService.inquire(patient);
