@@ -57,6 +57,15 @@
         WHERE a.id = #{id}
     </select>
     
+    <select id="getOwnership" resultType="com.geeke.stock.entity.InventoryVerificationDetail">
+        SELECT
+            a.id AS "id",
+            a.company_id AS "company.id",
+            a.inventory_verification_id AS "inventoryVerification.id"
+        FROM inventory_verification_detail a
+        WHERE a.id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM inventory_verification_detail a
         <include refid="inventoryVerificationDetailJoins"/>

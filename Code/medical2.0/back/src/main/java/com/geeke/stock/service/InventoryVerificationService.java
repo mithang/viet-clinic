@@ -70,6 +70,12 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
     @Autowired
     private MedicinalStockRecordService medicinalStockRecordService;
 
+    /** L1 (iteration 34): doc phieu goc khong qua san tenant, de ben goi tu
+     * kiem tra chu so huu theo dong DB truoc khi ghi tong tien. */
+    public InventoryVerification getRaw(String id) {
+        return this.dao.get(id);
+    }
+
     @Transactional
     public  void updateAllPrice(String id, BigDecimal allPrice) {
         this.dao.updateAllPrice(id,allPrice);

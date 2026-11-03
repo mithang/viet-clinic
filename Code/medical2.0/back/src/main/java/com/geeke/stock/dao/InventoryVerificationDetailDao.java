@@ -26,6 +26,10 @@ public interface InventoryVerificationDetailDao extends CrudDao<InventoryVerific
 
     void deleteByInventoryVerificationId(String inventoryVerificationId);
 
+    /** L1 (iteration 34): chi id + company + phieu cha, tranh mapping rong
+     * cua get() (IFNULL end_date '' -> Timestamp) khi dong khong co kho. */
+    InventoryVerificationDetail getOwnership(String id);
+
     public List<InventoryVerificationDetail> listPages(PageRequest pageRequest);
 
 }

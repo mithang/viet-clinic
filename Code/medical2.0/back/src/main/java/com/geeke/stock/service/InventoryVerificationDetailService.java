@@ -107,6 +107,48 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         BigDecimal allPrice=new BigDecimal("0");
         int i=-1;
         if(!CollectionUtils.isEmpty(inventoryVerificationDetailDTOS)){
+            // L1 (iteration 34): kiem tra chu so huu TRUOC KHI ghi, doi chieu theo
+            // dong DB da luu chu khong theo company payload (id la + company OWN
+            // van lot neu chi kiem tra payload). Dong la -> 400 + rollback toan bo.
+            for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
+                if (CollectionUtils.isEmpty(group)) {
+                    continue;
+                }
+                for (InventoryVerificationDetail detail : group) {
+                    if (detail == null) {
+                        continue;
+                    }
+                    verifyTenantOwnership(detail);
+                    if (StringUtils.isNotBlank(detail.getId())) {
+                        InventoryVerificationDetail dbRow = this.dao.getOwnership(detail.getId());
+                        if (dbRow != null) {
+                            verifyTenantOwnership(dbRow);
+                            if (detail.getCompany() != null
+                                    && StringUtils.isNotBlank(detail.getCompany().getId())
+                                    && dbRow.getCompany() != null
+                                    && !detail.getCompany().getId().equals(dbRow.getCompany().getId())) {
+                                throw new com.geeke.common.service.ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                            }
+                        }
+                    }
+                }
+            }
+            // Kiem tra phieu cha se nhan tong tien (nhom dau tien khong rong),
+            // theo dong DB cua phieu, voi cung ngu nghia institution-shared.
+            for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
+                if (CollectionUtils.isEmpty(group)) {
+                    continue;
+                }
+                InventoryVerificationDetail first = group.get(0);
+                if (first != null && first.getInventoryVerification() != null
+                        && StringUtils.isNotBlank(first.getInventoryVerification().getId())) {
+                    InventoryVerification parent = inventoryVerificationService.getRaw(first.getInventoryVerification().getId());
+                    if (parent != null) {
+                        verifyTenantOwnership(parent);
+                    }
+                }
+                break;
+            }
             for (List<InventoryVerificationDetail> inventoryVerificationDetailDTO : inventoryVerificationDetailDTOS) {
                 if(!CollectionUtils.isEmpty(inventoryVerificationDetailDTO)){
                     for (InventoryVerificationDetail inventoryVerificationDetail : inventoryVerificationDetailDTO) {
