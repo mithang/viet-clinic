@@ -67,6 +67,17 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
 
     @Transactional(readOnly = true)
     public List<MedicalProject> listPageForMedical(List<Parameter> parameters, String orderby) {
+        // ITER65 item 4: tenant guard kieu W2 cho duong listForMedical (probe-proven:
+        // params rong tra 26 dong moi tenant, company=F1 tra dung 1 dong la).
+        // Phai chat hon listPage/listAll: ensureCompanyFilter return som khi null,
+        // ma PageRequest bien null thanh list rong -> params-null hien ro toan bo
+        // tenant, nen null phai thanh list rong TRUOC khi goi filter.
+        // KHONG ngoai le institution rieng: listPage anh em cung chi ep session
+        // tenant; hang institution lay qua listByInstitution (khong doi).
+        if (parameters == null) {
+            parameters = new ArrayList<>();
+        }
+        ensureCompanyFilter(parameters);
         PageRequest pageRequest = new PageRequest(parameters, orderby);
         int total = this.dao.count(pageRequest);
         List<CostItem> lis = null;
