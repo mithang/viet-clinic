@@ -13,4 +13,9 @@ import com.geeke.toll.entity.TollDetail;
  */
 @Mapper
 public interface TollDetailDao extends CrudDao<TollDetail> {
+
+    /** ITER63: toll_id da luu cua mot dong chi tiet, tra truc tiep mot cot
+     * (khong qua get() — get() map company null nen khong dung lam nguon
+     * truth cho guard; va lookup mot cot tranh moi JOIN thua). */
+    String getTollDetailTollId(@Param("id") String id);
 }

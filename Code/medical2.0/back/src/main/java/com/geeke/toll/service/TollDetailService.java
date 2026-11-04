@@ -3,6 +3,8 @@ package com.geeke.toll.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.geeke.common.data.Page;
+import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,19 +34,31 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
      * chứng minh insert và bulkInsert gắn toll FOREIGN đều 200 và ghi
      * thật. Guard này resolve company của phiếu toll cha bằng lookup
      * trực tiếp một cột (KHÔNG dùng TollInfoService.get() hay
-     * TollDetailDao.get(): bài học N1 — get() có thể trả null vì JOIN,
-     * và mapper TollDetail.get() hiện lỗi SQL tollId.name nên không
-     * được dùng làm nguồn truth), rồi so với tenant phiên.
-     * - Chỉ phủ NHÁNH INSERT của save (id rỗng) và bulkInsert: đó là
-     *   phạm vi N3a. Nhánh UPDATE của save, delete, get, listPage
-     *   KHÔNG động — chúng hiện 500 toàn cục do bug mapper
-     *   tollId.name (cả dòng own), là bug chức năng riêng; khi mapper
-     *   được sửa sau này phải re-probe update/delete vì mapper update/
-     *   delete chỉ WHERE id, không có điều kiện company.
+     * TollDetailDao.get(): bài học N1 — get() có thể trả null vì JOIN),
+     * rồi so với tenant phiên.
+     * - N3a chỉ phủ NHÁNH INSERT của save (id rỗng) và bulkInsert.
+     * - ITER63 mở rộng sang mọi đường còn lại (mapper tollId.name đã
+     *   sửa nên các đường này không còn 500, và mapper update/delete
+     *   chỉ WHERE id nên không kèm guard sẽ thành lỗ mới — tuyệt đối
+     *   không commit mapper fix đơn lẻ):
+     *   + save-UPDATE: kiểm tra cả phiếu cha ĐÃ LƯU của dòng (chặn ghi
+     *     đè dòng FOREIGN dù payload mang toll own) và phiếu cha MỚI
+     *     trong payload (chặn re-home dòng own sang toll FOREIGN).
+     *   + delete / bulkDelete: kiểm tra phiếu cha đã lưu của từng id.
+     *   + bulkUpdate: kiểm tra cả hai chiều cho từng item, tiền kiểm
+     *     toàn bộ list trước khi ghi dòng nào (fail-closed cả list).
+     *   + get: kiểm tra phiếu cha của dòng trả về.
+     *   + listPage / listAll: lọc SQL theo company phiếu cha
+     *     (tollId.company_id = tenant phiên, JOIN tollId đã có sẵn
+     *     trong mapper) — TollDetail không khai báo field company riêng
+     *     nên ensureCompanyFilter của CrudService mù với nó, phải lọc
+     *     riêng ở đây. Dòng mồ côi (toll không tồn tại, tollId.id IS
+     *     NULL) vẫn hiện trong list như parity get (lookup null cho
+     *     qua, xem dưới).
      * - Phiếu không tồn tại (lookup null), phiếu không mang tollId, hoặc
      *   phiên không session (tenant rỗng/"null", luồng nội bộ): cho qua
      *   như cũ — parity pre-fix (insert gắn toll không tồn tại vốn 200
-     *   và tạo dòng mồ côi; không biến thành 400 mới).
+     *   và tạo dòng mồ côi; dòng mồ côi không biến thành 400 mới).
      * - bulkInsert: tiền kiểm TOÀN BỘ list trước khi ghi dòng nào —
      *   fail-closed cả list (mẫu bulkDelete/N1 saveList): một dòng lạ
      *   thì không dòng nào được ghi.
@@ -56,7 +70,27 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
                 || StringUtils.isBlank(entity.getTollId().getId())) {
             return;
         }
-        String ownerCompanyId = tollInfoDao.getTollInfoCompanyId(entity.getTollId().getId());
+        checkTollCompany(entity.getTollId().getId());
+    }
+
+    /** ITER63: kiểm tra company của phiếu cha đã lưu theo id dòng chi
+     * tiết — nguồn truth là cột toll_id trong DB, không phải payload.
+     * Dòng không tồn tại / toll_id rỗng / phiếu cha không tồn tại đều
+     * cho qua (parity N3c cho id không tồn tại và dòng mồ côi). */
+    private void checkStoredTollTenant(String detailId) {
+        if (StringUtils.isBlank(detailId)) {
+            return;
+        }
+        String storedTollId = dao.getTollDetailTollId(detailId);
+        if (StringUtils.isBlank(storedTollId)) {
+            return;
+        }
+        checkTollCompany(storedTollId);
+    }
+
+    /** So company của một phiếu toll với tenant phiên; lạ -> 400. */
+    private void checkTollCompany(String tollId) {
+        String ownerCompanyId = tollInfoDao.getTollInfoCompanyId(tollId);
         if (StringUtils.isBlank(ownerCompanyId)) {
             return;
         }
@@ -69,11 +103,44 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
         }
     }
 
+    /**
+     * ITER63: tham số lọc tenant cho listPage/listAll. Loại bỏ company_id
+     * do client gửi trước (tránh spoof), rồi thêm nhóm
+     * (tollId.company_id = tenant phiên OR tollId.id IS NULL) — nhóm OR
+     * giữ dòng mồ côi trong list như parity get. Logic "" ở điều kiện
+     * đầu nhóm vì whereParams render "(" rồi tới điều kiện (không được
+     * để AND thừa sau "("). Phiên không tenant thì không lọc (luồng nội
+     * bộ). Lưu ý: extractAndRemoveCompanyId phải chạy TRƯỚC khi thêm
+     * điều kiện tollId.company_id, vì isCompanyIdColumn cũng khớp hậu tố
+     * company_id — và ensureCompanyFilter của CrudService không chạm
+     * tới các tham số này vì TollDetail không khai báo field company.
+     */
+    private List<Parameter> tenantFilteredParams(List<Parameter> parameters) {
+        List<Parameter> params = parameters == null
+                ? new java.util.ArrayList<Parameter>() : parameters;
+        Parameter.extractAndRemoveCompanyId(params);
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return params;
+        }
+        params.add(new Parameter(null, "(", null, "AND"));
+        params.add(new Parameter("tollId.company_id", "=", tenantId, ""));
+        params.add(new Parameter("tollId.id", "is null", null, "or"));
+        params.add(new Parameter(null, ")", null, ""));
+        return params;
+    }
+
     @Override
     @Transactional(readOnly = false)
     public TollDetail save(TollDetail entity) {
-        // N3a: chỉ nhánh insert; nhánh update giữ nguyên hành vi cũ.
         if (StringUtils.isBlank(entity.getId())) {
+            // N3a: nhánh insert — kiểm tra phiếu cha trong payload.
+            checkTollTenant(entity);
+        } else {
+            // ITER63: nhánh update — kiểm tra cả phiếu cha đã lưu
+            // (chặn ghi đè dòng FOREIGN) và phiếu cha mới trong payload
+            // (chặn re-home dòng own sang toll FOREIGN).
+            checkStoredTollTenant(entity.getId());
             checkTollTenant(entity);
         }
         return super.save(entity);
@@ -89,6 +156,65 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
             }
         }
         return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<TollDetail> entitys) {
+        // ITER63: tiền kiểm toàn bộ list, cả hai chiều, trước khi ghi.
+        if (entitys != null) {
+            for (TollDetail entity : entitys) {
+                if (entity != null) {
+                    checkStoredTollTenant(entity.getId());
+                    checkTollTenant(entity);
+                }
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(TollDetail entity) {
+        // ITER63: kiểm tra phiếu cha đã lưu trước khi xóa.
+        if (entity != null) {
+            checkStoredTollTenant(entity.getId());
+        }
+        return super.delete(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<TollDetail> entitys) {
+        // ITER63: tiền kiểm toàn bộ list trước khi xóa dòng nào.
+        if (entitys != null) {
+            for (TollDetail entity : entitys) {
+                if (entity != null) {
+                    checkStoredTollTenant(entity.getId());
+                }
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    @Override
+    public TollDetail get(String id) {
+        TollDetail entity = super.get(id);
+        // ITER63: super.get chỉ verify company null (luôn pass với
+        // TollDetail) nên kiểm tra thêm phiếu cha của dòng trả về.
+        // Dòng mồ côi (toll không tồn tại) cho qua như parity N3a.
+        checkTollTenant(entity);
+        return entity;
+    }
+
+    @Override
+    public Page<TollDetail> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
+        return super.listPage(tenantFilteredParams(parameters), offset, limit, orderby);
+    }
+
+    @Override
+    public List<TollDetail> listAll(List<Parameter> parameters, String orderby) {
+        return super.listAll(tenantFilteredParams(parameters), orderby);
     }
 
 }

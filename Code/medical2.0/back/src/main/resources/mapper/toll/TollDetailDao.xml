@@ -6,8 +6,11 @@
         a.id AS "id",
         a.recipel_id AS "recipel.id",
         IFNULL(recipel.name,'') AS "recipel.name",
-        a.toll_id AS "tollId.id",
-        IFNULL(tollId.name,'') AS "tollId.name"
+        a.toll_id AS "tollId.id"
+        <!-- ITER63: bo IFNULL(tollId.name,'') — bang toll_info khong co cot
+             name (chi co toll_number, company_id, ...) nen moi SELECT qua
+             tollDetailColumns deu loi SQL 500 toan cuc. JOIN tollId giu lai
+             vi loc listPage/listAll theo company phieu cha dung no. -->
     </sql>
     
     <sql id="tollDetailJoins">
@@ -23,6 +26,11 @@
         WHERE a.id = #{id}
     </select>
     
+    <!-- ITER63: toll_id da luu cua mot dong chi tiet (guard stored-row). -->
+    <select id="getTollDetailTollId" resultType="java.lang.String">
+        SELECT toll_id FROM toll_detail WHERE id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM toll_detail a
         <include refid="tollDetailJoins"/>
