@@ -135,6 +135,21 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
 
     @Transactional(readOnly = false)
     public InventoryVerification accomplishInventoryVerification(InventoryVerification inventoryVerification) {
+        // N2 (iteration 61): guard tenant TRUOC DAO update, vi DAO update chi
+        // WHERE id (khong dieu kien company) va la lenh dau tien cua method —
+        // guard sau khong cuu duoc status da lat neu adjustStock loi sau do.
+        // Lookup duoc kiem chung live: dao.get(id) (qua getRaw, khong qua san
+        // tenant) tra dung company.id cho ca phieu OWN lan FOREIGN (xem
+        // iter61-n2-impl-report.md), nen verifyTenantOwnership phan biet duoc;
+        // phieu khong ton tai (stored null) cho qua nhu cu (parity case C).
+        // updateAllPrice KHONG them guard rieng: caller duy nhat saveAll da
+        // guard moi phieu cha bang ngu nghia institution-shared (O2-37),
+        // chung minh live U2 (400 + all_price la khong doi); guard strict them
+        // o day se pha luong institution-shared do.
+        InventoryVerification stored = getRaw(inventoryVerification.getId());
+        if (stored != null) {
+            verifyTenantOwnership(stored);
+        }
         int i = this.dao.accomplishInventoryVerification(inventoryVerification);
         //Sau khi hoàn thành kiểm kê, thực hiện công việc tăng giảm tồn kho liên quan
         logger.debug("Accomplish inventory verification: {}", inventoryVerification);
