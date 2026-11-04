@@ -131,6 +131,13 @@
     </update>
     
 
+    <select id="getCompanyIdById" resultType="String">
+        SELECT
+            company_id
+        FROM sys_company_code_rule
+        WHERE id = #{id}
+    </select>
+
     <select id="getRuleDefByCode" resultType="String">
         SELECT 
             rule_def
