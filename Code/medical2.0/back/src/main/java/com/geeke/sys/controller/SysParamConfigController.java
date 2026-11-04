@@ -32,6 +32,11 @@ public class SysParamConfigController extends CrudController<SysParamConfigServi
     public ResponseEntity<JSONObject> saveList(@RequestBody List<SysParamConfig> entitys) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         if (CollectionUtil.isNotEmpty(entitys)) {
+            // N3e: tien kiem TOAN BO list truoc khi luu dong nao — fail-closed
+            // ca list (mau N1): neu chi dua vao service.save tung dong thi
+            // list hon hop [own, foreign] se ghi xong dong own roi moi nem
+            // 400 o dong la; tien kiem giu ca list nguyen ven.
+            entitys.forEach(sysParamConfigService::checkParamWriteTenant);
             entitys.forEach(sysParamConfigService::save);
         }
         return ResponseEntity.ok(ResultUtil.successJson("thao tácThành công"));
