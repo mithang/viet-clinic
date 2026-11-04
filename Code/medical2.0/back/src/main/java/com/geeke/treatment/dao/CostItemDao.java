@@ -22,6 +22,13 @@ public interface CostItemDao extends CrudDao<CostItem> {
     @Select("select id from cost_item where item_name = #{name} and company_id = #{tenantId}")
     String GetIDByName(@Param("name")String name,@Param("tenantId")String tenantId);
 
+    /** ITER64 item 2: single-column lookup, khong tin payload company va
+     * khong dung mapper get (LEFT JOIN tra '' khi thieu dong org_company).
+     * cost_item_package khong co cot company nen guard saveDto phai di qua
+     * parent cost_item bang lookup nay. Tra null khi id khong ton tai. */
+    @Select("select company_id from cost_item where id = #{id}")
+    String getCostItemCompanyId(@Param("id") String id);
+
     CostItem getByRecipelInfo(String recipelDetailId);
 
 

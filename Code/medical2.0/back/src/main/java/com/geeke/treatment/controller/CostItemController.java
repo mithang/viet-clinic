@@ -80,6 +80,10 @@ public class CostItemController extends CrudController<CostItemService, CostItem
     public ResponseEntity<JSONObject> saveDto(@RequestBody CostItemDTO costItemDTO) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         logger.debug("Lưuhạng mục khám chữa bệnh: {}", costItemDTO);
+        // ITER64 item 2: tien kiem TOAN BO package TRUOC parent save — cac
+        // method package la transaction rieng le, guard dat sau parent save
+        // se de lai ghi rac; mot package item la -> 400, khong ghi/xoa gi.
+        costItemPackageService.validateSaveDtoPackages(costItemDTO.getCostItemPackage());
         if(costItemDTO.getCostItemPackage().size()!=0&&costItemDTO.getCostItemPackage().get(0).getReferenceUnit()==null){
             costItemDTO.getCostItem().setIsPackage("1");
         }else {
