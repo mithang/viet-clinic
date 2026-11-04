@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
+import com.geeke.common.service.ServiceException;
 import com.geeke.stock.entity.MedicalProject;
 import com.geeke.stock.entity.Stuff;
 import com.geeke.stock.service.StuffService;
@@ -13,6 +14,7 @@ import com.geeke.utils.StringUtils;
 import com.geeke.utils.constants.ErrorEnum;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,10 +66,52 @@ public class StuffController extends CrudController<StuffService, Stuff> {
         String id = null;
         try {
             id = stuffService.save(entity).getId();
+        } catch (ServiceException e) {
+            // Iteration 65 item 6: Stuff khong co nhanh trung lap bang
+            // ServiceException (trung lap nem NegativeArraySizeException, xem
+            // duoi) nen moi ServiceException o day deu la loi nghiep vu that
+            // — dac biet guard tenant — tra 400 dung message, khong gan nhan
+            // trung lap. Khong doi hanh vi guard, chi doi tin hieu.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.errorJson(ErrorEnum.E_400, businessMessage(e)));
+        } catch (NegativeArraySizeException e) {
+            // Trung lap that (StuffService.repeat) giu tin hieu cu 200+50001;
+            // NegativeArraySizeException khac message thi tra 400.
+            if ("Thông tin vật tư trùng lặp".equals(e.getMessage())) {
+                return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_50001, "Thông tin vật tư trùng lặp"));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.errorJson(ErrorEnum.E_400, businessMessage(e)));
         } catch (Exception e) {
-            return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_50001, "Thông tin vật tư trùng lặp"));
+            // Trung lap that o tang DB (unique index) van 50001; moi loi khac
+            // (vi pham NOT NULL, ...) tra 400 thay vi 200+50001 sai nhan.
+            if (isDuplicateKey(e)) {
+                return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_50001, "Thông tin vật tư trùng lặp"));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultUtil.errorJson(ErrorEnum.E_400, businessMessage(e)));
         }
         return ResponseEntity.ok(ResultUtil.successJson(id));
+    }
+
+    /**
+     * Iteration 65 item 6: message tra ve cho loi 400 — lay message that cua
+     * exception, fallback ve message mac dinh cua E_400 khi message rong.
+     */
+    private String businessMessage(Exception e) {
+        String msg = e.getMessage();
+        return StringUtils.isBlank(msg) ? ErrorEnum.E_400.getErrorMsg() : msg;
+    }
+
+    /**
+     * Iteration 65 item 6: nhan dien trung lap that o tang DB qua chuoi cause
+     * (DuplicateKeyException cua Spring hoac "Duplicate entry" cua MySQL).
+     */
+    private boolean isDuplicateKey(Throwable e) {
+        while (e != null) {
+            if (e instanceof DuplicateKeyException) { return true; }
+            String msg = e.getMessage();
+            if (msg != null && msg.contains("Duplicate entry")) { return true; }
+            e = e.getCause();
+        }
+        return false;
     }
 
     /**
