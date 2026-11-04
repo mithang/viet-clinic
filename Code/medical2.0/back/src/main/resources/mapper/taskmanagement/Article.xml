@@ -196,6 +196,9 @@
             </if>
         </where>
     </select>
+    <select id="getArticleCompanyId" resultType="java.lang.String">
+        SELECT company_id FROM article WHERE id = #{id}
+    </select>
     <update id="update">
         update article
         <set>
