@@ -86,9 +86,22 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	 * @param entity
 	 */
 	public T save(T entity) {
+		// ITER64 item 1: verify payload company on EVERY save, not only on
+		// update. Previously the check ran only when id was non-blank, so
+		// the blank-id (insert) branch went straight to doInsert with the
+		// payload company untouched, letting any guarded endpoint plant a
+		// row into a foreign tenant (probe-proven on costItem, supplier,
+		// manufactureFactory, noticeSend single save). Insert has no stored
+		// row, so the payload check alone is sufficient for that branch;
+		// the update branch keeps its stored-row cross-check below.
+		// Parity (from verifyTenantOwnership itself, unchanged): null/blank
+		// company passes, blank/'null' session passes, and the
+		// institution-shared exception still applies. This BLOCKS foreign
+		// companies; it never overwrites the payload with the session
+		// company (no force-session at the generic layer).
+		verifyTenantOwnership(entity);
 		// Cập nhậtthao tácCầnKiểm tratenantthuộc về
 		if (StringUtils.isNotBlank(entity.getId())) {
-			verifyTenantOwnership(entity);
 			// ITER35 M2: same stored-row cross-check as bulkUpdate (M1).
 			// Payload-only verification let a foreign row id + own-tenant
 			// payload company pass, and doUpdate then overwrote + re-homed

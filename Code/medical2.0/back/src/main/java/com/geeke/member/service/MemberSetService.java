@@ -37,6 +37,13 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
     @Transactional(readOnly = false)
     public MemberSet save(MemberSet memberSet){
        if(StringUtils.isBlank(memberSet.getId())){
+           // ITER64 item 1: this insert branch bypassed super.save, so the
+           // generic insert guard does not cover it. Verify BEFORE
+           // dao.insert (same check as the update branch below); a foreign
+           // payload company used to plant a member_set row into a foreign
+           // tenant (probe-proven). Child MemberItem rows saved afterwards
+           // go through memberItemService.save, covered by the generic guard.
+           verifyTenantOwnership(memberSet);
            memberSet.preInsert();
            int i = this.dao.insert(memberSet);
            if(i>0){

@@ -53,6 +53,14 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                 this.dao.update(memberManagement);
                 return memberManagement;
             }
+            // ITER64 item 1: this insert branch bypassed super.save, so the
+            // generic insert guard does not cover it. Verify BEFORE any
+            // write (dao.insert + detail saves + set stock decrement); a
+            // foreign payload company used to plant a card row into a
+            // foreign tenant (probe-proven with an OWN set, so the trailing
+            // memberSetService.get(setId) check cannot mask it). The update
+            // branch above already has both checks (ITER36 N1).
+            verifyTenantOwnership(memberManagement);
             memberManagement.preInsert();
             String id = memberManagement.getId();
             String card = new Date().getTime() + "";
