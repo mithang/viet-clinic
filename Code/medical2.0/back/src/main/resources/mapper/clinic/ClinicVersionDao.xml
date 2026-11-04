@@ -18,6 +18,7 @@
     </sql>
     
     <sql id="clinicVersionJoins">
+        LEFT JOIN sys_role r ON r.id = a.role_id
     </sql>
     
     <select id="get" resultType="com.geeke.clinic.entity.ClinicVersion">
@@ -36,6 +37,10 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             <include refid="Common.whereParams"/>
+            <if test='institution != null and institution != ""'>
+                AND (a.company_id = #{institution} OR a.company_id IS NULL)
+                AND (r.company_id IS NULL OR r.company_id = '0' OR r.company_id = #{institution})
+            </if>
         </where>
     </select>    
     
@@ -49,6 +54,10 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             <include refid="Common.whereParams"/>
+            <if test='institution != null and institution != ""'>
+                AND (a.company_id = #{institution} OR a.company_id IS NULL)
+                AND (r.company_id IS NULL OR r.company_id = '0' OR r.company_id = #{institution})
+            </if>
         </where>
         <choose>
             <when test="order != null and order != ''">
@@ -71,6 +80,10 @@
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
             <include refid="Common.whereParams"/>
+            <if test='institution != null and institution != ""'>
+                AND (a.company_id = #{institution} OR a.company_id IS NULL)
+                AND (r.company_id IS NULL OR r.company_id = '0' OR r.company_id = #{institution})
+            </if>
         </where>
         <choose>
             <when test="order != null and order != ''">

@@ -15,4 +15,8 @@ import org.apache.ibatis.annotations.Select;
 public interface ClinicVersionDao extends CrudDao<ClinicVersion> {
     @Select("select role_id from clinic_version where id = #{id}")
     String getRoleIdById(@Param("id")String id);
+    @Select("select company_id from clinic_version where id = #{id}")
+    String getCompanyIdById(@Param("id")String id);
+    @Select("select company_id from sys_role where id = #{id}")
+    String getRoleCompanyIdById(@Param("id")String id);
 }
