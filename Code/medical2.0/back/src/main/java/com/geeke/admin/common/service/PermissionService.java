@@ -6,7 +6,10 @@ import com.geeke.admin.common.entity.DataPermission;
 import com.geeke.admin.common.entity.Permission;
 import com.geeke.admin.entity.Resource;
 import com.geeke.admin.entity.Router;
+import com.geeke.common.service.ServiceException;
 import com.geeke.utils.IdGen;
+import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +81,33 @@ public class PermissionService {
     }
     
     
+    /**
+     * ITER65 item 1: chan doc/ghi quyen cua role thuoc tenant khac.
+     * Lookup stored company_id cua role dich (single-column SELECT, tien le
+     * X3/N1): foreign (!= session tenant) -> ServiceException 400 fail-closed
+     * TRUOC moi lenh xoa/ghi. Parity: role khong ton tai (lookup null) hoac
+     * stored company rong giu hanh vi cu (tien le orphan N3c); session khong
+     * tenant / "null" thi skip. Chi cho dung session tenant (khong noi cho
+     * role cua cong ty cha/institution — khong co bang chung code nao cho
+     * thay role la institution-shared, plan iter65 §1(c)).
+     * DAT O CONTROLLER (khong dat trong savePermission): CompanyService.
+     * savePermisson goi noi bo savePermission de copy quyen mau version
+     * sang role moi vua tao cua clinic moi (company = clinic moi, != session
+     * tenant cua nguoi tao) — guard o service se lam vo luong tao clinic
+     * (L6). Cac duong ngoai duy nhat vao day la 2 controller, ca 2 deu goi
+     * verifyRoleTenant truoc khi vao service.
+     */
+    public void verifyRoleTenant(String roleId) {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        String storedCompanyId = this.permissionDAO.getRoleCompanyId(roleId);
+        if (StringUtils.isNotBlank(storedCompanyId) && !tenantId.equals(storedCompanyId)) {
+            throw new ServiceException("Không có quyền truy cập quyền của vai trò thuộc phòng khám khác");
+        }
+    }
+
     /**
      * LưuVai tròQuyền
      * @param roleId

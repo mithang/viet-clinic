@@ -118,6 +118,12 @@ public interface PermissionDAO {
 	
 	
 	int saveDataPermission(@Param("dataPermissions") List<DataPermission> dataPermissions, @Param("ids") String[] ids);
+
+    /**
+     * ITER65 item 1: company_id cua role theo id, phuc vu guard tenant
+     * (single-column SELECT, khong INNER JOIN de khong bi null gia nhu N1).
+     */
+    String getRoleCompanyId(@Param("roleId") String roleId);
 	
 	
 	/**

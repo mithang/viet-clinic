@@ -5,7 +5,10 @@ import com.geeke.admin.common.dao.PermissionDAO;
 import com.geeke.admin.common.entity.DataPermission;
 import com.geeke.admin.common.entity.Permission;
 import com.geeke.clinic.dao.ClinicPermissionDAO;
+import com.geeke.common.service.ServiceException;
 import com.geeke.utils.IdGen;
+import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,12 +39,36 @@ public class ClinicPermissionService {
      */
     @Transactional
     public int savePermission(String roleId, Permission permission) {
+        // ITER65 item 1: guard o service duoc vi service nay CHI duoc goi tu
+        // ClinicPermissionController (khong co luong noi bo nhu
+        // CompanyService.savePermisson ben PermissionService). Phai verify
+        // role goc VA TOAN BO role con TRUOC khi xoa bat ky dong nao —
+        // xoa role goc roi moi nem loi se de lai role goc trang quyen.
+        // Cung quy tac nhu PermissionService.verifyRoleTenant: chi dung
+        // session tenant; role khong ton tai / company rong giu hanh vi cu;
+        // session khong tenant thi skip.
+        verifyRoleTenant(roleId);
+        List<String> childIds = clinicPermissionDAO.queryChildNodesByPid(roleId);
+        for (String childId : childIds) {
+            verifyRoleTenant(childId);
+        }
+
         int rows = saveAllPermission(roleId, permission);
 
         //Truy vấnconLớpVai tròvàCập nhậtQuyền
-        List<String> ids = clinicPermissionDAO.queryChildNodesByPid(roleId);
-        ids.stream().forEach(id -> saveAllPermission(id,permission));
+        childIds.stream().forEach(id -> saveAllPermission(id,permission));
         return rows;
+    }
+
+    private void verifyRoleTenant(String roleId) {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        String storedCompanyId = this.permissionDAO.getRoleCompanyId(roleId);
+        if (StringUtils.isNotBlank(storedCompanyId) && !tenantId.equals(storedCompanyId)) {
+            throw new ServiceException("Không có quyền truy cập quyền của vai trò thuộc phòng khám khác");
+        }
     }
 
     private int saveAllPermission(String roleId, Permission permission) {

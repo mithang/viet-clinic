@@ -112,6 +112,7 @@ public class PermissionController extends BaseController {
     @GetMapping("/{roleId}/resourcePermissions")
     public ResponseEntity<JSONObject> listResourcePermissionByRoleId(@PathVariable("roleId") String roleId) {
         if (!hasAnySessionPermission()) { return forbidden(); }
+        this.permissionService.verifyRoleTenant(roleId); // ITER65 item 1
     	List<String> list = this.permissionService.listResourcePermission(roleId);
     	return ResponseEntity.ok(ResultUtil.successJson(list));
     }
@@ -119,6 +120,7 @@ public class PermissionController extends BaseController {
     @PostMapping("/{roleId}/savePermission")
     public ResponseEntity<JSONObject> savePermission(@PathVariable("roleId") String roleId, @RequestBody Permission permission) {
         if (!hasSessionPermission("role:update") && !hasSessionPermission("clinicVersion:update")) { return forbidden(); }
+        this.permissionService.verifyRoleTenant(roleId); // ITER65 item 1, truoc moi remove*
         int rows = this.permissionService.savePermission(roleId, permission);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
@@ -126,6 +128,7 @@ public class PermissionController extends BaseController {
     @GetMapping("/{roleId}/dataPermissions")
     public ResponseEntity<JSONObject> listDataPermissionByRoleId(@PathVariable("roleId") String roleId) {
         if (!hasAnySessionPermission()) { return forbidden(); }
+        this.permissionService.verifyRoleTenant(roleId); // ITER65 item 1
     	List<DataPermission> list = this.permissionService.listDataPermissionByRoleId(roleId);
     	return ResponseEntity.ok(ResultUtil.successJson(list));
     }

@@ -105,6 +105,11 @@
         </foreach>
     </insert>  
     
+    <!-- ITER65 item 1: company cua role theo id, cho guard tenant -->
+    <select id="getRoleCompanyId" resultType="String">
+        SELECT company_id FROM sys_role WHERE id = #{roleId}
+    </select>
+
     <select id="listDataPermissionByRoleId" resultType="com.geeke.admin.common.entity.DataPermission">
         SELECT a.id AS "id",
             a.role_id AS "roleId",
