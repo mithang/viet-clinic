@@ -629,6 +629,9 @@
             AND a.name = #{name}
             AND a.pack_number = #{packNumber}
             AND a.price_out_sell = #{priceOutSell}
+            <if test="id != null and id != ''">
+                AND a.id != #{id}
+            </if>
         </where>
     </select>
 
