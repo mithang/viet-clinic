@@ -45,6 +45,26 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
 
         if (CollectionUtils.isNotEmpty(sysCollectList)) {
 
+            // N4-P3 (iteration 62): updateBatch mapper WHERE chi theo id,
+            // khong loc user_id, nen nhan id dong cua user khac vao list la
+            // ghi de duoc favorite cua user do (controller chi check path
+            // userId == self, khong check tung item). Verify stored user_id
+            // cua moi item truoc khi ghi, fail-closed ca list: stored row
+            // thuoc user khac -> 400, khong ghi item nao. Id rong / khong
+            // ton tai / stored user rong giu duong cu (mapper khop 0 dong).
+            if (StringUtils.isNotBlank(userId)) {
+                for (SysCollect item : sysCollectList) {
+                    if (item == null || StringUtils.isBlank(item.getId())) {
+                        continue;
+                    }
+                    SysCollect stored = sysCollectDao.get(item.getId());
+                    if (stored != null && stored.getUserId() != null
+                            && StringUtils.isNotBlank(stored.getUserId().getId())
+                            && !userId.equals(stored.getUserId().getId())) {
+                        throw new ServiceException("Không có quyền truy cập dữ liệu của người dùng khác");
+                    }
+                }
+            }
             for (int i = 0; i < sysCollectList.size(); i++) {
                 SysCollect sysCollect = sysCollectList.get(i);
                 sysCollect.preUpdate();
