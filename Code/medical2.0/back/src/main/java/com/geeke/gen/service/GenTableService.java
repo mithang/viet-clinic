@@ -4,6 +4,7 @@ import com.geeke.common.constants.ActionConstants;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.gen.dao.ConstraintDao;
 import com.geeke.gen.dao.GenTableColumnDao;
 import com.geeke.gen.dao.GenTableDao;
@@ -183,16 +184,21 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
 
     @Transactional(readOnly = false)
     public GenTable importJson(GenTable genTable) {
-        // Không cóBản ghi của tình hìnhdưới, trướcThêm, nhưngsaulạiQuaCập nhật
-        if(get(genTable.getId()) == null ){
-        	// Thêm
-        	genTable.preInsert();
-        	doInsert(genTable);
-        	this.saveAction(this.createAction(ActionConstants.ACTION_CREATED, genTable));
+        // ITER67 item 1 (8c), phuong an B, gop chung 1 commit voi san moi:
+        // import chi cap nhat dong da ton tai (file export genTable.json
+        // luon co id). Code cu: get(id) qua GenTableService.get -> goi
+        // getId() tren null -> NPE 500 o ca nhanh id trong lan id khong
+        // ton tai; nhanh insert cu lai save them 1 lan ngay sau do
+        // (double-save/audit). Nay: id trong hoac khong ton tai -> 400
+        // tuong minh qua ServiceException (GlobalExceptionHandler), khong
+        // NPE, khong tao dong; chi 1 lan save -> 1 audit.
+        if (genTable == null || StringUtils.isBlank(genTable.getId())) {
+            throw new ServiceException("Import JSON yêu cầu id của bảng đã tồn tại; không tạo bảng mới qua import");
         }
-        // Cập nhật
-        GenTable genTableTemp = this.save(genTable);
-        return genTableTemp;
+        if (super.get(genTable.getId()) == null) {
+            throw new ServiceException("Import JSON: bảng không tồn tại: " + genTable.getId());
+        }
+        return this.save(genTable);
     }
 
     /**

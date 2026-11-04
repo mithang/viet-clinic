@@ -57,17 +57,21 @@ public class GenTableController extends BaseController {
 
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody GenTable entity) {
-        if (!hasAnySessionPermission()) {
+        // ITER67 item 1 (8c): gen_table la metadata codegen toan cuc, khong
+        // co cot company nen khong guard tenant duoc — san theo thao tac,
+        // theo mau DictTypeController: save phu ca create lan update.
+        if (!hasSessionPermission("genTable:create") && !hasSessionPermission("genTable:update")) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
         String id = genTableService.save(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
-  
+
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody GenTable entity) {
-        if (!hasAnySessionPermission()) {
+        // ITER67 item 1 (8c): san theo thao tac, thay hasAnySessionPermission.
+        if (!hasSessionPermission("genTable:delete")) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
@@ -77,27 +81,30 @@ public class GenTableController extends BaseController {
 
     @PostMapping(value = "bulkInsert")
     public ResponseEntity<JSONObject> bulkInsert(@RequestBody List<GenTable> entitys) {
-        if (!hasAnySessionPermission()) {
+        // ITER67 item 1 (8c): san theo thao tac, thay hasAnySessionPermission.
+        if (!hasSessionPermission("genTable:create")) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
         List<String> ids = genTableService.bulkInsert(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
     }
-    
+
     @PostMapping(value = "bulkUpdate")
     public ResponseEntity<JSONObject> bulkUpdate(@RequestBody List<GenTable> entitys) {
-        if (!hasAnySessionPermission()) {
+        // ITER67 item 1 (8c): san theo thao tac, thay hasAnySessionPermission.
+        if (!hasSessionPermission("genTable:update")) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
         List<String> ids = genTableService.bulkUpdate(entitys);
         return ResponseEntity.ok(ResultUtil.successJson(ids));
     }
-    
+
     @PostMapping(value = "bulkDelete")
     public ResponseEntity<JSONObject> bulkDelete(@RequestBody List<GenTable> entitys) {
-        if (!hasAnySessionPermission()) {
+        // ITER67 item 1 (8c): san theo thao tac, thay hasAnySessionPermission.
+        if (!hasSessionPermission("genTable:delete")) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
@@ -107,7 +114,24 @@ public class GenTableController extends BaseController {
 
     @PostMapping(value = "importJson")
     public ResponseEntity<JSONObject> importJson(@RequestBody GenTable entity) {
-        if (!hasAnySessionPermission()) {
+        // ITER67 item 1 (8c): san theo thao tac + phuong an B cho nhanh
+        // create chet NPE (gop chung 1 commit voi san, theo bai hoc
+        // LargeScreen: sua NPE rieng se mo duong tao metadata dang chet).
+        // Can cu shape file export that: trang genTable export bang getById
+        // -> JSON.stringify(data) -> genTable.json, luon co id cua dong da
+        // ton tai; import-create (id trong) khong co caller that nao.
+        // Vi vay import chi cap nhat: id trong -> 400 tuong minh (khong
+        // NPE 500, khong tao dong); id co -> can genTable:update.
+        if (entity == null || entity.getId() == null || entity.getId().trim().isEmpty()) {
+            if (!hasSessionPermission("genTable:create")) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                        .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+            }
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400,
+                            "Import JSON yêu cầu id của bảng đã tồn tại (file export genTable.json luôn có id); không tạo bảng mới qua import"));
+        }
+        if (!hasSessionPermission("genTable:update")) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
