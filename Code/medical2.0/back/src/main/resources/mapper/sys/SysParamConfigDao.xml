@@ -123,5 +123,93 @@
     <delete id="delete">
         DELETE FROM sys_param_config WHERE id = #{id}
     </delete>
-    
+
+    <!-- ITER63 item 4: 3 statement bulk còn thiếu (N3e đã ghi nợ; trước đây
+         bulkInsert/bulkUpdate/bulkDelete đều 500 toàn cục vì MyBatis không
+         tìm thấy statement). Chỉ bổ sung mapper, KHÔNG động guard N3e:
+         SysParamConfigService.bulk* đã tiền kiểm toàn bộ list (body +
+         stored companyId) trước khi tới đây, nên foreign/mixed vẫn 400
+         trước khi chạm SQL. Các cột mirror đúng insert/update/delete đơn:
+         bulkUpdate chỉ đổi 6 cột của update đơn (không động remarks hay
+         create_*); bulkDelete là hard DELETE như delete đơn (entity này
+         không dùng soft-delete ở delete đơn, khác Lessee). -->
+    <insert id="bulkInsert" parameterType="java.util.List">
+        INSERT INTO sys_param_config(
+            id,
+            category,
+            config_name,
+            config_value,
+            company_id,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES
+        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
+        (
+            #{entity.id},
+            #{entity.category},
+            #{entity.configName},
+            #{entity.configValue},
+            #{entity.companyId},
+            #{entity.remarks},
+            #{entity.createBy},
+            #{entity.createDate},
+            #{entity.updateBy},
+            #{entity.updateDate},
+            #{entity.delFlag}
+        )
+        </foreach>
+    </insert>
+
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE sys_param_config
+        <set>
+            <trim prefix="category=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.category}
+                </foreach>
+            </trim>
+            <trim prefix="config_name=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.configName}
+                </foreach>
+            </trim>
+            <trim prefix="config_value=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.configValue}
+                </foreach>
+            </trim>
+            <trim prefix="company_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.companyId}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <delete id="bulkDelete" parameterType="java.util.List">
+        DELETE FROM sys_param_config
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </delete>
+
 </mapper>
