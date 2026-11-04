@@ -19,6 +19,11 @@ import java.util.List;
 public interface RecipelInfoReviewDao extends CrudDao<RecipelInfoReview> {
     RecipelInfoReview getByRecipelInfoId(String recipelInfoId);
 
+    /** N1: recipel_info_id của một review row (lookup trực tiếp, không qua
+     * get() nhiều JOIN — get() INNER JOIN registration nên trả null khi
+     * registration cha thiếu, đã chứng minh live). */
+    String getRecipelInfoIdByReviewId(String reviewId);
+
     /** Y1: parent_id của một company (để ép phạm vi thống kê theo session). */
     String getCompanyParentId(@Param("id") String companyId);
 

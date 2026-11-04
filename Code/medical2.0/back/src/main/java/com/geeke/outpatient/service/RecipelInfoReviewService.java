@@ -58,6 +58,11 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
         return this.recipelInfoReviewDao.getCompanyParentId(companyId);
     }
 
+    /** N1: recipel_info_id của stored review row (lookup trực tiếp một cột). */
+    public String getRecipelInfoIdByReviewId(String reviewId) {
+        return this.recipelInfoReviewDao.getRecipelInfoIdByReviewId(reviewId);
+    }
+
     public ReviewVO reviewForm(String recipelInfoId) {
         RecipelInfoReview recipelInfoReview = this.getByRecipelInfoId(recipelInfoId);
         if (ObjectUtil.isNull(recipelInfoReview)) {

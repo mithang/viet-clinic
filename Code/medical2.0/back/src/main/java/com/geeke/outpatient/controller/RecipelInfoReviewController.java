@@ -6,6 +6,7 @@ import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.service.ServiceException;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import com.geeke.medicareutils.config.MedicareConfigProperties;
@@ -96,6 +97,45 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     }
 
     /**
+     * N1: chặn ghi review của tenant khác theo đơn cha, TRƯỚC mọi ghi.
+     * Review không có company riêng nên guard generic của CrudService luôn
+     * pass trên company null (mapper không map company cấp review; mapper
+     * update chỉ WHERE id, mapper delete là DELETE vật lý không del_flag).
+     * - Dòng đã tồn tại (id khác rỗng): resolve đơn cha của stored row
+     *   bằng lookup trực tiếp một cột (KHÔNG dùng get() — get() INNER
+     *   JOIN registration nên trả null khi registration cha thiếu, đã
+     *   chứng minh live: cả hai recipel test đều thiếu dòng registration
+     *   nên get() luôn null và guard dùng get() không bao giờ chặn),
+     *   rồi so company của đơn cha với tenant phiên; lạ thì ném 400.
+     *   Guard đặt trước save/delete vì delete vật lý không cứu được bằng
+     *   guard sau (lỗ A2/A3 đã chứng minh ở M6).
+     * - Insert (id rỗng): chặn tường minh bằng isForeignRecipel (đơn
+     *   trong body lạ) thay vì chỉ dựa vào tác dụng phụ của chuỗi get()
+     *   ở save() — cùng mã 400 như hành vi A1 cũ, không đổi phản hồi;
+     *   và phủ luôn saveList, đường gọi thẳng service.save từng dòng
+     *   nên trước đây bypass cả chuỗi get() (lỗ A4/A4c).
+     * - id không tồn tại (lookup null) hoặc phiên không session: cho qua
+     *   như cũ, parity Y1 (service trả null / 0 dòng).
+     * Ném ServiceException (400) như verifyTenantOwnership của
+     * CrudService, đồng nhất với mã lỗi tenant của A1.
+     */
+    private void checkReviewWriteTenant(RecipelInfoReview entity) {
+        if (entity == null) {
+            return;
+        }
+        if (StringUtils.isNotBlank(entity.getId())) {
+            String storedRecipelId = recipelInfoReviewService.getRecipelInfoIdByReviewId(entity.getId());
+            if (StringUtils.isNotBlank(storedRecipelId)
+                    && isForeign(recipelInfoService.getRecipelInfoCompanyId(storedRecipelId))) {
+                throw new ServiceException("Không có quyền truy cập tenant khác");
+            }
+        }
+        if (isForeignRecipel(entity)) {
+            throw new ServiceException("Không có quyền truy cập tenant khác");
+        }
+    }
+
+    /**
      * Y1: phạm vi thống kê hợp lệ của phiên — parent của tenant phiên
      * (trang thật gửi company.parent_id = parent của công ty đăng nhập),
      * hoặc chính tenant phiên khi tenant không có parent (parent 0/null:
@@ -152,6 +192,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody RecipelInfoReview entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        checkReviewWriteTenant(entity); // N1: chan ghi review tenant khac theo don cha (stored row + don trong body), truoc chuoi get().
         //Lấyxongnguyên của Đơn thuốc, bệnh án, Thông tin đăng ký khám
         RecipelInfo recipelInfo = recipelInfoService.get(entity.getRecipelInfo().getId());
         MedicalRecord medicalRecord = medicalRecordService.get(entity.getMedicalRecord().getId());
@@ -176,6 +217,9 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     public ResponseEntity<JSONObject> saveList(@RequestBody List<RecipelInfoReview> entitys) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         if (CollectionUtil.isNotEmpty(entitys)) {
+            // N1: tien kiem TOAN BO list truoc khi luu dong nao — fail-closed
+            // ca list (mau bulkDelete): mot dong la thi khong dong nao duoc ghi.
+            entitys.forEach(this::checkReviewWriteTenant);
             entitys.forEach(recipelInfoReviewService::save);
         }
         return ResponseEntity.ok(ResultUtil.successJson("thao tácThành công"));
@@ -186,6 +230,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     @DeleteMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody RecipelInfoReview entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        checkReviewWriteTenant(entity); // N1: chan xoa vat ly review tenant khac theo don cha cua stored row, truoc delete.
         int rows = recipelInfoReviewService.delete(entity);
         return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
@@ -268,6 +313,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     public ResponseEntity<JSONObject> revokePre(@RequestBody RecipelInfoReview recipelInfoReview, @RequestParam String undoRea) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y1.
         if (isForeignRecipel(recipelInfoReview)) { return forbidden(); } // Y1: chan huy don tenant khac — kiem tra TRUOC khi goi dich vu huy BHYT.
+        checkReviewWriteTenant(recipelInfoReview); // N1: revoke goi thang service.save (khong qua save() controller) nen can guard stored row rieng; dat truoc cuoc goi BHYT.
          mdMedicationOrderService.cancelElectronicPrescription_Ld7104(recipelInfoReview,undoRea);
          recipelInfoReview.setReviewerId(SessionUtils.getUserJson().getString("id"));
          recipelInfoReview.setReviewStatus(2);
