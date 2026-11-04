@@ -97,9 +97,21 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
 
     /**
      * Trích xuất từ tham số company_id Và xây dựng kèm tenantThông tin của  PageRequest(không phúttrang)
+     * ITER65 item 5-followup: bản không phân trang trước đây lấy id từ company_id
+     * trong body (Parameter.extractAndRemoveCompanyId trả về giá trị body), nên
+     * StuffService.listAlls rò tenant lạ qua exportStuff / listAll / salesStat.
+     * Ép session tenant như bản có phân trang: strip company_id body, lấy
+     * SessionUtils.getLoginTenantId(), institution từ stored company đó.
+     * Các caller đều là frontend-driven với company = session tenant nên hành
+     * vi hợp lệ không đổi; chỉ chặn company lạ trong body.
      */
     private PageRequest buildStuffTenantPageRequest(List<Parameter> params, String orderby) {
-        String id = Parameter.extractAndRemoveCompanyId(params);
+        // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
+        Parameter.extractAndRemoveCompanyId(params);
+        String id = SessionUtils.getLoginTenantId();
+        if ("null".equals(id)) {
+            id = null;
+        }
         String institution = companyService.getInstitution(id);
         return new PageRequest(params, orderby, id, institution);
     }

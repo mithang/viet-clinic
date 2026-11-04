@@ -430,6 +430,12 @@
             1=1
             AND a.id > 0
             AND a.del_flag = '0'
+            <!-- ITER65 item 5-followup: câu list trước đây không có lọc tenant
+                 trong khi câu count countInventory có — exportDrugInventory và
+                 JSON getDrugInventoryWarning rò toàn bộ tenant. Copy nguyên
+                 predicate tenant của countInventory để count/list nhất quán
+                 (id/institution đã được buildTenantPageRequest ép session). -->
+            and if(company.is_institution=0, company.id = #{id}, (company.id = #{institution} or company.id = #{id}))
             AND (stock.storage_stock-stock.used_stock-stock.reimburse_stock) &lt;= a.inventory_floor*a.preparation
             <include refid="Common.whereParams"/>
         </where>
