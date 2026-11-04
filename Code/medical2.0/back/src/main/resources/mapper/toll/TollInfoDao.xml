@@ -52,6 +52,11 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- N3a: company của phiếu toll cha, một cột, không JOIN (xem TollInfoDao). -->
+    <select id="getTollInfoCompanyId" parameterType="String" resultType="String">
+        SELECT company_id FROM toll_info WHERE id = #{id}
+    </select>
+
     <select id="count" resultType="int">
         SELECT COUNT(DISTINCT a.id) FROM toll_info a
         <include refid="tollInfoJoins"/>

@@ -19,6 +19,11 @@ import java.util.Stack;
 @Mapper
 public interface TollInfoDao extends CrudDao<TollInfo> {
 
+    /** N3a: company của phiếu toll cha, tra trực tiếp một cột (không qua
+     * get() — mapper get() của TollDetail đã chứng minh không đáng tin
+     * vì lỗi tollId.name, và lookup một cột tránh mọi JOIN thừa). */
+    String getTollInfoCompanyId(@Param("id") String id);
+
     List<TollInfo> tollTotalForm(PageRequest var1);
 
     List<TollInfo> tollDetailForm(PageRequest var1);
