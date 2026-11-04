@@ -12,7 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Nhật ký khám ngoại trúService
@@ -73,6 +77,44 @@ public class OutpatientLogService {
 
     public void exportExcel(OutpatientLogRc outpatientLogRc, HttpServletResponse response) throws Exception {
         List<OutpatientLog> list = outpatientLogDao.getOutpatientLog(outpatientLogRc);
+        // ITER66 item 2: EasyExcel kèm POI cũ không có
+        // Cell.setCellValue(LocalDateTime); EasyExcel tự đổi ô java.util.Date
+        // sang LocalDateTime rồi ném NoSuchMethodError giữa chừng khi ghi
+        // (response đã commit nên client chỉ thấy 200 + body rỗng — đã probe
+        // pre-fix). Vì vậy chuyển 2 cột ngày sang chuỗi định dạng trước khi
+        // ghi, để EasyExcel chỉ ghi ô chuỗi; không đổi phiên bản POI/EasyExcel,
+        // không đổi ExcelExportBuilder (ảnh hưởng mọi đường xuất khác).
+        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<Map<String, Object>> rows = new ArrayList<>();
+        for (OutpatientLog log : list) {
+            Map<String, Object> row = new HashMap<>();
+            row.put("patientName", log.getPatientName());
+            row.put("patriarchName", log.getPatriarchName());
+            row.put("sex", log.getSex());
+            row.put("age", log.getAge());
+            row.put("nation", log.getNation());
+            row.put("occupation", log.getOccupation());
+            row.put("address", log.getAddress());
+            row.put("visitDate", log.getVisitDate() != null ? dateFmt.format(log.getVisitDate()) : "");
+            row.put("initialVisit", log.getInitialVisit());
+            row.put("bloodPressure", log.getBloodPressure());
+            row.put("symptom", log.getSymptom());
+            row.put("fever", log.getFever());
+            row.put("epidemicDisease", log.getEpidemicDisease());
+            row.put("westernDiagnose", log.getWesternDiagnose());
+            row.put("chinaDiagnose", log.getChinaDiagnose());
+            row.put("infect", log.getInfect());
+            row.put("handle", log.getHandle());
+            row.put("certificate", log.getCertificate());
+            row.put("unit", log.getUnit());
+            row.put("signature", log.getSignature());
+            row.put("poverty", log.getPoverty());
+            row.put("telephone", log.getTelephone());
+            row.put("morbidityDate", log.getMorbidityDate() != null ? dateFmt.format(log.getMorbidityDate()) : "");
+            row.put("positiveResult", log.getPositiveResult());
+            row.put("healthEducation", log.getHealthEducation());
+            rows.add(row);
+        }
         new ExcelExportBuilder("Nhật ký khám ngoại trú")
             .addColumns(
                 new ExcelExportBuilder.Column("Tên bệnh nhân", "patientName"),
@@ -101,7 +143,7 @@ public class OutpatientLogService {
                 new ExcelExportBuilder.Column("Kết quả dương tính trong phòng thí nghiệm", "positiveResult"),
                 new ExcelExportBuilder.Column("Giáo dục sức khỏe cá thể hóa", "healthEducation")
             )
-            .data(list)
+            .data(rows)
             .write(response, "Nhật ký khám ngoại trú.xlsx");
     }
 }

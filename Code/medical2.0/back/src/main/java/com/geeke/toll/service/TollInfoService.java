@@ -1420,10 +1420,15 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 // Quy cách = Liều lượng+Đơn vị liều lượng*Số lượng+Số lượngĐơn vị/Đóng gói
                 String norms = ds.getDosis() + ds.getDosisUnit() + "*" + ds.getPreparation() + ds.getPreparationUnit() + "/" + ds.getPack();
                 row.put("norms", norms);
-                // Số lượngquy đổi
-                int prep = Integer.parseInt(ds.getPreparation());
-                int wholePacks = ds.getTotal() / prep;
-                int remainder = ds.getTotal() % prep;
+                // Số lượngquy đổi. ITER66 item 2: preparation trong DB là
+                // chuỗi thập phân ('1.0'/'100.0'/'6.0') nên parseInt vỡ
+                // toàn bộ file (NumberFormatException tại đây, đã probe
+                // pre-fix); tái dùng parseExportCount (BigDecimal,
+                // null/rỗng/không số -> 0) như exportDrugStock ở iter65
+                // item 2, prep <= 0 thì giữ nguyên tổng, không chia 0.
+                int prep = parseExportCount(ds.getPreparation());
+                int wholePacks = prep > 0 ? ds.getTotal() / prep : ds.getTotal();
+                int remainder = prep > 0 ? ds.getTotal() % prep : 0;
                 String number = wholePacks + ds.getPack() + (remainder > 0 ? remainder + ds.getPreparationUnit() : "");
                 row.put("number", number);
                 row.put("allFee", BigdecimalConvert.convert(ds.getAllFee()));
