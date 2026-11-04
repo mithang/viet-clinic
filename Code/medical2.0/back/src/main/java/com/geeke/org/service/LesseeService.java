@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.geeke.common.data.Page;
+import com.geeke.common.data.PageRequest;
+import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +64,8 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
      *   và listPage/listAll (500 toàn cục do ensureCompanyFilter thêm
      *   lọc company_id lên bảng không có cột đó). Sửa mapping sau này
      *   phải re-probe save/list; list 500 hiện tại không lộ dữ liệu.
+     *   (ITER63 item 2 đã sửa mapping và mở rộng guard xuống dưới —
+     *   đoạn này giữ lại làm lịch sử N3c; xem khối ITER63.)
      * Ném ServiceException (400) như verifyTenantOwnership của
      * CrudService. Không sửa CrudService generic, không sửa mapper
      * update/delete; chỉ thêm hai SELECT trực tiếp phục vụ guard.
@@ -87,6 +92,151 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
         if (!tenantId.equals(ownerId)) {
             throw new ServiceException("Không có quyền truy cập tenant khác");
         }
+    }
+
+    /**
+     * ITER63 item 2: chặn ghi tên công ty của tenant khác — cùng một truth
+     * như checkLesseeTenant nhưng xét tên trong PAYLOAD (chặn tạo mới mang
+     * tên lạ và re-home dòng own sang tên lạ). Tên rỗng, tên không trùng
+     * bất kỳ org_company nào, hoặc phiên không session: cho qua như N3c
+     * (parity dòng mồ côi / legacy). Phiên có tenant mà tên trùng đúng
+     * công ty của tenant phiên: cho qua.
+     */
+    public void checkLesseeNameTenant(String companyName) {
+        if (StringUtils.isBlank(companyName)) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        String ownerId = dao.getCompanyIdByName(companyName);
+        if (StringUtils.isBlank(ownerId)) {
+            return;
+        }
+        if (!tenantId.equals(ownerId)) {
+            throw new ServiceException("Không có quyền truy cập tenant khác");
+        }
+    }
+
+    /**
+     * ITER63 item 2: save đã sửa mapping (companyName, xem Lessee.java)
+     * nên giờ đi được tới đây thay vì 500/400 như trước — vì vậy PHẢI
+     * kèm guard, không được để đường ghi mới mở mà không chặn (quy tắc
+     * item 1 TollDetail). Insert: chặn tên payload lạ. Update: chặn cả
+     * dòng đã lưu lạ (checkLesseeTenant, N3c) và tên payload lạ (re-home).
+     * Generic verify của CrudService vẫn cho qua (getCompany() null) như
+     * trước. @Transactional(readOnly = false) tường minh vì class-level
+     * readOnly = true (mẫu N3d).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public Lessee save(Lessee entity) {
+        if (entity != null && StringUtils.isBlank(entity.getId())) {
+            checkLesseeNameTenant(entity.getCompanyName());
+        } else if (entity != null) {
+            checkLesseeTenant(entity);
+            checkLesseeNameTenant(entity.getCompanyName());
+        }
+        return super.save(entity);
+    }
+
+    /**
+     * ITER63 item 2: bulkInsert tiền kiểm TOÀN BỘ list trước khi ghi
+     * dòng nào — một tên lạ thì không dòng nào được ghi (fail-closed).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Lessee> entitys) {
+        if (entitys != null) {
+            for (Lessee entity : entitys) {
+                if (entity != null) {
+                    checkLesseeNameTenant(entity.getCompanyName());
+                }
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    /**
+     * ITER63 item 2: bulkUpdate tiền kiểm TOÀN BỘ list, cả dòng đã lưu
+     * và tên payload mới, trước khi ghi dòng nào (fail-closed).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Lessee> entitys) {
+        if (entitys != null) {
+            for (Lessee entity : entitys) {
+                if (entity != null) {
+                    checkLesseeTenant(entity);
+                    checkLesseeNameTenant(entity.getCompanyName());
+                }
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    /**
+     * ITER63 item 2: lọc tenant cho list — Lessee KHÔNG có cột tenant id
+     * nên không thể lọc SQL theo company_id (đó chính là nguyên nhân
+     * listPage/listAll 500 trước đây: ensureCompanyFilter chèn lọc
+     * company_id lên bảng không có cột đó; sau khi bỏ field `company`
+     * che ở Lessee.java, ensureCompanyFilter đã bỏ qua Lessee).
+     * Lọc ở service theo cùng truth tên→org_company như guard N3c:
+     * giữ dòng tên trùng tenant phiên, dòng tên rỗng/không trùng công ty
+     * nào (parity N3c), và mọi dòng khi phiên không session; ẩn dòng
+     * tên trùng công ty khác — nếu không, sửa mapping sẽ mở đường đọc
+     * lách guard get của N3c qua list. Lọc trong bộ nhớ sau khi lấy
+     * toàn bộ dòng khớp tham số client (bảng quản trị, vài dòng; tránh
+     * JOIN org_company theo tên vì tên không unique-constrained nên
+     * JOIN có thể nhân dòng và làm get/count sai), rồi phân trang tay
+     * để total khớp đúng số dòng đã lọc. Tham số company_id do client
+     * gửi bị loại trước (chống spoof và tránh 500 vì bảng không có cột
+     * đó, mẫu TollDetail).
+     */
+    private List<Lessee> tenantVisibleLessees(List<Parameter> parameters, String orderby) {
+        List<Parameter> params = parameters == null
+                ? new java.util.ArrayList<Parameter>() : parameters;
+        Parameter.extractAndRemoveCompanyId(params);
+        List<Lessee> all = dao.listAll(new PageRequest(params, orderby));
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return all;
+        }
+        Map<String, String> ownerByName = Maps.newHashMap();
+        List<Lessee> visible = new java.util.ArrayList<Lessee>();
+        for (Lessee row : all) {
+            String name = row == null ? null : row.getCompanyName();
+            if (StringUtils.isBlank(name)) {
+                visible.add(row);
+                continue;
+            }
+            if (!ownerByName.containsKey(name)) {
+                ownerByName.put(name, dao.getCompanyIdByName(name));
+            }
+            String ownerId = ownerByName.get(name);
+            if (StringUtils.isBlank(ownerId) || tenantId.equals(ownerId)) {
+                visible.add(row);
+            }
+        }
+        return visible;
+    }
+
+    @Override
+    public Page<Lessee> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
+        List<Lessee> visible = tenantVisibleLessees(parameters, orderby);
+        int from = Math.max(0, offset);
+        int pageSize = limit < 1 ? visible.size() : limit;
+        int to = Math.min(visible.size(), from + pageSize);
+        List<Lessee> page = from >= visible.size()
+                ? new java.util.ArrayList<Lessee>()
+                : new java.util.ArrayList<Lessee>(visible.subList(from, to));
+        return new Page<Lessee>(visible.size(), page);
+    }
+
+    @Override
+    public List<Lessee> listAll(List<Parameter> parameters, String orderby) {
+        return tenantVisibleLessees(parameters, orderby);
     }
 
     /**

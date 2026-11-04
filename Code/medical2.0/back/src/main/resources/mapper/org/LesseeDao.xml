@@ -6,7 +6,7 @@
         a.id AS "id",
         a.user_name AS "userName",
         a.phone_number AS "phoneNumber",
-        a.company AS "company",
+        a.company AS "companyName",
         a.contact_name AS "contactName",
         a.address_province AS "addressProvince",
         a.address_city AS "addressCity",
@@ -108,7 +108,7 @@
             #{id},
             #{userName},
             #{phoneNumber},
-            #{company},
+            #{companyName},
             #{contactName},
             #{addressProvince},
             #{addressCity},
@@ -128,7 +128,7 @@
         UPDATE lessee SET     
             user_name = #{userName},
             phone_number = #{phoneNumber},
-            company = #{company},
+            company = #{companyName},
             contact_name = #{contactName},
             address_province = #{addressProvince},
             address_city = #{addressCity},
@@ -171,7 +171,7 @@
             #{entity.id},
             #{entity.userName},
             #{entity.phoneNumber},
-            #{entity.company},
+            #{entity.companyName},
             #{entity.contactName},
             #{entity.addressProvince},
             #{entity.addressCity},
@@ -203,7 +203,7 @@
             </trim>
             <trim prefix="company=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.company}
+                    when id=#{entity.id} then #{entity.companyName}
                 </foreach>
             </trim>
             <trim prefix="contact_name=case" suffix="end,">

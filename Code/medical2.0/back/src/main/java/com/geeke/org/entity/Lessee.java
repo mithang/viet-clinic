@@ -3,6 +3,7 @@ package com.geeke.org.entity;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.geeke.common.persistence.DataEntity;
 /**
@@ -15,7 +16,18 @@ public class Lessee extends DataEntity<Lessee> {
 	private static final long serialVersionUID = 985180319911059468L;
 	private String userName;		// tenanttên
 	private String phoneNumber;		// Số điện thoạisố
-	private String company;		// công tyTên
+	// ITER63 item 2: tên công ty của đơn vị thuê — CHUỖI tên, KHÔNG phải
+	// tenant id. Trước đây field này tên `company`, che (shadow) field
+	// `Company company` của DataEntity nhưng không có getter/setter String,
+	// nên property `company` luôn resolve qua getCompany()/setCompany(Company)
+	// của lớp cha: Jackson biến chuỗi frontend thành Company(id=chuỗi tên),
+	// MyBatis đưa Company object vào cột varchar (500), get trả company null,
+	// và Reflections.hasOwnField(Lessee,"company")=true khiến
+	// ensureCompanyFilter chèn lọc company_id lên bảng không có cột đó
+	// (listPage/listAll 500). Đổi tên thành companyName để hết shadow;
+	// wire name giữ nguyên "company" qua @JsonProperty để frontend
+	// (lesseeForm.vue: input text `company`) không phải đổi gì.
+	private String companyName;		// công tyTên (chuỗi tên, xem trên)
 	private String contactName;		// người liên hệTên
 	private String addressProvince;		// Địa chỉ(Tỉnh)
 	private String addressCity;		// Địa chỉ(Thành phố)
@@ -26,6 +38,18 @@ public class Lessee extends DataEntity<Lessee> {
 	
 	public Lessee() {
 		super();
+		// ITER63 item 2: Lessee không dùng company kiểu Company của
+		// DataEntity (không có tenant id — chuỗi tên nằm ở companyName),
+		// nhưng CrudController.save có @Valid và DataEntity.getCompany()
+		// mang @NotNull (constraint này Hibernate Validator vẫn áp cho
+		// cả override không annotation, theo tiền lệ Department/
+		// ClinicOffice re-declare @NotNull). Để save đơn qua được @Valid
+		// mà không cần payload company object (frontend chỉ gửi chuỗi
+		// tên), giữ sẵn một Company rỗng: id rỗng nên generic guard
+		// verifyTenantOwnership vẫn cho qua (id rỗng -> return sớm),
+		// và nó không bao giờ chạm tới SQL (mapper chỉ dùng companyName)
+		// hay JSON (getCompany() đã @JsonIgnore).
+		this.company = new com.geeke.org.entity.Company();
 	}
 
 	public Lessee(String id){
@@ -48,6 +72,41 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	/**
+	 * Tên công ty (chuỗi) của đơn vị thuê — wire name "company" như frontend
+	 * gửi/nhận, nhưng KHÔNG dùng property `company` của DataEntity (kiểu
+	 * Company, tenant id) để tránh shadow và tránh Jackson/MyBatis lẫn lộn.
+	 */
+	@Length(min=0, max=100, message="Tên công tyĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@JsonProperty("company")
+	public String getCompanyName() {
+		return companyName;
+	}
+	@JsonProperty("company")
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	/**
+	 * ITER63 item 2: ẩn property `company` kiểu Company của DataEntity khỏi
+	 * JSON — Lessee không có tenant id, chuỗi tên nằm ở companyName.
+	 * Không có override này, Jackson sẽ nhận property "company" thứ hai
+	 * (kiểu Company) xung đột với companyName-as-"company" ở trên.
+	 * Generic guard của CrudService vẫn đọc getCompany() (luôn null ở đây)
+	 * và cho qua như trước; guard thật của Lessee là checkLesseeTenant
+	 * theo chuỗi tên (N3c, giữ nguyên).
+	 */
+	@Override
+	@JsonIgnore
+	public com.geeke.org.entity.Company getCompany() {
+		return super.getCompany();
+	}
+	@Override
+	@JsonIgnore
+	public void setCompany(com.geeke.org.entity.Company company) {
+		super.setCompany(company);
 	}
 
 
