@@ -57,6 +57,20 @@
     </sql>
 
 
+        <!-- ITER65 item 7: statement get con thieu — CrudService.save (nhanh update
+         qua verifyTenantOwnershipAgainstStoredRow) va CrudService.get deu goi
+         dao.get(id); thieu statement nay MyBatis nem BindingException lam
+         saveWithFile va generic get/update deu loi + rollback. Chi them select,
+         tai dung sysSetingColumns + sysSetingJoins, khong doi guard (bang
+         sys_seting khong co company_id, cau hinh toan cuc theo thiet ke). -->
+    <select id="get" resultType="com.geeke.sys.entity.SysSeting">
+        SELECT
+            <include refid="sysSetingColumns"/>
+        FROM sys_seting a
+        <include refid="sysSetingJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
     <select id="listAll" resultType="com.geeke.sys.entity.SysSeting">
         SELECT 
             <include refid="sysSetingColumns"/>
