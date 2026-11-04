@@ -69,7 +69,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
         return ResponseEntity.ok(ResultUtil.successJson(costItemDTO));
     }
 
-    @PostMapping(value = {"listForMedical", ""})
+    @PostMapping(value = {"listForMedical"})
     public ResponseEntity<JSONObject> listForMedical(@RequestBody SearchParams searchParams) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         List<MedicalProject> result = costItemService.listPageForMedical(searchParams.getParams(), searchParams.getOrderby());
