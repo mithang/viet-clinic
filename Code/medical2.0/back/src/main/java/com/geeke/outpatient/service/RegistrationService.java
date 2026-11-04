@@ -352,6 +352,21 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     @Transactional(readOnly = false)
     public int registrationupdate(Registration registrations) {
+        // ITER62 P2: verify stored-row company before writing, never trust
+        // payload company.id. The mapper WHERE is company_id=#{company.id}
+        // from the payload, so a caller could previously write a foreign
+        // visit by carrying its company id (reproduced live:
+        // POST registationupdate with a foreign id + foreign company
+        // changed that visit's pulse NULL -> 99). The helper reads the
+        // stored row via dao.get (which selects a.company_id), so a
+        // foreign stored row -> ServiceException 400 before any write,
+        // while blank id / missing row / blank stored company keep the
+        // legacy 0-row behaviour, exactly like updateStatus (ITER37 O1).
+        // An own stored row with a mismatched payload company still
+        // writes 0 rows via the mapper WHERE, unchanged from before.
+        if (registrations != null) {
+            verifyTenantOwnershipAgainstStoredRow(registrations);
+        }
         int i = dao.registrationupdate(registrations);
 
         return i;
