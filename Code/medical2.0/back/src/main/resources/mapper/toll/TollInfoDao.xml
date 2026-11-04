@@ -952,6 +952,12 @@
         <if test="jgid==null and jgzt==null">
             and (a.company_id =#{companyId} or a.company_id =#{jgid})
         </if>
+        <if test="jgid!=null and jgzt==1">
+            and a.company_id =#{jgid}
+        </if>
+        <if test="jgid!=null and jgzt==null">
+            and a.company_id =#{companyId}
+        </if>
         <if test="lx!='' and lx!=null">
             and a.type=#{lx}
         </if>
@@ -1087,6 +1093,12 @@
         </if>
         <if test="jgid==null and jgzt==null">
             and (a.company_id =#{companyId} or a.company_id =#{jgid})
+        </if>
+        <if test="jgid!=null and jgzt==1">
+            and a.company_id =#{jgid}
+        </if>
+        <if test="jgid!=null and jgzt==null">
+            and a.company_id =#{companyId}
         </if>
         <if test="lx!='' and lx!=null">
             and a.type=#{lx}
@@ -1230,6 +1242,9 @@
         <if test="jgid==null and jgzt==null">
             and a.company_id =#{companyId}
         </if>
+        <if test="jgid!=null and jgzt==null">
+            and a.company_id =#{companyId}
+        </if>
         <if test="lx!='' and lx!=null">
             and a.type=#{lx}
         </if>
@@ -1269,6 +1284,12 @@
         <if test="jgid==null and jgzt==null">
             and (a.company_id =#{companyId} or a.company_id =#{jgid})
         </if>
+        <if test="jgid!=null and jgzt==1">
+            and a.company_id =#{jgid}
+        </if>
+        <if test="jgid!=null and jgzt==null">
+            and a.company_id =#{companyId}
+        </if>
         <if test="kssj!=null and jssj!=null">
             and a.create_date  between #{kssj} and #{jssj}
         </if>
@@ -1296,6 +1317,12 @@
         </if>
         <if test="jgid==null and jgzt==null">
             and (a.company_id =#{companyId} or a.company_id =#{jgid})
+        </if>
+        <if test="jgid!=null and jgzt==1">
+            and a.company_id =#{jgid}
+        </if>
+        <if test="jgid!=null and jgzt==null">
+            and a.company_id =#{companyId}
         </if>
         <if test="kssj!=null and jssj!=null">
             and a.create_date  between #{kssj} and #{jssj}
@@ -1328,6 +1355,9 @@
             and  oc.parent_id in (select parent_id  from org_company oc2 where id=#{companyId})
         </if>
         <if test="jgid==null and jgzt==null">
+            and a.company_id =#{companyId}
+        </if>
+        <if test="jgid!=null and jgzt==null">
             and a.company_id =#{companyId}
         </if>
         <if test="kssj!=null and jssj!=null">
@@ -1826,6 +1856,12 @@
             <if test="jgid==null and jgzt==null">
                 and (a.company_id =#{companyId} or a.company_id =#{jgid})
             </if>
+        <if test="jgid!=null and jgzt==1">
+            and a.company_id =#{jgid}
+        </if>
+        <if test="jgid!=null and jgzt==null">
+            and a.company_id =#{companyId}
+        </if>
             <if test="lx!='' and lx!=null">
                 and a.type=#{lx}
             </if>
@@ -1857,6 +1893,12 @@
             <if test="jgid==null and jgzt==null">
                 and a.company_id =#{companyId}
             </if>
+        <if test="jgid!=null and jgzt==1">
+            and a.company_id =#{jgid}
+        </if>
+        <if test="jgid!=null and jgzt==null">
+            and a.company_id =#{companyId}
+        </if>
             <if test="kssj!=null and jssj!=null">
                 and a.create_date between #{kssj} and #{jssj}
             </if>

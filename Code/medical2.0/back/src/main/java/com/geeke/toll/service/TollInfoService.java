@@ -1062,6 +1062,58 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         verifyCompanyInSessionGroup(tenantId, jgid);
     }
 
+    /**
+     * ITER66 item 5-followup: chot scope that su truy van cho ho
+     * ypjxc/stuffsummary (getypjxcmanagement(+sums),
+     * getStuffsalessummarylists(+sumss) va cac delegate jgzt=1 cua
+     * chung: getpharmaceuticalInventoryManagement(+sums),
+     * getconsumablemarketstatistics(+sum)).
+     * TRUOC DAY: 4 method nay ghi de jgid = institution cua companyId
+     * (getInstitution) — mapper cua ho nay KHONG CO nhanh jgid!=null
+     * cho list/count nen khi co institution, moi nhanh loc company deu
+     * tat va query tra toan bo tenant, ke ca nhom khac parent (probe
+     * iter66 item 5: ypjxc total 5 chua i66i-p2-drug, stuffsummary
+     * total 4 chua i66i-p2-stuff). Sua admission guard la KHONG DU vi
+     * request gay ro la request hop le toi company OWN.
+     * TU NAY: khong ghi de jgid bang institution nua. Query LUON loc
+     * theo company yeu cau: jgzt null -> companyId; jgzt=1 + jgid rong
+     * -> nhom sibling cua companyId (nhu Phase A); jgzt=1 + jgid co gia
+     * tri -> facility do (dropdown trang quan ly co so), va jgid do
+     * phai qua cung guard cung-parent nhu companyId (neu khong, ke
+     * gui jgid la truc tiep se mo lo moi khi service het ghi de).
+     * Chuan hoa rong -> null vi MyBatis chi nhan nhanh jgid==null /
+     * jgzt==null khi dung null, chuoi rong se lam tat ca nhanh loc.
+     * QUYET DINH TACH cljxc: cljxc (getcljxcmanagement(+sums),
+     * getmaterialmanagement(+sums)) GIU NGUYEN hanh vi iter65 (co
+     * institution -> tra hang institution), khong dong trong commit
+     * nay; chi ho ypjxc/stuffsummary moi tach institution khoi loc.
+     * Hang institution van xem duoc bang cach yeu cau truc tiep
+     * companyId = institution (guard cho phep cung parent).
+     */
+    private void normalizeYpjxcFacilityFilter(YpjxcRc ypjxcRc) {
+        verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
+        if (StringUtils.isBlank(ypjxcRc.getJgid())) {
+            ypjxcRc.setJgid(null);
+        } else {
+            verifyYpjxcCompanyScope(ypjxcRc.getJgid());
+        }
+        if (StringUtils.isBlank(ypjxcRc.getJgzt())) {
+            ypjxcRc.setJgzt(null);
+        }
+    }
+
+    private void normalizeYpjxcFacilityFilter(StuffsalessummaryRc stuffsalessummaryRc) {
+        verifyYpjxcCompanyScope(stuffsalessummaryRc.getCompanyId());
+        if (StringUtils.isBlank(stuffsalessummaryRc.getJgid())) {
+            stuffsalessummaryRc.setJgid(null);
+        } else {
+            verifyYpjxcCompanyScope(stuffsalessummaryRc.getJgid());
+        }
+        if (StringUtils.isBlank(stuffsalessummaryRc.getJgzt())) {
+            stuffsalessummaryRc.setJgzt(null);
+        }
+    }
+
     private void verifyCompanyInSessionGroup(String tenantId, String companyId) {
         if (StringUtils.isBlank(companyId)) {
             return;
@@ -1091,9 +1143,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getypjxcmanagement(YpjxcRc ypjxcRc){
-        verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
-        String institution = companyService.getInstitution(ypjxcRc.getCompanyId());
-        ypjxcRc.setJgid(institution);
+        // ITER66 item 5-followup: khong ghi de jgid = institution (xem
+        // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
+        normalizeYpjxcFacilityFilter(ypjxcRc);
         int total = tollInfoDao.countYpjxcManagement(ypjxcRc);
         List<Ypjxc> list2 = null;
         if(total > 0){
@@ -1108,9 +1160,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getypjxcmanagementsums(YpjxcRc ypjxcRc){
-        verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
-        String institution = companyService.getInstitution(ypjxcRc.getCompanyId());
-        ypjxcRc.setJgid(institution);
+        // ITER66 item 5-followup: khong ghi de jgid = institution (xem
+        // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
+        normalizeYpjxcFacilityFilter(ypjxcRc);
         int total = tollInfoDao.countYpjxcManagement(ypjxcRc);
         List<Ypjxc> list2 = null;
         if(total > 0){
@@ -1125,9 +1177,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Stuffsalessummary> getStuffsalessummarylists(StuffsalessummaryRc stuffsalessummaryRc){
-        verifyYpjxcCompanyScope(stuffsalessummaryRc.getCompanyId());
-        String institution = companyService.getInstitution(stuffsalessummaryRc.getCompanyId());
-        stuffsalessummaryRc.setJgid(institution);
+        // ITER66 item 5-followup: khong ghi de jgid = institution (xem
+        // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
+        normalizeYpjxcFacilityFilter(stuffsalessummaryRc);
         int total = tollInfoDao.countStuffSalesSummary(stuffsalessummaryRc);
         List<Stuffsalessummary> list2 = null;
         if(total > 0){
@@ -1137,9 +1189,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public Page<Stuffsalessummary> getStuffsalessummarysumss(StuffsalessummaryRc stuffsalessummaryRc){
-        verifyYpjxcCompanyScope(stuffsalessummaryRc.getCompanyId());
-        String institution = companyService.getInstitution(stuffsalessummaryRc.getCompanyId());
-        stuffsalessummaryRc.setJgid(institution);
+        // ITER66 item 5-followup: khong ghi de jgid = institution (xem
+        // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
+        normalizeYpjxcFacilityFilter(stuffsalessummaryRc);
         int total = tollInfoDao.countStuffSalesSummary(stuffsalessummaryRc);
         List<Stuffsalessummary> list2 = null;
         if(total > 0){
