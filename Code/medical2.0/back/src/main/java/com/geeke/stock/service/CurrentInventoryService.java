@@ -167,10 +167,16 @@ public class CurrentInventoryService {
             for (MedicinalStorageControl msc : medicinalStorageControls) {
                 // Số lượng còn lại(Giá trị số gốc)
                 String inventory = msc.getStorageStock().subtract(msc.getUsedStock().add(msc.getReimburseStock())).stripTrailingZeros().toPlainString();
-                msc.getStuff().setInventory(Integer.parseInt(inventory));
+                msc.getStuff().setInventory(parseExportCount(inventory));
 
-                // Tổng giá bán
-                BigDecimal selling = new BigDecimal(msc.getStuff().getPriceOutSell() + "").divide(new BigDecimal(msc.getStuff().getPackNumber()), 4, BigDecimal.ROUND_HALF_UP);
+                // Tổng giá bán: giá/đơn vị nhỏ = giá bán / số lượng đóng gói.
+                // Dòng MSC loại thuốc join stuff rỗng cho pack_number = 0 (mapper
+                // IFNULL(stuff.pack_number,'')) nên packNum <= 0 thì giữ nguyên
+                // giá bán, không chia cho 0 (mẫu TollInfo: mẫu số <= 0 giữ tổng).
+                int packNum = msc.getStuff().getPackNumber() == null ? 0 : msc.getStuff().getPackNumber();
+                BigDecimal selling = packNum > 0
+                        ? new BigDecimal(msc.getStuff().getPriceOutSell() + "").divide(new BigDecimal(packNum), 4, BigDecimal.ROUND_HALF_UP)
+                        : new BigDecimal(msc.getStuff().getPriceOutSell() + "");
                 BigDecimal sellingTotal = new BigDecimal(msc.getStuff().getInventory()).multiply(selling);
                 msc.getStuff().setRetailPrice(sellingTotal);
 
@@ -180,11 +186,16 @@ public class CurrentInventoryService {
 
                 // Số lượng còn lại(Chuỗi đã định dạng)
                 int inv = msc.getStuff().getInventory();
-                int packNum = msc.getStuff().getPackNumber();
-                String number = Math.floor(inv / packNum) >= 0
-                        ? (int) Math.floor(inv / packNum) + msc.getStuff().getPackUnit().getName()
-                        + ((inv % packNum > 0) ? (inv % packNum) + msc.getStuff().getMinUnit().getName() : "")
-                        : inv + msc.getStuff().getMinUnit().getName();
+                String number;
+                if (packNum > 0) {
+                    number = Math.floor(inv / packNum) >= 0
+                            ? (int) Math.floor(inv / packNum) + msc.getStuff().getPackUnit().getName()
+                            + ((inv % packNum > 0) ? (inv % packNum) + msc.getStuff().getMinUnit().getName() : "")
+                            : inv + msc.getStuff().getMinUnit().getName();
+                } else {
+                    // mẫu TollInfo: mẫu số <= 0 thì giữ nguyên tổng, đơn vị đóng gói
+                    number = inv + msc.getStuff().getPackUnit().getName();
+                }
                 msc.getStuff().setStockNumber(number);
             }
         }
@@ -270,10 +281,15 @@ public class CurrentInventoryService {
             for (MedicinalStorageControl msc : medicinalStorageControls) {
                 // Số lượng còn lại(Giá trị số gốc)
                 String inventory = msc.getStorageStock().subtract(msc.getUsedStock().add(msc.getReimburseStock())).stripTrailingZeros().toPlainString();
-                msc.getDrug().setInventory(Integer.parseInt(inventory));
+                msc.getDrug().setInventory(parseExportCount(inventory));
 
-                // Tổng giá bán
-                BigDecimal selling = new BigDecimal(msc.getDrug().getPrice() + "").divide(new BigDecimal(msc.getDrug().getPreparation()), 4, BigDecimal.ROUND_HALF_UP);
+                // Tổng giá bán: preparation là String dạng thập phân ("100.0")
+                // nên parse bằng BigDecimal theo mẫu parseExportCount; prep <= 0
+                // thì giữ nguyên giá bán, không chia cho 0.
+                int prep = parseExportCount(msc.getDrug().getPreparation());
+                BigDecimal selling = prep > 0
+                        ? new BigDecimal(msc.getDrug().getPrice() + "").divide(new BigDecimal(msc.getDrug().getPreparation()), 4, BigDecimal.ROUND_HALF_UP)
+                        : new BigDecimal(msc.getDrug().getPrice() + "");
                 BigDecimal sellingTotal = msc.getStorageStock().subtract(msc.getUsedStock().add(msc.getReimburseStock())).multiply(selling);
                 msc.getDrug().setRetailPrice(sellingTotal);
 
@@ -283,11 +299,16 @@ public class CurrentInventoryService {
 
                 // Số lượng còn lại(Chuỗi đã định dạng)
                 int inv = msc.getDrug().getInventory();
-                int prep = Integer.parseInt(msc.getDrug().getPreparation());
-                String number = Math.floor(inv / prep) >= 0
-                        ? (int) Math.floor(inv / prep) + msc.getDrug().getPack().getName()
-                        + ((inv % prep > 0) ? (inv % prep) + msc.getDrug().getPreparationUnit().getName() : "")
-                        : inv + msc.getDrug().getPreparationUnit().getName();
+                String number;
+                if (prep > 0) {
+                    number = Math.floor(inv / prep) >= 0
+                            ? (int) Math.floor(inv / prep) + msc.getDrug().getPack().getName()
+                            + ((inv % prep > 0) ? (inv % prep) + msc.getDrug().getPreparationUnit().getName() : "")
+                            : inv + msc.getDrug().getPreparationUnit().getName();
+                } else {
+                    // mẫu TollInfo: mẫu số <= 0 thì giữ nguyên tổng, đơn vị đóng gói
+                    number = inv + msc.getDrug().getPack().getName();
+                }
                 msc.getDrug().setStockNumber(number);
             }
         }
@@ -326,13 +347,18 @@ public class CurrentInventoryService {
                 // Số lượng còn lại(Giá trị số gốc)
                 if (!Objects.isNull(drug.getStock()) && !Objects.isNull(drug.getStock().getStorageStock())) {
                     String inventory = drug.getStock().getStorageStock().subtract(drug.getStock().getUsedStock().add(drug.getStock().getReimburseStock())).stripTrailingZeros().toPlainString();
-                    drug.setInventory(Integer.parseInt(inventory));
+                    drug.setInventory(parseExportCount(inventory));
                 } else {
                     drug.setInventory(0);
                 }
 
-                // Tổng giá bán
-                BigDecimal selling = new BigDecimal(drug.getPrice() + "").divide(new BigDecimal(drug.getPreparation()), 4, BigDecimal.ROUND_HALF_UP);
+                // Tổng giá bán: preparation là String dạng thập phân ("100.0")
+                // nên parse bằng BigDecimal theo mẫu parseExportCount; prep <= 0
+                // thì giữ nguyên giá bán, không chia cho 0.
+                int prep = parseExportCount(drug.getPreparation());
+                BigDecimal selling = prep > 0
+                        ? new BigDecimal(drug.getPrice() + "").divide(new BigDecimal(drug.getPreparation()), 4, BigDecimal.ROUND_HALF_UP)
+                        : new BigDecimal(drug.getPrice() + "");
                 BigDecimal sellingTotal = drug.getStock().getStorageStock().subtract(drug.getStock().getUsedStock().add(drug.getStock().getReimburseStock())).multiply(selling);
                 drug.setRetailPrice(sellingTotal);
 
@@ -342,11 +368,16 @@ public class CurrentInventoryService {
 
                 // Số lượng còn lại(Chuỗi đã định dạng)
                 int inv = drug.getInventory();
-                int prep = Integer.parseInt(drug.getPreparation());
-                String number = Math.floor(inv / prep) >= 0
-                        ? (int) Math.floor(inv / prep) + drug.getPack().getName()
-                        + ((inv % prep > 0) ? (inv % prep) + drug.getPreparationUnit().getName() : "")
-                        : inv + drug.getPreparationUnit().getName();
+                String number;
+                if (prep > 0) {
+                    number = Math.floor(inv / prep) >= 0
+                            ? (int) Math.floor(inv / prep) + drug.getPack().getName()
+                            + ((inv % prep > 0) ? (inv % prep) + drug.getPreparationUnit().getName() : "")
+                            : inv + drug.getPreparationUnit().getName();
+                } else {
+                    // mẫu TollInfo: mẫu số <= 0 thì giữ nguyên tổng, đơn vị đóng gói
+                    number = inv + drug.getPack().getName();
+                }
                 drug.setStockNumber(number);
             }
         }
@@ -366,5 +397,17 @@ public class CurrentInventoryService {
                 .write(response, "Tồn kho thuốc hiện tại-Theo hàng hóa.xlsx");
     }
 
+    // Mẫu parseExportCount của TollInfoService (iter65/66): chuỗi số thập phân
+    // dạng "100.0"/"6.0" về int; null/rỗng/không số -> 0, không ném 500.
+    private int parseExportCount(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return new BigDecimal(value.trim()).intValue();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
 }
