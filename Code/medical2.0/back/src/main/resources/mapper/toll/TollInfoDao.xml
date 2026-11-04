@@ -1420,8 +1420,8 @@
         (if(g.sl>0,g.sl,0)) bqcksl,
         sum(if(g.sl>0,g.sl,0)*b.bid) bqckcb,
         (if(i.pdsl>0,i.pdsl,0)) bqpdsl,(if(i.pdsl*b.bid>0,i.pdsl*b.bid,0)) bqpdcb,
-        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)),0) qmsl,
-        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)))*b.bid,0) qmcb
+        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h2.sl>0,h2.sl,0)),0) qmsl,
+        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h2.sl>0,h2.sl,0)))*b.bid,0) qmcb
         from stuff a
         left join supplier_stock b on a.id=b.stuff_id and (a.company_id = b.company_id or #{jgid} = b.company_id)
         left join medicinal_storage_control msc on msc.storage_id =b.id and (a.company_id = msc.company_id or #{jgid} = msc.company_id) and msc.del_flag ='0'
@@ -1490,8 +1490,8 @@
         (if(g.sl>0,g.sl,0)) bqcksl,
         sum(if(g.sl>0,g.sl,0)*b.bid) bqckcb,
         (if(i.pdsl>0,i.pdsl,0)) bqpdsl,(if(i.pdsl*b.bid>0,i.pdsl*b.bid,0)) bqpdcb,
-        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)),0) qmsl,
-        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)))*b.bid,0) qmcb
+        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h2.sl>0,h2.sl,0)),0) qmsl,
+        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h2.sl>0,h2.sl,0)))*b.bid,0) qmcb
         from stuff a
         left join supplier_stock b on a.id=b.stuff_id and (a.company_id = b.company_id or #{jgid} = b.company_id)
         left join medicinal_storage_control msc on msc.storage_id =b.id and (a.company_id = msc.company_id or #{jgid} = msc.company_id) and msc.del_flag ='0'
@@ -1507,7 +1507,7 @@
         group by company_id,supplier_stock_id) g on g.supplier_stock_id =b.id and (a.company_id = g.company_id or #{jgid} = g.company_id)
         left join (select company_id ,supplier_stock_id ,sum(number) sl from dispensing d2
         where  create_date &gt; #{jssj}
-        group by company_id,supplier_stock_id) h on h.supplier_stock_id =b.id and (a.company_id = h.company_id or #{jgid} = h.company_id)
+        group by company_id,supplier_stock_id) h2 on h2.supplier_stock_id =b.id and (a.company_id = h2.company_id or #{jgid} = h2.company_id)
         left join (select company_id ,supplier_stock_id ,sum(`number`) pdsl from inventory_verification_record
         where create_date between #{kssj} and #{jssj}
         group by company_id ,supplier_stock_id ) i on (a.company_id = i.company_id or #{jgid} = i.company_id) and i.supplier_stock_id =b.id
@@ -1816,6 +1816,7 @@
             left join medicinal_storage_control msc on msc.storage_id =b.id and msc.company_id =a.company_id and msc.del_flag ='0'
             left join supplier d on b.supplier_id =d.id and a.company_id =d.company_id
             left join manufacture_factory f on a.factory =f.id and a.company_id =f.company_id
+            left join org_company oc on a.company_id = oc.id and oc.del_flag ='0'
             left join sys_dict_item j on a.preparation_unit=j.value and j.del_flag ='0'
             left join sys_dict_item h on a.pack=h.value and j.del_flag ='0'
             where msc.id is not null
@@ -1848,6 +1849,7 @@
             left join recipel_info b on a.recipel_id =b.id and a.company_id =b.company_id and b.del_flag ='0'
             left join recipel_detail c on b.id=c.recipel_info_id and a.company_id =c.company_id and c.del_flag ='0'
             left join stuff d on c.drug_stuff_id =d.id and (a.company_id =d.company_id or d.company_id =#{jgid}) and d.del_flag ='0'
+            left join org_company oc on a.company_id = oc.id and oc.del_flag ='0'
             where c.stuff_type='4' and a.del_flag ='0' and d.code is not null and a.return_type = '0'
             <if test="jgid==null and jgzt==1">
                 and <include refid="siblingCompanyFilter"/>
@@ -1907,6 +1909,7 @@
             FROM supplier_storage a
             left join supplier_stock b on a.id=b.supplier_storage_id and a.company_id =b.company_id and b.del_flag ='0'
             left join medicinal_storage_control msc on msc.storage_id =b.id and msc.company_id =a.company_id and msc.del_flag ='0'
+            left join org_company oc on a.company_id = oc.id and oc.del_flag ='0'
             where a.del_flag='0' and (b.drug_id is not null or b.stuff_id is not null) and a.examine != 'supplierStorageExamineStatus_2'
             <if test="jgid!=null and jgzt==1">
                 and a.company_id =#{jgid}

@@ -547,5 +547,10 @@
         where a.parent_id = (SELECT parent_id FROM org_company WHERE id=#{companyId}) and a.is_institution = 1;
     </select>
 
+    <!-- ITER65 item 2: lookup parent phuc vu guard scope cung-parent. -->
+    <select id="getCompanyParentId" resultType="String">
+        select parent_id from org_company where id = #{companyId}
+    </select>
+
 
 </mapper>

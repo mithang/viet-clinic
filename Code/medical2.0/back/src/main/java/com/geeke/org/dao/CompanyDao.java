@@ -38,4 +38,8 @@ public interface CompanyDao extends TreeDao<Company> {
     List<Company> getCompanys(String id);
 
     String getInstitution(@Param("companyId") String id);
+
+    // ITER65 item 2: single-column lookup parent_id phuc vu guard scope
+    // cung-parent cho ho bao cao Ypjxc/Rc (khong JOIN, theo tien le X3).
+    String getCompanyParentId(@Param("companyId") String id);
 }

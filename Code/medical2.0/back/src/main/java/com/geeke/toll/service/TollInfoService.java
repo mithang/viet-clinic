@@ -1023,11 +1023,75 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
+     * ITER65 item 2: chan doc bao cao Ypjxc/Rc cua nhom khac parent.
+     * Pham vi cho phep = cung parent group voi session tenant (plan iter65
+     * §2(c)): companyId duoc chap nhan khi bang session tenant hoac co cung
+     * parent_id voi session tenant (lookup stored parent, single-column,
+     * khong tin parent trong body). Khac parent -> ServiceException 400
+     * fail-closed TRUOC moi truy van. Company khong ton tai (lookup null)
+     * cung 400 fail-closed (ly do: count cua getcljxcmanagement khong loc
+     * company nen giu parity cho companyId la se tra ve toan bo du lieu).
+     * Session rong / "null" (luong noi bo khong session) giu hanh vi cu;
+     * companyId rong giu hanh vi cu (truy van tra rong). Rieng tenant la
+     * cong ty goc (parent_id = 0): chi cho chinh no + cac con truc tiep
+     * cua no, khong cho cong ty goc khac (tat ca deu co parent_id = 0,
+     * khong phai cung nhom). Khong ep session mu nhu OutpatientLog X1:
+     * xem kho phong kham anh em cung nhom la tinh nang that (dropdown
+     * jgid o trang drugmaterialsstockmanagement) nen giu lai.
+     * Dat o SERVICE (khong phai controller): da grep, khong co caller noi
+     * bo nao ngoai controller cho cac method nay — khac truong hop
+     * savePermission cua item 1 (CompanyService.savePermisson goi noi bo).
+     * Cac method ho Ypjxc ghi de jgid = institution cua companyId nen chi
+     * can check companyId; ho rkcx dung truc tiep jgid trong body nen
+     * check ca companyId lan jgid.
+     */
+    private void verifyYpjxcCompanyScope(String companyId) {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        verifyCompanyInSessionGroup(tenantId, companyId);
+    }
+
+    private void verifyYpjxcCompanyAndJgidScope(String companyId, String jgid) {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        verifyCompanyInSessionGroup(tenantId, companyId);
+        verifyCompanyInSessionGroup(tenantId, jgid);
+    }
+
+    private void verifyCompanyInSessionGroup(String tenantId, String companyId) {
+        if (StringUtils.isBlank(companyId)) {
+            return;
+        }
+        if (tenantId.equals(companyId)) {
+            return;
+        }
+        String tenantParent = companyService.getCompanyParentId(tenantId);
+        String companyParent = companyService.getCompanyParentId(companyId);
+        if (tenantParent == null || companyParent == null) {
+            throw new ServiceException("Không có quyền truy cập dữ liệu kho của phòng khám khác nhóm");
+        }
+        boolean sameGroup;
+        if ("0".equals(tenantParent)) {
+            sameGroup = tenantId.equals(companyParent);
+        } else {
+            sameGroup = tenantParent.equals(companyParent);
+        }
+        if (!sameGroup) {
+            throw new ServiceException("Không có quyền truy cập dữ liệu kho của phòng khám khác nhóm");
+        }
+    }
+
+    /**
      * Thông tin nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
     public Page<Ypjxc> getypjxcmanagement(YpjxcRc ypjxcRc){
+        verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
         String institution = companyService.getInstitution(ypjxcRc.getCompanyId());
         ypjxcRc.setJgid(institution);
         int total = tollInfoDao.countYpjxcManagement(ypjxcRc);
@@ -1044,6 +1108,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getypjxcmanagementsums(YpjxcRc ypjxcRc){
+        verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
         String institution = companyService.getInstitution(ypjxcRc.getCompanyId());
         ypjxcRc.setJgid(institution);
         int total = tollInfoDao.countYpjxcManagement(ypjxcRc);
@@ -1060,6 +1125,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Stuffsalessummary> getStuffsalessummarylists(StuffsalessummaryRc stuffsalessummaryRc){
+        verifyYpjxcCompanyScope(stuffsalessummaryRc.getCompanyId());
         String institution = companyService.getInstitution(stuffsalessummaryRc.getCompanyId());
         stuffsalessummaryRc.setJgid(institution);
         int total = tollInfoDao.countStuffSalesSummary(stuffsalessummaryRc);
@@ -1071,6 +1137,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public Page<Stuffsalessummary> getStuffsalessummarysumss(StuffsalessummaryRc stuffsalessummaryRc){
+        verifyYpjxcCompanyScope(stuffsalessummaryRc.getCompanyId());
         String institution = companyService.getInstitution(stuffsalessummaryRc.getCompanyId());
         stuffsalessummaryRc.setJgid(institution);
         int total = tollInfoDao.countStuffSalesSummary(stuffsalessummaryRc);
@@ -1087,8 +1154,30 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getcljxcmanagement(YpjxcRc ypjxcRc){
+        verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
+        // ITER65 item 2: count/list cua cljxc KHONG loc company khi jgid
+        // null (nhanh tautology a.company_id = oc.id) — guard admission
+        // rieng no khong du, phai chot scope that su truy van: jgid trong
+        // body (dropdown chon co so, da kiem chung cung-parent) neu co,
+        // neu khong thi institution cua companyId neu co, neu khong thi
+        // companyId; ep jgzt = "1" de nhanh a.company_id = #{jgid} chay.
+        // Giua nguyen hanh vi institution khi co institution (trang
+        // material o deployment co institution van tra hang cua
+        // institution); khi khong co institution thi tra hang cua
+        // companyId thay vi toan bo nhu truoc (do la lo).
+        String requestedJgid = ypjxcRc.getJgid();
+        if (StringUtils.isNotBlank(requestedJgid)) {
+            verifyYpjxcCompanyScope(requestedJgid);
+        }
         String institution = companyService.getInstitution(ypjxcRc.getCompanyId());
-        ypjxcRc.setJgid(institution);
+        if (StringUtils.isNotBlank(requestedJgid)) {
+            ypjxcRc.setJgid(requestedJgid);
+        } else if (institution != null) {
+            ypjxcRc.setJgid(institution);
+        } else {
+            ypjxcRc.setJgid(ypjxcRc.getCompanyId());
+        }
+        ypjxcRc.setJgzt("1");
         int total = tollInfoDao.countCljxcManagement(ypjxcRc);
         List<Ypjxc> list2 = null;
         if(total > 0){
@@ -1103,8 +1192,23 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getcljxcmanagementsums(YpjxcRc ypjxcRc){
+        verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
+        // ITER65 item 2: chot scope that su truy van nhu
+        // getcljxcmanagement (count/list cua cljxc khong loc company khi
+        // jgid null) — xem ghi chu tai getcljxcmanagement.
+        String requestedJgid = ypjxcRc.getJgid();
+        if (StringUtils.isNotBlank(requestedJgid)) {
+            verifyYpjxcCompanyScope(requestedJgid);
+        }
         String institution = companyService.getInstitution(ypjxcRc.getCompanyId());
-        ypjxcRc.setJgid(institution);
+        if (StringUtils.isNotBlank(requestedJgid)) {
+            ypjxcRc.setJgid(requestedJgid);
+        } else if (institution != null) {
+            ypjxcRc.setJgid(institution);
+        } else {
+            ypjxcRc.setJgid(ypjxcRc.getCompanyId());
+        }
+        ypjxcRc.setJgzt("1");
         int total = tollInfoDao.countCljxcManagement(ypjxcRc);
         List<Ypjxc> list2 = null;
         if(total > 0){
@@ -1119,6 +1223,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypclrkcx> getypclrkcxlist(YpjxcRc ypjxcRc){
+        verifyYpjxcCompanyAndJgidScope(ypjxcRc.getCompanyId(), ypjxcRc.getJgid());
         int total = tollInfoDao.countYpclrkcx(ypjxcRc);
         List<Ypclrkcx> list2 = null;
         if(total > 0){
@@ -1133,6 +1238,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypclrkcx> getypclrkcxsums(YpjxcRc ypjxcRc){
+        verifyYpjxcCompanyAndJgidScope(ypjxcRc.getCompanyId(), ypjxcRc.getJgid());
         int total = tollInfoDao.countYpclrkcx(ypjxcRc);
         List<Ypclrkcx> list2 = null;
         if(total > 0){
@@ -1157,6 +1263,14 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public List<Ypjxc> getjglist(YpjxcRc ypjxcRc){
+        // ITER65 item 2: chi liet ke nhom cua session tenant (ep companyId
+        // = session tenant truoc khi lookup sibling, theo plan §2(c)).
+        // Voi caller cung nhom thi danh sach khong doi (cung parent_id);
+        // voi companyId la thi khong ro ri danh muc nhom la.
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
+            ypjxcRc.setCompanyId(tenantId);
+        }
         return tollInfoDao.getjglist(ypjxcRc);
     }
 
@@ -1376,6 +1490,19 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             exportDrugStock(ypjxcRc,response);
     }
 
+    // ITER65 item 2: parse so luong export kieu decimal/null-safe (xem
+    // ghi chu tai cho goi trong exportDrugStock).
+    private int parseExportCount(String value) {
+        if (StringUtils.isBlank(value)) {
+            return 0;
+        }
+        try {
+            return new BigDecimal(value.trim()).intValue();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     private void exportDrugStock(YpjxcRc ypjxcRc, HttpServletResponse response) throws IOException {
         boolean isDrug = Objects.equals("1", ypjxcRc.getYpcltype());
         String sheetName = isDrug ? "Thuốcnhập khothống kêbảng" : "Vật tưnhập khothống kêbảng";
@@ -1403,11 +1530,16 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 row.put("gg", item.getGg());
                 row.put("sccj", item.getSccj() != null ? item.getSccj() : "");
                 row.put("gys", item.getGys() != null ? item.getGys() : "");
-                // Số lượngquy đổi
-                int sl = Integer.parseInt(item.getSl());
-                int zj = Integer.parseInt(item.getZj());
-                int wholePacks = sl / zj;
-                int remainder = sl % zj;
+                // Số lượngquy đổi. So luong trong DB la decimal
+                // ("100.0000"): parse qua BigDecimal thay vi
+                // Integer.parseInt (parseInt nem NumberFormatException lam
+                // vo export moi khi co dong du lieu — loi san co, phat
+                // hien o probe iter65 item 2). zj null/rong/khong so thi
+                // giu nguyen sl (truoc day la throw -> khong co file).
+                int sl = parseExportCount(item.getSl());
+                int zj = parseExportCount(item.getZj());
+                int wholePacks = zj > 0 ? sl / zj : sl;
+                int remainder = zj > 0 ? sl % zj : 0;
                 String number = wholePacks + item.getDw() + (remainder > 0 ? remainder + item.getZxdw() : "");
                 row.put("number", number);
                 row.put("dw", item.getDw() != null ? item.getDw() : "");

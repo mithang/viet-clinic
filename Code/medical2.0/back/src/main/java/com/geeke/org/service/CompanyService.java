@@ -306,6 +306,12 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         return this.dao.getInstitution(id);
     }
 
+    // ITER65 item 2: parent_id cua company, phuc vu guard scope cung-parent.
+    @Transactional(readOnly = true)
+    public String getCompanyParentId(String id) {
+        return this.dao.getCompanyParentId(id);
+    }
+
     public List<Company> getSubordinateClinic(String companyId) {
 
         return this.dao.getCompanys(companyId);
