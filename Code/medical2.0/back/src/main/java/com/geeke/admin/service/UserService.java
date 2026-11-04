@@ -596,9 +596,44 @@ public class UserService extends CrudService<UserDao, User>{
 
     /**
      * Sửa Mật khẩu
+     *
+     * ITER62 P1 (N4-P1): stored-row tenant check truoc dao.updateLoginPassword.
+     * Truoc day controller chi check tu-doi hoac quyen user:update, khong check
+     * tenant cua id dich, nen PUT /admin/user/{foreignId}/loginPassword voi
+     * quyen user:update o tenant minh doi duoc login_password cua user tenant
+     * khac (probe live N4). Guard nay: tu-doi (id == session user) giu nguyen
+     * khong check; nguoc lai, neu session co tenant thi user dich phai thuoc
+     * tenant do — theo user_tenant active (userDao.getClinicId, tien le
+     * bulkUpdate H1 iter28), neu khong co dong user_tenant thi fallback ve
+     * sys_user.company_id da luu (dao.get); id khong ton tai / dong mo coi
+     * khong company giu hanh vi cu (update tra rows 0 -> 200, nhu tien le
+     * orphan cua N3c). ServiceException -> 400 qua GlobalExceptionHandler.
+     * Khong dung verifyTenantOwnershipAgainstStoredRow o day vi no chi doc
+     * company cua payload, khong biet membership user_tenant cua user.
      */
     @Transactional(readOnly = false)
     public int changeLoginPassword(String id, String pass) {
+        User sessionUser = SessionUtils.getUser();
+        boolean self = sessionUser != null && id != null && id.equals(sessionUser.getId());
+        if (!self) {
+            String loginTenant = SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(loginTenant) && !"null".equals(loginTenant)) {
+                List<String> clinics = userDao.getClinicId(id);
+                if (clinics != null && !clinics.isEmpty()) {
+                    if (!clinics.contains(loginTenant)) {
+                        throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    }
+                } else {
+                    User stored = userDao.get(id);
+                    if (stored != null && stored.getCompany() != null) {
+                        String storedCompanyId = stored.getCompany().getId();
+                        if (StringUtils.isNotBlank(storedCompanyId) && !loginTenant.equals(storedCompanyId)) {
+                            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                        }
+                    }
+                }
+            }
+        }
         // Md5Mật khẩu — sử dụng và  UserRealm Nhất quán của lặp lầnsố
         Md5Hash md5 = new Md5Hash(pass, id, 10000);
         String md5Password = md5.toHex();
