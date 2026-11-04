@@ -177,6 +177,34 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         TollInfo tollSave = null;
         Registration registration = null;
         if (!CollectionUtils.isEmpty(recipelInfoEvts)) {
+            // N5-TOLL (iter62): verify stored company cua tung recipelInfo
+            // trong payload TRUOC moi ghi (nhanh PAID, vong dong dau :206,
+            // processRefund :495): khong tin company tu payload; lookup
+            // truc tiep 1 cot getRecipelInfoCompanyId (tien le X3, SELECT
+            // don bang, khong INNER JOIN nhu dao.get() cua N1) nen khong
+            // bi null gia. Stored company lech session tenant -> 400
+            // fail-closed ca TollEvt (cung transaction, chua ghi dong nao).
+            // Khong ton tai / stored company rong giu hanh vi cu (tien le
+            // orphan N3c); session khong tenant thi skip nhu cac guard khac.
+            // processRefund (:495) va cancel (:881) khong can guard rieng:
+            // processRefund chi goi tu day (sau guard nay), cancel da bi
+            // CrudService.get chan foreign truoc vong reset (probe iter62).
+            String tollTenantId = SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(tollTenantId) && !"null".equals(tollTenantId)) {
+                for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
+                    if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null) {
+                        continue;
+                    }
+                    String recipelId = recipelInfoEvt.getRecipelInfo().getId();
+                    if (StringUtils.isBlank(recipelId)) {
+                        continue;
+                    }
+                    String storedCompanyId = recipelInfoService.getRecipelInfoCompanyId(recipelId);
+                    if (StringUtils.isNotBlank(storedCompanyId) && !tollTenantId.equals(storedCompanyId)) {
+                        throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    }
+                }
+            }
             //Kiểm tratrùng lặpđề xuấtgiao
             List<String> InRecipeIds = recipelInfoEvts.stream().map(recipelInfoEvt -> {
                 return recipelInfoEvt.getRecipelInfo().getId();
