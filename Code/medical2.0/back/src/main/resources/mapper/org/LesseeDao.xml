@@ -273,5 +273,14 @@
             #{entity.id}
         </foreach>
     </update>
-    
+
+    <!-- N3c: guard lookup trực tiếp, không JOIN (bài học N1/N3d). -->
+    <select id="getCompanyNameById" resultType="String">
+        SELECT a.company FROM lessee a WHERE a.id = #{id}
+    </select>
+
+    <select id="getCompanyIdByName" resultType="String">
+        SELECT c.id FROM org_company c WHERE c.name = #{name} LIMIT 1
+    </select>
+
 </mapper>
