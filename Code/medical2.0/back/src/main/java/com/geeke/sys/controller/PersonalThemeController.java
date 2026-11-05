@@ -173,6 +173,22 @@ public class PersonalThemeController extends CrudController<PersonalThemeService
 		if (entity.getUserId() != null && !isOwnUser(entity.getUserId())) {
 			return forbidden();
 		}
+		// DS47: save-update must also check the STORED row, not only the
+		// payload userId. The generic stored-row cross-check
+		// (CrudService.save -> verifyTenantOwnershipAgainstStoredRow) is
+		// blind here -- sys_personal_theme has no company_id, so the
+		// stored company is null and the check early-returns -- and the
+		// update mapper sets user_id WHERE id only, so a save with a
+		// foreign row id + own userId re-homed the victim's row to the
+		// caller (probe-proven, tools/ds47-verify.py pre 10/10). Same
+		// stored-row pattern as delete() below; rows with null userId
+		// and nonexistent ids pass through as before.
+		if (entity.getId() != null) {
+			PersonalTheme stored = getService().get(entity.getId());
+			if (stored != null && stored.getUserId() != null && !isOwnUser(stored.getUserId())) {
+				return forbidden();
+			}
+		}
 		if (!beforeSave(entity)) {
 			return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
 		}
