@@ -125,8 +125,15 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             throw new ServiceException("Hội viênthẻSố lượng còn lại là 0, Không thểlạiThêmHội viên!");
 
         }else {
-            int newNumber=memberSet.getNumber()-1;
-            int i = this.dao.updateNumber(id,newNumber);
+            // DS61: tru tuyet doi number = number - 1 WHERE number > 0.
+            // Truoc day get() -> number-1 trong Java -> UPDATE tuyet doi:
+            // phat the song song cho cac benh nhan khac nhau deu doc cung
+            // N va ghi cung N-1, ban vuot so the con lai. Ke thua cuoc dua
+            // (rows == 0) bi tu choi nhu truong hop het the, khong ghi de.
+            int i = this.dao.decrementNumber(id);
+            if (i == 0) {
+                throw new ServiceException("Hội viênthẻSố lượng còn lại là 0, Không thểlạiThêmHội viên!");
+            }
             return i;
         }
 
@@ -142,8 +149,13 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         if (memberSet == null || memberSet.getNumber() == null) {
             throw new ServiceException("Thẻ hội viên chưa có số lượng còn lại, không thể hoàn trả!");
         }
-        int newNumber = memberSet.getNumber()+1;
-        int i = this.dao.updateNumber(id, newNumber);
+        // DS61: cong tuyet doi number = number + 1. Truoc day get() ->
+        // number+1 trong Java -> UPDATE tuyet doi: huy the song song
+        // mat luot cong tra theo cung mau nhu updateNumber.
+        int i = this.dao.incrementNumber(id);
+        if (i == 0) {
+            throw new ServiceException("Thẻ hội viên chưa có số lượng còn lại, không thể hoàn trả!");
+        }
         return i;
     }
 }

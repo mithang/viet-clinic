@@ -294,4 +294,15 @@
         update member_set set number = #{number} where id = #{id}
     </update>
 
+    <!-- DS61: tru tuyet doi, dieu kien number > 0 lam claim nguyen tu:
+         ke thua cuoc dua song song nhan 0 dong thay vi ghi de N-1. -->
+    <update id="decrementNumber">
+        update member_set set number = number - 1 where id = #{id} and number &gt; 0
+    </update>
+
+    <!-- DS61: cong tuyet doi, hoan tra khi huy the. -->
+    <update id="incrementNumber">
+        update member_set set number = number + 1 where id = #{id}
+    </update>
+
 </mapper>

@@ -17,4 +17,11 @@ public interface MemberSetDao extends CrudDao<MemberSet> {
 
     int updateNumber(@Param("id") String id,@Param("number") int number);
 
+    // DS61: tru tuyet doi number = number - 1, chi khi number > 0.
+    // Tra ve so dong bi anh huong (0 = het the hoac thua cuoc dua song song).
+    int decrementNumber(@Param("id") String id);
+
+    // DS61: cong tuyet doi number = number + 1 (hoan tra khi huy the).
+    int incrementNumber(@Param("id") String id);
+
 }
