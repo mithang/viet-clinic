@@ -23,8 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +64,35 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         if (StringUtils.isBlank(clinic.getFileId())) {
             clinic.setFileId(IdGen.uuid());
         }
+        // L6 (iteration 59): guard deleteIds truoc moi upload/xoa/ghi, mau K5.
+        // ClinicService.save truoc day goi sysFileService.delete(deleteIds)
+        // tran truoc khi save clinic; sys_file khong co company_id nen
+        // delete tran xoa duoc file logo cua clinic la (probe pre-fix:
+        // clinic OWN + deleteIds file la -> 200 + file + content bi xoa).
+        // Tap hop cho phep gom fileId dang gui + fileId da luu cua clinic
+        // (UI xoa logo cu sau khi doi fileId, nhu K5); file co object_id
+        // ngoai tap nay -> 400 truoc moi ghi de transaction rollback toan
+        // bo; file khong ton tai giu hanh vi cu (bo qua, nhu R3).
+        // Item nay CHI guard deleteIds; floor tao clinic giu nguyen theo
+        // quyet dinh owner-decision tu iter22 (uy quyen toan quyen
+        // 2026-11-05 cho phep guard nay, khong doi floor).
+        // companyService.get la dao.get tran (khong co tenant check),
+        // nen doc oldClinic som o day khong doi hanh vi, chi de lay
+        // fileId da luu cho tap cho phep va tranh doc trung o duoi.
+        Company oldClinic = null;
+        if (StringUtils.isNotBlank(clinic.getId())) {
+            oldClinic = companyService.get(clinic.getId());
+        }
+        if (null != deleteIds && deleteIds.length > 0) {
+            Set<String> allowedObjectIds = new HashSet<>();
+            if (StringUtils.isNotBlank(clinic.getFileId())) {
+                allowedObjectIds.add(clinic.getFileId());
+            }
+            if (oldClinic != null && StringUtils.isNotBlank(oldClinic.getFileId())) {
+                allowedObjectIds.add(oldClinic.getFileId());
+            }
+            sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds), allowedObjectIds);
+        }
         // save file
         sysFileService.changeAndSaveSysFileList(fileIdUploads, clinic.getFileId());
         // Theo tệp đính kèmIDXóa thông tin tệp đính kèm
@@ -69,7 +101,6 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         }
 
         //save clinic
-        Company oldClinic = companyService.get(clinic.getId());
         if (null != oldClinic) {
             //Đã tồn tại, SửaPhòng khám
             companyService.save(clinic);
