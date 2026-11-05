@@ -180,6 +180,174 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
         params.add(new Parameter("company.parent_id", "=", scopeId));
     }
 
+    /**
+     * DS19: generic-read ownership, completing the Y1/N1 custom guards
+     * (which left the CrudController generics untouched). recipel_info_
+     * review has NO company_id column and RecipelInfoReviewDao.get maps
+     * only the NESTED recipelInfo.company.id, so the review entity's own
+     * DataEntity.company stays null: CrudService.verifyTenantOwnership
+     * early-returns and ensureCompanyFilter skips entities without an own
+     * "company" field. Probe-proven (tools/ds19-review.py pre 19/19):
+     * any permissioned session could GET another institution's review by
+     * id (plus joined patient name/phone/card and diagnosis), and
+     * listPage/listAll with no params — or an attacker recipelInfo.
+     * company_id filter — returned foreign institutions' prescriptions.
+     * Scope choice (deliberate, NOT strict own-tenant): this module's
+     * established scope is the INSTITUTION GROUP, not the single clinic
+     * — the real review UI (review.vue/randomReview.vue) lists with
+     * company.parent_id = loginCompany.parent.id and opens the detail
+     * via generic getById, and Y1's listPageStatement forces the same
+     * parent scope. Forcing own-tenant would regress sibling-clinic
+     * detail views inside an institution. So, controller only, reusing
+     * isForeign + getRecipelInfoIdByReviewId (direct lookup, NOT get()
+     * — get() INNER JOINs registration and returns null when the parent
+     * registration is missing, N1):
+     * - getById: allow own tenant OR a prescription company whose
+     *   parent_id equals the Y1 session scope (parent of session tenant,
+     *   or the tenant itself when parentless); anything else -> 403.
+     *   Nonexistent (lookup blank) keeps the generic 200+null contract;
+     *   no-session passes like the Y1/N1 guards.
+     * - listPage/listAll: same parent-scope force as forceSessionParent
+     *   (Y1-proven), PLUS a null-params fix: forceSessionParent returns
+     *   early when the body carries no params, so a no-params list call
+     *   stayed unforced (probe-proven: total 2 with the foreign row in
+     *   it). This override creates the param list when absent, then
+     *   strips client company/company.parent_id params and forces
+     *   company.parent_id = session scope. Legit UI calls already send
+     *   that parent value, so their results are unchanged; attacker
+     *   filters are ignored. forceSessionParent itself is left untouched
+     *   (statement page always sends params).
+     * - bulkInsert/bulkUpdate/bulkDelete: STRICT own-tenant (the write
+     *   convention of save/delete in this file, not the read group
+     *   scope): any item foreign (body prescription for insert/update,
+     *   stored row for update/delete) -> 403 fail-closed for the whole
+     *   list BEFORE delegating. Delegated own calls keep the existing
+     *   mapper-missing 500 (RecipelInfoReviewDao.xml has no bulk
+     *   statements), unchanged.
+     * No service change, no new resources, no frontend change; the
+     * custom Y1/N1 endpoints and listPageStatement are untouched.
+     */
+    private boolean isForeignReview(String reviewId) {
+        if (StringUtils.isBlank(reviewId)) {
+            return false;
+        }
+        String storedRecipelId = recipelInfoReviewService.getRecipelInfoIdByReviewId(reviewId);
+        if (StringUtils.isBlank(storedRecipelId)) {
+            return false;
+        }
+        return isForeign(recipelInfoService.getRecipelInfoCompanyId(storedRecipelId));
+    }
+
+    private boolean isOutsideReviewGroup(String reviewId) {
+        String tenantId = sessionTenantId();
+        if (tenantId == null || StringUtils.isBlank(reviewId)) {
+            return false;
+        }
+        String storedRecipelId = recipelInfoReviewService.getRecipelInfoIdByReviewId(reviewId);
+        if (StringUtils.isBlank(storedRecipelId)) {
+            return false;
+        }
+        String companyId = recipelInfoService.getRecipelInfoCompanyId(storedRecipelId);
+        if (StringUtils.isBlank(companyId)) {
+            return false;
+        }
+        if (tenantId.equals(companyId)) {
+            return false;
+        }
+        String scopeId = sessionStatisticsScopeId();
+        if (scopeId == null) {
+            return false;
+        }
+        String parentId = recipelInfoReviewService.getCompanyParentId(companyId);
+        return StringUtils.isBlank(parentId) || !scopeId.equals(parentId);
+    }
+
+    @Override
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
+        if (isOutsideReviewGroup(id)) { return forbidden(); }
+        RecipelInfoReview entity = getService().get(id);
+        return ResponseEntity.ok(ResultUtil.successJson(entity));
+    }
+
+    private void forceReviewListScope(SearchParams searchParams) {
+        String scopeId = sessionStatisticsScopeId();
+        if (scopeId == null) {
+            return;
+        }
+        java.util.List<Parameter> params = searchParams.getNewParams();
+        if (params == null) {
+            params = new java.util.ArrayList<>();
+            searchParams.setParams(params);
+        }
+        Parameter.extractAndRemoveCompanyId(params);
+        params.removeIf(p -> "company.parent_id".equals(p.getColumnName())
+                || "`company.parent_id`".equals(p.getColumnName()));
+        params.add(new Parameter("company.parent_id", "=", scopeId));
+    }
+
+    @Override
+    @PostMapping(value = {"list", ""})
+    public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
+        forceReviewListScope(searchParams);
+        Page<RecipelInfoReview> result = getService().listPage(searchParams.getParams(), searchParams.getOffset(),
+                searchParams.getLimit(), searchParams.getOrderby());
+        return ResponseEntity.ok(ResultUtil.successJson(result));
+    }
+
+    @Override
+    @PostMapping(value = "listAll")
+    public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
+        forceReviewListScope(searchParams);
+        java.util.List<RecipelInfoReview> result = getService().listAll(searchParams.getParams(), searchParams.getOrderby());
+        return ResponseEntity.ok(ResultUtil.successJson(result));
+    }
+
+    @Override
+    @PostMapping(value = "bulkInsert")
+    public ResponseEntity<JSONObject> bulkInsert(@RequestBody List<RecipelInfoReview> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
+        if (CollectionUtil.isNotEmpty(entitys)) {
+            for (RecipelInfoReview e : entitys) {
+                if (isForeignReview(e.getId()) || isForeignRecipel(e)) {
+                    return forbidden();
+                }
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @PostMapping(value = "bulkUpdate")
+    public ResponseEntity<JSONObject> bulkUpdate(@RequestBody List<RecipelInfoReview> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
+        if (CollectionUtil.isNotEmpty(entitys)) {
+            for (RecipelInfoReview e : entitys) {
+                if (isForeignReview(e.getId()) || isForeignRecipel(e)) {
+                    return forbidden();
+                }
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @PostMapping(value = "bulkDelete")
+    public ResponseEntity<JSONObject> bulkDelete(@RequestBody List<RecipelInfoReview> entitys) {
+        if (!hasAnySessionPermission()) { return forbidden(); }
+        if (CollectionUtil.isNotEmpty(entitys)) {
+            for (RecipelInfoReview e : entitys) {
+                if (isForeignReview(e.getId())) {
+                    return forbidden();
+                }
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
+
     @GetMapping("/recipelInfo/{recipelInfoId}")
     public ResponseEntity<JSONObject> getByRecipelInfoId(@PathVariable("recipelInfoId") String recipelInfoId) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y1, parity save/saveList/delete cùng file.
