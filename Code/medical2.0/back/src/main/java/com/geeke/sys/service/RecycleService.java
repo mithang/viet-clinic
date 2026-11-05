@@ -48,6 +48,15 @@ public class RecycleService extends ActionService {
 			throw new ServiceException("Không tìm thấy bản ghi nhật ký cần khôi phục!");
 		}
 		int rows = recycleDao.updateActionStaus(entity.getId());
+		// DS45: claim co dieu kien (mapper: AND status='0') — rows==0
+		// nghia la action da duoc khoi phuc truoc do (hoac bi doi
+		// trang thai giua chung). Fail-closed 400, khong chay lai
+		// restore() tren cac dong recycle va khong ghi them dong
+		// audit RESTORED trung. Claim la atomic nen 2 restore song
+		// song cung action chi 1 duoc chap nhan.
+		if (rows == 0) {
+			throw new ServiceException("Bản ghi này đã được khôi phục trước đó!");
+		}
 		if(rows > 0) {
 			for(ActionRecycle busObject: entity.getActionRecycleList()) {
 				recycleDao.restore(busObject.getTableName(), busObject.getObjectId());

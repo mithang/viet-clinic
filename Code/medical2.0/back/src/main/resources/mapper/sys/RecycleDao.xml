@@ -5,7 +5,11 @@
      <!-- Viết thủ công -->
      
     <update id="updateActionStaus">
-        UPDATE sys_action SET status = '1' WHERE id = #{id}
+        <!-- DS45: claim co dieu kien — chi nhan action chua duoc khoi
+             phuc (status='0'). Neu khong, restore lan 2 tren action
+             da khoi phuc van tra rows 1 va ghi them dong audit
+             RESTORED trung (probe ds45 pre: restored_rows 1 -> 2). -->
+        UPDATE sys_action SET status = '1' WHERE id = #{id} AND status = '0'
     </update>
     
     
