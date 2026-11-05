@@ -284,8 +284,17 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         return dto;
     }
 
-    public Patient getByCard(Patient patient){
-        return this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null).get(0);
+    // DS7 (round 7): getByCard cu deref .get(0) khong guard (list rong ->
+    // IndexOutOfBounds 500) va getCompany().getId() NPE khi thieu company.
+    // Nay tra null khi khong khop / thieu company (controller da xu ly
+    // null: khong ghi audit, tra successJson(null)); tenant do controller
+    // ep theo session (parity C3 getByOpenId), service chi tra dong dau.
+    public Patient getByCard(String card, String companyId){
+        if (companyId == null || companyId.trim().isEmpty()) {
+            return null;
+        }
+        List<Patient> list = this.dao.getPatientByCard(card, companyId, null);
+        return CollectionUtils.isEmpty(list) ? null : list.get(0);
     }
 
     public Patient getPatientByregistrationId(String registrationId) {

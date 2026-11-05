@@ -312,8 +312,8 @@ public class PatientController extends CrudController<PatientService, Patient> {
 
     /**
      * R2 — Tra cứu 1 hồ sơ theo CCCD: trả đủ hồ sơ như getById nên ghi
-     * đúng 1 dòng VIEW với patientId đó (chỉ khi tìm thấy; service ném
-     * lỗi khi không khớp nên không có dòng audit cho kết quả rỗng).
+     * đúng 1 dòng VIEW với patientId đó (chỉ khi tìm thấy; service trả null
+     * khi không khớp nên không có dòng audit cho kết quả rỗng).
      * S3 — Quyền sàn parity với getById: tài khoản 0 quyền nhận 403
      * trước khi service chạy, nên lượt bị chặn cũng không ghi VIEW.
      * Không lên patient:list: frontend không có caller nào cho endpoint
@@ -325,7 +325,17 @@ public class PatientController extends CrudController<PatientService, Patient> {
         if (!hasAnySessionPermission()) {
             return forbidden();
         }
-        Patient byCard = patientService.getByCard(patient);
+        // DS7 (round 7): ep tenant theo session nhu getByOpenId (C3) — truoc
+        // day company lay thang tu payload nen token tenant A gui company
+        // tenant B + CCCD cua benh nhan B la doc duoc toan bo ho so B, va
+        // payload thieu company thi NPE 500 o service. Session co tenant thi
+        // bo qua company payload; session rong giu fallback body cu; tenant
+        // rong -> tra null fail-closed (khong query, khong audit).
+        String tenant = sessionTenantOr(patient.getCompany() == null ? null : patient.getCompany().getId());
+        if (tenant == null || tenant.trim().isEmpty()) {
+            return ResponseEntity.ok(ResultUtil.successJson(null));
+        }
+        Patient byCard = patientService.getByCard(patient.getCard(), tenant);
         if (byCard != null) {
             logAccessSafely(RecordAccessAuditService.ACTION_VIEW, byCard.getId(), byCard.getName());
         }
