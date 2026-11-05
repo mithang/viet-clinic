@@ -72,6 +72,15 @@
         <where>
             1=1
             AND a.id > 0
+            <!-- DS23: cung vi pham institution nhu listPages (parity Drug count):
+                 neu khong them, total dem ca dong tenant khac trong khi list
+                 da loc (lo so luong + lech phan trang). Chi ap dung khi id
+                 duoc set (buildTenantPageRequest); PageRequest tran cu giu
+                 hanh vi cu. -->
+            <if test="id != null and id != ''">
+                and if(company.is_institution=0, company.id = #{id}, (company.id = #{institution} or
+                company.id = #{id}) )
+            </if>
             <include refid="Common.whereParams"/>
         </where>
     </select>

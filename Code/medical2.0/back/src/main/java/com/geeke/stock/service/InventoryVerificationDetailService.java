@@ -73,20 +73,15 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         return new Page<>((long)total, list);
     }
 
+    // DS23: listPages dung buildTenantPageRequest + dao.listPages (cau lenh
+    // listPages co san, gioi han theo co so) thay cho PageRequest tran +
+    // dao.listPage khong pham vi — truoc day bat ky session nao co quyen
+    // cung doc duoc chi tiet kiem ke cua tenant khac bang cach bo hoac doi
+    // company_id do client gui (frontend gui company_id + phieu cha).
+    // Parity DrugService.listPages / StuffService.listPages (isInstitutionShared).
     public Page<InventoryVerificationDetail> listPages(List<Parameter> parameters, int offset, int limit, String orderby) {
-/*        Optional<Parameter> cartOptional = parameters.stream().filter(item -> item.getColumnName().equals("`company_id`")).findFirst();
-        parameters.remove(0);
-        String id = (String) cartOptional.get().getValue();
-        Company company = companyService.get(id);
-        String institution = companyService.getInstitution(company.getParent().getId());
-        PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby, id, institution);*/
-        PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
-        int total = dao.count(pageRequest);
-        List<InventoryVerificationDetail> list = null;
-        if(total > 0) {
-            list = dao.listPage(pageRequest);
-        }
-        return new Page<InventoryVerificationDetail>(total, list);
+        PageRequest pageRequest = buildTenantPageRequest(parameters, offset, limit, orderby);
+        return paginate(() -> dao.count(pageRequest), () -> dao.listPages(pageRequest));
     }
 
     @Transactional(readOnly = false)
