@@ -177,7 +177,7 @@
             #{entity.parentTableFk},
             #{entity.isAssociation},
             #{entity.filter},
-            #{orderColumns},
+            #{entity.orderColumns},
             #{entity.createBy},
             #{entity.createDate},
             #{entity.updateBy},

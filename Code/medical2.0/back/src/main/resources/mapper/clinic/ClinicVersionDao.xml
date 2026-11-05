@@ -170,8 +170,8 @@
             #{entity.updateDate},
             #{entity.remarks},
             #{entity.delFlag},
-            #{roleId},
-            #{code}
+            #{entity.roleId},
+            #{entity.code}
         )
         </foreach>
     </insert>
