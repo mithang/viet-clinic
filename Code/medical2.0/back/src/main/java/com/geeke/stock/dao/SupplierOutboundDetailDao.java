@@ -35,4 +35,13 @@ public interface SupplierOutboundDetailDao extends CrudDao<SupplierOutboundDetai
 
     /** DS66: locking re-read of one line (SELECT ... FOR UPDATE). */
     SupplierOutboundDetail getForUpdate(String id);
+
+    /**
+     * DS67: atomically claim a line for deletion: delete the row only
+     * when it still holds the given number. Returns 1 when this caller
+     * won the deletion (and may release the freeze), 0 when another
+     * edit/delete moved or removed the line first (the service then
+     * re-reads and decides no-op vs stale refusal).
+     */
+    int deleteIfNumber(@Param("id") String id, @Param("number") java.math.BigDecimal number);
 }

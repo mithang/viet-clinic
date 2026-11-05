@@ -228,6 +228,28 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     /**
      * XóaXuất khoChi tiết, giải phóngđóng băngTồn kho
      *
+     * DS67: claim the line for deletion BEFORE releasing its freeze.
+     * The old code read the stored line (plain SELECT, so under
+     * REPEATABLE READ a concurrent edit's new number was invisible),
+     * released occupy/freeze by that stored number, then deleted the
+     * row and ignored the DELETE's affected-row count. A parallel edit
+     * 5 -> 8 plus a delete therefore left NO line but occupy/freeze 3
+     * (probe-proven phantom freeze no line accounts for), and two
+     * parallel deletes both released -5 for one 5-unit line
+     * (probe-proven occupy -5). The conditional DELETE lets exactly
+     * one caller own the deletion; only that caller releases the
+     * freeze. A loser re-reads with getForUpdate (a plain get would
+     * return its opening snapshot, DS66 lesson): row gone means the
+     * other delete already released it, so this is the sequential
+     * no-op -- accept without releasing again; row moved to a
+     * different number means a stale delete -- refuse 400 like the
+     * DS66 stale edit, and the whole saveEvt rolls back. Claiming the
+     * detail row first also puts delete on the same lock order as the
+     * DS66 edit claim (detail row, then stock row), so the edit/delete
+     * deadlock disappears. A row that still holds the read number
+     * after a failed claim cannot happen (the conditional DELETE is a
+     * current write); retry once defensively, then refuse as stale.
+     *
      * @param detailId
      */
     @Transactional(readOnly = false)
@@ -238,13 +260,37 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         }
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
-        // DS32: atomic detail release (occupy -N). DS36: the same delta is
-        // dual-written to freeze_stock (this line's freeze is released).
-        medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
-                BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate(),
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate());
-
-        supplierOutboundDetailDao.delete(detail);
+        for (int attempt = 0; attempt < 2; attempt++) {
+            int deleted = supplierOutboundDetailDao.deleteIfNumber(detailId, detail.getNumber());
+            if (deleted == 1) {
+                // DS32: atomic detail release (occupy -N). DS36: the same delta is
+                // dual-written to freeze_stock (this line's freeze is released).
+                medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
+                        BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate(),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate());
+                return;
+            }
+            // DS66: locking re-read -- a plain get() under REPEATABLE READ
+            // would return this transaction's opening snapshot (the stale
+            // number), not the winning edit/delete's committed value.
+            SupplierOutboundDetail fresh = supplierOutboundDetailDao.getForUpdate(detailId);
+            if (fresh == null) {
+                // Another delete already removed the line and released its
+                // freeze: the sequential equivalent is a no-op, so accept
+                // without releasing again.
+                return;
+            }
+            if (fresh.getNumber() != null
+                    && fresh.getNumber().compareTo(detail.getNumber()) == 0) {
+                // Still holds the quantity we read: retry the claim once.
+                continue;
+            }
+            // The line moved to a different quantity: this is a stale
+            // delete -- refuse like the sequential guard, instead of
+            // releasing a freeze computed from an old value.
+            throw new ServiceException("Xuất kho đơn chi tiết đã thay đổi, vui lòng tải lại phiếu rồi sửa lại");
+        }
+        throw new ServiceException("Xuất kho đơn chi tiết đã thay đổi, vui lòng tải lại phiếu rồi sửa lại");
     }
 
     /**

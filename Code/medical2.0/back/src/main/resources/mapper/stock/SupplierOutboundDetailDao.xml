@@ -160,6 +160,27 @@
         </where>
     </delete>
 
+    <!-- DS67: atomically claim a line for deletion: delete the row only
+         when it still holds the quantity the caller read. The delete
+         step released the freeze by the stored number it read (plain
+         SELECT, so under REPEATABLE READ a concurrent edit's new number
+         was invisible) and ignored the DELETE's affected-row count, so
+         a parallel edit 5 -> 8 plus a delete left NO line but occupy/
+         freeze 3 (probe-proven phantom), and two parallel deletes both
+         released -5 for one 5-unit line (probe-proven occupy -5). The
+         conditional DELETE lets exactly one caller own the deletion;
+         the loser re-reads in the service and either takes the
+         sequential no-op (row already gone) or is refused as a stale
+         edit. It also claims the detail row first, putting delete on
+         the same lock order as the DS66 edit claim (detail row, then
+         stock row), so the edit/delete deadlock disappears. Mirrors
+         claimNumber (DS66). -->
+    <delete id="deleteIfNumber">
+        DELETE FROM supplier_outbound_detail
+        WHERE id = #{id}
+          AND number = #{number}
+    </delete>
+
     <delete id="delete">
         DELETE FROM supplier_outbound_detail
         <where>
