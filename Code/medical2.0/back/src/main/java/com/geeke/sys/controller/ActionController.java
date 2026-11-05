@@ -54,6 +54,14 @@ public class ActionController extends CrudController<ActionService, Action> {
 	// tra dong cua tenant khac khong (bang khong co cot company nen
 	// ensureCompanyFilter khong co gi de loc) la item doc rieng sau nay,
 	// khong nhet vao commit khoa write.
+	// DS1 (deep-search round 1): cau hoi doc do nay da duoc tra loi
+	// bang tenant-scope o tang service, KHONG phai proxy o controller
+	// (proxy action:list se lam drawer lich su tren ~20 trang clinic
+	// tra rong): sys_action.company_id = tenant cua doi tuong
+	// (migration v15, dat trong CrudService.createAction), Action khai
+	// company rieng de ensureCompanyFilter ap, ActionService bypass
+	// filter/verify chi cho action:list/read holders (admin thay toan
+	// bo). Chi tiet: hidden_files/ds1-auditread-fix-report.md.
 	// - He qua co y thuc: nut An theo dong (gated boi action:delete) cung
 	// tra 403 tu nay — an bang chung audit la thao tac nhay cam ve toan
 	// ven, khong phai luong nghiep vu can giu; cac dong da an van khoi

@@ -13,5 +13,8 @@ import com.geeke.sys.entity.Action;
  */
 @Mapper
 public interface ActionDao extends CrudDao<Action> {
-	
+
+	// DS1: lookup rieng 1 cot (mau N1) vi SELECT get dung resultType
+	// auto-mapping khong map company_id ve Action.company.
+	String getCompanyIdById(@Param("id") String id);
 }

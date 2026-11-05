@@ -504,6 +504,15 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		action.setObjectId(entity.getId());
 		action.setObjectName((String)Reflections.invokeGetter(entity, "name"));
 		action.setStatus("0");
+		// DS1: dong audit mang tenant cua DOI TUONG bi thao tac
+		// (sys_action.company_id, migration v15) de doc audit loc
+		// duoc theo tenant. Entity khong co company (bang toan cuc,
+		// Company...) de NULL: fail-closed. Dat o day vi save()/
+		// delete() goi createAction SAU doInsert/doUpdate/doDelete
+		// nen company luc nay la company cuoi cung cua entity.
+		if (entity.getCompany() != null && StringUtils.isNotBlank(entity.getCompany().getId())) {
+			action.setCompany(entity.getCompany());
+		}
 
 
 		List<ActionRecycle> recycles = Lists.newArrayList();

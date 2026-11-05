@@ -2,7 +2,9 @@ package com.geeke.sys.entity;
 
 import com.geeke.sys.entity.DictItem;
 import com.geeke.gen.entity.GenTable;
+import com.geeke.org.entity.Company;
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 import com.google.common.collect.Lists;
@@ -23,6 +25,19 @@ public class Action extends DataEntity<Action> {
 	private String objectId;		// Đối tượng nghiệp vụ
 	private String objectName;		// Tên đối tượnggọi là
 	private String status;		// khôi phục
+
+	// DS1: tenant cua DOI TUONG bi thao tac (sys_action.company_id,
+	// migration v15). Khai rieng o day (khong dung ke thua) vi
+	// CrudService.ensureCompanyFilter chi ap khi entity class co
+	// DECLARED field "company" (Reflections.getDeclaredField) — neu
+	// khong, list/listAll cua audit khong loc gi ca va moi session
+	// co >=1 resource deu doc het dong cua tenant khac. Cung mau
+	// nhu Patient/ClinicOffice/Department (khai company rieng du
+	// DataEntity da co). Gia tri do CrudService.createAction dat tu
+	// company cua entity bi thao tac; dong toan cuc (router,
+	// resource, Company...) de NULL: fail-closed (an voi clinic,
+	// hien voi admin nho bypass o ActionService).
+	private Company company;
 
 	private List<ActionRecycle> actionRecycleList = Lists.newArrayList();		// Danh sách bảng con
 	
@@ -75,6 +90,24 @@ public class Action extends DataEntity<Action> {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	
+	// DS1: override de field rieng o tren thang (xem comment o field).
+	// Giu @NotNull nhu DataEntity.getCompany de khong thay doi ngu
+	// nghia validation hien co. Luu y: cac SELECT cua ActionDao dung
+	// resultType auto-mapping nen khong map company_id ve day — loc
+	// list chay o muc SQL (param company_id), con get() dung lookup
+	// rieng getCompanyIdById o ActionService (mau N1).
+	@Override
+	@NotNull(message="Phòng khámIDKhông được để trống")
+	public Company getCompany() {
+		return company;
+	}
+
+	@Override
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 	
 	

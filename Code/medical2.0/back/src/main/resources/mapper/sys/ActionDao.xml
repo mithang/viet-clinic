@@ -32,6 +32,10 @@
         <include refid="actionJoins"/>
         WHERE a.id = #{id}
     </select>
+
+    <select id="getCompanyIdById" resultType="java.lang.String">
+        SELECT company_id FROM sys_action WHERE id = #{id}
+    </select>
     
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM sys_action a
@@ -95,6 +99,7 @@
             object_type,
             object_id,
             object_name,
+            company_id,
             status,
             create_by,
             create_date,
@@ -108,6 +113,7 @@
             #{objectType.id},                    
             #{objectId},
             #{objectName},
+            #{company.id},
             #{status},
             #{createBy},
             #{createDate},
