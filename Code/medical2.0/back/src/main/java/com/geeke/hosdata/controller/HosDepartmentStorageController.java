@@ -222,9 +222,35 @@ public class HosDepartmentStorageController extends BaseController {
 
         supplierStockService.saves(storageEvt);
         supplierStockService.savesTo(storageEvt);
-        // callbackbản việngiao diệnSửaĐãnhập khoTrạng thái
-        hisDrugsStorages.forEach(item-> httpUtil.UpdateHosData(ApiUrl.HOS_UPDATE_DRUGS_STORAGE_STATUS, item.getCrkmxId()));
-        return ResponseEntity.ok(ResultUtil.successJson());
+        // DS26: callback HIS chi la thong bao SAU KHI nhap kho da commit
+        // (saves/savesTo la insert, khong co idempotency). Truoc day mot
+        // callback nem (khong cau hinh HIS server -> URI is not absolute,
+        // hoac HIS mat ket noi) lam ca request 500 DU DA GHI XONG: UI bao
+        // loi, khong refresh, nguoi dung an dong bo lai -> ghi trung.
+        // Nay moi item duoc callback rieng trong try/catch: loi callback
+        // chi ghi WARN + danh dau, khong doi trang thai nhap kho thanh
+        // that bai; tra 100 kem co hisCallbackFailed de UI canh bao thay
+        // vi bao thanh cong tron ven. Tra ve false (HIS tra != 200) cung
+        // tinh la that bai callback, khong phai chi khi nem exception.
+        List<String> callbackFailed = new ArrayList<>();
+        hisDrugsStorages.forEach(item -> {
+            try {
+                Boolean ok = httpUtil.UpdateHosData(ApiUrl.HOS_UPDATE_DRUGS_STORAGE_STATUS, item.getCrkmxId());
+                if (!Boolean.TRUE.equals(ok)) {
+                    callbackFailed.add(item.getCrkmxId());
+                    logger.warn("HIS callback tra ve khong phai 200 cho crkmxId {}", item.getCrkmxId());
+                }
+            } catch (Exception e) {
+                callbackFailed.add(item.getCrkmxId());
+                logger.warn("HIS callback that bai cho crkmxId {} (nhap kho van giu nguyen): {}", item.getCrkmxId(), e.getMessage());
+            }
+        });
+        JSONObject data = new JSONObject();
+        data.put("hisCallbackFailed", !callbackFailed.isEmpty());
+        if (!callbackFailed.isEmpty()) {
+            data.put("hisCallbackFailedIds", callbackFailed);
+        }
+        return ResponseEntity.ok(ResultUtil.successJson(data));
     }
 
 

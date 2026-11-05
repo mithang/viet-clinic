@@ -336,7 +336,15 @@ export default {
         syncInstitutionDispensing(this.currentData).then(responseData => {
           if (responseData.code === 100) {
             this.getStuffList()
-            this.showMessage({ type: 'success', msg: 'Đồng bộ thành công' })
+            // DS26: nhap kho da xong nhung callback bao trang thai ve HIS
+            // that bai (HIS khong cau hinh/mat ket noi) -> canh bao thay
+            // vi bao thanh cong tron ven; danh sach van refresh vi so lieu
+            // kho da doi, tranh an dong bo lai gay ghi trung.
+            if (responseData.data && responseData.data.hisCallbackFailed) {
+              this.showMessage({ type: 'warning', msg: 'Đã nhập kho nhưng chưa cập nhật được trạng thái về HIS, vui lòng kiểm tra lại HIS trước khi đồng bộ lại để tránh ghi trùng' })
+            } else {
+              this.showMessage({ type: 'success', msg: 'Đồng bộ thành công' })
+            }
           } else {
             this.showMessage(responseData)
           }
