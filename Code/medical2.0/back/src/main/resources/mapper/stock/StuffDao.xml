@@ -537,7 +537,7 @@
             <trim prefix="update_date=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.updateDate}
-                </foreach>indate
+                </foreach>
             </trim>
             <trim prefix="indate=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
