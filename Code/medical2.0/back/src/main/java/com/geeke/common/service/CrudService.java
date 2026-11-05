@@ -161,9 +161,13 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		// back as HTTP 500 (probe-proven on DictItem delete-by-type and
 		// on SupplierStock no-id delete of a voided slip). A no-id
 		// delete names no single object, so there is nothing to audit;
-		// the framework's own blessed cascade paths (DictTypeService /
-		// OrgDictTypeService delete) already delete child rows DAO-direct
-		// with no audit row. save() can never hit this (preInsert
+		// the framework's own blessed cascade paths (DictTypeService
+		// delete) already delete child rows DAO-direct
+		// with no audit row. (DS43: the org-dictionary service, the
+		// second path named here before, was removed with the whole
+		// dead org-dictionary feature -- its tables never existed in
+		// the seed or the test DB, no router/menu or UI called it,
+		// and every endpoint 500d.) save() can never hit this (preInsert
 		// generates the id first) and bulkDelete never calls saveAction,
 		// so this guard only affects the no-id delete path. DbActionSaver
 		// stays strict: a null objectId from any other path still fails
