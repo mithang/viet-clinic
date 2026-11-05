@@ -249,6 +249,33 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
         return super.bulkUpdate(entitys);
     }
 
+    // DS78: bulkInsert bypasses save(), so it is the only path that
+    // can plant a version whose roleId points at no sys_role row.
+    // A dangling roleId breaks nothing on read (the N3b guard and the
+    // listPage LEFT JOIN are null-safe), but it silently breaks clinic
+    // provisioning: CompanyService.saveClinicAndRole copies the version
+    // role's router/resource/data permissions into the new clinic admin
+    // role, and a nonexistent role copies an empty set (probe-proven:
+    // 0 resources / 0 routers vs 12 / 5 for a real version role), so
+    // the new clinic's admin ends up with no permissions at all.
+    // Fail the whole list closed when a non-blank, non-"0" roleId has
+    // no sys_role row (role_id is NOT NULL DEFAULT 0; "0" = no role).
+    // Single save() needs no check: it always creates a real role and
+    // overwrites roleId. bulkUpdate cannot change roleId.
+    @Override
+    public List<String> bulkInsert(List<ClinicVersion> entitys) {
+        if (entitys != null) {
+            for (ClinicVersion entity : entitys) {
+                String roleId = entity.getRoleId();
+                if (StringUtils.isNotBlank(roleId) && !"0".equals(roleId)
+                        && roleService.get(roleId) == null) {
+                    throw new ServiceException("Vai trò liên kết của phiên bản không tồn tại");
+                }
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
     public int deleteClinic(ClinicVersion entity) {
         String roleId = entity.getRoleId();
         //XóaPhòng khám

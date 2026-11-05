@@ -221,7 +221,7 @@
     <update id="update">
         UPDATE recipel_detail
         SET recipel_info_id      = #{recipelInfo.id},
-            drug_stuff_id        = #{drugStuffId},
+            drug_stuff_id        = #{drugStuffId.drugStuffId},
             single_dosage        = #{singleDosage},
             total                = #{total},
             all_fee              = #{allFee},

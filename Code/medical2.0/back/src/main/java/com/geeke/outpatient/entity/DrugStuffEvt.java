@@ -1,5 +1,6 @@
 package com.geeke.outpatient.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.geeke.basicdata.entity.ManufactureFactory;
 import com.geeke.common.persistence.DataEntity;
@@ -34,6 +35,27 @@ public class DrugStuffEvt implements Serializable {
     private Stuff stuff;
     private CostItem costItem;
     private InspectionCheckInfo inspectionCheckInfo;
+
+    public DrugStuffEvt() {
+    }
+
+    /**
+     * DS78: the standalone recipelDetail form sends drugStuffId as a
+     * plain id string, and the generic /save endpoint must accept that
+     * shape (object shape keeps working via the default constructor +
+     * setters). Without a String creator Jackson 400s every form
+     * create ("no String-argument constructor/factory method").
+     * Mode.DELEGATING is required: a bare @JsonCreator on a
+     * single-arg constructor whose parameter name matches a bean
+     * property (drugStuffId) is treated as a PROPERTIES-based creator,
+     * so a String value still 400s; DELEGATING forces the String
+     * shape to use this constructor (verified live: bare @JsonCreator
+     * still 400d after a clean rebuild+restart).
+     */
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    public DrugStuffEvt(String drugStuffId) {
+        this.drugStuffId = drugStuffId;
+    }
 
     public String getDrugStuffId() {
         return drugStuffId;

@@ -65,6 +65,10 @@ public class CostItem extends DataEntity<CostItem> {
 	}
 	
 	
+	// DS78: @Length(min=1) permits null, so a generic /save body
+	// without itemName passed validation and 500d on the NOT NULL
+	// column instead of failing closed with 400.
+	@NotNull(message="Hạng mục tên không được để trống")
 	@Length(min=1, max=64, message="hạng mụcTênĐộ dài phải nằm trong khoảng 1 đến 64 ")
 	public String getItemName() {
 		return itemName;

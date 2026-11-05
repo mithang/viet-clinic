@@ -51,6 +51,16 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
     @Override
     @Transactional(readOnly = false)
     public CostItem save(CostItem costItem) {
+        // DS78: is_package is NOT NULL DEFAULT '0', but the insert
+        // lists the column unconditionally, so a generic /save body
+        // without isPackage 500s ("Column 'is_package' cannot be
+        // null") instead of taking the default. The real UI path
+        // (/saveDto) always sets isPackage, so this only repairs the
+        // generic /save + API-client path; default here mirrors the
+        // DB default and saveDto's single-item "0".
+        if (StringUtils.isBlank(costItem.getIsPackage())) {
+            costItem.setIsPackage("0");
+        }
         // Khi thêm mới, Xử lý trường tự động đánh số
         if (StringUtils.isBlank(costItem.getId())){
             String sn = sequenceService.generate(SessionUtils.getLoginTenantId(), "treatment_item_code", costItem);
