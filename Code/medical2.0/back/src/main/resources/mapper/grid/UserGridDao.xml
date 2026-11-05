@@ -127,5 +127,110 @@
             del_flag = #{DEL_FLAG_DELETE}
         WHERE id = #{id}
     </update>
-    
+
+    <!-- DS48: bulk statements were missing (same wart DS40 fixed for the
+         outbound slips): CrudService.bulk* calls dao.bulk* directly, so
+         every bulk call 500'd "Invalid bound statement" for any session.
+         bulkInsert/bulkUpdate mirror the single-row columns above (the
+         single update does NOT set user_id, its WHERE is id AND user_id,
+         so bulkUpdate does not set it either); bulkDelete is a soft
+         delete like the single delete. Guards live in
+         UserGridController (payload userId for insert/update +
+         stored-row check for update/delete). -->
+    <insert id="bulkInsert" parameterType="java.util.List">
+        INSERT INTO user_grid(
+            id,
+            user_id,
+            router_id,
+            grid_info,
+            default_check,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES
+        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
+        (
+            #{entity.id},
+            #{entity.userId},
+            #{entity.routerId},
+            #{entity.gridInfo},
+            #{entity.defaultCheck},
+            #{entity.remarks},
+            #{entity.createBy},
+            #{entity.createDate},
+            #{entity.updateBy},
+            #{entity.updateDate},
+            #{entity.delFlag}
+        )
+        </foreach>
+    </insert>
+
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE user_grid
+        <set>
+            <trim prefix="grid_info=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.gridInfo}
+                </foreach>
+            </trim>
+            <trim prefix="router_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.routerId}
+                </foreach>
+            </trim>
+            <trim prefix="default_check=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.defaultCheck}
+                </foreach>
+            </trim>
+            <trim prefix="remarks=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.remarks}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <update id="bulkDelete" parameterType="java.util.List">
+        UPDATE user_grid
+        <set>
+            <trim prefix="del_flag=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then 1
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
 </mapper>

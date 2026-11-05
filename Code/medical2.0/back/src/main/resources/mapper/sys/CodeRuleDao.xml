@@ -122,8 +122,101 @@
             del_flag = #{DEL_FLAG_DELETE}
         WHERE id = #{id}
     </update>
-    
-    
+
+    <!-- DS48: bulk statements were missing (same wart DS40 fixed for the
+         outbound slips): CrudService.bulk* calls dao.bulk* directly, so
+         every bulk call 500'd "Invalid bound statement" for any session,
+         including testfull. bulkInsert/bulkUpdate mirror the single-row
+         columns above; bulkDelete sets only del_flag, like the single
+         delete. Guards live in CodeRuleController (per-op permissions
+         codeRule:create/update/delete, held only by roles 2000/2001/
+         4000): bulk grants no privilege beyond save for the same
+         roles, so no extra guard is added here. -->
+    <insert id="bulkInsert" parameterType="java.util.List">
+        INSERT INTO sys_code_rule(
+            id,
+            code,
+            name,
+            rule_def,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES
+        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
+        (
+            #{entity.id},
+            #{entity.code},
+            #{entity.name},
+            #{entity.ruleDef},
+            #{entity.remarks},
+            #{entity.createBy},
+            #{entity.createDate},
+            #{entity.updateBy},
+            #{entity.updateDate},
+            #{entity.delFlag}
+        )
+        </foreach>
+    </insert>
+
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE sys_code_rule
+        <set>
+            <trim prefix="code=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.code}
+                </foreach>
+            </trim>
+            <trim prefix="name=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.name}
+                </foreach>
+            </trim>
+            <trim prefix="rule_def=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.ruleDef}
+                </foreach>
+            </trim>
+            <trim prefix="remarks=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.remarks}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <update id="bulkDelete" parameterType="java.util.List">
+        UPDATE sys_code_rule
+        <set>
+            <trim prefix="del_flag=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then 1
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+
     <select id="listNotInCompany" resultType="com.geeke.sys.entity.CodeRule">
         SELECT 
             <include refid="codeRuleColumns"/>

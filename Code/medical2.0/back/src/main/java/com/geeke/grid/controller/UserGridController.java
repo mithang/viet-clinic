@@ -241,6 +241,26 @@ public class UserGridController extends CrudController<UserGridService, UserGrid
 					return forbidden();
 				}
 			}
+			// DS48: bulkUpdate must ALSO check the STORED row, not only the
+			// payload userId -- same hole DS47 closed for save() on the
+			// sibling controllers. The generic stored-row cross-check
+			// (CrudService.bulkUpdate ->
+			// verifyTenantOwnershipAgainstStoredRow) is blind here:
+			// user_grid has no company_id, so the stored company is null
+			// and the check early-returns -- and unlike the single-row
+			// update mapper (WHERE id AND user_id), the bulkUpdate CASE
+			// mapper can only filter WHERE id IN, so a bulkUpdate with a
+			// victim row id + own userId would overwrite the victim's
+			// layout. Same stored-row pattern as delete() below; rows
+			// with null userId and nonexistent ids pass through.
+			for (UserGrid e : entitys) {
+				if (e != null && e.getId() != null) {
+					UserGrid stored = getService().get(e.getId());
+					if (stored != null && stored.getUserId() != null && !isOwnUser(stored.getUserId())) {
+						return forbidden();
+					}
+				}
+			}
 		}
 		List<String> ids = getService().bulkUpdate(entitys);
 		return ResponseEntity.ok(ResultUtil.successJson(ids));

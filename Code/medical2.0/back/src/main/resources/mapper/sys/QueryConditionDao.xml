@@ -127,6 +127,109 @@
             del_flag = #{DEL_FLAG_DELETE}
         WHERE id = #{id}
     </update>
-    
-    
+
+    <!-- DS48: bulk statements were missing (same wart DS40 fixed for the
+         outbound slips): CrudService.bulk* calls dao.bulk* directly, so
+         every bulk call 500'd "Invalid bound statement" for any session.
+         bulkInsert/bulkUpdate mirror the single-row columns above;
+         bulkDelete is a soft delete like the single delete. Guards live
+         in QueryConditionController (payload userId for insert/update +
+         stored-row check for update/delete). -->
+    <insert id="bulkInsert" parameterType="java.util.List">
+        INSERT INTO sys_condition(
+            id,
+            user_id,
+            router_id,
+            name,
+            conditions,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES
+        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
+        (
+            #{entity.id},
+            #{entity.userId},
+            #{entity.routerId},
+            #{entity.name},
+            #{entity.conditions},
+            #{entity.remarks},
+            #{entity.createBy},
+            #{entity.createDate},
+            #{entity.updateBy},
+            #{entity.updateDate},
+            #{entity.delFlag}
+        )
+        </foreach>
+    </insert>
+
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE sys_condition
+        <set>
+            <trim prefix="user_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.userId}
+                </foreach>
+            </trim>
+            <trim prefix="router_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.routerId}
+                </foreach>
+            </trim>
+            <trim prefix="name=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.name}
+                </foreach>
+            </trim>
+            <trim prefix="conditions=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.conditions}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <update id="bulkDelete" parameterType="java.util.List">
+        UPDATE sys_condition
+        <set>
+            <trim prefix="del_flag=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then 1
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+
 </mapper>

@@ -249,6 +249,24 @@ public class PersonalThemeController extends CrudController<PersonalThemeService
 					return forbidden();
 				}
 			}
+			// DS48: bulkUpdate must ALSO check the STORED row, not only the
+			// payload userId -- same hole DS47 closed for save(). The
+			// generic stored-row cross-check (CrudService.bulkUpdate ->
+			// verifyTenantOwnershipAgainstStoredRow) is blind here:
+			// sys_personal_theme has no company_id, so the stored company
+			// is null and the check early-returns -- and the bulkUpdate
+			// mapper sets user_id WHERE id IN, so a bulkUpdate with a
+			// victim row id + own userId would re-home the victim's row
+			// to the caller. Same stored-row pattern as delete() below;
+			// rows with null userId and nonexistent ids pass through.
+			for (PersonalTheme e : entitys) {
+				if (e != null && e.getId() != null) {
+					PersonalTheme stored = getService().get(e.getId());
+					if (stored != null && stored.getUserId() != null && !isOwnUser(stored.getUserId())) {
+						return forbidden();
+					}
+				}
+			}
 		}
 		List<String> ids = getService().bulkUpdate(entitys);
 		return ResponseEntity.ok(ResultUtil.successJson(ids));

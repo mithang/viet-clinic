@@ -115,5 +115,77 @@
     <delete id="delete">
         DELETE FROM sys_personal_theme WHERE id = #{id}
     </delete>
-    
+
+    <!-- DS48: bulk statements were missing (same wart DS40 fixed for the
+         outbound slips): CrudService.bulk* calls dao.bulk* directly, so
+         every bulk call 500'd "Invalid bound statement" for any session.
+         bulkInsert/bulkUpdate mirror the single-row columns above;
+         bulkDelete is a physical delete like the single delete
+         (this table has no soft-delete use). Guards live in
+         PersonalThemeController (payload userId for insert/update +
+         stored-row check for update/delete). -->
+    <insert id="bulkInsert" parameterType="java.util.List">
+        INSERT INTO sys_personal_theme(
+            id,
+            user_id,
+            theme,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES
+        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
+        (
+            #{entity.id},
+            #{entity.userId},
+            #{entity.theme},
+            #{entity.remarks},
+            #{entity.createBy},
+            #{entity.createDate},
+            #{entity.updateBy},
+            #{entity.updateDate},
+            #{entity.delFlag}
+        )
+        </foreach>
+    </insert>
+
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE sys_personal_theme
+        <set>
+            <trim prefix="user_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.userId}
+                </foreach>
+            </trim>
+            <trim prefix="theme=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.theme}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <delete id="bulkDelete" parameterType="java.util.List">
+        DELETE FROM sys_personal_theme WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </delete>
+
 </mapper>

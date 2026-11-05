@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.sys.dao.SysSetingDao;
 import com.geeke.sys.entity.SysSeting;
 import org.springframework.web.multipart.MultipartFile;
@@ -181,5 +182,33 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
         //Trả vềTệpid
         SysFile sysFileTemp =  sysFileService.save(sysFile);
         return sysFileTemp;
+    }
+
+    // DS48: bulk* fail-closed 400 (DS40 service-gate pattern), NOT new
+    // mapper statements. sys_seting holds exactly 1 live row (singleton
+    // global config, no company_id, no per-op resource) and is edited
+    // only via save/saveWithFile; bulk semantics are meaningless there,
+    // and the generic bulk floor is only hasAnySessionPermission -- so
+    // adding statements would open a new working batch-write path to
+    // global config for any permissioned session. The generic bulk
+    // endpoints stay reachable but now answer an intentional 400
+    // instead of an accidental BindingException 500. No internal
+    // caller uses bulk* on this service (only the generic controller).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<SysSeting> entitys) {
+        throw new ServiceException("Cấu hình hệ thống chỉ sửa từng mục qua trang Cài đặt, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<SysSeting> entitys) {
+        throw new ServiceException("Cấu hình hệ thống chỉ sửa từng mục qua trang Cài đặt, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<SysSeting> entitys) {
+        throw new ServiceException("Cấu hình hệ thống chỉ sửa từng mục qua trang Cài đặt, không hỗ trợ thao tác hàng loạt!");
     }
 }
