@@ -74,7 +74,11 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             int insert = this.dao.insert(memberManagement);
             //LưutốtsauSẽ Dữ liệuLưuĐếnChi tiếtbảng trong 
 
+            // DS42: payload chi co memberSet.id (khong kem danh sach hang
+            // muc) truoc day getMemberItem() null -> NPE 500 o vong for
+            // ben duoi. Khong co hang muc thi khong sinh dong chi tiet.
             List<MemberItem> memberItem = memberManagement.getMemberSet().getMemberItem();
+            if (memberItem != null) {
             for (MemberItem item : memberItem) {
                 MemberManagementDetail memberManagementDetail = new MemberManagementDetail();
                 memberManagementDetail.setMemberManagement(memberManagement);
@@ -83,6 +87,7 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                 memberManagementDetail.setUseNumber(0);
                 memberManagementDetail.setCompany(memberManagement.getCompany());
                 memberManagementDetailService.save(memberManagementDetail);
+            }
             }
             //liên kếtthẻThành côngCầnđikhấu trừHội viênthẻSố lượng
             // ITER36 N1: the set id comes from the payload, so creating a

@@ -51,9 +51,15 @@ public class ActionService extends CrudService<ActionDao, Action> {
 		// cuc) cung bi chan voi session clinic — fail-closed, vi
 		// khong luong clinic hop le nao get() truc tiep dong audit
 		// (drawer dung listAll, trang admin dung quyen admin).
-		// Dong khong ton tai giu nguyen hanh vi cu (NPE o
-		// action.getId() ben duoi, ngoai pham vi item nay).
-		if (action != null && !hasActionRead()) {
+		// DS42: dong khong ton tai tra null nhu hop dong cua CrudService.get
+		// (truoc day NPE o action.getId() ben duoi — DS1 ghi nhan la ngoai
+		// pham vi item do; nay dong ho get() NPE: DictType/User/GenTable/
+		// Action deu NPE 500 voi id la, probe-chung-minh). Controller tra
+		// 200 data null nhu cac get() khac.
+		if (action == null) {
+			return null;
+		}
+		if (!hasActionRead()) {
 			String tenantId = SessionUtils.getLoginTenantId();
 			if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
 				String companyId = actionDao.getCompanyIdById(id);

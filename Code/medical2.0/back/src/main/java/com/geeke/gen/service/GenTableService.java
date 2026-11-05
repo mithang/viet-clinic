@@ -40,6 +40,13 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
     @Override
     public GenTable get(String id) {
         GenTable genTable = super.get(id);
+        // DS42: super.get() tra null khi dong khong ton tai (hop dong cua
+        // CrudService.get); truoc day genTable.getId() ben duoi NPE 500 o
+        // GET /gen/genTable/{id} voi id la (cung mau NPE ma ITER67 (8c)
+        // da tranh o importJson bang super.get()). Tra null nhu get() goc.
+        if (genTable == null) {
+            return null;
+        }
 
         List<Parameter> params = null;
         PageRequest pageRequest;

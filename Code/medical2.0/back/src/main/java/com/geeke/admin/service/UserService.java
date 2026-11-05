@@ -65,6 +65,12 @@ public class UserService extends CrudService<UserDao, User>{
     @Override
     public User get(String id) {
         User user = super.get(id);
+        // DS42: super.get() tra null khi dong khong ton tai (hop dong cua
+        // CrudService.get); truoc day user.getId() ben duoi NPE 500 o
+        // GET /admin/user/{id} voi id la. Tra null nhu get() goc.
+        if (user == null) {
+            return null;
+        }
 
         /*Lấy danh sách bảng con   Vai trò người dùng*/
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(

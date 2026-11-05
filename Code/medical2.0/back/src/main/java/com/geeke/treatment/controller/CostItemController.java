@@ -47,6 +47,11 @@ public class CostItemController extends CrudController<CostItemService, CostItem
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         //Theohạng mục khám chữa bệnh của idLấyĐếntương ứng của hạng mục khám chữa bệnhThông tin
         CostItem entity = costItemService.get(id);
+        // DS42: id la -> service.get tra null; truoc day setCostItemPackages
+        // tren null NPE 500. Tra 200 data null nhu CrudController goc.
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.successJson(entity));
+        }
         //Quahạng mục khám chữa bệnh của idLấyĐếntương ứng của hạng mục con của Thông tin
         List<CostItemPackage> costItemPackages = costItemPackageService.getAll(id);
         entity.setCostItemPackages(costItemPackages);

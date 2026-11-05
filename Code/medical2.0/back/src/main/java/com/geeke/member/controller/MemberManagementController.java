@@ -56,6 +56,11 @@ public class MemberManagementController extends CrudController<MemberManagementS
         }
 
         MemberManagement entity = memberManagementService.get(id);
+        // DS42: id la -> service.get tra null; truoc day getMemberSet()
+        // tren null NPE 500. Tra 200 data null nhu CrudController goc.
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.successJson(entity));
+        }
         MemberSet memberSet = memberSetService.get(entity.getMemberSet().getId());
         List<MemberItem> byMemberSetId = memberItemService.getByMemberSetId(memberSet.getId());
         memberSet.setMemberItem(byMemberSetId);

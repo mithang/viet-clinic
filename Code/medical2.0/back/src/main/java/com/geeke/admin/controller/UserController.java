@@ -70,6 +70,13 @@ public class UserController extends CrudController<UserService, User> {
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
         User entity = service.get(id);
+        // DS42: id la -> service.get tra null (hop dong CrudService.get);
+        // truoc day setUserExt tren null NPE 500 (sau khi UserService.get
+        // da duoc guard, NPE doi len day). Tra 200 data null nhu
+        // CrudController.getById goc.
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.successJson(entity));
+        }
         UserExt extByUserId = userExtService.getExtByUserId(id);
         entity.setUserExt(extByUserId);
         // Không trả về mật khẩu

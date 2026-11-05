@@ -45,15 +45,26 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
            // go through memberItemService.save, covered by the generic guard.
            verifyTenantOwnership(memberSet);
            memberSet.preInsert();
+           // DS42: so luong con lai (number) mac dinh bang tong so (amount)
+           // khi payload khong gui number — neu khong, set co number NULL
+           // va phat the sau do NPE o updateNumber (unbox null) 500.
+           if (memberSet.getNumber() == null && memberSet.getAmount() != null) {
+               memberSet.setNumber(memberSet.getAmount());
+           }
            int i = this.dao.insert(memberSet);
            if(i>0){
+               // DS42: payload khong co memberItem (tao set chua co hang muc)
+               // truoc day getMemberItem() null -> NPE 500 o vong for ben
+               // duoi. Khong co hang muc thi khong co gi de luu.
                List<MemberItem> memberItemList = memberSet.getMemberItem();
+               if (memberItemList != null) {
                for (MemberItem memberItem : memberItemList) {
                    CostItem costItem = new CostItem();
                    costItem.setId(memberItem.getName());
                    memberItem.setCostItem(costItem);
                    memberItem.setMember(memberSet);
                    memberItemService.save(memberItem);
+               }
                }
            }
        }else {
@@ -67,7 +78,9 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
            //Khi sửa số lượng thẻ hội viên cần kiểm tra số lượng thẻ đã phát hành có lớn hơn số lượng phát hành không
            List<MemberManagement> memberManagements = memberManagementService.getByMemberSetId(memberSet.getId());
 
-           if(memberManagements.size()>memberSet.getAmount()){
+           // DS42: amount null (cot amount nullable) truoc day unbox NPE
+           // 500 o phep so sanh; chi kiem tra khi amount co gia tri.
+           if(memberSet.getAmount() != null && memberManagements.size()>memberSet.getAmount()){
                throw new ServiceException("Số lượng thẻ hội viên sau khi sửa không được thấp hơn số lượng thẻ hội viên đã phát hành!");
            }
            int i = this.dao.update(memberSet);
@@ -75,7 +88,10 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
                //trướcSẽ gốcđến của hạng mụctiến hành dòngXóatạiThêm
                int delete=memberItemService.deleteByMemberSet(memberSet.getId());
 
+                   // DS42: nhu nhanh insert — payload khong co memberItem
+                   // thi khong co gi de luu lai (truoc day NPE 500).
                    List<MemberItem> memberItemList = memberSet.getMemberItem();
+                   if (memberItemList != null) {
                    for (MemberItem memberItem : memberItemList) {
                        memberItem.setId(null);
                        CostItem costItem = new CostItem();
@@ -84,7 +100,9 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
                        memberItem.setMember(memberSet);
                        memberItemService.save(memberItem);
 
-               }
+                   }
+                   }
+
            }
        }
         return memberSet;
@@ -97,6 +115,12 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         // (reproduced live through deleting an own card linked to a
         // foreign set). get() verifies the stored set's tenant.
         MemberSet memberSet = this.get(id);
+        // DS42: number NULL (set tao qua API khong gui number, hoac dong
+        // cu) truoc day unbox NPE 500. Fail-closed: khong tu suy ra ton
+        // kho (set co the da phat the), bao loi ro rang thay vi NPE.
+        if (memberSet == null || memberSet.getNumber() == null) {
+            throw new ServiceException("Thẻ hội viên chưa có số lượng còn lại, không thể phát hành thêm!");
+        }
         if(memberSet.getNumber()==0){
             throw new ServiceException("Hội viênthẻSố lượng còn lại là 0, Không thểlạiThêmHội viên!");
 
@@ -114,6 +138,10 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         // to it (reproduced live: foreign stock 50 -> 51). get() verifies
         // the stored set's tenant.
         MemberSet memberSet = this.get(id);
+        // DS42: nhu updateNumber — number NULL truoc day unbox NPE 500.
+        if (memberSet == null || memberSet.getNumber() == null) {
+            throw new ServiceException("Thẻ hội viên chưa có số lượng còn lại, không thể hoàn trả!");
+        }
         int newNumber = memberSet.getNumber()+1;
         int i = this.dao.updateNumber(id, newNumber);
         return i;

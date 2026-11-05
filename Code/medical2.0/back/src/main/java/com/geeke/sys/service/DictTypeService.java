@@ -61,9 +61,21 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
     }
 
     @Override
-    @Cacheable(value = "dict:type", key = "#id")
+    @Cacheable(value = "dict:type", key = "#id", unless = "#result == null")
     public DictType get(String id) {
         DictType dictType = super.get(id);
+        // DS42: super.get() tra null khi dong khong ton tai (hop dong cua
+        // CrudService.get); truoc day dong tiep theo deref dictType.getId()
+        // -> NPE 500 o GET /sys/dictType/{id} voi id la, va o importJson
+        // (nhanh create `get(id)==null` khong bao gio dung duoc, ca id
+        // trong lan id khong ton tai deu 500 — cung mau NPE ma ITER67 (8c)
+        // da sua o GenTableService.importJson bang super.get()). Tra null
+        // nhu get() goc; controller tra 200 data null nhu cac get() khac.
+        // `unless` de null khong bi cache lai neu sau nay bat cache
+        // (hien tai spring.cache.type=none nen annotation la no-op).
+        if (dictType == null) {
+            return null;
+        }
 
         /*Lấy danh sách bảng con   Mục từ điển*/
         SearchParamsBuilder builder = SearchParamsBuilder.create()

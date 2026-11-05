@@ -45,6 +45,11 @@ public class MemberSetController extends CrudController<MemberSetService, Member
         }
 
         MemberSet entity = memberSetService.get(id);
+        // DS42: id la -> service.get tra null; truoc day setMemberItem
+        // tren null NPE 500. Tra 200 data null nhu CrudController goc.
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.successJson(entity));
+        }
         //TheoHội viênthẻLấytương ứng của hạng mụcChi tiết
         List<MemberItem> memberItemList=memberItemService.getByMemberSetId(id);
         entity.setMemberItem(memberItemList);
