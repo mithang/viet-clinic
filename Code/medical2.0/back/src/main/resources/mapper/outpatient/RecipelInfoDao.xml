@@ -626,6 +626,12 @@
         where id = #{id} and (is_pay is null or is_pay = '0')
     </update>
 
+    <update id="claimRefunded">
+        update recipel_info set
+        is_pay = '2'
+        where id = #{id} and is_pay = '1'
+    </update>
+
     <select id="getHistoryRecipel" resultType="com.geeke.outpatient.entity.RecipelInfoDTO">
         SELECT
             <include refid="recipelInfoColumns"/>

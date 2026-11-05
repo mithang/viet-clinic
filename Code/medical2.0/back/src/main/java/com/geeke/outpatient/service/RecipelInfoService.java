@@ -67,6 +67,20 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         return this.recipelInfoDao.claimPaid(id);
     }
 
+    /**
+     * DS54: atomic claim for refunding. Sets is_pay='2' only when the
+     * recipel is still PAID (is_pay '1'); returns the rows affected
+     * (0 = already refunded / never paid / missing). Exactly one
+     * concurrent refund wins the claim, so a parallel double refund
+     * cannot write a second refund TollInfo or REFUND audit row, or
+     * run materialRefund twice. The caller still sets isPay/
+     * chargeStatus/retreatDate afterwards as before.
+     */
+    @Transactional(readOnly = false)
+    public int claimRefunded(String id) {
+        return this.recipelInfoDao.claimRefunded(id);
+    }
+
     @Transactional(readOnly = false)
     public int invalid(String id) {
         RecipelInfo recipelInfo = super.get(id);

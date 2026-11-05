@@ -38,4 +38,13 @@ public interface RecipelInfoDao extends CrudDao<RecipelInfo> {
      * NULL); returns rows affected (0 = already paid/refunded or missing).
      * No del_flag filter, same reason as claimDispensed. */
     int claimPaid(@Param("id") String id);
+
+    /** DS54: atomic refund claim, same pattern as claimPaid. Sets
+     * is_pay='2' only when the recipel is still PAID (is_pay '1');
+     * returns rows affected (0 = already refunded / never paid /
+     * missing). Exactly one concurrent refund wins the claim, so a
+     * parallel double refund cannot write a second refund TollInfo,
+     * a second REFUND audit row, or run materialRefund twice.
+     * No del_flag filter, same reason as claimDispensed. */
+    int claimRefunded(@Param("id") String id);
 }

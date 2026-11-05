@@ -455,6 +455,28 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * Xử lýhoàn phílogic: Kiểm tra, Cập nhật trạng thái đơn thuốc, Tạohoàn phíBản ghi, trảcònTồn kho, BHYThoàn phí
      */
     private void processRefund(TollEvt tollEvt, TollInfo tollInfo, List<RecipelInfoEvt> recipelInfoEvts) {
+        // DS54: claim tung don la "da hoan" TRUOC moi dong tac hoan phi/kho,
+        // nguyen tu (UPDATE ... WHERE is_pay='1', chi 1 luong song song
+        // thang claim; mau DS53). Guard getInRecipeIds o saveToll chi la
+        // SELECT-then-act nen cac lan hoan song song deu vuot qua roi moi
+        // ghi phieu hoan + audit REFUND + materialRefund, lam phieu/audit
+        // nhan doi va ton kho lech (probe pre: x8 deu 200, 8 phieu, 8
+        // audit, surplus 10035 thay vi 10000). Claim o day, truoc vong
+        // chinh, nen don da hoan / chua thu / da duoc claim boi luong khac
+        // deu 400 truoc khi ghi dong nao; don trong cung TollEvt bi lap
+        // cung bi chan (claim lan 2 tra 0 dong). Id trong duoc bo qua nhu
+        // cu (vong chinh giu hanh vi cu). Thong bao giong guard trung lap
+        // o saveToll de UI thay cung mot loi. Cung transaction saveToll
+        // nen claim cua luong thua rollback cung giao dich.
+        for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
+            if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null
+                    || StringUtils.isBlank(recipelInfoEvt.getRecipelInfo().getId())) {
+                continue;
+            }
+            if (recipelInfoService.claimRefunded(recipelInfoEvt.getRecipelInfo().getId()) == 0) {
+                throw new ServiceException("Dữ liệuĐã tồn tạiVui lòngđừngtrùng lặpđề xuấtgiao");
+            }
+        }
         for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
             RecipelInfo recipelInfo = recipelInfoService.get(recipelInfoEvt.getRecipelInfo().getId());
             String value = tollInfo.getAmountStatus().getValue();
@@ -559,7 +581,13 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     private void validateRefundForTreatmentRecipel(RecipelInfo recipelInfo) {
         List<RecipelDetail> recipelDetails = recipelDetailService.getByRecipelInfoId(recipelInfo.getId());
         for (RecipelDetail recipelDetail : recipelDetails) {
-            if (recipelDetail.getExecutions().compareTo(BigDecimal.valueOf(0)) != 0) {
+            // DS54: executions NULL nghia la chua thuc hien (don tao qua
+            // allSave/UI khong gui executions; chi luong truyen dich moi
+            // set) nen xu ly nhu 0. Truoc day getExecutions().compareTo
+            // NPE -> hoan phi don 诊疗 nao co executions NULL cung 500
+            // (probe DS54: refund#1 500, khong phieu hoan/audit nao).
+            if (recipelDetail.getExecutions() != null
+                    && recipelDetail.getExecutions().compareTo(BigDecimal.valueOf(0)) != 0) {
                 throw new ServiceException("Hạng mục khám chữa bệnh đã thực hiện khấu trừ, không thể hoàn phí!");
             }
         }
