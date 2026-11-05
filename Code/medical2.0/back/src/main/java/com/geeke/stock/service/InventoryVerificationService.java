@@ -246,7 +246,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             medicinalStockRecord.setType(2);
         }
         medicinalStockRecord.setDrugStuffName(medicinalStorageControl.getDrugStuffName());
-        medicinalStockRecordService.save(medicinalStockRecord);
+        medicinalStockRecordService.saveInternal(medicinalStockRecord);
 
         //Tồn kho kiểm kêthao tácbảngLưu
         InventoryVerificationRecord inventoryVerificationRecord = new InventoryVerificationRecord();

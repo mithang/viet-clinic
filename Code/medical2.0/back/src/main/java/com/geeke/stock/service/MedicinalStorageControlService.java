@@ -214,7 +214,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             medicinalStockRecord.setOperationStock(new BigDecimal(supplierStock.getInitial()));
             medicinalStockRecord.setStorageId(supplierStock.getSupplierStorage().getId());
 
-            this.medicinalStockRecordService.save(medicinalStockRecord);
+            this.medicinalStockRecordService.saveInternal(medicinalStockRecord);
         }
     }
 
@@ -436,7 +436,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStockRecord.setOperationStock(storageStock);
                 medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());
 
-                this.medicinalStockRecordService.save(medicinalStockRecord);
+                this.medicinalStockRecordService.saveInternal(medicinalStockRecord);
             }
         }
     }
@@ -491,7 +491,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         medicinalStockRecord.setOperationStock(surplusStock);
         medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());
 
-        this.medicinalStockRecordService.save(medicinalStockRecord);
+        this.medicinalStockRecordService.saveInternal(medicinalStockRecord);
     }
 
     /**
@@ -675,7 +675,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //chiếm dụng của Chi tiết nhập khoID
                 medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //chiếm dụng của Đơn thuốcID
                 medicinalStockRecord.setRefId(recipelDetail.getId());  //chiếm dụng của liên kếtBản ghiID
-                this.medicinalStockRecordService.save(medicinalStockRecord);
+                this.medicinalStockRecordService.saveInternal(medicinalStockRecord);
 
                 // DS32: atomic conditional occupy of the detail row
                 // (occupy +take, surplus -take, only when the surplus still
@@ -792,7 +792,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
             //Cập nhật trạng thái bản ghi thao tác tồn kho động
             medicinalStockRecord.setOperationType(3);
-            this.medicinalStockRecordService.save(medicinalStockRecord);
+            this.medicinalStockRecordService.saveInternal(medicinalStockRecord);
 
             //LưuChi tiết phát thuốc
             Dispensing dispensing = new Dispensing();
@@ -875,7 +875,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
             //Cập nhật trạng thái bản ghi thao tác tồn kho động
             medicinalStockRecord.setOperationType(4);
-            this.medicinalStockRecordService.save(medicinalStockRecord);
+            this.medicinalStockRecordService.saveInternal(medicinalStockRecord);
         }
     }
 
