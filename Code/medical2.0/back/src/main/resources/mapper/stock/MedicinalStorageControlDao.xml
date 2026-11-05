@@ -538,4 +538,19 @@
         WHERE id = #{id}
           AND IFNULL(surplus_stock, 0) - IFNULL(occupy_stock, 0) &gt;= #{occupyDelta}
     </update>
+
+    <!-- DS34: conditional zero for voiding an import slip (see
+         MedicinalStorageControlDao.zeroVoidStocks). Only the caller that
+         still sees the exact storage/surplus it read zeroes the row, so a
+         parallel double void cannot decrement the aggregate twice. -->
+    <update id="zeroVoidStocks">
+        UPDATE medicinal_storage_control
+        SET storage_stock = 0,
+            surplus_stock = 0,
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+          AND storage_stock = #{storageStock}
+          AND surplus_stock = #{surplusStock}
+    </update>
 </mapper>

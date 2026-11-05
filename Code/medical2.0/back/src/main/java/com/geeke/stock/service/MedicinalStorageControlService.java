@@ -269,9 +269,38 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 }
 
                 //1.hủynhập khoThông tin giờ, Đưakhả dụngTồn khođặt là 0
-                medicinalStorageControl.setStorageStock(BigDecimal.ZERO);
-                medicinalStorageControl.setSurplusStock(BigDecimal.ZERO);
-                super.save(medicinalStorageControl);
+                // DS34: conditional atomic zero (was absolute set-to-0 +
+                // super.save()): parallel cancels of the same slip all
+                // read storage==surplus and all zeroed the row, while EACH
+                // decremented the aggregate by the read values
+                // (probe-proven: aggregate 9965 vs detail 10000 for one
+                // slip of 5). The UPDATE only applies when the row still
+                // holds exactly the values read above, so exactly one
+                // caller zeroes a line and decrements the aggregate for it.
+                // Keeps the UPDATED action row that super.save() wrote.
+                medicinalStorageControl.preUpdate();
+                int zeroed = this.dao.zeroVoidStocks(medicinalStorageControl.getId(),
+                        storageStock, surplusStock,
+                        medicinalStorageControl.getUpdateBy(), medicinalStorageControl.getUpdateDate());
+                if (zeroed == 1) {
+                    medicinalStorageControl.setStorageStock(BigDecimal.ZERO);
+                    medicinalStorageControl.setSurplusStock(BigDecimal.ZERO);
+                    this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, medicinalStorageControl));
+                } else {
+                    // Another thread already voided this line, or its stock
+                    // moved since the read above: re-read and decide
+                    // fail-closed instead of decrementing the aggregate on
+                    // stale values.
+                    MedicinalStorageControl fresh = this.get(medicinalStorageControl.getId());
+                    if (fresh != null
+                            && fresh.getStorageStock() != null
+                            && fresh.getStorageStock().compareTo(BigDecimal.ZERO) == 0
+                            && fresh.getSurplusStock() != null
+                            && fresh.getSurplusStock().compareTo(BigDecimal.ZERO) == 0) {
+                        continue;
+                    }
+                    throw new ServiceException("độngTồn khokiểm soátĐãphátthay đổi, Không thểhủyXóanhập khoDữ liệu!");
+                }
 
                 // DS28: a missing aggregate row must not abort the void. The
                 // detail row above is already zeroed, so skip only the

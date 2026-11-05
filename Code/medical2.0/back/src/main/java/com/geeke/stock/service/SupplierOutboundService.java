@@ -110,7 +110,23 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         supplierOutbound.setStatus(3);
         //super.save(supplierOutbound);
         supplierOutbound.setCancelDate(new Date());
-        supplierOutboundDao.cancel(supplierOutbound);
+        // DS34: atomic cancel claim. The status checks above are
+        // read-then-act: 8 parallel cancels of one slip of 5 had 5 accepted
+        // and released the freeze 5 times (detail occupy -20, probe-proven).
+        // The conditional UPDATE lets exactly one caller win; losers get 0
+        // rows and throw before any stock is released, and the transaction
+        // rolls back.
+        int claimed = supplierOutboundDao.cancel(supplierOutbound);
+        if (claimed != 1) {
+            SupplierOutbound fresh = this.get(id);
+            if (fresh != null && fresh.getStatus() == 3) {
+                throw new ServiceException("Xuất khođơnĐãhủy, Không thểtrùng lặpthao tác");
+            }
+            if (fresh != null && fresh.getStatus() == 2) {
+                throw new ServiceException("Xuất khođơnĐãxét duyệt, Không thểhủy");
+            }
+            throw new ServiceException("Xuất khođơnĐãhủy, Không thểtrùng lặpthao tác");
+        }
 
         //giải phóngTồn kho
         supplierOutboundDetailService.cancelSupplierOutboundDetail(id);
@@ -131,6 +147,27 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             throw new ServiceException("Xuất khođơnĐãhủy bỏ, Không thểxét duyệt");
         if (supplierOutbound.getStatus() == 2)
             throw new ServiceException("Xuất khođơnKhông thểtrùng lặpxét duyệt");
+
+        // DS34: atomically claim the slip for examining BEFORE any stock
+        // move. The status checks above are read-then-act and status was
+        // only set to 2 at the end (examinee), so 8 parallel examines of
+        // one slip of 5 all applied the confirm move (detail used 40,
+        // surplus 9960, occupy -35, probe-proven). The conditional UPDATE
+        // lets exactly one caller win; losers get 0 rows and throw before
+        // touching stock, and the transaction rolls the claim back if a
+        // later move throws. examinee below still writes examine_by/date
+        // and re-asserts status 2.
+        int claimed = supplierOutboundDao.claimExamine(id, 2);
+        if (claimed != 1) {
+            SupplierOutbound fresh = this.get(id);
+            if (fresh != null && fresh.getStatus() == 3) {
+                throw new ServiceException("Xuất khođơnĐãhủy bỏ, Không thểxét duyệt");
+            }
+            if (fresh != null && fresh.getStatus() == 2) {
+                throw new ServiceException("Xuất khođơnKhông thểtrùng lặpxét duyệt");
+            }
+            throw new ServiceException("Xuất khođơnKhông thểtrùng lặpxét duyệt");
+        }
 
         //TheoChi tiếtvòng lặptrừđiTồn kho
         List<SupplierOutboundDetail> details = supplierOutboundDetailService.getByOutboundId(id);

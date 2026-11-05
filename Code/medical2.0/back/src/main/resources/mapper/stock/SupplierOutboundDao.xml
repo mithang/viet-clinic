@@ -123,10 +123,26 @@
         status = #{status}
         WHERE id = #{id}
     </update>
+    <!-- DS34: conditional cancel claim (see SupplierOutboundDao.cancel).
+         Only a slip that is neither cancelled (3) nor examined (2) can be
+         claimed for cancelling, so parallel cancels cannot each release
+         the freeze. -->
     <update id="cancel">
         UPDATE supplier_outbound SET
         status = #{status}
         WHERE id = #{id}
+          AND status NOT IN (2, 3)
+    </update>
+
+    <!-- DS34: conditional examine claim (see SupplierOutboundDao.
+         claimExamine). Only a slip that is neither examined (2) nor
+         cancelled (3) can be claimed for examining, so parallel examines
+         cannot each apply the confirm move. -->
+    <update id="claimExamine">
+        UPDATE supplier_outbound SET
+        status = #{status}
+        WHERE id = #{id}
+          AND status NOT IN (2, 3)
     </update>
     <select id="get" resultType="com.geeke.stock.entity.SupplierOutbound">
         SELECT

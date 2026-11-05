@@ -69,4 +69,18 @@ public interface MedicinalStorageControlDao extends CrudDao<MedicinalStorageCont
                      @Param("occupyDelta") java.math.BigDecimal occupyDelta,
                      @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
 
+    // DS34: conditionally zero a detail row for voiding an import slip,
+    // only when it still holds exactly the storage/surplus the caller read.
+    // invalidStorageStock used to set both columns to 0 with absolute
+    // save(): parallel cancels of the same slip all read storage==surplus
+    // and all zeroed the row, while EACH decremented the aggregate by the
+    // read values (probe-proven: aggregate 9965 vs detail 10000 for one
+    // slip of 5). Returns 1 when zeroed, 0 when another thread already
+    // voided the row (or its stock moved since the read); the caller then
+    // re-reads and either skips the line or throws fail-closed.
+    int zeroVoidStocks(@Param("id") String id,
+                       @Param("storageStock") java.math.BigDecimal storageStock,
+                       @Param("surplusStock") java.math.BigDecimal surplusStock,
+                       @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
+
 }

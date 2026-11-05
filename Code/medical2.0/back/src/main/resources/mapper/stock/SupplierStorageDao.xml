@@ -177,6 +177,19 @@
             type=#{type}
         WHERE id = #{id}
     </update>
+
+    <!-- DS34: conditional void claim (see SupplierStorageDao.voidExamine).
+         Sets examine to VOIDED only when the slip is not already voided,
+         so exactly one of N parallel cancels wins the slip. -->
+    <update id="voidExamine">
+        UPDATE supplier_storage SET
+            examine = #{voided},
+            examine_date = #{examineDate},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+          AND (examine IS NULL OR examine != #{voided})
+    </update>
     
     <update id="delete">
         UPDATE supplier_storage SET

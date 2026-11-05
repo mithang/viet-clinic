@@ -9,7 +9,6 @@ import com.geeke.common.service.CrudService;
 import com.geeke.stock.dao.SupplierStorageDao;
 import com.geeke.stock.entity.SupplierStock;
 import com.geeke.stock.entity.SupplierStorage;
-import com.geeke.sys.entity.DictItem;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,12 +67,28 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         if (supplierStorage == null) {
             throw new ServiceException("Phiếu nhập kho không tồn tại");
         }
-        // phiếu nhập khoTrạng thái->hủy
-        DictItem dictItem = new DictItem();
-        dictItem.setValue(BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED);
-        supplierStorage.setExamine(dictItem);
-        supplierStorage.setExamineDate(new Date());
-        this.save(supplierStorage);
+        // DS34: a voided slip must not be voided again. The old code had
+        // no status guard at all (unlike the outbound cancel, which throws
+        // on status 3/2): a sequential second cancel was accepted and wrote
+        // a duplicate zero op=-1 stock record (probe-proven).
+        if (supplierStorage.getExamine() != null
+                && BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(supplierStorage.getExamine().getValue())) {
+            throw new ServiceException("Phiếu nhập kho đã hủy, không thể hủy lặp lại");
+        }
+        // DS34: atomically claim the slip for voiding. The sequential guard
+        // above is read-then-act, so 8 parallel cancels all read PASS and
+        // all ran invalidStorageStock, each decrementing the aggregate by
+        // the slip quantity (probe-proven: aggregate 9965 vs detail 10000
+        // for one slip of 5). The conditional UPDATE lets exactly one
+        // caller win; losers get 0 rows and throw, and the transaction
+        // rolls back before any stock moves. Replaces the old unconditional
+        // setExamine + this.save(supplierStorage) (same columns written).
+        supplierStorage.preUpdate();
+        int claimed = this.dao.voidExamine(id, BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED,
+                new Date(), supplierStorage.getUpdateBy(), supplierStorage.getUpdateDate());
+        if (claimed != 1) {
+            throw new ServiceException("Phiếu nhập kho đã hủy, không thể hủy lặp lại");
+        }
         //hủysauCầnSẽ tương ứng của Chi tiếtbảnghủyrơi
         List<SupplierStock> byStorageId = supplierStockService.getByStorageId(id);
 
