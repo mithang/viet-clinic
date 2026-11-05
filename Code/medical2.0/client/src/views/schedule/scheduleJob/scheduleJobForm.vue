@@ -60,13 +60,6 @@
             </el-row>
     </el-form>
     <span slot='footer' class='dialog-footer'>
-      <el-dropdown v-if='dialogProps.action === "edit"' split-button type='warning' @click='startTask("scheduleJobForm")'>
-        Khởi động nhiệm vụ
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item><el-button  type='text' :plain='true' @click='restartTask("scheduleJobForm")'>Lưu và khởi động</el-button></el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-       <el-button v-if='dialogProps.action === "edit"' type='primary' :plain='true' @click='endTask("scheduleJobForm")'>Tạm dừng</el-button>
       <el-button v-if='dialogProps.action !== "view"' :disabled="flag" type='primary' :plain='true' @click='onSubmit("scheduleJobForm")'>Lưu</el-button>
       <el-button v-if='dialogProps.action !== "view"' :plain='true' @click='onDialogClose()'>Hủy</el-button>
       <el-button v-if='dialogProps.action === "view"' :plain='true' @click='onDialogClose()'>Đóng</el-button>
@@ -78,7 +71,7 @@
 </template>
 <script>
 import '@/utils/validate';
-import { saveScheduleJob,startTask,endTask,restartTask } from '@/api/schedule/scheduleJob'
+import { saveScheduleJob } from '@/api/schedule/scheduleJob'
 import BaseUI from '@/views/components/baseUI'
 import OperationIcon from '@/components/OperationIcon'
 import Crontab from '@/components/Crontab'
@@ -152,93 +145,6 @@ export default {
     crontabFill(value) {
       this.bizFormModel.cron = value;
     },
-
-    //Huỷ nhiệm vụ
-    endTask(formName){
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          if (this.bizFormModel.status==='已暂停') {
-            this.$message.warning("Nhiệm vụ đang tạm dừng, không thể tạm dừng lại");
-            return  false;
-          }
-          this.setLoad()
-          endTask(this.bizFormModel).then(responseData => {
-            if(responseData.code === 100) {
-              this.dialogProps.visible = false
-              this.$emit('save-finished')
-              this.$message.success(responseData.data)
-            } else {
-              this.showMessage(responseData)
-            }
-            this.resetLoad()
-          }).catch(error => {
-            this.outputError(error)
-          })
-        } else {
-          return false
-        }
-      });
-    },
-    //Khởi động tác vụ định kỳ
-    startTask(formName){
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          if (this.bizFormModel.status==='执行中') {
-              this.$message.warning("Nhiệm vụ đang chạy, không thể khởi động lại");
-              return  false;
-          }
-          this.setLoad()
-             startTask(this.bizFormModel).then(responseData => {
-              if(responseData.code === 100) {
-                this.dialogProps.visible = false
-                this.$emit('save-finished')
-                this.$message.success(responseData.data)
-              } else {
-                this.showMessage(responseData)
-              }
-              this.resetLoad()
-            }).catch(error => {
-              this.outputError(error)
-            })
-        } else {
-          return false
-        }
-      });
-    },
-
-    //Lưu và khởi động lại nhiệm vụ
-    restartTask(formName){
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          this.setLoad()
-          saveScheduleJob(this.bizFormModel).then(responseData => {
-              if(responseData.code === 100) {
-                //Khởi động lại nhiệm vụ
-                  restartTask(this.bizFormModel).then(responseData => {
-                    if(responseData.code === 100) {
-                      this.dialogProps.visible = false
-                      this.$emit('save-finished')
-                      this.$message.success(responseData.data)
-                    } else {
-                      this.showMessage(responseData)
-                    }
-                    this.resetLoad()
-                  }).catch(error => {
-                    this.outputError(error)
-                  })
-              } else {
-                this.showMessage(responseData)
-              }
-              this.resetLoad()
-            }).catch(error => {
-               this.outputError(error)
-          })
-        } else {return false}
-      });
-    },
-
-
-
 
     onSubmit(formName) {
       this.flag=true
