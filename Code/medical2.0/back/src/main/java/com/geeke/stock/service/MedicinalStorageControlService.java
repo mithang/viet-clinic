@@ -118,6 +118,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             medicinalStorageControl.setStorageStock(new BigDecimal(supplierStock.getInitial()));
             medicinalStorageControl.setUsedStock(BigDecimal.ZERO);
             medicinalStorageControl.setOccupyStock(BigDecimal.ZERO);
+            medicinalStorageControl.setFreezeStock(BigDecimal.ZERO);
             medicinalStorageControl.setSurplusStock(new BigDecimal(supplierStock.getInitial()));
             medicinalStorageControl.setReimburseStock(BigDecimal.ZERO);
 
@@ -178,9 +179,28 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
     public int adjustDetailStocks(MedicinalStorageControl row, BigDecimal storageDelta, BigDecimal surplusDelta,
                                   BigDecimal occupyDelta, BigDecimal usedDelta,
                                   BigDecimal reimburseDelta, BigDecimal returnTodoFeeDelta) {
+        // DS36: non-freeze callers (prescription occupy / confirm / refund
+        // paths) pass freezeDelta ZERO, so they never move freeze_stock.
+        return this.adjustDetailStocks(row, storageDelta, surplusDelta, occupyDelta, usedDelta,
+                reimburseDelta, returnTodoFeeDelta, BigDecimal.ZERO);
+    }
+
+    /**
+     * DS36: same atomic bump as the 7-argument overload, plus a freezeDelta
+     * dual-written to the freeze_stock column. Only the outbound-freeze
+     * touch points (freezeDetailStocks, outbound line delete, outbound
+     * cancel, examine) pass a non-zero freezeDelta, always equal to the
+     * occupyDelta of the same move, so freeze_stock always holds the
+     * frozen portion of occupy_stock.
+     */
+    @Transactional(readOnly = false)
+    public int adjustDetailStocks(MedicinalStorageControl row, BigDecimal storageDelta, BigDecimal surplusDelta,
+                                  BigDecimal occupyDelta, BigDecimal usedDelta,
+                                  BigDecimal reimburseDelta, BigDecimal returnTodoFeeDelta,
+                                  BigDecimal freezeDelta) {
         row.preUpdate();
         int affected = this.dao.adjustStocks(row.getId(), storageDelta, surplusDelta, occupyDelta, usedDelta,
-                reimburseDelta, returnTodoFeeDelta, row.getUpdateBy(), row.getUpdateDate());
+                reimburseDelta, returnTodoFeeDelta, freezeDelta, row.getUpdateBy(), row.getUpdateDate());
         this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, row));
         return affected;
     }
@@ -223,9 +243,11 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         row.preUpdate();
         int affected;
         if (occupyDelta.compareTo(BigDecimal.ZERO) <= 0) {
+            // DS36: a freeze decrease dual-writes the same delta to
+            // freeze_stock (the guarded branch below does it in SQL).
             affected = this.adjustDetailStocks(row,
                     BigDecimal.ZERO, BigDecimal.ZERO, occupyDelta,
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, occupyDelta);
         } else {
             affected = this.dao.freezeStocks(row.getId(), occupyDelta, row.getUpdateBy(), row.getUpdateDate());
             if (affected == 1) {

@@ -13,6 +13,7 @@
         a.storage_stock AS "storageStock",
         a.used_stock AS "usedStock",
         a.occupy_stock AS "occupyStock",
+        a.freeze_stock AS "freezeStock",
         a.surplus_stock AS "surplusStock",
         a.reimburse_stock AS "reimburseStock",
         a.remarks AS "remarks",
@@ -170,6 +171,7 @@
             storage_stock,
             used_stock,
             occupy_stock,
+            freeze_stock,
             surplus_stock,
             reimburse_stock,
             remarks,
@@ -189,6 +191,7 @@
             #{storageStock},
             #{usedStock},
             #{occupyStock},
+            #{freezeStock},
             #{surplusStock},
             #{reimburseStock},
             #{remarks},
@@ -211,6 +214,7 @@
             storage_stock = #{storageStock},
             used_stock = #{usedStock},
             occupy_stock = #{occupyStock},
+            freeze_stock = #{freezeStock},
             surplus_stock = #{surplusStock},
             reimburse_stock = #{reimburseStock},
             remarks = #{remarks},
@@ -239,6 +243,7 @@
             storage_stock,
             used_stock,
             occupy_stock,
+            freeze_stock,
             surplus_stock,
             reimburse_stock,
             remarks,
@@ -260,6 +265,7 @@
             #{entity.storageStock},
             #{entity.usedStock},
             #{entity.occupyStock},
+            #{entity.freezeStock},
             #{entity.surplusStock},
             #{entity.reimburseStock},
             #{entity.remarks},
@@ -314,6 +320,11 @@
             <trim prefix="occupy_stock=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.occupyStock}
+                </foreach>
+            </trim>
+            <trim prefix="freeze_stock=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.freezeStock}
                 </foreach>
             </trim>
             <trim prefix="surplus_stock=case" suffix="end,">
@@ -498,12 +509,16 @@
          lost-update shape as the aggregate bump (probe-proven: 8 parallel
          outbound examines left the shared detail row at used 5 instead of
          40). IFNULL guards the columns because return_todo_fee_stock is
-         NULL on live rows. -->
+         NULL on live rows. DS36: a seventh delta, freezeDelta, dual-writes
+         the freeze-only portion of occupy_stock into the new freeze_stock
+         column; callers that are not freeze touch points pass ZERO, so a
+         prescription occupy never moves freeze_stock. -->
     <update id="adjustStocks">
         UPDATE medicinal_storage_control
         SET storage_stock = IFNULL(storage_stock, 0) + #{storageDelta},
             surplus_stock = IFNULL(surplus_stock, 0) + #{surplusDelta},
             occupy_stock = IFNULL(occupy_stock, 0) + #{occupyDelta},
+            freeze_stock = IFNULL(freeze_stock, 0) + #{freezeDelta},
             used_stock = IFNULL(used_stock, 0) + #{usedDelta},
             reimburse_stock = IFNULL(reimburse_stock, 0) + #{reimburseDelta},
             return_todo_fee_stock = IFNULL(return_todo_fee_stock, 0) + #{returnTodoFeeDelta},
@@ -529,10 +544,14 @@
 
     <!-- DS33: freeze-only occupy bump (surplus untouched, it moves at
          examine). Guarded on surplus minus occupy so parallel outbound
-         creates cannot over-freeze the same detail row. -->
+         creates cannot over-freeze the same detail row. DS36: the same
+         delta is dual-written to freeze_stock, so the freeze portion of
+         occupy_stock is tracked separately; the guard still reads occupy
+         this round (DS37 switches it to freeze_stock). -->
     <update id="freezeStocks">
         UPDATE medicinal_storage_control
         SET occupy_stock = IFNULL(occupy_stock, 0) + #{occupyDelta},
+            freeze_stock = IFNULL(freeze_stock, 0) + #{occupyDelta},
             update_by = #{updateBy},
             update_date = #{updateDate}
         WHERE id = #{id}

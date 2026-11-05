@@ -177,9 +177,11 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             // DS32: atomic detail confirm (occupy -N, used +N, surplus -N).
             // Was read-modify-write via save(): 8 parallel examines left
             // the shared detail row at used 5 instead of 40, probe-proven.
+            // DS36: the same occupy delta is dual-written to freeze_stock
+            // (the freeze converts to used).
             medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
                     BigDecimal.ZERO, detail.getNumber().negate(), detail.getNumber().negate(), detail.getNumber(),
-                    BigDecimal.ZERO, BigDecimal.ZERO);
+                    BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate());
 
             //Cập nhậttổngTồn khokiểm soát
             String drugOrStuffId = (detail.getDrug() != null && !StringUtils.isNullOrEmpty(detail.getDrug().getId()))? detail.getDrug().getId() : detail.getStuff().getId();

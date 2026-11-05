@@ -32,6 +32,11 @@ public interface MedicinalStorageControlDao extends CrudDao<MedicinalStorageCont
     // outbound examines left the shared detail row at used 5 instead of
     // 40). IFNULL guards the columns because return_todo_fee_stock is
     // NULL on live rows. Returns the rows updated (1).
+    // DS36: a seventh delta, freezeDelta, dual-writes the freeze-only
+    // portion of occupy_stock into freeze_stock. Only the outbound-freeze
+    // touch points pass a non-zero freezeDelta (equal to occupyDelta);
+    // every other caller passes ZERO through the 7-argument overload, so
+    // a prescription occupy never moves freeze_stock.
     int adjustStocks(@Param("id") String id,
                      @Param("storageDelta") java.math.BigDecimal storageDelta,
                      @Param("surplusDelta") java.math.BigDecimal surplusDelta,
@@ -39,6 +44,7 @@ public interface MedicinalStorageControlDao extends CrudDao<MedicinalStorageCont
                      @Param("usedDelta") java.math.BigDecimal usedDelta,
                      @Param("reimburseDelta") java.math.BigDecimal reimburseDelta,
                      @Param("returnTodoFeeDelta") java.math.BigDecimal returnTodoFeeDelta,
+                     @Param("freezeDelta") java.math.BigDecimal freezeDelta,
                      @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
 
     // DS32: atomically occupy a detail row, but only when its surplus still

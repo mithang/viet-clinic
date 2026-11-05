@@ -24,6 +24,7 @@ public class MedicinalStorageControl extends DataEntity<MedicinalStorageControl>
 	private BigDecimal storageStock;		// Tổng lượng nhập kho
 	private BigDecimal usedStock;		// Số lượng tồn kho đã sử dụng
 	private BigDecimal occupyStock;		// Số lượng tồn kho đang bị chiếm dụng
+	private BigDecimal freezeStock = BigDecimal.ZERO;		// Số lượng tồn kho đang bị đóng băng bởi phiếu xuất kho (DS36: phần đóng băng của occupy_stock, dual-write)
 	private BigDecimal surplusStock;		// Số lượng tồn kho còn khả dụng
 	private BigDecimal reimburseStock;		// Số lượng tồn kho báo hỏng
 	private BigDecimal returnTodoFeeStock;		// Trả thuốcChưahoàn phílượng
@@ -112,6 +113,18 @@ public class MedicinalStorageControl extends DataEntity<MedicinalStorageControl>
 	}
 	public void setOccupyStock(BigDecimal occupyStock) {
 		this.occupyStock = occupyStock;
+	}
+	
+	
+	// DS36: frozen-by-outbound-slip portion of occupy_stock, dual-written
+	// at every freeze touch point (freezeDetailStocks, outbound line
+	// delete, outbound cancel, examine). Prescription occupies never
+	// touch this column.
+	public BigDecimal getFreezeStock() {
+		return freezeStock;
+	}
+	public void setFreezeStock(BigDecimal freezeStock) {
+		this.freezeStock = freezeStock;
 	}
 	
 	

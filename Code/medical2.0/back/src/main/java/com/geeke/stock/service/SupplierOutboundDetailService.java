@@ -137,10 +137,11 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         }
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
-        // DS32: atomic detail release (occupy -N).
+        // DS32: atomic detail release (occupy -N). DS36: the same delta is
+        // dual-written to freeze_stock (this line's freeze is released).
         medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
                 BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate(),
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate());
 
         supplierOutboundDetailDao.delete(detail);
     }
@@ -155,10 +156,11 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         List<SupplierOutboundDetail> details = supplierOutboundDetailDao.getByOutboundId(outboundId);
         for (SupplierOutboundDetail detail : details) {
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId());//detail.getMedicinalStorage();
-            // DS32: atomic detail release (occupy -N).
+            // DS32: atomic detail release (occupy -N). DS36: the same delta
+            // is dual-written to freeze_stock (this line's freeze is released).
             medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
                     BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate(),
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate());
         }
     }
 
