@@ -98,11 +98,30 @@ public class articleController extends BaseController{
         List<article> result = articleService.listAll(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
+    // DS22: listgetid doc bai viet cua tenant khac (xem
+    // ArticleService.isArticleForeignOwned): list/listAll/lists da duoc
+    // ensureCompanyFilter loc theo session tenant, nhung listgetid goi
+    // thang DAO va chi loc theo a.id, nen moi session co quyen deu doc
+    // duoc bai cua tenant khac theo id; nhanh id rong cung tin
+    // companyid do caller gui. Id co thi doi chieu dong da luu -> 403
+    // neu la; id khong ton tai giu hop dong 200 + data null; id rong
+    // thi ep companyid ve session tenant (session rong/"null" giu cu).
+    // Luu y: nhanh id rong dung selectOne nen tenant co >1 bai van 500
+    // nhu cu (loi co san, khong thuoc DS22); UI that (articleForm) chi
+    // goi nhanh co id.
     @PostMapping(value = "listgetid")
     public ResponseEntity<JSONObject> listgetid(@RequestBody article entity){
         if (!hasAnySessionPermission()) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+        }
+        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+            if (articleService.isArticleForeignOwned(entity.getId())) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                        .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
+            }
+        } else if (entity != null) {
+            articleService.forceListgetidCompany(entity);
         }
         article result = articleService.listgetid(entity);
         return ResponseEntity.ok(ResultUtil.successJson(result));

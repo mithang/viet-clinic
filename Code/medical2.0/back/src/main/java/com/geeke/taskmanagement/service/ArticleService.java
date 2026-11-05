@@ -68,6 +68,52 @@ public class ArticleService extends CrudService<ArticleDao, article>{
         }
     }
 
+    /**
+     * DS22: nhanh id rong cua listgetid — ep companyid ve session tenant
+     * (cung nguon getLoginTenantId nhu isArticleForeignOwned; controller
+     * dung com.geeke.sys.utils.SessionUtils nen khong co ham nay).
+     * Session rong/"null" giu hanh vi cu.
+     */
+    @Transactional(readOnly = true)
+    public void forceListgetidCompany(article entity) {
+        if (entity == null) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
+            entity.setCompanyid(tenantId);
+        }
+    }
+
+    /**
+     * DS22: read-side ownership for article/listgetid (same stored-row
+     * lookup as checkArticleTenant, but read-only so the controller can
+     * answer 403 instead of the write guard's 400). list/listAll/lists
+     * are already tenant-scoped (ensureCompanyFilter in listPages, and
+     * the generic list/listAll floor), but listgetid calls the DAO
+     * directly and filters only by a.id — any permissioned session
+     * could read another tenant's article (title/abstracts/content)
+     * by id, and the id-blank branch trusted the caller-supplied
+     * companyid the same way. Nonexistent id returns null (caller
+     * keeps the 200-null contract); blank/'null' session keeps the
+     * old behaviour, parity with checkArticleTenant.
+     */
+    @Transactional(readOnly = true)
+    public boolean isArticleForeignOwned(String articleId) {
+        if (StringUtils.isBlank(articleId)) {
+            return false;
+        }
+        String storedCompanyId = articleDao.getArticleCompanyId(articleId);
+        if (StringUtils.isBlank(storedCompanyId)) {
+            return false;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return false;
+        }
+        return !tenantId.equals(storedCompanyId);
+    }
+
     @Transactional(readOnly = false)
     public int update(article article){
         checkArticleTenant(article.getId());

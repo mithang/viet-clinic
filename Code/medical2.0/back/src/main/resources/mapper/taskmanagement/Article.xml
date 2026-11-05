@@ -191,7 +191,13 @@
             <if test="id!='' and id!=null ">
                 and a.id=#{id}
             </if>
-            <if test="id =='' and id ==null ">
+            <!-- DS22: dieu kien cu "id =='' and id ==null" khong bao gio
+                 dung (id khong the vua rong vua null) nen nhanh companyid
+                 chet — truy van tra TOAN BO bai viet roi selectOne 500
+                 (hoac ro 1 bai duy nhat trong DB). Sua thanh "or" de
+                 nhanh nay loc dung theo companyid, von da duoc controller
+                 ep ve session tenant. -->
+            <if test="id =='' or id ==null ">
                 and a.company_id=#{companyid}
             </if>
         </where>
