@@ -126,10 +126,16 @@
     <!-- DS34: conditional cancel claim (see SupplierOutboundDao.cancel).
          Only a slip that is neither cancelled (3) nor examined (2) can be
          claimed for cancelling, so parallel cancels cannot each release
-         the freeze. -->
+         the freeze.
+         DS35: also persist cancel_date. The service sets cancelDate
+         before calling this update, but the statement only wrote status,
+         so a cancelled slip always read cancel_date NULL even though the
+         column exists, the insert writes it, the get select reads it, and
+         examinee persists examine_date the same way. -->
     <update id="cancel">
         UPDATE supplier_outbound SET
-        status = #{status}
+        status = #{status},
+        cancel_date = #{cancelDate}
         WHERE id = #{id}
           AND status NOT IN (2, 3)
     </update>

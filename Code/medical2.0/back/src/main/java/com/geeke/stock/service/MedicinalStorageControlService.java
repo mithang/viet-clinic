@@ -268,6 +268,24 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     throw new ServiceException("độngTồn khokiểm soátĐãphátthay đổi, Không thểhủyXóanhập khoDữ liệu!");
                 }
 
+                // DS35: refuse the void while the detail row is still
+                // occupied. The storage==surplus check above catches a
+                // prescription occupy (it lowers surplus), but an outbound
+                // FREEZE is occupy-only (DS32/DS33 invariant: freeze adds
+                // occupy, surplus moves only at examine), so storage ==
+                // surplus still holds and the old code zeroed storage and
+                // surplus while leaving occupy > 0 orphaned on the zeroed
+                // row; examining the frozen outbound slip afterwards then
+                // drove detail surplus negative (probe-proven: freeze 5,
+                // void, examine -> surplus -5). Fail-closed: cancel the
+                // outbound slip first (releasing the freeze), then void
+                // the import slip.
+                BigDecimal occupyStock = medicinalStorageControl.getOccupyStock();
+                if (occupyStock != null && occupyStock.compareTo(BigDecimal.ZERO) > 0)
+                {
+                    throw new ServiceException("Tồn kho đang bị chiếm dụng, không thể hủy nhập kho! Vui lòng hủy phiếu xuất kho đang giữ tồn kho này trước.");
+                }
+
                 //1.hủynhập khoThông tin giờ, Đưakhả dụngTồn khođặt là 0
                 // DS34: conditional atomic zero (was absolute set-to-0 +
                 // super.save()): parallel cancels of the same slip all
