@@ -125,6 +125,38 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
+     * DS38: generic delete khong duoc phep xoa truc tiep mot dong cua phieu
+     * xuat kho chua huy. CrudController mo endpoint delete chung, nhung
+     * CrudService.delete chi xoa vat ly dong chi tiet ma khong giai phong
+     * dong bang ton kho (occupy/freeze_stock) -- dong bang bi ket lai tren
+     * dong kho trong khi phieu van cho xet duyet nhung khong con dong nao
+     * (probe: xoa dong 3000 cua phieu cho duyet tra 200, dong kho van
+     * occupy 3000 / freeze 3000, huy phieu sau do cung khong giai phong
+     * vi cancel chi duyet cac dong con lai). Duong xoa dong dung la sua
+     * phieu qua saveEvt (goi deleteSupplierOutboundDetail, co giai phong
+     * dong bang). Chi cho phep xoa dong khi phieu me da huy (status 3,
+     * dong bang da duoc giai phong luc huy) hoac khong tim thay phieu me;
+     * phieu cho duyet (1) / da duyet (2) thi fail-closed 400.
+     * @Transactional(readOnly = false) tuong minh la bat buoc vi service
+     * nay khai bao class-level readOnly = true (mau LesseeService N3d).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(SupplierOutboundDetail entity) {
+        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+            SupplierOutboundDetail stored = this.get(entity.getId());
+            if (stored != null && stored.getSupplierOutbound() != null
+                    && StringUtils.isNotBlank(stored.getSupplierOutbound().getId())) {
+                SupplierOutbound parent = supplierOutboundService.get(stored.getSupplierOutbound().getId());
+                if (parent != null && parent.getStatus() != null && parent.getStatus() != 3) {
+                    throw new ServiceException("Chi tiết thuộc phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy sửa phiếu xuất kho để xóa dòng.");
+                }
+            }
+        }
+        return super.delete(entity);
+    }
+
+    /**
      * XóaXuất khoChi tiết, giải phóngđóng băngTồn kho
      *
      * @param detailId
