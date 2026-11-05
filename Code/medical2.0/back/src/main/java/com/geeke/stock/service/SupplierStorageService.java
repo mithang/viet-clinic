@@ -3,6 +3,7 @@ package com.geeke.stock.service;
 import cn.hutool.core.collection.ListUtil;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.data.Page;
+import com.geeke.common.service.ServiceException;
 import com.geeke.common.sequence.service.SequenceService;
 import com.geeke.common.service.CrudService;
 import com.geeke.stock.dao.SupplierStorageDao;
@@ -61,6 +62,12 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     public void cancel(String id) {
         //Trước khi hủy, kiểm tra trước thuốc hoặc vật tư đó có đang được sử dụng không
         SupplierStorage supplierStorage = this.get(id);
+        // DS14: get() tra null khi id khong ton tai (Outbound cancel
+        // co kiem tra tuong tu); khong co kiem tra nay thi setExamine
+        // duoi day NPE -> 500. Fail-closed 400, khong ghi gi.
+        if (supplierStorage == null) {
+            throw new ServiceException("Phiếu nhập kho không tồn tại");
+        }
         // phiếu nhập khoTrạng thái->hủy
         DictItem dictItem = new DictItem();
         dictItem.setValue(BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED);
