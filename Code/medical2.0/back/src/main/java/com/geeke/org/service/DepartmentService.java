@@ -62,6 +62,29 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 	}
 
 	/**
+	 * DS51: chan som id rong o delete don — neu khong, mapper <delete>
+	 * nhanh <otherwise> xoa theo company_id va quet sach toan bo phong
+	 * cua tenant (probe-proven: POST /org/department/delete
+	 * {company:{id:OWN}} tra 200 rows 2, ca 2 phong OWN del_flag=1,
+	 * khong dong audit nao vi DS41 bo qua audit khi id rong).
+	 * CrudService.delete khong yeu cau id: verifyTenantOwnership chi
+	 * so payload company voi session tenant, stored-row check return
+	 * som khi id rong. Mau UserService.delete (iteration 29) da chan
+	 * tuong tu cho User. Chi chan wipe theo company_id; delete-by-parent
+	 * co chu y o cac mapper khac (DictItem theo dict_type_id, ...) khong
+	 * bi anh huong vi chung khong qua service nay. bulkDelete cua
+	 * service nay (DS50) da bo qua dong khong id nen khong doi.
+	 */
+	@Override
+	@Transactional(readOnly = false)
+	public int delete(Department department) {
+		if (department == null || StringUtils.isBlank(department.getId())) {
+			throw new ServiceException("Không xác định được phòng ban cần xóa.");
+		}
+		return super.delete(department);
+	}
+
+	/**
 	 * DS50: bulk* khong dung duong generic CrudService.bulk* (khong co
 	 * statement trong DepartmentDao.xml nen moi goi deu 500 "Invalid
 	 * bound statement", probe-proven) va cung khong duoc them statement
