@@ -128,10 +128,34 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                             .eq("drug_stuff_id", medicinalStorageControl.getDrugStuffId())
                             .eq("company_id", medicinalStorageControl.getCompany().getId())
                             .build(), "");
+            // DS30: initStock above keys the aggregate row by the DRUG's
+            // company, so for an institution-owned drug it creates
+            // (drug, INSTITUTION) while this lookup is tenant-scoped to
+            // (drug, clinic) and comes back empty. Previously `return`
+            // here silently dropped this line's op=1 record AND every
+            // remaining line of the slip, while the caller still returned
+            // 200 and the slip was marked examined/passed (probe-proven:
+            // audit of a 2-line slip with the (institution drug, clinic)
+            // aggregate row soft-deleted wrote line 1's detail row only,
+            // no record, no aggregate bump, and line 2 never ran at all).
+            // Create the (drug, clinic) row instead -- exactly what
+            // saves()/initStockTo does at slip creation -- then bump it
+            // and keep processing the remaining lines.
+            MedicinalStockControl medicinalStockControl;
             if (CollectionUtils.isEmpty(medicinalStockControlList)) {
-                return;
+                medicinalStockControl = new MedicinalStockControl();
+                medicinalStockControl.setCompany(medicinalStorageControl.getCompany());
+                medicinalStockControl.setDrugStuffId(medicinalStorageControl.getDrugStuffId());
+                medicinalStockControl.setDrugStuffName(medicinalStorageControl.getDrugStuffName());
+                medicinalStockControl.setType(medicinalStorageControl.getType());
+                medicinalStockControl.setStorageStock(BigDecimal.ZERO);
+                medicinalStockControl.setUsedStock(BigDecimal.ZERO);
+                medicinalStockControl.setOccupyStock(BigDecimal.ZERO);
+                medicinalStockControl.setSurplusStock(BigDecimal.ZERO);
+                medicinalStockControl.setReimburseStock(BigDecimal.ZERO);
+            } else {
+                medicinalStockControl = medicinalStockControlList.get(0);
             }
-            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
             medicinalStockControl.setStorageStock(medicinalStockControl.getStorageStock().add(medicinalStorageControl.getStorageStock()));
             medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(medicinalStorageControl.getSurplusStock()));
             //Cập nhật bản ghi kiểm soát tổng hợp nhập kho của tồn kho động

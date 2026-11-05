@@ -540,11 +540,23 @@
     </select>
 
 
+    <!-- DS30: institution = parent company (clinic -> its parent, a
+         top-level company -> itself), the same definition as
+         ScreenController.effectiveParentId (DS20). The old SQL looked
+         for a SIBLING row with is_institution = 1 sharing the clinic's
+         parent_id: in this DB no row has is_institution = 1, and the
+         parent's own parent_id is 0, so it returned NULL for every
+         tenant, silently disabling all institution-shared access
+         (CrudService.verifyTenantOwnership's allowance and the
+         institution list scopes). A clinic session then got 400 on any
+         institution-owned drug/stuff/cost item and never saw them in
+         lists, although drugs are institution-shared by design
+         (DrugService.isInstitutionShared). -->
     <select id="getInstitution" resultType="String">
  select
-        a.id
+        CASE WHEN a.parent_id IS NULL OR a.parent_id = 0 THEN a.id ELSE a.parent_id END
         from org_company a
-        where a.parent_id = (SELECT parent_id FROM org_company WHERE id=#{companyId}) and a.is_institution = 1;
+        where a.id = #{companyId};
     </select>
 
     <!-- ITER65 item 2: lookup parent phuc vu guard scope cung-parent. -->
