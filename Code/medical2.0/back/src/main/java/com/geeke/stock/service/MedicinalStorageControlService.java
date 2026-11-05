@@ -293,33 +293,42 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             return;
         }
 
+        // DS29: a missing detail or aggregate row must not abort the release.
+        // Both lookups used to `return` here, which skipped the aggregate
+        // release, every remaining record, AND the batchDelete(list) at the
+        // end -- so a refunded prescription kept its op=2 occupy records
+        // forever and the aggregate kept the refunded occupy (probe-proven:
+        // refund of a 2-line retail charge after the detail row was
+        // soft-deleted left 2 op=2 records and aggregate occupy 5, while
+        // the refund still returned 200 code 100). Each guard now skips
+        // only its own update: a deleted detail row has nothing left to
+        // release, but the aggregate rollup (keyed by drug, not by the
+        // detail row) is still corrected and the records are still deleted.
         for (MedicinalStockRecord medicinalStockRecord:list)
         {
             BigDecimal operationStock = medicinalStockRecord.getOperationStock();    //chiếm dụngTồn khosố
             //Cập nhậttrướcchiếm dụng của Chi tiết nhập kho
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
-            if (CollectionUtils.isEmpty(medicinalStorageControlList))
+            if (!CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                return;
+                MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
+                medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
+                medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
+                //TODO: Trả lại đúng lúc gặp chi tiết nhập kho hết hạn thì xử lý thế nào?    giải quyếtPhương thức: khôngXử lý, củatrướcnhư thế nàogìchiếm dụng của Bây giờ trả lại như thế nào
+                super.save(medicinalStorageControl);
             }
-            MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
-            //TODO: Trả lại đúng lúc gặp chi tiết nhập kho hết hạn thì xử lý thế nào?    giải quyếtPhương thức: khôngXử lý, củatrướcnhư thế nàogìchiếm dụng của Bây giờ trả lại như thế nào
-            super.save(medicinalStorageControl);
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId()).build(), "");
-            if (CollectionUtils.isEmpty(medicinalStockControlList))
+            if (!CollectionUtils.isEmpty(medicinalStockControlList))
             {
-                return;
+                MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
+                medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
+                medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
+                this.medicinalStockControlService.save(medicinalStockControl);
             }
-            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
-            this.medicinalStockControlService.save(medicinalStockControl);
         }
 
         //XóaChi tiếtDữ liệu(mụctrướclàmvật lýXóa)
@@ -477,19 +486,30 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             }
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
+            // DS29: a missing aggregate row must not abort the occupy. The
+            // detail rows above are already occupied and their op=2 records
+            // already saved, so skip only the aggregate bump and still
+            // process the remaining lines. Previously `return` here left
+            // the 2nd+ lines of a prescription unoccupied while the charge
+            // still returned 200 code 100 (probe-proven: retail charge of
+            // 2+3 with the aggregate row soft-deleted occupied only 2 in
+            // the detail row and wrote a single op=2 record, although the
+            // prescription itself showed both lines). Deliberately NOT
+            // fail-closed (throwing would make a prescribable drug
+            // unprescribable until someone restores a deleted aggregate
+            // row) and deliberately NOT recreating the aggregate row here
+            // (the import path owns its creation via initStock).
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                     SearchParamsBuilder.create()
                             .eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId())
                             .eq("company_id", companyId)
                             .build(), "");
-            if (CollectionUtils.isEmpty(medicinalStockControlList))
-            {
-                return;
+            if (!CollectionUtils.isEmpty(medicinalStockControlList)) {
+                MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
+                medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().add(calculationBigDecimal));   //Số lượng tồn kho đang bị chiếm dụngNênthêmtrênđi
+                medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(calculationBigDecimal));     //Số lượng tồn kho còn khả dụngNêntrừdướiđi
+                this.medicinalStockControlService.save(medicinalStockControl);
             }
-            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().add(calculationBigDecimal));   //Số lượng tồn kho đang bị chiếm dụngNênthêmtrênđi
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(calculationBigDecimal));     //Số lượng tồn kho còn khả dụngNêntrừdướiđi
-            this.medicinalStockControlService.save(medicinalStockControl);
         }
     }
 
