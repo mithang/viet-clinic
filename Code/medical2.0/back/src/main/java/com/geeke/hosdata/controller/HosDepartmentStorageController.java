@@ -130,6 +130,8 @@ public class HosDepartmentStorageController extends BaseController {
         StorageEvt storageEvt = new StorageEvt();
         SupplierStorage supplierStorage = new SupplierStorage();
         List<SupplierStock> supplierStockList = new ArrayList<>();
+        List<String> alreadyImportedIds = new ArrayList<>();
+        String companyId = SessionUtils.getUserJson().getString("companyId");
         int totalNumber = 0; // Khởi tạotổng số là 0
         for (int i = 0; i < hisDrugsStorages.size(); i++){
             // DS25: moi dong HIS duoc kiem chung TRUOC moi ghi — truoc day
@@ -145,7 +147,18 @@ public class HosDepartmentStorageController extends BaseController {
             // tra 400 ke ten ma de nhan vien dong bo truoc roi duyet lai.
             // Duong hop le khong doi mot byte: cac dong duoi day giu nguyen.
             HisDrugsStorage hisItem = hisDrugsStorages.get(i);
-            Drug drug = drugService.getByCode(hisItem.getYpdm(),SessionUtils.getUserJson().getString("companyId"));
+            // DS27: chan ghi trung TRUOC moi kiem chung khac — dong HIS da
+            // nhap kho truoc do cho cung company (cung crkmxId) thi bo qua:
+            // khong kiem chung lai thuoc (thuoc co the da bi xoa khoi danh
+            // muc sau lan nhap truoc, nhung dong da nhap thi khong can
+            // kiem chung nua) va khong ghi them dong nao. Dong khong co
+            // crkmxId thi khong dedup duoc, nhap nhu truoc.
+            if (hisItem.getCrkmxId() != null && !hisItem.getCrkmxId().isEmpty()
+                    && supplierStockService.countImportedHisDetail(companyId, hisItem.getCrkmxId()) > 0) {
+                alreadyImportedIds.add(hisItem.getCrkmxId());
+                continue;
+            }
+            Drug drug = drugService.getByCode(hisItem.getYpdm(), companyId);
             if (drug == null) {
                 throw new ServiceException("Thuốc mã " + hisItem.getYpdm() + " chưa có trong kho của phòng khám, hãy đồng bộ thuốc trước khi duyệt nhập kho");
             }
@@ -164,6 +177,8 @@ public class HosDepartmentStorageController extends BaseController {
             SupplierStock supplierStock = new SupplierStock();
             //sinhsảnLô
             supplierStock.setBatchNo(hisDrugsStorages.get(i).getPc());
+            // DS27: luu id duy nhat cua dong HIS de lan dong bo sau nhan ra dong da nhap
+            supplierStock.setHisCrkmxId(hisItem.getCrkmxId());
             //Thông tin thuốc
             supplierStock.setDrug(drug);
             //Vật tưMặc định là null
@@ -179,7 +194,7 @@ public class HosDepartmentStorageController extends BaseController {
             }
             //Phòng khámid
             Company company = new Company();
-            company.setId(SessionUtils.getUserJson().getString("companyId"));
+            company.setId(companyId);
             supplierStock.setCompany(company);
             supplierStorage.setCompany(company);
             //Ngày sản xuất
@@ -204,34 +219,39 @@ public class HosDepartmentStorageController extends BaseController {
             supplierStorage.setInvoiceNumber(hisDrugsStorages.get(i).getFPh());
             totalNumber += supplierStock.getNumber();
         }
-        //Bắt đầuThêmTồn khoThông tin
-        supplierStorage.setNumber(totalNumber); // Sẽ cộng dồnthêm của Kết quảgánGiá trịchosupplierStorage
-        //Thuốc 2
-        supplierStorage.setBreed(2);
-        supplierStorage.setExamineDate(new Date());
-        DictItem dictItem = new DictItem();
-        dictItem.setId(BizConstants.DICT_ITEM_STORAGE_EXAMINE_PASS);
-        dictItem.setValue(BizConstants.SUPPLIER_STORAGE_EXAMINE_PASS);
-        supplierStorage.setExamine(dictItem);
-        supplierStorage.setType("1");
-        supplierStorage.setCode("");
+        // DS27: chi ghi phieu khi con dong moi — neu tat ca cac dong deu
+        // da nhap truoc do thi khong tao phieu rong (savesTo se insert mot
+        // supplier_storage tong 0 ma khong co dong hang nao).
+        if (!supplierStockList.isEmpty()) {
+            //Bắt đầuThêmTồn khoThông tin
+            supplierStorage.setNumber(totalNumber); // Sẽ cộng dồnthêm của Kết quảgánGiá trịchosupplierStorage
+            //Thuốc 2
+            supplierStorage.setBreed(2);
+            supplierStorage.setExamineDate(new Date());
+            DictItem dictItem = new DictItem();
+            dictItem.setId(BizConstants.DICT_ITEM_STORAGE_EXAMINE_PASS);
+            dictItem.setValue(BizConstants.SUPPLIER_STORAGE_EXAMINE_PASS);
+            supplierStorage.setExamine(dictItem);
+            supplierStorage.setType("1");
+            supplierStorage.setCode("");
 
 
-        storageEvt.setSupplierStockList(supplierStockList);
-        storageEvt.setSupplierStorage(supplierStorage);
+            storageEvt.setSupplierStockList(supplierStockList);
+            storageEvt.setSupplierStorage(supplierStorage);
 
-        supplierStockService.saves(storageEvt);
-        supplierStockService.savesTo(storageEvt);
+            supplierStockService.saves(storageEvt);
+            supplierStockService.savesTo(storageEvt);
+        }
         // DS26: callback HIS chi la thong bao SAU KHI nhap kho da commit
-        // (saves/savesTo la insert, khong co idempotency). Truoc day mot
-        // callback nem (khong cau hinh HIS server -> URI is not absolute,
-        // hoac HIS mat ket noi) lam ca request 500 DU DA GHI XONG: UI bao
-        // loi, khong refresh, nguoi dung an dong bo lai -> ghi trung.
+        // (truoc day mot callback nem lam ca request 500 DU DA GHI XONG).
         // Nay moi item duoc callback rieng trong try/catch: loi callback
         // chi ghi WARN + danh dau, khong doi trang thai nhap kho thanh
         // that bai; tra 100 kem co hisCallbackFailed de UI canh bao thay
         // vi bao thanh cong tron ven. Tra ve false (HIS tra != 200) cung
         // tinh la that bai callback, khong phai chi khi nem exception.
+        // DS27: ghi trung khi dong bo lai da duoc chan o tren (bo qua dong
+        // co crkmxId da nhap); callback van chay cho ca dong da nhap de
+        // HIS co co hoi danh dau da duyet.
         List<String> callbackFailed = new ArrayList<>();
         hisDrugsStorages.forEach(item -> {
             try {
@@ -249,6 +269,13 @@ public class HosDepartmentStorageController extends BaseController {
         data.put("hisCallbackFailed", !callbackFailed.isEmpty());
         if (!callbackFailed.isEmpty()) {
             data.put("hisCallbackFailedIds", callbackFailed);
+        }
+        // DS27: cac dong HIS da nhap truoc do, da bo qua de tranh ghi
+        // trung. Callback van chay cho ca cac dong nay (vong lap tren):
+        // neu HIS van chua danh dau da duyet thi day la co hoi bao lai.
+        data.put("hisAlreadyImported", !alreadyImportedIds.isEmpty());
+        if (!alreadyImportedIds.isEmpty()) {
+            data.put("hisAlreadyImportedIds", alreadyImportedIds);
         }
         return ResponseEntity.ok(ResultUtil.successJson(data));
     }

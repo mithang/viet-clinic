@@ -51,7 +51,11 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
 	private  String drugtracinfo; //truy xuấtmãNútThông tin
 	private  String drugTracCodg;//Mã truy xuất thuốc
 	private  String cnt;//ybáoSố lượng
-	
+
+	/** DS27: id duy nhất của dòng HIS (crkmxId) đã nhập kho — dùng để
+	 *  chặn ghi trùng khi đồng bộ lại cùng một danh sách HIS; NULL với
+	 *  phiếu nhập tay và các dòng HIS nhập trước khi có cột này. */
+	private String hisCrkmxId;
 	public SupplierStock() {
 		super();
 	}

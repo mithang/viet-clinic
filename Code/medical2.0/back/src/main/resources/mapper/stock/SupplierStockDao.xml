@@ -63,7 +63,8 @@
         IFNULL(storage.surplus_stock,'') AS 'medicinalStorageControl.surplusStock',
         IFNULL(storage.reimburse_stock,'') AS 'medicinalStorageControl.reimburseStock',
         IFNULL(a.drugtracinfo,'') as "drugtracinfo",
-        IFNULL(a.drug_trac_codg,'') as "drugTracCodg"
+        IFNULL(a.drug_trac_codg,'') as "drugTracCodg",
+        IFNULL(a.his_crkmx_id,'') as "hisCrkmxId"
     </sql>
     
     <sql id="supplierStockJoins">
@@ -173,7 +174,8 @@
             initial,
             cancellation,
             drugtracinfo,
-            drug_trac_codg
+            drug_trac_codg,
+            his_crkmx_id
         ) VALUES (
             #{id},
             #{company.id},                    
@@ -201,7 +203,8 @@
             #{initial},
             #{cancellation},
             #{drugtracinfo},
-            #{drugTracCodg}
+            #{drugTracCodg},
+            #{hisCrkmxId}
         )
     </insert>
     
@@ -457,6 +460,16 @@
     </select>
     <select id="getByDrugId" resultType="java.math.BigDecimal">
         SELECT sum(a.least_bid * a.number) from supplier_stock a WHERE a.drug_id = #{drugOrStuffId} AND a.cancellation = '0'
+    </select>
+    <!-- DS27: dem so dong nhap kho HIS da co cho (company, crkmxId) — dung
+         de chan ghi trung khi dong bo lai cung mot danh sach HIS. Chi dem
+         dong con hieu luc (del_flag normal); NULL his_crkmx_id khong bao
+         gio khop vi so sanh = voi NULL la UNKNOWN. -->
+    <select id="countByHisCrkmxId" resultType="int">
+        SELECT COUNT(*) FROM supplier_stock a
+        WHERE a.company_id = #{companyId}
+          AND a.his_crkmx_id = #{hisCrkmxId}
+          AND a.del_flag = '0'
     </select>
     <select id="getByStuffId" resultType="java.math.BigDecimal">
         SELECT sum(a.least_bid * a.number) from supplier_stock a WHERE a.stuff_id = #{stuffId} AND a.cancellation = '0'

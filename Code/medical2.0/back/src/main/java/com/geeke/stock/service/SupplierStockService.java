@@ -271,6 +271,19 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         return byDrugOrStuffId;
     }
 
+    /**
+     * DS27: đếm số dòng nhập kho HIS đã có cho (company, crkmxId) — dùng
+     * để chặn ghi trùng khi đồng bộ lại cùng một danh sách HIS. Trả 0 khi
+     * thiếu company/crkmxId (dòng HIS cũ không có id thì không dedup được
+     * và vẫn nhập như trước).
+     */
+    public int countImportedHisDetail(String companyId, String hisCrkmxId) {
+        if (companyId == null || companyId.isEmpty() || hisCrkmxId == null || hisCrkmxId.isEmpty()) {
+            return 0;
+        }
+        return this.dao.countByHisCrkmxId(companyId, hisCrkmxId);
+    }
+
     @Transactional(readOnly = false)
     public void cancellation(List<SupplierStock> supplierStockList) {
         this.dao.updateCancel(supplierStockList);

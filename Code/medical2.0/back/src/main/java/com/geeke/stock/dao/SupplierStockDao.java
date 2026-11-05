@@ -18,6 +18,9 @@ import java.util.List;
 public interface SupplierStockDao extends CrudDao<SupplierStock> {
     List<SupplierStock> getByStorageId(@Param("storageId")String id);
 
+    /** DS27: số dòng nhập kho HIS đã có cho (company, crkmxId). */
+    int countByHisCrkmxId(@Param("companyId") String companyId, @Param("hisCrkmxId") String hisCrkmxId);
+
     BigDecimal getByDrugId(String drugOrStuffId);
 
     void updateCancel(@Param("list") List<SupplierStock> supplierStockList);

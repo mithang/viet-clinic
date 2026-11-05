@@ -342,6 +342,11 @@ export default {
             // kho da doi, tranh an dong bo lai gay ghi trung.
             if (responseData.data && responseData.data.hisCallbackFailed) {
               this.showMessage({ type: 'warning', msg: 'Đã nhập kho nhưng chưa cập nhật được trạng thái về HIS, vui lòng kiểm tra lại HIS trước khi đồng bộ lại để tránh ghi trùng' })
+            } else if (responseData.data && responseData.data.hisAlreadyImported) {
+              // DS27: tat ca / mot phan dong HIS da nhap kho truoc do, da
+              // bo qua de tranh ghi trung; danh sach van refresh vi cac
+              // dong moi (neu co) da doi so lieu kho.
+              this.showMessage({ type: 'warning', msg: 'Đã bỏ qua các dòng đã nhập kho trước đó để tránh ghi trùng' })
             } else {
               this.showMessage({ type: 'success', msg: 'Đồng bộ thành công' })
             }
