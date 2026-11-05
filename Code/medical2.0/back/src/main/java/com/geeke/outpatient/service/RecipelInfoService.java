@@ -96,37 +96,51 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
     }
 
     @Transactional(readOnly = false)
+    public int claimInvalid(String id) {
+        return this.recipelInfoDao.claimInvalid(id);
+    }
+
+    @Transactional(readOnly = false)
     public int invalid(String id) {
+        // DS58: atomic claim for invalidating an unpaid prescription. Sets
+        // status=-1 only when the recipel is still ACTIVE (status 1) and
+        // UNCHARGED (charge_status 0); returns the rows affected (0 =
+        // already invalid / charged / missing). Exactly one concurrent
+        // invalid wins the claim, so a parallel double invalid cannot run
+        // cancelOccupy twice and release the same occupy N times (probe
+        // pre: par x8 all returned 1, occupy -35, surplus 10035). The
+        // set-status + save below is kept as before (same value the claim
+        // already wrote, like DS52/DS57).
+        if (this.claimInvalid(id) == 0) {
+            return 0;
+        }
         RecipelInfo recipelInfo = super.get(id);
         if (Objects.nonNull(recipelInfo))
         {
-            if (Objects.equals(recipelInfo.getStatus(), 1) && Objects.equals(recipelInfo.getChargeStatus(), 0))
-            {
-                recipelInfo.setStatus(-1);
-                super.save(recipelInfo);
+            recipelInfo.setStatus(-1);
+            super.save(recipelInfo);
 
-                //độngTồn khogiải phóngthao tác
-                this.medicinalStorageControlService.cancelOccupy(recipelInfo);
+            //độngTồn khogiải phóngthao tác
+            this.medicinalStorageControlService.cancelOccupy(recipelInfo);
 
-                //Theoca bệnhidLấytất cả của Đơn thuốcThông tin
-                List<RecipelInfo> byMedicalId = recipelInfoDao.getByMedicalId(recipelInfo.getRegistration().getId());
-                int recipelInfoLength=byMedicalId.size();
-                int count=0;
-                for (RecipelInfo recipelInfos : byMedicalId  ) {
-                    if(recipelInfos.getStatus()==-1){
-                        count++;
-                    }
+            //Theoca bệnhidLấytất cả của Đơn thuốcThông tin
+            List<RecipelInfo> byMedicalId = recipelInfoDao.getByMedicalId(recipelInfo.getRegistration().getId());
+            int recipelInfoLength=byMedicalId.size();
+            int count=0;
+            for (RecipelInfo recipelInfos : byMedicalId  ) {
+                if(recipelInfos.getStatus()==-1){
+                    count++;
                 }
+            }
 
-                //tất cảĐơn thuốcđềuhủysau, Sẽ đăng kýThông tin của cũngcờ
-                if(count==recipelInfoLength){
+            //tất cảĐơn thuốcđềuhủysau, Sẽ đăng kýThông tin của cũngcờ
+            if(count==recipelInfoLength){
                     //Theoca bệnhThông tinLấyđăng kýThông tin
                     //MedicalRecord medicalRecord = medicalRecordService.get(recipelInfo.getRegistration().getId());
                     //Theoca bệnhThông tinLấyđăng kýid, Đặtđăng ký của Đơn thuốcTrạng thái
                     registrationService.updateRecipeStatus(recipelInfo.getRegistration().getId());
                 }
                 return 1;
-            }
         }
 
         return 0;

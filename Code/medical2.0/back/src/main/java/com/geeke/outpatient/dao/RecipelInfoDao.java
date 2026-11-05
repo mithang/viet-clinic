@@ -56,4 +56,13 @@ public interface RecipelInfoDao extends CrudDao<RecipelInfo> {
      * drugRepercussion twice and drift used/return_todo_fee.
      * No del_flag filter, same reason as claimDispensed. */
     int claimReturned(@Param("id") String id);
+
+    /** DS58: atomic invalid claim, same pattern as claimDispensed. Sets
+     * status='-1' only when the recipel is still ACTIVE (status 1) and
+     * UNCHARGED (charge_status 0); returns rows affected (0 = already
+     * invalid / charged / missing). Exactly one concurrent invalid wins
+     * the claim, so a parallel double invalid cannot run cancelOccupy
+     * twice and release the same occupy N times. No del_flag filter,
+     * same reason as claimDispensed. */
+    int claimInvalid(@Param("id") String id);
 }

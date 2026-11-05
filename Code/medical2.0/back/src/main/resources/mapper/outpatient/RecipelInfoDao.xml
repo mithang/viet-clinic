@@ -638,6 +638,12 @@
         where id = #{id} and is_dispension = '1'
     </update>
 
+    <update id="claimInvalid">
+        update recipel_info set
+        status = -1
+        where id = #{id} and status = 1 and charge_status = 0
+    </update>
+
     <select id="getHistoryRecipel" resultType="com.geeke.outpatient.entity.RecipelInfoDTO">
         SELECT
             <include refid="recipelInfoColumns"/>
