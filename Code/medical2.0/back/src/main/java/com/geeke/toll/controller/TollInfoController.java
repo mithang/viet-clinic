@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
+import com.geeke.common.persistence.DataEntity;
 import com.geeke.common.service.ServiceException;
 import com.geeke.common.data.Page;
 import com.geeke.outpatient.entity.*;
@@ -67,6 +68,14 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
                     && StringUtils.isNotBlank(companyId) && !tenant.equals(companyId)) {
                 return forbidden();
             }
+        }
+        // DS10: phieu da xoa mem (del_flag=1, vd H6 huy phi) khong tra
+        // qua GET nay — tra null nhu khong ton tai. Chi loc o controller
+        // GET; DAO/service khong doi vi nhanh save() REFUNDED goi service
+        // truc tiep va khong chiu duoc null (setReturnType tren null se
+        // NPE), nen loc o DAO se lam hong luong hoan tien.
+        if (entity != null && DataEntity.DEL_FLAG_DELETE.equals(entity.getDelFlag())) {
+            return ResponseEntity.ok(ResultUtil.successJson(null));
         }
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
