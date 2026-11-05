@@ -47,6 +47,26 @@ public class RecycleService extends ActionService {
 		if (entity == null) {
 			throw new ServiceException("Không tìm thấy bản ghi nhật ký cần khôi phục!");
 		}
+		// DS46: chi khoi phuc duoc dong DELETED. Chi ACTION_DELETED
+		// moi sinh dong sys_action_recycle (CrudService.createAction,
+		// nhanh DELETED); dong CREATED/UPDATED/LOGIN/LOGOUT khong co
+		// dong recycle nao nen khong co gi de khoi phuc, nhung
+		// restore() truoc day van chap nhan bat ky action status='0'
+		// nao: lat status 0->1 va ghi them dong audit RESTORED gia
+		// cho cung object_id (probe ds46 pre: CREATED + UPDATED moi
+		// dong deu 200 rows 1, restored_rows 0 -> 2). UI da gate nut
+		// Khoi phuc bang status 0 + actionType deleted
+		// (views/sys/action/index.vue:84); API nay moi ep cung dieu
+		// kien do. Kiem tra ca 2 ve: loai thao tac phai la 'deleted'
+		// VA danh sach recycle khong rong — bat bien live da chung
+		// minh 0 dong DELETED thieu recycle va 0 dong khong phai
+		// DELETED co recycle, nen guard khong chan khoi phuc hop le.
+		// Fail-closed 400 (mau DS42/DS44/DS45) truoc claim DS45.
+		if (entity.getActionType() == null
+				|| !ActionConstants.ACTION_DELETED.equals(entity.getActionType().getValue())
+				|| entity.getActionRecycleList() == null || entity.getActionRecycleList().isEmpty()) {
+			throw new ServiceException("Chỉ bản ghi đã xóa mới có thể khôi phục!");
+		}
 		int rows = recycleDao.updateActionStaus(entity.getId());
 		// DS45: claim co dieu kien (mapper: AND status='0') — rows==0
 		// nghia la action da duoc khoi phuc truoc do (hoac bi doi
