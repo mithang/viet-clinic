@@ -302,7 +302,7 @@
             #{entity.updateDate},
             #{entity.delFlag},
             #{entity.initial},
-            #{cancellation}
+            #{entity.cancellation}
         )
         </foreach>
     </insert>
@@ -370,6 +370,11 @@
                     when id=#{entity.id} then #{entity.bid}
                 </foreach>
             </trim>
+            <trim prefix="least_bid=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.leastBid}
+                </foreach>
+            </trim>
             <trim prefix="retail_price=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.retailPrice}
@@ -385,11 +390,16 @@
                     when id=#{entity.id} then #{entity.allRetailPrice}
                 </foreach>
             </trim>
+            <trim prefix="remarks=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.remarks}
+                </foreach>
+            </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.updateBy}
                 </foreach>
-            </trim>initial
+            </trim>
             <trim prefix="update_date=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.updateDate}

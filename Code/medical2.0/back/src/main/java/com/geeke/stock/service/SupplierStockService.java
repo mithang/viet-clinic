@@ -401,13 +401,12 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
     /**
      * DS70: same fail-closed guard for the bulk writes -- CrudService
      * bulkInsert/bulkUpdate call dao.bulk* directly, NOT save(), so the
-     * save() override above does not cover them. Note the bulk mapper is
-     * ALSO broken today independent of this guard (bulkInsert references
-     * #{cancellation} instead of #{entity.cancellation}, bulkUpdate emits
-     * malformed CASE SQL -- both 500 for any payload, probe-proven), so
-     * the bulk paths were not exploitable; this override makes them
-     * fail-closed 400 instead of 500 and keeps them closed if the mapper
-     * is ever fixed. No internal caller uses bulk on this service.
+     * save() override above does not cover them. DS73 fixed the bulk
+     * mapper itself (bulkInsert #{entity.cancellation}, bulkUpdate stray
+     * 'initial' removed + least_bid/remarks CASEs added), so the bulk
+     * paths would work if reached -- this override still keeps them
+     * fail-closed 400 by design: bulk stock writes go only through the
+     * import-slip flows. No internal caller uses bulk on this service.
      */
     @Override
     @Transactional(readOnly = false)
