@@ -150,7 +150,25 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		}
 		entity.preUpdate();
 		int rows = doDelete(entity);
-		if(rows > 0) {
+		// DS41: only write the audit row when the delete names a single
+		// object. Some mapper <delete> statements have an <otherwise>
+		// branch that deletes by a PARENT key when id is blank (e.g.
+		// supplier_stock by supplier_storage_id, sys_dict_item by
+		// dict_type_id -- 18 mappers), so rows > 0 with a blank id is a
+		// real multi-row delete; createAction would then set
+		// object_id = null and the sys_action insert throws
+		// "Column 'object_id' cannot be null", rolling the whole delete
+		// back as HTTP 500 (probe-proven on DictItem delete-by-type and
+		// on SupplierStock no-id delete of a voided slip). A no-id
+		// delete names no single object, so there is nothing to audit;
+		// the framework's own blessed cascade paths (DictTypeService /
+		// OrgDictTypeService delete) already delete child rows DAO-direct
+		// with no audit row. save() can never hit this (preInsert
+		// generates the id first) and bulkDelete never calls saveAction,
+		// so this guard only affects the no-id delete path. DbActionSaver
+		// stays strict: a null objectId from any other path still fails
+		// loudly instead of silently dropping audit.
+		if(rows > 0 && StringUtils.isNotBlank(entity.getId())) {
 			this.saveAction(this.createAction(ActionConstants.ACTION_DELETED, entity));
 		}
 		return rows;
