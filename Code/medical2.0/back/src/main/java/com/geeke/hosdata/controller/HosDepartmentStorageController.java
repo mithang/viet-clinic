@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.service.ServiceException;
 import com.geeke.hosdata.constant.ApiUrl;
 import com.geeke.hosdata.entity.HisDrugs;
 import com.geeke.hosdata.entity.HisDrugsStorage;
@@ -131,7 +132,35 @@ public class HosDepartmentStorageController extends BaseController {
         List<SupplierStock> supplierStockList = new ArrayList<>();
         int totalNumber = 0; // Khởi tạotổng số là 0
         for (int i = 0; i < hisDrugsStorages.size(); i++){
-            Drug drug = drugService.getByCode(hisDrugsStorages.get(i).getYpdm(),SessionUtils.getUserJson().getString("companyId"));
+            // DS25: moi dong HIS duoc kiem chung TRUOC moi ghi — truoc day
+            // dong khong dung duoc lam ca lo 500 ma khong noi ro dong nao
+            // (saves/savesTo chi chay sau vong lap nen nem o day la
+            // fail-closed, khong ghi mot phan): ma thuoc chua dong bo vao
+            // kho cua phong kham (getByCode loc code + company session tra
+            // null) -> drug.getPreparation() NPE; ckzhyz null/khong phai so
+            // -> NPE/NumberFormatException; he so > 1 ma preparation null
+            // hoac khong co '.' -> NPE/StringIndexOutOfBounds; sl/pfj null
+            // -> NPE khi unbox. Ma chua dong bo la truong hop BINH THUONG
+            // (luong getHosDrugsStorage cung dong bo thuoc chua co), nen
+            // tra 400 ke ten ma de nhan vien dong bo truoc roi duyet lai.
+            // Duong hop le khong doi mot byte: cac dong duoi day giu nguyen.
+            HisDrugsStorage hisItem = hisDrugsStorages.get(i);
+            Drug drug = drugService.getByCode(hisItem.getYpdm(),SessionUtils.getUserJson().getString("companyId"));
+            if (drug == null) {
+                throw new ServiceException("Thuốc mã " + hisItem.getYpdm() + " chưa có trong kho của phòng khám, hãy đồng bộ thuốc trước khi duyệt nhập kho");
+            }
+            int factor;
+            try {
+                factor = Integer.parseInt(hisItem.getCkzhyz());
+            } catch (NumberFormatException | NullPointerException e) {
+                throw new ServiceException("Hệ số chuyển đổi của thuốc mã " + hisItem.getYpdm() + " không hợp lệ: " + hisItem.getCkzhyz());
+            }
+            if (hisItem.getSl() == null || hisItem.getPfj() == null) {
+                throw new ServiceException("Số lượng hoặc đơn giá của thuốc mã " + hisItem.getYpdm() + " bị trống");
+            }
+            if (factor > 1 && (drug.getPreparation() == null || !drug.getPreparation().contains("."))) {
+                throw new ServiceException("Quy cách của thuốc mã " + hisItem.getYpdm() + " không có dạng số thập phân nên không đổi được đơn vị chuẩn");
+            }
             SupplierStock supplierStock = new SupplierStock();
             //sinhsảnLô
             supplierStock.setBatchNo(hisDrugsStorages.get(i).getPc());
@@ -140,10 +169,10 @@ public class HosDepartmentStorageController extends BaseController {
             //Vật tưMặc định là null
             supplierStock.setStuff(new Stuff());
             //Kiểm tra số lượng theo bản viện là đơn vị nhỏ nhất hay đơn vị chuẩn
-            if(Integer.parseInt(hisDrugsStorages.get(i).getCkzhyz()) > 1){
+            if(factor > 1){
                 //tiêu chuẩnĐơn vị
                 supplierStock.setNumber(hisDrugsStorages.get(i).getSl() * Integer.parseInt( (drug.getPreparation().substring(0,drug.getPreparation().indexOf(".")))));
-                supplierStock.setLeastBid(hisDrugsStorages.get(i).getPfj().divide(new BigDecimal(Integer.parseInt(hisDrugsStorages.get(i).getCkzhyz())),2,BigDecimal.ROUND_HALF_UP));
+                supplierStock.setLeastBid(hisDrugsStorages.get(i).getPfj().divide(new BigDecimal(factor),2,BigDecimal.ROUND_HALF_UP));
             }else {
                 supplierStock.setNumber(hisDrugsStorages.get(i).getSl());
                 supplierStock.setLeastBid(hisDrugsStorages.get(i).getPfj());
