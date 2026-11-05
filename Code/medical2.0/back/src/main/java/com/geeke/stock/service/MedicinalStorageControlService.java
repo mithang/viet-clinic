@@ -810,7 +810,9 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             dispensing.setSupplierStock(supplierStock);
             dispensing.setCompany(medicinalStockControl.getCompany());
             dispensing.setNumber(Integer.parseInt(operationStock.stripTrailingZeros().toPlainString()));
-            dispensingService.save(dispensing);
+            // DS71: DispensingService.save is fail-closed now; the real
+            // dispense-confirm flow writes through saveInternal().
+            dispensingService.saveInternal(dispensing);
         }
     }
 
