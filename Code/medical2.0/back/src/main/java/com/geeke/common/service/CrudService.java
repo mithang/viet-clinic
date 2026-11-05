@@ -132,6 +132,22 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		// payload company pass, and doDelete then soft-deleted the
 		// foreign row (reproduced live on /org/clinicOffice/delete).
 		verifyTenantOwnershipAgainstStoredRow(entity);
+		// DS2 (DS1 completeness): delete payloads usually carry only
+		// {id}, so createAction would record NULL company and the
+		// delete event would be invisible to the object's tenant in
+		// lists/drawer (and would trip DS1's strict get check for
+		// restores). Resolve the audit tenant from the STORED row
+		// BEFORE doDelete (after it the row is flagged and dao.get
+		// may not return it). Only fills a blank payload company;
+		// never overrides a payload company, and never affects the
+		// verifies above (already run) or the delete itself.
+		if ((entity.getCompany() == null || StringUtils.isBlank(entity.getCompany().getId()))
+				&& StringUtils.isNotBlank(entity.getId())) {
+			T stored = dao.get(entity.getId());
+			if (stored != null && stored.getCompany() != null) {
+				entity.setCompany(stored.getCompany());
+			}
+		}
 		entity.preUpdate();
 		int rows = doDelete(entity);
 		if(rows > 0) {

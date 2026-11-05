@@ -1,14 +1,23 @@
 package com.geeke.sys.service;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.geeke.common.constants.ActionConstants;
+import com.geeke.common.data.Page;
+import com.geeke.common.data.PageRequest;
+import com.geeke.common.data.Parameter;
+import com.geeke.org.entity.Company;
 import com.geeke.sys.dao.RecycleDao;
 import com.geeke.sys.entity.Action;
 import com.geeke.sys.entity.ActionRecycle;
 import com.geeke.sys.entity.DictItem;
+import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 
 /**
  * Nhật ký thao tácService
@@ -31,10 +40,63 @@ public class RecycleService extends ActionService {
 			for(ActionRecycle busObject: entity.getActionRecycleList()) {
 				recycleDao.restore(busObject.getTableName(), busObject.getObjectId());
 			}
-			
+
 			this.saveAction(this.createAction(ActionConstants.ACTION_RESTORED, entity));
 		}
 		return rows;
+	}
+
+	// DS2: list rieng cho /sys/recycle — KHONG the dung
+	// ensureCompanyFilter cua CrudService o day. Filter generic giai
+	// entity class bang Reflections.getClassGenricType(getClass(), 1),
+	// chi doc DIRECT superclass: RecycleService -> ActionService (lop
+	// concrete, khong co type parameter) -> tra Object.class -> filter
+	// bo qua lang le. Hau qua da chung minh live: clinic /sys/recycle/
+	// list thay TOAN BO dong (158 dong, ca marker la). Khong sua util
+	// generic (anh huong toan bo service) — loc tuong minh o day:
+	// admin giu action:list bypass (nhu ActionService), con lai them
+	// company_id = session tenant (dong NULL bi loc mat, fail-closed).
+	// Luu y: khong goi wrapBodyParamsForTenantFilter (private trong
+	// CrudService) — caller cua recycle list chi gui filter don
+	// (drawer: 1 eq object_id; trang admin: cac truong AND), khong co
+	// nhom OR kieu iter20; neu sau nay co caller gui OR thi phai wrap
+	// truoc khi them company_id.
+	@Override
+	public Page<Action> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
+		if (hasActionList()) {
+			PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
+			int total = dao.count(pageRequest);
+			List<Action> list = total > 0 ? dao.listPage(pageRequest) : Collections.emptyList();
+			return new Page<Action>(total, list);
+		}
+		return listScoped(parameters, offset, limit, orderby);
+	}
+
+	@Override
+	public List<Action> listAll(List<Parameter> parameters, String orderby) {
+		if (hasActionList()) {
+			PageRequest pageRequest = new PageRequest(parameters, orderby);
+			return dao.listAll(pageRequest);
+		}
+		Parameter.extractAndRemoveCompanyId(parameters);
+		String tenantId = SessionUtils.getLoginTenantId();
+		if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
+			parameters.add(new Parameter("company_id", "=", tenantId));
+		}
+		PageRequest pageRequest = new PageRequest(parameters, orderby);
+		return dao.listAll(pageRequest);
+	}
+
+	private Page<Action> listScoped(List<Parameter> parameters, int offset, int limit, String orderby) {
+		Parameter.extractAndRemoveCompanyId(parameters);
+		String tenantId = SessionUtils.getLoginTenantId();
+		if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
+			parameters.add(new Parameter("company_id", "=", tenantId));
+		}
+		PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
+		int total = dao.count(pageRequest);
+		List<Action> list = total > 0 ? dao.listPage(pageRequest) : Collections.emptyList();
+		return new Page<Action>(total, list);
 	}
 	
 	/**
@@ -52,7 +114,19 @@ public class RecycleService extends ActionService {
 		action.setObjectType(entity.getObjectType());
 		action.setObjectId(entity.getObjectId());
 		action.setObjectName(entity.getObjectName());
-		action.setStatus("0");    	
+		action.setStatus("0");
+		// DS2: dong RESTORED mang tenant cua dong goc (lookup 1 cot,
+		// mau N1) de tenant cua doi tuong thay su kien khoi phuc
+		// trong list/drawer. Override nay khong goi super
+		// (CrudService.createAction) nen logic company cua DS1 khong
+		// ap o day; dong goc NULL company -> dong restored NULL
+		// (fail-closed, nhu cu).
+		if (StringUtils.isNotBlank(entity.getId())) {
+			String companyId = actionDao.getCompanyIdById(entity.getId());
+			if (StringUtils.isNotBlank(companyId)) {
+				action.setCompany(new Company(companyId));
+			}
+		}
 		return action;
 	}
 }

@@ -106,7 +106,7 @@ public class ActionService extends CrudService<ActionDao, Action> {
 		return super.listAll(parameters, orderby);
 	}
 
-	private boolean hasActionList() {
+	protected boolean hasActionList() {
 		try {
 			java.util.List<String> permissions = SessionUtils.getUserPermission();
 			return permissions != null && permissions.contains("action:list");
@@ -115,7 +115,7 @@ public class ActionService extends CrudService<ActionDao, Action> {
 		}
 	}
 
-	private boolean hasActionRead() {
+	protected boolean hasActionRead() {
 		try {
 			java.util.List<String> permissions = SessionUtils.getUserPermission();
 			return permissions != null && permissions.contains("action:read");
