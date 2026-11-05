@@ -206,6 +206,35 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         return affected;
     }
 
+    /**
+     * DS33: atomically freeze (or release) an outbound quantity on a
+     * detail row: occupy only, surplus untouched (surplus moves at
+     * examine, DS32 invariant). A positive delta is guarded by
+     * freezeStocks (surplus minus occupy must cover it), so parallel
+     * outbound creates cannot over-freeze; a non-positive delta cannot
+     * over-freeze, so it uses the plain atomic bump instead (a guarded
+     * decrease could spuriously refuse on a row that is already
+     * over-frozen by pre-fix data). Returns 1 when applied, 0 when the
+     * guarded increase was refused; the caller throws stock-not-enough
+     * and the transaction rolls back.
+     */
+    @Transactional(readOnly = false)
+    public int freezeDetailStocks(MedicinalStorageControl row, BigDecimal occupyDelta) {
+        row.preUpdate();
+        int affected;
+        if (occupyDelta.compareTo(BigDecimal.ZERO) <= 0) {
+            affected = this.adjustDetailStocks(row,
+                    BigDecimal.ZERO, BigDecimal.ZERO, occupyDelta,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        } else {
+            affected = this.dao.freezeStocks(row.getId(), occupyDelta, row.getUpdateBy(), row.getUpdateDate());
+            if (affected == 1) {
+                this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, row));
+            }
+        }
+        return affected;
+    }
+
     //hủynhập khoThông tin, Cập nhậtđộngTồn kho
     @Transactional(readOnly = false)
     public void invalidStorageStock(SupplierStorage supplierStorage)

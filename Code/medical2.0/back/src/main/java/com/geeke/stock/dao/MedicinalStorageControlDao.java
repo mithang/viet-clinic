@@ -53,4 +53,20 @@ public interface MedicinalStorageControlDao extends CrudDao<MedicinalStorageCont
                      @Param("requiredSurplus") java.math.BigDecimal requiredSurplus,
                      @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
 
+    // DS33: atomically bump ONLY the occupy column of a detail row, and
+    // only when the still-unfrozen surplus covers the amount: the guard
+    // is surplus minus occupy >= delta. An outbound freeze does NOT move
+    // surplus (that happens at examine, DS32 invariant), so a plain
+    // surplus >= delta guard would still let two parallel creates of 6000
+    // against surplus 10000 both pass and freeze 12000 total
+    // (probe-proven). The guard is conservative where the shared occupy
+    // column also holds prescription occupies (those already reduced
+    // surplus, so surplus minus occupy understates what is free); it
+    // never over-freezes, only over-refuses in that mixed case. A
+    // non-positive delta always passes the guard (callers use the plain
+    // atomic bump for decreases). Returns 1 when applied, 0 when refused.
+    int freezeStocks(@Param("id") String id,
+                     @Param("occupyDelta") java.math.BigDecimal occupyDelta,
+                     @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
+
 }

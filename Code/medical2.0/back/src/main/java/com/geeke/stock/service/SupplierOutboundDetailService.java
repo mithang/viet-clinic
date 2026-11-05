@@ -66,12 +66,28 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         //Cập nhậtĐãcóChi tiết, tìm raCầnXóa của Chi tiết
         List<SupplierOutboundDetail> willDeleteDetail = new ArrayList<>();
         for (SupplierOutboundDetail d : exist) {
-            int found = supplierOutboundDetails.indexOf(d);
-            if (found < 0) {
+            // DS33: match by id, NOT List.indexOf. BaseEntity /
+            // DataEntity / SupplierOutboundDetail define no equals /
+            // hashCode, so indexOf is identity comparison between the
+            // DB-loaded rows and the request-deserialized rows and is
+            // ALWAYS -1: every existing line was treated as "to delete",
+            // updateSupplierOutboundDetail was never called, and the add
+            // loop below skips request lines that carry an id — so editing
+            // a slip silently deleted all its lines while returning 200
+            // (probe-proven: edit 5->8 left 0 lines, occupy 0).
+            SupplierOutboundDetail updated = null;
+            for (SupplierOutboundDetail n : supplierOutboundDetails) {
+                if (n.getId() != null && n.getId().equals(d.getId())) {
+                    updated = n;
+                    break;
+                }
+            }
+            if (updated == null) {
                 willDeleteDetail.add(d);//tức làSẽ Xóa
             } else {
-                //Cập nhật
-                updateSupplierOutboundDetail(d);
+                //Cập nhật: pass the REQUEST line (new quantity), not the
+                //old DB row — passing the old row made addNumber always 0.
+                updateSupplierOutboundDetail(updated);
             }
         }
 
@@ -92,19 +108,17 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
                 throw new ServiceException("độngTồn khoBản ghiKhông tồn tại");
             }
 
-            if (queryStorageControl.getSurplusStock().compareTo(d.getNumber()) < 0) {
+            // DS33: freeze with the atomic guarded bump (occupy +N, surplus
+            // untouched — surplus moves only at examine, DS32 invariant).
+            // The old Java check (surplus >= N, then an unguarded bump)
+            // let two parallel creates of 6000 against surplus 10000 both
+            // pass and freeze 12000 total (probe-proven). A refused freeze
+            // throws and the whole saveEvt rolls back (ServiceException is
+            // a RuntimeException), so no outbound header is left behind.
+            int frozen = medicinalStorageControlService.freezeDetailStocks(queryStorageControl, d.getNumber());
+            if (frozen != 1) {
                 throw new ServiceException("khả dụngTồn khokhôngđủ");
             }
-            // DS32: the old code computed the freeze on the request object
-            // (medicinalStorageControl above) but saved the reloaded one
-            // (queryStorageControl), so creating a slip froze nothing and
-            // examine() later drove the detail occupy to -N (probe-proven:
-            // save left occupy 0, examine left occupy -5). Atomic occupy
-            // bump on the reloaded row instead (occupy +N; surplus moves
-            // only at examine, as before).
-            medicinalStorageControlService.adjustDetailStocks(queryStorageControl,
-                    BigDecimal.ZERO, BigDecimal.ZERO, d.getNumber(),
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
             save(d);
         }
@@ -149,28 +163,35 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
-     * SửaXuất khohạnChi tiết, sửađóng băngSố lượng tồn kho
+     * SửaXuất khohạnChi tiết, sửađóng băngSố lượng tồn kho.
+     * Takes the REQUEST line (new quantity). DS33 rewrite:
+     * the old code took the OLD DB row (so addNumber was always 0), never
+     * persisted the new quantity, and its decrease branch was inverted
+     * (occupy subtracts a negative delta, i.e. increases; surplus adds a
+     * negative delta, i.e. decreases). Now the delta is applied as an
+     * atomic occupy-only bump (DS32 invariant: freeze is occupy-only,
+     * surplus moves only at examine, so examine cannot double-subtract
+     * surplus), guarded when the quantity grows, and the new quantity is
+     * saved on the stored row. A refused increase throws and the whole
+     * saveEvt rolls back, leaving the line and its freeze untouched.
      *
-     * @param detail
+     * @param detail request line with the new quantity
      */
     @Transactional(readOnly = false)
     public void updateSupplierOutboundDetail(SupplierOutboundDetail detail) {
         SupplierOutboundDetail old = supplierOutboundDetailDao.get(detail.getId());
         if (old == null) throw new ServiceException("Xuất khođơnChi tiếtKhông tồn tại");
 
-        MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId());//old.getMedicinalStorage();
+        MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(old.getMedicinalStorage().getId());
         BigDecimal addNumber = detail.getNumber().subtract(old.getNumber());//tăngđóng băng của Số lượng
-        if (addNumber.compareTo(BigDecimal.ZERO) > 0) {
-            if (addNumber.compareTo(medicinalStorageControl.getSurplusStock()) > 0) {
+        if (addNumber.compareTo(BigDecimal.ZERO) != 0) {
+            int frozen = medicinalStorageControlService.freezeDetailStocks(medicinalStorageControl, addNumber);
+            if (frozen != 1) {
                 throw new ServiceException("khả dụngTồn khokhôngđủ");
             }
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().add(addNumber));
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().subtract(addNumber));
-        } else {
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(addNumber));
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(addNumber));
         }
-        medicinalStorageControlService.save(medicinalStorageControl);
+        old.setNumber(detail.getNumber());
+        this.save(old);
     }
 
     /**

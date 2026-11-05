@@ -208,9 +208,15 @@
             )
     </insert>
 
+    <!-- DS33: the table has no `name` column (see SHOW COLUMNS), so the
+         `name = #{name}` line made EVERY generic update of this entity
+         throw "Unknown column 'name'" (HTTP 500). The old edit path never
+         reached it because updateSupplierOutboundDetail was never called
+         (indexOf always -1); the DS33 edit fix calls this.save(old), which
+         goes through this update, so the dead line has to go. Insert /
+         select / delete never referenced `name` and are untouched. -->
     <update id="update">
         UPDATE supplier_outbound_detail SET
-            name = #{name},
             current_stock = #{currentStock},
             number=#{number},
             remarks = #{remarks}

@@ -526,4 +526,16 @@
         WHERE id = #{id}
           AND IFNULL(surplus_stock, 0) &gt;= #{requiredSurplus}
     </update>
+
+    <!-- DS33: freeze-only occupy bump (surplus untouched, it moves at
+         examine). Guarded on surplus minus occupy so parallel outbound
+         creates cannot over-freeze the same detail row. -->
+    <update id="freezeStocks">
+        UPDATE medicinal_storage_control
+        SET occupy_stock = IFNULL(occupy_stock, 0) + #{occupyDelta},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+          AND IFNULL(surplus_stock, 0) - IFNULL(occupy_stock, 0) &gt;= #{occupyDelta}
+    </update>
 </mapper>
