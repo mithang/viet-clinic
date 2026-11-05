@@ -27,4 +27,9 @@ public interface RecipelInfoDao extends CrudDao<RecipelInfo> {
     void updateSchedule(@Param("id")String id, @Param("cureType")int cureType);
     /** X3: company của đơn thuốc theo id, phục vụ kiểm tra sở hữu ở controller */
     String getRecipelInfoCompanyId(@Param("id") String id);
+
+    /** DS52: no del_flag filter here on purpose -- the old code's get() has
+     * none either, so a soft-deleted recipel with is_dispension='0' keeps
+     * exactly its old behaviour. The claim only adds atomicity. */
+    int claimDispensed(@Param("id") String id);
 }

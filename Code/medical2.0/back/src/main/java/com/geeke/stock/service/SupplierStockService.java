@@ -112,6 +112,20 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         if ("0".equals(dispensingEvt.getDispensingType())) {
 
             //Phát thuốc
+            // DS52: claim tung don truoc moi dong ton kho, nguyen tu
+            // (UPDATE ... WHERE is_dispension='0', chi 1 luong song song
+            // thang claim). Code cu chi kiem tra isDispension SAU khi
+            // okOccupyStock, nen cac lan phat song song deu tru kho truoc
+            // roi moi bi chan, lam used tang gap N va occupy am.
+            for (String recipelInfoId : dispensingEvt.getRecipelInfoIdList()) {
+                RecipelInfo recipelInfo = this.recipelInfoService.get(recipelInfoId);
+                if (recipelInfo == null || !"0".equals(recipelInfo.getIsDispension())) {
+                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc Đãphát thuốcqua");
+                }
+                if (this.recipelInfoService.claimDispensed(recipelInfoId) == 0) {
+                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc Đãphát thuốcqua");
+                }
+            }
             for (String recipelInfoId : dispensingEvt.getRecipelInfoIdList()) {
                 //tiến hành dòngđộngTồn khochiếm dụng thực tế
                 medicinalStorageControlService.okOccupyStock(registrationId, recipelInfoId);
@@ -126,7 +140,11 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
             for (String recipelInfoId : recipelInfoIdList) {
                 RecipelInfo recipelInfo = this.recipelInfoService.get(recipelInfoId);
-                if (recipelInfo == null || !"0".equals(recipelInfo.getIsDispension())) {
+                // DS52: the isDispension check already happened in the claim
+                // loop above (which flipped the flag to '1'), so only the
+                // missing-row guard stays here; the old !"0" test would
+                // always throw now because this same call claimed the row.
+                if (recipelInfo == null) {
                     throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc Đãphát thuốcqua");
                 }
                 recipelInfo.setIsDispension("1");

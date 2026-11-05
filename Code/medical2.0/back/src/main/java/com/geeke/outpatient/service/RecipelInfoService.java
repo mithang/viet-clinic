@@ -42,6 +42,18 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
     @Autowired
     private MedicinalStorageControlService medicinalStorageControlService;
 
+    /**
+     * DS52: atomic claim for dispensing. Sets is_dispension='1' only when it
+     * is still '0'; returns the rows affected (0 = already dispensed or
+     * missing). Exactly one concurrent dispense wins the claim, so a
+     * parallel double dispense cannot move stock twice. The caller still
+     * saves dispensionDate/dispensionStatus afterwards as before.
+     */
+    @Transactional(readOnly = false)
+    public int claimDispensed(String id) {
+        return this.recipelInfoDao.claimDispensed(id);
+    }
+
     @Transactional(readOnly = false)
     public int invalid(String id) {
         RecipelInfo recipelInfo = super.get(id);
