@@ -33,6 +33,24 @@ public class CompanyController extends CrudController<CompanyService, Company> {
         return companyService;
     }
 
+    // DS16: override get generic — Company khong co company_id nen
+    // CrudService.verifyTenantOwnership bo qua, doc don /org/company/{id}
+    // truoc day tra bat ky company nao (gom appSecret/privateKey).
+    // Id khong ton tai giu hop dong generic (200 + data null); chi
+    // dong ngoai nhom co so cua session moi 403.
+    @Override
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        Company entity = companyService.get(id);
+        if (entity != null && !companyService.isCompanyVisibleToSession(entity)) {
+            return forbidden();
+        }
+        return ResponseEntity.ok(ResultUtil.successJson(entity));
+    }
+
     @PostMapping(value = "getCompanys")
     public ResponseEntity<JSONObject> getCompanys(@RequestBody String id) {
         if (!hasAnySessionPermission()) {

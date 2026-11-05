@@ -30,6 +30,21 @@ public class TenantController extends CrudController<CompanyService, Company> {
 		return companyService;
 	}
 
+	// DS16: nhu CompanyController.getById — /org/tenant/{id} generic
+	// cung bypass san tenant vi Company khong co company_id.
+	@Override
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+		if (!hasAnySessionPermission()) {
+			return forbidden();
+		}
+		Company entity = companyService.get(id);
+		if (entity != null && !companyService.isCompanyVisibleToSession(entity)) {
+			return forbidden();
+		}
+		return ResponseEntity.ok(ResultUtil.successJson(entity));
+	}
+
 	@Override
 	@PostMapping(value = {"list", ""})
 	public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {

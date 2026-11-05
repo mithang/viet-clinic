@@ -43,6 +43,18 @@ public class ClinicController extends BaseController {
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
         Company entity = companyService.get(id);
+        // DS16: id khong ton tai truoc day NPE o setLesseeId -> 500
+        // (companyService.get tra null, controller deref ngay).
+        if (entity == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // DS16: Company khong co company_id nen san generic khong chan
+        // doc cheo tenant — dong ngoai nhom co so cua session -> 403,
+        // ke ca khi no chua appSecret/privateKey trong companyColumns.
+        if (!companyService.isCompanyVisibleToSession(entity)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         entity.setLesseeId(entity.getParent());
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }

@@ -301,6 +301,54 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         return this.dao.getCompanys(id);
     }
 
+    /**
+     * DS16: Company co che rieng — CompanyDao.get khong select company_id
+     * nen DataEntity.company luon null va CrudService.verifyTenantOwnership
+     * return som, tuc san generic khong bao gio chan Company. Chi duong
+     * doc don ban ghi moi can guard nay (list/tree da co scope rieng
+     * Z3b/Z3c; write da co floor iter68). Pham vi hop le = pham vi cay
+     * Z3c: dong cua chinh tenant + dong trong nhom co so "0.<root>."
+     * (gom parent root + sibling cung co so). Session sentinel rong/
+     * "null" va tenant khong tim thay dong thi giu hanh vi cu.
+     * Row null -> false (caller tu quyet 404/null-data theo hop dong
+     * cua endpoint do, khong doan 403 cho id khong ton tai).
+     */
+    @Transactional(readOnly = true)
+    public boolean isCompanyVisibleToSession(Company row) {
+        if (row == null) {
+            return false;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return true;
+        }
+        if (tenantId.equals(row.getId())) {
+            return true;
+        }
+        Company tenant = this.dao.get(tenantId);
+        if (tenant == null) {
+            return true;
+        }
+        String ids = tenant.getIds();
+        if (StringUtils.isBlank(ids)) {
+            return false;
+        }
+        java.util.List<String> tokens = new ArrayList<String>();
+        for (String part : ids.split("\\.")) {
+            if (StringUtils.isNotBlank(part)) {
+                tokens.add(part);
+            }
+        }
+        if (tokens.isEmpty() || (tokens.size() == 1 && "0".equals(tokens.get(0)))) {
+            return false;
+        }
+        String groupPrefix = "0".equals(tokens.get(0)) && tokens.size() >= 2
+                ? "0." + tokens.get(1) + "."
+                : tokens.get(0) + ".";
+        String rowIds = row.getIds();
+        return StringUtils.isNotBlank(rowIds) && rowIds.startsWith(groupPrefix);
+    }
+
     @Transactional(readOnly = true)
     public String getInstitution(String id) {
         return this.dao.getInstitution(id);
