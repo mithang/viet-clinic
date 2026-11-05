@@ -61,6 +61,60 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
     @Lazy
     @Autowired
     private RegistrationService registrationService;
+
+    /**
+     * DS69: generic single-entity save() is fail-closed. CrudController
+     * exposes POST /stock/medicinalStorageControl/save, but the mapper
+     * <update> writes storage_stock / used_stock / occupy_stock /
+     * freeze_stock / surplus_stock verbatim by id, so any caller with the
+     * permission could set absolute stock numbers with no freeze, no
+     * delta and no stock record (probe-proven: occupy/freeze 5000 while
+     * the aggregate still held 0, detail SUM 10777 vs aggregate 10000).
+     * Detail rows are written only through the guarded flows
+     * (inStorage/addStorageStock, the atomic adjust/occupy/freeze
+     * bumps, inventory-verification accomplish), never by a direct save
+     * -- the frontend has no UI path through this endpoint either.
+     * Internal callers use saveInternal() below, which keeps the old
+     * CrudService.save behaviour (tenant check + audit action).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public MedicinalStorageControl save(MedicinalStorageControl entity) {
+        throw new ServiceException("Tồn kho chi tiết chỉ thay đổi qua nhập kho / kê đơn / xuất kho / kiểm kê, không hỗ trợ lưu trực tiếp!");
+    }
+
+    /**
+     * DS69: same fail-closed guard for the bulk writes -- CrudService
+     * bulkInsert/bulkUpdate call dao.bulk* directly, NOT save(), so the
+     * save() override above does not cover them, and the bulk mapper
+     * writes the same absolute stock columns (probe-proven: bulkUpdate
+     * set occupy/freeze 4000, bulkInsert added a 333 row, both 200).
+     * No internal caller uses bulk on this service.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<MedicinalStorageControl> entitys) {
+        throw new ServiceException("Tồn kho chi tiết chỉ thay đổi qua nhập kho / kê đơn / xuất kho / kiểm kê, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<MedicinalStorageControl> entitys) {
+        throw new ServiceException("Tồn kho chi tiết chỉ thay đổi qua nhập kho / kê đơn / xuất kho / kiểm kê, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    /**
+     * DS69: internal single-entity save for the guarded flows
+     * (InventoryVerificationService.adjustStock). NOT reachable from the
+     * controller -- CrudController routes only to save()/bulkInsert()/
+     * bulkUpdate(). Delegates to CrudService.save, so the tenant check
+     * and the audit action row are kept exactly as before.
+     */
+    @Transactional(readOnly = false)
+    public MedicinalStorageControl saveInternal(MedicinalStorageControl entity) {
+        return super.save(entity);
+    }
+
     /**
      * Thêm mớinhập khoThông tin giờ, kiểm soátThuốc hoặc Vật tư của độngTồn khoChi tiết
      * @param supplierStorage
@@ -423,7 +477,9 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
         medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(surplusStock));
         medicinalStockControl.setReimburseStock(medicinalStockControl.getReimburseStock().add(surplusStock));
-        this.medicinalStockControlService.save(medicinalStockControl);
+        // DS69: internal save -- the generic save() is fail-closed, so
+        // the guarded auto-invalidate flow writes through saveInternal().
+        this.medicinalStockControlService.saveInternal(medicinalStockControl);
 
         //3.chènChi tiết thao tác tồn kho động
         MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();

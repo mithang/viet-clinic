@@ -211,7 +211,9 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         BigDecimal newStock = medicinalStorageControl.getStorageStock().add(new BigDecimal(profitAndLoss));
         medicinalStorageControl.setStorageStock(newStock);
         medicinalStorageControl.setSurplusStock(newStock);
-        medicinalStorageControlService.save(medicinalStorageControl);
+        // DS69: internal save -- the generic save() is fail-closed, so
+        // the guarded accomplish flow writes through saveInternal().
+        medicinalStorageControlService.saveInternal(medicinalStorageControl);
 
         //Truy vấnđộngTồn khotổngkiểm soátbảng
         List<Parameter> parameters = SearchParamsBuilder.create()
@@ -227,7 +229,9 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         BigDecimal newControlStock = medicinalStockControl.getStorageStock().add(new BigDecimal(profitAndLoss));
         medicinalStockControl.setStorageStock(newControlStock);
         medicinalStockControl.setSurplusStock(newControlStock);
-        medicinalStockControlService.save(medicinalStockControl);
+        // DS69: internal save -- the generic save() is fail-closed, so
+        // the guarded accomplish flow writes through saveInternal().
+        medicinalStockControlService.saveInternal(medicinalStockControl);
 
         //Bản ghi thao tác tồn kho
         MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
