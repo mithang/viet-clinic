@@ -57,6 +57,48 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         return supplierStorageTemp;
     }
 
+    /**
+     * DS39: generic delete must not bypass the blessed cancel path. The
+     * generic CrudController delete only flips del_flag, so deleting a
+     * passed/pending import slip left its detail storage/surplus and the
+     * aggregate counting it (probe-proven: slip del_flag=1, stock still
+     * 5/5, agg 10005) while the slip vanished from every list -- phantom
+     * inventory no UI flow can reach again (only an API cancel with the
+     * known id could still repair it). Fail-closed: refuse unless the
+     * slip is already voided (examine _2, stock already zeroed by
+     * cancel()); a null examine is refused too (stock state unknown).
+     * Nonexistent ids delegate to super (0 rows, no harm).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(SupplierStorage entity) {
+        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+            SupplierStorage stored = this.get(entity.getId());
+            if (stored != null && (stored.getExamine() == null
+                    || !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(stored.getExamine().getValue()))) {
+                throw new ServiceException("Phiếu nhập kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu nhập kho trước.");
+            }
+        }
+        return super.delete(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<SupplierStorage> entitys) {
+        if (entitys != null) {
+            for (SupplierStorage entity : entitys) {
+                if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+                    SupplierStorage stored = this.get(entity.getId());
+                    if (stored != null && (stored.getExamine() == null
+                            || !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(stored.getExamine().getValue()))) {
+                        throw new ServiceException("Phiếu nhập kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu nhập kho trước.");
+                    }
+                }
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
+
     @Transactional(readOnly = false)
     public void cancel(String id) {
         //Trước khi hủy, kiểm tra trước thuốc hoặc vật tư đó có đang được sử dụng không

@@ -20,6 +20,7 @@ import com.geeke.stock.dao.SupplierStockDao;
 import com.geeke.stock.entity.*;
 import com.geeke.sys.entity.DictItem;
 import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -282,6 +283,68 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             return 0;
         }
         return this.dao.countByHisCrkmxId(companyId, hisCrkmxId);
+    }
+
+    /**
+     * DS39: a line may only be generic-deleted once its parent import slip
+     * is voided. The generic delete only flips the line's del_flag, so
+     * deleting a line of a passed slip left its detail storage/surplus
+     * live (probe-proven: line del_flag=1, stock still 5/5, agg 10005)
+     * AND broke the blessed cancel for good: invalidStorageStock lists
+     * lines via listAll, which filters del_flag='0', so it finds no lines
+     * and throws, leaving the stock stranded with no repair path at all.
+     * Fail-closed: refuse unless the parent slip is already voided
+     * (examine _2, stock already zeroed by cancel()); a null examine is
+     * refused too, and a live line whose parent cannot be resolved is
+     * refused too (stock state unknown). The no-id payload branch
+     * (delete by supplierStorage.id) is gated the same way. Nonexistent
+     * ids delegate to super (0 rows, no harm).
+     */
+    private void checkLineDeletable(SupplierStock entity) {
+        if (entity == null) {
+            return;
+        }
+        String slipId = null;
+        boolean lineExists = false;
+        if (StringUtils.isNotBlank(entity.getId())) {
+            SupplierStock stored = this.get(entity.getId());
+            if (stored != null) {
+                lineExists = true;
+                if (stored.getSupplierStorage() != null) {
+                    slipId = stored.getSupplierStorage().getId();
+                }
+            }
+        } else if (entity.getSupplierStorage() != null) {
+            slipId = entity.getSupplierStorage().getId();
+        }
+        if (lineExists && StringUtils.isBlank(slipId)) {
+            throw new ServiceException("Chi tiết nhập kho không xác định được phiếu nhập kho, không thể xóa trực tiếp.");
+        }
+        if (StringUtils.isNotBlank(slipId)) {
+            SupplierStorage slip = supplierStorageService.get(slipId);
+            if (slip != null && (slip.getExamine() == null
+                    || !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(slip.getExamine().getValue()))) {
+                throw new ServiceException("Chi tiết thuộc phiếu nhập kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu nhập kho trước.");
+            }
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(SupplierStock entity) {
+        checkLineDeletable(entity);
+        return super.delete(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<SupplierStock> entitys) {
+        if (entitys != null) {
+            for (SupplierStock entity : entitys) {
+                checkLineDeletable(entity);
+            }
+        }
+        return super.bulkDelete(entitys);
     }
 
     @Transactional(readOnly = false)
