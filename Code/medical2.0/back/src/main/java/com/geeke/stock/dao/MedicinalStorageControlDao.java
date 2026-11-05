@@ -60,17 +60,20 @@ public interface MedicinalStorageControlDao extends CrudDao<MedicinalStorageCont
                      @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
 
     // DS33: atomically bump ONLY the occupy column of a detail row, and
-    // only when the still-unfrozen surplus covers the amount: the guard
-    // is surplus minus occupy >= delta. An outbound freeze does NOT move
-    // surplus (that happens at examine, DS32 invariant), so a plain
-    // surplus >= delta guard would still let two parallel creates of 6000
-    // against surplus 10000 both pass and freeze 12000 total
-    // (probe-proven). The guard is conservative where the shared occupy
-    // column also holds prescription occupies (those already reduced
-    // surplus, so surplus minus occupy understates what is free); it
-    // never over-freezes, only over-refuses in that mixed case. A
-    // non-positive delta always passes the guard (callers use the plain
-    // atomic bump for decreases). Returns 1 when applied, 0 when refused.
+    // only when the still-unfrozen surplus covers the amount. DS37: the
+    // guard is surplus minus freeze_stock >= delta. An outbound freeze
+    // does NOT move surplus (that happens at examine, DS32 invariant),
+    // so a plain surplus >= delta guard would still let two parallel
+    // creates of 6000 against surplus 10000 both pass and freeze 12000
+    // total (probe-proven). The DS33 guard (surplus minus occupy)
+    // double-counted a prescription occupy -- occupy already reduced
+    // surplus, so it understated what is free and refused a freeze the
+    // stock could cover (probe-proven: Rx occupy 6000, surplus 4000,
+    // freeze 3000 refused). freeze_stock holds exactly the frozen
+    // portion (DS36 dual-write), so surplus minus freeze_stock is the
+    // exact headroom. A non-positive delta always passes the guard
+    // (callers use the plain atomic bump for decreases). Returns 1 when
+    // applied, 0 when refused.
     int freezeStocks(@Param("id") String id,
                      @Param("occupyDelta") java.math.BigDecimal occupyDelta,
                      @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);

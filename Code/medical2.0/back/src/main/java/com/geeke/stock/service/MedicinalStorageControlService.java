@@ -230,13 +230,14 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
      * DS33: atomically freeze (or release) an outbound quantity on a
      * detail row: occupy only, surplus untouched (surplus moves at
      * examine, DS32 invariant). A positive delta is guarded by
-     * freezeStocks (surplus minus occupy must cover it), so parallel
-     * outbound creates cannot over-freeze; a non-positive delta cannot
-     * over-freeze, so it uses the plain atomic bump instead (a guarded
-     * decrease could spuriously refuse on a row that is already
-     * over-frozen by pre-fix data). Returns 1 when applied, 0 when the
-     * guarded increase was refused; the caller throws stock-not-enough
-     * and the transaction rolls back.
+     * freezeStocks (DS37: surplus minus freeze_stock must cover it --
+     * the exact headroom, since a prescription occupy already reduced
+     * surplus), so parallel outbound creates cannot over-freeze; a
+     * non-positive delta cannot over-freeze, so it uses the plain
+     * atomic bump instead (a guarded decrease could spuriously refuse
+     * on a row that is already over-frozen by pre-fix data). Returns 1
+     * when applied, 0 when the guarded increase was refused; the
+     * caller throws stock-not-enough and the transaction rolls back.
      */
     @Transactional(readOnly = false)
     public int freezeDetailStocks(MedicinalStorageControl row, BigDecimal occupyDelta) {
@@ -302,8 +303,18 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 // void, examine -> surplus -5). Fail-closed: cancel the
                 // outbound slip first (releasing the freeze), then void
                 // the import slip.
-                BigDecimal occupyStock = medicinalStorageControl.getOccupyStock();
-                if (occupyStock != null && occupyStock.compareTo(BigDecimal.ZERO) > 0)
+                // DS37: the check now reads freeze_stock, not occupy.
+                // The switch preserves behaviour exactly: a prescription
+                // occupy is already refused by the storage != surplus
+                // check above (it lowers surplus), so the only state
+                // this check adds is the freeze -- and freeze is the
+                // only occupy-only path (DS32/DS33 invariant; every Rx
+                // occupy/release moves surplus with occupy). Probe-proven
+                // in both directions: a frozen row still refuses the
+                // void, and an Rx-only row (freeze 0, occupy 3) still
+                // refuses it via the first check.
+                BigDecimal freezeStock = medicinalStorageControl.getFreezeStock();
+                if (freezeStock != null && freezeStock.compareTo(BigDecimal.ZERO) > 0)
                 {
                     throw new ServiceException("Tồn kho đang bị chiếm dụng, không thể hủy nhập kho! Vui lòng hủy phiếu xuất kho đang giữ tồn kho này trước.");
                 }

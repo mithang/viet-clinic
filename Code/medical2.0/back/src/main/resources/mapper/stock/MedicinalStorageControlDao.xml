@@ -543,11 +543,15 @@
     </update>
 
     <!-- DS33: freeze-only occupy bump (surplus untouched, it moves at
-         examine). Guarded on surplus minus occupy so parallel outbound
-         creates cannot over-freeze the same detail row. DS36: the same
-         delta is dual-written to freeze_stock, so the freeze portion of
-         occupy_stock is tracked separately; the guard still reads occupy
-         this round (DS37 switches it to freeze_stock). -->
+         examine). Guarded so parallel outbound creates cannot
+         over-freeze the same detail row. DS36: the same delta is
+         dual-written to freeze_stock, so the freeze portion of
+         occupy_stock is tracked separately. DS37: the guard now reads
+         freeze_stock, not occupy: the DS33 guard (surplus minus
+         occupy) double-counted a prescription occupy, which already
+         reduced surplus, and refused freezes the stock could cover
+         (probe-proven: Rx occupy 6000, surplus 4000, freeze 3000
+         refused). surplus minus freeze_stock is the exact headroom. -->
     <update id="freezeStocks">
         UPDATE medicinal_storage_control
         SET occupy_stock = IFNULL(occupy_stock, 0) + #{occupyDelta},
@@ -555,7 +559,7 @@
             update_by = #{updateBy},
             update_date = #{updateDate}
         WHERE id = #{id}
-          AND IFNULL(surplus_stock, 0) - IFNULL(occupy_stock, 0) &gt;= #{occupyDelta}
+          AND IFNULL(surplus_stock, 0) - IFNULL(freeze_stock, 0) &gt;= #{occupyDelta}
     </update>
 
     <!-- DS34: conditional zero for voiding an import slip (see
