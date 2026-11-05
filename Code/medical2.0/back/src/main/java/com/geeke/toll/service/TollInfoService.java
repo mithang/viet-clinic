@@ -322,6 +322,26 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * Xử lýbình thườngThu phí(không phảibán lẻ): Lưu đơn thuốc, TạoThu phíBản ghi, BHYTTải lên, Trừ thẻ trải nghiệm, Xét nghiệm và kiểm tra
      */
     private Registration processNormalCharge(TollEvt tollEvt, TollInfo tollInfo, Patient patient, List<RecipelInfoEvt> recipelInfoEvts) {
+        // DS53: claim tung don la "da thu" TRUOC moi dong tac thu phi/kho,
+        // nguyen tu (UPDATE ... WHERE is_pay='0', chi 1 luong song song
+        // thang claim; mau DS52). Guard getInRecipeIds o saveToll chi la
+        // SELECT-then-act nen cac lan thu song song deu vuot qua roi moi
+        // ghi TollInfo + goi deduction -> okOccupyStock, lam used tang gap
+        // N (probe: x8 deu 200, used 40 thay vi 5, 8 phieu). Claim o day,
+        // truoc vong chinh, nen don da thu / da duoc claim boi luong khac
+        // deu 400 truoc khi ghi dong nao; don trong cung TollEvt bi lap
+        // cung bi chan (claim lan 2 tra 0 dong). Id trong duoc bo qua nhu
+        // cu (vong chinh giu hanh vi cu). Thong bao giong guard trung lap
+        // o saveToll de UI thay cung mot loi.
+        for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
+            if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null
+                    || StringUtils.isBlank(recipelInfoEvt.getRecipelInfo().getId())) {
+                continue;
+            }
+            if (recipelInfoService.claimPaid(recipelInfoEvt.getRecipelInfo().getId()) == 0) {
+                throw new ServiceException("Dữ liệuĐã tồn tạiVui lòngđừngtrùng lặpđề xuấtgiao");
+            }
+        }
         Registration registration = null;
         tollInfo.setPatient(patient);
         JSONArray array = new JSONArray();

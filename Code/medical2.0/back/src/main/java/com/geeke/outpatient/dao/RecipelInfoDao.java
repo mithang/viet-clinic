@@ -32,4 +32,10 @@ public interface RecipelInfoDao extends CrudDao<RecipelInfo> {
      * none either, so a soft-deleted recipel with is_dispension='0' keeps
      * exactly its old behaviour. The claim only adds atomicity. */
     int claimDispensed(@Param("id") String id);
+
+    /** DS53: atomic charge claim, same pattern as claimDispensed. Sets
+     * is_pay='1' only when the recipel is still unpaid (is_pay '0' or
+     * NULL); returns rows affected (0 = already paid/refunded or missing).
+     * No del_flag filter, same reason as claimDispensed. */
+    int claimPaid(@Param("id") String id);
 }

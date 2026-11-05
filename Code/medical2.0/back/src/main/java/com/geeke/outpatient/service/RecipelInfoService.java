@@ -54,6 +54,19 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         return this.recipelInfoDao.claimDispensed(id);
     }
 
+    /**
+     * DS53: atomic claim for charging. Sets is_pay='1' only when the
+     * recipel is still unpaid (is_pay '0' or NULL); returns the rows
+     * affected (0 = already paid/refunded or missing). Exactly one
+     * concurrent charge wins the claim, so a parallel double charge cannot
+     * write a second TollInfo or deduct stock twice. The caller still
+     * sets isPay/payDate/chargeStatus afterwards as before.
+     */
+    @Transactional(readOnly = false)
+    public int claimPaid(String id) {
+        return this.recipelInfoDao.claimPaid(id);
+    }
+
     @Transactional(readOnly = false)
     public int invalid(String id) {
         RecipelInfo recipelInfo = super.get(id);
