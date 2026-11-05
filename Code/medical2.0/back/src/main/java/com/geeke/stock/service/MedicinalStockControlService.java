@@ -3,13 +3,16 @@ package com.geeke.stock.service;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
+import com.geeke.common.persistence.BaseEntity;
 import com.geeke.common.persistence.DataEntity;
+import com.geeke.common.constants.ActionConstants;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 
 import com.geeke.outpatient.entity.PresDrug;
 import com.geeke.outpatient.service.PresDrugService;
 import com.geeke.stock.dao.MedicinalStockControlDao;
+import com.geeke.org.entity.Company;
 import com.geeke.stock.entity.Drug;
 import com.geeke.stock.entity.MedicinalStockControl;
 import com.geeke.stock.entity.Stuff;
@@ -54,6 +57,101 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
     public static final Boolean enable = Boolean.TRUE;
 
     /**
+     * DS31: ensure exactly one live aggregate row exists for
+     * (drugStuffId, companyId), creating or resurrecting it as needed.
+     * Previously initStock/initStockTo did a read-then-plain-insert, so two
+     * concurrent imports of the same new drug both passed the empty check
+     * and both inserted (8 parallel imports created 8 live rows,
+     * probe-proven with tools/ds30-race.py), and a re-import after a
+     * soft-delete inserted a second row instead of reviving the old one,
+     * stranding its totals (DS30 caveat: the live total lost 10000 while
+     * the soft-deleted row kept it).
+     * - Live row: return it unchanged (callers that need a name sync do
+     *   their own save, as initStock does below).
+     * - Soft-deleted row: resurrect it (del_flag 0) with the stock totals
+     *   recomputed from the live detail rows, so the aggregate again equals
+     *   the detail sum. Callers must invoke this BEFORE inserting any new
+     *   detail row for the pair (addStorageStock ensures the aggregate
+     *   first, then writes the detail), so the recompute never counts the
+     *   row being imported right now.
+     * - No row: atomic upsert (INSERT ... ON DUPLICATE KEY UPDATE on
+     *   uk_msc_drug_company). A concurrent winner's uncommitted insert
+     *   makes this statement wait on the index lock and then take the
+     *   UPDATE branch, which only flips del_flag and never zeroes the
+     *   totals; the row is then this transaction's own modification, so
+     *   later reads in the same transaction see it (a plain insert plus
+     *   catch of DuplicateKeyException would leave the loser
+     *   snapshot-blind under REPEATABLE READ).
+     * The tenant check runs on every path, exactly as CrudService.save
+     * would run it for an insert: a foreign company's row is refused
+     * rather than silently revived or created.
+     */
+    @Transactional(readOnly = false)
+    public MedicinalStockControl ensureAggregateRow(String drugStuffId, String companyId,
+                                                   String drugStuffName, Integer type) {
+        List<MedicinalStockControl> rows = this.dao.getByDrugOrStuffId(drugStuffId, companyId);
+        if (!CollectionUtils.isEmpty(rows)) {
+            MedicinalStockControl row = rows.get(0);
+            verifyTenantOwnership(row);
+            if (BaseEntity.DEL_FLAG_NORMAL.equals(row.getDelFlag())) {
+                return row;
+            }
+            MedicinalStockControl sums = this.dao.sumDetailStocks(drugStuffId, companyId);
+            row.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
+            row.setDrugStuffName(drugStuffName);
+            row.setStorageStock(sums.getStorageStock());
+            row.setUsedStock(sums.getUsedStock());
+            row.setOccupyStock(sums.getOccupyStock());
+            row.setSurplusStock(sums.getSurplusStock());
+            row.setReimburseStock(sums.getReimburseStock());
+            row.preUpdate();
+            this.dao.resurrect(row);
+            this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, row));
+            return row;
+        }
+        MedicinalStockControl row = new MedicinalStockControl();
+        row.setCompany(new Company(companyId));
+        row.setDrugStuffId(drugStuffId);
+        row.setDrugStuffName(drugStuffName);
+        row.setType(type);
+        row.setStorageStock(BigDecimal.ZERO);
+        row.setUsedStock(BigDecimal.ZERO);
+        row.setOccupyStock(BigDecimal.ZERO);
+        row.setSurplusStock(BigDecimal.ZERO);
+        row.setReimburseStock(BigDecimal.ZERO);
+        row.preInsert();
+        verifyTenantOwnership(row);
+        int affected = this.dao.insertOrResurrect(row);
+        if (affected == 1) {
+            this.saveAction(this.createAction(ActionConstants.ACTION_CREATED, row));
+            return row;
+        }
+        // 0 = a live row already existed (concurrent winner, no change);
+        // 2 = a soft-deleted row was flipped live by the UPDATE branch.
+        // Either way the persisted row is ours to see now: re-read it
+        // instead of trusting the local object (its id is not the row's).
+        List<MedicinalStockControl> again = this.dao.getByDrugOrStuffId(drugStuffId, companyId);
+        return CollectionUtils.isEmpty(again) ? row : again.get(0);
+    }
+
+    /**
+     * DS31: atomically add to the aggregate storage/surplus totals. The old
+     * addStorageStock bump read the row, added in Java and saved it back,
+     * so N concurrent imports each read the same total and overwrote each
+     * other (8 parallel imports left the total at 1.0 instead of 8.0 even
+     * after the duplicate-row fix). A single UPDATE ... SET col = col +
+     * delta serializes on the row lock instead. Keeps the UPDATED action
+     * row that CrudService.save used to write for the bump.
+     */
+    @Transactional(readOnly = false)
+    public void addStorageStocks(MedicinalStockControl row, BigDecimal storageDelta, BigDecimal surplusDelta) {
+        verifyTenantOwnership(row);
+        row.preUpdate();
+        this.dao.addStorageStocks(row.getId(), storageDelta, surplusDelta, row.getUpdateBy(), row.getUpdateDate());
+        this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, row));
+    }
+
+    /**
      * Thêm mớiThuốc hoặc Vật tưcơ bảnchínhDữ liệu giờ, Khởi tạo dữ liệu bản ghi kiểm soát tổng tồn kho
      * @param dataEntity
      */
@@ -64,12 +162,20 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
         {
             return;
         }
-        List<Parameter> parameters = SearchParamsBuilder.create()
-                .eq("drug_stuff_id", dataEntity.getId())
-                .build();
-        List<MedicinalStockControl> list = super.listAll(parameters, "");
-        MedicinalStockControl medicinalStockControl = CollectionUtils.isEmpty(list) ? new MedicinalStockControl() : list.get(0);
-
+        // DS31: resolve the master data first (unchanged), then delegate
+        // the row handling to ensureAggregateRow: live row -> sync the name
+        // as before; soft-deleted row -> resurrect with recomputed totals;
+        // no row -> atomic upsert. The old code read via tenant-scoped
+        // listAll (del_flag=0 only) and inserted a fresh row whenever the
+        // list was empty, which both raced and stranded soft-deleted
+        // totals. The row is still keyed by the DRUG's company, as before
+        // (for an institution drug that is the institution row; the clinic
+        // row is created by initStockTo / the DS30 D2 fallback in
+        // addStorageStock).
+        String drugStuffId;
+        String drugStuffName;
+        Integer type;
+        String companyId;
         if (dataEntity instanceof Drug)
         {
             Drug drug = drugService.get(dataEntity.getId());
@@ -77,19 +183,10 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             {
                 throw new ServiceException("Khởi tạo[ThuốcTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của thuốc!");
             }
-
-            medicinalStockControl.setDrugStuffName(drug.getGoodsName());
-            if (CollectionUtils.isEmpty(list))
-            {
-                medicinalStockControl.setCompany(drug.getCompany());
-                medicinalStockControl.setDrugStuffId(drug.getId());
-                medicinalStockControl.setType(1);
-                medicinalStockControl.setStorageStock(BigDecimal.ZERO);
-                medicinalStockControl.setUsedStock(BigDecimal.ZERO);
-                medicinalStockControl.setOccupyStock(BigDecimal.ZERO);
-                medicinalStockControl.setSurplusStock(BigDecimal.ZERO);
-                medicinalStockControl.setReimburseStock(BigDecimal.ZERO);
-            }
+            drugStuffId = drug.getId();
+            drugStuffName = drug.getGoodsName();
+            type = 1;
+            companyId = drug.getCompany() == null ? null : drug.getCompany().getId();
         }
         else if (dataEntity instanceof Stuff)
         {
@@ -98,22 +195,21 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             {
                 throw new ServiceException("Khởi tạo[Vật tưTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của vật tư!");
             }
-
-            medicinalStockControl.setDrugStuffName(stuff.getName());
-            if (CollectionUtils.isEmpty(list))
-            {
-                medicinalStockControl.setCompany(stuff.getCompany());
-                medicinalStockControl.setDrugStuffId(stuff.getId());
-                medicinalStockControl.setType(2);
-                medicinalStockControl.setStorageStock(BigDecimal.ZERO);
-                medicinalStockControl.setUsedStock(BigDecimal.ZERO);
-                medicinalStockControl.setOccupyStock(BigDecimal.ZERO);
-                medicinalStockControl.setSurplusStock(BigDecimal.ZERO);
-                medicinalStockControl.setReimburseStock(BigDecimal.ZERO);
-            }
+            drugStuffId = stuff.getId();
+            drugStuffName = stuff.getName();
+            type = 2;
+            companyId = stuff.getCompany() == null ? null : stuff.getCompany().getId();
         }
-
-        super.save(medicinalStockControl);
+        else
+        {
+            return;
+        }
+        MedicinalStockControl row = ensureAggregateRow(drugStuffId, companyId, drugStuffName, type);
+        if (!drugStuffName.equals(row.getDrugStuffName()))
+        {
+            row.setDrugStuffName(drugStuffName);
+            super.save(row);
+        }
     }
 
     /**
@@ -127,16 +223,17 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
         {
             return;
         }
-        List<Parameter> parameters = SearchParamsBuilder.create()
-                .eq("drug_stuff_id", dataEntity.getId())
-                .build();
-        List<MedicinalStockControl> list = super.listAll(parameters, "");
-        for (MedicinalStockControl list1 : list){
-            list1.getCompany().setId(dataEntity.getCompany().getId());
-        }
-        MedicinalStockControl medicinalStockControl = CollectionUtils.isEmpty(list) ? new MedicinalStockControl() : list.get(0);
-        medicinalStockControl.setId(null);
-
+        // DS31: same delegation as initStock, but the row is keyed by the
+        // IMPORTING tenant (dataEntity.getCompany(), set by saves() to the
+        // slip line's company), not by the drug's company -- unchanged
+        // semantics. The old code always inserted a NEW zero row (it nulled
+        // the id even when a row already existed), which is exactly the
+        // duplicate the race probe caught; now a live row is left alone, a
+        // soft-deleted row is resurrected with recomputed totals, and only
+        // a truly absent row is upserted atomically.
+        String drugStuffId;
+        String drugStuffName;
+        Integer type;
         if (dataEntity instanceof Drug)
         {
             Drug drug = drugService.get(dataEntity.getId());
@@ -144,19 +241,9 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             {
                 throw new ServiceException("Khởi tạo[ThuốcTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của thuốc!");
             }
-
-            medicinalStockControl.setDrugStuffName(drug.getGoodsName());
-            if (CollectionUtils.isEmpty(list))
-            {
-                medicinalStockControl.setCompany(drug.getCompany());
-                medicinalStockControl.setDrugStuffId(drug.getId());
-                medicinalStockControl.setType(1);
-                medicinalStockControl.setStorageStock(BigDecimal.ZERO);
-                medicinalStockControl.setUsedStock(BigDecimal.ZERO);
-                medicinalStockControl.setOccupyStock(BigDecimal.ZERO);
-                medicinalStockControl.setSurplusStock(BigDecimal.ZERO);
-                medicinalStockControl.setReimburseStock(BigDecimal.ZERO);
-            }
+            drugStuffId = drug.getId();
+            drugStuffName = drug.getGoodsName();
+            type = 1;
         }
         else if (dataEntity instanceof Stuff)
         {
@@ -165,33 +252,18 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             {
                 throw new ServiceException("Khởi tạo[Vật tưTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của vật tư!");
             }
-
-            medicinalStockControl.setDrugStuffName(stuff.getName());
-            if (CollectionUtils.isEmpty(list))
-            {
-                medicinalStockControl.setCompany(stuff.getCompany());
-                medicinalStockControl.setDrugStuffId(stuff.getId());
-                medicinalStockControl.setType(2);
-                medicinalStockControl.setStorageStock(BigDecimal.ZERO);
-                medicinalStockControl.setUsedStock(BigDecimal.ZERO);
-                medicinalStockControl.setOccupyStock(BigDecimal.ZERO);
-                medicinalStockControl.setSurplusStock(BigDecimal.ZERO);
-                medicinalStockControl.setReimburseStock(BigDecimal.ZERO);
-            }
+            drugStuffId = stuff.getId();
+            drugStuffName = stuff.getName();
+            type = 2;
         }
-        medicinalStockControl.setStorageStock(BigDecimal.valueOf(0));
-        medicinalStockControl.setUsedStock(BigDecimal.valueOf(0));
-        medicinalStockControl.setOccupyStock(BigDecimal.valueOf(0));
-        medicinalStockControl.setSurplusStock(BigDecimal.valueOf(0));
-        medicinalStockControl.setReimburseStock(BigDecimal.valueOf(0));
-        super.save(medicinalStockControl);
+        else
+        {
+            return;
+        }
+        String companyId = dataEntity.getCompany() == null ? null : dataEntity.getCompany().getId();
+        ensureAggregateRow(drugStuffId, companyId, drugStuffName, type);
     }
 
-    /**
-     * hủyXóaThuốc hoặc Vật tưchínhDữ liệu giờ, Kiểm traTồn khoCó hay khôngsử dụng, NếuNếu đang sử dụng thì không cho phép hủyXóachínhDữ liệu; NếuChưasử dụng, thìcho phéphủyXóachínhDữ liệu, Đồng thời đánh dấu hủy/xóa cho dữ liệu kiểm soát tồn kho
-     * @param dataEntity
-     */
-    @Transactional(readOnly = false)
     public void delAllStock(DataEntity<?> dataEntity)
     {
         if (!MedicinalStockControlService.enable)

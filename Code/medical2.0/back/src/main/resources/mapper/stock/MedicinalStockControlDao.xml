@@ -201,6 +201,110 @@
         <include refid="medicinalStockControlJoins"/>
         WHERE a.drug_stuff_id = #{drugOrStuffId} and a.company_id = #{companyId}
     </select>
+
+    <!-- DS31: atomic create-or-resurrect for the (drug, company) aggregate
+         row on uk_msc_drug_company. A plain insert races: two concurrent
+         saves() both pass the inventory() check and both insert, creating
+         duplicate live rows (probe-proven: 8 parallel imports -> 8 live
+         rows). INSERT ... ON DUPLICATE KEY UPDATE serializes on the index
+         lock instead: the loser waits for the winner to commit, then takes
+         the UPDATE branch, which only flips del_flag back to '0' and never
+         touches the stock totals (the winner's fresh row is all zeros; a
+         resurrected row keeps the totals recomputed by
+         ensureAggregateRow). Because the UPDATE branch is this
+         transaction's own modification, the row is visible to later reads
+         in the same transaction; a plain insert plus catch of
+         DuplicateKeyException would leave the loser snapshot-blind under
+         REPEATABLE READ. Returns 1 = inserted, 2 = updated (del_flag
+         flipped), 0 = row already live, nothing changed. -->
+    <insert id="insertOrResurrect">
+        INSERT INTO medicinal_stock_control(id,
+                                            company_id,
+                                            drug_stuff_id,
+                                            drug_stuff_name,
+                                            type,
+                                            storage_stock,
+                                            used_stock,
+                                            occupy_stock,
+                                            surplus_stock,
+                                            reimburse_stock,
+                                            remarks,
+                                            create_by,
+                                            create_date,
+                                            update_by,
+                                            update_date,
+                                            del_flag,
+                                            return_todo_fee_stock)
+        VALUES (#{id},
+                #{company.id},
+                #{drugStuffId},
+                #{drugStuffName},
+                #{type},
+                #{storageStock},
+                #{usedStock},
+                #{occupyStock},
+                #{surplusStock},
+                #{reimburseStock},
+                #{remarks},
+                #{createBy},
+                #{createDate},
+                #{updateBy},
+                #{updateDate},
+                #{delFlag},
+                #{returnTodoFeeStock})
+        ON DUPLICATE KEY UPDATE del_flag = '0'
+    </insert>
+
+    <!-- DS31: revive a soft-deleted aggregate row with caller-supplied
+         totals. The generic update never sets del_flag, so this dedicated
+         statement is required. The del_flag guard makes it a no-op when a
+         concurrent transaction already resurrected the row. -->
+    <update id="resurrect">
+        UPDATE medicinal_stock_control
+        SET del_flag = '0',
+            drug_stuff_name = #{drugStuffName},
+            storage_stock = #{storageStock},
+            used_stock = #{usedStock},
+            occupy_stock = #{occupyStock},
+            surplus_stock = #{surplusStock},
+            reimburse_stock = #{reimburseStock},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id} AND del_flag != '0'
+    </update>
+
+    <!-- DS31: atomically add deltas to the aggregate storage/surplus
+         totals. A read-modify-write in Java loses concurrent imports (8
+         parallel imports each read the same total and overwrote each
+         other, leaving 1.0 instead of 8.0). A single UPDATE ... SET col =
+         col + delta serializes on the row lock instead. Same columns the
+         old Java bump wrote; the generic update's WHERE id = #{id}
+         semantics are kept (no del_flag filter), so a row soft-deleted
+         mid-import still receives the bump exactly as before and is
+         repaired by the recompute when it is resurrected. -->
+    <update id="addStorageStocks">
+        UPDATE medicinal_stock_control
+        SET storage_stock = storage_stock + #{storageDelta},
+            surplus_stock = surplus_stock + #{surplusDelta},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <!-- DS31: live detail totals for one (drug, company) pair, used to
+         recompute a resurrected aggregate row so it again equals the
+         detail sum. -->
+    <select id="sumDetailStocks" resultType="com.geeke.stock.entity.MedicinalStockControl">
+        SELECT COALESCE(SUM(a.storage_stock),0) AS "storageStock",
+               COALESCE(SUM(a.used_stock),0) AS "usedStock",
+               COALESCE(SUM(a.occupy_stock),0) AS "occupyStock",
+               COALESCE(SUM(a.surplus_stock),0) AS "surplusStock",
+               COALESCE(SUM(a.reimburse_stock),0) AS "reimburseStock"
+        FROM medicinal_storage_control a
+        WHERE a.drug_stuff_id = #{drugStuffId}
+          AND a.company_id = #{companyId}
+          AND a.del_flag = '0'
+    </select>
     <select id="listPreAll" resultType="com.geeke.stock.entity.MedicinalStockControl">
         select     a.id  AS "id",
                    '' AS "company.id",

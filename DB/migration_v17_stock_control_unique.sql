@@ -1,0 +1,20 @@
+-- DS31 (deep-search round 31): one aggregate stock row per (drug, company).
+-- 8 parallel inStorage imports of the same never-imported drug created 8
+-- live medicinal_stock_control rows (probe tools/ds30-race.py, re-run
+-- 2026-11-05: 8/8 live rows, live aggregate sum 1.0 vs detail sum 8.0),
+-- because saves() checks dao.inventory() then initStockTo() inserts, and
+-- nothing serialized the check-then-insert gap. A duplicate aggregate row
+-- also breaks the outbound flow outright (SupplierOutboundService throws
+-- "tim den nhieu muc" when getByDrugOrStuffId returns > 1 row), and the
+-- aggregate/detail totals silently drift apart.
+-- This unique index makes (drug_stuff_id, company_id) the enforced key:
+-- concurrent inserts serialize on the index lock, and the application
+-- upserts (INSERT ... ON DUPLICATE KEY UPDATE) instead of plain inserts.
+-- Safe to apply: verified 2026-11-05 that NO (drug, company) pair has
+-- more than one row, live or soft-deleted (0 duplicate pairs), and no row
+-- has a NULL key (both columns NOT NULL). The index covers soft-deleted
+-- rows too, so a re-import after a soft-delete must RESURRECT the old row
+-- (see MedicinalStockControlService.ensureAggregateRow) instead of
+-- inserting a second one; the old code path that inserted a fresh row is
+-- removed in the same round.
+CREATE UNIQUE INDEX uk_msc_drug_company ON medicinal_stock_control (drug_stuff_id, company_id);
