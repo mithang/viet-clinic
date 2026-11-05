@@ -31,12 +31,17 @@
     </resultMap>
 
     <!-- Thêm tác vụ mới -->
-    <select id="getQuest" resultType="String">taskmanagement
+    <!-- DS20: stray "taskmanagement" token before SELECT made this query
+         (and therefore every getBasics call) fail with a SQL syntax
+         error; UPDATED_BY is a varchar user name, so to_days() on it is
+         always NULL and the count was always 0 even without the token.
+         The task table's date column is UPDATED_TIME. -->
+    <select id="getQuest" resultType="String">
     select count(*)
     from taskmanagement t
     where t.company_id in (SELECT id FROM org_company WHERE parent_id = #{parentId})
       and t.del_flag = '0'
-      and to_days(t.UPDATED_BY) = to_days(now())
+      and to_days(t.UPDATED_TIME) = to_days(now())
     </select>
 
 
