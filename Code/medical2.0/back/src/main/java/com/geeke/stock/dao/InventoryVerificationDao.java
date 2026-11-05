@@ -23,5 +23,12 @@ public interface InventoryVerificationDao extends CrudDao<InventoryVerification>
 
     void updateAllPrice(@Param("id") String id,@Param("allPrice") BigDecimal allPrice);
 
+    /** DS65: khoa dong phieu cha (SELECT ... FOR UPDATE, khong JOIN de
+     * chi khoa dung dong phieu) truoc bulkUpdate trong saveAll: tuan tu
+     * hoa cac saveAll cung phieu, tranh deadlock giua bulkUpdate khoa
+     * cac dong detail roi roi va SUM ... FOR UPDATE khoa toan bo detail
+     * cua phieu. */
+    InventoryVerification lockById(@Param("id") String id);
+
     List<InventoryVerification> getByCompanyId(@Param("companyId") String companyId,@Param("status") String status);
 }

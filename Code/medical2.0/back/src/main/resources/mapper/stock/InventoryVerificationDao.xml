@@ -191,4 +191,17 @@
         update inventory_verification set all_price=#{allPrice} where id=#{id}
     </update>
 
+    <select id="lockById" resultType="com.geeke.stock.entity.InventoryVerification">
+        SELECT
+            a.id AS "id",
+            a.company_id AS "company.id",
+            a.code AS "code",
+            a.status AS "status",
+            a.type AS "type",
+            a.all_price AS "allPrice"
+        FROM inventory_verification a
+        WHERE a.id = #{id}
+        FOR UPDATE
+    </select>
+
 </mapper>

@@ -99,7 +99,6 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
 
     @Transactional
     public String saveAll(List<List<InventoryVerificationDetail>> inventoryVerificationDetailDTOS) {
-        BigDecimal allPrice=new BigDecimal("0");
         int i=-1;
         if(!CollectionUtils.isEmpty(inventoryVerificationDetailDTOS)){
             // L1 (iteration 34): kiem tra chu so huu TRUOC KHI ghi, doi chieu theo
@@ -208,6 +207,14 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
             if (hasWritableDetail && totalParentId == null) {
                 throw new com.geeke.common.service.ServiceException("Thiếu phiếu kiểm kê của dòng chi tiết");
             }
+            // DS65: khoa phieu cha TRUOC bulkUpdate (xem lockById): tuan tu
+            // hoa cac saveAll cung phieu. Khong khoa o day thi 2 saveAll
+            // song song giu khoa X tren cac dong detail khac nhau roi cung
+            // cho SUM ... FOR UPDATE -> deadlock; khoa phieu truoc thi
+            // luong sau doi den khi luong truoc commit roi moi doc.
+            if (totalParentId != null) {
+                inventoryVerificationService.lockById(totalParentId);
+            }
             for (List<InventoryVerificationDetail> inventoryVerificationDetailDTO : inventoryVerificationDetailDTOS) {
                 if(!CollectionUtils.isEmpty(inventoryVerificationDetailDTO)){
                     List<InventoryVerificationDetail> rows = new ArrayList<>();
@@ -221,16 +228,22 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                     }
                     for (InventoryVerificationDetail inventoryVerificationDetail : rows) {
                         inventoryVerificationDetail.preUpdate();
-                        BigDecimal price = inventoryVerificationDetail.getProfitAndLossPrice();
-                        allPrice = allPrice.add(price == null ? BigDecimal.ZERO : price);
                     }
                     i = this.dao.bulkUpdate(rows);
 
                 }
             }
+            // DS65: tong tien KHONG cong tu payload nua (payload cua UI that
+            // chi chua cac trang da mo -> tong cu la tong cua mot phan
+            // phieu; 2 luong song song sua 2 trang khac nhau thi luong
+            // commit sau ghi de tong cua luong truoc). Tinh lai tu DB:
+            // SUM ... FOR UPDATE tren toan bo detail cua phieu trong cung
+            // transaction (current read, thay ca thay doi detail da commit
+            // cua saveAll song song, va giu khoa den het transaction).
             //Sau khi thực thi vòng lặp thành công, lưu tổng số tiền vào bảng chính
             if(i>0 && totalParentId != null){
-                inventoryVerificationService.updateAllPrice(totalParentId,allPrice);
+                BigDecimal dbAllPrice = this.dao.sumProfitAndLossPriceForUpdate(totalParentId);
+                inventoryVerificationService.updateAllPrice(totalParentId, dbAllPrice == null ? BigDecimal.ZERO : dbAllPrice);
             }
             return "hành nghề dòngThành công";
         }else {

@@ -81,6 +81,14 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         this.dao.updateAllPrice(id,allPrice);
     }
 
+    /** DS65: khoa dong phieu cha (SELECT ... FOR UPDATE) de saveAll
+     * tuan tu hoa tren cung phieu; phieu khong ton tai tra null, giu
+     * parity nhu cu (updateAllPrice sau do update 0 dong). */
+    @Transactional
+    public InventoryVerification lockById(String id) {
+        return this.dao.lockById(id);
+    }
+
     @Transactional(readOnly = false)
     /*LưuKiểm kê tồn khođơn*/
     public InventoryVerification save(String type,String variety){

@@ -350,6 +350,13 @@
             </foreach>
     </insert>
 
+    <select id="sumProfitAndLossPriceForUpdate" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(profit_and_loss_price), 0)
+        FROM inventory_verification_detail
+        WHERE inventory_verification_id = #{inventoryVerificationId}
+        FOR UPDATE
+    </select>
+
     <update id="bulkUpdate" parameterType="java.util.List">    
         UPDATE inventory_verification_detail
         <set>           

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.geeke.common.persistence.CrudDao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -29,6 +30,14 @@ public interface InventoryVerificationDetailDao extends CrudDao<InventoryVerific
     /** L1 (iteration 34): chi id + company + phieu cha, tranh mapping rong
      * cua get() (IFNULL end_date '' -> Timestamp) khi dong khong co kho. */
     InventoryVerificationDetail getOwnership(String id);
+
+    /** DS65: tong lai/lo cua TOAN BO detail thuoc phieu, doc khoa
+     * (SELECT ... FOR UPDATE) trong cung transaction voi bulkUpdate:
+     * current read nen thay ca thay doi detail da commit cua saveAll
+     * song song khac, khong phai snapshot REPEATABLE READ; khoa cac
+     * dong detail cua phieu. Caller khoa phieu cha truoc (lockById) nen
+     * khong deadlock voi bulkUpdate cua luong song song. */
+    BigDecimal sumProfitAndLossPriceForUpdate(@Param("inventoryVerificationId") String inventoryVerificationId);
 
     public List<InventoryVerificationDetail> listPages(PageRequest pageRequest);
 
