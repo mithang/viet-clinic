@@ -794,6 +794,16 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             if (ObjectUtil.isNull(recipelInfo.getChronicDisease()) || !StrUtil.equals(BizConstants.RECIPEL_TYPE_WESTERN,recipelInfo.getRecipelType().getValue())) {
                 recipelInfo.setIsPre(Boolean.FALSE);
             }
+            // DS59: K3-class gap on the v2 path — FinishVisit sends no
+            // isFollowUp, but recipel_info.is_follow_up is NOT NULL (the
+            // insert always lists the column, so an explicit NULL 500s
+            // even though the column has DEFAULT 0). Default to 0 when
+            // missing, keep the caller-sent value otherwise (same rule
+            // as K3 on v1 allSave; seq is already set i+1 in both
+            // branches below, so no seq change here).
+            if (null == recipelInfo.getIsFollowUp()) {
+                recipelInfo.setIsFollowUp(0);
+            }
             if( recipelInfo.getIsPre()!= null && recipelInfo.getIsPre()){
                 //điện tửĐơn thuốcđặc biệtXử lý
                 List<RecipelDetail> recipelDetailEvtList = recipelInfoEvt.getRecipelDetailEvtList();
