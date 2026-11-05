@@ -15,12 +15,12 @@
         a.file_id AS "fileId",
         a.executeschedule AS "executeschedule",
         a.taskmanagement_id AS "taskManagement.id",
-        IFNULL(tm.created_time,'') AS "taskManagement.updateDate",
+        tm.created_time AS "taskManagement.updateDate",
         IFNULL(tm.tasktype,'') AS "taskManagement.tasktype",
         IFNULL(tm.taskname,'') AS "taskManagement.taskname",
         IFNULL(tm.taskdescribe,'') AS "taskManagement.taskdescribe",
         IFNULL(tm.taskaccessory,'') AS "taskManagement.taskaccessory",
-        IFNULL(tm.taskdeadline,'') AS "taskManagement.taskdeadline",
+        tm.taskdeadline AS "taskManagement.taskdeadline",
         IFNULL(tm.taskremark,'') AS "taskManagement.taskremark",
         IFNULL(tm.taskinitiator,'') AS "taskManagement.user.id",
         IFNULL(tm.auditresult,'') AS "taskManagement.auditresult",
@@ -98,7 +98,7 @@
                 ORDER BY ${order}
             </when>
             <otherwise>
-                ORDER BY a.code ASC
+                ORDER BY a.executeschedule asc , a.updated_time desc , a.created_time desc
             </otherwise>
         </choose>
     </select>

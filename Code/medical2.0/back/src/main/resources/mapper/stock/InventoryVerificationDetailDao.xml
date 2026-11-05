@@ -28,7 +28,7 @@
         IFNULL(ss.id,'') AS 'supplierStock.id',
         IFNULL(ss.norms,'') AS 'supplierStock.norms',
         IFNULL(ss.batch_no,'') AS 'supplierStock.batchNo',
-        IFNULL(ss.end_date,'') AS 'supplierStock.endDate',
+        ss.end_date AS 'supplierStock.endDate',
         IFNULL(factory.id,'') AS 'supplierStock.factory.id',
         IFNULL(factory.name,'') AS 'supplierStock.factory.name',
         IFNULL(supplierId.id,'') AS 'supplierStock.supplierId.id',

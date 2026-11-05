@@ -72,8 +72,8 @@
         IFNULL(supplierStock.bid,'') AS 'supplierStock.bid',
         IFNULL(supplierStock.retail_price,'') AS 'supplierStock.retail_price',
         IFNULL(supplierStock.batch_no,'') AS 'supplierStock.batchNo',
-        IFNULL(supplierStock.produce_date,'') AS 'supplierStock.produce_date',
-        IFNULL(supplierStock.end_date,'') AS 'supplierStock.end_date'
+        supplierStock.produce_date AS 'supplierStock.produce_date',
+        supplierStock.end_date AS 'supplierStock.end_date'
     </sql>
     
     <sql id="medicinalStorageControlJoins">
