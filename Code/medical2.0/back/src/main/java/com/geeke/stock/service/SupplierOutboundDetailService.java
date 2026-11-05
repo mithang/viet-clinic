@@ -120,8 +120,34 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
                 throw new ServiceException("khả dụngTồn khokhôngđủ");
             }
 
-            save(d);
+            super.save(d);
         }
+    }
+
+    /**
+     * DS68: generic single save fail-closed 400 (DS50 bulkInsert/
+     * bulkUpdate pattern). CrudController exposes POST
+     * /stock/supplierOutboundDetail/save, which fell through to
+     * CrudService.save -> doInsert/doUpdate and wrote `number`
+     * verbatim with no stock freeze/release (probe-proven: generic
+     * update 5 -> 8 returned 200 while occupy/freeze stayed 5, and a
+     * generic insert of 3 created an unfrozen line, occupy unchanged).
+     * Lines are edited only via the slip: saveEvt -> save(outboundId,
+     * list) / updateSupplierOutboundDetail, which freeze the delta
+     * (DS33) behind an atomic claim (DS66). The frontend has no UI
+     * path through this endpoint (only listByBoutbound), so refusing
+     * it changes no real flow. The three internal single-entity saves
+     * call super.save directly (they run AFTER the freeze/claim, so
+     * they must not hit this gate): the new-line loop in
+     * save(outboundId, list), the delta-0 branch and the post-claim
+     * save in updateSupplierOutboundDetail.
+     * @Transactional(readOnly = false) is explicit because this
+     * service declares class-level readOnly = true (DS38/DS50).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public SupplierOutboundDetail save(SupplierOutboundDetail entity) {
+        throw new ServiceException("Chi tiết phiếu xuất kho chỉ sửa qua phiếu xuất kho, không hỗ trợ lưu trực tiếp!");
     }
 
     /**
@@ -336,8 +362,11 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         if (addNumber.compareTo(BigDecimal.ZERO) == 0) {
             // No quantity change: the delta is 0, so there is nothing to
             // freeze; keep the old behaviour of persisting the line as-is.
+            // DS68: super.save -- this runs after the DS66 claim path
+            // (delta 0 needs no claim) and must not hit the fail-closed
+            // single-entity save() override.
             old.setNumber(detail.getNumber());
-            this.save(old);
+            super.save(old);
             return;
         }
         // DS66: claim the quantity transition BEFORE freezing the delta.
@@ -372,7 +401,10 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
             throw new ServiceException("khả dụngTồn khokhôngđủ");
         }
         old.setNumber(detail.getNumber());
-        this.save(old);
+        // DS68: super.save -- the quantity was already claimed (DS66)
+        // and the delta frozen above, so this persist must not hit the
+        // fail-closed single-entity save() override.
+        super.save(old);
     }
 
     /**
