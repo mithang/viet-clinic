@@ -1,5 +1,6 @@
 package com.geeke.org.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.geeke.org.entity.Company;
 import com.geeke.org.entity.Department;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -57,6 +59,65 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 
         Department departmentTemp = super.save(department);
         return departmentTemp;
+	}
+
+	/**
+	 * DS50: bulk* khong dung duong generic CrudService.bulk* (khong co
+	 * statement trong DepartmentDao.xml nen moi goi deu 500 "Invalid
+	 * bound statement", probe-proven) va cung khong duoc them statement
+	 * tho: duong generic bo qua moi bat bien ma save() don ep buoc --
+	 * Z3a ep company theo session tenant (bulkInsert voi company trong
+	 * hoac cua tenant khac se trong orphan / sai tenant), kiem tra
+	 * trung ma code theo company, TreeService.save nap parent (co
+	 * kiem tra tenant) va tinh ids tu ids that cua parent roi viet lai
+	 * ids ca cay con khi doi parent (duong generic goi preInsert tren
+	 * parent tho chi co id nen con se nhan ids "<id>." nhu nut goc, va
+	 * doi parent qua bulkUpdate de lai ids cay con cu). Vi vay bulk*
+	 * chay vong lap qua save()/delete() don da kiem chung: moi dong
+	 * huong day du Z3a + trung ma + parent/ids + audit nhu luu don.
+	 * @Transactional(readOnly = false) tuong minh la bat buoc vi service
+	 * nay khai bao class-level readOnly = true (mau DS40); mot dong loi
+	 * nem ServiceException thi ca list rollback.
+	 */
+	@Override
+	@Transactional(readOnly = false)
+	public List<String> bulkInsert(List<Department> entitys) {
+		List<String> ids = Lists.newArrayList();
+		if (entitys != null) {
+			for (Department department : entitys) {
+				ids.add(this.save(department).getId());
+			}
+		}
+		return ids;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public List<String> bulkUpdate(List<Department> entitys) {
+		List<String> ids = Lists.newArrayList();
+		if (entitys != null) {
+			for (Department department : entitys) {
+				ids.add(this.save(department).getId());
+			}
+		}
+		return ids;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public int bulkDelete(List<Department> entitys) {
+		int rows = 0;
+		if (entitys != null) {
+			for (Department department : entitys) {
+				// Dong khong co id khong neu doi tuong nao (mau DS41):
+				// bo qua thay vi de mapper <delete> nhanh otherwise
+				// xoa theo company_id va quet sach ca cong ty.
+				if (department != null && StringUtils.isNotBlank(department.getId())) {
+					rows += this.delete(department);
+				}
+			}
+		}
+		return rows;
 	}
 
 }

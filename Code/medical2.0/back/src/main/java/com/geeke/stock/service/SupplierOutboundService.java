@@ -135,6 +135,38 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
     }
 
     /**
+     * DS50: bulkInsert/bulkUpdate fail-closed 400 (DS48 SysSeting
+     * pattern), NOT new mapper statements. SupplierOutboundDao.xml has
+     * no bulkInsert/bulkUpdate statements so every call 500d "Invalid
+     * bound statement" (probe-proven), but working statements would
+     * be unsafe here: header bulkInsert bypasses saveEvt (date-prefix
+     * code generation, status forced to 1, detail freeze), so it could
+     * plant a status-2 "examined" slip with no stock moves; header
+     * bulkUpdate bypasses save()'s status guards (examined/cancelled
+     * slips cannot be edited) and the DS33 delta-occupy line logic.
+     * No loop-through-save() exists for this signature either --
+     * save() takes an OutboundEvt (header + lines), not a header
+     * list. The generic bulk endpoints stay reachable but now answer
+     * an intentional 400 instead of an accidental 500. No internal
+     * caller uses bulk* on this service (only the generic controller);
+     * the UI saves slips only via saveEvt. bulkDelete keeps its DS40
+     * statement + gate (cancelled slips only).
+     * @Transactional(readOnly = false) tuong minh la bat buoc vi service
+     * nay khai bao class-level readOnly = true (mau DS40).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<SupplierOutbound> entitys) {
+        throw new ServiceException("Phiếu xuất kho chỉ lập từng phiếu qua trang Xuất kho, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<SupplierOutbound> entitys) {
+        throw new ServiceException("Phiếu xuất kho chỉ sửa từng phiếu qua trang Xuất kho, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    /**
      * hủy bỏXuất khođơn
      *
      * @param id

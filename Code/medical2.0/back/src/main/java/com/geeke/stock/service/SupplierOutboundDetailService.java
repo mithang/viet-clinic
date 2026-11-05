@@ -193,6 +193,39 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
+     * DS50: bulkInsert/bulkUpdate fail-closed 400 (DS48 SysSeting
+     * pattern), NOT new mapper statements. SupplierOutboundDetailDao.
+     * xml has no bulkInsert/bulkUpdate statements so every call 500d
+     * "Invalid bound statement" (probe-proven), but working statements
+     * would be unsafe here: detail bulkInsert bypasses the atomic
+     * freeze (DS33), so a line with no freeze lets examine() drive
+     * surplus negative; detail bulkUpdate bypasses
+     * updateSupplierOutboundDetail's atomic delta-occupy (DS33), so it
+     * could change a line quantity with no freeze adjustment. No
+     * loop-through-save() exists for this signature either --
+     * save(outboundId, list) treats the list as the slip's FULL new
+     * line set (lines absent from it are deleted), so it cannot serve
+     * a bulk row list. The generic bulk endpoints stay reachable but
+     * now answer an intentional 400 instead of an accidental 500. No
+     * internal caller uses bulk* on this service (only the generic
+     * controller); lines are edited only via saveEvt. bulkDelete keeps
+     * its DS40 statement + gate (cancelled slips only).
+     * @Transactional(readOnly = false) tuong minh la bat buoc vi service
+     * nay khai bao class-level readOnly = true (mau DS38/DS40).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<SupplierOutboundDetail> entitys) {
+        throw new ServiceException("Chi tiết phiếu xuất kho chỉ sửa qua phiếu xuất kho, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<SupplierOutboundDetail> entitys) {
+        throw new ServiceException("Chi tiết phiếu xuất kho chỉ sửa qua phiếu xuất kho, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    /**
      * XóaXuất khoChi tiết, giải phóngđóng băngTồn kho
      *
      * @param detailId
