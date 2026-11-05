@@ -156,7 +156,7 @@
             cost_item_id,
             conclusion,
             sign,
-            describe,
+            describes,
             seq
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
@@ -167,7 +167,7 @@
             #{entity.costItem.id},                    
             #{entity.conclusion},
             #{entity.sign},
-            #{entity.describe},
+            #{entity.describes},
             #{entity.seq}
         )
         </foreach>
@@ -201,9 +201,24 @@
                     when id=#{entity.id} then #{entity.sign}
                 </foreach>
             </trim>
-            <trim prefix="describe=case" suffix="end,">
+            <trim prefix="describes=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.describe}
+                    when id=#{entity.id} then #{entity.describes}
+                </foreach>
+            </trim>
+            <trim prefix="seq=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.seq}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
                 </foreach>
             </trim>
         </set>
