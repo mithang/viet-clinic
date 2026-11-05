@@ -139,7 +139,20 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     }
 
     public List<MedicalProject> listPageForMedical(List<Parameter> parameters, String orderby) {
-        PageRequest pageRequest = new PageRequest(parameters, orderby);
+        // DS5: dung builder tenant-session nhu listAlls (da sua o ffab9c4),
+        // thay cho PageRequest tran truoc day. PageRequest tran de id/institution
+        // NULL nen predicate tenant cua StuffDao.count/listAll luon NULL -> duong
+        // nay tra [] cho moi session (probe ds5: ca company OWN + name ds5 cung
+        // []). Chi dung ensureCompanyFilter nhu CostItem (iter65 item 4) thi KHONG
+        // du: whereParam company_id=session van bi AND voi predicate NULL -> van [].
+        // Builder strip company_id body, lay id = session tenant + institution tu
+        // stored company do, nen tra dung dong OWN (va dong institution-shared neu
+        // co) ma khong bao gio tra dong tenant la theo body — cung mau da kiem
+        // chung o listAlls/exportStuff. Khong doi mapper, khong doi mapping "".
+        if (parameters == null) {
+            parameters = new ArrayList<>();
+        }
+        PageRequest pageRequest = buildStuffTenantPageRequest(parameters, orderby);
         int total = this.dao.count(pageRequest);
         List<Stuff> lis = null;
         List<MedicalProject> list = new ArrayList<>();
