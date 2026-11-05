@@ -183,6 +183,15 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                         }
                     }
                 }
+                // DS57: claim tung don truoc drugRepercussion, nguyen tu
+                // (UPDATE ... WHERE is_dispension='1', chi 1 luong song
+                // song thang claim). Code cu chi kiem tra isDispension
+                // SELECT-then-act, nen cac lan tra song song deu doc co
+                // "1" truoc khi commit roi moi ap adjustment DS32, lam
+                // used am va return_todo_fee tang gap N.
+                if (this.recipelInfoService.claimReturned(recipelInfoId) == 0) {
+                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc ĐãTrả thuốcqua");
+                }
                 //Trả thuốctạmkhônghoàn phí
                 medicinalStorageControlService.drugRepercussion(recipelInfo);
 

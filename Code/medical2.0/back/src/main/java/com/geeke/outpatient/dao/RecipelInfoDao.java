@@ -47,4 +47,13 @@ public interface RecipelInfoDao extends CrudDao<RecipelInfo> {
      * a second REFUND audit row, or run materialRefund twice.
      * No del_flag filter, same reason as claimDispensed. */
     int claimRefunded(@Param("id") String id);
+
+    /** DS57: atomic return claim, same pattern as claimDispensed. Sets
+     * is_dispension='2' only when the recipel is still DISPENSED
+     * (is_dispension '1'); returns rows affected (0 = already returned
+     * / never dispensed / missing). Exactly one concurrent return wins
+     * the claim, so a parallel double return cannot run
+     * drugRepercussion twice and drift used/return_todo_fee.
+     * No del_flag filter, same reason as claimDispensed. */
+    int claimReturned(@Param("id") String id);
 }

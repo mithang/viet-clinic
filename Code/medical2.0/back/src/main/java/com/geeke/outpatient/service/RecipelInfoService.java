@@ -81,6 +81,20 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         return this.recipelInfoDao.claimRefunded(id);
     }
 
+    /**
+     * DS57: atomic claim for returning dispensed drugs. Sets
+     * is_dispension='2' only when it is still '1'; returns the rows
+     * affected (0 = already returned / never dispensed / missing).
+     * Exactly one concurrent return wins the claim, so a parallel
+     * double return cannot run drugRepercussion twice and drift
+     * used/return_todo_fee. The caller still sets
+     * dispensionStatus/retreatChargeDate afterwards as before.
+     */
+    @Transactional(readOnly = false)
+    public int claimReturned(String id) {
+        return this.recipelInfoDao.claimReturned(id);
+    }
+
     @Transactional(readOnly = false)
     public int invalid(String id) {
         RecipelInfo recipelInfo = super.get(id);
