@@ -109,6 +109,16 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
                 entity.setCompany(new Company(tenant));
             }
         }
+        // DS12: amountStatus la field @NotNull nhung controller khong co
+        // @Valid, nen payload thieu amountStatus truoc day NPE 500 o dieu
+        // kien nhanh REFUNDED ben duoi. Fail-closed 400 thay vi bo qua
+        // (bo qua se bat dau insert phieu khong co trang thai — chat hon
+        // hanh vi hien tai, von tu choi payload dang nay, chi sai tin
+        // hieu). Chi anh huong POST /toll/tollInfo/save; cac luong noi
+        // bo goi TollInfoService.save truc tiep khong qua day.
+        if (entity.getAmountStatus() == null) {
+            throw new ServiceException("Trạng thái phiếu thu không được để trống");
+        }
         if(BizConstants.AMOUNT_STATUS_REFUNDED.equals(entity.getAmountStatus().getValue())){
             TollInfo tollInfoByRegistrationId = tollInfoService.getTollInfoByRegistrationId(entity.getRegistrationFeeId());
             // DS11: khong co phieu thu goc cho registration nay (chua thu
