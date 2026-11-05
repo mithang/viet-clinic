@@ -189,16 +189,22 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStorageControl.setSurplusStock(BigDecimal.ZERO);
                 super.save(medicinalStorageControl);
 
-                //2.Cập nhật bản ghi kiểm soát tổng hợp nhập kho của tồn kho động, Trừ lượng hủy khỏi tổng lượng nhập kho và tổng lượng khả dụng
+                // DS28: a missing aggregate row must not abort the void. The
+                // detail row above is already zeroed, so skip only the
+                // aggregate decrement and still write the stock record and
+                // process the remaining lines. Previously `return` here left
+                // the 2nd+ lines of a voided slip holding live stock
+                // (probe-proven: cancel of a 2-line slip with the aggregate
+                // row soft-deleted zeroed line 1 only, detail SUM stayed
+                // 10003 instead of returning to 10000).
                 List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                         SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStorageControl.getDrugStuffId()).build(), "");
-                if (CollectionUtils.isEmpty(medicinalStockControlList)) {
-                    return;
+                if (!CollectionUtils.isEmpty(medicinalStockControlList)) {
+                    MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
+                    medicinalStockControl.setStorageStock(medicinalStockControl.getStorageStock().subtract(storageStock));
+                    medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(surplusStock));
+                    this.medicinalStockControlService.save(medicinalStockControl);
                 }
-                MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-                medicinalStockControl.setStorageStock(medicinalStockControl.getStorageStock().subtract(storageStock));
-                medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(surplusStock));
-                this.medicinalStockControlService.save(medicinalStockControl);
 
                 //3.chènChi tiết thao tác tồn kho động
                 MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
