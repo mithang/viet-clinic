@@ -287,11 +287,43 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(old.getMedicinalStorage().getId());
         BigDecimal addNumber = detail.getNumber().subtract(old.getNumber());//tăngđóng băng của Số lượng
-        if (addNumber.compareTo(BigDecimal.ZERO) != 0) {
-            int frozen = medicinalStorageControlService.freezeDetailStocks(medicinalStorageControl, addNumber);
-            if (frozen != 1) {
-                throw new ServiceException("khả dụngTồn khokhôngđủ");
+        if (addNumber.compareTo(BigDecimal.ZERO) == 0) {
+            // No quantity change: the delta is 0, so there is nothing to
+            // freeze; keep the old behaviour of persisting the line as-is.
+            old.setNumber(detail.getNumber());
+            this.save(old);
+            return;
+        }
+        // DS66: claim the quantity transition BEFORE freezing the delta.
+        // The delta above was computed from the stored number just read,
+        // so two parallel saveEvt edits of the same line (both 5 -> 8)
+        // both froze +3 and left occupy/freeze at 11 for a line of 8
+        // (probe-proven). The conditional UPDATE lets exactly one caller
+        // move the number; only that caller freezes its delta. A refused
+        // freeze still throws and the whole saveEvt rolls back (as
+        // before), which also rolls the claim back.
+        int claimed = supplierOutboundDetailDao.claimNumber(detail.getId(),
+                detail.getNumber(), old.getNumber());
+        if (claimed != 1) {
+            // DS66: locking re-read -- a plain get() under REPEATABLE READ
+            // would return this transaction's opening snapshot (the stale
+            // number), not the winning edit's committed value.
+            SupplierOutboundDetail fresh = supplierOutboundDetailDao.getForUpdate(detail.getId());
+            if (fresh != null && fresh.getNumber() != null
+                    && fresh.getNumber().compareTo(detail.getNumber()) == 0) {
+                // Another edit already moved the line to exactly the
+                // quantity this caller wanted: the sequential equivalent
+                // is a delta-0 no-op, so accept without freezing again.
+                return;
             }
+            // The line moved to a different quantity (or was deleted):
+            // this is a stale edit -- refuse like the sequential guard,
+            // instead of freezing a delta computed from an old value.
+            throw new ServiceException("Xuất kho đơn chi tiết đã thay đổi, vui lòng tải lại phiếu rồi sửa lại");
+        }
+        int frozen = medicinalStorageControlService.freezeDetailStocks(medicinalStorageControl, addNumber);
+        if (frozen != 1) {
+            throw new ServiceException("khả dụngTồn khokhôngđủ");
         }
         old.setNumber(detail.getNumber());
         this.save(old);

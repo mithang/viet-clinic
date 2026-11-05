@@ -238,6 +238,37 @@
         WHERE id = #{id}
     </update>
 
+    <!-- DS66: atomically claim a line-quantity transition. The caller
+         computed the freeze delta from the stored number it read, so two
+         parallel saveEvt edits of the same line (both 5 -> 8) both froze
+         +3 and left occupy/freeze at 11 for a line of 8 (probe-proven).
+         The conditional UPDATE moves the number only when the row still
+         holds the value the caller read, so exactly one caller may
+         freeze its delta; the loser re-reads in the service and either
+         takes the sequential no-op (already at its target) or is refused
+         as a stale edit. Mirrors SupplierOutboundDao.claimExamine. -->
+    <update id="claimNumber">
+        UPDATE supplier_outbound_detail SET
+            number = #{newNumber}
+        WHERE id = #{id}
+          AND number = #{oldNumber}
+    </update>
+
+    <!-- DS66: locking re-read of one line. A plain SELECT under
+         REPEATABLE READ returns the transaction's opening snapshot, so
+         the claim loser would re-read the stale number it started from
+         and be refused even when the line already holds its target.
+         FOR UPDATE is a current read: it waits for the winning edit to
+         commit and then returns the line as it really is now. -->
+    <select id="getForUpdate" resultType="com.geeke.stock.entity.SupplierOutboundDetail">
+        SELECT
+        <include refid="supplierOutboundDetailColumns"/>
+        FROM supplier_outbound_detail a
+        <include refid="supplierOutboundDetailJoins"/>
+        WHERE a.id = #{id}
+        FOR UPDATE
+    </select>
+
     <select id="get" resultType="com.geeke.stock.entity.SupplierOutboundDetail">
         SELECT
         <include refid="supplierOutboundDetailColumns"/>

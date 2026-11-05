@@ -23,4 +23,16 @@ public interface SupplierOutboundDetailDao extends CrudDao<SupplierOutboundDetai
     List<SupplierOutboundDetail> getByOutboundId(String outboundId);
 
     void deleteByOutboundId(String outboundId);
+
+    /**
+     * DS66: atomically claim a line-quantity transition: set the line's
+     * number to newNumber only when it still holds oldNumber. Returns 1
+     * when this caller won the transition, 0 when another edit moved the
+     * line first (the service then re-reads and decides no-op vs stale).
+     */
+    int claimNumber(@Param("id") String id, @Param("newNumber") java.math.BigDecimal newNumber,
+                    @Param("oldNumber") java.math.BigDecimal oldNumber);
+
+    /** DS66: locking re-read of one line (SELECT ... FOR UPDATE). */
+    SupplierOutboundDetail getForUpdate(String id);
 }
