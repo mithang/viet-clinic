@@ -93,6 +93,48 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
     }
 
     /**
+     * DS40: generic delete khong duoc phep xoa truc tiep mot phieu xuat
+     * kho chua huy. CrudController mo endpoint delete/bulkDelete chung,
+     * nhung SupplierOutboundDao.xml truoc day KHONG co statement delete /
+     * bulkDelete nen moi lan goi deu 500 "Invalid bound statement"
+     * (probe-proven, DS38/DS39). Statement moi them (mau
+     * SupplierStorageDao, xoa mem del_flag=1) chi duoc goi qua override
+     * nay: chi cho phep xoa khi phieu da huy (status 3, dong bang da
+     * duoc giai phong luc huy) hoac khong tim thay phieu; phieu cho duyet
+     * (1) / da duyet (2) / status null thi fail-closed 400. Duong huy
+     * chuan cancel() khong doi.
+     * @Transactional(readOnly = false) tuong minh la bat buoc vi service
+     * nay khai bao class-level readOnly = true (mau DS38/DS39).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(SupplierOutbound entity) {
+        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+            SupplierOutbound stored = this.get(entity.getId());
+            if (stored != null && (stored.getStatus() == null || stored.getStatus() != 3)) {
+                throw new ServiceException("Phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu xuất kho trước.");
+            }
+        }
+        return super.delete(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<SupplierOutbound> entitys) {
+        if (entitys != null) {
+            for (SupplierOutbound entity : entitys) {
+                if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+                    SupplierOutbound stored = this.get(entity.getId());
+                    if (stored != null && (stored.getStatus() == null || stored.getStatus() != 3)) {
+                        throw new ServiceException("Phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu xuất kho trước.");
+                    }
+                }
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    /**
      * hủy bỏXuất khođơn
      *
      * @param id

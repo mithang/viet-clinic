@@ -167,6 +167,21 @@
         </where>
     </delete>
 
+    <!-- DS40: the generic line bulkDelete endpoint existed (CrudController)
+         but this statement did not, so every call failed HTTP 500
+         "Invalid bound statement" (probe-proven). Physical delete, like
+         the single delete above (the detail table has no del_flag
+         column); pattern copied from SysParamConfigDao bulkDelete. It is
+         reachable only through the service override below, which refuses
+         any line whose parent slip is not already cancelled (3). -->
+    <delete id="bulkDelete" parameterType="java.util.List">
+        DELETE FROM supplier_outbound_detail
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </delete>
+
     <insert id="insert">
         INSERT INTO supplier_outbound_detail(
         id,

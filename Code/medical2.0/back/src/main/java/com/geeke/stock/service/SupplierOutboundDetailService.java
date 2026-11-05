@@ -157,6 +157,42 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     }
 
     /**
+     * DS40: generic bulkDelete khong duoc phep xoa truc tiep dong cua
+     * phieu xuat kho chua huy. Endpoint bulkDelete chung ton tai
+     * (CrudController) nhung SupplierOutboundDetailDao.xml truoc day
+     * KHONG co statement bulkDelete nen moi lan goi deu 500 "Invalid
+     * bound statement" (probe-proven). Statement moi them (xoa vat ly,
+     * mau SysParamConfigDao, bang chi tiet khong co cot del_flag) chi
+     * duoc goi qua override nay, giong gate cua delete() o DS38: chi cho
+     * phep xoa dong khi phieu me da huy (status 3, dong bang da duoc
+     * giai phong luc huy); phieu cho duyet (1) / da duyet (2) / status
+     * null thi fail-closed 400. Gate chay truoc super.bulkDelete nen
+     * mot list tron (dong cua phieu da huy + dong cua phieu chua huy)
+     * bi tu choi nguyen list, khong dong nao bi xoa.
+     * @Transactional(readOnly = false) tuong minh la bat buoc vi service
+     * nay khai bao class-level readOnly = true (mau DS38/DS39).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<SupplierOutboundDetail> entitys) {
+        if (entitys != null) {
+            for (SupplierOutboundDetail entity : entitys) {
+                if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+                    SupplierOutboundDetail stored = this.get(entity.getId());
+                    if (stored != null && stored.getSupplierOutbound() != null
+                            && StringUtils.isNotBlank(stored.getSupplierOutbound().getId())) {
+                        SupplierOutbound parent = supplierOutboundService.get(stored.getSupplierOutbound().getId());
+                        if (parent != null && (parent.getStatus() == null || parent.getStatus() != 3)) {
+                            throw new ServiceException("Chi tiết thuộc phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu xuất kho trước.");
+                        }
+                    }
+                }
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    /**
      * XóaXuất khoChi tiết, giải phóngđóng băngTồn kho
      *
      * @param detailId

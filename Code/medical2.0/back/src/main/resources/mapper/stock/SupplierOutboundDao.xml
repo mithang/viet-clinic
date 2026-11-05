@@ -123,6 +123,47 @@
         status = #{status}
         WHERE id = #{id}
     </update>
+
+    <!-- DS40: the generic delete/bulkDelete endpoints existed (CrudController)
+         but these two statements did not, so every call failed HTTP 500
+         "Invalid bound statement" (probe-proven). They copy the proven
+         SupplierStorageDao pattern (soft delete del_flag=1; CASE
+         bulkDelete) and are reachable only through the service overrides
+         below, which refuse any slip that is not already cancelled (3).
+         A pending (1) or examined (2) slip keeps its freeze / used stock,
+         so deleting its header must go through cancel / examine first. -->
+    <update id="delete">
+        UPDATE supplier_outbound SET
+            update_by = #{updateBy},
+            update_date = #{updateDate},
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+    <update id="bulkDelete" parameterType="java.util.List">
+        UPDATE supplier_outbound
+        <set>
+            <trim prefix="del_flag=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then 1
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
     <!-- DS34: conditional cancel claim (see SupplierOutboundDao.cancel).
          Only a slip that is neither cancelled (3) nor examined (2) can be
          claimed for cancelling, so parallel cancels cannot each release
