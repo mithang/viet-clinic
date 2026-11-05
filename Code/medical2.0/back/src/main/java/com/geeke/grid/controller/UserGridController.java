@@ -6,6 +6,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.admin.entity.User;
 import com.geeke.common.controller.CrudController;
+import com.geeke.common.controller.SearchParams;
+import com.geeke.common.data.Page;
+import com.geeke.common.data.Parameter;
 import com.geeke.grid.entity.UserGrid;
 import com.geeke.grid.service.UserGridService;
 import com.geeke.utils.ResultUtil;
@@ -78,6 +83,93 @@ public class UserGridController extends CrudController<UserGridService, UserGrid
 		User sessionUser = SessionUtils.getUser();
 		return sessionUser != null && sessionUser.getId() != null
 				&& sessionUser.getId().equals(String.valueOf(userId));
+	}
+
+	// DS17 (deep-search round 17): READ-side ownership, completing the
+	// iter68 write guards (which left "Doc GIU NGUYEN"). The generic
+	// CrudController reads are blind here: these tables have NO
+	// company_id column, so verifyTenantOwnership early-returns, and
+	// the floor is only hasAnySessionPermission — any permissioned
+	// session could GET another user's row by id, or listAll/list with
+	// a client-supplied user_id filter (or none) and read foreign
+	// themes / saved query conditions / grid layouts (probe-proven,
+	// tools/ds17-userread.py pre 28/28). Fix, controller only:
+	// - getById: stored userId != session user -> 403. Nonexistent
+	//   keeps the generic 200+null contract; rows with null userId
+	//   pass through as before (same pattern as the write guards).
+	// - listPage/listAll: strip any client user_id param and force
+	//   user_id = session user (SearchParams.getParams() is called
+	//   exactly once here — a second call would throw on the
+	//   backticked column names it already wrote). Legit callers
+	//   already filter by self (queryForm.vue passes currentUser.id),
+	//   so their results are unchanged; attacker filters are ignored.
+	//   No service change: AuthController reads PersonalTheme via the
+	//   service directly at login and is untouched.
+	private String sessionUserId() {
+		User sessionUser = SessionUtils.getUser();
+		return (sessionUser != null && sessionUser.getId() != null) ? sessionUser.getId() : null;
+	}
+
+	private java.util.List<Parameter> forceOwnUserParams(SearchParams searchParams) {
+		java.util.List<Parameter> params = searchParams.getParams();
+		if (params == null) {
+			params = new java.util.ArrayList<>();
+		} else {
+			params = new java.util.ArrayList<>(params);
+		}
+		params.removeIf(p -> {
+			if (p == null || p.getColumnName() == null) {
+				return false;
+			}
+			String c = p.getColumnName().replace("`", "");
+			int dot = c.lastIndexOf('.');
+			if (dot >= 0) {
+				c = c.substring(dot + 1);
+			}
+			return "user_id".equals(c);
+		});
+		params.add(new Parameter("user_id", "=", sessionUserId()));
+		return params;
+	}
+
+	@Override
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<JSONObject> getById(@PathVariable("id") String id) {
+		if (!hasAnySessionPermission()) {
+			return forbidden();
+		}
+		UserGrid entity = getService().get(id);
+		if (entity != null && entity.getUserId() != null && !isOwnUser(entity.getUserId())) {
+			return forbidden();
+		}
+		return ResponseEntity.ok(ResultUtil.successJson(entity));
+	}
+
+	@Override
+	@PostMapping(value = {"list", ""})
+	public ResponseEntity<JSONObject> listPage(@RequestBody SearchParams searchParams) {
+		if (!hasAnySessionPermission()) {
+			return forbidden();
+		}
+		if (sessionUserId() == null) {
+			return forbidden();
+		}
+		Page<UserGrid> result = getService().listPage(forceOwnUserParams(searchParams), searchParams.getOffset(),
+				searchParams.getLimit(), searchParams.getOrderby());
+		return ResponseEntity.ok(ResultUtil.successJson(result));
+	}
+
+	@Override
+	@PostMapping(value = "listAll")
+	public ResponseEntity<JSONObject> listAll(@RequestBody SearchParams searchParams) {
+		if (!hasAnySessionPermission()) {
+			return forbidden();
+		}
+		if (sessionUserId() == null) {
+			return forbidden();
+		}
+		java.util.List<UserGrid> result = getService().listAll(forceOwnUserParams(searchParams), searchParams.getOrderby());
+		return ResponseEntity.ok(ResultUtil.successJson(result));
 	}
 
 	@Override
