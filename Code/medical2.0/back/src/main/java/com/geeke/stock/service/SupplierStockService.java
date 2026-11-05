@@ -272,7 +272,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                 entity.setSupplierStorage(save);
                 entity.setInitial(entity.getNumber());
                 entity.setCancellation("0");
-                String id = supplierStockService.save(entity).getId();
+                String id = supplierStockService.saveInternal(entity).getId();
                 //Sau khi lưu thành công, lưu tồn kho của mặt hàng đó vào cơ sở dữ liệu tương ứng
 //                if(id!=null){
 //                    if(entity.getDrug().getId()!=null){
@@ -374,6 +374,66 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         return super.bulkDelete(entitys);
     }
 
+    /**
+     * DS70: generic single save fail-closed 400 (DS50/DS68/DS69 pattern).
+     * CrudController exposes POST /stock/supplierStock/save, which fell
+     * through to CrudService.save -> doInsert/doUpdate, whose mapper
+     * &lt;update&gt; writes number, bid, least_bid, retail_price, all_bid,
+     * all_retail_price, initial, cancellation absolutely by id -- quantity
+     * AND money, with no freeze, no delta, no stock record and no
+     * aggregate adjustment (probe-proven: an AUDITED slip's line 10000 /
+     * 200.00 was rewritten to 888 / 8888.88 with the control rows still
+     * 10000, and a phantom line 777 was inserted on the same audited
+     * slip, both 200; parallel rounds both 200). The frontend has no live
+     * UI path through this endpoint (supplierStockForm.vue is imported by
+     * no view and no router). Real writes go through inStorage
+     * (savesTo) / inStorageByCompany (savesToAudit), which use
+     * saveInternal() below. Internal callers use saveInternal(), which
+     * keeps the old CrudService.save behaviour (tenant check + audit
+     * action).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public SupplierStock save(SupplierStock entity) {
+        throw new ServiceException("Chi tiết nhập kho chỉ thay đổi qua phiếu nhập kho, không hỗ trợ lưu trực tiếp!");
+    }
+
+    /**
+     * DS70: same fail-closed guard for the bulk writes -- CrudService
+     * bulkInsert/bulkUpdate call dao.bulk* directly, NOT save(), so the
+     * save() override above does not cover them. Note the bulk mapper is
+     * ALSO broken today independent of this guard (bulkInsert references
+     * #{cancellation} instead of #{entity.cancellation}, bulkUpdate emits
+     * malformed CASE SQL -- both 500 for any payload, probe-proven), so
+     * the bulk paths were not exploitable; this override makes them
+     * fail-closed 400 instead of 500 and keeps them closed if the mapper
+     * is ever fixed. No internal caller uses bulk on this service.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<SupplierStock> entitys) {
+        throw new ServiceException("Chi tiết nhập kho chỉ thay đổi qua phiếu nhập kho, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<SupplierStock> entitys) {
+        throw new ServiceException("Chi tiết nhập kho chỉ thay đổi qua phiếu nhập kho, không hỗ trợ thao tác hàng loạt!");
+    }
+
+    /**
+     * DS70: internal single-entity save for the guarded import flows
+     * (savesTo / savesToAudit, both INSERTs of fresh import lines).
+     * NOT reachable from the controller -- CrudController routes only to
+     * save()/bulkInsert()/bulkUpdate(). Delegates to CrudService.save,
+     * so the tenant check and the audit action row are kept exactly as
+     * before.
+     */
+    @Transactional(readOnly = false)
+    public SupplierStock saveInternal(SupplierStock entity) {
+        return super.save(entity);
+    }
+
     @Transactional(readOnly = false)
     public void cancellation(List<SupplierStock> supplierStockList) {
         this.dao.updateCancel(supplierStockList);
@@ -468,7 +528,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                 entity.setSupplierStorage(save);
                 entity.setInitial(entity.getNumber());
                 entity.setCancellation("0");
-                supplierStockService.save(entity);
+                supplierStockService.saveInternal(entity);
 
             }
         }
