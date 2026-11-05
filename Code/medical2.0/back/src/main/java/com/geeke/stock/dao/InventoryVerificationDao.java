@@ -16,7 +16,10 @@ import java.util.List;
  */
 @Mapper
 public interface InventoryVerificationDao extends CrudDao<InventoryVerification> {
-    int accomplishInventoryVerification(InventoryVerification inventoryVerification);
+    /** DS56: claim nguyen tu chot kiem ke -- chi phieu dang status='0' moi
+     * chuyen sang '1'; dung 1 caller thang, cac caller thua claim thi no-op
+     * (mau DS55 claimAuditExamine). Thay the lenh UPDATE vo dieu kien cu. */
+    int claimAccomplish(@Param("id") String id);
 
     void updateAllPrice(@Param("id") String id,@Param("allPrice") BigDecimal allPrice);
 

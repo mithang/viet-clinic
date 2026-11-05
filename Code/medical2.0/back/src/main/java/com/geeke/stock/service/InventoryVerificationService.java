@@ -150,7 +150,15 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         if (stored != null) {
             verifyTenantOwnership(stored);
         }
-        int i = this.dao.accomplishInventoryVerification(inventoryVerification);
+        // DS56: claim nguyen tu status '0'->'1' TRUOC moi dong tac kho (mau
+        // DS55): UPDATE ... WHERE id AND status='0' nen dung 1 caller thang;
+        // thua claim thi no-op -- chot lap (ke ca tuan tu) tra 200 nhu cu,
+        // khong doi kho, khong bia ma loi moi. Phieu khong ton tai / id null:
+        // claim 0 dong -> no-op nhu cu (update 0 dong + adjustStock tren
+        // list rong, cung tra 200).
+        if (this.dao.claimAccomplish(inventoryVerification.getId()) == 0) {
+            return inventoryVerification;
+        }
         //Sau khi hoàn thành kiểm kê, thực hiện công việc tăng giảm tồn kho liên quan
         logger.debug("Accomplish inventory verification: {}", inventoryVerification);
         if(Objects.equals(inventoryVerification.getType(),"0")){
