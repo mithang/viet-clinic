@@ -235,6 +235,101 @@
         DELETE FROM recipel_info_review WHERE id = #{id}
     </delete>
 
+    <!-- DS49: bulk statements for the CrudController bulk endpoints.
+         Guards live in RecipelInfoReviewController (strict own tenant
+         on the parent prescription, stored row plus payload); the
+         generic CrudService tenant checks are blind here because a
+         review carries no company of its own. bulkInsert/bulkUpdate
+         mirror the single row columns above; bulkUpdate does not set
+         recipel_info_id so a review cannot be rehomed; bulkDelete is
+         a physical delete like the single delete. -->
+    <insert id="bulkInsert" parameterType="java.util.List">
+        INSERT INTO recipel_info_review(
+            id,
+            recipel_info_id,
+            review_result,
+            review_content,
+            reviewer_name,
+            reviewer_id,
+            review_status,
+            remarks,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag
+        ) VALUES
+        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
+        (
+            #{entity.id},
+            #{entity.recipelInfo.id},
+            #{entity.reviewResult},
+            #{entity.reviewContent},
+            #{entity.reviewerName},
+            #{entity.reviewerId},
+            #{entity.reviewStatus},
+            #{entity.remarks},
+            #{entity.createBy},
+            #{entity.createDate},
+            #{entity.updateBy},
+            #{entity.updateDate},
+            #{entity.delFlag}
+        )
+        </foreach>
+    </insert>
+
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE recipel_info_review
+        <set>
+            <trim prefix="review_result=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.reviewResult}
+                </foreach>
+            </trim>
+            <trim prefix="review_content=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.reviewContent}
+                </foreach>
+            </trim>
+            <trim prefix="reviewer_name=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.reviewerName}
+                </foreach>
+            </trim>
+            <trim prefix="reviewer_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.reviewerId}
+                </foreach>
+            </trim>
+            <trim prefix="review_status=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.reviewStatus}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <delete id="bulkDelete" parameterType="java.util.List">
+        DELETE FROM recipel_info_review WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </delete>
+
     <select id="prescriptionStatistics" resultType="com.geeke.outpatient.vo.PrescriptionStatisticsVO">
         SELECT
             count(*) AS "total",
