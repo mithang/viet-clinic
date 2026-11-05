@@ -275,11 +275,26 @@
         update member_management_detail set use_number = #{useNumber} where id = #{id}
     </update>
 
+    <!-- DS62: atomic claim cho use-count. Dieu kien use_number =
+         #{expectedUseNumber} khoa luong song song: luong thua doc gia tri
+         cu, UPDATE cho lai 0 dong vi gia tri hien tai da doi. Hai rang
+         buoc gia tri moi (>= hien tai, <= number) chan ca payload stale
+         / gia mao doi ve sau khi doc. -->
+    <update id="claimUseNumber">
+        update member_management_detail set use_number = #{useNumber}
+        where id = #{id}
+          and use_number = #{expectedUseNumber}
+          and #{useNumber} &gt;= use_number
+          and #{useNumber} &lt;= number
+    </update>
+
     <select id="getOwnership" resultType="com.geeke.member.entity.MemberManagementDetail">
         SELECT
             a.id AS "id",
             a.company_id AS "company.id",
-            a.member_management_id AS "memberManagement.id"
+            a.member_management_id AS "memberManagement.id",
+            a.number AS "number",
+            a.use_number AS "useNumber"
         FROM member_management_detail a
         WHERE a.id = #{id}
     </select>

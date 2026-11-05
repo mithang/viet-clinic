@@ -53,6 +53,9 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
         if (memberManagement != null && StringUtils.isNotBlank(memberManagement.getId())) {
             memberManagementService.get(memberManagement.getId());
         }
+        // DS62: giu lai gia tri DB cua tung detail de vong ghi claim theo
+        // dung gia tri da doc (xem vong ghi ben duoi).
+        java.util.Map<String, MemberManagementDetail> dbRows = new java.util.HashMap<>();
         if (memberManagementDetails != null) {
             for (MemberManagementDetail memberManagementDetail : memberManagementDetails) {
                 if (memberManagementDetail == null || StringUtils.isBlank(memberManagementDetail.getId())) {
@@ -67,12 +70,44 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
                             && !memberManagement.getId().equals(dbRow.getMemberManagement().getId())) {
                         throw new com.geeke.common.service.ServiceException("Không có quyền truy cập tenant khácDữ liệu");
                     }
+                    dbRows.put(memberManagementDetail.getId(), dbRow);
                 }
             }
         }
 
+        // DS62: ghi use-count bang atomic claim (mau DS52-DS61), khong con
+        // SET mu gia tri tuyet doi tu payload. Frontend gui gia tri tuyet
+        // doi moi (= gia tri no doc + so luot dung them), nen:
+        // - payload < gia tri DB hien tai: payload stale hoac gia mao doi
+        //   use-count ve (nap lai the da dung) -> 400, khong ghi.
+        // - payload > allowance number: vuot so luot the cho phep -> 400.
+        // - claimUseNumber chi ghi khi use_number van dung gia tri da doc
+        //   va gia tri moi trong [hien tai, number]; luong song song thua
+        //   tra 0 dong -> 400 nhu truong hop tuan tu (nap lai the roi thu
+        //   lai thi duoc). Toan bo saveToll la mot transaction nen 400 o
+        //   day rollback ca phieu thu, don thuoc van thu duoc o lan thu.
         for (MemberManagementDetail memberManagementDetail : memberManagementDetails) {
-            this.dao.updateUseNumber(memberManagementDetail);
+            if (memberManagementDetail == null || StringUtils.isBlank(memberManagementDetail.getId())) {
+                continue;
+            }
+            MemberManagementDetail dbRow = dbRows.get(memberManagementDetail.getId());
+            if (dbRow == null || memberManagementDetail.getUseNumber() == null) {
+                continue;
+            }
+            // DB khong co dong NULL (kiem tra 2026-11-05: 35/35 dong deu co
+            // number + use_number); coi NULL nhu 0 de tranh NPE unboxing.
+            int expected = dbRow.getUseNumber() == null ? 0 : dbRow.getUseNumber();
+            if (memberManagementDetail.getUseNumber() < expected) {
+                throw new com.geeke.common.service.ServiceException("Thẻ hội viên đã thay đổi, vui lòng thử lại");
+            }
+            if (dbRow.getNumber() != null && memberManagementDetail.getUseNumber() > dbRow.getNumber()) {
+                throw new com.geeke.common.service.ServiceException("Số lần sử dụng vượt quá số lượng thẻ");
+            }
+            int rows = this.dao.claimUseNumber(memberManagementDetail.getId(),
+                    memberManagementDetail.getUseNumber(), expected);
+            if (rows == 0) {
+                throw new com.geeke.common.service.ServiceException("Thẻ hội viên đã thay đổi, vui lòng thử lại");
+            }
         }
 
         //Sửa lầnsốsau, CầnSửaHội viênthẻTrạng thái

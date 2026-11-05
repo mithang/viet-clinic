@@ -21,6 +21,17 @@ public interface MemberManagementDetailDao extends CrudDao<MemberManagementDetai
 
     void updateUseNumber(MemberManagementDetail memberManagementDetail);
 
+    /**
+     * DS62: claim co dieu kien cho use-count cua chi tiet the.
+     * SET use_number = #{useNumber} chi khi gia tri hien tai van dung
+     * #{expectedUseNumber} (doc truoc do trong transaction), gia tri moi
+     * khong giam va khong vuot allowance number. Tra so dong bi anh
+     * huong: 0 = luong khac da doi the truoc -> caller tu choi nhu
+     * truong hop tuan tu tuong duong (nap lai trang thai moi roi thu lai).
+     */
+    int claimUseNumber(@Param("id") String id, @Param("useNumber") Integer useNumber,
+                       @Param("expectedUseNumber") Integer expectedUseNumber);
+
     MemberManagementDetail getOwnership(String id);
 
 }
