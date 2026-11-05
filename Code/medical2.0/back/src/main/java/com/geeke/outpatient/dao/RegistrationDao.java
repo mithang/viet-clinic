@@ -66,6 +66,9 @@ public interface RegistrationDao extends CrudDao<Registration> {
 
     int wxReturnPay(Registration registrations);
 
+    /** DS64: atomic refund claim, xem RegistrationDao.xml claimRefund. */
+    int claimRefund(Registration registrations);
+
     List<String> wxCount(PageRegistration pageRegistration);
 
     List<String> wxListPages(PageRegistration pageRegistration);

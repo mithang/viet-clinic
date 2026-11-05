@@ -186,11 +186,33 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         Registration probe = new Registration();
         probe.setId(id);
         verifyTenantOwnershipAgainstStoredRow(probe);
-        int i = dao.refundRegistrationPay(id, status, refundRegistrationPayType, refundRegistrationRemarks, exitNumberDate);
-        if(i>0){
-
+        // DS64: hoan phi bang atomic claim thay cho dao
+        // refundRegistrationPay vo dieu kien (xem wxReturnPay ben duoi):
+        // guard status o controller chi chay khi remarks == _2, client
+        // that gui remarks="" nen guard khong bao gio chay — tuan tu thu
+        // 2 van duoc nhan 200 data 1 va client tao them phieu hoan phi.
+        // Claim 0 dong -> 400 nhu truong hop tuan tu tuong duong (wx).
+        Registration claim = new Registration();
+        claim.setId(id);
+        com.geeke.sys.entity.DictItem statusItem = new com.geeke.sys.entity.DictItem();
+        statusItem.setValue(status);
+        claim.setStatus(statusItem);
+        com.geeke.sys.entity.DictItem payTypeItem = new com.geeke.sys.entity.DictItem();
+        payTypeItem.setValue(refundRegistrationPayType);
+        claim.setRefundRegistrationPayType(payTypeItem);
+        claim.setRefundRegistrationRemarks(refundRegistrationRemarks);
+        claim.setExitNumberDate(exitNumberDate);
+        int i = dao.claimRefund(claim);
+        if (i != 1) {
+            // Dong khong ton tai / id rong: giu hanh vi cu (tra 0, khong
+            // nem) nhu dao cu ghi 0 dong; dong da ton tai nhung het
+            // trang thai duoc hoan -> 400 nhu truong hop tuan tu (wx).
+            Registration stored = this.get(id);
+            if (stored == null) {
+                return 0;
+            }
+            throw new com.geeke.common.service.ServiceException("bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!");
         }
-
         return i;
     }
 
@@ -296,7 +318,18 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     @Transactional(readOnly = false)
     public int wxReturnPay(Registration registrations) {
-        int i = dao.wxReturnPay(registrations);
+        // DS64: hoan phi bang atomic claim (mau DS52-DS63) thay cho dao
+        // wxReturnPay vo dieu kien. Controller da kiem tra status truoc
+        // (read-then-act) nen tuan tu thu 2 bi 400, nhung 8 song song co
+        // 5 duoc nhan (probe): cac luong deu doc qua guard truoc khi
+        // luong thang commit. Claim chi lat khi dong van o trang thai
+        // duoc hoan (NULL/_3/_5, xem RegistrationDao.xml claimRefund);
+        // 0 dong -> ServiceException 400 voi dung thong diep tu choi
+        // tuan tu, khong ghi gi, thu lai tren luot kham moi thi duoc.
+        int i = dao.claimRefund(registrations);
+        if (i != 1) {
+            throw new com.geeke.common.service.ServiceException("bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!");
+        }
 
         return i;
     }

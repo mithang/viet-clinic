@@ -784,6 +784,24 @@
         update registration set status=#{status.value},refund_registration_pay_type=#{refundRegistrationPayType.value},refund_registration_remarks=#{refundRegistrationRemarks},exit_number_date=#{exitNumberDate} where id = #{id}
     </update>
 
+    <!-- DS64: atomic refund claim (mau DS52-DS63). Ca hai duong hoan phi
+         (wxReturnPay WeChat + refundRegistrationPay desktop) truoc day ghi
+         status -> _2 bang UPDATE vo dieu kien, chi kiem tra status truoc
+         o controller (read-then-act): wx tuan tu thu 2 bi 400 nhung 8
+         song song co 5 duoc nhan (probe); desktop tham chi tuan tu thu 2
+         cung duoc nhan 200 data 1 vi nhanh guard chi chay khi remarks ==
+         _2 ma client that gui remarks="" — client con tao them phieu hoan
+         phi saveTollInfo khi res.data === 1 nen hoan phi trung tien that.
+         Claim chi lat khi dong van o trang thai duoc hoan (NULL moi tao /
+         _3 cho diem danh / _5 cho phan loai — dung tap trang thai ma
+         guard wxReturnPay cho phep, chan _0/_1/_2/_4 nhu guard); luong
+         thua tra 0 dong -> ServiceException 400 nhu truong hop tuan tu
+         tuong duong. Khong doi cot DB. -->
+    <update id="claimRefund">
+        update registration set status=#{status.value},refund_registration_pay_type=#{refundRegistrationPayType.value},refund_registration_remarks=#{refundRegistrationRemarks},exit_number_date=#{exitNumberDate} where id = #{id}
+          and (status is null or status not in ('registrationStatus_0','registrationStatus_1','registrationStatus_2','registrationStatus_4'))
+    </update>
+
     <select id="conditionList" resultType="com.geeke.outpatient.entity.Registration">
         SELECT
         <include refid="registrationColumns"/>
