@@ -190,6 +190,19 @@
         WHERE id = #{id}
           AND (examine IS NULL OR examine != #{voided})
     </update>
+
+    <!-- DS55: conditional approval claim (see SupplierStorageDao.claimAuditExamine).
+         Sets examine to the passed value only when the slip is still PENDING,
+         so exactly one of N parallel audits wins the slip and adds stock once. -->
+    <update id="claimAuditExamine">
+        UPDATE supplier_storage SET
+            examine = #{passed},
+            examine_date = #{examineDate},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+          AND examine = #{pending}
+    </update>
     
     <update id="delete">
         UPDATE supplier_storage SET

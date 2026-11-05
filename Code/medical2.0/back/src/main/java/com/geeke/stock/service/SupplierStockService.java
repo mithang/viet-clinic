@@ -474,16 +474,38 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
     @Transactional
     public void auditStorage(StorageEvt storageEvt) {
+        // DS55: claim the slip BEFORE any stock move. The old code loaded the
+        // slip, checked examine == PENDING, set examine=PASS, saved, then
+        // added stock -- SELECT-then-act with no claim, so N parallel audits
+        // of one slip all read PENDING and each added the slip quantity
+        // (probe-proven: 8 parallel audits of a slip of 5 left the aggregate
+        // at 10025 with 5 op=1 records). claimForAudit flips PENDING -> the
+        // passed value in one conditional UPDATE; losers get 0 rows and skip
+        // the slip (idempotent approve -- the sequential 2nd audit already
+        // returned 200 with no stock change, so skipping preserves the
+        // existing contract). A null payload examine / null slip id is a
+        // no-op instead of an NPE (the old code NPEd at
+        // storage.getExamine().getValue() for an unknown slip id or a slip
+        // with no examine state).
+        if (storageEvt == null || storageEvt.getSupplierStorage() == null
+                || storageEvt.getSupplierStorage().getExamine() == null
+                || storageEvt.getSupplierStockList() == null) {
+            return;
+        }
         DictItem examine = storageEvt.getSupplierStorage().getExamine();
         storageEvt.getSupplierStockList().forEach(stock -> {
-            SupplierStorage storage = supplierStorageService.get(stock.getId());
-            if (storage.getExamine().getValue().equalsIgnoreCase(BizConstants.SUPPLIER_STORAGE_EXAMINE_PENDING)) {
-                storage.setExamine(examine);
-                storage.setExamineDate(new Date());
-                supplierStorageService.save(storage);
-                //độngTồn khokiểm soát
-                this.medicinalStorageControlService.addStorageStock(storage);
+            if (stock == null || StringUtils.isBlank(stock.getId())) {
+                return;
             }
+            SupplierStorage storage = supplierStorageService.get(stock.getId());
+            if (storage == null) {
+                return;
+            }
+            if (!supplierStorageService.claimForAudit(storage.getId(), examine.getValue(), new Date())) {
+                return;
+            }
+            //độngTồn khokiểm soát
+            this.medicinalStorageControlService.addStorageStock(storage);
         });
     }
 }

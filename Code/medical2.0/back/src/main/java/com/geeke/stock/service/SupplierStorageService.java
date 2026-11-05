@@ -99,6 +99,25 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         return super.bulkDelete(entitys);
     }
 
+    /**
+     * DS55: atomically claim a slip for approval (mirror of the DS34 void
+     * claim). Returns true only when the slip exists and was still PENDING;
+     * the conditional UPDATE flips it to the passed value in the same
+     * statement, so exactly one of N parallel audits wins the slip.
+     */
+    @Transactional(readOnly = false)
+    public boolean claimForAudit(String id, String passedValue, Date examineDate) {
+        SupplierStorage stored = this.get(id);
+        if (stored == null) {
+            return false;
+        }
+        stored.preUpdate();
+        int claimed = this.dao.claimAuditExamine(id, passedValue,
+                BizConstants.SUPPLIER_STORAGE_EXAMINE_PENDING, examineDate,
+                stored.getUpdateBy(), stored.getUpdateDate());
+        return claimed == 1;
+    }
+
     @Transactional(readOnly = false)
     public void cancel(String id) {
         //Trước khi hủy, kiểm tra trước thuốc hoặc vật tư đó có đang được sử dụng không
