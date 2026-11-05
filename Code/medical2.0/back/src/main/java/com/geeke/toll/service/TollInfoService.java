@@ -894,7 +894,19 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         if (StringUtils.isBlank(id)) {
             throw new ServiceException("Không tìm thấy phiếu thu phí cần hủy.");
         }
-        TollInfo info = this.get(id);
+        // DS60: locked read (TollInfoDao.getForUpdate) instead of this.get:
+        // two concurrent cancels both read del_flag='0' before either
+        // commits, so each wrote its own CANCEL audit (probe pre: par x8
+        // all 200, 8 CANCEL audits, day summary cancelTotal 9x150000).
+        // FOR UPDATE serializes them inside this @Transactional method:
+        // the loser blocks, then re-reads del_flag='1' and is refused
+        // 400 by the guard below, exactly like a sequential 2nd cancel.
+        // Tenant check kept (CrudService.get did it; the DAO read does
+        // not), and the rest of the method is unchanged.
+        TollInfo info = tollInfoDao.getForUpdate(id);
+        if (info != null) {
+            verifyTenantOwnership(info);
+        }
         if (info == null) {
             throw new ServiceException("Không tìm thấy phiếu thu phí cần hủy.");
         }

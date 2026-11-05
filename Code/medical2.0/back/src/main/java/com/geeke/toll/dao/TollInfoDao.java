@@ -24,6 +24,20 @@ public interface TollInfoDao extends CrudDao<TollInfo> {
      * vì lỗi tollId.name, và lookup một cột tránh mọi JOIN thừa). */
     String getTollInfoCompanyId(@Param("id") String id);
 
+    /** DS60: locked read of one toll slip for cancelUnpaidToll. SELECT ...
+     * FOR UPDATE inside the service's @Transactional method serializes
+     * concurrent cancels of the same slip: the loser blocks until the
+     * winner commits, then re-reads del_flag='1' and is refused with the
+     * existing 400, so only one CANCEL audit row is ever written. An
+     * UPDATE-claim on del_flag (the DS52-DS58 pattern) does NOT fit here:
+     * the claim would set del_flag='1' first, and the body's
+     * CrudService.delete() would then find no changed column whenever
+     * update_date falls in the same second (no CLIENT_FOUND_ROWS in the
+     * JDBC URL), return 0 rows and silently drop the sys_action DELETED
+     * row the cancel currently writes. Precedent for a FOR UPDATE claim
+     * read: sequenceDao.xml. */
+    TollInfo getForUpdate(@Param("id") String id);
+
     List<TollInfo> tollTotalForm(PageRequest var1);
 
     List<TollInfo> tollDetailForm(PageRequest var1);

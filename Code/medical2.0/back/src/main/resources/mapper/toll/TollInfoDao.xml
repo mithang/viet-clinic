@@ -52,6 +52,18 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- DS60: same row as get, but locks it until the caller's transaction
+         commits, so parallel cancels of one slip serialize (see
+         TollInfoDao.getForUpdate). -->
+    <select id="getForUpdate" resultType="com.geeke.toll.entity.TollInfo">
+        SELECT
+            <include refid="tollInfoColumns"/>
+        FROM toll_info a
+        <include refid="tollInfoJoins"/>
+        WHERE a.id = #{id}
+        FOR UPDATE
+    </select>
+
     <!-- N3a: company của phiếu toll cha, một cột, không JOIN (xem TollInfoDao). -->
     <select id="getTollInfoCompanyId" parameterType="String" resultType="String">
         SELECT company_id FROM toll_info WHERE id = #{id}
