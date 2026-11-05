@@ -90,6 +90,18 @@ public class Stuff extends DataEntity<Stuff> {
     public void setCompany(Company company) {
         this.company = company;
     }
+	// DS79: DataEntity.getName chi co @Length(min=1) nen null lot qua
+	// @Valid roi 500 o cot name NOT NULL (truoc day save khong co @Valid
+	// nen loi DB lo ra 400 kem SQL); override de fail-closed 400 sach.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong
+	// co cot name / name nullable — chi cac entity da probe moi override.
+	@Override
+	@NotNull(message="Tên vật tư không được để trống")
+	@Length(min=1, max=100, message="Tên vật tư độ dài phải nằm trong khoảng 1 đến 100 ")
+	public String getName() {
+		return super.getName();
+	}
+
     
 	@ExcelImportField(columnIndex = 1, label = "Tên chung", maxLength = 45)
 	@Length(min=0, max=45, message="thườngdùngtênĐộ dài phải nằm trong khoảng 0 đến 45 ")
@@ -245,6 +257,8 @@ public class Stuff extends DataEntity<Stuff> {
 
 
 	@ExcelImportField(columnIndex = 19, label = "Trạng thái", maxLength = 1)
+	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot status NOT NULL.
+	@NotNull(message="Trạng thái không được để trống")
 	@Length(min=1, max=1, message="Cờ bậtĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getStatus() {
 		return status;
@@ -255,6 +269,8 @@ public class Stuff extends DataEntity<Stuff> {
 
 
 	@ExcelImportField(columnIndex = 2, label = "Mã pinyin", maxLength = 100)
+	// DS79: @Length(min=0) cho phep null lot qua @Valid roi 500 o cot pinyin_code NOT NULL.
+	@NotNull(message="Mã pinyin không được để trống")
 	@Length(min=0, max=100, message="PinyinmãĐộ dài phải nằm trong khoảng 0 đến 100 ")
 	public String getPinyinCode() {
 		return pinyinCode;

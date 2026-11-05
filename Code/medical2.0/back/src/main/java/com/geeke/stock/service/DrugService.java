@@ -92,7 +92,17 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             drug.setCode(sn);
             //ThêmThuốcggTrường
         }
-        String ypgg = drug.getDosis() + drug.getDosisUnit().getName()+ "*" + drug.getPreparation() + drug.getPreparationUnit().getName()+"/" + drug.getPack().getName();
+        // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
+        // preparationUnit / pack nen null NPE 400 chung chung. Form bat
+        // buoc preparationUnit + pack (da @NotNull), nhung dosisUnit
+        // khong bat buoc nen ypgg phai null-safe thay vi NPE.
+        String dosisUnitName = drug.getDosisUnit() != null && drug.getDosisUnit().getName() != null
+                ? drug.getDosisUnit().getName() : "";
+        String preparationUnitName = drug.getPreparationUnit() != null && drug.getPreparationUnit().getName() != null
+                ? drug.getPreparationUnit().getName() : "";
+        String packName = drug.getPack() != null && drug.getPack().getName() != null
+                ? drug.getPack().getName() : "";
+        String ypgg = drug.getDosis() + dosisUnitName + "*" + drug.getPreparation() + preparationUnitName + "/" + packName;
         drug.setYpgg(ypgg);
         Drug drugTemp = super.save(drug);
         this.medicinalStockControlService.initStock(drugTemp);

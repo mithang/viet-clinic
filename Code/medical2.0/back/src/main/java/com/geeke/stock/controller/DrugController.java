@@ -12,6 +12,7 @@ import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import com.geeke.utils.constants.ErrorEnum;
 import io.swagger.annotations.ApiOperation;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -133,8 +134,11 @@ public class DrugController extends CrudController<DrugService, Drug> {
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
+    // DS79: them @Valid de cac @NotNull/@Length tren Drug (goodsName,
+    // status, type, preparationUnit, pack) fail-closed 400 voi message
+    // tieng Viet thay vi loi DB lo ra kem SQL (iter65 catch-Exception).
     @PostMapping(value = "save")
-    public ResponseEntity<JSONObject> save(@RequestBody Drug entity) {
+    public ResponseEntity<JSONObject> save(@Valid @RequestBody Drug entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String id = null;
         try {

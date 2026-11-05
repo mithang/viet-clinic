@@ -62,6 +62,17 @@ public class Patient extends DataEntity<Patient> {
         this.company = company;
     }
     
+	// DS79: DataEntity.getName chi co @Length(min=1) nen null lot qua
+	// @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong
+	// co cot name / name nullable — chi cac entity da probe moi override.
+	@Override
+	@NotNull(message="Tên bệnh nhân không được để trống")
+	@Length(min=1, max=100, message="Tên bệnh nhân độ dài phải nằm trong khoảng 1 đến 100 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	@NotNull(message="Giới tínhKhông thể là trống")
     public DictItem getGender() {
         return gender;
@@ -71,6 +82,8 @@ public class Patient extends DataEntity<Patient> {
         this.gender = gender;
     }
     
+	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot NOT NULL.
+	@NotNull(message="Tuổi không được để trống")
 	@Length(min=1, max=45, message="TuổiĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getAge() {
 		return age;
@@ -80,6 +93,8 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
+	// DS79: xem getAge.
+	@NotNull(message="Tháng không được để trống")
 	@Length(min=1, max=45, message="ThángĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getMonth() {
 		return month;
@@ -98,6 +113,8 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
+	// DS79: xem getAge.
+	@NotNull(message="Số điện thoại liên hệ không được để trống")
 	@Length(min=1, max=45, message="liên hệcáchĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getPhone() {
 		return phone;
@@ -107,6 +124,8 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
+	// DS79: xem getAge.
+	@NotNull(message="Số CMND/CCCD không được để trống")
 	@Length(min=1, max=45, message="số CMND/CCCDĐộ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getCard() {
 		return card;

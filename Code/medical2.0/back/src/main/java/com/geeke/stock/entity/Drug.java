@@ -128,6 +128,9 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 
+	// DS79: @Length(min=1) cho phep null lot qua @Valid; truoc day save
+	// khong co @Valid nen loi DB lo ra 400 kem SQL. Them @Valid o controller.
+	@NotNull(message="Tên thuốc không được để trống")
 	@Length(min=1, max=128, message="ThuốcTênĐộ dài phải nằm trong khoảng 1 đến 128 ")
 	public String getGoodsName() {
 		return goodsName;
@@ -259,6 +262,9 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
+    // DS79: ypgg deref getName() nen null NPE 400 chung chung; form bat
+    // buoc chon don vi bao che (xem drugForm.vue formRules) nen @NotNull.
+    @NotNull(message="Đơn vị bào chế không được để trống")
     public DictItem getPreparationUnit() {
         return preparationUnit;
     }
@@ -267,6 +273,8 @@ public class Drug extends DataEntity<Drug> {
         this.preparationUnit = preparationUnit;
     }
     
+    // DS79: nhu getPreparationUnit; form bat buoc chon dong goi.
+    @NotNull(message="Đóng gói không được để trống")
     public DictItem getPack() {
         return pack;
     }
@@ -299,6 +307,8 @@ public class Drug extends DataEntity<Drug> {
 		this.retailPrice = retailPrice;
 	}
 
+	// DS79: xem getGoodsName.
+	@NotNull(message="Trạng thái thuốc không được để trống")
 	@Length(min=0, max=1, message="Cờ bậtĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getStatus() {
 		return status;

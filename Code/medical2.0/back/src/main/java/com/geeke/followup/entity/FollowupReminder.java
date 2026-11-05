@@ -76,6 +76,8 @@ public class FollowupReminder extends DataEntity<FollowupReminder> {
         this.patientId = patientId;
     }
 
+    // DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot NOT NULL.
+    @NotNull(message = "Tên bệnh nhân không được để trống")
     @Length(min = 1, max = 100, message = "Tên bệnh nhân độ dài phải nằm trong khoảng 1 đến 100")
     public String getPatientName() {
         return patientName;
@@ -85,6 +87,8 @@ public class FollowupReminder extends DataEntity<FollowupReminder> {
         this.patientName = patientName;
     }
 
+    // DS79: xem getPatientName.
+    @NotNull(message = "Loại tái khám không được để trống")
     @Length(min = 1, max = 50, message = "Loại tái khám độ dài phải nằm trong khoảng 1 đến 50")
     public String getFollowupType() {
         return followupType;

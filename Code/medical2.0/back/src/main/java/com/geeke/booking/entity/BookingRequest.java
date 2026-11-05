@@ -73,6 +73,8 @@ public class BookingRequest extends DataEntity<BookingRequest> {
         this.company = company;
     }
 
+    // DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot NOT NULL.
+    @NotNull(message = "Tên người đặt lịch không được để trống")
     @Length(min = 1, max = 100, message = "Tên người đặt lịch độ dài phải nằm trong khoảng 1 đến 100")
     public String getPatientName() {
         return patientName;
@@ -82,6 +84,8 @@ public class BookingRequest extends DataEntity<BookingRequest> {
         this.patientName = patientName;
     }
 
+    // DS79: xem getPatientName.
+    @NotNull(message = "Số điện thoại không được để trống")
     @Length(min = 1, max = 20, message = "Số điện thoại độ dài phải nằm trong khoảng 1 đến 20")
     public String getPhone() {
         return phone;
@@ -91,6 +95,8 @@ public class BookingRequest extends DataEntity<BookingRequest> {
         this.phone = phone;
     }
 
+    // DS79: khong co annotation nao, null lot qua @Valid roi 500 o cot wanted_date NOT NULL.
+    @NotNull(message = "Ngày muốn khám không được để trống")
     @JsonFormat(pattern = "yyyy-MM-dd")
     public Date getWantedDate() {
         return wantedDate;

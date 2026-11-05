@@ -50,6 +50,8 @@ public class DictItem extends DataEntity<DictItem> {
         this.dictType = dictType;
     }
     
+	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot value NOT NULL.
+	@NotNull(message="Giá trị từ điển không được để trống")
 	@Length(min=1, max=128, message="Giá trịĐộ dài phải nằm trong khoảng 1 đến 128 ")
 	public String getValue() {
 		return value;
@@ -57,6 +59,17 @@ public class DictItem extends DataEntity<DictItem> {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	// DS79: DataEntity.getName chi co @Length(min=1) nen null lot qua
+	// @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong
+	// co cot name / name nullable — chi cac entity da probe moi override.
+	@Override
+	@NotNull(message="Tên mục từ điển không được để trống")
+	@Length(min=1, max=100, message="Tên mục từ điển độ dài phải nằm trong khoảng 1 đến 100 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	
 	
 	

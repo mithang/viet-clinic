@@ -39,6 +39,8 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
 	}
 	
 	
+	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot theme NOT NULL.
+	@NotNull(message="Chủ đề không được để trống")
 	@Length(min=1, max=2000, message="Độ dài chủ đề phải nằm trong khoảng 1 đến 2000 ")
 	public String getTheme() {
 		return theme;

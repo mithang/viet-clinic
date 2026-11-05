@@ -13,6 +13,7 @@ import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import com.geeke.utils.constants.ErrorEnum;
 import io.swagger.annotations.ApiOperation;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -60,8 +61,11 @@ public class StuffController extends CrudController<StuffService, Stuff> {
         return ResponseEntity.ok(ResultUtil.successJson(result));
     }
 
+    // DS79: them @Valid de cac @NotNull/@Length tren Stuff (status,
+    // pinyinCode, name, packNumber, minUnit, packUnit) fail-closed 400
+    // voi message tieng Viet thay vi loi DB lo ra kem SQL.
     @PostMapping(value = "save")
-    public ResponseEntity<JSONObject> save(@RequestBody Stuff entity) {
+    public ResponseEntity<JSONObject> save(@Valid @RequestBody Stuff entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         String id = null;
         try {

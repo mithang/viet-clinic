@@ -51,6 +51,8 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	}
 	
 	
+	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot conditions NOT NULL.
+	@NotNull(message="Điều kiện không được để trống")
 	@Length(min=1, max=4000, message="Điều kiệnĐộ dài phải nằm trong khoảng 1 đến 4000 ")
 	public String getConditions() {
 		return conditions;
@@ -58,6 +60,17 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	public void setConditions(String conditions) {
 		this.conditions = conditions;
 	}
+	// DS79: DataEntity.getName chi co @Length(min=1) nen null lot qua
+	// @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong
+	// co cot name / name nullable — chi cac entity da probe moi override.
+	@Override
+	@NotNull(message="Tên điều kiện không được để trống")
+	@Length(min=1, max=100, message="Tên điều kiện độ dài phải nằm trong khoảng 1 đến 100 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	
 	
 	
