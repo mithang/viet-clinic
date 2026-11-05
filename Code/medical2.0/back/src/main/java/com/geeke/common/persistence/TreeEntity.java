@@ -40,7 +40,11 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 		super.preInsert();
 		
 		TreeEntity<T> treeParent = (TreeEntity<T>)parent;
-		if(!StringUtils.isBlank(treeParent.getIds())) {
+		// DS9 (round 9): parent null (payload chi co id, vd delete/bulkDelete/
+		// bulkInsert) truoc day NPE o treeParent.getIds(). Guard null de roi
+		// ve nhanh else cu (nut goc: ids = id + "."), giong hanh vi khi
+		// parent co ids rong; parent co ids thi hanh vi khong doi.
+		if(treeParent != null && !StringUtils.isBlank(treeParent.getIds())) {
 			setIds(treeParent.getIds()  + id + ".");
 		} else {
 			setIds(id + ".");
@@ -55,7 +59,13 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 		super.preUpdate();
 		
 		TreeEntity<T> treeParent = (TreeEntity<T>)parent;
-		if(!StringUtils.isBlank(treeParent.getIds())) {
+		// DS9 (round 9): nhu preInsert — parent null truoc day NPE o day
+		// (stack: TreeEntity.preUpdate:58 qua CrudService.delete/bulkDelete),
+		// lam single delete va bulkDelete cua Company (va moi TreeEntity)
+		// tra 500 cho ca full/system du payload chi co id. Guard null de
+		// roi ve nhanh else cu; cac statement delete khong ghi ids nen
+		// viec tinh lai ids o day khong anh huong dong da xoa.
+		if(treeParent != null && !StringUtils.isBlank(treeParent.getIds())) {
 			setIds(treeParent.getIds()  + id + ".");
 		} else {
 			setIds(id + ".");

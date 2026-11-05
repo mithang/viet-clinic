@@ -87,10 +87,12 @@ public class CompanyController extends CrudController<CompanyService, Company> {
         // phai quyen ghi).
         // - Doc (getCompanys/tree/getSubordinateClinic/get/list/
         // listAll) GIU NGUYEN. Khong tao resource moi.
-        // - Quirks giu nguyen, khong sua o day: single delete 500 va
-        // bulkDelete NPE (CrudService.bulkDelete stored-row check tren
-        // dong Company khong co company) cho moi session ke ca full —
-        // san chi chan clinic 403 truoc khi cham cac loi do.
+        // - DS9 (round 9): single delete 500 va bulkDelete NPE truoc day
+        // KHONG phai do stored-row check (no bo qua khi company null)
+        // ma do TreeEntity.preUpdate deref parent null khi payload chi
+        // co id; da sua bang null-guard o TreeEntity (preUpdate +
+        // preInsert), nhanh else cu (ids = id + ".") xu ly nut goc.
+        // San proxy van chan clinic 403 truoc khi cham service.
         if (!hasSessionPermission("company:create") && !hasSessionPermission("company:update")) {
             return forbidden();
         }
