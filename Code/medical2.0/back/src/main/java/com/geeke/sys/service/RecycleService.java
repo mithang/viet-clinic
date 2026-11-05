@@ -11,6 +11,7 @@ import com.geeke.common.constants.ActionConstants;
 import com.geeke.common.data.Page;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.service.ServiceException;
 import com.geeke.org.entity.Company;
 import com.geeke.sys.dao.RecycleDao;
 import com.geeke.sys.entity.Action;
@@ -34,7 +35,18 @@ public class RecycleService extends ActionService {
 	
 	@Transactional(readOnly = false)
 	public int restore(Action entity) {
+		// DS44: get() tra null khi id trong/khong ton tai (hop dong
+		// CrudService.get, DS42) — deref entity.getId() o dong duoi
+		// NPE 500 (4 dong trong backend-ds43.log). Fail-closed 400
+		// truoc khi deref; chi goi updateActionStaus/restore khi
+		// entity ton tai (mau ServiceException cua DS42).
+		if (entity == null || StringUtils.isBlank(entity.getId())) {
+			throw new ServiceException("Không tìm thấy bản ghi nhật ký cần khôi phục!");
+		}
 		entity = this.get(entity.getId());
+		if (entity == null) {
+			throw new ServiceException("Không tìm thấy bản ghi nhật ký cần khôi phục!");
+		}
 		int rows = recycleDao.updateActionStaus(entity.getId());
 		if(rows > 0) {
 			for(ActionRecycle busObject: entity.getActionRecycleList()) {
