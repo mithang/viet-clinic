@@ -203,8 +203,86 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
 
 
 
+    /**
+     * DS21: ep pham vi nhom co so cho ho list Company — tiep DS16 (chi sua
+     * doc don) va Z3c (chi sua tree). listPage/listAll generic (CrudService)
+     * goi ensureCompanyFilter nhung ham do bo qua Company (khong co field
+     * "company" rieng), va CompanyDao list* khong he tham chieu
+     * #{id}/#{institution} cua PageRequest — chi del_flag + whereParams
+     * cua caller — nen moi session co 1 quyen deu doc TOAN BO org_company
+     * kem appSecret/privateKey/publicKey (da tai hien live 11/11 pre).
+     * Pham vi = pham vi cay Z3c / isCompanyVisibleToSession (DS16):
+     * ids bat dau bang "0.<root>." (tenant + parent root + sibling cung
+     * co so). Session sentinel rong/"null" hoac khong tim thay dong tenant
+     * giu hanh vi cu (admin he thong van thay tat ca); tenant ids rong
+     * tra rong (parity tree). Caller param giu nguyen, chi AND them ids.
+     */
+    private String sessionGroupPrefix() {
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return null;
+        }
+        Company tenant = this.dao.get(tenantId);
+        if (tenant == null) {
+            return null;
+        }
+        String ids = tenant.getIds();
+        if (StringUtils.isBlank(ids)) {
+            return "";
+        }
+        java.util.List<String> tokens = new ArrayList<String>();
+        for (String part : ids.split("\\.")) {
+            if (StringUtils.isNotBlank(part)) {
+                tokens.add(part);
+            }
+        }
+        if (tokens.isEmpty() || (tokens.size() == 1 && "0".equals(tokens.get(0)))) {
+            return "";
+        }
+        return "0".equals(tokens.get(0)) && tokens.size() >= 2
+                ? "0." + tokens.get(1) + "."
+                : tokens.get(0) + ".";
+    }
+
+    private List<Parameter> scopedParams(List<Parameter> parameters, String groupPrefix) {
+        List<Parameter> scoped = parameters == null
+                ? new ArrayList<Parameter>()
+                : new ArrayList<Parameter>(parameters);
+        scoped.add(new Parameter("ids", "right_like", groupPrefix));
+        return scoped;
+    }
+
+    @Override
+    public Page<Company> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
+        String groupPrefix = sessionGroupPrefix();
+        if (groupPrefix == null) {
+            return super.listPage(parameters, offset, limit, orderby);
+        }
+        if (groupPrefix.isEmpty()) {
+            return new Page<Company>(0, new ArrayList<Company>());
+        }
+        return super.listPage(scopedParams(parameters, groupPrefix), offset, limit, orderby);
+    }
+
+    @Override
+    public List<Company> listAll(List<Parameter> parameters, String orderby) {
+        String groupPrefix = sessionGroupPrefix();
+        if (groupPrefix == null) {
+            return super.listAll(parameters, orderby);
+        }
+        if (groupPrefix.isEmpty()) {
+            return new ArrayList<Company>();
+        }
+        return super.listAll(scopedParams(parameters, groupPrefix), orderby);
+    }
+
     public Page<Company> listTenantPage(List<Parameter> parameters, int offset, int limit, String orderby) {
-        PageRequest pageRequest = buildTenantPageRequest(parameters, offset, limit, orderby);
+        String groupPrefix = sessionGroupPrefix();
+        if (groupPrefix != null && groupPrefix.isEmpty()) {
+            return new Page<Company>(0, new ArrayList<Company>());
+        }
+        PageRequest pageRequest = buildTenantPageRequest(
+                groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), offset, limit, orderby);
         return paginate(
             () -> this.dao.countTenant(pageRequest),
             () -> this.dao.listTenantPage(pageRequest)
@@ -212,12 +290,22 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     }
 
     public List<Company> listAllTenant(List<Parameter> parameters, String orderby) {
-        PageRequest pageRequest = buildTenantPageRequest(parameters, orderby);
+        String groupPrefix = sessionGroupPrefix();
+        if (groupPrefix != null && groupPrefix.isEmpty()) {
+            return new ArrayList<Company>();
+        }
+        PageRequest pageRequest = buildTenantPageRequest(
+                groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), orderby);
         return this.dao.listAllTenant(pageRequest);
     }
 
     public Page<Company> listClinicPage(List<Parameter> parameters, int offset, int limit, String orderby) {
-        PageRequest pageRequest = buildTenantPageRequest(parameters, offset, limit, orderby);
+        String groupPrefix = sessionGroupPrefix();
+        if (groupPrefix != null && groupPrefix.isEmpty()) {
+            return new Page<Company>(0, new ArrayList<Company>());
+        }
+        PageRequest pageRequest = buildTenantPageRequest(
+                groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), offset, limit, orderby);
         return paginate(
             () -> this.dao.countClinic(pageRequest),
             () -> this.dao.listClinicPage(pageRequest)
@@ -225,7 +313,12 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     }
 
     public List<Company> listAllClinic(List<Parameter> parameters, String orderby) {
-        PageRequest pageRequest = buildTenantPageRequest(parameters, orderby);
+        String groupPrefix = sessionGroupPrefix();
+        if (groupPrefix != null && groupPrefix.isEmpty()) {
+            return new ArrayList<Company>();
+        }
+        PageRequest pageRequest = buildTenantPageRequest(
+                groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), orderby);
         return this.dao.listAllClinic(pageRequest);
     }
 
