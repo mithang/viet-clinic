@@ -201,6 +201,27 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
             this.doInsert(entity);
             this.saveAction(this.createAction("created", entity));
         } else {
+            // DS5: explicit write checks for the update branch. The
+            // generic verifies on roleService.save below accidentally
+            // block foreign updates today (payload company "0" vs
+            // session tenant for clinics; stored role company vs
+            // tenant for system sessions), but nothing checks the
+            // VERSION row itself — make it explicit so the guard
+            // survives any refactor of the role path. Shared rows
+            // (version company NULL + role company "0") pass, matching
+            // N3b read semantics. The roleId must also match the
+            // stored version's roleId: the UI form has no role field
+            // and round-trips the stored roleId, so a differing
+            // supplied roleId would rename + re-home an arbitrary
+            // role through roleService.save below (its update writes
+            // company_id from the forced company "0").
+            checkVersionReadTenant(entity.getId());
+            if (StringUtils.isNotBlank(entity.getRoleId())) {
+                String storedRoleId = clinicVersionDao.getRoleIdById(entity.getId());
+                if (StringUtils.isBlank(storedRoleId) || !storedRoleId.equals(entity.getRoleId())) {
+                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                }
+            }
             role.setId(entity.getRoleId());
             roleService.save(role);
             entity.preUpdate();
@@ -209,6 +230,23 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
         }
 
         return entity;
+    }
+
+    // DS5: generic bulkUpdate verifies payload company (absent ->
+    // pass) + stored company (the mapper does not map company_id,
+    // so stored company is always null -> pass) — any session
+    // could rename/reprice foreign version rows (bulkUpdate sets
+    // only name/price/description/remarks). Pre-check every row
+    // with the N3b read guard before any write (whole list fails
+    // closed, N1 pattern). Shared rows pass, as for reads.
+    @Override
+    public List<String> bulkUpdate(List<ClinicVersion> entitys) {
+        if (entitys != null) {
+            for (ClinicVersion entity : entitys) {
+                checkVersionReadTenant(entity.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
     }
 
     public int deleteClinic(ClinicVersion entity) {
