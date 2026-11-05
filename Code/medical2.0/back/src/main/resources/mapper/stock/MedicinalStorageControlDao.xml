@@ -493,4 +493,37 @@
 <!--            </foreach>-->
 <!--        )-->
     </select>
+
+    <!-- DS32: atomically add deltas to all six detail stock columns. Same
+         lost-update shape as the aggregate bump (probe-proven: 8 parallel
+         outbound examines left the shared detail row at used 5 instead of
+         40). IFNULL guards the columns because return_todo_fee_stock is
+         NULL on live rows. -->
+    <update id="adjustStocks">
+        UPDATE medicinal_storage_control
+        SET storage_stock = IFNULL(storage_stock, 0) + #{storageDelta},
+            surplus_stock = IFNULL(surplus_stock, 0) + #{surplusDelta},
+            occupy_stock = IFNULL(occupy_stock, 0) + #{occupyDelta},
+            used_stock = IFNULL(used_stock, 0) + #{usedDelta},
+            reimburse_stock = IFNULL(reimburse_stock, 0) + #{reimburseDelta},
+            return_todo_fee_stock = IFNULL(return_todo_fee_stock, 0) + #{returnTodoFeeDelta},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <!-- DS32: atomically occupy a detail row, but only when its surplus
+         still covers the amount (preOccupyStock check-then-act). Without
+         the guard two concurrent prescriptions can both read surplus
+         10000 and both occupy 6000, leaving surplus -2000. Returns 1
+         when applied, 0 when the row no longer has enough surplus. -->
+    <update id="occupyStocks">
+        UPDATE medicinal_storage_control
+        SET occupy_stock = IFNULL(occupy_stock, 0) + #{occupyDelta},
+            surplus_stock = IFNULL(surplus_stock, 0) + #{surplusDelta},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+          AND IFNULL(surplus_stock, 0) &gt;= #{requiredSurplus}
+    </update>
 </mapper>

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -136,10 +137,12 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         for (SupplierOutboundDetail detail : details) {
             //Cập nhậtđộngTồn kho
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(detail.getNumber()));
-            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().add(detail.getNumber()));
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().subtract(detail.getNumber()));
-            medicinalStorageControlService.save(medicinalStorageControl);
+            // DS32: atomic detail confirm (occupy -N, used +N, surplus -N).
+            // Was read-modify-write via save(): 8 parallel examines left
+            // the shared detail row at used 5 instead of 40, probe-proven.
+            medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
+                    BigDecimal.ZERO, detail.getNumber().negate(), detail.getNumber().negate(), detail.getNumber(),
+                    BigDecimal.ZERO, BigDecimal.ZERO);
 
             //Cập nhậttổngTồn khokiểm soát
             String drugOrStuffId = (detail.getDrug() != null && !StringUtils.isNullOrEmpty(detail.getDrug().getId()))? detail.getDrug().getId() : detail.getStuff().getId();
@@ -150,9 +153,10 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             if (stockControls.size() > 1)
                 throw new ServiceException("tìmĐếnnhiềumụcThuốcVật tưTồn khoBản ghi");
             MedicinalStockControl medicinalStockControl = stockControls.get(0);
-            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().add(detail.getNumber()));
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(detail.getNumber()));
-            medicinalStockControlService.save(medicinalStockControl);
+            // DS32: atomic aggregate confirm (used +N, surplus -N).
+            medicinalStockControlService.adjustStocks(medicinalStockControl,
+                    BigDecimal.ZERO, detail.getNumber().negate(), BigDecimal.ZERO, detail.getNumber(),
+                    BigDecimal.ZERO, BigDecimal.ZERO);
 
             //LưuTồn khokiểm soátBản ghi
             MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();

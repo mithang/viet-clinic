@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
+import com.geeke.common.constants.ActionConstants;
 import com.geeke.common.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -162,6 +163,49 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         }
     }
 
+    /**
+     * DS32: atomically add deltas to all six detail stock columns. Same
+     * lost-update shape as the aggregate bump: the occupy / dispense /
+     * refund / outbound paths used to read a detail row, add in Java and
+     * save it back, so N concurrent operations on the same detail row
+     * overwrote each other (probe-proven: 8 parallel outbound examines
+     * left the shared detail row at used 5 instead of 40). A single
+     * UPDATE ... SET col = col + delta serializes on the row lock
+     * instead. Keeps the UPDATED action row that CrudService.save used
+     * to write. Returns the rows updated (1).
+     */
+    @Transactional(readOnly = false)
+    public int adjustDetailStocks(MedicinalStorageControl row, BigDecimal storageDelta, BigDecimal surplusDelta,
+                                  BigDecimal occupyDelta, BigDecimal usedDelta,
+                                  BigDecimal reimburseDelta, BigDecimal returnTodoFeeDelta) {
+        row.preUpdate();
+        int affected = this.dao.adjustStocks(row.getId(), storageDelta, surplusDelta, occupyDelta, usedDelta,
+                reimburseDelta, returnTodoFeeDelta, row.getUpdateBy(), row.getUpdateDate());
+        this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, row));
+        return affected;
+    }
+
+    /**
+     * DS32: atomically occupy a detail row, but only when its surplus still
+     * covers the amount. preOccupyStock reads the surplus to decide how
+     * much to take from the row; without the guard two concurrent
+     * prescriptions can both read surplus 10000 and both occupy 6000,
+     * leaving surplus -2000. Returns 1 when applied, 0 when the row no
+     * longer has enough surplus (caller throws stock-not-enough and the
+     * transaction rolls back, exactly like the existing insufficient-stock
+     * check at the end of the occupy loop).
+     */
+    @Transactional(readOnly = false)
+    public int occupyDetailStocks(MedicinalStorageControl row, BigDecimal occupyDelta) {
+        row.preUpdate();
+        int affected = this.dao.occupyStocks(row.getId(), occupyDelta, occupyDelta.negate(),
+                occupyDelta, row.getUpdateBy(), row.getUpdateDate());
+        if (affected == 1) {
+            this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, row));
+        }
+        return affected;
+    }
+
     //hủynhập khoThông tin, Cập nhậtđộngTồn kho
     @Transactional(readOnly = false)
     public void invalidStorageStock(SupplierStorage supplierStorage)
@@ -211,10 +255,12 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
                         SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStorageControl.getDrugStuffId()).build(), "");
                 if (!CollectionUtils.isEmpty(medicinalStockControlList)) {
-                    MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-                    medicinalStockControl.setStorageStock(medicinalStockControl.getStorageStock().subtract(storageStock));
-                    medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(surplusStock));
-                    this.medicinalStockControlService.save(medicinalStockControl);
+                    // DS32: atomic aggregate decrement (was read-modify-write
+                    // via save(): 8 parallel voids left the aggregate at
+                    // 10035 instead of 10000, probe-proven).
+                    this.medicinalStockControlService.adjustStocks(medicinalStockControlList.get(0),
+                            storageStock.negate(), surplusStock.negate(),
+                            BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
                 }
 
                 //3.chènChi tiết thao tác tồn kho động
@@ -323,11 +369,11 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (!CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-                medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
-                medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
+                // DS32: atomic detail release (occupy -op, surplus +op).
                 //TODO: Trả lại đúng lúc gặp chi tiết nhập kho hết hạn thì xử lý thế nào?    giải quyếtPhương thức: khôngXử lý, củatrướcnhư thế nàogìchiếm dụng của Bây giờ trả lại như thế nào
-                super.save(medicinalStorageControl);
+                this.adjustDetailStocks(medicinalStorageControlList.get(0),
+                        BigDecimal.ZERO, operationStock, operationStock.negate(),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
             }
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
@@ -335,10 +381,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     SearchParamsBuilder.create().eq("drug_stuff_id", medicinalStockRecord.getDrugStuffId()).build(), "");
             if (!CollectionUtils.isEmpty(medicinalStockControlList))
             {
-                MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-                medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
-                medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));     //Số lượng tồn kho còn khả dụngNênthêmtrả lạiđi
-                this.medicinalStockControlService.save(medicinalStockControl);
+                // DS32: atomic aggregate release (occupy -op, surplus +op).
+                this.medicinalStockControlService.adjustStocks(medicinalStockControlList.get(0),
+                        BigDecimal.ZERO, operationStock, operationStock.negate(),
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
             }
         }
 
@@ -455,40 +501,33 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 }
 
                 BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();   //Số lượng tồn kho còn khả dụng(Đơn vị đóng gói)
-                BigDecimal occupyStock = medicinalStorageControl.getOccupyStock();		// Số lượng tồn kho đang bị chiếm dụng
 
-                if (surplusStock.compareTo(stockToOccupy) >= 0)   //Chi tiếtTồn khođủdùng
+                // Chi tiếtTồn khođủdùng thì chiếm đúng số còn thiếu, không đủ
+                // thì chiếm hết số khả dụng của dòng này (như 2 nhánh cũ).
+                BigDecimal take = surplusStock.compareTo(stockToOccupy) >= 0 ? stockToOccupy : surplusStock;
+                medicinalStockRecord.setId(null);
+                medicinalStockRecord.setOperationStock(take);  //Số lượng tồn kho thao tác
+                medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //chiếm dụng của Chi tiết nhập khoID
+                medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //chiếm dụng của Đơn thuốcID
+                medicinalStockRecord.setRefId(recipelDetail.getId());  //chiếm dụng của liên kếtBản ghiID
+                this.medicinalStockRecordService.save(medicinalStockRecord);
+
+                // DS32: atomic conditional occupy of the detail row
+                // (occupy +take, surplus -take, only when the surplus still
+                // covers take). The old code read the row, added in Java
+                // and saved it back, so two concurrent prescriptions could
+                // both read the same surplus and both occupy from it. When
+                // the guard refuses (0 rows), the surplus moved under us:
+                // throw stock-not-enough exactly like the check at the end
+                // of this loop; the transaction rolls the record back too.
+                int occupied = this.occupyDetailStocks(medicinalStorageControl, take);
+                if (occupied == 0)
                 {
-                    medicinalStockRecord.setId(null);
-                    medicinalStockRecord.setOperationStock(stockToOccupy);  //Số lượng tồn kho thao tác
-                    medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //chiếm dụng của Chi tiết nhập khoID
-                    medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //chiếm dụng của Đơn thuốcID
-                    medicinalStockRecord.setRefId(recipelDetail.getId());  //chiếm dụng của liên kếtBản ghiID
-                    this.medicinalStockRecordService.save(medicinalStockRecord);
-
-                    medicinalStorageControl.setOccupyStock(occupyStock.add(stockToOccupy));
-                    medicinalStorageControl.setSurplusStock(surplusStock.subtract(stockToOccupy));
-                    super.save(medicinalStorageControl);
-
-                    calculationBigDecimal = calculationBigDecimal.add(stockToOccupy);
-                    stockToOccupy = stockToOccupy.subtract(stockToOccupy);
+                    throw new ServiceException("[" + recipelInfo.getName() + "] trong [" + medicinalStockRecord.getDrugStuffName() + "]Tồn khokhông đủ!");
                 }
-                else                                            //Chi tiếtTồn khokhôngđủdùng
-                {
-                    medicinalStockRecord.setId(null);
-                    medicinalStockRecord.setOperationStock(surplusStock);  //Số lượng tồn kho thao tác
-                    medicinalStockRecord.setStorageId(medicinalStorageControl.getStorageId());    //chiếm dụng của Chi tiết nhập khoID
-                    medicinalStockRecord.setRecipelInfoId(recipelInfoId);  //chiếm dụng của Đơn thuốcID
-                    medicinalStockRecord.setRefId(recipelDetail.getId());  //chiếm dụng của liên kếtBản ghiID
-                    this.medicinalStockRecordService.save(medicinalStockRecord);
 
-                    medicinalStorageControl.setOccupyStock(occupyStock.add(surplusStock));
-                    medicinalStorageControl.setSurplusStock(surplusStock.subtract(surplusStock));    //Số lượng tồn kho còn khả dụng,tươngkhitại0
-                    super.save(medicinalStorageControl);
-
-                    calculationBigDecimal = calculationBigDecimal.add(surplusStock);
-                    stockToOccupy = stockToOccupy.subtract(surplusStock);
-                }
+                calculationBigDecimal = calculationBigDecimal.add(take);
+                stockToOccupy = stockToOccupy.subtract(take);
             }
 
             if (stockToOccupy.compareTo(BigDecimal.ZERO) > 0)
@@ -516,10 +555,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                             .eq("company_id", companyId)
                             .build(), "");
             if (!CollectionUtils.isEmpty(medicinalStockControlList)) {
-                MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-                medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().add(calculationBigDecimal));   //Số lượng tồn kho đang bị chiếm dụngNênthêmtrênđi
-                medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().subtract(calculationBigDecimal));     //Số lượng tồn kho còn khả dụngNêntrừdướiđi
-                this.medicinalStockControlService.save(medicinalStockControl);
+                // DS32: atomic aggregate occupy (occupy +calc, surplus -calc).
+                this.medicinalStockControlService.adjustStocks(medicinalStockControlList.get(0),
+                        BigDecimal.ZERO, calculationBigDecimal.negate(), calculationBigDecimal,
+                        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
             }
         }
     }
@@ -569,10 +608,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
-            MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().add(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được cộng thêm
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
-            super.save(medicinalStorageControl);
+            // DS32: atomic detail confirm (used +op, occupy -op).
+            this.adjustDetailStocks(medicinalStorageControlList.get(0),
+                    BigDecimal.ZERO, BigDecimal.ZERO, operationStock.negate(), operationStock,
+                    BigDecimal.ZERO, BigDecimal.ZERO);
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
@@ -581,10 +620,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
-            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().add(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được cộng thêm
-            medicinalStockControl.setOccupyStock(medicinalStockControl.getOccupyStock().subtract(operationStock));   //Số lượng tồn kho đang bị chiếm dụng hiện tại cần được trừ trả lại
-            this.medicinalStockControlService.save(medicinalStockControl);
+            // DS32: atomic aggregate confirm (used +op, occupy -op).
+            this.medicinalStockControlService.adjustStocks(medicinalStockControlList.get(0),
+                    BigDecimal.ZERO, BigDecimal.ZERO, operationStock.negate(), operationStock,
+                    BigDecimal.ZERO, BigDecimal.ZERO);
 
             //Cập nhật trạng thái bản ghi thao tác tồn kho động
             medicinalStockRecord.setOperationType(3);
@@ -596,6 +635,12 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             dispensing.setRecipelInfo(recipelInfo);
             dispensing.setId("");
             SupplierStock supplierStock = new SupplierStock();
+            // DS32: the two rows are only read here for the dispensing
+            // record (storage id, company); the stock moves above are
+            // atomic now, so the locals are re-declared here instead of
+            // above where they used to be mutated and saved back.
+            MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
+            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
             supplierStock.setId(medicinalStorageControl.getStorageId());
             dispensing.setSupplierStock(supplierStock);
             dispensing.setCompany(medicinalStockControl.getCompany());
@@ -641,12 +686,13 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
-            MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
-            BigDecimal returnTodoFeeStock1 =medicinalStorageControl.getReturnTodoFeeStock()==null?new BigDecimal("0"):medicinalStorageControl.getReturnTodoFeeStock();
-            medicinalStorageControl.setReturnTodoFeeStock(returnTodoFeeStock1.add(operationStock));
-
-            super.save(medicinalStorageControl);
+            // DS32: atomic detail return (used -op, return-todo-fee +op).
+            // The old code null-guarded returnTodoFeeStock in Java; the
+            // atomic UPDATE does the same with IFNULL in SQL (the column
+            // is NULL on live rows).
+            this.adjustDetailStocks(medicinalStorageControlList.get(0),
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, operationStock.negate(),
+                    BigDecimal.ZERO, operationStock);
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
@@ -655,11 +701,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
-            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
-            BigDecimal returnTodoFeeStock2 =medicinalStockControl.getReturnTodoFeeStock()==null?new BigDecimal("0"):medicinalStockControl.getReturnTodoFeeStock();
-            medicinalStockControl.setReturnTodoFeeStock(returnTodoFeeStock2.add(operationStock));
-            this.medicinalStockControlService.save(medicinalStockControl);
+            // DS32: atomic aggregate return (used -op, return-todo-fee +op).
+            this.medicinalStockControlService.adjustStocks(medicinalStockControlList.get(0),
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, operationStock.negate(),
+                    BigDecimal.ZERO, operationStock);
 
             //Cập nhật trạng thái bản ghi thao tác tồn kho động
             medicinalStockRecord.setOperationType(4);
@@ -704,10 +749,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
-            MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));            //Số lượng tồn kho còn khả dụng hiện tại cần được cộng trả lại
-            medicinalStorageControl.setReturnTodoFeeStock(medicinalStorageControl.getReturnTodoFeeStock().subtract(operationStock));
-            super.save(medicinalStorageControl);
+            // DS32: atomic detail refund (surplus +op, return-todo-fee -op).
+            this.adjustDetailStocks(medicinalStorageControlList.get(0),
+                    BigDecimal.ZERO, operationStock, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, operationStock.negate());
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
@@ -716,10 +761,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
-            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));            //Số lượng tồn kho còn khả dụng hiện tại cần được cộng trả lại
-            medicinalStockControl.setReturnTodoFeeStock(medicinalStockControl.getReturnTodoFeeStock().subtract(operationStock));
-            this.medicinalStockControlService.save(medicinalStockControl);
+            // DS32: atomic aggregate refund (surplus +op, return-todo-fee -op).
+            this.medicinalStockControlService.adjustStocks(medicinalStockControlList.get(0),
+                    BigDecimal.ZERO, operationStock, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO, operationStock.negate());
         }
 
         //Xóachiếm dụngthao tácChi tiết(này lầnvật lýXóa)
@@ -781,12 +826,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
-            MedicinalStorageControl medicinalStorageControl = medicinalStorageControlList.get(0);
-            medicinalStorageControl.setUsedStock(medicinalStorageControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
-//            BigDecimal returnTodoFeeStock1 =medicinalStorageControl.getReturnTodoFeeStock()==null?new BigDecimal("0"):medicinalStorageControl.getReturnTodoFeeStock();
-//            medicinalStorageControl.setReturnTodoFeeStock(returnTodoFeeStock1.add(operationStock));
-            medicinalStorageControl.setSurplusStock(medicinalStorageControl.getSurplusStock().add(operationStock));
-            super.save(medicinalStorageControl);
+            // DS32: atomic detail material refund (used -op, surplus +op).
+            this.adjustDetailStocks(medicinalStorageControlList.get(0),
+                    BigDecimal.ZERO, operationStock, BigDecimal.ZERO, operationStock.negate(),
+                    BigDecimal.ZERO, BigDecimal.ZERO);
 
             //Cập nhật lượng chiếm dụng trước của kiểm soát tổng
             List<MedicinalStockControl> medicinalStockControlList = this.medicinalStockControlService.listAll(
@@ -795,10 +838,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             {
                 throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy mặt hàng[ " + medicinalStockRecord.getDrugStuffName() + " ] của bản ghi kiểm soát tổng tồn kho. ");
             }
-            MedicinalStockControl medicinalStockControl = medicinalStockControlList.get(0);
-            medicinalStockControl.setUsedStock(medicinalStockControl.getUsedStock().subtract(operationStock));            //Số lượng tồn kho đã sử dụng hiện tại cần được trừ trả lại
-            medicinalStockControl.setSurplusStock(medicinalStockControl.getSurplusStock().add(operationStock));
-            this.medicinalStockControlService.save(medicinalStockControl);
+            // DS32: atomic aggregate material refund (used -op, surplus +op).
+            this.medicinalStockControlService.adjustStocks(medicinalStockControlList.get(0),
+                    BigDecimal.ZERO, operationStock, BigDecimal.ZERO, operationStock.negate(),
+                    BigDecimal.ZERO, BigDecimal.ZERO);
         }
         //Xóachiếm dụngthao tácChi tiết(này lầnvật lýXóa)
         this.medicinalStockRecordService.batchDelete(medicinalStockRecordList);

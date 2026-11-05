@@ -291,6 +291,25 @@
         WHERE id = #{id}
     </update>
 
+    <!-- DS32: atomically add deltas to all six aggregate stock columns.
+         Same lost-update shape as addStorageStocks, for the void / occupy /
+         dispense / refund paths (probe-proven: 8 parallel voids left the
+         aggregate at 10035 instead of 10000). IFNULL guards the columns
+         because return_todo_fee_stock is NULL on live rows. Same WHERE id
+         semantics as the generic update (no del_flag filter). -->
+    <update id="adjustStocks">
+        UPDATE medicinal_stock_control
+        SET storage_stock = IFNULL(storage_stock, 0) + #{storageDelta},
+            surplus_stock = IFNULL(surplus_stock, 0) + #{surplusDelta},
+            occupy_stock = IFNULL(occupy_stock, 0) + #{occupyDelta},
+            used_stock = IFNULL(used_stock, 0) + #{usedDelta},
+            reimburse_stock = IFNULL(reimburse_stock, 0) + #{reimburseDelta},
+            return_todo_fee_stock = IFNULL(return_todo_fee_stock, 0) + #{returnTodoFeeDelta},
+            update_by = #{updateBy},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
     <!-- DS31: live detail totals for one (drug, company) pair, used to
          recompute a resurrected aggregate row so it again equals the
          detail sum. -->

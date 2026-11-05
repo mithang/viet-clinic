@@ -46,6 +46,22 @@ public interface MedicinalStockControlDao extends CrudDao<MedicinalStockControl>
                          @Param("surplusDelta") java.math.BigDecimal surplusDelta,
                          @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
 
+    // DS32: atomically add deltas to ALL six aggregate stock columns.
+    // Same lost-update shape as addStorageStocks, but the void / occupy /
+    // dispense / refund paths move occupy, used, reimburse and
+    // return-todo-fee as well (probe-proven: 8 parallel voids left the
+    // aggregate at 10035 instead of 10000, 8 parallel outbound examines
+    // left aggregate used at 5 instead of 40). IFNULL guards the columns
+    // because return_todo_fee_stock is NULL on live rows. Returns 1.
+    int adjustStocks(@Param("id") String id,
+                     @Param("storageDelta") java.math.BigDecimal storageDelta,
+                     @Param("surplusDelta") java.math.BigDecimal surplusDelta,
+                     @Param("occupyDelta") java.math.BigDecimal occupyDelta,
+                     @Param("usedDelta") java.math.BigDecimal usedDelta,
+                     @Param("reimburseDelta") java.math.BigDecimal reimburseDelta,
+                     @Param("returnTodoFeeDelta") java.math.BigDecimal returnTodoFeeDelta,
+                     @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
+
     List<MedicinalStockControl> listAlls(PageRequest pageRequest);
 
     List<MedicinalStockControl> listPreAll(PageRequest pageRequest);

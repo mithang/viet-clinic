@@ -27,4 +27,30 @@ public interface MedicinalStorageControlDao extends CrudDao<MedicinalStorageCont
     BigDecimal getByDrugOrStuffId(String drugOrStuffId,String companyId);
     BigDecimal getByDrugOrStuffIds(@Param("list") List<String> drugOrStuffIds);
 
+    // DS32: atomically add deltas to ALL six detail stock columns. Same
+    // lost-update shape as the aggregate bump (probe-proven: 8 parallel
+    // outbound examines left the shared detail row at used 5 instead of
+    // 40). IFNULL guards the columns because return_todo_fee_stock is
+    // NULL on live rows. Returns the rows updated (1).
+    int adjustStocks(@Param("id") String id,
+                     @Param("storageDelta") java.math.BigDecimal storageDelta,
+                     @Param("surplusDelta") java.math.BigDecimal surplusDelta,
+                     @Param("occupyDelta") java.math.BigDecimal occupyDelta,
+                     @Param("usedDelta") java.math.BigDecimal usedDelta,
+                     @Param("reimburseDelta") java.math.BigDecimal reimburseDelta,
+                     @Param("returnTodoFeeDelta") java.math.BigDecimal returnTodoFeeDelta,
+                     @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
+
+    // DS32: atomically occupy a detail row, but only when its surplus still
+    // covers the amount (preOccupyStock check-then-act). Without the guard
+    // two concurrent prescriptions can both read surplus 10000 and both
+    // occupy 6000, leaving surplus -2000. Returns 1 when applied, 0 when
+    // the row no longer has enough surplus (caller throws stock-not-enough
+    // and the transaction rolls back). surplusDelta is negative.
+    int occupyStocks(@Param("id") String id,
+                     @Param("occupyDelta") java.math.BigDecimal occupyDelta,
+                     @Param("surplusDelta") java.math.BigDecimal surplusDelta,
+                     @Param("requiredSurplus") java.math.BigDecimal requiredSurplus,
+                     @Param("updateBy") String updateBy, @Param("updateDate") java.util.Date updateDate);
+
 }

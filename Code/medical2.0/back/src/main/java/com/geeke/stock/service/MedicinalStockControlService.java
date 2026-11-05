@@ -152,6 +152,29 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
     }
 
     /**
+     * DS32: atomically add deltas to all six aggregate stock columns. Same
+     * lost-update shape as addStorageStocks (which only covers storage /
+     * surplus): the void, occupy, dispense and refund paths move occupy,
+     * used, reimburse and return-todo-fee as well, and they used to read
+     * the row, add in Java and save it back, so N concurrent operations on
+     * the same drug overwrote each other (probe-proven: 8 parallel voids
+     * left the aggregate at 10035 instead of 10000; 8 parallel outbound
+     * examines left aggregate used at 5 instead of 40). A single UPDATE
+     * ... SET col = col + delta serializes on the row lock instead. Keeps
+     * the UPDATED action row that CrudService.save used to write.
+     */
+    @Transactional(readOnly = false)
+    public void adjustStocks(MedicinalStockControl row, BigDecimal storageDelta, BigDecimal surplusDelta,
+                             BigDecimal occupyDelta, BigDecimal usedDelta,
+                             BigDecimal reimburseDelta, BigDecimal returnTodoFeeDelta) {
+        verifyTenantOwnership(row);
+        row.preUpdate();
+        this.dao.adjustStocks(row.getId(), storageDelta, surplusDelta, occupyDelta, usedDelta,
+                reimburseDelta, returnTodoFeeDelta, row.getUpdateBy(), row.getUpdateDate());
+        this.saveAction(this.createAction(ActionConstants.ACTION_UPDATED, row));
+    }
+
+    /**
      * Thêm mớiThuốc hoặc Vật tưcơ bảnchínhDữ liệu giờ, Khởi tạo dữ liệu bản ghi kiểm soát tổng tồn kho
      * @param dataEntity
      */

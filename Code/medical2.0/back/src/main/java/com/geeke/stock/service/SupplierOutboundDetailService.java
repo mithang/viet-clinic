@@ -95,8 +95,16 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
             if (queryStorageControl.getSurplusStock().compareTo(d.getNumber()) < 0) {
                 throw new ServiceException("khả dụngTồn khokhôngđủ");
             }
-            medicinalStorageControl.setOccupyStock(queryStorageControl.getOccupyStock().add(d.getNumber()));
-            medicinalStorageControlService.save(queryStorageControl);
+            // DS32: the old code computed the freeze on the request object
+            // (medicinalStorageControl above) but saved the reloaded one
+            // (queryStorageControl), so creating a slip froze nothing and
+            // examine() later drove the detail occupy to -N (probe-proven:
+            // save left occupy 0, examine left occupy -5). Atomic occupy
+            // bump on the reloaded row instead (occupy +N; surplus moves
+            // only at examine, as before).
+            medicinalStorageControlService.adjustDetailStocks(queryStorageControl,
+                    BigDecimal.ZERO, BigDecimal.ZERO, d.getNumber(),
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
             save(d);
         }
@@ -115,8 +123,10 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         }
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
-        medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(detail.getNumber()));
-        medicinalStorageControlService.save(medicinalStorageControl);
+        // DS32: atomic detail release (occupy -N).
+        medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
+                BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate(),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
         supplierOutboundDetailDao.delete(detail);
     }
@@ -131,8 +141,10 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         List<SupplierOutboundDetail> details = supplierOutboundDetailDao.getByOutboundId(outboundId);
         for (SupplierOutboundDetail detail : details) {
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId());//detail.getMedicinalStorage();
-            medicinalStorageControl.setOccupyStock(medicinalStorageControl.getOccupyStock().subtract(detail.getNumber()));
-            medicinalStorageControlService.save(medicinalStorageControl);
+            // DS32: atomic detail release (occupy -N).
+            medicinalStorageControlService.adjustDetailStocks(medicinalStorageControl,
+                    BigDecimal.ZERO, BigDecimal.ZERO, detail.getNumber().negate(),
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
         }
     }
 
