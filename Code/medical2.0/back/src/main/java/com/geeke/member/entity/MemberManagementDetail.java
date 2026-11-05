@@ -21,6 +21,13 @@ public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
 	private Integer number;
 	private Integer useNumber;
 
+	// DS63: gia tri use_number goc ma frontend da doc truoc khi cong them
+	// so luot dung cua don nay. Chi dung de claim o backend, KHONG phai
+	// cot DB (khong co trong mapper), KHONG duoc ghi xuong DB. Frontend
+	// chooseMember gan truoc khi doi useNumber; backend claim theo gia tri
+	// nay khi co, fallback ve gia tri DB da doc (DS62) khi vang.
+	private Integer expectedUseNumber;
+
 	public MemberManagementDetail() {
 		super();
 	}
@@ -69,6 +76,14 @@ public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
 
 	public void setUseNumber(Integer useNumber) {
 		this.useNumber = useNumber;
+	}
+
+	public Integer getExpectedUseNumber() {
+		return expectedUseNumber;
+	}
+
+	public void setExpectedUseNumber(Integer expectedUseNumber) {
+		this.expectedUseNumber = expectedUseNumber;
 	}
 
 	/**

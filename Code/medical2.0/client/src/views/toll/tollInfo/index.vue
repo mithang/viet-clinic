@@ -2187,6 +2187,18 @@
           }
         }
         this.singleForm.amountReceived = this.singleForm.amountReceivable
+        // DS63: ghi lại giá trị useNumber gốc vừa đọc làm expectedUseNumber
+        // cho MỌI detail, kể cả detail không đổi ở lần thu này (thẻ nhiều
+        // hạng mục gửi toàn bộ detail mỗi lần thu). Backend claim theo giá
+        // trị gốc này nên một lần replay stale — payload trùng giá trị DB
+        // hiện tại nhưng gốc đã cũ — bị từ chối 400, còn no-op hợp lệ
+        // (expected == DB) vẫn được nhận. Khi vắng expectedUseNumber thì
+        // backend fallback về hành vi DS62.
+        if (row.memberManagementDetails) {
+          for (let m = 0; m < row.memberManagementDetails.length; m++) {
+            row.memberManagementDetails[m].expectedUseNumber = row.memberManagementDetails[m].useNumber
+          }
+        }
         for (let i = 0; i < this.medicalEditTabsValue.content.recipelDetailEvtList.length; i++) {
           for (let j = 0; j < row.memberItems.length; j++) {
             if (row.memberItems[j].costItem.id === this.medicalEditTabsValue.content.recipelDetailEvtList[i].drugStuffId.costItem.id) {

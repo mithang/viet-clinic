@@ -75,17 +75,27 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
             }
         }
 
-        // DS62: ghi use-count bang atomic claim (mau DS52-DS61), khong con
+        // DS63: ghi use-count bang atomic claim (mau DS52-DS61), khong con
         // SET mu gia tri tuyet doi tu payload. Frontend gui gia tri tuyet
         // doi moi (= gia tri no doc + so luot dung them), nen:
         // - payload < gia tri DB hien tai: payload stale hoac gia mao doi
         //   use-count ve (nap lai the da dung) -> 400, khong ghi.
         // - payload > allowance number: vuot so luot the cho phep -> 400.
-        // - claimUseNumber chi ghi khi use_number van dung gia tri da doc
-        //   va gia tri moi trong [hien tai, number]; luong song song thua
-        //   tra 0 dong -> 400 nhu truong hop tuan tu (nap lai the roi thu
-        //   lai thi duoc). Toan bo saveToll la mot transaction nen 400 o
-        //   day rollback ca phieu thu, don thuoc van thu duoc o lan thu.
+        // - claimUseNumber chi ghi khi use_number van dung gia tri ky
+        //   vong va gia tri moi trong [hien tai, number]; luong song
+        //   song thua tra 0 dong -> 400 nhu truong hop tuan tu (nap lai
+        //   the roi thu lai thi duoc). Toan bo saveToll la mot transaction
+        //   nen 400 o day rollback ca phieu thu, don thuoc van thu duoc
+        //   o lan thu.
+        // - DS63: gia tri ky vong KHONG lay tu DB nua khi frontend da gui
+        //   expectedUseNumber (gia tri goc no doc). DS62 lay gia tri DB
+        //   vua doc lam expected nen mot lan replay stale co payload
+        //   TRUNG gia tri DB hien tai (doc 5, +5 -> gui 10 trong khi DB
+        //   da len 10) van duoc nhan nhu no-op delta 0, 5 luot dung bien
+        //   mat. Claim theo gia tri goc thi replay stale tra 0 dong ->
+        //   400; no-op hop le (expected == DB) van duoc nhan. Khi
+        //   expectedUseNumber vang (client cu / caller khac) fallback ve
+        //   hanh vi DS62: lay gia tri DB da doc.
         for (MemberManagementDetail memberManagementDetail : memberManagementDetails) {
             if (memberManagementDetail == null || StringUtils.isBlank(memberManagementDetail.getId())) {
                 continue;
@@ -96,8 +106,10 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
             }
             // DB khong co dong NULL (kiem tra 2026-11-05: 35/35 dong deu co
             // number + use_number); coi NULL nhu 0 de tranh NPE unboxing.
-            int expected = dbRow.getUseNumber() == null ? 0 : dbRow.getUseNumber();
-            if (memberManagementDetail.getUseNumber() < expected) {
+            int dbValue = dbRow.getUseNumber() == null ? 0 : dbRow.getUseNumber();
+            int expected = memberManagementDetail.getExpectedUseNumber() != null
+                    ? memberManagementDetail.getExpectedUseNumber() : dbValue;
+            if (memberManagementDetail.getUseNumber() < dbValue) {
                 throw new com.geeke.common.service.ServiceException("Thẻ hội viên đã thay đổi, vui lòng thử lại");
             }
             if (dbRow.getNumber() != null && memberManagementDetail.getUseNumber() > dbRow.getNumber()) {
