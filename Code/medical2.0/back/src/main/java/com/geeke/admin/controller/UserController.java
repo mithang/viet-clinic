@@ -89,6 +89,24 @@ public class UserController extends CrudController<UserService, User> {
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
         User entity = service.CheckNewUserByPhone(phone);
+        // DS13: tra phone là tra cứu PII cross-tenant. user:read do nhiều
+        // vai trò phòng khám giữ (YS/dược sĩ/admin, không chỉ quản trị
+        // nền tảng), mà CheckNewUserByPhone chỉ ném khi phone đã đăng ký
+        // ở ĐÚNG clinic gọi (kiểm tra trùng khi tạo user) — phone clinic
+        // khác trước đây trả đủ entity. Giới hạn: chỉ trả entity khi
+        // cùng tenant hoặc phiên hệ thống ('0'/rỗng — quản trị nền
+        // tảng); clinic khác -> null như không tìm thấy. Tạo user
+        // cross-clinic vốn được phép (chỉ trùng cùng clinic mới ném)
+        // nên null không đổi luồng tạo user; user:list vốn cũng ép
+        // tenant session nên giới hạn này là nhất quán, không mới.
+        if (entity != null && entity.getCompany() != null) {
+            String tenant = SessionUtils.getLoginTenantId();
+            String companyId = entity.getCompany().getId();
+            if (StringUtils.isNotBlank(tenant) && !"null".equals(tenant) && !"0".equals(tenant)
+                    && StringUtils.isNotBlank(companyId) && !tenant.equals(companyId)) {
+                return ResponseEntity.ok(ResultUtil.successJson(null));
+            }
+        }
         if(null!=entity)
         {
             UserExt oldExtInfo = userExtService.getOldExtByUserId(entity.getId());
