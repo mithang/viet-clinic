@@ -375,6 +375,11 @@
                     when id=#{entity.id} then #{entity.registrationFeeId}
                 </foreach>
             </trim>
+            <trim prefix="return_type=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.returnType}
+                </foreach>
+            </trim>
         </set>
         WHERE id IN
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">

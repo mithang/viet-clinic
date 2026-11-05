@@ -311,17 +311,17 @@
             </trim>
             <trim prefix="patient_id=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.patientId}
+                    when id=#{entity.id} then #{entity.patient.id}
                 </foreach>
             </trim>
             <trim prefix="registration_id=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.registrationId}
+                    when id=#{entity.id} then #{entity.registration.id}
                 </foreach>
             </trim>
             <trim prefix="cost_item_id=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.costItemId}
+                    when id=#{entity.id} then #{entity.costItem.id}
                 </foreach>
             </trim>
             <trim prefix="name=case" suffix="end,">
@@ -377,6 +377,16 @@
             <trim prefix="complete_date=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.completeDate}
+                </foreach>
+            </trim>
+            <trim prefix="recipel_detail_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.recipelDetail.id}
+                </foreach>
+            </trim>
+            <trim prefix="recipel_info_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.recipelInfo.id}
                 </foreach>
             </trim>
         </set>

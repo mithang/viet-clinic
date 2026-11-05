@@ -275,6 +275,46 @@
                     when id=#{entity.id} then #{entity.reportConclusion}
                 </foreach>
             </trim>
+            <trim prefix="check_advise=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.checkAdvise}
+                </foreach>
+            </trim>
+            <trim prefix="check_part=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.checkPart}
+                </foreach>
+            </trim>
+            <trim prefix="check_project=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.checkProject}
+                </foreach>
+            </trim>
+            <trim prefix="check_type=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.checkType}
+                </foreach>
+            </trim>
+            <trim prefix="doctor=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.doctor}
+                </foreach>
+            </trim>
+            <trim prefix="opinion=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.opinion}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
         </set>
         WHERE id IN
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">

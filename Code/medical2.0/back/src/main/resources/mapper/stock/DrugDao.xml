@@ -823,6 +823,31 @@
                     when id=#{entity.id} then #{entity.indate}
                 </foreach>
             </trim>
+            <trim prefix="inventory=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.inventory}
+                </foreach>
+            </trim>
+            <trim prefix="inventory_floor=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.inventoryFloor}
+                </foreach>
+            </trim>
+            <trim prefix="inventory_limit=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.inventoryLimit}
+                </foreach>
+            </trim>
+            <trim prefix="location_number=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.locationNumber}
+                </foreach>
+            </trim>
+            <trim prefix="ypgg=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.ypgg}
+                </foreach>
+            </trim>
         </set>
         WHERE id IN
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">

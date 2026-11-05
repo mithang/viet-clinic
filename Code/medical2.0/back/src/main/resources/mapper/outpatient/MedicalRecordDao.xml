@@ -613,6 +613,16 @@
                     when id=#{entity.id} then #{entity.updateDate}
                 </foreach>
             </trim>
+            <trim prefix="china_diagnose=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.chinaDiagnose}
+                </foreach>
+            </trim>
+            <trim prefix="western_diagnose=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.westernDiagnose}
+                </foreach>
+            </trim>
         </set>
         WHERE id IN
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">

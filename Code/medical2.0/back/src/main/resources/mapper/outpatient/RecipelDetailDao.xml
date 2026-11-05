@@ -466,7 +466,22 @@
             </trim>
             <trim prefix="infuse_type=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.infuse_type}
+                    when id=#{entity.id} then #{entity.infuseType}
+                </foreach>
+            </trim>
+            <trim prefix="stuff_type=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.stuffType}
+                </foreach>
+            </trim>
+            <trim prefix="min_total=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.minTotal}
+                </foreach>
+            </trim>
+            <trim prefix="drug_order=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.drugOrder}
                 </foreach>
             </trim>
         </set>

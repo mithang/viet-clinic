@@ -742,6 +742,86 @@
                     when id=#{entity.id} then #{entity.queueNumber}
                 </foreach>
             </trim>
+            <trim prefix="card_type=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.cardType.value}
+                </foreach>
+            </trim>
+            <trim prefix="exit_number_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.exitNumberDate}
+                </foreach>
+            </trim>
+            <trim prefix="follow_up_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.followUpDate}
+                </foreach>
+            </trim>
+            <trim prefix="ipt_otp_no=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.iptOtpNo}
+                </foreach>
+            </trim>
+            <trim prefix="is_pre=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.isPre}
+                </foreach>
+            </trim>
+            <trim prefix="mdtrt_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.mdtrtId}
+                </foreach>
+            </trim>
+            <trim prefix="med_type=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.medType.value}
+                </foreach>
+            </trim>
+            <trim prefix="nation=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.nation}
+                </foreach>
+            </trim>
+            <trim prefix="occupation=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.occupation}
+                </foreach>
+            </trim>
+            <trim prefix="pay_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.payDate}
+                </foreach>
+            </trim>
+            <trim prefix="practicle_registration_fee=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.practicleRegistrationFee}
+                </foreach>
+            </trim>
+            <trim prefix="practicle_registration_pay_remarks=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.practicalRegistrationPayRemarks}
+                </foreach>
+            </trim>
+            <trim prefix="reception_end_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.receptionEndDate}
+                </foreach>
+            </trim>
+            <trim prefix="setl_id=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.setlId}
+                </foreach>
+            </trim>
+            <trim prefix="signed_date=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.signedDate}
+                </foreach>
+            </trim>
+            <trim prefix="workplace=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.workplace}
+                </foreach>
+            </trim>
         </set>
         WHERE id IN
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">

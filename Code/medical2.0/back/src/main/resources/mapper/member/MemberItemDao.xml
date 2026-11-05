@@ -208,6 +208,11 @@
                     when id=#{entity.id} then #{entity.updateDate}
                 </foreach>
             </trim>
+            <trim prefix="use_number=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.useNumber}
+                </foreach>
+            </trim>
         </set>
         WHERE id IN
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
