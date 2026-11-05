@@ -111,6 +111,12 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
         }
         if(BizConstants.AMOUNT_STATUS_REFUNDED.equals(entity.getAmountStatus().getValue())){
             TollInfo tollInfoByRegistrationId = tollInfoService.getTollInfoByRegistrationId(entity.getRegistrationFeeId());
+            // DS11: khong co phieu thu goc cho registration nay (chua thu
+            // hoac registration khong ton tai) thi fail-closed 400 thay vi
+            // NPE 500 o setReturnType ben duoi. Khong ghi dong nao.
+            if (tollInfoByRegistrationId == null) {
+                throw new ServiceException("Không tìm thấy phiếu thu gốc của đăng ký này để hoàn phí");
+            }
             tollInfoByRegistrationId.setReturnType(1);
             tollInfoService.save(tollInfoByRegistrationId);
             entity.setReturnType(1);
