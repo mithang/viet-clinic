@@ -54,6 +54,20 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
     public ResponseEntity<JSONObject> getTollInfoByRegistrationId(@PathVariable("registrationId") String registrationId) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC W1: tai khoan 0-resource bi 403, parity save/saveToll/cancel.
         TollInfo entity = tollInfoService.getTollInfoByRegistrationId(registrationId);
+        // DS9: phieu thu cua phong kham khac -> 403, khong tra du lieu.
+        // DAO khong loc company (WHERE registration_fee_id=... tran) nen
+        // guard o day, theo mau SysFileContentController (file la -> 403).
+        // Chi guard endpoint GET nay; luong save() noi bo goi service truc
+        // tiep nen khong doi. Session rong/"null" (luong noi bo) va dong
+        // company rong giu hanh vi cu, parity verifyTenantOwnership.
+        if (entity != null && entity.getCompany() != null) {
+            String tenant = SessionUtils.getLoginTenantId();
+            String companyId = entity.getCompany().getId();
+            if (StringUtils.isNotBlank(tenant) && !"null".equals(tenant)
+                    && StringUtils.isNotBlank(companyId) && !tenant.equals(companyId)) {
+                return forbidden();
+            }
+        }
         return ResponseEntity.ok(ResultUtil.successJson(entity));
     }
 
