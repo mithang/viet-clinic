@@ -65,9 +65,9 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
      *   dòng mồ côi theo semantics cũ khi nó không gắn tenant nào).
      * - Bulk: tiền kiểm TOÀN BỘ list trước khi ghi dòng nào —
      *   fail-closed cả list (mẫu N1/N3e): một dòng lạ thì không dòng
-     *   nào được ghi. bulkUpdate/bulkDelete không có mapper statement
-     *   nên own vốn 500 toàn cục (không đổi); foreign nay 400 do
-     *   guard chạy trước khi chạm mapper.
+     *   nào được ghi. DS102: bulkUpdate/bulkDelete nay CÓ mapper
+     *   statement (mirror update/delete đơn), nên guard tenant chạy
+     *   trước SQL thật thay vì trước lỗi 500 toàn cục như trước.
      * Ném ServiceException (400) như verifyTenantOwnership của
      * CrudService. Không sửa CrudService generic, không sửa mapper
      * update/delete (đúng lập luận L1/M1: sửa generic rủi ro phá
@@ -141,9 +141,9 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
      * rule_def đều NOT NULL ở sys_company_code_rule; mapper bulkInsert
      * ghi trực tiếp) nên hàng thiếu trường 500 ở DB (probe U1/U2;
      * tiền lệ DS99/DS100). Ghi đè ở đây để fail-closed 400 trước mọi
-     * ghi: danh sách null/rỗng, trường bắt buộc. (bulkUpdate KHÔNG có
-     * mapper statement nên mọi lời gọi đều 500 toàn cục — đã ghi nhận
-     * từ trước, không đổi ở vòng này; xem probe U5.)
+     * ghi: danh sách null/rỗng, trường bắt buộc. (DS102: bulkUpdate/
+     * bulkDelete nay CÓ mapper statement — xem bulkUpdate/bulkDelete
+     * bên dưới; ghi chú "không đổi" cũ ở đây đã hết hiệu lực.)
      */
     private void validateRequired(CompanyCodeRule companyCodeRule) {
         if (companyCodeRule == null) {
@@ -182,20 +182,50 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
         return super.bulkInsert(entitys);
     }
 
+    /**
+     * DS102: bulkUpdate nay CÓ mapper statement (mirror update đơn: chỉ
+     * rule_def + remarks), nên phải tiền kiểm như bulkInsert DS101 trước
+     * khi chạm SQL: danh sách null/rỗng, id rỗng/không tồn tại (mapper
+     * CASE chạm 0 dòng mà vẫn 200 — họ silent no-op DS94/DS99), ruleDef
+     * rỗng (rule_def NOT NULL — CASE ghi NULL sẽ 500 ở DB). code/name/
+     * sysRule không kiểm tra vì mapper không ghi chúng. Tiền kiểm toàn
+     * bộ list trước khi ghi dòng nào — một dòng lỗi thì không dòng nào
+     * được ghi (mẫu N1/N3e; probe A5).
+     */
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<CompanyCodeRule> entitys) {
-        if (entitys != null) {
-            for (CompanyCodeRule entity : entitys) {
-                checkRuleWriteTenant(entity);
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách quy tắc mã cập nhật không được để trống");
+        }
+        for (CompanyCodeRule entity : entitys) {
+            checkRuleWriteTenant(entity);
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của quy tắc mã đã tồn tại");
+            }
+            if (dao.getCompanyIdById(entity.getId()) == null) {
+                throw new ServiceException("Quy tắc mã công ty không tồn tại: "
+                        + entity.getId());
+            }
+            if (StringUtils.isBlank(entity.getRuleDef())) {
+                throw new ServiceException("Quy tắc không được để trống");
             }
         }
         return super.bulkUpdate(entitys);
     }
 
+    /**
+     * DS102: bulkDelete nay CÓ mapper statement (xóa mềm del_flag = 1,
+     * mirror delete đơn). Chỉ chặn danh sách null/rỗng; id không tồn tại
+     * giữ nguyên 200 rows 0 IDEMPOTENT theo tiền lệ DS99 G11 (bulkDelete
+     * không kiểm tra tồn tại như bulkUpdate).
+     */
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<CompanyCodeRule> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách quy tắc mã xóa không được để trống");
+        }
         if (entitys != null) {
             for (CompanyCodeRule entity : entitys) {
                 checkRuleWriteTenant(entity);

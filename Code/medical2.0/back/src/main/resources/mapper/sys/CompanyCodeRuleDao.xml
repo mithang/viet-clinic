@@ -166,5 +166,56 @@
         )
     </foreach>
     </update>
-    
+
+    <!-- DS102: bulkUpdate/bulkDelete còn thiếu (mọi lời gọi đều 500 vì
+         MyBatis không tìm thấy statement — probe U5 DS101, A1–A9 DS102).
+         Phạm vi đã quyết ở DS102: BỔ SUNG mapper (không phải chặn 400
+         "không hỗ trợ") vì CrudController generic đã công khai hai endpoint
+         này cho mọi entity có quyền, và tiền lệ ITER63 đã bổ sung đúng 3
+         statement bulk cho SysParamConfig trong cùng tình huống. Các cột
+         mirror đúng update/delete đơn: bulkUpdate chỉ đổi rule_def +
+         remarks (+ update_by/update_date) như update đơn, KHÔNG động
+         company_id/sys_rule_id/code/name; bulkDelete xóa mềm del_flag = 1
+         như delete đơn (mẫu DictItem bulkDelete). Service tiền kiểm
+         tồn tại/trường bắt buộc trước khi chạm SQL (xem
+         CompanyCodeRuleService.bulkUpdate/bulkDelete). -->
+    <update id="bulkUpdate" parameterType="java.util.List">
+        UPDATE sys_company_code_rule
+        <set>
+            <trim prefix="rule_def=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.ruleDef}
+                </foreach>
+            </trim>
+            <trim prefix="remarks=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.remarks}
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateBy}
+                </foreach>
+            </trim>
+            <trim prefix="update_date=case" suffix="end">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.updateDate}
+                </foreach>
+            </trim>
+        </set>
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
+    <update id="bulkDelete" parameterType="java.util.List">
+        UPDATE sys_company_code_rule SET
+            del_flag = 1
+        WHERE id IN
+        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+    </update>
+
 </mapper>
