@@ -126,6 +126,40 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     public Company save(Company company,
                         MultipartFile[] fileIdUploads,
                         String[] deleteIds) throws java.io.IOException {
+        // DS85: saveWithFile parses the entity from a String (no @Valid),
+        // so nulls reach here and 500 (NPE at getFileId() for a null
+        // entity; DB NOT NULL at the insert/update for null name/sort/
+        // address fields/phone). Guard null-only BEFORE any file op,
+        // same contract as the plain-save @NotNull fields (DS80) and
+        // the DS83 null-only pattern. '' is NOT rejected: both live
+        // companies carry '' address fields, and the UI submits them
+        // back on update -- a blank guard would 400 a working update.
+        // Clinic creation is unaffected: ClinicService.save calls the
+        // 1-arg save(), never this overload.
+        if (company == null) {
+            throw new ServiceException("Công ty không được để trống");
+        }
+        if (company.getName() == null) {
+            throw new ServiceException("Tên công ty không được để trống");
+        }
+        if (company.getSort() == null) {
+            throw new ServiceException("Sắp xếp không được để trống");
+        }
+        if (company.getAddressProvince() == null) {
+            throw new ServiceException("Địa chỉ (Tỉnh) không được để trống");
+        }
+        if (company.getAddressCity() == null) {
+            throw new ServiceException("Địa chỉ (Thành phố) không được để trống");
+        }
+        if (company.getAddressRegion() == null) {
+            throw new ServiceException("Địa chỉ (Quận) không được để trống");
+        }
+        if (company.getAddress() == null) {
+            throw new ServiceException("Địa chỉ không được để trống");
+        }
+        if (company.getPhoneNumber() == null) {
+            throw new ServiceException("Số điện thoại không được để trống");
+        }
         checkCompanySaveOwnership(company);
         if(StringUtils.isBlank(company.getFileId())) {
             company.setFileId(IdGen.uuid());

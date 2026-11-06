@@ -10,6 +10,7 @@ import com.geeke.utils.ResultUtil;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.constants.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -114,8 +115,30 @@ public class CompanyController extends CrudController<CompanyService, Company> {
         if (!hasSessionPermission("company:create") && !hasSessionPermission("company:update")) {
             return forbidden();
         }
-        Company entity = JSONObject.parseObject(strEntity, Company.class);
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        Company entity;
+        try {
+            entity = JSONObject.parseObject(strEntity, Company.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS85: malformed entity JSON (e.g. a bare string for the
+            // Company-typed parentId, truncated JSON) threw at parse
+            // -> 500; unparseable input can never succeed -> 400.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        // DS85: parse from String (no @Valid); a "null" entity NPEd at
+        // company.getFileId() in the service -> 400 early (DS83 pattern).
+        if (entity == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        String[] deleteIds;
+        try {
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS85: same as the entity parse above.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         String id = companyService.save(entity,
             fileIdUploads,
             deleteIds

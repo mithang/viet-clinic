@@ -18,6 +18,7 @@ import com.geeke.cure.service.InspectionCheckInfoService;
 import com.geeke.utils.ResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -60,8 +61,33 @@ public class InspectionCheckInfoController extends CrudController<InspectionChec
             return forbidden();
         }
 
-        InspectionCheckInfo inspectionCheckInfo = JSONObject.parseObject(strInspection, InspectionCheckInfo.class);
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        InspectionCheckInfo inspectionCheckInfo;
+        try {
+            inspectionCheckInfo = JSONObject.parseObject(strInspection, InspectionCheckInfo.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS85: malformed entity JSON threw at parse -> 500;
+            // unparseable input can never succeed -> 400.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        // DS85: parse from String (no @Valid); a "null" entity NPEd in
+        // the service at getInspectionCheckDetails() -> 400 early
+        // (DS83 pattern). The remaining null shapes are already 400
+        // via the service T1/T2/T3 guards (iter41/42), and the
+        // post-save controller deref is only reachable after those
+        // guards pass, so no further change here.
+        if (inspectionCheckInfo == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        String[] deleteIds;
+        try {
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS85: same as the entity parse above.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
         logger.debug("LưuChi tiết xét nghiệm và kiểm tra: {}", inspectionCheckInfo);
         inspectionCheckInfoService.save(inspectionCheckInfo,fileIdUploads,deleteIds);
         InspectionCheck inspectionCheck = inspectionCheckService.get(inspectionCheckInfo.getInspectionCheck().getId());
