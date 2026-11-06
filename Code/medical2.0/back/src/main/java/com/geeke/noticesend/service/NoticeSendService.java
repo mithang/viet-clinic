@@ -51,6 +51,21 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
         }
     }
 
+    /** DS103: fail-closed 400 khi update id khong ton tai (ho DS94/DS99).
+     * checkNoticeOwnership pass khi dong khong ton tai (getCompanyIdById
+     * tra null), CrudService.save sau do doUpdate cham 0 dong ma van 200
+     * + ghi audit ACTION_UPDATED ma; bulkUpdate CASE cung cham 0 dong.
+     * Kiem tra ton tai qua dao.get (LEFT JOIN company -- null chi khi
+     * dong khong ton tai). */
+    private void checkExists(String id) {
+        if (StringUtils.isBlank(id)) {
+            return;
+        }
+        if (dao.get(id) == null) {
+            throw new ServiceException("Thông báo không tồn tại: " + id);
+        }
+    }
+
     private void forceSessionCompany(List<NoticeSend> entitys) {
         String tenantId = SessionUtils.getLoginTenantId();
         if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
@@ -77,6 +92,7 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     public NoticeSend save(NoticeSend entity) {
         if (StringUtils.isNotBlank(entity.getId())) {
             checkNoticeOwnership(entity.getId());
+            checkExists(entity.getId());
         }
         return super.save(entity);
     }
@@ -100,6 +116,10 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     public List<String> bulkUpdate(List<NoticeSend> entitys) {
         for (NoticeSend entity : entitys) {
             checkNoticeOwnership(entity.getId());
+            // DS103: vong pre-check chay truoc dao.bulkUpdate (mot
+            // statement CASE duy nhat) nen [valid, khong ton tai] nem
+            // truoc khi ghi gi -- dong valid khong bi doi (probe B8).
+            checkExists(entity.getId());
         }
         return super.bulkUpdate(entitys);
     }
