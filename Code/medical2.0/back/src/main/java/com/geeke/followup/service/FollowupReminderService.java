@@ -74,11 +74,47 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         entity.setCompany(company);
     }
 
+    /** DS103: fail-closed 400 khi update id khong ton tai (ho DS94/DS99).
+     * checkRowOwnership pass khi dong khong ton tai (getCompanyIdById tra
+     * null), CrudService.save sau do doUpdate cham 0 dong ma van 200 +
+     * ghi audit ACTION_UPDATED ma; bulkUpdate CASE cung cham 0 dong.
+     * Kiem tra ton tai qua dao.get (WHERE a.id, LEFT JOIN company chi
+     * them cot -- khong tao/an dong). */
+    private void checkExists(String id) {
+        if (StringUtils.isBlank(id)) {
+            return;
+        }
+        if (dao.get(id) == null) {
+            throw new ServiceException("Nhắc lịch tái khám không tồn tại: " + id);
+        }
+    }
+
+    /** DS103: bulkInsert bo qua @Valid nen thieu truong NOT NULL se 500
+     * o SQL thay vi 400 (probe A9/A10). Kiem tra truoc khi ghi: ca ba
+     * truong @NotNull cua entity (patient_id/patient_name/followup_type
+     * deu NOT NULL trong DB) + company (company_id NOT NULL). */
+    private void validateRequired(FollowupReminder entity) {
+        if (entity.getPatientId() == null) {
+            throw new ServiceException("Bệnh nhân không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getPatientName())) {
+            throw new ServiceException("Tên bệnh nhân không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getFollowupType())) {
+            throw new ServiceException("Loại tái khám không được để trống");
+        }
+        if (entity.getCompany() == null
+                || StringUtils.isBlank(entity.getCompany().getId())) {
+            throw new ServiceException("Phòng khám không được để trống");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public FollowupReminder save(FollowupReminder entity) {
         if (StringUtils.isNotBlank(entity.getId())) {
             checkRowOwnership(entity.getId());
+            checkExists(entity.getId());
         } else {
             forceSessionCompany(entity);
         }
@@ -100,6 +136,13 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     public List<String> bulkInsert(List<FollowupReminder> entitys) {
         for (FollowupReminder entity : entitys) {
             forceSessionCompany(entity);
+            // DS103: status NOT NULL DEFAULT '0' trong DB; save() don
+            // mac dinh "0" khi null, bulk phai lam tuong tu neu khong
+            // payload thieu status se 500 o SQL.
+            if (entity.getStatus() == null) {
+                entity.setStatus("0");
+            }
+            validateRequired(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -109,6 +152,10 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     public List<String> bulkUpdate(List<FollowupReminder> entitys) {
         for (FollowupReminder entity : entitys) {
             checkRowOwnership(entity.getId());
+            // DS103: vong pre-check chay truoc dao.bulkUpdate (mot
+            // statement CASE duy nhat) nen [valid, khong ton tai] nem
+            // truoc khi ghi gi -- dong valid khong bi doi (probe A8).
+            checkExists(entity.getId());
         }
         return super.bulkUpdate(entitys);
     }
