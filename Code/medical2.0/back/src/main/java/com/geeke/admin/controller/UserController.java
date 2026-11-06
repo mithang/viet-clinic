@@ -259,7 +259,22 @@ public class UserController extends CrudController<UserService, User> {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
-        User user = JSONObject.parseObject(strUser, User.class);
+        User user;
+        try {
+            user = JSONObject.parseObject(strUser, User.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS86: malformed entity JSON (truncated, or a bare string for
+            // the Company-typed field) threw at parseObject -> 500;
+            // unparseable input can never succeed -> 400 (DS85 pattern).
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        // DS86: parse from String (no @Valid); a "null" entity NPEd at
+        // user.getCompany() below -> 400 early (DS83/DS85 pattern).
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         // DS83: saveWithFile khong chay @Valid; company/userExt/office
         // null se NPE o getCompany().getId() / getUserExt().getOffice()
         // (office null con lam eq("name", null) nem 500 truoc ca guard
@@ -288,7 +303,14 @@ public class UserController extends CrudController<UserService, User> {
         department.setId(departmentId);
         user.setDepartment(department);
         user.getUserExt().setOfficeCode(offices.get(0).getCode());
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        String[] deleteIds;
+        try {
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS86: same as the entity parse above (DS85 pattern).
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         String id = service.save(user,fileIdUploads,deleteIds).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
@@ -301,7 +323,21 @@ public class UserController extends CrudController<UserService, User> {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
-        User user = JSONObject.parseObject(strUser, User.class);
+        User user;
+        try {
+            user = JSONObject.parseObject(strUser, User.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS86: malformed entity JSON threw at parseObject -> 500;
+            // unparseable input can never succeed -> 400 (DS85 pattern).
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        // DS86: parse from String (no @Valid); a "null" entity NPEd at
+        // user.getCompany() below -> 400 early (DS83/DS85 pattern).
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         // DS83: nhu saveWithFile — update cung khong chay @Valid;
         // company/userExt/office null se NPE o lookup khoa -> 400 som.
         if (user.getCompany() == null || StringUtils.isBlank(user.getCompany().getId())
@@ -322,7 +358,14 @@ public class UserController extends CrudController<UserService, User> {
         ClinicOffice clinicOffice = offices.get(0);
         user.getUserExt().setOfficeCode(clinicOffice.getCode());
         //user.setLoginName(user.getPhone());
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        String[] deleteIds;
+        try {
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS86: same as the entity parse above (DS85 pattern).
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         String id = service.update(user,fileIdUploads,deleteIds).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
