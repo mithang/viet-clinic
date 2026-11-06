@@ -7,6 +7,7 @@ import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.org.service.CompanyService;
+import com.geeke.utils.StringUtils;
 
 
 import com.google.common.collect.Maps;
@@ -54,8 +55,75 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
            }
        }
 
+        // DS105 A1: save voi id khong ton tai truoc day roi qua
+        // CrudService.save -> doUpdate 0 dong roi van 200 silent no-op
+        // (verifyTenantOwnershipAgainstStoredRow bo qua khi stored==null,
+        // cung mau DS94/DS99). Kiem tra ton tai truoc moi ghi, sau
+        // check trung ten chi-chay-khi-tao-moi.
+        if (StringUtils.isNotBlank(manufactureFactory.getId())
+                && manufactureFactoryDao.get(manufactureFactory.getId()) == null) {
+            throw new ServiceException("Nhà sản xuất không tồn tại: "
+                    + manufactureFactory.getId());
+        }
+
         ManufactureFactory manufactureFactoryTemp = super.save(manufactureFactory);
         return manufactureFactoryTemp;
+    }
+
+    // DS105 A3-A8/A10-A12: bulkInsert/bulkUpdate/bulkDelete generic truoc
+    // day de lo: null/rong roi xuong MyBatis <foreach> rong -> 500 SQL
+    // syntax, thieu truong NOT NULL (name/type) -> 500
+    // DataIntegrityViolation, bulkUpdate id khong ton tai -> 200 silent
+    // no-op. Chan het o service de 400 ro nghia, kiem tra truoc moi ghi
+    // de batch hon hop khong doi dong hop le (A9). @Transactional
+    // (readOnly = false) tuong minh vi class-level la readOnly = true
+    // (mau SupplierService DS104).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<ManufactureFactory> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách nhà sản xuất không được để trống");
+        }
+        for (ManufactureFactory manufactureFactory : entitys) {
+            if (StringUtils.isBlank(manufactureFactory.getName())) {
+                throw new ServiceException("Tên nhà sản xuất không được để trống");
+            }
+            if (StringUtils.isBlank(manufactureFactory.getType())) {
+                throw new ServiceException("Loại nhà sản xuất không được để trống");
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<ManufactureFactory> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách nhà sản xuất không được để trống");
+        }
+        for (ManufactureFactory manufactureFactory : entitys) {
+            if (StringUtils.isNotBlank(manufactureFactory.getId())
+                    && manufactureFactoryDao.get(manufactureFactory.getId()) == null) {
+                throw new ServiceException("Nhà sản xuất không tồn tại: "
+                        + manufactureFactory.getId());
+            }
+            if (StringUtils.isBlank(manufactureFactory.getName())) {
+                throw new ServiceException("Tên nhà sản xuất không được để trống");
+            }
+            if (StringUtils.isBlank(manufactureFactory.getType())) {
+                throw new ServiceException("Loại nhà sản xuất không được để trống");
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<ManufactureFactory> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách nhà sản xuất không được để trống");
+        }
+        return super.bulkDelete(entitys);
     }
 
     /**
