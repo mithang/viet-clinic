@@ -625,6 +625,11 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             BigDecimal totalBigDecimal;
             boolean isUnpackSell = recipelDetail.getIsUnpackSell() != null && recipelDetail.getIsUnpackSell() == 1;
 
+            // DS98: total null unboxes to NPE in new BigDecimal(int)
+            // below (total is Integer) -- fail closed 400 instead of 500.
+            if (recipelDetail.getTotal() == null) {
+                throw new ServiceException("Đơn thuốc [" + recipelInfo.getName() + "] trong [" + medicinalStockRecord.getDrugStuffName() + "] số lượng không được để trống");
+            }
             if (isUnpackSell) {
                 // Bán lẻ: total  có Đơn vị bào chế, CầnChuyển đổi thànhĐơn vị đóng gói(hướng tớitrênLàm tròn)
                 totalBigDecimal = new BigDecimal(recipelDetail.getTotal());
@@ -652,10 +657,22 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
             // bán lẻ giờ, CầnĐưatổng lượng(Đơn vị bào chế)Chuyển đổi thànhĐơn vị đóng gói
             BigDecimal stockToOccupy = totalBigDecimal;
-            if (isUnpackSell && drug != null && drug.getPreparation() != null && Integer.valueOf(drug.getPreparation()) > 0) {
-                // Đơn vị bào chếchuyển là Đơn vị đóng gói: hướng tớitrênLàm tròn(chắc chắnbảocóđủđủ của bào chếSố lượng)
-                BigDecimal preparationBD = new BigDecimal(drug.getPreparation());
-                stockToOccupy = totalBigDecimal.divide(preparationBD, 0, BigDecimal.ROUND_UP);
+            // DS98: preparation is a DECIMAL string ('1.0' is a valid pack
+            // size) -- Integer.valueOf() NFE'd on '1.0'/'abc' -> 500.
+            // Parse as BigDecimal; a non-numeric preparation is corrupt
+            // data and fails closed 400; <= 0 / null keeps the old
+            // behaviour (no conversion, total counts as packs).
+            if (isUnpackSell && drug != null && drug.getPreparation() != null) {
+                BigDecimal preparationBD;
+                try {
+                    preparationBD = new BigDecimal(drug.getPreparation());
+                } catch (NumberFormatException e) {
+                    throw new ServiceException("Quy cách của thuốc [" + drug.getGoodsName() + "] không hợp lệ: " + drug.getPreparation());
+                }
+                if (preparationBD.compareTo(BigDecimal.ZERO) > 0) {
+                    // Đơn vị bào chếchuyển là Đơn vị đóng gói: hướng tớitrênLàm tròn(chắc chắnbảocóđủđủ của bào chếSố lượng)
+                    stockToOccupy = totalBigDecimal.divide(preparationBD, 0, BigDecimal.ROUND_UP);
+                }
             }
 
             for (int i = 0; i < medicinalStorageControlList.size(); i++) {
@@ -809,7 +826,19 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             supplierStock.setId(medicinalStorageControl.getStorageId());
             dispensing.setSupplierStock(supplierStock);
             dispensing.setCompany(medicinalStockControl.getCompany());
-            dispensing.setNumber(Integer.parseInt(operationStock.stripTrailingZeros().toPlainString()));
+            // DS98: operationStock is BigDecimal and may be fractional (a
+            // batch with fractional surplus, e.g. 2.5) -- parseInt NFE'd
+            // -> 500 at charge time. A fractional pack count cannot be
+            // written to dispensing.number (Integer): fail closed 400 so
+            // the clinic fixes the fractional stock instead of recording
+            // a wrong dispensed quantity.
+            int dispenseNumber;
+            try {
+                dispenseNumber = Integer.parseInt(operationStock.stripTrailingZeros().toPlainString());
+            } catch (NumberFormatException e) {
+                throw new ServiceException("Số lượng phát thuốc của [" + medicinalStockRecord.getDrugStuffName() + "] không phải số nguyên: " + operationStock.toPlainString());
+            }
+            dispensing.setNumber(dispenseNumber);
             // DS71: DispensingService.save is fail-closed now; the real
             // dispense-confirm flow writes through saveInternal().
             dispensingService.saveInternal(dispensing);
