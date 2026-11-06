@@ -49,6 +49,15 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
                 || StringUtils.isBlank(genTableColumn.getGenTable().getId())) {
             throw new ServiceException("Bảng mã số không thể là trống");
         }
+        // DS99: nhu GenTableService.save -- CrudService.save re nhanh update
+        // khi id khac rong, doUpdate khong dong den dong nao neu id khong
+        // ton tai ma van tra 200 (probe G5c: column save id la -> 200 im
+        // lang, khong co dong nao duoc tao). Chi chap nhan update khi dong
+        // da ton tai; tao moi phai gui id rong.
+        if (StringUtils.isNotBlank(genTableColumn.getId())
+                && super.get(genTableColumn.getId()) == null) {
+            throw new ServiceException("Trường bảng không tồn tại: " + genTableColumn.getId());
+        }
         return super.save(genTableColumn);
     }
 }
