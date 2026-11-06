@@ -10,6 +10,7 @@ import com.geeke.admin.service.RoleService;
 import com.geeke.admin.service.UserService;
 import com.geeke.clinic.entity.ClinicVersion;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.org.dao.ClinicDao;
 import com.geeke.org.entity.Clinic;
 import com.geeke.org.entity.Company;
@@ -92,6 +93,27 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         Company oldClinic = null;
         if (StringUtils.isNotBlank(clinic.getId())) {
             oldClinic = companyService.get(clinic.getId());
+        }
+        // DS100: fail-closed 400 truoc moi ghi -- nhanh update NPE 500
+        // khi version null (getVersion().getRoleId(), probe C2c) hoac
+        // khong co admin user (admin.getId() :120, probe C2b); nhanh
+        // create NPE 500 khi version null (saveClinicAndRole:215
+        // getVersion().getId(), probe P2, log-proven). Guard o day,
+        // truoc moi file/company write, de transaction khong co gi
+        // phai rollback; happy path C2d (co admin + version day du)
+        // khong doi.
+        if (null != oldClinic) {
+            if (clinic.getVersion() == null || StringUtils.isBlank(clinic.getVersion().getRoleId())) {
+                throw new ServiceException("Phiên bản phòng khám (vai trò) không được để trống");
+            }
+            if (userService.getAdmin(oldClinic.getId()) == null) {
+                throw new ServiceException("Phòng khám chưa có tài khoản quản trị");
+            }
+        } else {
+            if (clinic.getVersion() == null || StringUtils.isBlank(clinic.getVersion().getId())
+                    || StringUtils.isBlank(clinic.getVersion().getRoleId())) {
+                throw new ServiceException("Phiên bản phòng khám không được để trống");
+            }
         }
         if (null != deleteIds && deleteIds.length > 0) {
             Set<String> allowedObjectIds = new HashSet<>();
