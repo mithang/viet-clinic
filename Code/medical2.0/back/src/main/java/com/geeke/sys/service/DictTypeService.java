@@ -102,6 +102,15 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         if ("1".equals(dictType.getIsSystem())) {
             dictType.setCompany(null);
         }
+        // DS104 A1: save voi id khong ton tai truoc day roi qua
+        // CrudService.save -> doUpdate 0 dong roi van 200 silent no-op
+        // (verifyTenantOwnershipAgainstStoredRow bo qua khi stored==null,
+        // cung mau DS94/DS99). Kiem tra ton tai truoc moi ghi.
+        if (StringUtils.isNotBlank(dictType.getId())
+                && dao.get(dictType.getId()) == null) {
+            throw new ServiceException("Loại từ điển không tồn tại: "
+                    + dictType.getId());
+        }
         DictType dictTypeTemp = super.save(dictType);
         if (StringUtils.isNoneBlank(dictTypeTemp.getId())) {
 
@@ -109,6 +118,59 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
             saveDictItemList(dictTypeTemp);
         }
         return dictTypeTemp;
+    }
+
+    // DS104 A3-A8/A10-A12: bulkInsert/bulkUpdate/bulkDelete generic truoc
+    // day de lo: null/rong roi xuong MyBatis <foreach> rong -> 500 SQL
+    // syntax (chi vo tinh ve 400 nho handler DS94, sai message), thieu
+    // truong NOT NULL (name/code/is_system) -> 500 DataIntegrityViolation,
+    // bulkUpdate id khong ton tai -> 200 silent no-op. Chan het o service
+    // de 400 ro nghia, kiem tra truoc moi ghi de batch hon hop khong doi
+    // dong hop le (A9). @Transactional(readOnly = false) tuong minh la bat
+    // buoc vi class-level la readOnly = true (mau DepartmentService DS103).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<DictType> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách loại từ điển không được để trống");
+        }
+        for (DictType dictType : entitys) {
+            if (StringUtils.isBlank(dictType.getName())) {
+                throw new ServiceException("Tên loại từ điển không được để trống");
+            }
+            if (StringUtils.isBlank(dictType.getCode())) {
+                throw new ServiceException("Mã loại từ điển không được để trống");
+            }
+            if (StringUtils.isBlank(dictType.getIsSystem())) {
+                throw new ServiceException("Cấp hệ thống không được để trống");
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<DictType> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách loại từ điển không được để trống");
+        }
+        for (DictType dictType : entitys) {
+            if (StringUtils.isNotBlank(dictType.getId())
+                    && dao.get(dictType.getId()) == null) {
+                throw new ServiceException("Loại từ điển không tồn tại: "
+                        + dictType.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<DictType> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách loại từ điển không được để trống");
+        }
+        return super.bulkDelete(entitys);
     }
 
     @Transactional(readOnly = false)
