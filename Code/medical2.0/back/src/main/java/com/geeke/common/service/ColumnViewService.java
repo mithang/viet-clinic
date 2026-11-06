@@ -243,7 +243,14 @@ public class ColumnViewService {
 			// Z3d: update SQL chi WHERE theo id, khong loc user — chan ghi de
 			// cau hinh cot cua user khac khi gui id la (fail-closed 400).
 			ColumnView existing = dao.get(cv.getId());
-			if (existing != null && !userId.equals(existing.getUserId())) {
+			// DS102: dao.update chi WHERE theo id — id khong ton tai thi
+			// update cham 0 dong nhung save van tra rows 0 va controller
+			// tra successJson(0) = HTTP 200 im lang (probe C1; ho silent
+			// no-op DS94/DS99). Chi chap nhan update khi dong da ton tai.
+			if (existing == null) {
+				throw new ServiceException("Cau hinh cot khong ton tai: " + cv.getId());
+			}
+			if (!userId.equals(existing.getUserId())) {
 				throw new ServiceException("Khong co quyen sua cau hinh cot cua nguoi dung khac");
 			}
 			rows = dao.update(cv);
