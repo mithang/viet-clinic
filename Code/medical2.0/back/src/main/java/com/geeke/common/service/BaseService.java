@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.geeke.common.service.ServiceException;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -32,7 +34,15 @@ public abstract class BaseService {
 		if (lastCode == null || lastCode.length() < 9) {
 			return datePrefix + "0000001";
 		}
-		int increment = Integer.parseInt(lastCode.substring(8)) + 1;
+		// DS98: a latest code whose 7-char suffix is not numeric (bad
+		// legacy/manual row) NFE'd -> 500 on every new slip. Fail closed
+		// 400 so the bad code row is fixed instead of failing silently.
+		int increment;
+		try {
+			increment = Integer.parseInt(lastCode.substring(8)) + 1;
+		} catch (NumberFormatException e) {
+			throw new ServiceException("Mã phiếu gần nhất không hợp lệ: " + lastCode);
+		}
 		String incrementStr = String.valueOf(increment);
 		StringBuilder prefix = new StringBuilder(datePrefix);
 		for (int i = 0; i < 7 - incrementStr.length(); i++) {
