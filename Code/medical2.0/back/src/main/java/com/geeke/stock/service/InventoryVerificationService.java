@@ -216,22 +216,36 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         medicinalStorageControlService.saveInternal(medicinalStorageControl);
 
         //Truy vấnđộngTồn khotổngkiểm soátbảng
-        List<Parameter> parameters = SearchParamsBuilder.create()
-                .eq("drug_stuff_id", medicinalStorageControl.getDrug().getId())
-                .build();
-        List<MedicinalStockControl> medicinalStockControls = medicinalStockControlService.listAll(parameters, "");
-        if (CollectionUtils.isEmpty(medicinalStockControls)) {
-            return;
+        // DS98: the aggregate must be looked up by the MSC row's own
+        // drug_stuff_id. The old code used getDrug().getId(), but the
+        // mapper fills drug.id with IFNULL(drug.id,'') -- '' for a stuff
+        // row or a dangling drug -- and Common.whereParams SKIPS an empty
+        // '=' value, so listAll returned ALL aggregates and .get(0)
+        // (ORDER BY update_date DESC) adjusted a WRONG drug's aggregate
+        // while the op-5 record carried the right id (silent cross-drug
+        // corruption on every stuff-type accomplish). A blank
+        // drug_stuff_id skips the lookup entirely (never touch an
+        // arbitrary row).
+        if (StringUtils.isNotBlank(medicinalStorageControl.getDrugStuffId())) {
+            List<Parameter> parameters = SearchParamsBuilder.create()
+                    .eq("drug_stuff_id", medicinalStorageControl.getDrugStuffId())
+                    .build();
+            List<MedicinalStockControl> medicinalStockControls = medicinalStockControlService.listAll(parameters, "");
+            if (!CollectionUtils.isEmpty(medicinalStockControls)) {
+                //độngTồn khotổngkiểm soátbảngSửa
+                MedicinalStockControl medicinalStockControl = medicinalStockControls.get(0);
+                BigDecimal newControlStock = medicinalStockControl.getStorageStock().add(new BigDecimal(profitAndLoss));
+                medicinalStockControl.setStorageStock(newControlStock);
+                medicinalStockControl.setSurplusStock(newControlStock);
+                // DS69: internal save -- the generic save() is fail-closed, so
+                // the guarded accomplish flow writes through saveInternal().
+                medicinalStockControlService.saveInternal(medicinalStockControl);
+            }
         }
-
-        //độngTồn khotổngkiểm soátbảngSửa
-        MedicinalStockControl medicinalStockControl = medicinalStockControls.get(0);
-        BigDecimal newControlStock = medicinalStockControl.getStorageStock().add(new BigDecimal(profitAndLoss));
-        medicinalStockControl.setStorageStock(newControlStock);
-        medicinalStockControl.setSurplusStock(newControlStock);
-        // DS69: internal save -- the generic save() is fail-closed, so
-        // the guarded accomplish flow writes through saveInternal().
-        medicinalStockControlService.saveInternal(medicinalStockControl);
+        // DS98: the op-5 record documents the detail-stock change that
+        // already happened above, so it is written even when no aggregate
+        // row exists (dangling drug / deleted aggregate) -- previously
+        // the early return skipped it, leaving an unaudited stock move.
 
         //Bản ghi thao tác tồn kho
         MedicinalStockRecord medicinalStockRecord = new MedicinalStockRecord();
