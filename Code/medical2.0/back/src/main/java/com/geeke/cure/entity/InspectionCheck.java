@@ -81,6 +81,7 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 		this.costItem = costItem;
 	}
 
+	@NotNull(message="Loại(0: Xét nghiệm; 1: Kiểm tra)Không được để trống")
 	@Length(min=1, max=1, message="Loại(0: Xét nghiệm; 1: Kiểm tra)Độ dài phải từ 1  và  1 Giữa")
 	public String getType() {
 		return type;
@@ -90,6 +91,7 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 	}
 	
 	
+	@NotNull(message="điềnTrạng thái(0: Chưađiền; 1: Đãđiền)Không được để trống")
 	@Length(min=1, max=1, message="điềnTrạng thái(0: Chưađiền; 1: Đãđiền)Độ dài phải từ 1  và  1 Giữa")
 	public String getStatus() {
 		return status;

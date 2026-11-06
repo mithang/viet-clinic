@@ -170,6 +170,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
         this.registration = registration;
     }
     
+	@NotNull(message="Lý do khám chínhKhông được để trống")
 	@Length(min=1, max=128, message="Lý do khám chínhĐộ dài phải nằm trong khoảng 1 đến 128 ")
 	public String getPatientTell() {
 		return patientTell;

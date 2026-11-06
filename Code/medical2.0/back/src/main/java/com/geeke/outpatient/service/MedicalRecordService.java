@@ -127,6 +127,25 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
     @Autowired
     private PresDrugService presDrugService;
 
+    /**
+     * DS81: patientTell is NOT NULL in the DB but the entity had only
+     * @Length(min=1) (null passes validation) and no reachable save path
+     * runs @Valid — saveWithFile/saveAdd/registerSave/allSave all parse
+     * the entity from a String and funnel here, so a null patientTell
+     * 500d on the insert (probe-proven). Fail closed 400 here, in the
+     * single-arg funnel every real save path uses. Null only: 7 live
+     * rows carry '' patientTell (registration flow inserts '' via the
+     * direct-DAO medicalRecordInserts path), so blank is NOT rejected.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public MedicalRecord save(MedicalRecord medicalRecord) {
+        if (medicalRecord.getPatientTell() == null) {
+            throw new ServiceException("Lý do khám chính không được để trống");
+        }
+        return super.save(medicalRecord);
+    }
+
     @Transactional(readOnly = false)
     public MedicalRecord save(MedicalRecord medicalRecord,
                               MultipartFile[] fileIdUploads,
