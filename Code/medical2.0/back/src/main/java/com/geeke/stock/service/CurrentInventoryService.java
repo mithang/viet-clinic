@@ -38,6 +38,61 @@ public class CurrentInventoryService {
     @Autowired
     private MedicinalStorageControlService medicinalStorageControlService;
 
+    // DS97: các thống kê giá trị tồn kho trước đây chia/trừ trực tiếp trên dữ
+    // liệu nullable (drug.price/preparation NULL, stuff.priceOutSell NULL,
+    // packNumber 0, MSC dangling -> preparation ''/packNumber null) nên MỘT
+    // dòng xấu làm cả endpoint 500 (NPE/NFE/ArithmeticException /0). Dòng xấu
+    // đóng góp 0 vào tổng (giữ nguyên tổng của các dòng tốt), không 500.
+    private static BigDecimal safeDecimal(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            String s = String.valueOf(value).trim();
+            if (s.isEmpty() || "null".equalsIgnoreCase(s)) {
+                return null;
+            }
+            return new BigDecimal(s);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // Số lượng còn lại của một dòng MSC (storage - used - reimburse); các cột
+    // NOT NULL nhưng vẫn guard null để không NPE khi mapper/join thiếu.
+    private static BigDecimal remainingStock(MedicinalStorageControl m) {
+        if (m == null || m.getStorageStock() == null) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal used = m.getUsedStock() == null ? BigDecimal.ZERO : m.getUsedStock();
+        BigDecimal reimburse = m.getReimburseStock() == null ? BigDecimal.ZERO : m.getReimburseStock();
+        return m.getStorageStock().subtract(used.add(reimburse));
+    }
+
+    // Số lượng còn lại của một thuốc/vật tư trong listAlls (stock join có thể
+    // null khi thuốc/vật tư chưa có dòng tồn kho tổng) -> null để caller bỏ qua.
+    private static BigDecimal remainingOfStock(MedicinalStockControl stock) {
+        if (stock == null || stock.getStorageStock() == null) {
+            return null;
+        }
+        BigDecimal used = stock.getUsedStock() == null ? BigDecimal.ZERO : stock.getUsedStock();
+        BigDecimal reimburse = stock.getReimburseStock() == null ? BigDecimal.ZERO : stock.getReimburseStock();
+        return stock.getStorageStock().subtract(used.add(reimburse));
+    }
+
+    // Đơn giá lẻ = giá bán / hệ số đóng gói; giá null, hệ số null/không số/
+    // <= 0 -> null (dòng xấu đóng góp 0 vào tổng thay vì 500).
+    private static BigDecimal unitPrice(BigDecimal price, Object packFactor) {
+        if (price == null) {
+            return null;
+        }
+        BigDecimal factor = safeDecimal(packFactor);
+        if (factor == null || factor.compareTo(BigDecimal.ZERO) <= 0) {
+            return null;
+        }
+        return price.divide(factor, 4, BigDecimal.ROUND_HALF_UP);
+    }
+
     @Transactional(readOnly = true)
     public HashMap<String, BigDecimal> getAllDrugs(List<Parameter> params, String orderby) {
         List<Drug> drugs = drugService.listAllDrug(params, orderby);
@@ -46,16 +101,20 @@ public class CurrentInventoryService {
         for (Drug drug : drugs) {
             //LấymỗiCáiThuốc của giá nhậpTổng cộng
             //tiến hành dònggiá bánTính
-            BigDecimal leastBid = drug.getPrice().divide(new BigDecimal(drug.getPreparation()),4,BigDecimal.ROUND_HALF_UP);
-            BigDecimal multiply = leastBid.multiply(drug.getStock().getStorageStock().subtract((drug.getStock().getUsedStock().add(drug.getStock().getReimburseStock()))));
-            totalSellingPrice = totalSellingPrice.add(multiply);
+            BigDecimal remaining = remainingOfStock(drug.getStock());
+            BigDecimal unit = unitPrice(drug.getPrice(), drug.getPreparation());
+            if (remaining != null && unit != null) {
+                totalSellingPrice = totalSellingPrice.add(unit.multiply(remaining));
+            }
         }
 
         //LấymỗiCáiThuốc của giá nhậpTổng cộng
         List<String> drugIds = new ArrayList<>();
         for (Drug d : drugs) { drugIds.add(d.getId()); }
         BigDecimal byDrugOrStuffIds = medicinalStorageControlService.getByDrugOrStuffIds(drugIds);
-        totalPrice = totalPrice.add(byDrugOrStuffIds);
+        if (byDrugOrStuffIds != null) {
+            totalPrice = totalPrice.add(byDrugOrStuffIds);
+        }
 
         HashMap<String, BigDecimal> totalMap = new HashMap<>();
         totalMap.put("totalPrice",totalPrice);
@@ -77,16 +136,20 @@ public class CurrentInventoryService {
         for (Stuff stuff : stuffs) {
             //LấyVật tư của tổnggiá nhập
             //LấyVật tư của tổnggiá bán
-            BigDecimal divide = stuff.getPriceOutSell().divide(new BigDecimal(stuff.getPackNumber() + ""), 4, BigDecimal.ROUND_HALF_UP);
-            BigDecimal multiply = divide.multiply(stuff.getStock().getStorageStock().subtract((stuff.getStock().getUsedStock().add(stuff.getStock().getReimburseStock()))));
-            totalSellingPrice = totalSellingPrice.add(multiply);
+            BigDecimal remaining = remainingOfStock(stuff.getStock());
+            BigDecimal unit = unitPrice(stuff.getPriceOutSell(), stuff.getPackNumber());
+            if (remaining != null && unit != null) {
+                totalSellingPrice = totalSellingPrice.add(unit.multiply(remaining));
+            }
         }
 
         //LấyVật tư của tổnggiá nhập
         List<String> stuffIds = new ArrayList<>();
         for (Stuff s : stuffs) { stuffIds.add(s.getId()); }
         BigDecimal byDrugOrStuffIds = medicinalStorageControlService.getByDrugOrStuffIds(stuffIds);
-        totalPrice = totalPrice.add(byDrugOrStuffIds);
+        if (byDrugOrStuffIds != null) {
+            totalPrice = totalPrice.add(byDrugOrStuffIds);
+        }
 
         HashMap<String, BigDecimal> totalMap = new HashMap<>();
         totalMap.put("totalPrice",totalPrice);
@@ -105,15 +168,22 @@ public class CurrentInventoryService {
         BigDecimal totalSellingPrice = new BigDecimal("0");
         if(!CollectionUtils.isEmpty(medicinalStorageControls)){
             for (MedicinalStorageControl medicinalStorageControl : medicinalStorageControls) {
+                BigDecimal remaining = remainingStock(medicinalStorageControl);
 
                 //Lấytất cả của giá nhậpTổng cộng
-                BigDecimal purchasing = new BigDecimal(medicinalStorageControl.getSupplierStock().getLeastBid() + "").multiply(medicinalStorageControl.getStorageStock().subtract(medicinalStorageControl.getUsedStock().add(medicinalStorageControl.getReimburseStock())));
-                totalPrice = totalPrice.add(purchasing);
+                BigDecimal leastBid = medicinalStorageControl.getSupplierStock() == null
+                        ? null : safeDecimal(medicinalStorageControl.getSupplierStock().getLeastBid());
+                if (leastBid != null) {
+                    totalPrice = totalPrice.add(leastBid.multiply(remaining));
+                }
 
                 //Lấytất cả của giá bán
-                BigDecimal divide = new BigDecimal((medicinalStorageControl.getDrug().getPrice()==null?0:medicinalStorageControl.getDrug().getPrice()) + "").divide(new BigDecimal((medicinalStorageControl.getDrug().getPreparation()==null?"0":medicinalStorageControl.getDrug().getPreparation())), 4, BigDecimal.ROUND_HALF_UP);
-                BigDecimal selling = (medicinalStorageControl.getStorageStock().subtract(medicinalStorageControl.getUsedStock().add(medicinalStorageControl.getReimburseStock()))).multiply(divide);
-                totalSellingPrice = totalSellingPrice.add(selling);
+                BigDecimal unit = medicinalStorageControl.getDrug() == null
+                        ? null : unitPrice(medicinalStorageControl.getDrug().getPrice(),
+                                medicinalStorageControl.getDrug().getPreparation());
+                if (unit != null) {
+                    totalSellingPrice = totalSellingPrice.add(remaining.multiply(unit));
+                }
             }
         }
         HashMap<String, BigDecimal> totalMap = new HashMap<>();
@@ -129,14 +199,21 @@ public class CurrentInventoryService {
         BigDecimal totalSellingPrice = new BigDecimal("0");
         if(!CollectionUtils.isEmpty(medicinalStorageControls)){
             for (MedicinalStorageControl medicinalStorageControl : medicinalStorageControls) {
+                BigDecimal remaining = remainingStock(medicinalStorageControl);
                 //Lấygiá nhậpTổng cộng
-                BigDecimal purchasing = new BigDecimal(medicinalStorageControl.getSupplierStock().getLeastBid() + "").multiply(medicinalStorageControl.getStorageStock().subtract(medicinalStorageControl.getUsedStock().add(medicinalStorageControl.getReimburseStock())));
-                totalPrice = totalPrice.add(purchasing);
+                BigDecimal leastBid = medicinalStorageControl.getSupplierStock() == null
+                        ? null : safeDecimal(medicinalStorageControl.getSupplierStock().getLeastBid());
+                if (leastBid != null) {
+                    totalPrice = totalPrice.add(leastBid.multiply(remaining));
+                }
 
                 //Tổng giá bán
-                BigDecimal divide = new BigDecimal(medicinalStorageControl.getStuff().getPriceOutSell() + "").divide(new BigDecimal(medicinalStorageControl.getStuff().getPackNumber()),4, BigDecimal.ROUND_HALF_UP);
-                BigDecimal selling = (medicinalStorageControl.getStorageStock().subtract(medicinalStorageControl.getUsedStock().add(medicinalStorageControl.getReimburseStock()))).multiply(divide);
-                totalSellingPrice = totalSellingPrice.add(selling);
+                BigDecimal unit = medicinalStorageControl.getStuff() == null
+                        ? null : unitPrice(medicinalStorageControl.getStuff().getPriceOutSell(),
+                                medicinalStorageControl.getStuff().getPackNumber());
+                if (unit != null) {
+                    totalSellingPrice = totalSellingPrice.add(remaining.multiply(unit));
+                }
             }
         }
         HashMap<String, BigDecimal> totalMap = new HashMap<>();
