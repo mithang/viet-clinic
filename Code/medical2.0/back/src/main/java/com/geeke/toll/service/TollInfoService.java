@@ -173,6 +173,15 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         //Đang tiến hành kiểm kê giờKhông thểtiến hành dòngThu phí/Hoàn phí
         validateInventoryNotInProgress(company.getId(), tollEvt.getTollInfo().getAmountStatus().getValue());
         TollInfo tollInfo = tollEvt.getTollInfo();
+        // DS98: discount null unboxes to NPE at :232
+        // (BigDecimal.valueOf(getDiscount())) AFTER the charge already
+        // ran -- validate up front so a missing discount fails closed
+        // 400 with nothing written. The UI always sends discount
+        // (retailCharge tollEncapsulation / tollInfo form); a missing
+        // one is a malformed call, not "no discount" (that is discount=1).
+        if (tollInfo.getDiscount() == null) {
+            throw new ServiceException("Chiết khấu không được để trống");
+        }
         List<RecipelInfoEvt> recipelInfoEvts = tollEvt.getRecipelInfos();
         TollInfo tollSave = null;
         Registration registration = null;
@@ -737,8 +746,18 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         DictItem dictItem = new DictItem();
         dictItem.setValue(BizConstants.RECIPEL_TYPE_EXTERNAL);
         //bán lẻĐơn thuốcMặc địnhchỉ có mộtCáiĐơn thuốc
+        // DS98 (K3-class): recipel_info.seq is NOT NULL, but the retail
+        // path never defaulted it -- a retail charge without seq 500d
+        // (Column 'seq' cannot be null), while v1 allSave / v2
+        // saveRecipelInfoEvt both set seq=i+1. Default the same way
+        // here; the UI sends seq:1, so this only bites API callers.
+        int recipelIdx = 0;
         for (RecipelInfoEvt recipelInfoEvt : recipelInfos) {
             RecipelInfo recipelInfo = recipelInfoEvt.getRecipelInfo();
+            recipelIdx++;
+            if (recipelInfo.getSeq() == null) {
+                recipelInfo.setSeq(recipelIdx);
+            }
             recipelInfo.setRecipelType(dictItem);
             //recipelInfo.setMedicalRecord(medicalRecord);
             recipelInfo.setRegistration(medicalRecord.getRegistration());
