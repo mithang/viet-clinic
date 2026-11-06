@@ -66,6 +66,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
         this.company = company;
     }
     
+	@NotNull(message="Tên mẫu không được để trống")
 	@Length(min=1, max=100, message="Tên mẫuĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getRecipetemplateName() {
 		return recipetemplateName;
@@ -84,6 +85,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
         this.type = type;
     }
     
+	@NotNull(message="Loại mẫu không được để trống")
 	@Length(min=1, max=1, message="mẫuLớploạiĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getCategory() {
 		return category;
@@ -130,6 +132,8 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 		this.code = code;
 	}
 
+	@NotNull(message="Mã mẫu không được để trống")
+	@Length(min=1, max=100, message="Độ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getCode() {
 		return code;
 	}

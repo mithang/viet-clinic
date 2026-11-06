@@ -29,6 +29,11 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 	@Override
 	@Transactional(readOnly = false)
 	public Department save(Department department) {
+        // DS80: sort NOT NULL nhung form co the khong gui; mac dinh 0 theo
+        // mau CompanyService (company.setSort(0)) thay vi 500 o cot sort.
+        if (department.getSort() == null) {
+            department.setSort(0);
+        }
         // Z3a: ep tenant theo session, theo mau ClinicOffice save (setCompany
         // session). Tao moi: company body bi ghi de bang tenant session, khong
         // tao duoc khoa/phong o tenant khac. Sua: dong cu thuoc tenant khac

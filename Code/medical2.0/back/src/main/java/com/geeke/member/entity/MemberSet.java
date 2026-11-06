@@ -43,6 +43,15 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 
+    // DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+    // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+    @Override
+    @NotNull(message="Tên gói hội viên không được để trống")
+    @Length(min=1, max=255, message="TênĐộ dài phải nằm trong khoảng 1 đến 255 ")
+    public String getName() {
+    	return super.getName();
+    }
+
 	@NotNull(message="Phòng khámidKhông được để trống")
     public Company getCompany() {
         return company;
@@ -86,6 +95,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 	
+	@NotNull(message="Trạng thái không được để trống")
 	@Length(min=1, max=1, message="Có bật không(0: Kích hoạt, 1:Vô hiệu hóa)Độ dài phải từ 1  và  1 Giữa")
 	public String getStatus() {
 		return status;
@@ -95,6 +105,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 	
+	@NotNull(message="Hết hiệu lực không được để trống")
 	@Length(min=1, max=1, message="Có hay khônghết hiệu lực(0:  không , 1:  có )Độ dài phải từ 1  và  1 Giữa")
 	public String getFailure() {
 		return failure;

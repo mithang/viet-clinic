@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class ClinicOfficeController extends CrudController<ClinicOfficeService, 
 
     @Override
     @PostMapping(value = "save")
-    public ResponseEntity<JSONObject> save(@RequestBody ClinicOffice entity) {
+    public ResponseEntity<JSONObject> save(@Valid @RequestBody ClinicOffice entity) {
         if (!hasAnySessionPermission()) {
             return forbidden();
         }

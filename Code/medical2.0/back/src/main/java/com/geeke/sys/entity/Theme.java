@@ -3,6 +3,7 @@ package com.geeke.sys.entity;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -28,6 +29,16 @@ public class Theme extends DataEntity<Theme> {
 	}
 	
 
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên chủ đề không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
+	@NotNull(message="Chủ đề không được để trống")
 	@Length(min=1, max=2000, message="Độ dài chủ đề phải nằm trong khoảng 1 đến 2000 ")
 	public String getTheme() {
 		return theme;

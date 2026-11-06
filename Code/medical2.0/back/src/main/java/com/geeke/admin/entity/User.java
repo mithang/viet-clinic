@@ -38,6 +38,15 @@ public class User extends DataEntity<User> implements IUser {
 	private String office; //thuộc vềKhoa
 	private String isWxuser="0";  //Có hay không là WeChatBệnh nhânNgười dùng
 
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên người dùng không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	public String getOffice() {
 		return office;
 	}
@@ -122,7 +131,8 @@ public class User extends DataEntity<User> implements IUser {
         this.department = department;
     }
     
-	@Length(min=1, max=32, message="Đăng nhậptênĐộ dài phải nằm trong khoảng 1 đến 32 ")
+	@NotNull(message="Tên đăng nhập không được để trống")
+	@Length(min=1, max=11, message="Đăng nhậptênĐộ dài phải nằm trong khoảng 1 đến 11 ")
 	public String getLoginName() {
 		return loginName;
 	}
@@ -164,7 +174,8 @@ public class User extends DataEntity<User> implements IUser {
 	}
 
 
-	@Length(min=0, max=100, message="emailĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@NotNull(message="Email không được để trống")
+	@Length(min=0, max=36, message="emailĐộ dài phải nằm trong khoảng 0 đến 36 ")
 	public String getEmail() {
 		return email;
 	}

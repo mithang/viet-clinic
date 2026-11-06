@@ -1,6 +1,7 @@
 package com.geeke.org.entity;
 
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,6 +58,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 
+	@NotNull(message="Tên tenant không được để trống")
 	@Length(min=1, max=100, message="tenanttênĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getUserName() {
 		return userName;
@@ -66,6 +68,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
+	@NotNull(message="Số điện thoại không được để trống")
 	@Length(min=1, max=20, message="Số điện thoạisốĐộ dài phải nằm trong khoảng 1 đến 20 ")
 	public String getPhoneNumber() {
 		return phoneNumber;
@@ -155,6 +158,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
+	@NotNull(message="Trạng thái không được để trống")
 	@Length(min=1, max=1, message="Độ dài trạng thái phải nằm trong khoảng 1 đến 1 ")
 	public String getIsUse() {
 		return isUse;

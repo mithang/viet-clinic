@@ -1,6 +1,7 @@
 package com.geeke.sys.entity;
 
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import com.google.common.collect.Lists;
 
@@ -30,6 +31,15 @@ public class DictType extends DataEntity<DictType> {
 		super(id);
 	}
 
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên loại từ điển không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	public Company getCompany() {
 		return company;
 	}
@@ -38,6 +48,7 @@ public class DictType extends DataEntity<DictType> {
 		this.company = company;
 	}
 
+	@NotNull(message="Mã loại từ điển không được để trống")
 	@Length(min=1, max=64, message="Độ dài mã loại từ điển phải nằm trong khoảng 1 đến 64 ")
 	public String getCode() {
 		return code;
@@ -47,6 +58,7 @@ public class DictType extends DataEntity<DictType> {
 	}
 	
 	
+	@NotNull(message="Cấp hệ thống không được để trống")
 	@Length(min=1, max=1, message="Hệ thốngcấpĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getIsSystem() {
 		return isSystem;

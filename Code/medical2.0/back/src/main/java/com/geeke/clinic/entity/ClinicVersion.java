@@ -27,6 +27,15 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 		super(id);
 	}
 
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên phiên bản không được để trống")
+	@Length(min=1, max=50, message="TênĐộ dài phải nằm trong khoảng 1 đến 50 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	@NotNull(message="phiên bảnMãKhông thể là trống")
 	public String getCode() {
 		return code;

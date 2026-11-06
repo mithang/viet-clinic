@@ -18,6 +18,15 @@ public class Role extends DataEntity<Role> {
 	private String code;		// Mã nguồn
 	private Integer isLocked;		// Vô hiệu hóa
 
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên vai trò không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	public String getParentId() {
 		return parentId;
 	}
@@ -49,6 +58,7 @@ public class Role extends DataEntity<Role> {
         this.company = company;
     }
     
+	@NotNull(message="Mã vai trò không được để trống")
 	@Length(min=1, max=32, message="Độ dài mã phải nằm trong khoảng 1 đến 32 ")
 	public String getCode() {
 		return code;

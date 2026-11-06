@@ -46,6 +46,15 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
+    // DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+    // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+    @Override
+    @NotNull(message="Tên phòng khám không được để trống")
+    @Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+    public String getName() {
+    	return super.getName();
+    }
+
     @NotNull(message="thuộc vềPhòng khámKhông thể là trống")
     public Company getCompany() {
         return company;
@@ -54,6 +63,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     public void setCompany(Company company) {
         this.company = company;
     }
+    @NotNull(message="Mã khoa không được để trống")
     @Length(min=1, max=64, message="Khoamã sốĐộ dài phải nằm trong khoảng 1 đến 64 ")
     public String getCode() {
         return code;
@@ -63,6 +73,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
+    @NotNull(message="Vô hiệu hóa không được để trống")
     @Length(min=1, max=1, message="Vô hiệu hóa(0: ChưaVô hiệu hóa; 1: Vô hiệu hóa)Độ dài phải từ 1  và  1 Giữa")
     public String getIsLocked() {
         return isLocked;

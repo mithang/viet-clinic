@@ -66,6 +66,24 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
     @Override
     @Transactional(readOnly = false)
     public GenTable save(GenTable genTable) {
+        // DS80: gen_table la metadata toan cuc, khong co cot company nen
+        // controller save KHONG co @Valid — them @Valid se bat ca @NotNull
+        // ke thua tren DataEntity.getCompany (form UI khong gui company)
+        // va lam hong moi luu GenTable hop le. Kiem tra fail-closed 400
+        // o day thay vi @Valid: null/rong qua validation se 500 o cot
+        // NOT NULL, chi con service check moi chan duoc.
+        if (StringUtils.isBlank(genTable.getName())) {
+            throw new ServiceException("Tên bảng không được để trống");
+        }
+        if (StringUtils.isBlank(genTable.getClassName())) {
+            throw new ServiceException("Tên lớp thực thể không được để trống");
+        }
+        if (StringUtils.isBlank(genTable.getSource())) {
+            throw new ServiceException("Nguồn không được để trống");
+        }
+        if (StringUtils.isBlank(genTable.getIsAssociation())) {
+            throw new ServiceException("Liên kết bảng không được để trống");
+        }
 
         String id = super.save(genTable).getId();
         if (StringUtils.isNoneBlank(id)) {

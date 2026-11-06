@@ -1,6 +1,7 @@
 package com.geeke.admin.entity;
 
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,6 +30,15 @@ public class Router extends TreeEntity<Router> {
 	}
 	
 
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên router không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	@Length(min=0, max=64, message="Độ dài mã phải nằm trong khoảng 0 đến 64 ")
 	public String getCode() {
 		return code;
@@ -47,6 +57,7 @@ public class Router extends TreeEntity<Router> {
 	}
 	
 	
+	@NotNull(message="Có thể phân phối không được để trống")
 	@Length(min=1, max=1, message="có thể không  phútphốiĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getCanPermission() {
 		return canPermission;
@@ -64,6 +75,7 @@ public class Router extends TreeEntity<Router> {
 	}
 	
 	
+	@NotNull(message="Thuộc tính mở rộng không được để trống")
 	@Length(min=1, max=1024, message="mở rộngthuộc tínhĐộ dài phải nằm trong khoảng 1 đến 1024 ")
 	public String getProperties() {
 		return properties;

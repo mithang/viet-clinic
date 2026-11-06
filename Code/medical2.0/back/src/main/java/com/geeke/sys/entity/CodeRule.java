@@ -1,6 +1,7 @@
 package com.geeke.sys.entity;
 
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -40,6 +41,15 @@ public class CodeRule extends DataEntity<CodeRule> {
 	 * thống để qua @NotNull. Mapper CodeRuleDao không dùng company nên giá
 	 * trị này không ghi vào DB và không đổi ngữ nghĩa dữ liệu.
 	 */
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên quy tắc mã không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	@Override
 	public Company getCompany() {
 		if (company == null) {
@@ -55,6 +65,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 		return company;
 	}
 
+	@NotNull(message="Mã không được để trống")
 	@Length(min=1, max=20, message="Độ dài mã phải nằm trong khoảng 1 đến 20 ")
 	public String getCode() {
 		return code;
@@ -64,6 +75,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 	}
 	
 	
+	@NotNull(message="Quy tắc không được để trống")
 	@Length(min=1, max=512, message="quy tắcĐộ dài phải nằm trong khoảng 1 đến 512 ")
 	public String getRuleDef() {
 		return ruleDef;

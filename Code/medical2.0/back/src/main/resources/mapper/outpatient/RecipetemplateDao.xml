@@ -115,6 +115,7 @@
             id,
             company_id,
             recipetemplate_name,
+            code,
             type,
             category,
             diagnosis,
@@ -122,12 +123,12 @@
             create_date,
             update_by,
             update_date,
-            del_flag,
-
+            del_flag
         ) VALUES (
             #{id},
             #{company.id},                    
             #{recipetemplateName},
+            #{code},
             #{type.value},                    
             #{category},
             #{diagnosis},
@@ -136,7 +137,6 @@
             #{updateBy},
             #{updateDate},
             #{delFlag}
-
         )
     </insert>
     
@@ -179,7 +179,7 @@
             update_by,
             update_date,
             del_flag,
-            single_dosage
+            code
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
         (
@@ -194,7 +194,7 @@
             #{entity.updateBy},
             #{entity.updateDate},
             #{entity.delFlag},
-            #{entity.singleDosage}
+            #{entity.code}
         )
         </foreach>
     </insert>
@@ -210,6 +210,11 @@
             <trim prefix="recipetemplate_name=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
                     when id=#{entity.id} then #{entity.recipetemplateName}
+                </foreach>
+            </trim>
+            <trim prefix="code=case" suffix="end,">
+                <foreach collection="entitys" item="entity" index="index">
+                    when id=#{entity.id} then #{entity.code}
                 </foreach>
             </trim>
             <trim prefix="type=case" suffix="end,">
@@ -237,9 +242,9 @@
                     when id=#{entity.id} then #{entity.updateDate}
                 </foreach>
             </trim>
-            <trim prefix="single_dosage=case" suffix="end,">
+            <trim prefix="remarks=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.singleDosage}
+                    when id=#{entity.id} then #{entity.remarks}
                 </foreach>
             </trim>
         </set>

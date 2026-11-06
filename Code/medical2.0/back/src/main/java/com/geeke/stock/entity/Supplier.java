@@ -2,6 +2,7 @@ package com.geeke.stock.entity;
 
 import com.geeke.org.entity.Company;
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -35,6 +36,15 @@ public class Supplier extends DataEntity<Supplier> {
 		super(id);
 	}
 	
+
+    // DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+    // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+    @Override
+    @NotNull(message="Tên nhà cung cấp không được để trống")
+    @Length(min=1, max=64, message="TênĐộ dài phải nằm trong khoảng 1 đến 64 ")
+    public String getName() {
+    	return super.getName();
+    }
 
     public Company getCompany() {
         return company;
@@ -122,6 +132,8 @@ public class Supplier extends DataEntity<Supplier> {
 		this.status=status;
 	}
 
+	@NotNull(message="Loại nhà cung cấp không được để trống")
+	@Length(min=1, max=1, message="Độ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getType() {
 		return type;
 	}
@@ -130,6 +142,8 @@ public class Supplier extends DataEntity<Supplier> {
 		this.type = type;
 	}
 
+	@NotNull(message="Mã pinyin không được để trống")
+	@Length(min=1, max=64, message="Độ dài phải nằm trong khoảng 1 đến 64 ")
 	public String getPinyinCode() {
 		return pinyinCode;
 	}

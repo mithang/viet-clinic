@@ -158,6 +158,8 @@ public class CostItem extends DataEntity<CostItem> {
 		this.isPackage = isPackage;
 	}
 
+	@NotNull(message="Mã pinyin không được để trống")
+	@Length(min=1, max=64, message="Độ dài phải nằm trong khoảng 1 đến 64 ")
 	public String getPinyinCode() {
 		return pinyinCode;
 	}

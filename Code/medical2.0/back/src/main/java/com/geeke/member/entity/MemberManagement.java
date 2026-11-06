@@ -123,6 +123,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
+	@NotNull(message="Trạng thái không được để trống")
 	@Length(min=1, max=1, message="Độ dài trạng thái phải nằm trong khoảng 1 đến 1 ")
 	public String getStatus() {
 		return status;

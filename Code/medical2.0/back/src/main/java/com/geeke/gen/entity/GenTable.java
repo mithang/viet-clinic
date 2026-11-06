@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.geeke.common.persistence.DataEntity;
 import com.google.common.collect.Lists;
 import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotNull;
 
 import java.util.List;
 /**
@@ -35,6 +36,15 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên bảng không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	@Length(min=0, max=500, message="Giải thíchĐộ dài phải nằm trong khoảng 0 đến 500 ")
 	public String getComments() {
 		return comments;
@@ -44,6 +54,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
+	@NotNull(message="Nguồn không được để trống")
 	@Length(min=0, max=128, message="đếnnguồnĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getSource() {
 		return source;
@@ -53,6 +64,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
+	@NotNull(message="Tên lớp thực thể không được để trống")
 	@Length(min=1, max=100, message="thực thểLớpTênĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getClassName() {
 		return className;
@@ -79,6 +91,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
+	@NotNull(message="Liên kết bảng không được để trống")
 	@Length(min=1, max=1, message=" có liên kếtbảngĐộ dài phải nằm trong khoảng 1 đến 1 ")
 	public String getIsAssociation() {
 		return isAssociation;

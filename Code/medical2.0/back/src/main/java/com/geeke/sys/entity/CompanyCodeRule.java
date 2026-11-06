@@ -28,6 +28,15 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 		super(id);
 	}
 	
+	// DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+	@Override
+	@NotNull(message="Tên quy tắc mã công ty không được để trống")
+	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	public String getName() {
+		return super.getName();
+	}
+
 	public String getCompanyId() {
 		return companyId;
 	}
@@ -45,6 +54,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
         this.sysRule = sysRule;
     }
     
+	@NotNull(message="Mã không được để trống")
 	@Length(min=1, max=20, message="Độ dài mã phải nằm trong khoảng 1 đến 20 ")
 	public String getCode() {
 		return code;
@@ -54,6 +64,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 	}
 	
 	
+	@NotNull(message="Quy tắc không được để trống")
 	@Length(min=1, max=512, message="quy tắcĐộ dài phải nằm trong khoảng 1 đến 512 ")
 	public String getRuleDef() {
 		return ruleDef;

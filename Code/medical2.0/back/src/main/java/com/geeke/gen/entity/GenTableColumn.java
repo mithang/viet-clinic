@@ -51,6 +51,15 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 		this.genTable = genTable;
 	}
 
+    // DS80: @Length(min=1) cho phep null, nen null qua @Valid roi 500 o cot name NOT NULL; override de fail-closed 400.
+    // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
+    @Override
+    @NotNull(message="Tên cột không được để trống")
+    @Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+    public String getName() {
+    	return super.getName();
+    }
+
 	@NotNull(message="bảngmã sốKhông thể là trống")
     public GenTable getGenTable() {
         return genTable;
@@ -60,7 +69,8 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.genTable = genTable;
     }
     
-	@Length(min=0, max=500, message="Giải thíchĐộ dài phải nằm trong khoảng 0 đến 500 ")
+	@NotNull(message="Giải thích không được để trống")
+	@Length(min=0, max=64, message="Giải thíchĐộ dài phải nằm trong khoảng 0 đến 64 ")
 	public String getComments() {
 		return comments;
 	}
@@ -69,6 +79,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
+	@NotNull(message="Loại vật lý không được để trống")
 	@Length(min=1, max=100, message="vật lýLoạiĐộ dài phải nằm trong khoảng 1 đến 100 ")
 	public String getJdbcType() {
 		return jdbcType;
@@ -95,6 +106,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.customType = customType;
     }
     
+	@NotNull(message="Tên thuộc tính không được để trống")
 	@Length(min=1, max=200, message="thuộc tínhtênĐộ dài phải nằm trong khoảng 1 đến 200 ")
 	public String getJavaField() {
 		return javaField;
@@ -140,6 +152,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
+	@NotNull(message="Có thể biên không được để trống")
 	@Length(min=0, max=1, message="có thểbiênĐộ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getIsEdit() {
 		return isEdit;
