@@ -516,7 +516,12 @@
             setl_id,
             card_type,
             is_pre,
-            queue_number
+            queue_number,
+            practicle_registration_fee,
+            practicle_registration_pay_remarks,
+            workplace,
+            nation,
+            occupation
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
         (
@@ -569,7 +574,12 @@
             #{entity.setlId},
             #{entity.cardType.value},
             #{entity.isPre},
-            #{entity.queueNumber}
+            #{entity.queueNumber},
+            #{entity.practicleRegistrationFee},
+            #{entity.practicalRegistrationPayRemarks},
+            #{entity.workplace},
+            #{entity.nation},
+            #{entity.occupation}
         )
         </foreach>
     </insert>

@@ -197,7 +197,13 @@
             checkout_num,
             checkout_date,
             checkout_office,
-            report_conclusion
+            report_conclusion,
+            check_type,
+            check_part,
+            check_advise,
+            opinion,
+            doctor,
+            check_project
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
         (
@@ -212,7 +218,13 @@
             #{entity.checkoutNum},
             #{entity.checkoutDate},
             #{entity.checkoutOffice},
-            #{entity.reportConclusion}
+            #{entity.reportConclusion},
+            #{entity.checkType},
+            #{entity.checkPart},
+            #{entity.checkAdvise},
+            #{entity.opinion},
+            #{entity.doctor},
+            #{entity.checkProject}
         )
         </foreach>
     </insert>

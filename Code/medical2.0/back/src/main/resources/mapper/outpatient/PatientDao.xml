@@ -289,7 +289,8 @@
             del_flag,
             guardian_name,
             guardian_phone,
-            open_id
+            open_id,
+            card_type
         ) VALUES 
         <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
         (
@@ -316,7 +317,8 @@
             #{entity.delFlag},
             #{entity.guardianName},
             #{entity.guardianPhone},
-            #{entity.openId}
+            #{entity.openId},
+            #{entity.cardType}
         )
         </foreach>
     </insert>
