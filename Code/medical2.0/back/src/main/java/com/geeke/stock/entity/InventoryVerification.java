@@ -3,6 +3,8 @@ package com.geeke.stock.entity;
 import com.geeke.org.entity.Company;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.geeke.common.persistence.DataEntity;
@@ -41,6 +43,12 @@ public class InventoryVerification extends DataEntity<InventoryVerification> {
         this.company = company;
     }
     
+	// DS82: code + status are NOT NULL and the insert is static, but the
+	// entity had only @Length (null passes @Valid), so the inherited
+	// CrudController generic save 500d on nulls. The real UI path
+	// GET save/{type}/{variety} generates the code and sets status "0"
+	// server-side before super.save, so @NotNull cannot break it.
+	@NotNull(message="kiểm kêđơnsốKhông được để trống")
 	@Length(min=1, max=255, message="kiểm kêđơnsốĐộ dài phải nằm trong khoảng 1 đến 255 ")
 	public String getCode() {
 		return code;
@@ -50,6 +58,7 @@ public class InventoryVerification extends DataEntity<InventoryVerification> {
 	}
 	
 	
+	@NotNull(message="kiểm kêTrạng tháiKhông được để trống")
 	@Length(min=0, max=1, message="kiểm kêĐộ dài trạng thái phải nằm trong khoảng 0 đến 1 ")
 	public String getStatus() {
 		return status;

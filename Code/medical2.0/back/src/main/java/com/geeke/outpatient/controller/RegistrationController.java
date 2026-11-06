@@ -261,6 +261,12 @@ public class RegistrationController extends CrudController<RegistrationService, 
     @PostMapping(value = "registationupdate")
     public ResponseEntity<JSONObject> registationupdate(@RequestBody RegistrationMedicalrecordlist entitys) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        // DS82: registration null NPEd at getRegistration().setUpdateDate
+        // -> 500; fail closed 400 like the print path below.
+        if (entitys.getRegistration() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         entitys.getRegistration().setUpdateDate(new Date());
         int row = registrationService.registrationupdate(entitys.getRegistration());
         if(entitys.getMedicalRecord()!=null) {

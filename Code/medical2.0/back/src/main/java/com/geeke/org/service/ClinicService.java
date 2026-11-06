@@ -61,6 +61,16 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
 
     @Transactional(readOnly = false)
     public Company save(Company clinic, MultipartFile[] fileIdUploads, String[] deleteIds) throws java.io.IOException {
+        // DS82: phoneNumber is NOT NULL in org_company and the controller
+        // parses the entity from a String (no @Valid), so a null phone
+        // 500d at the company insert (and, had it passed, NPEd at
+        // phoneNumber.substring in createUserAndRole). No live company
+        // carries a blank phone, so blank is rejected too. Guard first,
+        // before any file/company write, so the transaction has nothing
+        // to roll back.
+        if (StringUtils.isBlank(clinic.getPhoneNumber())) {
+            throw new com.geeke.common.service.ServiceException("Số điện thoại phòng khám không được để trống");
+        }
         if (StringUtils.isBlank(clinic.getFileId())) {
             clinic.setFileId(IdGen.uuid());
         }

@@ -1,10 +1,13 @@
 package com.geeke.outpatient.service;
 
 import com.geeke.common.data.Page;
+import com.geeke.common.service.ServiceException;
 import com.geeke.outpatient.dao.BlmbDao;
 import com.geeke.outpatient.entity.Blmb;
 import com.geeke.outpatient.entity.Blmcxrc;
 import com.geeke.utils.IdGen;
+import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,38 @@ public class BlmbService {
      */
     @Transactional(readOnly = false)
     public int insert(Blmb blmb){
+        // DS82: direct-DAO insert into casehistorymbgl; mbmc/mblx/bllx/
+        // CREATED_BY/CREATED_ID/del_flag are all NOT NULL but the service
+        // set only mbbm + createdTime, so a body missing any of the rest
+        // 500d. No live row carries a blank in any of them, so blank is
+        // rejected for the three form fields; createdBy/createdID/delFlag
+        // are system-populated (the real form sends the session user +
+        // '0'), so blank ones are filled here instead of 400ing — same
+        // values the form computes, never overriding a caller value.
+        if (StringUtils.isBlank(blmb.getMbmc())) {
+            throw new ServiceException("Tên mẫu không được để trống");
+        }
+        if (StringUtils.isBlank(blmb.getMblx())) {
+            throw new ServiceException("Loại mẫu không được để trống");
+        }
+        if (StringUtils.isBlank(blmb.getBllx())) {
+            throw new ServiceException("Loại bệnh án không được để trống");
+        }
+        if (StringUtils.isBlank(blmb.getCreatedBy()) || StringUtils.isBlank(blmb.getCreatedID())) {
+            com.geeke.admin.entity.User user = SessionUtils.getUser();
+            if (user == null || StringUtils.isBlank(user.getId()) || StringUtils.isBlank(user.getName())) {
+                throw new ServiceException("Người tạo không được để trống");
+            }
+            if (StringUtils.isBlank(blmb.getCreatedBy())) {
+                blmb.setCreatedBy(user.getName() + "(" + user.getLoginName() + ")");
+            }
+            if (StringUtils.isBlank(blmb.getCreatedID())) {
+                blmb.setCreatedID(user.getId());
+            }
+        }
+        if (StringUtils.isBlank(blmb.getDelFlag())) {
+            blmb.setDelFlag("0");
+        }
         // Q3 (iteration 40): ep session tenant cho duong ghi, nhu
         // getblmblist/selectmbbm — companyId la bi ghi de bang session
         // tenant nen khong chen duoc mau vao tenant la.

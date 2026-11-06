@@ -407,6 +407,26 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     @Transactional(readOnly = false)
     public int medicalRecordInserts(MedicalRecord medicalRecord) {
+        // DS82: direct-DAO insert bypasses the DS81 MedicalRecordService.save
+        // guard (no @Valid runs on this path — the controller parses the
+        // entity from JSON and calls straight here), so a null patientTell /
+        // doctor id / registration id 500d on the NOT NULL columns, and a
+        // >128-char patientTell 500d under STRICT_TRANS_TABLES. Fail closed
+        // 400 here, in the same words as the DS81 guard. Null-only for
+        // patientTell: live rows carry '' (inserted by this same path), so
+        // blank is NOT rejected; length is capped at the DB 128.
+        if (medicalRecord.getPatientTell() == null) {
+            throw new com.geeke.common.service.ServiceException("Lý do khám chính không được để trống");
+        }
+        if (medicalRecord.getPatientTell().length() > 128) {
+            throw new com.geeke.common.service.ServiceException("Lý do khám chính độ dài phải nằm trong khoảng 1 đến 128");
+        }
+        if (medicalRecord.getDoctor() == null || medicalRecord.getDoctor().getId() == null) {
+            throw new com.geeke.common.service.ServiceException("Bác sĩ không được để trống");
+        }
+        if (medicalRecord.getRegistration() == null || medicalRecord.getRegistration().getId() == null) {
+            throw new com.geeke.common.service.ServiceException("Lượt đăng ký khám không được để trống");
+        }
         medicalRecord.setDiagnose("");
         medicalRecord.setId(IdGen.uuid());
         medicalRecord.setCompany(SessionUtils.getUser().getCompany());
