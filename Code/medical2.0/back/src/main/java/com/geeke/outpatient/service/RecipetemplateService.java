@@ -156,6 +156,12 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         //tự độngTạoMã mẫu
         String code = this.dao.listOne(recipetemplate.getCompany().getId());
         if(code!=null){
+            // DS97: mã mẫu mới nhất không đúng dạng MB+chữ số (dữ liệu cũ/
+            // import tay) làm parseInt NFE -> 500 khi lưu mẫu mới; fail-closed
+            // 400 thay vì 500 (kể cả mã ngắn hơn 2 ký tự hay "MB" trơn).
+            if (!code.matches("^MB\\d+$")) {
+                throw new ServiceException("Mã mẫu hiện tại không đúng định dạng (MB + số), không thể tự sinh mã mới");
+            }
             String substring = code.substring(2);
             int i = Integer.parseInt(substring);
             String newCode=(i+1)+"";
