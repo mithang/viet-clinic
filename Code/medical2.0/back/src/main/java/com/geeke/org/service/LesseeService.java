@@ -137,6 +137,16 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
         } else if (entity != null) {
             checkLesseeTenant(entity);
             checkLesseeNameTenant(entity.getCompanyName());
+            // DS106 C1: save voi id khong ton tai truoc day roi qua
+            // CrudService.save -> doUpdate 0 dong roi van 200 silent
+            // no-op (checkLesseeTenant bo qua khi stored null, cung mau
+            // DS94/DS99). Kiem tra ton tai truoc moi ghi, sau guard ten.
+            // Truong bat buoc (userName/phoneNumber/isUse @NotNull) da
+            // duoc @Valid o controller chan o save don.
+            if (dao.get(entity.getId()) == null) {
+                throw new ServiceException("Thuê bao không tồn tại: "
+                        + entity.getId());
+            }
         }
         return super.save(entity);
     }
@@ -148,6 +158,27 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<Lessee> entitys) {
+        // DS106 C4/C6/C10/C11: bulkInsert truoc day de lo: null/rong roi
+        // xuong for-loop (NPE 500) / MyBatis <foreach> rong (500 SQL);
+        // thieu userName/phoneNumber (NOT NULL) -> 500 vi bulk bypass
+        // @Valid. Chan het o service de 400 ro nghia, truoc vong tenant.
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thuê bao không được để trống");
+        }
+        for (Lessee entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Thuê bao không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getUserName())) {
+                throw new ServiceException("Tên tenant không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getPhoneNumber())) {
+                throw new ServiceException("Số điện thoại không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getIsUse())) {
+                throw new ServiceException("Trạng thái không được để trống");
+            }
+        }
         if (entitys != null) {
             for (Lessee entity : entitys) {
                 if (entity != null) {
@@ -165,6 +196,33 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<Lessee> entitys) {
+        // DS106 C2/C3/C5/C9/C12: bulkUpdate truoc day de lo: null/rong ->
+        // 500; id khong ton tai -> 200 silent no-op; batch hon hop doi ca
+        // dong hop le; isUse bi drop -> CASE set is_use=NULL -> 500 NOT
+        // NULL. Tien kiem TOAN BO list (ton tai + truong bat buoc) truoc
+        // moi ghi (fail-closed ca list, mau N1), truoc vong tenant.
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thuê bao không được để trống");
+        }
+        for (Lessee entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Thuê bao không được để trống");
+            }
+            if (StringUtils.isNotBlank(entity.getId())
+                    && dao.get(entity.getId()) == null) {
+                throw new ServiceException("Thuê bao không tồn tại: "
+                        + entity.getId());
+            }
+            if (StringUtils.isBlank(entity.getUserName())) {
+                throw new ServiceException("Tên tenant không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getPhoneNumber())) {
+                throw new ServiceException("Số điện thoại không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getIsUse())) {
+                throw new ServiceException("Trạng thái không được để trống");
+            }
+        }
         if (entitys != null) {
             for (Lessee entity : entitys) {
                 if (entity != null) {
@@ -271,6 +329,12 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<Lessee> entitys) {
+        // DS106 C7-C8: bulkDelete null/rong -> 400 ro nghia thay vi NPE
+        // 500 o vong tenant / <foreach> rong. bulkDelete id khong ton tai
+        // GIU NGUYEN 200 rows 0 idempotent (DS99 G11).
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thuê bao không được để trống");
+        }
         if (entitys != null) {
             for (Lessee entity : entitys) {
                 checkLesseeTenant(entity);
