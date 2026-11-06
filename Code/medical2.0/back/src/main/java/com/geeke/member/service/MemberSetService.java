@@ -74,6 +74,15 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
            // (reproduced live). Same two checks as generic save.
            verifyTenantOwnership(memberSet);
            verifyTenantOwnershipAgainstStoredRow(memberSet);
+           // DS105 C1: save voi id khong ton tai truoc day roi qua
+           // verifyTenantOwnershipAgainstStoredRow (bo qua khi stored==null,
+           // cung mau DS94/DS99) roi dao.update 0 dong nhung van 200 silent
+           // no-op, lai xoa + tao lai MemberItem cho id ma. Kiem tra ton
+           // tai truoc moi ghi.
+           if (this.dao.get(memberSet.getId()) == null) {
+               throw new ServiceException("Cài đặt thẻ hội viên không tồn tại: "
+                       + memberSet.getId());
+           }
            memberSet.preUpdate();
            //Khi sửa số lượng thẻ hội viên cần kiểm tra số lượng thẻ đã phát hành có lớn hơn số lượng phát hành không
            List<MemberManagement> memberManagements = memberManagementService.getByMemberSetId(memberSet.getId());
@@ -106,6 +115,67 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
            }
        }
         return memberSet;
+    }
+
+    // DS105 C3-C8/C10-C12: bulkInsert/bulkUpdate/bulkDelete generic truoc
+    // day de lo: null/rong roi xuong MyBatis <foreach> rong -> 500 SQL
+    // syntax, thieu truong NOT NULL (name/type/money) -> 500
+    // DataIntegrityViolation, bulkUpdate id khong ton tai -> 200 silent
+    // no-op (hoac 500 do bind #{entity.type}). Chan het o service de 400
+    // ro nghia, kiem tra truoc moi ghi de batch hon hop khong doi dong hop
+    // le (C9). @Transactional (readOnly = false) tuong minh vi class-level
+    // la readOnly = true (mau SupplierService DS104).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<MemberSet> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
+        }
+        for (MemberSet memberSet : entitys) {
+            validateRequiredFields(memberSet);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<MemberSet> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
+        }
+        for (MemberSet memberSet : entitys) {
+            if (StringUtils.isNotBlank(memberSet.getId())
+                    && this.dao.get(memberSet.getId()) == null) {
+                throw new ServiceException("Cài đặt thẻ hội viên không tồn tại: "
+                        + memberSet.getId());
+            }
+            validateRequiredFields(memberSet);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<MemberSet> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    // DS105 C10-C12: bulkInsert/bulkUpdate bo qua @Valid, truong NOT NULL
+    // thieu se 500 o mapper. type la DictItem: chi value moi co nghia.
+    private void validateRequiredFields(MemberSet memberSet) {
+        if (StringUtils.isBlank(memberSet.getName())) {
+            throw new ServiceException("Tên cài đặt thẻ hội viên không được để trống");
+        }
+        if (memberSet.getType() == null
+                || StringUtils.isBlank(memberSet.getType().getValue())) {
+            throw new ServiceException("Loại thẻ hội viên không được để trống");
+        }
+        if (memberSet.getMoney() == null) {
+            throw new ServiceException("Số tiền thẻ hội viên không được để trống");
+        }
     }
 
     @Transactional
