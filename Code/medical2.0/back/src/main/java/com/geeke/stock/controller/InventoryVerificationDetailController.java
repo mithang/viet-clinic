@@ -51,10 +51,13 @@ public class InventoryVerificationDetailController extends CrudController<Invent
         List<InventoryVerificationDetail> rows = result.getRows();
         if (rows!=null){
             for (InventoryVerificationDetail row : rows) {
+                // DS97: chi tiết không có cả thuốc lẫn vật tư (drug_id và
+                // stuff_id đều NULL) làm nhánh else deref row.getStuff()
+                // null -> NPE -> 500 cả trang; bỏ qua enrich dòng đó.
                 if(!StringUtils.isNullOrEmpty(row.getDrug())){
                     Drug drug = drugService.get(row.getDrug().getId());
                     row.setDrug(drug);
-                }else {
+                }else if(!StringUtils.isNullOrEmpty(row.getStuff())){
                     Stuff stuff = stuffService.get(row.getStuff().getId());
                     row.setStuff(stuff);
                 }
