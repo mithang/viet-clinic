@@ -45,6 +45,14 @@ public class WxUserService extends CrudService<WxUserDao, WxUser> {
        // WxUser wxUser = new WxUser();
         // LấycodeDữ liệu
         JSONObject object = wechatUtil.getOpenId(wxUser.getCode());
+        // DS84: getOpenId tra null khi goi WeChat loi, hoac JSON loi
+        // khong co openid (code gia/het han, chua cau hinh app-id);
+        // deref thang se NPE 500 -> tra null, controller chuyen
+        // thanh 400. Khong cham DB khi chua co openid.
+        if (object == null || object.get("openid") == null
+                || object.get("session_key") == null) {
+            return null;
+        }
         // jsonDữ liệuChuyển đổi thành chuỗi
         String openid = object.get("openid").toString();
         String sessionkey = object.get("session_key").toString();
@@ -76,58 +84,71 @@ public class WxUserService extends CrudService<WxUserDao, WxUser> {
     public WxUser getPhone(WxUser wxUser) {
         WxUser dto = new WxUser();
         JSONObject token = wechatUtil.getToken();
-        if(!ObjectUtils.isEmpty(token.get("access_token"))){
-            JSONObject phone = wechatUtil.getPhoneNumber(wxUser.getCode(), token.get("access_token").toString());
-            if(Objects.equals(phone.get("errcode").toString(),"0")){
-                String phone_info = phone.get("phone_info").toString();
-                JSONObject jsonObject = JSONObject.parseObject(phone_info);
-                String phoneNumber = jsonObject.get("phoneNumber").toString();
-                //QuaopenIdLấyCó hay khôngcóđóNgười dùngThông tin
-                WxUser byOpenId = wxUserDao.getByOpenId(wxUser.getOpenId());
-                String tokens="";
-                if(!ObjectUtils.isEmpty(byOpenId)){
-                    logger.debug("WxUser found: {}", byOpenId);
-                    wxUserDao.update(phoneNumber,wxUser.getOpenId());
+        // DS84: getToken/getPhoneNumber tra null khi goi WeChat loi
+        // (mat mang / cau hinh thieu); deref thang se NPE 500.
+        // Token loi (khong co access_token) cung la that bai, khong
+        // phai thanh cong voi data null mo ho -> tra null, controller
+        // chuyen thanh 400.
+        if (token == null || ObjectUtils.isEmpty(token.get("access_token"))) {
+            return null;
+        }
+        JSONObject phone = wechatUtil.getPhoneNumber(wxUser.getCode(), token.get("access_token").toString());
+        if (phone == null || phone.get("errcode") == null
+                || !Objects.equals(phone.get("errcode").toString(), "0")
+                || phone.get("phone_info") == null) {
+            return null;
+        }
+        JSONObject jsonObject = JSONObject.parseObject(phone.get("phone_info").toString());
+        if (jsonObject == null || jsonObject.get("phoneNumber") == null) {
+            return null;
+        }
+        String phoneNumber = jsonObject.get("phoneNumber").toString();
+        //QuaopenIdLấyCó hay khôngcóđóNgười dùngThông tin
+        WxUser byOpenId = wxUserDao.getByOpenId(wxUser.getOpenId());
+        String tokens = "";
+        if (!ObjectUtils.isEmpty(byOpenId)) {
+            logger.debug("WxUser found: {}", byOpenId);
+            wxUserDao.update(phoneNumber, wxUser.getOpenId());
 
-                    //Lưuxongsautiến hành dòngsauđầuLưuWeChatBệnh nhân
+            //Lưuxongsautiến hành dòngsauđầuLưuWeChatBệnh nhân
 
-                    //TheoPhòng khámid và openidLấyCó hay khôngcóđóNgười dùng
-                    User user1 = userService.getCompanyIdAndOpenId(byOpenId.getCompany().getId(),wxUser.getOpenId());
-                    User user = new User();
-                    if(!ObjectUtils.isEmpty(user1)){
-                        // Người dùngĐã tồn tại, Cập nhật
-                        user.setId(user1.getId());
-                        userService.updateWxUser(user);
-                    }else {
-                        // Người dùngKhông tồn tại, mớixây dựng
-                        user.setId(IdGen.uuid());
-                        user.setCompany(byOpenId.getCompany());
-                        user.setIsWxuser("1");
-                        user.setIsLocked(0);
-                        user.setLoginName(wxUser.getOpenId());
-                        int length = wxUser.getOpenId().length();
-                        String substring = wxUser.getOpenId().substring(length-6);
-                        logger.debug("WxUser password suffix: {}", substring);
-                        Md5Hash md5 = new Md5Hash(substring, user.getId(), 10000);
-                        user.setLoginPassword(md5.toHex());
-                        user.setName(byOpenId.getOpenId());
-                        user.setPhone(phoneNumber);
-                        userService.saveWxUser(user);
-                    }
-
-                }
-                dto.setPhone(phoneNumber);
-                dto.setToken(tokens);
-                return dto;
+            //TheoPhòng khámid và openidLấyCó hay khôngcóđóNgười dùng
+            User user1 = userService.getCompanyIdAndOpenId(byOpenId.getCompany().getId(), wxUser.getOpenId());
+            User user = new User();
+            if (!ObjectUtils.isEmpty(user1)) {
+                // Người dùngĐã tồn tại, Cập nhật
+                user.setId(user1.getId());
+                userService.updateWxUser(user);
+            } else {
+                // Người dùngKhông tồn tại, mớixây dựng
+                user.setId(IdGen.uuid());
+                user.setCompany(byOpenId.getCompany());
+                user.setIsWxuser("1");
+                user.setIsLocked(0);
+                user.setLoginName(wxUser.getOpenId());
+                int length = wxUser.getOpenId().length();
+                String substring = wxUser.getOpenId().substring(length - 6);
+                logger.debug("WxUser password suffix: {}", substring);
+                Md5Hash md5 = new Md5Hash(substring, user.getId(), 10000);
+                user.setLoginPassword(md5.toHex());
+                user.setName(byOpenId.getOpenId());
+                user.setPhone(phoneNumber);
+                userService.saveWxUser(user);
             }
         }
-
-        return null;
+        dto.setPhone(phoneNumber);
+        dto.setToken(tokens);
+        return dto;
     }
 
     @Transactional(readOnly = false)
     public WxUser initLogin(WxUser wxUser) {
         JSONObject object = wechatUtil.getOpenId(wxUser.getCode());
+        // DS84: nhu getCode — tra loi WeChat loi / khong co openid
+        // -> tra null thay vi NPE 500; controller chuyen thanh 400.
+        if (object == null || object.get("openid") == null) {
+            return null;
+        }
         // jsonDữ liệuChuyển đổi thành chuỗi
         String openid = object.get("openid").toString();
         WxUser user = wxUserDao.getByOpenId(openid);

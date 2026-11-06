@@ -794,6 +794,19 @@ public class UserService extends CrudService<UserDao, User>{
 
     @Transactional
     public void saveWxUser(User user){
+        // DS84: dao.insert la INSERT tinh toan bo cot; email /
+        // createBy / updateBy deu NOT NULL khong co default, trong
+        // khi getPhone chi set id/company/isWxuser/isLocked/loginName
+        // /loginPassword/name/phone -> duong WeChat that se 500 loi
+        // DB. Mac dinh "" cho cac truong chuoi nhu
+        // normalizeUserForFileSave (DS83); delFlag da mac dinh "0"
+        // o DataEntity, isLocked/loginPassword do caller set.
+        if (user.getEmail() == null) user.setEmail("");
+        if (user.getCreateBy() == null) user.setCreateBy("");
+        if (user.getUpdateBy() == null) user.setUpdateBy("");
+        if (user.getName() == null) user.setName("");
+        if (user.getPhone() == null) user.setPhone("");
+        if (user.getLoginName() == null) user.setLoginName("");
         user.setCreateDate(new Date());
         user.setUpdateDate(new Date());
         this.dao.insert(user);
