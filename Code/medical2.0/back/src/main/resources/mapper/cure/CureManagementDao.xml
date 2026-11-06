@@ -139,52 +139,8 @@
         WHERE id = #{id}
     </update>
     
-    <update id="delete">
-        DELETE FROM cure
-        <choose>
-            <when test="id !=null and id != ''">
-                WHERE id = #{id}
-            </when>
-            <otherwise>
-                WHERE toll_id = #{tollId.id}
-            </otherwise>
-        </choose>
-    </update>
         
-    <insert id="bulkInsert" parameterType="java.util.List">
-        INSERT INTO cure(
-            id,
-            recipel_id,
-            toll_id
-        ) VALUES 
-        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
-        (
-            #{entity.id},
-            #{entity.recipel.id},                    
-            #{entity.tollId.id}
-        )
-        </foreach>
-    </insert>
     
-    <update id="bulkUpdate" parameterType="java.util.List">    
-        UPDATE cure
-        <set>           
-            <trim prefix="recipel_id=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.recipel.id}
-                </foreach>
-            </trim>
-            <trim prefix="toll_id=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.tollId.id}
-                </foreach>
-            </trim>
-        </set>
-        WHERE id IN
-        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
-            #{entity.id}
-        </foreach>
-    </update>
     
     
     <update id="bulkDelete" parameterType="java.util.List">

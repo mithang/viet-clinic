@@ -92,55 +92,6 @@
         LEFT JOIN manufacture_factory factory ON factory.id = drug.factory
     </sql>
 
-    <insert id="saveDrug">
-        INSERT INTO supplier_outbound_detail(
-        id,
-        company_id,
-        supplier_outbound_id,
-        drug_id,
-        stuff_id,
-        current_stock,
-        number,
-        medicinal_storage_id,
-        remarks,
-        create_by,
-        create_date,
-        update_by,
-        update_date
-        ) VALUES
-        <foreach collection="medicinalStorageControls" item="item" open="" separator="," close="" index="index">
-            (
-            #{item.id},
-            #{item.company.id},
-            #{item.supplierOutbound.id},
-            <choose>
-                <when test="item.drug != null">
-                    #{item.drug.id},
-                </when>
-                <otherwise>
-                    null,
-                </otherwise>
-            </choose>
-            <choose>
-                <when test="item.stuff != null">
-                    #{item.stuff.id},
-                </when>
-                <otherwise>
-                    null,
-                </otherwise>
-            </choose>
-            #{item.currentStock},
-            #{item.number},
-            #{item.medicinalStorage.id},
-            #{item.remark},
-            #{item.createBy},
-            #{item.createDate},
-            #{item.updateBy},
-            #{item.updateDate}
-            )
-        </foreach>
-    </insert>
-
     <select id="getByOutboundId" resultType="com.geeke.stock.entity.SupplierOutboundDetail">
         SELECT
         <include refid="supplierOutboundDetailColumns"/>

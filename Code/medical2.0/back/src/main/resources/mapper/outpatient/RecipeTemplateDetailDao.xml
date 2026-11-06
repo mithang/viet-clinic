@@ -131,48 +131,7 @@
         WHERE a.recipetemplate_info_id = #{recipeTemplateInfoId}
     </select>
 
-    <insert id="insert">
-        INSERT INTO recipetemplate(
-            id,
-            company_id,
-            recipetemplate_name,
-            type,
-            category,
-            diagnosis,
-            create_by,
-            create_date,
-            update_by,
-            update_date,
-            del_flag,
-            single_dosage
-        ) VALUES (
-            #{id},
-            #{company.id},                    
-            #{recipetemplateName},
-            #{type.value},                    
-            #{category},
-            #{diagnosis},
-            #{createBy},
-            #{createDate},
-            #{updateBy},
-            #{updateDate},
-            #{delFlag},
-            #{singleDosage}
-        )
-    </insert>
     
-    <update id="update">
-        UPDATE recipetemplate SET     
-            company_id = #{company.id},                    
-            recipetemplate_name = #{recipetemplateName},
-            type = #{type.value},                    
-            category = #{category},
-            diagnosis = #{diagnosis},
-            update_by = #{updateBy},
-            update_date = #{updateDate},
-            single_dosage = #{singleDosage}
-        WHERE id = #{id}
-    </update>
     
     <update id="delete">
         UPDATE recipetemplate SET
@@ -182,88 +141,7 @@
         WHERE id = #{id}
     </update>
         
-    <insert id="bulkInsert" parameterType="java.util.List">
-        INSERT INTO recipetemplate(
-            id,
-            company_id,
-            recipetemplate_name,
-            type,
-            category,
-            diagnosis,
-            create_by,
-            create_date,
-            update_by,
-            update_date,
-            del_flag,
-            single_dosage
-        ) VALUES 
-        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
-        (
-            #{entity.id},
-            #{entity.company.id},                    
-            #{entity.recipetemplateName},
-            #{entity.type.value},                    
-            #{entity.category},
-            #{entity.diagnosis},
-            #{entity.createBy},
-            #{entity.createDate},
-            #{entity.updateBy},
-            #{entity.updateDate},
-            #{entity.delFlag},
-            #{entity.singleDosage}
-        )
-        </foreach>
-    </insert>
     
-    <update id="bulkUpdate" parameterType="java.util.List">    
-        UPDATE recipetemplate
-        <set>           
-            <trim prefix="company_id=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.company.id}
-                </foreach>
-            </trim>
-            <trim prefix="recipetemplate_name=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.recipetemplateName}
-                </foreach>
-            </trim>
-            <trim prefix="type=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.type.value}
-                </foreach>
-            </trim>
-            <trim prefix="category=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.category}
-                </foreach>
-            </trim>
-            <trim prefix="diagnosis=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.diagnosis}
-                </foreach>
-            </trim>
-            <trim prefix="update_by=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.updateBy}
-                </foreach>
-            </trim>
-            <trim prefix="update_date=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.updateDate}
-                </foreach>
-            </trim>
-            <trim prefix="single_dosage=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.singleDosage}
-                </foreach>
-            </trim>
-        </set>
-        WHERE id IN
-        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
-            #{entity.id}
-        </foreach>
-    </update>
     
     
     <update id="bulkDelete" parameterType="java.util.List">

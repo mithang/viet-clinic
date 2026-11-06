@@ -855,7 +855,6 @@
         </foreach>
     </update>
 
-
     <update id="bulkDelete" parameterType="java.util.List">
         UPDATE drug
         <set>
@@ -879,12 +878,6 @@
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
             #{entity.id}
         </foreach>
-    </update>
-    <update id="updateInventory">
-        update drug
-        set inventory=#{inventory},
-            update_date=now()
-        where id = #{id}
     </update>
     <update id="updateAllIndate">
         update drug

@@ -48,163 +48,6 @@
         </foreach>
     </insert>
 
-    <update id="bulkUpdate" parameterType="java.util.List">
-        UPDATE drug
-        <set>
-            <trim prefix="goods_name=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.goodsName}
-                </foreach>
-            </trim>
-            <trim prefix="brand_name=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.brandName}
-                </foreach>
-            </trim>
-            <trim prefix="pinyin_code=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.pinyinCode}
-                </foreach>
-            </trim>
-            <trim prefix="type=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.type.value}
-                </foreach>
-            </trim>
-            <trim prefix="source=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.source}
-                </foreach>
-            </trim>
-            <trim prefix="nature=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.nature.value}
-                </foreach>
-            </trim>
-            <trim prefix="factory=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.factory.id}
-                </foreach>
-            </trim>
-            <trim prefix="standard_code=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.standardCode}
-                </foreach>
-            </trim>
-            <trim prefix="bit_code=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.bitCode}
-                </foreach>
-            </trim>
-            <trim prefix="bar_code=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.barCode}
-                </foreach>
-            </trim>
-            <trim prefix="insurance_code=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.insuranceCode}
-                </foreach>
-            </trim>
-            <trim prefix="dosis=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.dosis}
-                </foreach>
-            </trim>
-            <trim prefix="dosis_unit=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.dosisUnit.value}
-                </foreach>
-            </trim>
-            <trim prefix="preparation=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.preparation}
-                </foreach>
-            </trim>
-            <trim prefix="update_by=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.updateBy}
-                </foreach>
-            </trim>
-            <trim prefix="preparation_unit=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.preparationUnit.value}
-                </foreach>
-            </trim>
-            <trim prefix="update_date=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.updateDate}
-                </foreach>
-            </trim>
-            <trim prefix="pack=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.pack.value}
-                </foreach>
-            </trim>
-            <trim prefix="price=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.price}
-                </foreach>
-            </trim>
-            <trim prefix="is_unpack_sell=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.isUnpackSell}
-                </foreach>
-            </trim>
-            <trim prefix="retail_price=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.retailPrice}
-                </foreach>
-            </trim>
-            <trim prefix="status=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.status}
-                </foreach>
-            </trim>
-
-            <trim prefix="western_medicine_use=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.westernMedicineUse.value}
-                </foreach>
-            </trim>
-            <trim prefix="chinese_medicine_use=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.chineseMedicineUse.value}
-                </foreach>
-            </trim>
-            <trim prefix="single_dosage=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.singleDosage}
-                </foreach>
-            </trim>
-            <trim prefix="total=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.total}
-                </foreach>
-            </trim>
-            <trim prefix="frequency=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.frequency.value}
-                </foreach>
-            </trim>
-            <trim prefix="days=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.days.value}
-                </foreach>
-            </trim>
-            <trim prefix="indate=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.indate}
-                </foreach>
-            </trim>
-        </set>
-        WHERE id IN
-        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
-            #{entity.id}
-        </foreach>
-    </update>
-
-
     <update id="bulkDelete" parameterType="java.util.List">
         UPDATE drug
         <set>
@@ -228,23 +71,6 @@
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
             #{entity.id}
         </foreach>
-    </update>
-    <update id="updateInventory">
-        update drug
-        set inventory=#{inventory},
-            update_date=now()
-        where id = #{id}
-    </update>
-    <update id="updateAllIndate">
-        update drug
-        set indate = #{indate}
-        where company_id = #{companyId}
-    </update>
-
-    <update id="updateAllInventory">
-        update drug
-        set inventory_floor = #{inventoryFloor}
-        where company_id = #{companyId}
     </update>
 
     <select id="repeat" resultType="com.geeke.stock.entity.Drug">
@@ -286,6 +112,5 @@
     <update id="markSynced">
         update stuff set sync_id = 1, update_date = NOW() where id = #{id}
     </update>
-
 
 </mapper>

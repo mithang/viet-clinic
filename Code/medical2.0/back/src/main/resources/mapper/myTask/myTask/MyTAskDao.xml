@@ -117,42 +117,6 @@
         where a.name = #{name} and a.company_id = #{company.id}
     </select>
 
-    <insert id="insert">
-        INSERT INTO feedbacktable(
-        id,
-        company_id,
-        code,
-        is_locked,
-        name,
-        sort,
-        category,
-        create_by,
-        create_date,
-        update_by,
-        address,
-        update_date,
-        del_flag,
-        is_default,
-        is_register
-        ) VALUES (
-        #{id},
-        #{company.id},
-        #{code},
-        #{isLocked},
-        #{name},
-        #{sort},
-        #{category},
-        #{createBy},
-        #{createDate},
-        #{updateBy},
-        #{address},
-        #{updateDate},
-        #{delFlag},
-        #{isDefault},
-        #{isRegister}
-        )
-    </insert>
-
     <update id="update">
         UPDATE feedbacktable SET
         company_id = #{company.id},
@@ -172,96 +136,6 @@
         del_flag = #{DEL_FLAG_DELETE}
         WHERE id = #{id}
     </update>
-
-    <insert id="bulkInsert" parameterType="java.util.List">
-        INSERT INTO feedbacktable(
-        id,
-        company_id,
-        code,
-        is_locked,
-        name,
-        sort,
-        category,
-        create_by,
-        create_date,
-        update_by,
-        address,
-        update_date,
-        del_flag,
-        is_default,
-        is_register
-        ) VALUES
-        <foreach collection="entitys" index="index" item="entity" open="" separator="," close="">
-            (
-            #{entity.id},
-            #{entity.company.id},
-            #{entity.code},
-            #{entity.isLocked},
-            #{entity.name},
-            #{entity.sort},
-            #{entity.category},
-            #{entity.createBy},
-            #{entity.createDate},
-            #{entity.updateBy},
-            #{entity.address},
-            #{entity.updateDate},
-            #{entity.delFlag},
-            #{entity.isDefault},
-            #{entity.isRegister}
-            )
-        </foreach>
-    </insert>
-
-    <update id="bulkUpdate" parameterType="java.util.List">
-        UPDATE feedbacktable
-        <set>
-            <trim prefix="company_id=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.company.id}
-                </foreach>
-            </trim>
-            <trim prefix="code=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.code}
-                </foreach>
-            </trim>
-            <trim prefix="is_locked=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.isLocked}
-                </foreach>
-            </trim>
-            <trim prefix="name=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.name}
-                </foreach>
-            </trim>
-            <trim prefix="category=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.category}
-                </foreach>
-            </trim>
-            <trim prefix="address=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.address}
-                </foreach>
-            </trim>
-            <trim prefix="is_default=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.isDefault}
-                </foreach>
-            </trim>
-            <trim prefix="is_register=case" suffix="end,">
-                <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.isRegister}
-                </foreach>
-            </trim>
-        </set>
-        WHERE id IN
-        <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
-            #{entity.id}
-        </foreach>
-    </update>
-
 
     <update id="bulkDelete" parameterType="java.util.List">
         UPDATE feedbacktable
@@ -286,9 +160,6 @@
         <foreach collection="entitys" item="entity" index="index" separator="," open="(" close=")">
             #{entity.id}
         </foreach>
-    </update>
-    <update id="updateDefault">
-        update feedbacktable set is_default='0' where company_id = #{companyId}
     </update>
 
 </mapper>
