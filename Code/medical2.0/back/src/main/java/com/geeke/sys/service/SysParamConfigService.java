@@ -85,6 +85,17 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
     @Override
     public SysParamConfig save(SysParamConfig entity) {
         checkParamWriteTenant(entity);
+        // DS102: CrudService.save rẽ nhánh update khi id khác rỗng,
+        // doUpdate không động đến dòng nào nếu id không tồn tại mà vẫn
+        // trả 200 (probe B1; họ silent no-op DS94/DS99). Chỉ chấp nhận
+        // update khi dòng đã tồn tại; tạo mới phải gửi id rỗng. Kiểm tra
+        // bằng dao.get: mapper get() là SELECT đơn bảng sys_param_config,
+        // không JOIN nên đáng tin (khác bài học N1/N3d ở các mapper JOIN).
+        if (StringUtils.isNotBlank(entity.getId())
+                && dao.get(entity.getId()) == null) {
+            throw new ServiceException("Cấu hình tham số không tồn tại: "
+                    + entity.getId());
+        }
         return super.save(entity);
     }
 
@@ -94,21 +105,57 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
         return super.delete(entity);
     }
 
+    /**
+     * DS102: bulkInsert/bulkUpdate kế thừa từ CrudService đi thẳng qua dao,
+     * bỏ qua các guard @NotNull của save() (config_name/company_id đều
+     * NOT NULL ở sys_param_config; mapper bulk ghi trực tiếp) nên hàng
+     * thiếu trường 500 ở DB (probe B2/B3/B7; tiền lệ DS99/DS100). Ghi đè
+     * ở đây để fail-closed 400 trước mọi ghi: danh sách null/rỗng, trường
+     * bắt buộc. category/config_value nullable nên không kiểm tra.
+     * bulkUpdate thêm kiểm tra id rỗng/không tồn tại (mapper CASE chạm 0
+     * dòng mà vẫn 200 — probe B4, họ DS94/DS99). bulkDelete chỉ chặn danh
+     * sách null/rỗng; id không tồn tại giữ 200 rows 0 IDEMPOTENT theo
+     * tiền lệ DS99 G11. (Danh sách rỗng vốn đã 400 nhờ handler BadSqlGrammar
+     * toàn cục DS94 — guard ở service chỉ làm rõ message, không đổi status.)
+     */
+    private void validateRequired(SysParamConfig entity) {
+        if (entity == null) {
+            throw new ServiceException("Cấu hình tham số không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getConfigName())) {
+            throw new ServiceException("Tên hạng mục cấu hình không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getCompanyId())) {
+            throw new ServiceException("Công ty của cấu hình tham số không được để trống");
+        }
+    }
+
     @Override
     public List<String> bulkInsert(List<SysParamConfig> entitys) {
-        if (entitys != null) {
-            for (SysParamConfig entity : entitys) {
-                checkParamWriteTenant(entity);
-            }
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách cấu hình tham số thêm mới không được để trống");
+        }
+        for (SysParamConfig entity : entitys) {
+            checkParamWriteTenant(entity);
+            validateRequired(entity);
         }
         return super.bulkInsert(entitys);
     }
 
     @Override
     public List<String> bulkUpdate(List<SysParamConfig> entitys) {
-        if (entitys != null) {
-            for (SysParamConfig entity : entitys) {
-                checkParamWriteTenant(entity);
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách cấu hình tham số cập nhật không được để trống");
+        }
+        for (SysParamConfig entity : entitys) {
+            checkParamWriteTenant(entity);
+            validateRequired(entity);
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của cấu hình tham số đã tồn tại");
+            }
+            if (dao.get(entity.getId()) == null) {
+                throw new ServiceException("Cấu hình tham số không tồn tại: "
+                        + entity.getId());
             }
         }
         return super.bulkUpdate(entitys);
@@ -116,6 +163,9 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
 
     @Override
     public int bulkDelete(List<SysParamConfig> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách cấu hình tham số xóa không được để trống");
+        }
         if (entitys != null) {
             for (SysParamConfig entity : entitys) {
                 checkParamWriteTenant(entity);
