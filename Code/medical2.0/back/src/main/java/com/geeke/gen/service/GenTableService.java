@@ -84,6 +84,25 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         if (StringUtils.isBlank(genTable.getIsAssociation())) {
             throw new ServiceException("Liên kết bảng không được để trống");
         }
+        // DS99: Jackson dat null tuong minh (constraintList/genTableColumnList
+        // : null trong JSON) ghi de Lists.newArrayList() khoi tao o field,
+        // roi vong lap ben duoi NPE -> 500 (probe G5). Null o day nghia la
+        // "khong co dong con", nhu khi bo qua truong: chuan hoa ve rong.
+        if (genTable.getConstraintList() == null) {
+            genTable.setConstraintList(Lists.newArrayList());
+        }
+        if (genTable.getGenTableColumnList() == null) {
+            genTable.setGenTableColumnList(Lists.newArrayList());
+        }
+        // DS99: CrudService.save rẽ nhánh update khi id khác rỗng, doUpdate
+        // khong dong den dong nao neu id khong ton tai ma van tra 200
+        // (probe G5: save id la + null lists het NPE nhung van 200 trong
+        // khi khong co dong nao duoc tao; cung ho silent no-op nhu DS94
+        // MyTask). Chi chap nhan update khi dong da ton tai; tao moi phai
+        // gui id rong (UI tao moi khong gui id, sua gui id lay tu list).
+        if (StringUtils.isNotBlank(genTable.getId()) && super.get(genTable.getId()) == null) {
+            throw new ServiceException("Bảng không tồn tại: " + genTable.getId());
+        }
 
         String id = super.save(genTable).getId();
         if (StringUtils.isNoneBlank(id)) {
@@ -176,6 +195,75 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         return genTable;
     }
 
+
+    /**
+     * DS99: bulkInsert/bulkUpdate/bulkDelete ke thua tu CrudService di
+     * thang qua dao, bo qua cac guard null cua save() (DS80) nen hang
+     * thieu truong NOT NULL 500 o DB (probe G1/G2/G4/G13), va bulkUpdate
+     * id khong ton tai tra 200 im lang du mapper khong dong den dong nao
+     * (probe G3; tien le DS94 chi sua MyTask). Ghi de o day de fail-closed
+     * 400 truoc moi ghi: danh sach null/rong, truong bat buoc, id rong
+     * hoac khong ton tai. bulkDelete giu tinh idempotent: id khong ton tai
+     * van 200 rows 0 (probe G11), chi chan danh sach null/rong (null
+     * truoc day NPE 500 o vong lap CrudService, rong da 400 nho handler
+     * BadSqlGrammar DS94 nhung khong co message ro).
+     */
+    private void validateRequired(GenTable genTable) {
+        if (genTable == null) {
+            throw new ServiceException("Bảng nghiệp vụ không được để trống");
+        }
+        if (StringUtils.isBlank(genTable.getName())) {
+            throw new ServiceException("Tên bảng không được để trống");
+        }
+        if (StringUtils.isBlank(genTable.getClassName())) {
+            throw new ServiceException("Tên lớp thực thể không được để trống");
+        }
+        if (StringUtils.isBlank(genTable.getSource())) {
+            throw new ServiceException("Nguồn không được để trống");
+        }
+        if (StringUtils.isBlank(genTable.getIsAssociation())) {
+            throw new ServiceException("Liên kết bảng không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<GenTable> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách bảng thêm mới không được để trống");
+        }
+        for (GenTable genTable : entitys) {
+            validateRequired(genTable);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<GenTable> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách bảng cập nhật không được để trống");
+        }
+        for (GenTable genTable : entitys) {
+            validateRequired(genTable);
+            if (StringUtils.isBlank(genTable.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của bảng đã tồn tại");
+            }
+            if (super.get(genTable.getId()) == null) {
+                throw new ServiceException("Bảng không tồn tại: " + genTable.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<GenTable> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách bảng xóa không được để trống");
+        }
+        return super.bulkDelete(entitys);
+    }
 
     /**
      * Xóa
