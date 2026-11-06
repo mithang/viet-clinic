@@ -109,6 +109,21 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
             throw new ServiceException("Đã tồn tại dữ liệu giống hệt(Công ty,Mã)");
         }
 
+        // DS101: CrudService.save rẽ nhánh update khi id khác rỗng,
+        // doUpdate không động đến dòng nào nếu id không tồn tại mà vẫn
+        // trả 200 (probe U3; cùng họ silent no-op DS94/DS99). Chỉ chấp
+        // nhận update khi dòng đã tồn tại; tạo mới phải gửi id rỗng.
+        // Kiểm tra bằng dao.getCompanyIdById (SELECT trực tiếp cột
+        // company_id) thay vì super.get(): mapper get() INNER JOIN
+        // sys_code_rule nên trả null cả với dòng mồ côi còn ghi được
+        // (bài học N3d), trong khi company_id NOT NULL nên lookup này
+        // chỉ null khi dòng thật sự không tồn tại.
+        if (StringUtils.isNotBlank(companyCodeRule.getId())
+                && dao.getCompanyIdById(companyCodeRule.getId()) == null) {
+            throw new ServiceException("Quy tắc mã công ty không tồn tại: "
+                    + companyCodeRule.getId());
+        }
+
         CompanyCodeRule companyCodeRuleTemp = super.save(companyCodeRule);
         return companyCodeRuleTemp;
     }
@@ -120,12 +135,48 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
         return super.delete(entity);
     }
 
+    /**
+     * DS101: bulkInsert kế thừa từ CrudService đi thẳng qua dao, bỏ qua
+     * các guard @NotNull của save() (company_id/sys_rule_id/code/name/
+     * rule_def đều NOT NULL ở sys_company_code_rule; mapper bulkInsert
+     * ghi trực tiếp) nên hàng thiếu trường 500 ở DB (probe U1/U2;
+     * tiền lệ DS99/DS100). Ghi đè ở đây để fail-closed 400 trước mọi
+     * ghi: danh sách null/rỗng, trường bắt buộc. (bulkUpdate KHÔNG có
+     * mapper statement nên mọi lời gọi đều 500 toàn cục — đã ghi nhận
+     * từ trước, không đổi ở vòng này; xem probe U5.)
+     */
+    private void validateRequired(CompanyCodeRule companyCodeRule) {
+        if (companyCodeRule == null) {
+            throw new ServiceException("Quy tắc mã công ty không được để trống");
+        }
+        if (StringUtils.isBlank(companyCodeRule.getCompanyId())) {
+            throw new ServiceException("Công ty của quy tắc mã không được để trống");
+        }
+        if (companyCodeRule.getSysRule() == null
+                || StringUtils.isBlank(companyCodeRule.getSysRule().getId())) {
+            throw new ServiceException("Quy tắc mã hệ thống không được để trống");
+        }
+        if (StringUtils.isBlank(companyCodeRule.getCode())) {
+            throw new ServiceException("Mã không được để trống");
+        }
+        if (StringUtils.isBlank(companyCodeRule.getName())) {
+            throw new ServiceException("Tên quy tắc mã công ty không được để trống");
+        }
+        if (StringUtils.isBlank(companyCodeRule.getRuleDef())) {
+            throw new ServiceException("Quy tắc không được để trống");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<CompanyCodeRule> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách quy tắc mã thêm mới không được để trống");
+        }
         if (entitys != null) {
             for (CompanyCodeRule entity : entitys) {
                 checkRuleWriteTenant(entity);
+                validateRequired(entity);
             }
         }
         return super.bulkInsert(entitys);
