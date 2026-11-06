@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.geeke.admin.entity.User;
 import com.geeke.admin.service.UserService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.config.MedicareConfigProperties;
 import com.geeke.medicareutils.db.entity.DzcfD001Output;
 import com.geeke.medicareutils.db.entity.DzcfD002Output;
@@ -554,11 +555,32 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
      */
     @Override
     public JSONObject cancelElectronicPrescription_Ld7104(RecipelInfoReview recipelInfoReview, String undoRea) {
-           JSONObject data = new JSONObject();
-           DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfoReview.getRecipelInfo().getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
-           String fixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
+           //DS89: guard null truoc chuoi deref — truoc day NPE 500 (:558/:561/:562/:564);
+           //BHYT khong tra ve / khong ket noi duoc thi 400 thay vi 500 (mau DS84 WeChat).
            RecipelInfo recipelInfo = recipelInfoReview.getRecipelInfo();
-           User doctor = userService.get(recipelInfo.getRegistration().getDoctor().getId());
+           if (recipelInfo == null || recipelInfo.getId() == null) {
+               throw new ServiceException("Không tìm thấy đơn thuốc");
+           }
+           Registration registration = recipelInfo.getRegistration();
+           if (registration == null || registration.getDoctor() == null
+                   || registration.getDoctor().getId() == null) {
+               throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
+           }
+           JSONObject data = new JSONObject();
+           DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+           if (one001 == null) {
+               throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
+           }
+           JSONObject company = SessionUtils.getUserJson() == null ? null
+                   : SessionUtils.getUserJson().getJSONObject("company");
+           if (company == null) {
+               throw new ServiceException("Không tìm thấy công ty của phiên đăng nhập");
+           }
+           String fixmedinsCode = company.getString("fixmedinsCode");
+           User doctor = userService.get(registration.getDoctor().getId());
+           if (doctor == null || doctor.getUserExt() == null) {
+               throw new ServiceException("Không tìm thấy bác sĩ kê đơn");
+           }
            data.put("hiRxno", one001.getHirxno());
            data.put("fixmedinsCode", fixmedinsCode);
            data.put("drCode",doctor.getUserExt().getPracPsnCode());
@@ -567,8 +589,19 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
            data.put("undoTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
            JSONObject jsonObject = new JSONObject();
            jsonObject.put("data", data);
-           JSONObject ld7104 = mdRequestUtil.dzcfUpload("Ld7104", jsonObject);
+           JSONObject ld7104;
+           try {
+               ld7104 = mdRequestUtil.dzcfUpload("Ld7104", jsonObject);
+           } catch (Exception e) {
+               throw new ServiceException("Không kết nối được cổng BHYT, thử lại sau");
+           }
+           if (ld7104 == null) {
+               throw new ServiceException("Không kết nối được cổng BHYT, thử lại sau");
+           }
            DzcfD003Output dzcfD003Output = dzcfD003OutputService.getOne(new LambdaQueryWrapper<DzcfD003Output>().eq(DzcfD003Output::getCfh, recipelInfo.getId()));
+           if (dzcfD003Output == null) {
+               throw new ServiceException("Không tìm thấy dữ liệu hủy đơn thuốc điện tử");
+           }
            dzcfD003Output.setCxyy(undoRea);
            dzcfD003Output.setCxsj(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
            dzcfD003Output.setRxstascodg(ld7104.getString("rxstascodg"));
@@ -598,10 +631,26 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
      */
     @Override
     public JSONObject queryElectronicPrescriptionReviewResult_Ld7805(RecipelInfoReview recipelInfoReview) {
+        //DS89: guard null truoc chuoi deref — truoc day NPE 500 (:601/:604/:606);
+        //BHYT khong tra ve / khong ket noi duoc thi 400 thay vi 500 (mau DS84 WeChat).
+        RecipelInfo recipelInfo = recipelInfoReview.getRecipelInfo();
+        if (recipelInfo == null || recipelInfo.getId() == null) {
+            throw new ServiceException("Không tìm thấy đơn thuốc");
+        }
+        Registration registration = recipelInfo.getRegistration();
+        if (registration == null || registration.getPatientId() == null
+                || registration.getPatientId().getId() == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
+        }
         JSONObject data  = new JSONObject(true);
-        Registration registration = recipelInfoReview.getRecipelInfo().getRegistration();
-        DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfoReview.getRecipelInfo().getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        if (one001 == null) {
+            throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
+        }
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        if (patientMdData == null) {
+            throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
+        }
         String fixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
         data.put("hiRxno",one001.getHirxno());
         data.put("fixmedinsCode",fixmedinsCode);
@@ -611,7 +660,16 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         data.put("psnCertno",patientMdData.getCertno());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data",data);
-        return mdRequestUtil.dzcfUpload("[Ld7804",jsonObject);
+        JSONObject result;
+        try {
+            result = mdRequestUtil.dzcfUpload("Ld7805",jsonObject);
+        } catch (Exception e) {
+            throw new ServiceException("Không kết nối được cổng BHYT, thử lại sau");
+        }
+        if (result == null) {
+            throw new ServiceException("Không kết nối được cổng BHYT, thử lại sau");
+        }
+        return result;
     }
 
     /**
@@ -619,10 +677,26 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
      */
     @Override
     public JSONObject queryPrescriptionDispensingResult_Ld7804(RecipelInfoReview recipelInfoReview) {
+        //DS89: guard null truoc chuoi deref — truoc day NPE 500 (:623/:625/:627);
+        //BHYT khong tra ve / khong ket noi duoc thi 400 thay vi 500 (mau DS84 WeChat).
+        RecipelInfo recipelInfo = recipelInfoReview.getRecipelInfo();
+        if (recipelInfo == null || recipelInfo.getId() == null) {
+            throw new ServiceException("Không tìm thấy đơn thuốc");
+        }
+        Registration registration = recipelInfo.getRegistration();
+        if (registration == null || registration.getPatientId() == null
+                || registration.getPatientId().getId() == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
+        }
         JSONObject data  = new JSONObject(true);
-        Registration registration = recipelInfoReview.getRecipelInfo().getRegistration();
-        DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfoReview.getRecipelInfo().getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        if (one001 == null) {
+            throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
+        }
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        if (patientMdData == null) {
+            throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
+        }
         String fixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
         data.put("hiRxno",one001.getHirxno());
         data.put("fixmedinsCode",fixmedinsCode);
@@ -632,7 +706,16 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         data.put("psnCertno",patientMdData.getCertno());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data",data);
-        return mdRequestUtil.dzcfUpload("[Ld7804",jsonObject);
+        JSONObject result;
+        try {
+            result = mdRequestUtil.dzcfUpload("Ld7804",jsonObject);
+        } catch (Exception e) {
+            throw new ServiceException("Không kết nối được cổng BHYT, thử lại sau");
+        }
+        if (result == null) {
+            throw new ServiceException("Không kết nối được cổng BHYT, thử lại sau");
+        }
+        return result;
     }
 
     /**

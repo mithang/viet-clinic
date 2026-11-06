@@ -361,11 +361,35 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     public ResponseEntity<JSONObject> save(@RequestBody RecipelInfoReview entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         checkReviewWriteTenant(entity); // N1: chan ghi review tenant khac theo don cha (stored row + don trong body), truoc chuoi get().
+        //DS89: guard null truoc chuoi deref — body thieu don/benh an/dang ky
+        //truoc day NPE 500 (save:365-367). Chi dong don la deref vo dieu kien
+        //(getIsPre); benh an/dang ky chi dung trong nhanh BHYT nen dong stored
+        //thieu chi 400 khi nhanh do that su chay — giu nguyen hanh vi cu:
+        //dang ky treo (khong co dong registration) van luu duoc khi check=false.
+        if (entity.getRecipelInfo() == null || entity.getRecipelInfo().getId() == null) {
+            throw new ServiceException("Không tìm thấy đơn thuốc");
+        }
         //Lấyxongnguyên của Đơn thuốc, bệnh án, Thông tin đăng ký khám
         RecipelInfo recipelInfo = recipelInfoService.get(entity.getRecipelInfo().getId());
+        if (recipelInfo == null) {
+            throw new ServiceException("Không tìm thấy đơn thuốc");
+        }
+        if (entity.getMedicalRecord() == null || entity.getMedicalRecord().getId() == null) {
+            throw new ServiceException("Không tìm thấy bệnh án");
+        }
         MedicalRecord medicalRecord = medicalRecordService.get(entity.getMedicalRecord().getId());
+        if (entity.getRecipelInfo().getRegistration() == null
+                || entity.getRecipelInfo().getRegistration().getId() == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám");
+        }
         Registration registration = registrationService.get(entity.getRecipelInfo().getRegistration().getId());
-        if(recipelInfo.getIsPre() && entity.getReviewResult().equals(1) && medicareConfigProperties.getCheck().equals("true") ){
+        boolean bhytUpload = Boolean.TRUE.equals(recipelInfo.getIsPre())
+                && Integer.valueOf(1).equals(entity.getReviewResult())
+                && "true".equals(medicareConfigProperties.getCheck());
+        if (bhytUpload && (medicalRecord == null || registration == null)) {
+            throw new ServiceException("Không tìm thấy bệnh án hoặc đăng ký khám của đơn thuốc");
+        }
+        if (bhytUpload){
             //điện tửĐơn thuốcxét duyệt
             recipelInfo.setRegistration(registration);
             entity.setRecipelInfo(recipelInfo);
