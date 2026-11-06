@@ -2,8 +2,10 @@ package com.geeke.outpatient.service;
 
 
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.outpatient.dao.SchedulingDao;
 import com.geeke.outpatient.entity.*;
+import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,32 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
 
     @Autowired
     private SchedulingDao schedulingDao;
+
+    // DS106 B1/B2/B3/B5: SchedulingDao.xml truoc day KHONG CO get/update/
+    // bulk statement nao, nen moi save/delete mang id deu 500
+    // BindingException qua verifyTenantOwnershipAgainstStoredRow (dao.get)
+    // cua CrudService, va save-update dong da ton tai khong bao gio lam
+    // duoc; dong thoi controller save khong @Valid nen save-create thieu
+    // userid/schedulingtime (NOT NULL) 500. Fix: them get/update vao
+    // mapper (mau DS102 them mapper thieu), kiem tra ton tai + truong
+    // bat buoc o day truoc moi ghi. @Transactional (readOnly = false)
+    // tuong minh vi class-level la readOnly = true.
+    @Override
+    @Transactional(readOnly = false)
+    public Scheduling save(Scheduling entity) {
+        if (entity != null && StringUtils.isNotBlank(entity.getId())
+                && schedulingDao.get(entity.getId()) == null) {
+            throw new ServiceException("Lịch trực không tồn tại: "
+                    + entity.getId());
+        }
+        if (entity != null && StringUtils.isBlank(entity.getUserid())) {
+            throw new ServiceException("Người dùng xếp lịch không được để trống");
+        }
+        if (entity != null && entity.getSchedulingtime() == null) {
+            throw new ServiceException("Ngày xếp lịch không được để trống");
+        }
+        return super.save(entity);
+    }
 
     public List<SchedulingDTO> getHisuserpblist(SchedulingDTO pageRequest) {
         List<SchedulingDTO> buserlist= schedulingDao.getpbuserlist(pageRequest);

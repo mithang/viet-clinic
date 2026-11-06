@@ -28,6 +28,27 @@
         #{isLocked}
         )
     </insert>
+    <!-- DS106 B1/B5/B10: SchedulingDao truoc day khong co get/update nen
+         CrudService.save/delete mang id deu 500 BindingException qua
+         dao.get (verifyTenantOwnershipAgainstStoredRow) va save-update
+         dong ton tai khong bao gio lam duoc. Them get (phuc vu ca
+         existence check o SchedulingService.save) + update (mau DS102
+         them mapper thieu). select * nhu listscheduling/listcount. -->
+    <select id="get" resultType="com.geeke.outpatient.entity.Scheduling">
+        select * from scheduling_data where ID = #{id}
+    </select>
+    <update id="update">
+        UPDATE scheduling_data SET
+        company_id = #{companyid},
+        userid = #{userid},
+        schedulingtime = #{schedulingtime},
+        timeid = #{timeid},
+        update_by = #{updateBy},
+        update_date = #{updateDate},
+        del_flag = #{delFlag},
+        is_locked = #{isLocked}
+        WHERE ID = #{id}
+    </update>
     <select id="getpbuserlist" resultType="com.geeke.outpatient.entity.SchedulingDTO">
         select user_id userid,su.name username,sue.office ksname,o.id ksid ,count(sd.userid) pbsl  from sys_user su
         inner join sys_user_ext sue on su.company_id =sue.company_id and su.id =sue.user_id
