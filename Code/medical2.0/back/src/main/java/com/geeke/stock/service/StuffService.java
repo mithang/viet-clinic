@@ -184,6 +184,16 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         return stuffs;
     }
 
+    // DS97: chuỗi tồn kho tính từ BigDecimal có thể thập phân ("10.5");
+    // parseInt vỡ cả trang, intValue() cắt phần thập phân, lỗi khác -> 0.
+    private static int parseInventory(String inventory) {
+        try {
+            return new BigDecimal(inventory).intValue();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     public Page<Stuff> getStuff(List<Parameter> params, int offset, int limit, String orderby) {
         PageRequest pageRequest = buildStuffTenantPageRequest(params, offset, limit, orderby);
         //PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
@@ -198,7 +208,10 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                     if (!Objects.isNull(stuff.getStock()) && !Objects.isNull(stuff.getStock().getStorageStock())) {
                         String inventory =
                                 stuff.getStock().getStorageStock().subtract((stuff.getStock().getUsedStock().add(stuff.getStock().getReimburseStock()))).stripTrailingZeros().toPlainString();
-                        stuff.setInventory(Integer.parseInt(inventory));
+                        // DS97: tồn kho thập phân ("10.5") làm Integer.parseInt NFE
+                        // -> 500 cả trang; dùng BigDecimal.intValue() như
+                        // DrugService.getDrug (cắt phần thập phân, không 500).
+                        stuff.setInventory(parseInventory(inventory));
                     } else {
                         stuff.setInventory(0);
                     }

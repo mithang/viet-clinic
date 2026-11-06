@@ -449,6 +449,16 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         return supplierStockList;
     }
 
+    // DS97: chuỗi tồn kho tính từ BigDecimal có thể thập phân ("10.5");
+    // parseInt vỡ cả trang cảnh báo hạn dùng, intValue() cắt phần thập phân.
+    private static int parseInventory(String number) {
+        try {
+            return new BigDecimal(number).intValue();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     public Page<SupplierStock> getDrugIndateWarning(List<Parameter> parameters, int offset, int limit, String
             orderby) {
         // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
@@ -468,7 +478,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                     if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
                         String number =
                                 supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
-                        supplierStock.setNumber(Integer.parseInt(number));
+                        supplierStock.setNumber(parseInventory(number));
                     } else {
                         supplierStock.setNumber(0);
                     }
@@ -497,7 +507,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                     if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
                         String number =
                                 supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
-                        supplierStock.setNumber(Integer.parseInt(number));
+                        supplierStock.setNumber(parseInventory(number));
                     } else {
                         supplierStock.setNumber(0);
                     }
