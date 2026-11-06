@@ -228,7 +228,8 @@ public class CurrentInventoryService {
                 // Số lượng còn lại(Giá trị số gốc)
                 if (!Objects.isNull(stuff.getStock()) && !Objects.isNull(stuff.getStock().getStorageStock())) {
                     String inventory = stuff.getStock().getStorageStock().subtract(stuff.getStock().getUsedStock().add(stuff.getStock().getReimburseStock())).stripTrailingZeros().toPlainString();
-                    stuff.setInventory(Integer.parseInt(inventory));
+                    // DS96 F7: tồn kho thập phân "10.5" làm Integer.parseInt ném NFE -> cả file 500; dùng parseExportCount như exportDrug.
+                    stuff.setInventory(parseExportCount(inventory));
                 } else {
                     stuff.setInventory(0);
                 }
