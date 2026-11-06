@@ -9,6 +9,7 @@ import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.sequence.service.SequenceService;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.org.entity.Company;
 import org.springframework.context.annotation.Lazy;
 import com.geeke.org.service.CompanyService;
@@ -119,6 +120,17 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     @Override
     @Transactional(readOnly = false)
     public Stuff save(Stuff stuff) {
+        // DS105 B1: save voi id khong ton tai truoc day roi qua
+        // CrudService.save -> doUpdate 0 dong roi van 200 silent no-op,
+        // roi initStock con tao them dong medicinal_stock_control ma cho
+        // id ma do (verifyTenantOwnershipAgainstStoredRow bo qua khi
+        // stored==null, cung mau DS94/DS99). Kiem tra ton tai truoc moi
+        // ghi, truoc ca repeat() va initStock.
+        if (StringUtils.isNotBlank(stuff.getId())
+                && stuffDao.get(stuff.getId()) == null) {
+            throw new ServiceException("Vật tư không tồn tại: "
+                    + stuff.getId());
+        }
         // Kiểm traVật tưCó hay khôngtrùng lặp
         final int repeat = this.repeat(stuff);
         if (repeat!=0){
@@ -136,6 +148,62 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         //LưuđộngTồn kho
         this.medicinalStockControlService.initStock(stuffTemp);
         return stuffTemp;
+    }
+
+    // DS105 B3-B8/B10-B12: bulkInsert/bulkUpdate/bulkDelete generic truoc
+    // day de lo: null/rong roi xuong MyBatis <foreach> rong -> 500 SQL
+    // syntax, thieu truong NOT NULL (name/pinyin_code) -> 500
+    // DataIntegrityViolation, bulkUpdate id khong ton tai -> 200 silent
+    // no-op. Chan het o service de 400 ro nghia, kiem tra truoc moi ghi
+    // de batch hon hop khong doi dong hop le (B9). @Transactional
+    // (readOnly = false) tuong minh vi class-level la readOnly = true
+    // (mau SupplierService DS104).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Stuff> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách vật tư không được để trống");
+        }
+        for (Stuff stuff : entitys) {
+            if (StringUtils.isBlank(stuff.getName())) {
+                throw new ServiceException("Tên vật tư không được để trống");
+            }
+            if (StringUtils.isBlank(stuff.getPinyinCode())) {
+                throw new ServiceException("Mã pinyin không được để trống");
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Stuff> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách vật tư không được để trống");
+        }
+        for (Stuff stuff : entitys) {
+            if (StringUtils.isNotBlank(stuff.getId())
+                    && stuffDao.get(stuff.getId()) == null) {
+                throw new ServiceException("Vật tư không tồn tại: "
+                        + stuff.getId());
+            }
+            if (StringUtils.isBlank(stuff.getName())) {
+                throw new ServiceException("Tên vật tư không được để trống");
+            }
+            if (StringUtils.isBlank(stuff.getPinyinCode())) {
+                throw new ServiceException("Mã pinyin không được để trống");
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<Stuff> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách vật tư không được để trống");
+        }
+        return super.bulkDelete(entitys);
     }
 
     public List<MedicalProject> listPageForMedical(List<Parameter> parameters, String orderby) {
