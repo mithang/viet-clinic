@@ -4,10 +4,14 @@ import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.persistence.DataEntity;
 import com.geeke.stock.entity.Drug;
+import com.geeke.stock.entity.MedicinalStockControl;
+import com.geeke.stock.entity.MedicinalStorageControl;
 import com.geeke.stock.entity.Stuff;
 import com.geeke.stock.entity.SupplierStock;
 import com.geeke.utils.excel.ExcelExportBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -30,6 +35,55 @@ public class WarningService {
 
     @Autowired
     private StuffService stuffService;
+
+    // DS96: các export cảnh báo trước đây dùng Integer.parseInt trực
+    // tiếp trên preparation/packNumber/số tồn kho dạng chuỗi. Dữ liệu
+    // thật có preparation "1.0" (NFE), packNumber 0 (/0), tồn kho
+    // thập phân "10.5" (NFE) -> cả file 500. Mapper IFNULL bọc tên
+    // type/factory/unit thành "" nên các deref tên thường an toàn,
+    // nhưng stock (storage/used/reimburse) và endDate vẫn có thể
+    // null. Các helper dưới đây giữ nguyên cách hiển thị cũ, chỉ làm
+    // cho phép tính null-safe và thập phân-safe (theo mẫu
+    // parseExportCount của CurrentInventoryService, DS92).
+    private static BigDecimal parseDecimal(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        try {
+            return new BigDecimal(value.trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static BigDecimal remainingStock(BigDecimal storage, BigDecimal used, BigDecimal reimburse) {
+        BigDecimal s = storage == null ? BigDecimal.ZERO : storage;
+        BigDecimal u = used == null ? BigDecimal.ZERO : used;
+        BigDecimal r = reimburse == null ? BigDecimal.ZERO : reimburse;
+        return s.subtract(u.add(r));
+    }
+
+    private static BigDecimal remainingStock(MedicinalStockControl stock) {
+        if (stock == null) {
+            return BigDecimal.ZERO;
+        }
+        return remainingStock(stock.getStorageStock(), stock.getUsedStock(), stock.getReimburseStock());
+    }
+
+    private static BigDecimal remainingStock(MedicinalStorageControl stock) {
+        if (stock == null) {
+            return BigDecimal.ZERO;
+        }
+        return remainingStock(stock.getStorageStock(), stock.getUsedStock(), stock.getReimburseStock());
+    }
+
+    private static String nameOrEmpty(DataEntity<?> entity) {
+        return entity == null || entity.getName() == null ? "" : entity.getName();
+    }
+
+    private static String safeString(String value) {
+        return value == null ? "" : value;
+    }
 
 
     @Transactional(readOnly = true)
@@ -83,14 +137,13 @@ public class WarningService {
             for (Stuff stuff : stuffInventoryWarning.getRows()) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("name", stuff.getName());
-                row.put("typeName", stuff.getType().getName());
+                row.put("typeName", nameOrEmpty(stuff.getType()));
                 // Quy cách
-                String specification = stuff.getPackNumber() + stuff.getMinUnit().getName() + "/" + stuff.getPackUnit().getName();
+                String specification = (stuff.getPackNumber() == null ? "" : stuff.getPackNumber()) + nameOrEmpty(stuff.getMinUnit()) + "/" + nameOrEmpty(stuff.getPackUnit());
                 row.put("specification", specification);
-                row.put("factoryName", stuff.getFactory().getName());
-                // Số lượng còn lại
-                String inventory = stuff.getStock().getStorageStock().subtract(stuff.getStock().getUsedStock().add(stuff.getStock().getReimburseStock())).stripTrailingZeros().toPlainString();
-                stuff.setInventory(Integer.parseInt(inventory));
+                row.put("factoryName", nameOrEmpty(stuff.getFactory()));
+                // Số lượng còn lại (DS96: null-safe + thập phân-safe, intValue cắt phần lẻ như parseExportCount DS92)
+                stuff.setInventory(remainingStock(stuff.getStock()).intValue());
                 String number = formatStuffNumber(stuff);
                 row.put("number", number);
                 rows.add(row);
@@ -117,21 +170,16 @@ public class WarningService {
             for (SupplierStock supplierStock : stuffIndateWarning.getRows()) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("stuffName", supplierStock.getStuff().getName());
-                row.put("typeName", supplierStock.getStuff().getType().getName());
+                row.put("typeName", nameOrEmpty(supplierStock.getStuff().getType()));
                 row.put("norms", supplierStock.getNorms());
-                row.put("factoryName", supplierStock.getFactory().getName());
-                row.put("supplierName", supplierStock.getSupplierId().getName());
+                row.put("factoryName", nameOrEmpty(supplierStock.getFactory()));
+                row.put("supplierName", nameOrEmpty(supplierStock.getSupplierId()));
                 row.put("batchNo", supplierStock.getBatchNo());
-                // Số lượng còn lại
-                if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
-                    String inventory = supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
-                    supplierStock.getStuff().setInventory(Integer.parseInt(inventory));
-                } else {
-                    supplierStock.getStuff().setInventory(0);
-                }
+                // Số lượng còn lại (DS96: null-safe + thập phân-safe)
+                supplierStock.getStuff().setInventory(remainingStock(supplierStock.getMedicinalStorageControl()).intValue());
                 row.put("number", formatStuffNumber(supplierStock.getStuff()));
                 // Thời hạn hiệu lực
-                row.put("endDate", sdf.format(supplierStock.getEndDate()));
+                row.put("endDate", supplierStock.getEndDate() == null ? "" : sdf.format(supplierStock.getEndDate()));
                 // Trạng thái
                 row.put("status", Objects.equals("0", supplierStock.getCancellation()) ? "tức làSẽ hết hạn" : "Đãhết hạn");
                 rows.add(row);
@@ -161,14 +209,13 @@ public class WarningService {
             for (Drug drug : drugInventoryWarning.getRows()) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("goodsName", drug.getGoodsName());
-                row.put("typeName", drug.getType().getName());
+                row.put("typeName", nameOrEmpty(drug.getType()));
                 // Quy cách
-                String specification = drug.getDosis() + drug.getDosisUnit().getName() + "*" + drug.getPreparation() + drug.getPreparationUnit().getName() + "/" + drug.getPack().getName();
+                String specification = safeString(drug.getDosis()) + nameOrEmpty(drug.getDosisUnit()) + "*" + safeString(drug.getPreparation()) + nameOrEmpty(drug.getPreparationUnit()) + "/" + nameOrEmpty(drug.getPack());
                 row.put("specification", specification);
-                row.put("factoryName", drug.getFactory().getName());
-                // Số lượng còn lại
-                String inventory = drug.getStock().getStorageStock().subtract(drug.getStock().getUsedStock().add(drug.getStock().getReimburseStock())).stripTrailingZeros().toPlainString();
-                drug.setInventory(Integer.parseInt(inventory));
+                row.put("factoryName", nameOrEmpty(drug.getFactory()));
+                // Số lượng còn lại (DS96: null-safe + thập phân-safe, intValue cắt phần lẻ như parseExportCount DS92)
+                drug.setInventory(remainingStock(drug.getStock()).intValue());
                 row.put("number", formatDrugNumber(drug));
                 rows.add(row);
             }
@@ -194,21 +241,16 @@ public class WarningService {
             for (SupplierStock supplierStock : drugIndateWarning.getRows()) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("drugName", supplierStock.getDrug().getGoodsName());
-                row.put("typeName", supplierStock.getDrug().getType().getName());
+                row.put("typeName", nameOrEmpty(supplierStock.getDrug().getType()));
                 row.put("norms", supplierStock.getNorms());
-                row.put("factoryName", supplierStock.getFactory().getName());
-                row.put("supplierName", supplierStock.getSupplierId().getName());
+                row.put("factoryName", nameOrEmpty(supplierStock.getFactory()));
+                row.put("supplierName", nameOrEmpty(supplierStock.getSupplierId()));
                 row.put("batchNo", supplierStock.getBatchNo());
-                // Số lượng còn lại
-                if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
-                    String inventory = supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
-                    supplierStock.getDrug().setInventory(Integer.parseInt(inventory));
-                } else {
-                    supplierStock.getDrug().setInventory(0);
-                }
+                // Số lượng còn lại (DS96: null-safe + thập phân-safe)
+                supplierStock.getDrug().setInventory(remainingStock(supplierStock.getMedicinalStorageControl()).intValue());
                 row.put("number", formatDrugNumber(supplierStock.getDrug()));
                 // Thời hạn hiệu lực
-                row.put("endDate", sdf.format(supplierStock.getEndDate()));
+                row.put("endDate", supplierStock.getEndDate() == null ? "" : sdf.format(supplierStock.getEndDate()));
                 // Trạng thái
                 row.put("status", Objects.equals("0", supplierStock.getCancellation()) ? "tức làSẽ hết hạn" : "Đãhết hạn");
                 rows.add(row);
@@ -232,33 +274,48 @@ public class WarningService {
 
     /**
      * định dạnghóaThuốcSố lượng còn lại, theoĐơn vị đóng góiquy đổihiển thị(như "2 hộp 3 viên")
+     * DS96: preparation "1.0" (NFE), "0"/"0.5" (/0), rỗng/không phải số (NFE) đều
+     * làm cả file 500. Quy đổi qua BigDecimal; không quy đổi được thì giữ nguyên
+     * tổng + đơn vị bào chế (mẫu TollInfo).
      */
     private String formatDrugNumber(Drug drug) {
         int inventory = drug.getInventory();
-        int preparation = Integer.parseInt(drug.getPreparation());
-        int wholePacks = inventory / preparation;
-        int remainder = inventory % preparation;
+        BigDecimal preparation = parseDecimal(drug.getPreparation());
+        if (preparation == null || preparation.compareTo(BigDecimal.ZERO) <= 0) {
+            return inventory + nameOrEmpty(drug.getPreparationUnit());
+        }
+        int prep = preparation.intValue();
+        if (prep <= 0) {
+            return inventory + nameOrEmpty(drug.getPreparationUnit());
+        }
+        int wholePacks = inventory / prep;
+        int remainder = inventory % prep;
         if (wholePacks >= 0) {
-            return wholePacks + drug.getPack().getName()
-                    + (remainder > 0 ? remainder + drug.getPreparationUnit().getName() : "");
+            return wholePacks + nameOrEmpty(drug.getPack())
+                    + (remainder > 0 ? remainder + nameOrEmpty(drug.getPreparationUnit()) : "");
         } else {
-            return inventory + drug.getPreparationUnit().getName();
+            return inventory + nameOrEmpty(drug.getPreparationUnit());
         }
     }
 
     /**
      * định dạnghóaVật tưSố lượng còn lại, theoĐơn vị đóng góiquy đổihiển thị(Như "2gói3Cái")
+     * DS96: packNumber null/0 (/0 hoặc NPE khi unbox) làm cả file 500.
+     * Không quy đổi được thì giữ nguyên tổng + đơn vị nhỏ nhất (mẫu TollInfo).
      */
     private String formatStuffNumber(Stuff stuff) {
         int inventory = stuff.getInventory();
-        int packNumber = stuff.getPackNumber();
+        Integer packNumber = stuff.getPackNumber();
+        if (packNumber == null || packNumber <= 0) {
+            return inventory + nameOrEmpty(stuff.getMinUnit());
+        }
         int wholePacks = inventory / packNumber;
         int remainder = inventory % packNumber;
         if (wholePacks >= 0) {
-            return wholePacks + stuff.getPackUnit().getName()
-                    + (remainder > 0 ? remainder + stuff.getMinUnit().getName() : "");
+            return wholePacks + nameOrEmpty(stuff.getPackUnit())
+                    + (remainder > 0 ? remainder + nameOrEmpty(stuff.getMinUnit()) : "");
         } else {
-            return inventory + stuff.getMinUnit().getName();
+            return inventory + nameOrEmpty(stuff.getMinUnit());
         }
     }
 }
