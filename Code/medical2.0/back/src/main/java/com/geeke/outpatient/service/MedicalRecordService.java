@@ -983,6 +983,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
 
         // Lấytừ xakhámkhámtrị liệuBản ghi
         RemoteDiagnosisTreatment entity = remoteDiagnosisTreatmentService.diagnosisById(id);
+        // DS88: a missing remote row (0 live rows in the DB) NPEd at
+        // entity.getRegistrationId() below -> 400 (K4 pattern in saveAdd).
+        if (entity == null) {
+            throw new ServiceException("Không tìm thấy chẩn đoán từ xa");
+        }
         /*
          * Đơn thuốcThông tin là trống, trực tiếpkhôngdùngLưu
          * */
@@ -993,6 +998,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         String registrationId = entity.getRegistrationId();
         // Lấyđăng kýThông tin
         Registration registration = this.registrationService.get(registrationId);
+        // DS88: a stale registration_id on the remote row NPEd at
+        // registration.getStatus() below -> 400 (same K4 message).
+        if (registration == null) {
+            throw new ServiceException("Không tìm thấy lượt khám của chẩn đoán từ xa");
+        }
 
         if (Objects.equals(registration.getStatus().getValue(), BizConstants.REG_STATUS_PENDING))
         {

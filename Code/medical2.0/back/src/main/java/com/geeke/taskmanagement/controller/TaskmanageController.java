@@ -63,8 +63,22 @@ public class TaskmanageController extends BaseController {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
-        taskmanagement task = JSONObject.parseObject(strInspection, taskmanagement.class);
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        taskmanagement task;
+        String[] deleteIds;
+        try {
+            task = JSONObject.parseObject(strInspection, taskmanagement.class);
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS88: malformed entity/deleteIds JSON threw at parseObject -> 500;
+            // unparseable input can never succeed -> 400 (DS85/DS86/DS87 pattern).
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        // DS88: a "null" entity NPEd in TaskmanageService.save at task.getID() -> 400 early.
+        if (task == null) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
 
         return ResponseEntity.ok(ResultUtil.successJson(taskmanageService.save(task,deleteIds,fileIdUploads,countId)));
     }
@@ -85,8 +99,21 @@ public class TaskmanageController extends BaseController {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
-        taskmanagement task = JSONObject.parseObject(strInspection, taskmanagement.class);
-        String[] strings = JSONObject.parseObject(strDeleteIds, String[].class);
+        taskmanagement task;
+        String[] strings;
+        try {
+            task = JSONObject.parseObject(strInspection, taskmanagement.class);
+            strings = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS88: same wrap as save() above (DS85/DS86/DS87 pattern).
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        // DS88: a "null" entity NPEd in TaskmanageService.storage at task.getID() -> 400 early.
+        if (task == null) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
 
         return ResponseEntity.ok(ResultUtil.successJson(taskmanageService.storage(task,fileIdUploads,strings,countId)));
     }

@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.service.ServiceException;
 import com.geeke.outpatient.dao.RemoteDiagnosisTreatmentDao;
 import com.geeke.outpatient.entity.*;
+import com.geeke.org.entity.Company;
 import com.geeke.outpatient.service.PatientService;
 import com.geeke.outpatient.service.RecipelDetailService;
 import com.geeke.outpatient.service.RecipelInfoService;
@@ -143,7 +145,17 @@ public class RemoteDiagnosisTreatmentController extends BaseController {
         RemoteDiagnosisTreatment entity = remoteDiagnosisTreatmentService.diagnosisById(recipelInfo.getDiagnosisId());
         if (entity != null && entity.getCompany() != null
                 && isForeign(entity.getCompany().getId())) { return forbidden(); } // X2: don thuoc mang company theo entity la, nhu ke hoach.
-        // entity null: giữ nguyên đường 500 cũ (NPE ở getCompany) như tiền lệ T1 — không đổi ngữ nghĩa ngoài sàn.
+        // DS88: entity null (fake/missing diagnosisId, or a null diagnosisId)
+        // NPEd at entity.getCompany().getId() below -> 400; a remote row
+        // whose company join yields null cannot anchor the recipel either.
+        // (The old comment here kept the 500 on purpose; the endpoint is
+        // reachable with any id, so fail closed instead.)
+        if (entity == null || entity.getCompany() == null || entity.getCompany().getId() == null) {
+            throw new ServiceException("Không tìm thấy chẩn đoán từ xa");
+        }
+        if (recipelInfo.getCompany() == null) {
+            recipelInfo.setCompany(new Company());
+        }
         recipelInfo.getCompany().setId(entity.getCompany().getId());
         String id = recipelInfoService.save(recipelInfo).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));

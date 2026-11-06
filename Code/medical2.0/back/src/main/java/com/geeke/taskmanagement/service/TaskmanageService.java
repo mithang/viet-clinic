@@ -104,6 +104,10 @@ public class TaskmanageService {
 
     @Transactional
     public taskmanagement save(taskmanagement task,String[] deleteIds, MultipartFile[] fileIdUploads,String counId) throws IOException {
+        // DS88: a "null" task NPEd at task.getID() below -> 400 (controller also guards).
+        if (task == null) {
+            throw new ServiceException("Thiếu thông tin tác vụ");
+        }
         if(task.getID()!=null && !"".equals(task.getID())){
             taskmanagement storage = storage(task, fileIdUploads, deleteIds, counId);
             taskmanagement release = release(task);
@@ -145,6 +149,10 @@ public class TaskmanageService {
                 // Z3f: file attach targets an existing task, so check its owner.
                 checkTaskOwnership(counId);
                 taskmanagement byId = this.taskmangementDao.getById(counId);
+                // DS88: a fake counId returns null -> byId.getID() NPEd below -> 400.
+                if (byId == null) {
+                    throw new ServiceException("Không tìm thấy tác vụ");
+                }
                 // L3 (iteration 59): guard deleteIds bang {byId id} truoc moi upload/xoa,
                 // mau K5/K7 (xem nhanh tao moi o tren); nhanh attach nay da co
                 // checkTaskOwnership cho DONG task nhung deleteIds van tran truoc day.
@@ -170,6 +178,11 @@ public class TaskmanageService {
     @Transactional(readOnly = false)
     public int savetaskexecutor(taskmanagement task){
         int result=0;
+        // DS88: a task without taskregion NPEd in the for loop below; a task
+        // with no executing clinic is valid (draft), so treat null as empty.
+        if (task.getTaskregion() == null) {
+            return result;
+        }
         for(String itme:task.getTaskregion()){
             taskexecutor cutor=new taskexecutor();
             cutor.setID(IdGen.uuid());
@@ -203,6 +216,11 @@ public class TaskmanageService {
     @Transactional(readOnly = false)
     public int savefeedbacktable(taskmanagement task){
         int result=0;
+        // DS88: same null-region guard as savetaskexecutor (release() can
+        // reach here with a task that has no region).
+        if (task.getTaskregion() == null) {
+            return result;
+        }
         for(String itme:task.getTaskregion()) {
             feedbacktable fee = new feedbacktable();
             fee.setId(IdGen.uuid());
@@ -288,6 +306,10 @@ public class TaskmanageService {
 
     @Transactional
     public taskmanagement storage(taskmanagement task, MultipartFile[] fileIdUploads,String[] deleteIds,String countId) throws IOException {
+        // DS88: same null-task guard as save() (controller also guards).
+        if (task == null) {
+            throw new ServiceException("Thiếu thông tin tác vụ");
+        }
 
 
 
@@ -322,6 +344,10 @@ public class TaskmanageService {
                 // Z3f: file attach targets an existing task, so check its owner.
                 checkTaskOwnership(countId);
                 taskmanagement byId = this.taskmangementDao.getById(countId);
+                // DS88: a fake countId returns null -> byId.getID() NPEd below -> 400.
+                if (byId == null) {
+                    throw new ServiceException("Không tìm thấy tác vụ");
+                }
                 // L3 (iteration 59): guard deleteIds bang {byId id} truoc moi upload/xoa,
                 // mau K5/K7 (nhanh attach da co checkTaskOwnership cho DONG task).
                 if (null != deleteIds && deleteIds.length > 0) {
@@ -377,6 +403,10 @@ public class TaskmanageService {
                // Z3f: file attach targets an existing task, so check its owner.
                checkTaskOwnership(countId);
                taskmanagement byId = this.taskmangementDao.getById(countId);
+               // DS88: a fake countId returns null -> byId.getID() NPEd below -> 400.
+               if (byId == null) {
+                   throw new ServiceException("Không tìm thấy tác vụ");
+               }
                // L3 (iteration 59): guard deleteIds bang {byId id} truoc moi upload/xoa,
                // mau K5/K7 (nhanh attach da co checkTaskOwnership cho DONG task).
                if (null != deleteIds && deleteIds.length > 0) {

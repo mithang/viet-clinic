@@ -200,13 +200,17 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
         // (all branches deref them); a null entry or null detail list
         // NPEd in the inner loop; NORMAL (type=0) also derefs patient,
         // doctor and company -> 400 early (DS82 pattern).
+        // DS88: INSTANT (type=1) saves a MedicalRecord through the same
+        // save() (doctor_id/company_id NOT NULL), so it needs doctor and
+        // company like NORMAL; RETAIL (type=2) never touches the medical
+        // record, so it stays exempt.
         if (receptionEvt == null || receptionEvt.getRecipelInfoEvtList() == null
                 || receptionEvt.getMedicalRecord() == null
                 || receptionEvt.getRegistration() == null) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
         }
-        if (receptionEvt.getType() == 0
+        if ((receptionEvt.getType() == 0 || receptionEvt.getType() == 1)
                 && (receptionEvt.getPatient() == null
                 || receptionEvt.getMedicalRecord().getDoctor() == null
                 || !StringUtils.hasText(receptionEvt.getMedicalRecord().getDoctor().getId())
