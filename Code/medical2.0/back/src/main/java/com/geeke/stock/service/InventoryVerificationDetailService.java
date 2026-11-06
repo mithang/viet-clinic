@@ -283,7 +283,11 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
             if (!StringUtils.isNullOrEmpty(detail.getDrug())) {
                 Drug drug = drugService.get(detail.getDrug().getId());
                 detail.setDrug(drug);
-            } else {
+            } else if (!StringUtils.isNullOrEmpty(detail.getStuff())) {
+                // DS92: dòng không có cả drug lẫn stuff (dữ liệu cũ) thì
+                // nhánh else cũ gọi getStuff().getId() -> NPE, vỡ toàn bộ
+                // file xuất; để cả hai null, các cột thuốc/vật tư render
+                // trống ở dưới.
                 Stuff stuff = stuffService.get(detail.getStuff().getId());
                 detail.setStuff(stuff);
             }
@@ -294,27 +298,40 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         List<Map<String, Object>> exportData = new ArrayList<>();
         for (InventoryVerificationDetail detail : rows) {
             Map<String, Object> row = new LinkedHashMap<>();
+            // DS92: dòng không có cả drug lẫn stuff, hoặc drug đã bị xóa
+            // (get() trả null) thì nhánh else cũ deref stuff null -> NPE;
+            // các cột thuốc/vật tư để trống thay vì vỡ file xuất.
             if (!StringUtils.isNullOrEmpty(detail.getDrug())) {
                 Drug drug = detail.getDrug();
                 row.put("code", drug.getCode());
                 row.put("name", drug.getGoodsName());
-                row.put("type", drug.getType().getName());
-                String spec = drug.getDosis() + drug.getDosisUnit().getName() + "/"
-                        + drug.getPreparation() + drug.getPreparationUnit().getName() + "/"
-                        + drug.getPack().getName();
+                row.put("type", drug.getType() == null ? "" : drug.getType().getName());
+                String spec = drug.getDosis() + (drug.getDosisUnit() == null ? "" : drug.getDosisUnit().getName()) + "/"
+                        + drug.getPreparation() + (drug.getPreparationUnit() == null ? "" : drug.getPreparationUnit().getName()) + "/"
+                        + (drug.getPack() == null ? "" : drug.getPack().getName());
                 row.put("specification", spec);
-                row.put("factory", drug.getFactory().getName());
-            } else {
+                row.put("factory", drug.getFactory() == null ? "" : drug.getFactory().getName());
+            } else if (!StringUtils.isNullOrEmpty(detail.getStuff())) {
                 Stuff stuff = detail.getStuff();
                 row.put("code", stuff.getCode());
                 row.put("name", stuff.getName());
-                row.put("type", stuff.getType().getName());
+                row.put("type", stuff.getType() == null ? "" : stuff.getType().getName());
                 row.put("specification", stuff.getSpecifications());
-                row.put("factory", stuff.getFactory().getName());
+                row.put("factory", stuff.getFactory() == null ? "" : stuff.getFactory().getName());
+            } else {
+                row.put("code", "");
+                row.put("name", "");
+                row.put("type", "");
+                row.put("specification", "");
+                row.put("factory", "");
             }
-            row.put("supplier", detail.getSupplierStock().getSupplierId().getName());
-            row.put("norms", detail.getSupplierStock().getNorms());
-            row.put("endDate", sdf.format(detail.getSupplierStock().getEndDate()));
+            // DS92: supplierStock.endDate NULL (dòng không có phiếu nhập
+            // tương ứng) thì sdf.format(null) -> NPE; nhà cung cấp/lô/
+            // hạn để trống thay vì vỡ file xuất.
+            SupplierStock ss = detail.getSupplierStock();
+            row.put("supplier", ss == null || ss.getSupplierId() == null ? "" : ss.getSupplierId().getName());
+            row.put("norms", ss == null ? "" : ss.getNorms());
+            row.put("endDate", ss == null || ss.getEndDate() == null ? "" : sdf.format(ss.getEndDate()));
             row.put("currentInventory", getCurrentInventory(detail));
             row.put("checkInventory", getCheckInventory(detail));
             row.put("profitAndLoss", getProfitAndLoss(detail));
@@ -343,34 +360,76 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                 .write(response, "Kiểm kê tồn kho.xlsx");
     }
 
+    // DS92: hệ số đổi đơn vị cho các cột số lượng đã đổi của file xuất
+    // kiểm kê (drug.preparation / stuff.packNumber); null, không phải
+    // số, <= 0, hoặc dòng không có cả drug lẫn stuff -> null, caller
+    // trả số lượng gốc dạng chuỗi thay vì NPE/chia 0.
+    private BigDecimal exportPreparation(InventoryVerificationDetail d) {
+        try {
+            BigDecimal p;
+            if (!StringUtils.isNullOrEmpty(d.getDrug())) {
+                if (d.getDrug().getPreparation() == null) { return null; }
+                p = new BigDecimal(d.getDrug().getPreparation().toString());
+            } else if (!StringUtils.isNullOrEmpty(d.getStuff())) {
+                if (d.getStuff().getPackNumber() == null) { return null; }
+                p = new BigDecimal(d.getStuff().getPackNumber().toString());
+            } else {
+                return null;
+            }
+            return p.compareTo(BigDecimal.ZERO) > 0 ? p : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // DS92: tên đơn vị [đơn vị đóng gói, đơn vị nhỏ nhất] cho cột số
+    // lượng đã đổi; tên dict rỗng (mapper IFNULL) hay dòng không có cả
+    // drug lẫn stuff đều trả "" chứ không null.
+    private String[] exportUnitNames(InventoryVerificationDetail d) {
+        String packName = "";
+        String minName = "";
+        if (!StringUtils.isNullOrEmpty(d.getDrug())) {
+            if (d.getDrug().getPack() != null && d.getDrug().getPack().getName() != null) {
+                packName = d.getDrug().getPack().getName();
+            }
+            if (d.getDrug().getPreparationUnit() != null && d.getDrug().getPreparationUnit().getName() != null) {
+                minName = d.getDrug().getPreparationUnit().getName();
+            }
+        } else if (!StringUtils.isNullOrEmpty(d.getStuff())) {
+            if (d.getStuff().getPackUnit() != null && d.getStuff().getPackUnit().getName() != null) {
+                packName = d.getStuff().getPackUnit().getName();
+            }
+            if (d.getStuff().getMinUnit() != null && d.getStuff().getMinUnit().getName() != null) {
+                minName = d.getStuff().getMinUnit().getName();
+            }
+        }
+        return new String[]{packName, minName};
+    }
+
     //TínhTồn kho hiện tại
     public String getCurrentInventory(InventoryVerificationDetail inventoryVerificationDetail){
         String inventory = "";
+        // DS92: currentInventory NULL (cột nullable) -> toString() NPE,
+        // vỡ toàn bộ file xuất; không có số lượng thì để trống.
+        if (inventoryVerificationDetail.getCurrentInventory() == null) {
+            return "";
+        }
         BigDecimal currentInventory = new BigDecimal(inventoryVerificationDetail.getCurrentInventory().toString());
-        BigDecimal preparation = null;
-        if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-            preparation = new BigDecimal(inventoryVerificationDetail.getDrug().getPreparation().toString());
-        }else {
-            preparation = new BigDecimal(inventoryVerificationDetail.getStuff().getPackNumber().toString());
+        BigDecimal preparation = exportPreparation(inventoryVerificationDetail);
+        if (preparation == null) {
+            return String.valueOf(inventoryVerificationDetail.getCurrentInventory());
         }
         BigDecimal divide = currentInventory.divide(preparation,BigDecimal.ROUND_CEILING);
         BigDecimal bigDecimal = divide.setScale(0, BigDecimal.ROUND_DOWN);
         BigDecimal subtract = divide.subtract(bigDecimal);
         int i = bigDecimal.intValue();
         int i1 = subtract.multiply(preparation).intValue();
+        String[] units = exportUnitNames(inventoryVerificationDetail);
         if((i-i1)>0){
-            if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                inventory=(i+inventoryVerificationDetail.getDrug().getPack().getName())+(i1+inventoryVerificationDetail.getDrug().getPreparationUnit().getName());
-            }else {
-                inventory=(i+inventoryVerificationDetail.getStuff().getPackUnit().getName())+(i1+inventoryVerificationDetail.getStuff().getMinUnit().getName());
-            }
+            inventory=(i+units[0])+(i1+units[1]);
             return inventory;
         }else {
-            if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                inventory=i+inventoryVerificationDetail.getDrug().getPack().getName();
-            }else {
-                inventory=i+inventoryVerificationDetail.getStuff().getPackUnit().getName();
-            }
+            inventory=i+units[0];
 
             return inventory;
         }
@@ -379,12 +438,14 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
     //Tồn kho kiểm kê
     public String getCheckInventory(InventoryVerificationDetail inventoryVerificationDetail){
         String inventory = "";
+        // DS92: checkInventory NULL -> toString() NPE, vỡ toàn bộ file xuất.
+        if (inventoryVerificationDetail.getCheckInventory() == null) {
+            return "";
+        }
         BigDecimal currentInventory = new BigDecimal(inventoryVerificationDetail.getCheckInventory().toString());
-        BigDecimal preparation = null;
-        if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-            preparation = new BigDecimal(inventoryVerificationDetail.getDrug().getPreparation().toString());
-        }else {
-            preparation = new BigDecimal(inventoryVerificationDetail.getStuff().getPackNumber().toString());
+        BigDecimal preparation = exportPreparation(inventoryVerificationDetail);
+        if (preparation == null) {
+            return String.valueOf(inventoryVerificationDetail.getCheckInventory());
         }
 
         BigDecimal divide = currentInventory.divide(preparation,BigDecimal.ROUND_CEILING);
@@ -392,19 +453,12 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         BigDecimal subtract = divide.subtract(bigDecimal);
         int i = bigDecimal.intValue();
         int i1 = subtract.multiply(preparation).intValue();
+        String[] units = exportUnitNames(inventoryVerificationDetail);
         if((i-i1)>0){
-            if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                inventory=(i+inventoryVerificationDetail.getDrug().getPack().getName())+(i1+inventoryVerificationDetail.getDrug().getPreparationUnit().getName());
-            }else {
-                inventory=(i+inventoryVerificationDetail.getStuff().getPackUnit().getName())+(i1+inventoryVerificationDetail.getStuff().getMinUnit().getName());
-            }
+            inventory=(i+units[0])+(i1+units[1]);
             return inventory;
         }else {
-            if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                inventory=i+inventoryVerificationDetail.getDrug().getPack().getName();
-            }else {
-                inventory=i+inventoryVerificationDetail.getStuff().getPackUnit().getName();
-            }
+            inventory=i+units[0];
 
             return inventory;
         }
@@ -413,34 +467,31 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
     //Lãi lỗ kiểm kê
     public String getProfitAndLoss(InventoryVerificationDetail inventoryVerificationDetail){
         String checkInventory="";
+        // DS92: checkInventory/profitAndLoss NULL -> unbox/toString NPE,
+        // vỡ toàn bộ file xuất; không có số liệu thì để trống.
+        if (inventoryVerificationDetail.getCheckInventory() == null
+                || inventoryVerificationDetail.getProfitAndLoss() == null) {
+            return "";
+        }
         if(inventoryVerificationDetail.getCheckInventory()>0){
 
             BigDecimal bigDecimal = new BigDecimal(inventoryVerificationDetail.getProfitAndLoss().toString());
-            BigDecimal bigDecimal1 = null;
-            if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                bigDecimal1 = new BigDecimal(inventoryVerificationDetail.getDrug().getPreparation().toString());
-            }else {
-                bigDecimal1 = new BigDecimal(inventoryVerificationDetail.getStuff().getPackNumber().toString());
+            BigDecimal bigDecimal1 = exportPreparation(inventoryVerificationDetail);
+            if (bigDecimal1 == null) {
+                return String.valueOf(inventoryVerificationDetail.getProfitAndLoss());
             }
             BigDecimal divide = bigDecimal.divide(bigDecimal1,BigDecimal.ROUND_CEILING);
             BigDecimal bigDecimal2 = divide.setScale(0, BigDecimal.ROUND_DOWN);
             BigDecimal subtract = divide.subtract(bigDecimal2);
             int i = bigDecimal2.intValue();
             int i1 = subtract.multiply(bigDecimal1).intValue();
+            String[] units = exportUnitNames(inventoryVerificationDetail);
             if(i1>0){
-                if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                    checkInventory=(i+inventoryVerificationDetail.getDrug().getPack().getName())+(i1+inventoryVerificationDetail.getDrug().getPreparationUnit().getName());
-                }else {
-                    checkInventory=(i+inventoryVerificationDetail.getStuff().getPackUnit().getName())+(i1+inventoryVerificationDetail.getStuff().getMinUnit().getName());
-                }
+                checkInventory=(i+units[0])+(i1+units[1]);
               //  checkInventory=(i+inventoryVerificationDetail.getDrug().getPack().getName())+(i1+inventoryVerificationDetail.getDrug().getPreparationUnit().getName());
                 return checkInventory;
             }else {
-                if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                    checkInventory=i+inventoryVerificationDetail.getDrug().getPack().getName();
-                }else {
-                    checkInventory=i+inventoryVerificationDetail.getStuff().getPackUnit().getName();
-                }
+                checkInventory=i+units[0];
                // checkInventory=i+inventoryVerificationDetail.getDrug().getPack().getName();
                 return checkInventory;
             }
@@ -449,40 +500,29 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
             Integer i=~(inventoryVerificationDetail.getProfitAndLoss()-1);
             BigDecimal bigDecimal = new BigDecimal(i.toString());
            // BigDecimal bigDecimal1 = new BigDecimal(inventoryVerificationDetail.getDrug().getPreparation().toString());
-            BigDecimal bigDecimal1 = null;
-            if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                bigDecimal1 = new BigDecimal(inventoryVerificationDetail.getDrug().getPreparation().toString());
-            }else {
-                bigDecimal1 = new BigDecimal(inventoryVerificationDetail.getStuff().getPackNumber().toString());
+            BigDecimal bigDecimal1 = exportPreparation(inventoryVerificationDetail);
+            if (bigDecimal1 == null) {
+                return String.valueOf(i);
             }
             BigDecimal divide = bigDecimal.divide(bigDecimal1,BigDecimal.ROUND_CEILING);
             BigDecimal bigDecimal2 = divide.setScale(0, BigDecimal.ROUND_DOWN);
             BigDecimal subtract = divide.subtract(bigDecimal2);
             int i2 = bigDecimal2.intValue();
             int i3 = subtract.multiply(bigDecimal1).intValue();
+            String[] units = exportUnitNames(inventoryVerificationDetail);
             if(i3>0){
-                if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                    checkInventory="-"+(i2+inventoryVerificationDetail.getDrug().getPack().getName())+(i3+inventoryVerificationDetail.getDrug().getPreparationUnit().getName());
-                }else {
-                    checkInventory="-"+(i2+inventoryVerificationDetail.getStuff().getPackUnit().getName())+(i3+inventoryVerificationDetail.getStuff().getMinUnit().getName());
-                }
+                checkInventory="-"+(i2+units[0])+(i3+units[1]);
                //checkInventory="-"+(i2+inventoryVerificationDetail.getDrug().getPack().getName())+(i3+inventoryVerificationDetail.getDrug().getPreparationUnit().getName());
                 return checkInventory;
             }else {
-                if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                    checkInventory="-"+i2+inventoryVerificationDetail.getDrug().getPack().getName();
-                }else {
-                    checkInventory="-"+i2+inventoryVerificationDetail.getStuff().getPackUnit().getName();
-                }
+                checkInventory="-"+i2+units[0];
                 //checkInventory="-"+i2+inventoryVerificationDetail.getDrug().getPack().getName();
                 return checkInventory;
             }
         } else {
-            if(!StringUtils.isNullOrEmpty(inventoryVerificationDetail.getDrug())){
-                return 0+inventoryVerificationDetail.getDrug().getPack().getName();
-            }else {
-                return 0+inventoryVerificationDetail.getStuff().getPackUnit().getName();
-            }
+            // DS92: chk == 0 -> "0" + đơn vị đóng gói; nhánh cũ deref
+            // getStuff() khi dòng không có cả drug lẫn stuff -> NPE.
+            return "0" + exportUnitNames(inventoryVerificationDetail)[0];
 
         }
     }

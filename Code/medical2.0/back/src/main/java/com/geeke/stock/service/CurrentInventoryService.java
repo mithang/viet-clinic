@@ -238,7 +238,17 @@ public class CurrentInventoryService {
                 stuff.setSpecifications(specification);
 
                 // Tổng giá bán
-                BigDecimal selling = new BigDecimal(stuff.getPriceOutSell() + "").divide(new BigDecimal(stuff.getPackNumber()), 4, BigDecimal.ROUND_HALF_UP);
+                // DS92: priceOutSell NULL (cột nullable, save API chấp nhận)
+                // làm new BigDecimal("null") ném NumberFormatException, và
+                // packNumber 0 làm divide ném ArithmeticException, cả hai
+                // đều vỡ toàn bộ file xuất -> giá null tính là 0,
+                // packNumber <= 0 thì giữ nguyên giá, không chia cho 0
+                // (cùng mẫu TollInfo/parseExportCount như exportDrug).
+                BigDecimal priceOut = stuff.getPriceOutSell() == null ? BigDecimal.ZERO : stuff.getPriceOutSell();
+                int packNumForSelling = stuff.getPackNumber() == null ? 0 : stuff.getPackNumber();
+                BigDecimal selling = packNumForSelling > 0
+                        ? priceOut.divide(new BigDecimal(packNumForSelling), 4, BigDecimal.ROUND_HALF_UP)
+                        : priceOut;
                 BigDecimal sellingTotal = new BigDecimal(stuff.getInventory()).multiply(selling);
                 stuff.setRetailPrice(sellingTotal);
 
@@ -248,11 +258,18 @@ public class CurrentInventoryService {
 
                 // Số lượng còn lại(Chuỗi đã định dạng)
                 int inv = stuff.getInventory();
-                int packNum = stuff.getPackNumber();
-                String number = Math.floor(inv / packNum) >= 0
-                        ? (int) Math.floor(inv / packNum) + stuff.getPackUnit().getName()
-                        + ((inv % packNum > 0) ? (inv % packNum) + stuff.getMinUnit().getName() : "")
-                        : inv + stuff.getMinUnit().getName();
+                int packNum = packNumForSelling;
+                String number;
+                if (packNum > 0) {
+                    number = Math.floor(inv / packNum) >= 0
+                            ? (int) Math.floor(inv / packNum) + stuff.getPackUnit().getName()
+                            + ((inv % packNum > 0) ? (inv % packNum) + stuff.getMinUnit().getName() : "")
+                            : inv + stuff.getMinUnit().getName();
+                } else {
+                    // DS92: packNumber 0 thì inv / packNum ném
+                    // ArithmeticException -> giữ nguyên tổng, đơn vị đóng gói.
+                    number = inv + stuff.getPackUnit().getName();
+                }
                 stuff.setStockNumber(number);
             }
         }
@@ -355,10 +372,14 @@ public class CurrentInventoryService {
                 // Tổng giá bán: preparation là String dạng thập phân ("100.0")
                 // nên parse bằng BigDecimal theo mẫu parseExportCount; prep <= 0
                 // thì giữ nguyên giá bán, không chia cho 0.
+                // DS92: drug.price NULL (cột nullable, save API chấp nhận)
+                // làm new BigDecimal("null") ném NumberFormatException,
+                // vỡ toàn bộ file xuất -> giá null tính là 0.
                 int prep = parseExportCount(drug.getPreparation());
+                BigDecimal price = drug.getPrice() == null ? BigDecimal.ZERO : drug.getPrice();
                 BigDecimal selling = prep > 0
-                        ? new BigDecimal(drug.getPrice() + "").divide(new BigDecimal(drug.getPreparation()), 4, BigDecimal.ROUND_HALF_UP)
-                        : new BigDecimal(drug.getPrice() + "");
+                        ? price.divide(new BigDecimal(drug.getPreparation()), 4, BigDecimal.ROUND_HALF_UP)
+                        : price;
                 BigDecimal sellingTotal = drug.getStock().getStorageStock().subtract(drug.getStock().getUsedStock().add(drug.getStock().getReimburseStock())).multiply(selling);
                 drug.setRetailPrice(sellingTotal);
 

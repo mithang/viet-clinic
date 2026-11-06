@@ -192,7 +192,7 @@
             #{updateDate},
             #{remarks},
             #{profitAndLossPrice},
-            #{medicinalStorageId}
+            #{medicinalStorageControl.id}
         )
     </insert>
     
@@ -209,7 +209,7 @@
             update_date = #{updateDate},
             remarks = #{remarks},
             profit_and_loss_price = #{profitAndLossPrice},
-            medicinal_storage_id = #{medicinalStorageId}
+            medicinal_storage_id = #{medicinalStorageControl.id}
         WHERE id = #{id}
     </update>
     
@@ -252,7 +252,7 @@
             #{entity.updateDate},
             #{entity.remarks},
             #{entity.profitAndLossPrice},
-            #{entity.medicinalStorageId}
+            #{entity.medicinalStorageControl.id}
         )
         </foreach>
     </insert>

@@ -74,6 +74,12 @@ public class InventoryVerificationDetailController extends CrudController<Invent
     @PostMapping("exportExcel")
     public void exportExcel(@RequestBody InventoryVerification inventoryVerification, HttpServletRequest request,HttpServletResponse response) throws IOException {
         if (!hasAnySessionPermission()) { response.setStatus(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN); return; }
+        // DS92: body không có company NPE ở getCompany().getId() trong
+        // service -> 500; fail closed 400 như các saveWithFile (DS87).
+        if (inventoryVerification == null || inventoryVerification.getCompany() == null) {
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         inventoryVerificationDetailService.exportExcel(inventoryVerification,response);
     }
 }
