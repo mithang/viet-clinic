@@ -57,7 +57,17 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
         colMaps.clear();
         colMaps.put("company_id", "company.id");
         colMaps.put("code", "code");
-        
+
+        // DS103: fail-closed 400 khi update id khong ton tai (ho DS94/
+        // DS99). Block Z3a tren day pass khi dong khong ton tai (dao.get
+        // tra null), TreeService.save sau do doUpdate cham 0 dong ma van
+        // 200. Kiem tra sau Z3a (de bao toan thu tu tenant truoc), truoc
+        // exists() trung ma (de bao toan C10/C11).
+        if (StringUtils.isNotBlank(department.getId())
+                && dao.get(department.getId()) == null) {
+            throw new ServiceException("Phòng ban không tồn tại: " + department.getId());
+        }
+
         if(exists(dao, department, colMaps)) {
             throw new ServiceException("Trong cùng một công ty đã tồn tại mã phòng ban giống hệt");
         }
@@ -110,6 +120,12 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 	@Override
 	@Transactional(readOnly = false)
 	public List<String> bulkInsert(List<Department> entitys) {
+		// DS103: null/rong -> 400 fail-closed, thay vi 200 [] silent
+		// no-op (probe C5; C7 null da 400 o controller, chan them o day
+		// de phong duong goi truc tiep service).
+		if (entitys == null || entitys.isEmpty()) {
+			throw new ServiceException("Danh sách phòng ban không được để trống");
+		}
 		List<String> ids = Lists.newArrayList();
 		if (entitys != null) {
 			for (Department department : entitys) {
@@ -122,6 +138,13 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 	@Override
 	@Transactional(readOnly = false)
 	public List<String> bulkUpdate(List<Department> entitys) {
+		// DS103: null/rong -> 400 fail-closed (probe C4; C7 null da 400
+		// o controller). Vong lap qua save(): save() nem ServiceException
+		// khi gap id khong ton tai (C2/C3) thi @Transactional rollback ca
+		// list -- dong valid khong bi doi (probe C3).
+		if (entitys == null || entitys.isEmpty()) {
+			throw new ServiceException("Danh sách phòng ban không được để trống");
+		}
 		List<String> ids = Lists.newArrayList();
 		if (entitys != null) {
 			for (Department department : entitys) {
@@ -134,6 +157,11 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 	@Override
 	@Transactional(readOnly = false)
 	public int bulkDelete(List<Department> entitys) {
+		// DS103: null/rong -> 400 fail-closed (probe C6; C7 null da 400
+		// o controller). Dong khong id van bo qua nhu cu (mau DS41).
+		if (entitys == null || entitys.isEmpty()) {
+			throw new ServiceException("Danh sách phòng ban không được để trống");
+		}
 		int rows = 0;
 		if (entitys != null) {
 			for (Department department : entitys) {
