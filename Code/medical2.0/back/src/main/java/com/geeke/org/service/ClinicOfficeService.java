@@ -44,7 +44,73 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
                throw new ServiceException("Đã tồn tạigiống hệtTênKhoa,Vui lòng nhập lại");
            }
        }
+       // DS100: CrudService.save rẽ nhánh update khi id khác rỗng,
+       // doUpdate không động đến dòng nào nếu id không tồn tại mà vẫn
+       // trả 200 (probe S1; cùng họ silent no-op DS94/DS99). Chỉ chấp
+       // nhận update khi dòng đã tồn tại; tạo mới phải gửi id rỗng.
+       if (StringUtils.isNotBlank(clinicOffice.getId()) && super.get(clinicOffice.getId()) == null) {
+           throw new ServiceException("Khoa không tồn tại: " + clinicOffice.getId());
+       }
         ClinicOffice save = super.save(clinicOffice);
         return clinicOffice;
+    }
+
+    /**
+     * DS100: bulkInsert/bulkUpdate kế thừa từ CrudService đi thẳng qua
+     * dao, bỏ qua các guard @NotNull của save() (code/name/company/
+     * isLocked đều NOT NULL ở clinic_office; mapper bulkInsert ghi
+     * trực tiếp, bulkUpdate ghi CASE không điều kiện) nên hàng thiếu
+     * trường 500 ở DB (probe S7/S9), và bulkUpdate id không tồn tại
+     * trả 200 im lặng dù mapper không động đến dòng nào (probe S2;
+     * tiền lệ DS99 chỉ sửa GenTable). Ghi đè ở đây để fail-closed 400
+     * trước mọi ghi: danh sách null/rỗng, trường bắt buộc, id rỗng
+     * hoặc không tồn tại.
+     */
+    private void validateRequired(ClinicOffice clinicOffice) {
+        if (clinicOffice == null) {
+            throw new ServiceException("Khoa không được để trống");
+        }
+        if (clinicOffice.getCompany() == null || StringUtils.isBlank(clinicOffice.getCompany().getId())) {
+            throw new ServiceException("Phòng khám của khoa không được để trống");
+        }
+        if (StringUtils.isBlank(clinicOffice.getCode())) {
+            throw new ServiceException("Mã khoa không được để trống");
+        }
+        if (StringUtils.isBlank(clinicOffice.getName())) {
+            throw new ServiceException("Tên khoa không được để trống");
+        }
+        if (StringUtils.isBlank(clinicOffice.getIsLocked())) {
+            throw new ServiceException("Vô hiệu hóa không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<ClinicOffice> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách khoa thêm mới không được để trống");
+        }
+        for (ClinicOffice clinicOffice : entitys) {
+            validateRequired(clinicOffice);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<ClinicOffice> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách khoa cập nhật không được để trống");
+        }
+        for (ClinicOffice clinicOffice : entitys) {
+            validateRequired(clinicOffice);
+            if (StringUtils.isBlank(clinicOffice.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của khoa đã tồn tại");
+            }
+            if (super.get(clinicOffice.getId()) == null) {
+                throw new ServiceException("Khoa không tồn tại: " + clinicOffice.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
     }
 }
