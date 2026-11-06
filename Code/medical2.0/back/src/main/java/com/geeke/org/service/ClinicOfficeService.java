@@ -51,6 +51,15 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
        if (StringUtils.isNotBlank(clinicOffice.getId()) && super.get(clinicOffice.getId()) == null) {
            throw new ServiceException("Khoa không tồn tại: " + clinicOffice.getId());
        }
+       // DS101: single-row insert ghi #{sort} trực tiếp; sort NOT NULL
+       // (default 0 của DB chỉ áp dụng khi bỏ cột, không áp cho NULL
+       // tường minh), entity chỉ có @Length nên @Valid cho null qua rồi
+       // 500 ở DB (probe T1). Chỉ yêu cầu ở nhánh tạo mới: mapper
+       // update không bao giờ ghi sort nên cập nhật thiếu sort vẫn 200
+       // (probe T4); bulkUpdate cũng không ghi sort (probe T5).
+       if (StringUtils.isBlank(clinicOffice.getId()) && StringUtils.isBlank(clinicOffice.getSort())) {
+           throw new ServiceException("Sắp xếp không được để trống");
+       }
         ClinicOffice save = super.save(clinicOffice);
         return clinicOffice;
     }
@@ -92,6 +101,12 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
         }
         for (ClinicOffice clinicOffice : entitys) {
             validateRequired(clinicOffice);
+            // DS101: bulkInsert ghi #{entity.sort} trực tiếp; sort NOT NULL
+            // nên hàng thiếu sort 500 ở DB (probe T2/T3). Chỉ yêu cầu ở
+            // bulkInsert: bulkUpdate không có CASE sort nên không yêu cầu.
+            if (StringUtils.isBlank(clinicOffice.getSort())) {
+                throw new ServiceException("Sắp xếp không được để trống");
+            }
         }
         return super.bulkInsert(entitys);
     }
