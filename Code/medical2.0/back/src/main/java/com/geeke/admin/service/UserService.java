@@ -315,9 +315,54 @@ public class UserService extends CrudService<UserDao, User>{
         return processed;
     }
 
+    /**
+     * DS83: saveWithFile/update goi thang save(user, files, deleteIds) /
+     * update(...) ma khong qua save(User) nen khong co guard null o do:
+     * userExt null -> NPE, creditNum/post/office null -> 500 o insert
+     * sys_user_ext tinh (NOT NULL), userRoleList null -> NPE o
+     * saveUserRoleInfo, name/phone/loginName/email/isLocked null -> 500
+     * o insert/update sys_user tinh (NOT NULL). Mac dinh null -> "" cho
+     * ext nhu save(User) (live data co ''), 400 null-only cho sys_user
+     * nhu @NotNull o plain save.
+     */
+    private void normalizeUserForFileSave(User user) {
+        if (user.getUserExt() == null) {
+            user.setUserExt(new UserExt());
+        }
+        if (user.getUserExt().getPost() == null) {
+            user.getUserExt().setPost("");
+        }
+        if (user.getUserExt().getOffice() == null) {
+            user.getUserExt().setOffice("");
+        }
+        if (user.getUserExt().getCreditNum() == null) {
+            user.getUserExt().setCreditNum("");
+        }
+        if (user.getUserRoleList() == null) {
+            user.setUserRoleList(Lists.newArrayList());
+        }
+        if (user.getName() == null) {
+            throw new ServiceException("Tên người dùng không được để trống");
+        }
+        if (user.getPhone() == null) {
+            throw new ServiceException("Số điện thoại không được để trống");
+        }
+        if (user.getLoginName() == null) {
+            throw new ServiceException("Tên đăng nhập không được để trống");
+        }
+        if (user.getEmail() == null) {
+            throw new ServiceException("Email không được để trống");
+        }
+        if (user.getIsLocked() == null) {
+            throw new ServiceException("Trạng thái khóa không được để trống");
+        }
+    }
+
     @Transactional(readOnly = false)
     public User save(User user,MultipartFile[] fileIdUploads,
                      String[] deleteIds) throws java.io.IOException {
+        // DS83: guard null truoc moi ghi (xem normalizeUserForFileSave).
+        normalizeUserForFileSave(user);
         // Người dùngĐăng nhậptênduy nhấtKiểm tra
         User existUser = getUserByLoginName(user);
         String loginTenant = SessionUtils.getLoginTenantId();
@@ -439,6 +484,11 @@ public class UserService extends CrudService<UserDao, User>{
         }
         for (UserRole userRole : user.getUserRoleList()){
 
+            // DS83: entry khong co role -> bulkInsert/update bind
+            // #{entity.role.id} NULL -> 500 o role_id NOT NULL.
+            if (userRole.getRole() == null || StringUtils.isBlank(userRole.getRole().getId())) {
+                throw new ServiceException("Vai trò người dùng không được để trống");
+            }
             if (StringUtils.isBlank(userRole.getId())) {
                 userRole.setUser(user);
                 userRole.preInsert();
@@ -482,6 +532,8 @@ public class UserService extends CrudService<UserDao, User>{
     @Transactional(readOnly = false)
     public User update(User user,MultipartFile[] fileIdUploads,
                        String[] deleteIds) throws java.io.IOException {
+        // DS83: guard null truoc moi ghi (xem normalizeUserForFileSave).
+        normalizeUserForFileSave(user);
         // K7 (iteration 58): guard deleteIds truoc moi ghi (mau J2):
         // file avatar co object_id = id user dang sua; file la -> 400
         // truoc super.save. Id rong (khong phai duong UI) thi tap cho

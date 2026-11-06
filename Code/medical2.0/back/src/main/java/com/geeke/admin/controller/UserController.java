@@ -260,6 +260,15 @@ public class UserController extends CrudController<UserService, User> {
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
         User user = JSONObject.parseObject(strUser, User.class);
+        // DS83: saveWithFile khong chay @Valid; company/userExt/office
+        // null se NPE o getCompany().getId() / getUserExt().getOffice()
+        // (office null con lam eq("name", null) nem 500 truoc ca guard
+        // D1) -> 400 som, khong 500.
+        if (user.getCompany() == null || StringUtils.isBlank(user.getCompany().getId())
+                || user.getUserExt() == null || StringUtils.isBlank(user.getUserExt().getOffice())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         user.setLoginName(user.getPhone());
         // test
         // ĐặtPhòng banid
@@ -293,6 +302,13 @@ public class UserController extends CrudController<UserService, User> {
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
         User user = JSONObject.parseObject(strUser, User.class);
+        // DS83: nhu saveWithFile — update cung khong chay @Valid;
+        // company/userExt/office null se NPE o lookup khoa -> 400 som.
+        if (user.getCompany() == null || StringUtils.isBlank(user.getCompany().getId())
+                || user.getUserExt() == null || StringUtils.isBlank(user.getUserExt().getOffice())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         List<Parameter> list = SearchParamsBuilder.create()
                 .eq("company_id", user.getCompany().getId())
                 .eq("name", user.getUserExt().getOffice())

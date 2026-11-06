@@ -159,12 +159,19 @@ public class User extends DataEntity<User> implements IUser {
 		this.loginPasswordUpdate = loginPasswordUpdate;
 	}	
 	
+	// DS83: khong co annotation nao nen null lot qua @Valid roi 500 o
+	// cot is_locked NOT NULL (plain save); null-only, live data khong
+	// co NULL is_locked.
+	@NotNull(message="Trạng thái khóa không được để trống")
 	public Integer getIsLocked() {
 		return isLocked;
 	}
 	public void setIsLocked(Integer isLocked) {
 		this.isLocked = isLocked;
 	}
+	// DS83: @Length(min=0) cho phep null lot qua @Valid roi 500 o cot
+	// phone NOT NULL (plain save); null-only, live data co '' phone.
+	@NotNull(message="Số điện thoại không được để trống")
 	@Length(min=0, max=20, message="số điện thoại di độngĐộ dài phải nằm trong khoảng 0 đến 20 ")
 	public String getPhone() {
 		return phone;
