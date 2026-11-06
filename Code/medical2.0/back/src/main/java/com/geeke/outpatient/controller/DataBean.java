@@ -161,7 +161,7 @@ public class DataBean {
         recipelTempletEvt.setBillDate("lập đơnNgày: " + billDate);
         recipelTempletEvt.setAge("Tuổi: " + (null == patient ? "" : patient.getAge()) + " tuổi");
         recipelTempletEvt.setFeeType("Loại phí: " + (null == tollInfo ? "" : tollInfo.getPaymentType().getName()));
-        recipelTempletEvt.setDispenseDate("0".equals(type) ? "" : ("Ngày phát thuốc: " + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getDispensionDate())));
+        recipelTempletEvt.setDispenseDate("0".equals(type) || null == recipelInfo.getDispensionDate() ? "" : ("Ngày phát thuốc: " + new SimpleDateFormat(DATE_FORMAT).format(recipelInfo.getDispensionDate())));
         recipelTempletEvt.setIdCard("Số CMND/CCCD: " + (null == patient ? "" : patient.getCard()));
         recipelTempletEvt.setDiagnose("Chẩn đoán lâm sàng: " + (null != medicalRecord && StringUtils.isNotBlank(medicalRecord.getWesternDiagnose()) ? "Chẩn đoán tây y: " + medicalRecord.getWesternDiagnose() + ";" : "")
                 + (null != medicalRecord && StringUtils.isNotBlank(medicalRecord.getChinaDiagnose()) ? "Chẩn đoán đông y: " + medicalRecord.getChinaDiagnose() + ";" : ""));
@@ -195,7 +195,11 @@ public class DataBean {
             for (RecipelDetail recipelDetail : detailList) {
                 if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
-                    count = count.add(recipelDetail.getAllFee());
+                    // DS90: allFee NULL (chi tiết phụ chưa tính tiền) thì đóng góp 0,
+                    // không NPE ở count.add(null) làm hỏng cả bản in (W5 :198).
+                    if (null != recipelDetail.getAllFee()) {
+                        count = count.add(recipelDetail.getAllFee());
+                    }
                     continue;
                 }
                 if ("0".equals(recipelDetail.getStuffType())) {
@@ -284,7 +288,10 @@ public class DataBean {
             for (RecipelDetail recipelDetail : detailList) {
                 if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
-                    count = count.add(recipelDetail.getAllFee());
+                    // DS90: allFee NULL thì đóng góp 0, không NPE (I6 :291).
+                    if (null != recipelDetail.getAllFee()) {
+                        count = count.add(recipelDetail.getAllFee());
+                    }
                     continue;
                 }
                 if ("2".equals(recipelDetail.getStuffType())) {
@@ -357,7 +364,10 @@ public class DataBean {
             for (RecipelDetail recipelDetail : detailList) {
                 if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
-                    count = count.add(recipelDetail.getAllFee());
+                    // DS90: allFee NULL thì đóng góp 0, không NPE (C6 :364).
+                    if (null != recipelDetail.getAllFee()) {
+                        count = count.add(recipelDetail.getAllFee());
+                    }
                     continue;
                 }
                 if ("1".equals(recipelDetail.getStuffType())) {
@@ -411,7 +421,10 @@ public class DataBean {
                         continue;
                     }
                     DecimalFormat decimalFormat = new DecimalFormat("0.##");
-                    chineseMedicalNames.add(drug.getGoodsName() + " " + decimalFormat.format(recipelDetail.getSingleDosage()) + drug.getDosisUnit().getName());
+                    // DS90: singleDosage NULL thì DecimalFormat.format(null) ném
+                    // IllegalArgumentException làm hỏng cả bản in (C1 :414):
+                    // liều để trống, vẫn in tên thuốc + đơn vị.
+                    chineseMedicalNames.add(drug.getGoodsName() + " " + (null == recipelDetail.getSingleDosage() ? "" : decimalFormat.format(recipelDetail.getSingleDosage())) + drug.getDosisUnit().getName());
                 }
             }
         }
@@ -450,7 +463,10 @@ public class DataBean {
             for (RecipelDetail recipelDetail : detailList) {
                 if (Integer.valueOf(1).equals(recipelDetail.getIsExtra())) {
                     //Tính phí phụ thêm
-                    count = count.add(recipelDetail.getAllFee());
+                    // DS90: allFee NULL thì đóng góp 0, không NPE (K3 :460).
+                    if (null != recipelDetail.getAllFee()) {
+                        count = count.add(recipelDetail.getAllFee());
+                    }
                     continue;
                 }
                 if ("3".equals(recipelDetail.getStuffType())) {
@@ -466,7 +482,10 @@ public class DataBean {
                     recipelDetailEvt.setName(costItem.getItemName());
                     recipelDetailEvt.setNum(recipelDetail.getTotal() + "");
                     recipelDetailEvt.setUseText(costItem.getUnit().getName());
-                    recipelDetailEvt.setPrice(new DecimalFormat("0.##").format(costItem.getSalePrice()) + " đồng");
+                    // DS90: salePrice NULL thì DecimalFormat.format(null) ném
+                    // IllegalArgumentException làm hỏng cả bản in (K2 :469):
+                    // giá để trống, không bịa giá.
+                    recipelDetailEvt.setPrice(null == costItem.getSalePrice() ? "" : new DecimalFormat("0.##").format(costItem.getSalePrice()) + " đồng");
                     recipelDetailEvt.setRemarks(costItem.getRemarks());
                     outList.add(recipelDetailEvt);
                 }
