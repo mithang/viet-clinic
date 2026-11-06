@@ -76,7 +76,17 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
         }
         myTask.setUpdateBy(SessionUtils.getUserJson().getString("name"));
         myTask.setUpdateDate(new Date());
-        this.dao.update(myTask);
+        // DS94: dao.update tra so dong da cap nhat; id khong ton tai thi
+        // 0 dong nhung truoc day van tra 200 (silent no-op). UI that
+        // luon gui task da co id (myTask/index.vue save tu dong da list,
+        // taskdetailsForm update) nen 400 chi ban khi caller bia id.
+        // (Luu y: file upload o tren chay truoc update; khi update 0
+        // dong ma co file dinh kem thi file vat ly co the thua lai --
+        // wart co san cua thu tu nay, DB thi rollback theo @Transactional.)
+        int updated = this.dao.update(myTask);
+        if (updated == 0) {
+            throw new ServiceException("Nhiệm vụ không tồn tại");
+        }
 
 
     }
@@ -115,9 +125,13 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
         verifyTenantOwnership(myTask);
         verifyStoredRowTenant(myTask);
         int i =this.dao.update(myTask);
-        if(i>0){
-            return myTask;
+        // DS94: truoc day update 0 dong (id khong ton tai) thi tra null
+        // ma controller van tra successJson(null) voi HTTP 200 --
+        // silent no-op, cung ho voi save(). UI that luon gui id da ton
+        // tai nen 400 chi ban khi caller bia id.
+        if (i == 0) {
+            throw new ServiceException("Nhiệm vụ không tồn tại");
         }
-        return null;
+        return myTask;
     }
 }

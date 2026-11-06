@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -72,6 +73,26 @@ public class GlobalExceptionHandler {
         logger.error("Ngoại lệ khi vận hành: {}", e.getMessage(), e);
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Hệ thốngtrongbộLỗi", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+    }
+
+    /**
+     * DS94: SQL sai nguphap — trong app nay chi xay ra khi tham so do
+     * client gui tao ra cau SQL khong hop le (sort key khong ton tai
+     * qua SearchParams.getOrderby, hoac ten cot loc khong ton tai qua
+     * Common.whereParams); SQL cua server la XML tinh. Truoc day
+     * BadSqlGrammarException roi vao RuntimeException handler -> 500,
+     * trong khi day la loi dau vao cua client -> 400. Handler nay dat
+     * o mot cho nen bao phu moi duong list (CrudService.listPage/
+     * listAll/paginate va cac override goi thang dao.listPage nhu
+     * DictItemService) ma khong phai sua tung service. Luu y: neu mot
+     * mapper cua server tu hong thi loi do cung ve 400 thay vi 500 --
+     * log warn ben duoi van giu message SQL day du de phan biet.
+     */
+    @ExceptionHandler(BadSqlGrammarException.class)
+    public ResponseEntity<JSONObject> badSqlGrammarExceptionHandler(BadSqlGrammarException e) {
+        logger.warn("Câu lệnh SQL không hợp lệ (tham số sắp xếp/lọc): {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Tham số sắp xếp hoặc lọc không hợp lệ", Constants.MSG_TYPE_WARNING);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
     /**
