@@ -12,12 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -135,6 +137,29 @@ public class GlobalExceptionHandler {
     public ResponseEntity<JSONObject> httpMessageNotReadableHandler(HttpMessageNotReadableException e) {
         logger.warn("Định dạng thân yêu cầu sai: {}", e.getMessage());
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Định dạng nội dung yêu cầu sai, vui lòng kiểm tra định dạng JSON", Constants.MSG_TYPE_ERROR);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    /**
+     * DS96: Content-Type khong dung (gui JSON body kem
+     * Content-Type text/plain) -> HttpMediaTypeNotSupportedException,
+     * va @RequestParam int nhan gia tri khong phai so (limit=abc)
+     * -> MethodArgumentTypeMismatchException. Ca hai truoc day roi
+     * vao RuntimeException handler -> 500, trong khi day la loi dau
+     * vao cua client -> 415/400. Dat o mot cho nen bao phu moi
+     * endpoint, ke ca cac endpoint khong co @RequestBody.
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<JSONObject> httpMediaTypeNotSupportedHandler(HttpMediaTypeNotSupportedException e) {
+        logger.warn("Loại nội dung yêu cầu không được hỗ trợ: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_415.getErrorCode(), "Loại nội dung yêu cầu không được hỗ trợ", Constants.MSG_TYPE_ERROR);
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(result);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<JSONObject> methodArgumentTypeMismatchHandler(MethodArgumentTypeMismatchException e) {
+        logger.warn("Tham số yêu cầu không hợp lệ: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Tham số yêu cầu không hợp lệ", Constants.MSG_TYPE_WARNING);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 

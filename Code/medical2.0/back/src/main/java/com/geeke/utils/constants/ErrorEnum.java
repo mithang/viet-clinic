@@ -18,6 +18,7 @@ public enum ErrorEnum {
      * Thông tin lỗi
      * */
     E_400("400", "Xử lý yêu cầu gặp ngoại lệ, vui lòng thử lại sau"),
+    E_415("415", "Loại nội dung yêu cầu không được hỗ trợ"),
     E_500("500", "Vui lòngyêu cầucáchcósai,Vui lòng kiểm tra GET/POST"),
     E_501("501", "Vui lòngyêu cầuđường dẫnKhông tồn tại"),
     E_502("502", "Quyềnkhông đủ"),
