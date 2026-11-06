@@ -45,6 +45,49 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
 
     @Transactional(readOnly = false)
     public SysSeting save(SysSeting entity, MultipartFile[] multipartFiles) {
+        // DS87: the six *Index fields are transient (no such columns exist
+        // in sys_seting; they index into the attachments array). A missing
+        // index unboxed to NPE at getProjectLogoIndex() >= 0 -> 500 (inside
+        // the try below, rethrown as RuntimeException), and an index past
+        // the attachments array AIOOBE'd the same way. Missing means "no
+        // file selected for that slot" -> default -1 (keep existing logo);
+        // out-of-range is a malformed request -> 400, checked BEFORE any
+        // write so the transaction has nothing to roll back.
+        if (entity == null) {
+            throw new ServiceException("Cài đặt hệ thống không được để trống");
+        }
+        if (entity.getProjectLogoIndex() == null) {
+            entity.setProjectLogoIndex(-1);
+        }
+        if (entity.getLoginLogoIndex() == null) {
+            entity.setLoginLogoIndex(-1);
+        }
+        if (entity.getSysLogoIndex() == null) {
+            entity.setSysLogoIndex(-1);
+        }
+        if (entity.getFaviconIndex() == null) {
+            entity.setFaviconIndex(-1);
+        }
+        if (entity.getLoginBgIndex() == null) {
+            entity.setLoginBgIndex(-1);
+        }
+        if (entity.getLoginGraphIndex() == null) {
+            entity.setLoginGraphIndex(-1);
+        }
+        if ((entity.getProjectLogoIndex() >= 0
+                && (multipartFiles == null || entity.getProjectLogoIndex() >= multipartFiles.length))
+                || (entity.getLoginLogoIndex() >= 0
+                && (multipartFiles == null || entity.getLoginLogoIndex() >= multipartFiles.length))
+                || (entity.getSysLogoIndex() >= 0
+                && (multipartFiles == null || entity.getSysLogoIndex() >= multipartFiles.length))
+                || (entity.getFaviconIndex() >= 0
+                && (multipartFiles == null || entity.getFaviconIndex() >= multipartFiles.length))
+                || (entity.getLoginBgIndex() >= 0
+                && (multipartFiles == null || entity.getLoginBgIndex() >= multipartFiles.length))
+                || (entity.getLoginGraphIndex() >= 0
+                && (multipartFiles == null || entity.getLoginGraphIndex() >= multipartFiles.length))) {
+            throw new ServiceException("Chỉ số tệp đính kèm vượt quá số tệp đã gửi");
+        }
 
         //lưu trữCài đặt hệ thốngcơ bảnThông tin
         String id = super.save(entity).getId();

@@ -66,6 +66,12 @@ public class RecipetemplateController extends CrudController<RecipetemplateServi
             for (Recipetemplate recipetemplate : recipetemplates) {
                 //Lấy thông tin đơn thuốc
                 RecipeTemplateInfo recipeTemplateInfo=recipetemplateInfoService.getByRecipeTemplateId(recipetemplate.getId());
+                // DS87: same null-info NPE as getById above (a template
+                // without an info row NPEd at getId()); a list must not
+                // 500 for one bad row -- skip enrichment for that row.
+                if (recipeTemplateInfo == null) {
+                    continue;
+                }
 
                 //Lấy chi tiết đơn thuốc
                 List<RecipeTemplateDetail> recipeTemplateDetails=recipetemplateDetailService.getByRecipeTemplateInfoId(recipeTemplateInfo.getId());

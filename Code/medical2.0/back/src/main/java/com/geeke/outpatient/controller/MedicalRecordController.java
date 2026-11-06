@@ -76,8 +76,33 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
       @RequestParam("fileIdUploads") MultipartFile[] fileIdUploads,  // Tệp: Tải lên tệp đính kèm
       @RequestParam("deleteIds")String strDeleteIds) throws java.io.IOException {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
-        MedicalRecord entity = JSONObject.parseObject(strEntity, MedicalRecord.class);
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        MedicalRecord entity;
+        try {
+            entity = JSONObject.parseObject(strEntity, MedicalRecord.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed entity JSON (truncated, or a bare string for
+            // a typed field) threw at parseObject -> 500; unparseable input
+            // can never succeed -> 400 (DS85/DS86 pattern).
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        // DS87: parse from String (no @Valid); a "null" entity NPEd in
+        // MedicalRecordService.save at medicalRecord.getFileId(), and a
+        // company-less record 500d at the insert (company_id NOT NULL)
+        // -> 400 early (DS82/DS83 pattern).
+        if (entity == null || entity.getCompany() == null
+                || !StringUtils.hasText(entity.getCompany().getId())) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        String[] deleteIds;
+        try {
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed deleteIds JSON threw at parseObject -> 500.
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
         String id = medicalRecordService.save(entity,
             fileIdUploads,
             deleteIds
@@ -110,7 +135,31 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
                                               @RequestParam(name = "fileIdUploads",required=false) MultipartFile[] fileIdUploads,  // Tệp: Tải lên tệp đính kèm
                                               @RequestParam(name = "deleteIds",required=false)String strDeleteIds) throws java.io.IOException {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
-        MedicalRecipelEvt medicalRecipelEvt = JSONObject.parseObject(strEntity, MedicalRecipelEvt.class);
+        MedicalRecipelEvt medicalRecipelEvt;
+        try {
+            medicalRecipelEvt = JSONObject.parseObject(strEntity, MedicalRecipelEvt.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed entity JSON threw at parseObject -> 500;
+            // unparseable input can never succeed -> 400 (DS85/DS86 pattern).
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        // DS87: a "null" evt / null medicalRecord NPEd in
+        // saveAllRecordInfo at getMedicalRecord(), and a non-instant evt
+        // without a registration id NPEd at getRegistration().getId()
+        // -> 400 early (DS82 pattern). Instant (isInstant=1) builds its
+        // own registration, so it needs no registration id.
+        if (medicalRecipelEvt == null || medicalRecipelEvt.getMedicalRecord() == null) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        if (medicalRecipelEvt.getIsInstant() != 1) {
+            Registration evtRegistration = medicalRecipelEvt.getMedicalRecord().getRegistration();
+            if (evtRegistration == null || !StringUtils.hasText(evtRegistration.getId())) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                        .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+            }
+        }
         Registration registration = medicalRecordService.allSave(medicalRecipelEvt, fileIdUploads, strDeleteIds);
         return ResponseEntity.ok(ResultUtil.successJson(registration));
     }
@@ -137,10 +186,46 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
                                                  @RequestParam(name = "medicalFiles",required=false) MultipartFile[] medicalFiles
                                                  ) throws Exception {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC U1: duong ghi nhu cac duong ghi cung controller (v2/allSave tunghi de duoc bang token 0 quyen).
-        ReceptionEvt receptionEvt = JSONObject.parseObject(strEntity, ReceptionEvt.class);
+        ReceptionEvt receptionEvt;
+        try {
+            receptionEvt = JSONObject.parseObject(strEntity, ReceptionEvt.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed entity JSON threw at parseObject -> 500;
+            // unparseable input can never succeed -> 400 (DS85/DS86 pattern).
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        // DS87: a "null" evt / null recipel list NPEd in the for-loop
+        // below; a null medicalRecord / registration NPEd in allNewSave
+        // (all branches deref them); a null entry or null detail list
+        // NPEd in the inner loop; NORMAL (type=0) also derefs patient,
+        // doctor and company -> 400 early (DS82 pattern).
+        if (receptionEvt == null || receptionEvt.getRecipelInfoEvtList() == null
+                || receptionEvt.getMedicalRecord() == null
+                || receptionEvt.getRegistration() == null) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        if (receptionEvt.getType() == 0
+                && (receptionEvt.getPatient() == null
+                || receptionEvt.getMedicalRecord().getDoctor() == null
+                || !StringUtils.hasText(receptionEvt.getMedicalRecord().getDoctor().getId())
+                || receptionEvt.getMedicalRecord().getCompany() == null
+                || !StringUtils.hasText(receptionEvt.getMedicalRecord().getCompany().getId()))) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
 
         for (RecipelInfoEvt recipelInfoEvtList : receptionEvt.getRecipelInfoEvtList()) {
+            if (recipelInfoEvtList == null || recipelInfoEvtList.getRecipelDetailEvtList() == null) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                        .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+            }
             for (RecipelDetail recipelDetail : recipelInfoEvtList.getRecipelDetailEvtList()) {
+                if (recipelDetail == null) {
+                    return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                            .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+                }
                 recipelDetail.setExecutions(BigDecimal.valueOf(0));
             }
         }

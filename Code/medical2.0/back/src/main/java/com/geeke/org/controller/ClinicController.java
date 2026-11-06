@@ -87,10 +87,30 @@ public class ClinicController extends BaseController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
-        Company clinic = JSONObject.parseObject(strEntity, Company.class);
-//        Company clinic = new Company();
-//        BeanUtils.copyProperties(entity,clinic);
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        Company clinic;
+        try {
+            clinic = JSONObject.parseObject(strEntity, Company.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed entity JSON (truncated, or a bare string for
+            // the Company-typed field) threw at parseObject -> 500;
+            // unparseable input can never succeed -> 400 (DS85/DS86 pattern).
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        // DS87: parse from String (no @Valid); a "null" entity NPEd in
+        // ClinicService.save at clinic.getPhoneNumber() -> 400 early.
+        if (clinic == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        String[] deleteIds;
+        try {
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed deleteIds JSON threw at parseObject -> 500.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         String id = clinicService.save(clinic,
             fileIdUploads,
             deleteIds

@@ -73,9 +73,31 @@ public class MyTaskController extends BaseController {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
         }
-        MyTask myTask = JSONObject.parseObject(strTask, MyTask.class);
+        MyTask myTask;
+        try {
+            myTask = JSONObject.parseObject(strTask, MyTask.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed entity JSON (truncated, or a bare string for
+            // a typed field) threw at parseObject -> 500; unparseable input
+            // can never succeed -> 400 (DS85/DS86 pattern).
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
+        // DS87: parse from String (no @Valid); a "null" task NPEd in
+        // MyTaskService.save at verifyTenantOwnership -> 400 early.
+        if (myTask == null) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
         // MultipartFile[] multipartFiles = JSONObject.parseObject(fileIdUploads, MultipartFile[].class);
-        String[] deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        String[] deleteIds;
+        try {
+            deleteIds = JSONObject.parseObject(strDeleteIds, String[].class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed deleteIds JSON threw at parseObject -> 500.
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
         myTaskService.save(myTask, fileIdUploads, deleteIds);
         return ResponseEntity.ok(ResultUtil.successJson(myTask.getId()));
     }

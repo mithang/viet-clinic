@@ -247,9 +247,19 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
     public Recipetemplate getById(String id){
         //LấyBảng chínhThông tin
         Recipetemplate recipetemplate=this.dao.getById(id,SessionUtils.getUserDto().getCompanyId());
+        // DS87: getById filters by session company: a missing id or a
+        // foreign-tenant template returns null -> NPE at getId() below
+        // (live: foreign template id and fake id both 500) -> 400.
+        if (recipetemplate == null) {
+            throw new ServiceException("Không tìm thấy mẫu đơn thuốc");
+        }
 
         //Lấy thông tin đơn thuốc
         RecipeTemplateInfo recipeTemplateInfo=recipetemplateInfoService.getByRecipeTemplateId(recipetemplate.getId());
+        // DS87: a template without an info row NPEd at getId() below.
+        if (recipeTemplateInfo == null) {
+            throw new ServiceException("Mẫu đơn thuốc thiếu thông tin đơn thuốc");
+        }
 
         //Lấy chi tiết đơn thuốc
         List<RecipeTemplateDetail> recipeTemplateDetails=recipetemplateDetailService.getByRecipeTemplateInfoId(recipeTemplateInfo.getId());

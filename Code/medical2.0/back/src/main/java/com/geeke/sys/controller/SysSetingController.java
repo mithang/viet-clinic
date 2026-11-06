@@ -75,7 +75,21 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
-        SysSeting entity = JSONObject.parseObject(sysSeting, SysSeting.class);
+        SysSeting entity;
+        try {
+            entity = JSONObject.parseObject(sysSeting, SysSeting.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            // DS87: malformed sysSeting JSON threw at parseObject -> 500;
+            // unparseable input can never succeed -> 400 (DS85/DS86 pattern).
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        // DS87: parse from String (no @Valid); a "null" entity NPEd in
+        // SysSetingService.save at super.save(null) -> 400 early.
+        if (entity == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
         String id = sysSetingService.save(entity, files).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
