@@ -80,8 +80,9 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
      * the 500 vi entity defaults cover reviewResult/reviewerName/
      * reviewStatus). bulkUpdate: null/[]/[null]/id rong/id la -> 400,
      * tien kiem TOAN BO list truoc khi ghi dong nao (B6/B7: truoc day
-     * ghost 200 silent, mixed ghi mot phan). Delete KHONG dung toi:
-     * delete ghost giu 200 rows 0 theo parity DS123 (probe B16).
+     * ghost 200 silent, mixed ghi mot phan). Delete: DS128 B doi
+     * single delete ghost/rong sang 400 (xem delete() duoi); bulkDelete
+     * ghost giu 200 idempotent (DS126 B).
      */
     @Override
     @Transactional(readOnly = false)
