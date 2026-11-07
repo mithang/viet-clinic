@@ -192,8 +192,9 @@ public class PatientService extends CrudService<PatientDao, Patient>{
      * bulkInsert thieu name truoc day 500 NOT NULL o mapper (probe C5),
      * [null] NPE 500 o preInsert (C4). bulkUpdate ghost id 200 silent,
      * mixed ghi mot phan (C6/C7). Tien kiem TOAN BO list truoc khi ghi
-     * dong nao. null/[] giu 400 nhu hien co (C2/C3/C8/C9). Delete KHONG
-     * dung toi: delete ghost giu 200 rows 0 theo parity DS123 (C15).
+     * dong nao. null/[] giu 400 nhu hien co (C2/C3/C8/C9). Delete:
+     * DS128 C doi single delete ghost/rong/da xoa mem sang 400 (xem
+     * delete() duoi); bulkDelete ghost giu 200 idempotent (DS126 B).
      * Khong them guard trung SDT/CCCD vao bulk — ngoai pham vi probe,
      * duong bulk hien khong co guard do.
      */
@@ -252,6 +253,32 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             }
         }
         return super.bulkUpdate(entitys);
+    }
+
+    /**
+     * DS128 C: single delete fail-closed 400 -- id rong / id ma / dong
+     * da xoa mem (mapper UPDATE SET del_flag='1' WHERE id, KHONG loc
+     * del_flag nen xoa lan 2 van rows 1 va ghi them 1 audit DELETED
+     * trung -- mau DS123). Deep search: DS123/DS124/DS125 da doi single
+     * delete ghost sang 400 o ~25 service anh em; DS127 giu 200 o day
+     * theo "parity DS123" la nguoc -- chinh DS123 la vong pha parity
+     * 200 do. Chi bulkDelete ghost moi giu 200 idempotent
+     * (DS99/DS106/DS126 B), khong doi o day. Kiem tra ton tai bang
+     * dao.get (DS127 C: get chi LEFT JOIN va KHONG loc del_flag nen
+     * tra ca dong da xoa mem; delFlag phan biet); mau DrugService.
+     * Khong caller noi bo nao goi patientService.delete.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Patient patient) {
+        if (patient == null || patient.getId() == null || patient.getId().trim().isEmpty()) {
+            throw new ServiceException("Không xác định được bệnh nhân cần xóa.");
+        }
+        Patient stored = this.dao.get(patient.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Bệnh nhân không tồn tại: " + patient.getId());
+        }
+        return super.delete(patient);
     }
 
     public Patient getPatientByPhone(String phoneNumber){
