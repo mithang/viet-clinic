@@ -4,6 +4,8 @@ package com.geeke.hosdata.service;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
+import com.geeke.utils.StringUtils;
 import com.geeke.basicdata.entity.ManufactureFactory;
 import com.geeke.basicdata.service.ManufactureFactoryService;
 import com.geeke.hosdata.dao.HisDrugDao;
@@ -37,6 +39,22 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
 
     @Override
     public List<String> bulkInsert(List<HisDrugs> entitys) {
+        // DS114: fail-closed 400 thay vi 500. Danh sach null (goi truc tiep
+        // tu code, khong qua controller) truoc day NPE o vong lap; dong
+        // null trong list cung NPE o getCode(); dong thieu truong NOT NULL
+        // cua bang drug (goods_name/type/status) truoc day 500 o
+        // dao.bulkInsert. Kiem tra TOAN BO list truoc khi xu ly dong nao
+        // (resolve factory, dedup) de lo [hop le, loi] khong tao tac dung
+        // phu roi moi loi; ServiceException la RuntimeException nen ca
+        // transaction rollback. List rong giu 200 no-op nhu cu: UI dong bo
+        // co the gui [] khi khong chon dong nao, va dao.bulkInsert khong
+        // bao gio duoc goi voi list rong, nen khong co loi de dong.
+        if (entitys == null) {
+            throw new ServiceException("Danh sách thuốc đồng bộ không được để trống");
+        }
+        for (HisDrugs entity : entitys) {
+            validateRequired(entity);
+        }
         //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> typeMap = getTypeMap(BizConstants.DICT_TYPE_DRUG_TYPE);
         Map<String, String> dosMap = getTypeMap(BizConstants.DICT_TYPE_DOSAGE_UNIT);
@@ -109,6 +127,25 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
             medicinalStockControlService.initStock(drug);
         });
         return ids;
+    }
+
+    // DS114: cac cot NOT NULL cua bang drug ma bulkInsert ghi (id va
+    // create/update do preInsert dien). code/standardCode/factory/price/
+    // dosis nullable nen khong kiem tra; dong thieu chi bi skip dedup
+    // khi code blank chu khong loi.
+    private void validateRequired(HisDrugs entity) {
+        if (entity == null) {
+            throw new ServiceException("Thuốc đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getGoodsName())) {
+            throw new ServiceException("Tên thuốc đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getType())) {
+            throw new ServiceException("Loại thuốc đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getStatus())) {
+            throw new ServiceException("Trạng thái thuốc đồng bộ không được để trống");
+        }
     }
 
     private Map<String, String> getTypeMap(String type) {

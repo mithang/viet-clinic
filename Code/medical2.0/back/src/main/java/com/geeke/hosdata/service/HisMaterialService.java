@@ -3,6 +3,8 @@ package com.geeke.hosdata.service;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
+import com.geeke.utils.StringUtils;
 import com.geeke.hosdata.dao.HisDrugDao;
 import com.geeke.hosdata.dao.HisInstitutionDao;
 import com.geeke.hosdata.dao.HisMaterialDao;
@@ -40,6 +42,18 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
 
     @Override
     public List<String> bulkInsert(List<HisMaterials> entitys) {
+        // DS114: fail-closed 400 thay vi 500 (xem HisDrugService: cung
+        // ly do). Kiem tra TOAN BO list truoc khi xu ly de lo [hop le,
+        // loi] khong tao tac dung phu. dw KHONG kiem tra: thieu dw duoc
+        // dien mac dinh tu dict don vi bao che ("Cái" ->
+        // medicalPreparationUnit_4) nen insert van thanh cong, da probe
+        // chung minh. List rong giu 200 no-op nhu cu.
+        if (entitys == null) {
+            throw new ServiceException("Danh sách vật tư đồng bộ không được để trống");
+        }
+        for (HisMaterials entity : entitys) {
+            validateRequired(entity);
+        }
         //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> preMap = getTypeMap(BizConstants.DICT_TYPE_PREPARATION_UNIT);
         Map<String, String> packMap = getTypeMap(BizConstants.DICT_TYPE_PACK_SPEC);
@@ -89,6 +103,24 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
             medicinalStockControlService.initStock(stuff);
         });
         return ids;
+    }
+
+    // DS114: cac cot NOT NULL cua bang stuff ma bulkInsert ghi (id va
+    // create/update do preInsert dien; status/del_flag/sync_id la hang
+    // so trong SQL). dw co gia tri mac dinh tu dict nen khong kiem tra.
+    private void validateRequired(HisMaterials entity) {
+        if (entity == null) {
+            throw new ServiceException("Vật tư đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getSfxmmc())) {
+            throw new ServiceException("Tên vật tư đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getPy())) {
+            throw new ServiceException("Mã pinyin vật tư đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getDwjls())) {
+            throw new ServiceException("Số lượng đóng gói vật tư đồng bộ không được để trống");
+        }
     }
 
     private Map<String, String> getTypeMap(String type) {

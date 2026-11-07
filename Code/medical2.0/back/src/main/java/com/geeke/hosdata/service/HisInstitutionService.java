@@ -3,6 +3,8 @@ package com.geeke.hosdata.service;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
+import com.geeke.utils.StringUtils;
 import com.geeke.hosdata.dao.HisDrugDao;
 import com.geeke.hosdata.dao.HisInstitutionDao;
 import com.geeke.hosdata.entity.DistDto;
@@ -28,6 +30,15 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
     private final HisInstitutionDao hisInstitutionDao;
     @Override
     public List<String> bulkInsert(List<HisInstitutions> entitys) {
+        // DS114: fail-closed 400 thay vi 500 (xem HisDrugService: cung
+        // ly do). Kiem tra TOAN BO list truoc khi xu ly de lo [hop le,
+        // loi] khong tao tac dung phu. List rong giu 200 no-op nhu cu.
+        if (entitys == null) {
+            throw new ServiceException("Danh sách hạng mục đồng bộ không được để trống");
+        }
+        for (HisInstitutions entity : entitys) {
+            validateRequired(entity);
+        }
         //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> typeMap= getTypeMap(BizConstants.DICT_TYPE_INSTITUTION_TYPE);
         Map<String, String> unitMap = getTypeMap(BizConstants.DICT_TYPE_INSTITUTION_UNIT);
@@ -82,6 +93,25 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
             dao.bulkInsert(toInsert);
         }
         return ids;
+    }
+
+    // DS114: cac cot NOT NULL cua bang cost_item ma bulkInsert ghi (id va
+    // create/update do preInsert dien; company_id do service ep tu
+    // session; is_use/sync_id la hang so trong SQL). dllx/dw nullable
+    // nen khong kiem tra.
+    private void validateRequired(HisInstitutions entity) {
+        if (entity == null) {
+            throw new ServiceException("Hạng mục đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getSfxmmc())) {
+            throw new ServiceException("Tên hạng mục đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getSfxmCode())) {
+            throw new ServiceException("Mã hạng mục đồng bộ không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getPy())) {
+            throw new ServiceException("Mã pinyin hạng mục đồng bộ không được để trống");
+        }
     }
 
     private Map<String, String> getTypeMap(String type) {
