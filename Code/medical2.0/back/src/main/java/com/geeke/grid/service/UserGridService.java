@@ -178,6 +178,29 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
         return super.bulkUpdate(entitys);
     }
 
+    /**
+     * DS124 B: single delete fail-closed 400. CrudService.delete chi chan
+     * qua stored-row tenant check ma check do bo qua stored==null, nen
+     * delete id ma tra 200 data=0 im lang; mapper delete la UPDATE
+     * del_flag khong loc del_flag nen delete dong da xoa mem tra 200
+     * rows=1 + audit DELETED trung. Kiem tra ton tai len dau qua dao.get
+     * (mapper get khong loc del_flag nen phai kiem tra del_flag='0').
+     * San 403 theo user giu o controller.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(UserGrid entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được bố cục tùy chỉnh cần xóa.");
+        }
+        UserGrid stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Bố cục tùy chỉnh không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<UserGrid> entitys) {
