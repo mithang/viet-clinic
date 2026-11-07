@@ -130,6 +130,19 @@ public class TollInfoController extends CrudController<TollInfoService, TollInfo
             tollInfoByRegistrationId.setReturnType(1);
             tollInfoService.save(tollInfoByRegistrationId);
             entity.setReturnType(1);
+        } else {
+            // DS122 C: paymentType / amountStatus / tollType la @NotNull
+            // tren entity nhung controller save khong co @Valid (chi check
+            // amountStatus, DS12) nen payload thieu truoc day insert phieu
+            // voi NULL (200). Chan o nhanh thuong; nhanh REFUNDED tren
+            // duoc mien (phieu hoan chi mang amountStatus, hanh vi da
+            // duoc ds11 pin, khong co caller UI).
+            if (entity.getPaymentType() == null
+                    || StringUtils.isBlank(entity.getPaymentType().getValue())
+                    || entity.getTollType() == null
+                    || StringUtils.isBlank(entity.getTollType().getValue())) {
+                throw new ServiceException("Loại thanh toán và loại thu phí không được để trống");
+            }
         }
         String id = tollInfoService.save(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));

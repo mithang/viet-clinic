@@ -154,6 +154,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     @Override
     @Transactional(readOnly = false)
     public TollInfo save(TollInfo tollInfo) {
+        // DS122 C: id khong ton tai truoc day roi qua super.save -> doUpdate
+        // 0 dong roi van 200 silent no-op (lop DS94/DS99); chan truoc moi
+        // ghi. Khong check paymentType/amountStatus/tollType o day:
+        // nhanh REFUNDED cua controller luu lai phieu goc + phieu hoan
+        // chi co amountStatus (hanh vi da duoc ds11 pin, khong co caller
+        // UI); check required dat o controller, chi nhanh thuong.
+        if (StringUtils.isNotBlank(tollInfo.getId())
+                && this.get(tollInfo.getId()) == null) {
+            throw new ServiceException("Phiếu thu không tồn tại: "
+                    + tollInfo.getId());
+        }
         // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
@@ -163,6 +174,96 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
         TollInfo tollInfoTemp = super.save(tollInfo);
         return tollInfoTemp;
+    }
+
+    /**
+     * DS122 C: bulk* fail-closed 400. bulkInsert/bulkUpdate khong qua
+     * save() nen khong co ca check amountStatus cua controller: body chi
+     * co company cung insert duoc phieu ma (moi cot nghiep vu deu nullable
+     * trong DB, lop DS120C), id ma -> 200 silent no-op, [null] -> NPE 500.
+     * Validate toan bo list truoc moi ghi: null/empty/[null] -> 400;
+     * thieu paymentType/amountStatus/tollType -> 400; bulkUpdate/
+     * bulkDelete id khong ton tai -> 400 (kiem tra stored-row tenant).
+     * Company rong -> ep theo session; company la de guard generic chan.
+     */
+    private void checkTollInfoRequired(TollInfo tollInfo) {
+        if (tollInfo == null) {
+            throw new ServiceException("Phiếu thu không được để trống");
+        }
+        if (tollInfo.getPaymentType() == null
+                || StringUtils.isBlank(tollInfo.getPaymentType().getValue())
+                || tollInfo.getAmountStatus() == null
+                || StringUtils.isBlank(tollInfo.getAmountStatus().getValue())
+                || tollInfo.getTollType() == null
+                || StringUtils.isBlank(tollInfo.getTollType().getValue())) {
+            throw new ServiceException("Loại thanh toán, trạng thái phiếu thu và loại thu phí không được để trống");
+        }
+    }
+
+    private void forceSessionCompanyWhenBlank(TollInfo tollInfo) {
+        if (tollInfo.getCompany() != null
+                && StringUtils.isNotBlank(tollInfo.getCompany().getId())) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        Company company = new Company();
+        company.setId(tenantId);
+        tollInfo.setCompany(company);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<TollInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu thu không được để trống");
+        }
+        for (TollInfo tollInfo : entitys) {
+            checkTollInfoRequired(tollInfo);
+            forceSessionCompanyWhenBlank(tollInfo);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<TollInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu thu không được để trống");
+        }
+        for (TollInfo tollInfo : entitys) {
+            if (tollInfo == null || StringUtils.isBlank(tollInfo.getId())) {
+                throw new ServiceException("Phiếu thu không được để trống");
+            }
+            if (this.get(tollInfo.getId()) == null) {
+                throw new ServiceException("Phiếu thu không tồn tại: "
+                        + tollInfo.getId());
+            }
+            verifyTenantOwnershipAgainstStoredRow(tollInfo);
+            checkTollInfoRequired(tollInfo);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<TollInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu thu không được để trống");
+        }
+        for (TollInfo tollInfo : entitys) {
+            if (tollInfo == null || StringUtils.isBlank(tollInfo.getId())) {
+                throw new ServiceException("Phiếu thu không được để trống");
+            }
+            if (this.get(tollInfo.getId()) == null) {
+                throw new ServiceException("Phiếu thu không tồn tại: "
+                        + tollInfo.getId());
+            }
+            verifyTenantOwnershipAgainstStoredRow(tollInfo);
+        }
+        return super.bulkDelete(entitys);
     }
     
 
