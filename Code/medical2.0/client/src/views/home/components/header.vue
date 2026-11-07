@@ -367,6 +367,10 @@ export default {
     })
     this.setLimitNumber();
     this.getUserIsIndate();
+    window.addEventListener("resize", this.setLimitNumber);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.setLimitNumber);
   },
   watch: {
     "$store.state.notices.noticeTotal"(val) {
@@ -410,6 +414,8 @@ export default {
       handler(newVal) {
         if (newVal && newVal.length > 0) {
           this.updateCachedRouters();
+          // Router ve sau mounted: tinh lai so nhom vua khung menu.
+          this.setLimitNumber();
         }
       }
     }
@@ -699,20 +705,50 @@ export default {
       this.changeSetting({ key, value });
     },
     setLimitNumber() {
+      // Tinh so nhom menu cap mot vua trong khung menu that, phan con lai
+      // gop vao submenu "Them". Truoc day ca hai nhanh deu gan cung 10
+      // nen menu tran xuong nhieu hang (cao 270px) va bi tab bar che mat,
+      // o man 1366px chi thay 2 nhom dau.
       this.$nextTick(() => {
-        const menus = [...this.$refs.menuUl.$el.children || []];
-        let menuUlWidth = 0;
-        menus.forEach((item) => {
-          menuUlWidth += item.offsetWidth;
+        const menuUl = this.$refs.menuUl;
+        const headerMenu = this.$refs.headerMenu;
+        if (!menuUl || !menuUl.$el || !headerMenu) return;
+        const avail = headerMenu.clientWidth;
+        if (!avail) return;
+        const children = [...menuUl.$el.children];
+        const widths = [];
+        let moreWidth = this._moreMenuWidth || 0;
+        children.forEach((el) => {
+          const title = el.querySelector(".el-submenu__title");
+          const name = title ? title.textContent.trim() : "";
+          if (name === "Thêm") {
+            if (el.offsetWidth > 0) {
+              moreWidth = el.offsetWidth;
+              this._moreMenuWidth = moreWidth;
+            }
+            return;
+          }
+          if (el.offsetWidth > 0) widths.push(el.offsetWidth);
         });
-        const width = document.body.getBoundingClientRect().width;
-        const usefullWidth = width - 660;
-
-        if (usefullWidth < menuUlWidth) {
-          this.limitNumber = 10;
-        } else {
-          this.limitNumber = 10;
+        // Nhom da bi v-show an co do rong 0 nen dung do rong da do lan truoc.
+        const cached = this._menuItemWidths || [];
+        const mainWidths = widths.length >= cached.length ? widths : cached;
+        if (!mainWidths.length) return;
+        this._menuItemWidths = mainWidths;
+        const total = mainWidths.reduce((a, b) => a + b, 0);
+        const needMore = total > avail;
+        let acc = 0;
+        let n = 0;
+        for (const w of mainWidths) {
+          const reserve = needMore ? moreWidth : 0;
+          if (acc + w + reserve <= avail) {
+            acc += w;
+            n += 1;
+          } else {
+            break;
+          }
         }
+        this.limitNumber = Math.max(1, n);
       });
     },
     unreadNotice() {
@@ -943,11 +979,17 @@ export default {
     top: 5px;
     left: 60px;
     display: inline-block;
-    width: calc(100% - 700px); // Điều chỉnh độ rộng menu con
+    // 460px: phan phai (ten co so + chuong + avatar) bat dau o ~x966 tren
+    // man 1366, khung menu rong toi da 686px. 700px cu chi cho 446px nen
+    // menu tran xuong nhieu hang va bi che mat.
+    width: calc(100% - 460px);
     .el-menu {
       background: none;
       border-bottom: 0;
       width: 100%;
+      // Khong cho menu xuong hang: phan thua do setLimitNumber gom vao "Them".
+      white-space: nowrap;
+      flex-wrap: nowrap;
     }
     ::v-deep .el-menu--horizontal {
       // Kiểu dáng tiêu đề submenu cấp một
