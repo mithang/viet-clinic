@@ -45,6 +45,26 @@ public class AdministrativeDivisionService extends CrudService<AdministrativeDiv
         return super.save(entity);
     }
 
+    // DS129 B: single delete fail-closed 400 -- mau DrugService.delete
+    // (chi check ton tai, khong check delFlag: bang nay HARD delete,
+    // khong co cot del_flag -- getBusTableHasDelFlag() false).
+    // Truoc day delete ghost/blank/re-delete deu 200 data 0 silent no-op
+    // (mapper DELETE FROM administrative_division WHERE id; probe DS129 B
+    // pre-fix 7/10). bulkDelete ghost GIU NGUYEN 200 rows 0 idempotent
+    // (DS99/DS106/DS126 B).
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(AdministrativeDivision entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được khu vực hành chính cần xóa.");
+        }
+        if (dao.get(entity.getId()) == null) {
+            throw new ServiceException("Khu vực hành chính không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     // DS106 A3-A6/A10-A11: bulkInsert truoc day de lo: null/rong roi xuong
     // MyBatis <foreach> rong -> 500 SQL syntax (hien tai global handler
     // anh xa mot so loi thanh 400, nhung van chan ro o service de hanh vi
