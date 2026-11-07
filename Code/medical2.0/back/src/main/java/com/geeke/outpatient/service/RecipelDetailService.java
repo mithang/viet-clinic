@@ -2,12 +2,14 @@ package com.geeke.outpatient.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.cure.entity.InspectionCheck;
 import com.geeke.cure.service.InspectionCheckService;
 import com.geeke.outpatient.dao.RecipelDetailDao;
 import com.geeke.outpatient.dao.RecipelInfoDao;
 import com.geeke.outpatient.entity.*;
 import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,106 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
 
     @Autowired
     private InspectionCheckService inspectionCheckService;
+
+    // DS108 C1/C10-C12: save/bulkInsert/bulkUpdate truoc day de lo:
+    // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
+    // dong roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow
+    // bo qua khi stored==null, cung mau DS94/DS99); bulkInsert/bulkUpdate
+    // bypass @Valid nen minTotal thieu van ghi duoc (min_total NOT NULL
+    // trong DB) -> 500; single save thieu minTotal cung 500 vi minTotal
+    // KHONG co @NotNull nen @Valid khong bat duoc (probe C11).
+    // Kiem tra ton tai + minTotal truoc moi ghi. @Transactional
+    // (readOnly = false) tuong minh vi class-level la readOnly = true
+    // (mau DS105/DS106/DS107). Chi validate minTotal o day, CO TINH:
+    // isUnpackSell tuy @NotNull tren single save nhung cac caller noi bo
+    // (MedicalRecordService saveRecipelInfoEvtTo) trong vao gia tri
+    // frontend gui va cot is_unpack_sell nullable -- chan o service save
+    // se lam vo luong ke don dang chay; company cung nullable va caller
+    // noi bo co the de null khi registration khong co company. Ca hai
+    // deu khong thuoc lop 500-NOT-NULL. addRetailrecipelDetails goi
+    // super.save nen khong bi anh huong; updateById/batchDelete khong
+    // doi.
+    @Override
+    @Transactional(readOnly = false)
+    public RecipelDetail save(RecipelDetail entity) {
+        if (entity != null && StringUtils.isNotBlank(entity.getId())
+                && dao.get(entity.getId()) == null) {
+            throw new ServiceException("Chi tiết đơn thuốc không tồn tại: "
+                    + entity.getId());
+        }
+        checkRecipelDetailRequired(entity);
+        return super.save(entity);
+    }
+
+    // DS108 C3-C6/C10: bulkInsert truoc day de lo: null/rong roi xuong
+    // MyBatis <foreach> rong -> 500 (hien tai global handler anh xa mot
+    // so loi thanh 400, nhung van chan ro o service de hanh vi khong phu
+    // thuoc vao exception mapping); thieu minTotal -> 500 NOT NULL.
+    // Chan het o service de 400 ro nghia.
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<RecipelDetail> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết đơn thuốc không được để trống");
+        }
+        for (RecipelDetail entity : entitys) {
+            checkRecipelDetailRequired(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    // DS108 C2/C3/C5/C9/C12: bulkUpdate truoc day de lo: id khong ton tai
+    // -> 200 silent no-op; batch hon hop [valid, nonexistent] doi ca dong
+    // hop le truoc khi cham id ma; minTotal bi drop -> CASE set
+    // min_total=NULL -> 500 NOT NULL. Tien kiem TOAN BO list truoc moi ghi
+    // (fail-closed ca list, mau N1).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<RecipelDetail> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết đơn thuốc không được để trống");
+        }
+        for (RecipelDetail entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Chi tiết đơn thuốc không được để trống");
+            }
+            if (StringUtils.isNotBlank(entity.getId())
+                    && dao.get(entity.getId()) == null) {
+                throw new ServiceException("Chi tiết đơn thuốc không tồn tại: "
+                        + entity.getId());
+            }
+            checkRecipelDetailRequired(entity);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    // DS108 C7-C8: bulkDelete null/rong -> 400 ro nghia thay vi roi xuong
+    // MyBatis <foreach> rong. bulkDelete id khong ton tai GIU NGUYEN
+    // 200 rows 0 idempotent (DS99 G11) -- khong chan o day.
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<RecipelDetail> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết đơn thuốc không được để trống");
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    // min_total la cot NOT NULL duy nhat co the bi drop qua bulk (cac cot
+    // NOT NULL khac: id/audit do preInsert lo; infuse_type la int
+    // primitive mac dinh 0, khong the null). MedicalRecordService da
+    // default minTotal = total truoc moi save noi bo, nen chan o day
+    // khong lam vo luong dang chay -- dong nao ve insert voi minTotal
+    // null hien da 500 san.
+    private void checkRecipelDetailRequired(RecipelDetail entity) {
+        if (entity == null) {
+            throw new ServiceException("Chi tiết đơn thuốc không được để trống");
+        }
+        if (entity.getMinTotal() == null) {
+            throw new ServiceException("Tổng lượng đơn vị nhỏ nhất không được để trống");
+        }
+    }
+
     @Transactional
     public void addRetailrecipelDetails(List<RecipelDetail> recipelDetails, RecipelInfo recipelInfo) {
         for (RecipelDetail recipelDetail : recipelDetails) {
