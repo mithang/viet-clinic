@@ -130,9 +130,26 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
         return params;
     }
 
+    /**
+     * DS127 A: save ghost id fail-closed 400 (DS94/DS120 class). Guard
+     * tenant hien co khong chan duoc: checkStoredTollTenant cho qua khi
+     * id khong ton tai (lookup toll_id tra null), nen save voi id la roi
+     * thang vao CrudService.save -> doUpdate 0 dong -> 200 silent no-op
+     * (probe A1). Chi chap nhan update khi dong da ton tai (mau DS99/
+     * DS101); kiem tra bang countById truc tiep — getTollDetailTollId
+     * khong dung duoc vi no tra null ca khi dong ton tai nhung toll_id
+     * NULL. Insert (id rong) giu nguyen: ghi dong mo coi gan toll khong
+     * ton tai van 200 nhu parity cu (ghi chu o checkTollTenant).
+     */
     @Override
     @Transactional(readOnly = false)
     public TollDetail save(TollDetail entity) {
+        if (entity == null) {
+            throw new ServiceException("Chi tiết thu phí không được để trống");
+        }
+        if (StringUtils.isNotBlank(entity.getId()) && dao.countById(entity.getId()) == 0) {
+            throw new ServiceException("Chi tiết thu phí không tồn tại: " + entity.getId());
+        }
         if (StringUtils.isBlank(entity.getId())) {
             // N3a: nhánh insert — kiểm tra phiếu cha trong payload.
             checkTollTenant(entity);
@@ -149,11 +166,18 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<TollDetail> entitys) {
+        // DS127 A: danh sach null/rong, phan tu null -> 400 (mau DS120).
+        // Truoc day [null] NPE 500 o CrudService.bulkInsert (preInsert),
+        // null/[] roi toi dao voi <foreach> rong (probe A2/A3/A4).
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết thu phí thêm mới không được để trống");
+        }
         // N3a: tiền kiểm toàn bộ list trước khi super ghi dòng nào.
-        if (entitys != null) {
-            for (TollDetail entity : entitys) {
-                checkTollTenant(entity);
+        for (TollDetail entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Chi tiết thu phí không được để trống");
             }
+            checkTollTenant(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -161,14 +185,26 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<TollDetail> entitys) {
+        // DS127 A: danh sach null/rong, phan tu null, id rong, id la ->
+        // 400 (mau DS120/DS102). Truoc day bulkUpdate id la 200 silent
+        // (CASE 0 dong) va list tron [valid, ghost] ghi mot phan
+        // (probe A6/A7). Tien kiem TOAN BO list truoc khi ghi dong nao.
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết thu phí cập nhật không được để trống");
+        }
         // ITER63: tiền kiểm toàn bộ list, cả hai chiều, trước khi ghi.
-        if (entitys != null) {
-            for (TollDetail entity : entitys) {
-                if (entity != null) {
-                    checkStoredTollTenant(entity.getId());
-                    checkTollTenant(entity);
-                }
+        for (TollDetail entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Chi tiết thu phí không được để trống");
             }
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của chi tiết thu phí đã tồn tại");
+            }
+            if (dao.countById(entity.getId()) == 0) {
+                throw new ServiceException("Chi tiết thu phí không tồn tại: " + entity.getId());
+            }
+            checkStoredTollTenant(entity.getId());
+            checkTollTenant(entity);
         }
         return super.bulkUpdate(entitys);
     }
