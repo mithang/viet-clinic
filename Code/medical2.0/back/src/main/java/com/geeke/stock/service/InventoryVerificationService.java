@@ -136,6 +136,29 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         return super.bulkUpdate(entitys);
     }
 
+    /**
+     * DS124 C: single delete fail-closed 400. CrudService.delete chi chan
+     * qua stored-row tenant check ma check do bo qua stored==null, nen
+     * delete id ma tra 200 data=0 im lang. Delete la XOA CUNG (mapper
+     * DELETE FROM inventory_verification) nen chi can kiem tra ton tai
+     * qua dao.get; khong co del_flag de kiem tra them. Controller chi
+     * xoa chi tiet khi rows>0 nen ghost delete khong dong den chi tiet
+     * truoc cung nhu sau fix (sau fix con 400 truoc khi xoa).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(InventoryVerification entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được phiếu kiểm kê cần xóa.");
+        }
+        InventoryVerification stored = dao.get(entity.getId());
+        if (stored == null) {
+            throw new ServiceException("Phiếu kiểm kê không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<InventoryVerification> entitys) {
