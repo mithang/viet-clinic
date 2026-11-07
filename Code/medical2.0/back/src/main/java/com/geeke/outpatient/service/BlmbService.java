@@ -30,6 +30,12 @@ public class BlmbService {
      */
     @Transactional(readOnly = false)
     public int insert(Blmb blmb){
+        // DS117: null body — framework chan JSON-null o tang controller
+        // ("Required request body is missing" -> 400) nhung service tu
+        // ve cho caller truc tiep: truoc day blmb.getMbmc() NPE 500.
+        if (blmb == null) {
+            throw new ServiceException("Mẫu bệnh án không được để trống");
+        }
         // DS82: direct-DAO insert into casehistorymbgl; mbmc/mblx/bllx/
         // CREATED_BY/CREATED_ID/del_flag are all NOT NULL but the service
         // set only mbbm + createdTime, so a body missing any of the rest
@@ -102,7 +108,12 @@ public class BlmbService {
     // Z1b: dung chung cho getblmblist/selectmbbm (xem ghi chu o getblmblist);
     // tu Q3 (iteration 40) cung ap cho save/deletembbm/updatembbm —
     // duong ghi truoc day de nhip Z3.
+    // DS117: null param — framework chan JSON-null o tang controller
+    // nhung service tu ve cho caller truc tiep (truoc day NPE 500).
     private void forceSessionTenant(Blmcxrc blmcxrc) {
+        if (blmcxrc == null) {
+            throw new ServiceException("Tham số truy vấn không được để trống");
+        }
         String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
         if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
             blmcxrc.setCompanyId(tenant);
@@ -111,6 +122,9 @@ public class BlmbService {
     // Q3: ban nang cho Blmb (save/updatembbm) — cung quy tac session
     // rong/"null" giu hanh vi cu nhu ban Blmcxrc.
     private void forceSessionTenant(Blmb blmb) {
+        if (blmb == null) {
+            throw new ServiceException("Mẫu bệnh án không được để trống");
+        }
         String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
         if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
             blmb.setCompanyId(tenant);
@@ -121,7 +135,26 @@ public class BlmbService {
         // Q3 (iteration 40): nhu deletembbm — companyId la bi ghi de
         // bang session tenant nen WHERE khong khop dong la.
         forceSessionTenant(blmb);
+        // DS117: mapper SET tat ca cac cot nen mblx/bllx bi bo se NULL
+        // hoa cot NOT NULL -> 500; mbbm la thi WHERE khong khop dong
+        // nao -> 200 rows 0 silent. Ca hai deu 400 fail-closed.
+        if (StringUtils.isBlank(blmb.getMbbm())) {
+            throw new ServiceException("Mã mẫu không được để trống");
+        }
+        if (StringUtils.isBlank(blmb.getMbmc())) {
+            throw new ServiceException("Tên mẫu không được để trống");
+        }
+        if (StringUtils.isBlank(blmb.getMblx())) {
+            throw new ServiceException("Loại mẫu không được để trống");
+        }
+        if (StringUtils.isBlank(blmb.getBllx())) {
+            throw new ServiceException("Loại bệnh án không được để trống");
+        }
         blmb.setUpdatedTime(new Date());
-        return blmbdao.updatembbm(blmb);
+        int rows = blmbdao.updatembbm(blmb);
+        if (rows == 0) {
+            throw new ServiceException("Mẫu bệnh án không tồn tại");
+        }
+        return rows;
     }
 }

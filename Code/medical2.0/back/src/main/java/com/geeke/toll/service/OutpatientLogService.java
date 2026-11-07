@@ -3,9 +3,11 @@ package com.geeke.toll.service;
 
 
 import com.geeke.common.data.Page;
+import com.geeke.common.service.ServiceException;
 import com.geeke.outpatient.entity.Patient;
 import com.geeke.toll.dao.OutpatientLogDao;
 import com.geeke.toll.entity.*;
+import com.geeke.utils.StringUtils;
 import com.geeke.utils.excel.ExcelExportBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,6 +69,24 @@ public class OutpatientLogService {
 
     @Transactional(readOnly = false)
     public int updateLog(OutpatientLog outpatientLogRc) {
+        // DS117: null body — framework chan JSON-null o tang controller
+        // nhung service tu ve (truoc day controller NPE o getId() truoc
+        // ca khi vao service). Id la thi WHERE khong khop; id khong ton
+        // tai thi UPDATE join khop 0 dong — ca hai 400 thay vi 200 rows
+        // 0 silent. Chi kiem tra registration TON TAI (qua
+        // getRegistrationCompanyId), khong dung rows==0: UPDATE join
+        // registration+patient+medical_record+sys_user nen dong dang ky
+        // that nhung thieu patient/doctor van tra 0 rows hop le (vd.
+        // registration seed chi co 1 dong, patient/doctor NULL).
+        if (outpatientLogRc == null) {
+            throw new ServiceException("Nhật ký khám ngoại trú không được để trống");
+        }
+        if (StringUtils.isBlank(outpatientLogRc.getId())) {
+            throw new ServiceException("Đăng ký khám không được để trống");
+        }
+        if (outpatientLogDao.getRegistrationCompanyId(outpatientLogRc.getId()) == null) {
+            throw new ServiceException("Đăng ký khám không tồn tại");
+        }
         return outpatientLogDao.updateLog(outpatientLogRc);
     }
 

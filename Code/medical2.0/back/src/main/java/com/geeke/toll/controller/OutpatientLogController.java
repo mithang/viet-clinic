@@ -110,6 +110,10 @@ public class OutpatientLogController extends BaseController {
     @PutMapping(value = "update")
     public int updateLog(@RequestBody OutpatientLog outpatientLogRc) {
         if (!hasAnySessionPermission()) { throw new ServiceException("Không có quyền truy cập"); } // San RBAC X1.
+        // DS117: null body — framework chan JSON-null ("Required request
+        // body is missing" -> 400) nhung controller tu ve cho chac:
+        // truoc day outpatientLogRc.getId() NPE 500 neu body lot qua.
+        if (outpatientLogRc == null) { throw new ServiceException("Nhật ký khám ngoại trú không được để trống"); }
         if (outpatientLogRc.getId() != null
                 && isForeign(outpatientLogService.getRegistrationCompanyId(outpatientLogRc.getId()))) {
             throw new ServiceException("Không có quyền truy cập tenant khác"); // X1: ghi cheo theo id tran.

@@ -1,9 +1,11 @@
 package com.geeke.cure.service;
 
 import com.geeke.common.data.Page;
+import com.geeke.common.service.ServiceException;
 import com.geeke.cure.dao.StmanagementDao;
 import com.geeke.cure.entity.Stmanagement;
 import com.geeke.cure.entity.Stparameter;
+import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,14 +40,31 @@ public class StmanagementService {
         // stmanagementlist/selectdetailid — companyId la bi ghi de bang
         // session tenant nen WHERE khong khop dong la.
         forceSessionTenant(stparameter);
+        // DS117: detailid la thi WHERE khong khop dong nao -> 200 rows
+        // 0 silent; detailid khong ton tai cung vay. Ca hai 400.
+        if (StringUtils.isBlank(stparameter.getDetailid())) {
+            throw new ServiceException("Chi tiết đơn thuốc không được để trống");
+        }
         stparameter.setZxsj(new Date());
-        return managementdao.updatestresult(stparameter);
+        int rows = managementdao.updatestresult(stparameter);
+        if (rows == 0) {
+            throw new ServiceException("Chi tiết đơn thuốc không tồn tại");
+        }
+        return rows;
     }
     @Transactional(readOnly = false)
     public int updatesttime(Stparameter stparameter){
         // Q1 (iteration 40): nhu updatestresult.
         forceSessionTenant(stparameter);
-        return managementdao.updatesttime(stparameter);
+        // DS117: nhu updatestresult.
+        if (StringUtils.isBlank(stparameter.getDetailid())) {
+            throw new ServiceException("Chi tiết đơn thuốc không được để trống");
+        }
+        int rows = managementdao.updatesttime(stparameter);
+        if (rows == 0) {
+            throw new ServiceException("Chi tiết đơn thuốc không tồn tại");
+        }
+        return rows;
     }
     public List<Stmanagement> selectdetailid(Stparameter stparameter){
         forceSessionTenant(stparameter);
@@ -55,7 +74,12 @@ public class StmanagementService {
     // Z1b: dung chung cho stmanagementlist/selectdetailid (xem ghi chu o
     // stmanagementlist); tu Q1 (iteration 40) cung ap cho
     // updatestresult/updatesttime — duong ghi truoc day de nhip Z3.
+    // DS117: null param — framework chan JSON-null o tang controller
+    // nhung service tu ve cho caller truc tiep (truoc day NPE 500).
     private void forceSessionTenant(Stparameter stparameter) {
+        if (stparameter == null) {
+            throw new ServiceException("Tham số truy vấn không được để trống");
+        }
         String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
         if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
             stparameter.setCompanyId(tenant);
