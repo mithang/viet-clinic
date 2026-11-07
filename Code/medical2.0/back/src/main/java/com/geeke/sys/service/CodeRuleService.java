@@ -50,6 +50,26 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
         return codeRuleTemp;
     }
 
+    // DS129 A: single delete fail-closed 400 -- mau DrugService.delete.
+    // Truoc day delete ghost/blank/da xoa mem deu 200 rows 0/1 silent
+    // no-op (mapper UPDATE sys_code_rule SET del_flag='1' WHERE id, KHONG
+    // loc del_flag; probe DS129 A pre-fix 7/10). dao.get KHONG loc del_flag
+    // nen tra ca dong da xoa mem, delFlag phan biet (mau DrugService).
+    // bulkDelete ghost GIU NGUYEN 200 rows 0 idempotent (DS99/DS106/DS126 B).
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(CodeRule codeRule) {
+        if (codeRule == null || StringUtils.isBlank(codeRule.getId())) {
+            throw new ServiceException("Không xác định được quy tắc mã cần xóa.");
+        }
+        CodeRule stored = dao.get(codeRule.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Quy tắc mã không tồn tại: " + codeRule.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(codeRule);
+        return super.delete(codeRule);
+    }
+
     // DS104 B3-B8/B10-B12/B16: bulkInsert/bulkUpdate/bulkDelete generic
     // truoc day de lo: null/rong roi xuong MyBatis <foreach> rong -> 500
     // SQL syntax (chi vo tinh ve 400 nho handler DS94, sai message),
