@@ -40,6 +40,9 @@ public interface RemoteDiagnosisTreatmentDao extends CrudDao<Patient> {
     int chargeEdit(@Param("id")String id);
     /** XóaBản ghi */
     int diagnosisDelete(@Param("id")String id);
+    /** DS133 C: co xoa cua ban ghi kham tu xa, phuc vu kiem tra ton
+     * tai truoc khi xoa (null = khong ton tai, '1' = da xoa). */
+    String getDelFlagById(@Param("id")String id);
     /** X2: company của dòng khám từ xa, phục vụ kiểm tra sở hữu */
     String getRemoteDiagnosisCompanyId(@Param("id")String id);
     /** X2: company của dòng khám từ xa theo lượt khám */

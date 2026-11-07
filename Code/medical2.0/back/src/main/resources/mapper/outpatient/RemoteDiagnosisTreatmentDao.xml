@@ -192,6 +192,11 @@
         WHERE id = #{id}
     </update>
 
+    <!-- DS133 C: co xoa cua ban ghi kham tu xa, phuc vu kiem tra ton tai truoc khi xoa. -->
+    <select id="getDelFlagById" parameterType="String" resultType="String">
+        select a.del_flag from remote_diagnosis a where a.id = #{id}
+    </select>
+
     <!-- X2: chỉ SELECT company_id, phục vụ kiểm tra sở hữu ở controller -->
     <select id="getRemoteDiagnosisCompanyId" parameterType="String" resultType="String">
         select a.company_id from remote_diagnosis a where a.id = #{id}

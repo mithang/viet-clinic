@@ -160,9 +160,27 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
         return 1;
     }
 
-    /** XóaBản ghi */
+    /** XóaBản ghi
+     * DS133 C: diagnosisDelete fail-closed 400. Truoc day goi thang
+     * dao.diagnosisDelete, ma mapper UPDATE remote_diagnosis SET
+     * del_flag='1' WHERE id KHONG loc del_flag nen ghost/blank ->
+     * 200 data 0 im lang, xoa lap (del_flag da '1') -> 200 rows 1.
+     * Cung lop DS123/DS129/DS130/DS131/DS132. Check X2 o controller
+     * cho ghost qua co tinh (company null -> khong phai la) nen chan
+     * o day: blank -> 400; getDelFlagById null (khong ton tai) hoac
+     * '1' (da xoa) -> 400. Lookup rieng khong JOIN (diagnosisById
+     * co patient joins) theo mau countById DS127; checkExists (DS103)
+     * KHONG tai dung. diagnosisDelete chi duoc controller nay goi.
+     */
     @Transactional(readOnly = false)
     public int diagnosisDelete(String id) {
+        if (StringUtils.isBlank(id)) {
+            throw new ServiceException("Không xác định được bản ghi khám từ xa cần xóa.");
+        }
+        String delFlag = remoteDiagnosisTreatmentDao.getDelFlagById(id);
+        if (delFlag == null || "1".equals(delFlag)) {
+            throw new ServiceException("Bản ghi khám từ xa không tồn tại: " + id);
+        }
         return remoteDiagnosisTreatmentDao.diagnosisDelete(id);
     }
 
