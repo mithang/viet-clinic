@@ -359,6 +359,17 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
     @Override
     @Transactional(readOnly = false)
     public int delete(SupplierStock entity) {
+        // DS119 C: mapper <update id="delete"> co nhanh <otherwise> xoa
+        // mem theo supplier_storage_id khi id rong. checkLineDeletable
+        // chi chan khi phieu CHUA huy: voi id rong + supplierStorage.id
+        // no lay slipId tu payload, phieu da huy thi cho qua, delete chay
+        // vao <otherwise> va xoa sach moi dong cua phieu (DS41 da
+        // probe-proven, luc do chi sua loi audit 500, wipe van mo).
+        // Chan o service: chi xoa khi co id; khong caller noi bo nao
+        // dung duong khong id (kiem tra 2026-11-07).
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được chi tiết nhập kho cần xóa.");
+        }
         checkLineDeletable(entity);
         return super.delete(entity);
     }
