@@ -218,6 +218,34 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         return inspectionCheckInfo;
     }
 
+    /**
+     * DS133 A: single delete fail-closed 400. Truoc day khong co
+     * delete() override; mapper <delete> la HARD DELETE (DELETE FROM
+     * inspection_check_info WHERE id, khong loc del_flag -- bang cung
+     * khong co cot del_flag) nen ghost/blank -> 200 data 0 im lang,
+     * xoa lap (dong da bi xoa cung) -> 200 data 0 im lang. Cung lop
+     * DS123/DS129/DS130/DS131/DS132. Chan truoc bang dao.get (tra
+     * null khi dong khong ton tai; khong co cot del_flag nen "khong
+     * ton tai" CHINH LA trang thai da xoa) theo mau CodeRule/DS129 A.
+     * checkExists (DS103) KHONG tai dung (cho qua blank, khong check
+     * ton tai, dung chung voi save/bulkUpdate). bulkDelete ghost CO
+     * TINH GIU 200 rows 0 (DS99/DS106/DS126 B idempotency) -- khong
+     * doi; bulkDelete dong live van la hard delete vi bang khong co
+     * co xoa mem de giu. deleteBy (xoa theo inspection_check_id,
+     * goi noi bo) khong doi.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(InspectionCheckInfo inspectionCheckInfo) {
+        if (inspectionCheckInfo == null || StringUtils.isBlank(inspectionCheckInfo.getId())) {
+            throw new ServiceException("Không xác định được chi tiết kiểm tra cần xóa.");
+        }
+        if (dao.get(inspectionCheckInfo.getId()) == null) {
+            throw new ServiceException("Chi tiết kiểm tra không tồn tại: " + inspectionCheckInfo.getId());
+        }
+        return super.delete(inspectionCheckInfo);
+    }
+
     @Transactional(readOnly = false)
     public void deleteBy(InspectionCheckInfo byInspecId) {
         this.dao.deleteBy(byInspecId.getId());
