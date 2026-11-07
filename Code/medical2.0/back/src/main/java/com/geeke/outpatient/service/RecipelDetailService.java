@@ -236,7 +236,22 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                         int i1 = recipelInfoDao.updateById(1,0, recipelDetail.getRecipelInfo().getId());
                         if(i1>0){
                             RecipelInfo recipelInfo = recipelInfoDao.get(recipelDetail.getRecipelInfo().getId());
+                            // DS110: registration cua recipel_info co the khong ton tai
+                            // (39/51 don live tro toi registration ma khong co dong
+                            // tuong ung; vi du 2222745407924404224) -> get() tra null
+                            // roi NPE o setTreatmentDate, cuoi bang 500 trong khi
+                            // cure row da commit. Chan fail-closed 400 qua
+                            // ServiceException (GlobalExceptionHandler -> HTTP 400);
+                            // updateById tx rollback nen co + flag deu giu nguyen.
+                            if (recipelInfo == null || recipelInfo.getRegistration() == null) {
+                                throw new ServiceException("Đơn thuốc không tồn tại hoặc thiếu đơn đăng ký: "
+                                        + recipelDetail.getRecipelInfo().getId());
+                            }
                             Registration registration = registrationService.get(recipelInfo.getRegistration().getId());
+                            if (registration == null) {
+                                throw new ServiceException("Đơn đăng ký không tồn tại: "
+                                        + recipelInfo.getRegistration().getId());
+                            }
                             registration.setTreatmentDate(new Date());
                             registrationService.save(registration);
                             
@@ -282,7 +297,17 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                     int i1 = recipelInfoDao.updateById(1,1, recipelDetail.getRecipelInfo().getId());
                     if(i1>0){
                         RecipelInfo recipelInfo = recipelInfoDao.get(recipelDetail.getRecipelInfo().getId());
+                        // DS110: nhu nhanh "3" o tren — registration khong ton tai
+                        // -> 400 thay vi NPE 500 (xem ghi chu o nhanh "3").
+                        if (recipelInfo == null || recipelInfo.getRegistration() == null) {
+                            throw new ServiceException("Đơn thuốc không tồn tại hoặc thiếu đơn đăng ký: "
+                                    + recipelDetail.getRecipelInfo().getId());
+                        }
                         Registration registration = registrationService.get(recipelInfo.getRegistration().getId());
+                        if (registration == null) {
+                            throw new ServiceException("Đơn đăng ký không tồn tại: "
+                                    + recipelInfo.getRegistration().getId());
+                        }
                         registration.setTreatmentDate(new Date());
                         registrationService.save(registration);
                         
