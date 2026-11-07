@@ -100,6 +100,31 @@ public class ThemeService extends CrudService<ThemeDao, Theme>{
         return super.bulkDelete(entitys);
     }
 
+    // DS131 B: ThemeService truoc day KHONG CO delete() override nen
+    // single delete roi thang xuong CrudService.delete: ghost id -> 200
+    // rows 0 im lang, blank id -> 200 rows 0 im lang, xoa lap -> 200
+    // rows 1 (mapper soft-delete khong loc del_flag) -- cung lop
+    // DS123/DS129/DS130. Chan truoc bang dao.get (khong loc del_flag
+    // nen tra ca dong da xoa mem, delFlag phan biet) theo mau
+    // CodeRuleService.delete (DS129 A); KHONG tai dung checkExists
+    // (DS103): no cho qua blank va khong check delFlag, lai dung chung
+    // voi save/bulkUpdate. sys_theme KHONG CO cot company_id (bang toan
+    // cuc) nen khong co guard tenant o day. bulkDelete ghost GIU NGUYEN
+    // 200 rows 0 (DS99/DS106/DS126 B idempotency).
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Theme entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được chủ đề cần xóa.");
+        }
+        Theme stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Chủ đề không tồn tại: "
+                    + entity.getId());
+        }
+        return super.delete(entity);
+    }
+
     private void checkThemeRequired(Theme entity) {
         if (entity == null) {
             throw new ServiceException("Chủ đề không được để trống");
