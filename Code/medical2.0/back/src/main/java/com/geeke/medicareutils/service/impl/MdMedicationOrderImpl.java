@@ -449,7 +449,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
 //                "  \"rxFile\": \"UEsDBBQAAAAIAI6gO5bPUc3nqs2SOmeKb4hVV3zRGkA5uAY9S5sPtm2EzKItUEz0X0MNRVBeVJtSBRZ6gdlwsOdQFk8NdhNBZeaSHIQFBvjoHaVBpP1fZ0PlHKhqP0RZ8wQZlV2J+3H0BEPDNkweXvTxF3akbbYN3pCRgBqa6xfqujlRaxDXnGG8J2UdhPuwmPOG1G9IhpkI+xP2rZz3IEp5VyzKSCxM6Wcvqqzt1p7s4zo5bXx/J0iq1lVXkmG7e6Nho2VHJGG0SZnGYoS0=\", \n" +
 //                "  \"signDigest\": \"8ac8e8327f2b38be283cd9032f2074f43b87c9a50637a589ec7c8039c36e69b9\", \n" +
 //                "  \"signCertSn\": \"1234567890ABCDE1234567890ABCDE1234567890ABCDE1234567890ABCDE12345\", \n" +
-//                "  \"signCertDn\": \"C=CN,O=NHSA,ST=15,L=00,L=00,OU=02,T=91150500MA0NFP6N44,CN=通辽博德 trong Kết hợp y học Mông Cổ và Tây yBệnh viện\"\n" +
+//                "  \"signCertDn\": \"C=CN,O=NHSA,ST=15,L=00,L=00,OU=02,T=91150500MA0NFP6N44,CN=Thông Liêu trong Kết hợp y học Mông Cổ và Tây yBệnh viện\"\n" +
 //                "}");
         JSONObject ld7802 =   mdRequestUtil.dzcfUpload("Ld7802", jsonObject);
         dzcfD002Output.setMzh(registration.getId());

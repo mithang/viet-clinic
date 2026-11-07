@@ -763,7 +763,7 @@
 <!--        left join cost_item costItem on costItem.id = rd.drug_stuff_id-->
 <!--        where-->
 <!--        su.name!='' and ti.update_date > '2022-08-05 17:20:07'-->
-<!--        and ti.amount_status = 'amountStatus_1' and su.name="张韵雯" and ti.company_id="998324809623052308" and ri.charge_status=1 and r.status = 'registrationStatus_1' group by su.name,sue.office,types-->
+<!--        and ti.amount_status = 'amountStatus_1' and su.name="Người dùng kiểm thử" and ti.company_id="998324809623052308" and ri.charge_status=1 and r.status = 'registrationStatus_1' group by su.name,sue.office,types-->
         select oc.id jgid,oc.name jgmc,
         su.name,
         sum(rd.actual_payment) as temporaryCost,

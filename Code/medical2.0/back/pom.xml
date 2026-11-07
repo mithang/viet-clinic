@@ -8,7 +8,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>permissionExample</name>
-    <description>权限后端</description>
+    <description>Backend phân quyền</description>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -25,7 +25,7 @@
         <profile>
             <id>dev</id>
             <activation>
-                <!-- 默认激活 -->
+                <!-- Kích hoạt mặc định -->
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
@@ -65,7 +65,7 @@
         <profile>
             <id>prod</id>
             <properties>
-                <!-- 生产 -->
+                <!-- Môi trường production -->
                 <package.environment>prod</package.environment>
             </properties>
             <build>
@@ -105,7 +105,7 @@
             </exclusions>
         </dependency>
 
-        <!-- 定时任务 -->
+        <!-- Tác vụ định kỳ -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
@@ -198,7 +198,7 @@
             <version>3.5.5</version>
         </dependency>
 
-        <!-- JAXB API (Java 9+ 移除了 javax.xml.bind) -->
+        <!-- JAXB API (Java 9+ đã loại bỏ javax.xml.bind) -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
@@ -268,7 +268,7 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <!-- Commons StringSubstitutor对模板占位符进行赋值 -->
+        <!-- Commons StringSubstitutor gán giá trị cho placeholder của mẫu -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
@@ -296,7 +296,7 @@
             <version>4.1.0</version>
         </dependency>
 
-        <!--doc解析-->
+        <!-- Phân tích doc -->
         <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -319,26 +319,26 @@
             <artifactId>ooxml-schemas</artifactId>
             <version>1.4</version>
         </dependency>
-        <!-- EasyExcel - 阿里巴巴 Excel 处理库 -->
+        <!-- EasyExcel - Thư viện xử lý Excel của Alibaba -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
             <version>3.3.4</version>
         </dependency>
 
-        <!--hutool工具类-->
+        <!-- Lớp tiện ích hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.16</version>
         </dependency>
-<!--        加密-->
+<!--        Mã hóa -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.70</version> <!-- 根据最新版本进行调整 -->
+            <version>1.70</version> <!-- Điều chỉnh theo phiên bản mới nhất -->
         </dependency>
-        <!--必须放在最后-->
+        <!-- Phải đặt ở cuối -->
         <dependency>
             <groupId>com.baidu.fsg</groupId>
             <artifactId>uid-generator</artifactId>
