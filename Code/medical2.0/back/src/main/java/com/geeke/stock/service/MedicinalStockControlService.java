@@ -98,6 +98,36 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
     }
 
     /**
+     * DS132 B: chan xoa truc tiep dong tong ton kho, cung mau DS126 A
+     * (MedicinalStorageControl/SysSeting) va DS69 save() o tren. Truoc
+     * day khong co delete() override nen generic CrudController delete
+     * toi thang mapper soft-delete (UPDATE del_flag=1 WHERE id, KHONG
+     * loc del_flag): ghost/blank -> 200 data 0 im lang, xoa lap ->
+     * 200 rows 1, va xoa dong LIVE cung 200 rows 1 -- dong tong duy
+     * nhat hien co (storage 10000 / surplus 10000) van con 1 dong chi
+     * tiet LIVE trong medicinal_storage_control, nen xoa no se mo coi
+     * ton kho that va pha vo bat bien "tong == tong chi tiet" ma
+     * DS30/DS31 bao ve (probe pre-fix tai hien live). Dong tong la du
+     * lieu dan xuat, chi doi qua cac flow co guard
+     * (ensureAggregateRow, add/adjust bumps, inventory accomplish);
+     * khong co duong UI xoa (client api chi co listAll), khong caller
+     * noi bo nao goi delete()/bulkDelete() tren service nay (verified
+     * by grep). bulkDelete cung chan han (khong giu parity 200 cua
+     * DS126 B -- giong DS126 A, bulk bi chan toan bo).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(MedicinalStockControl entity) {
+        throw new ServiceException("Tồn kho tổng chỉ thay đổi qua nhập kho / kê đơn / xuất kho / kiểm kê, không hỗ trợ xóa trực tiếp!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<MedicinalStockControl> entitys) {
+        throw new ServiceException("Tồn kho tổng chỉ thay đổi qua nhập kho / kê đơn / xuất kho / kiểm kê, không hỗ trợ xóa trực tiếp!");
+    }
+
+    /**
      * DS69: internal single-entity save for the guarded flows
      * (InventoryVerificationService.adjustStock and
      * MedicinalStorageControlService.autoInvalidStorageStock). NOT
