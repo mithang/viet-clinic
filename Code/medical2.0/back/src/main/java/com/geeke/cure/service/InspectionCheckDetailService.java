@@ -33,6 +33,108 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
 
     @Autowired
     private CostItemPackageService costItemPackageService;
+
+    // DS108 B1/B10-B12: save/bulkInsert/bulkUpdate truoc day de lo:
+    // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
+    // dong roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow
+    // bo qua khi stored==null, cung mau DS94/DS99); bulkInsert/bulkUpdate
+    // bypass @Valid nen inspectionCheckInfo/company thieu van ghi duoc
+    // (inspection_check_info_id/company_id NOT NULL trong DB) -> 500.
+    // Kiem tra ton tai + truong bat buoc truoc moi ghi. @Transactional
+    // (readOnly = false) tuong minh vi class-level la readOnly = true
+    // (mau DS105/DS106/DS107). Luu y: bang KHONG CO cot del_flag nen
+    // bulkDelete la HARD DELETE (B15 kiem row GONE, khong phai flag=1);
+    // update() tuy chinh dung cho InspectionCheckInfoService.saveWithFile
+    // khong bi anh huong (chi override save/bulk* cua CrudService).
+    @Override
+    @Transactional(readOnly = false)
+    public InspectionCheckDetail save(InspectionCheckDetail entity) {
+        if (entity != null && StringUtils.isNotBlank(entity.getId())
+                && dao.get(entity.getId()) == null) {
+            throw new ServiceException("Chi tiết phiếu kiểm tra không tồn tại: "
+                    + entity.getId());
+        }
+        checkInspectionCheckDetailRequired(entity);
+        return super.save(entity);
+    }
+
+    // DS108 B3-B6/B10-B11: bulkInsert truoc day de lo: null/rong roi xuong
+    // MyBatis <foreach> rong -> 500 (hien tai global handler anh xa mot
+    // so loi thanh 400, nhung van chan ro o service de hanh vi khong phu
+    // thuoc vao exception mapping); thieu inspectionCheckInfo/company ->
+    // 500 NOT NULL. Chan het o service de 400 ro nghia.
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<InspectionCheckDetail> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết phiếu kiểm tra không được để trống");
+        }
+        for (InspectionCheckDetail entity : entitys) {
+            checkInspectionCheckDetailRequired(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    // DS108 B2/B3/B5/B9/B12: bulkUpdate truoc day de lo: id khong ton tai
+    // -> 200 silent no-op; batch hon hop [valid, nonexistent] doi ca dong
+    // hop le truoc khi cham id ma; inspectionCheckInfo bi drop -> CASE
+    // set inspection_check_info_id=NULL -> 500 NOT NULL. Tien kiem TOAN
+    // BO list truoc moi ghi (fail-closed ca list, mau N1).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<InspectionCheckDetail> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết phiếu kiểm tra không được để trống");
+        }
+        for (InspectionCheckDetail entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Chi tiết phiếu kiểm tra không được để trống");
+            }
+            if (StringUtils.isNotBlank(entity.getId())
+                    && dao.get(entity.getId()) == null) {
+                throw new ServiceException("Chi tiết phiếu kiểm tra không tồn tại: "
+                        + entity.getId());
+            }
+            checkInspectionCheckDetailRequired(entity);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    // DS108 B7-B8: bulkDelete null/rong -> 400 ro nghia thay vi roi xuong
+    // MyBatis <foreach> rong. bulkDelete id khong ton tai GIU NGUYEN
+    // 200 rows 0 idempotent (DS99 G11) -- khong chan o day.
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<InspectionCheckDetail> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết phiếu kiểm tra không được để trống");
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    // inspectionCheckInfo/company la NOT NULL trong DB (company them
+    // @NotNull tren single save); costItem la @NotNull tren single save
+    // nen bulk cung chan cho dong nhat (cot cost_item_id nullable nhung
+    // UI luon gui). Company khong duoc CrudService.bulkInsert ep theo
+    // session nen thieu company cung 500 NOT NULL.
+    private void checkInspectionCheckDetailRequired(InspectionCheckDetail entity) {
+        if (entity == null) {
+            throw new ServiceException("Chi tiết phiếu kiểm tra không được để trống");
+        }
+        if (entity.getCompany() == null
+                || StringUtils.isBlank(entity.getCompany().getId())) {
+            throw new ServiceException("Phòng khám không được để trống");
+        }
+        if (entity.getInspectionCheckInfo() == null
+                || StringUtils.isBlank(entity.getInspectionCheckInfo().getId())) {
+            throw new ServiceException("Chi tiết bảng kiểm tra không được để trống");
+        }
+        if (entity.getCostItem() == null
+                || StringUtils.isBlank(entity.getCostItem().getId())) {
+            throw new ServiceException("Hạng mục khám chữa bệnh không được để trống");
+        }
+    }
+
     @Transactional
     public void allSave(InspectionCheckDetail inspectionCheckDetail) {
         this.dao.insert(inspectionCheckDetail);
