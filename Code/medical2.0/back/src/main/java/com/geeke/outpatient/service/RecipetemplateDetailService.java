@@ -65,6 +65,12 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
     @Transactional(readOnly = false)
     public void allSave(List<RecipeTemplateDetail> recipeTemplateDetails){
+        // DS116 A: a null list NPEd in the for-loop (reached from
+        // saveTemplate with a payload without a detail list); an empty
+        // list is a valid header-only template, so null is a no-op.
+        if (recipeTemplateDetails == null) {
+            return;
+        }
         for (RecipeTemplateDetail recipeTemplateDetail:
         recipeTemplateDetails) {
             recipeTemplateDetail.preInsert();

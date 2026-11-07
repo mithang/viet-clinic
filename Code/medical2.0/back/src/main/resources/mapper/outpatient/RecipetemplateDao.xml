@@ -157,6 +157,29 @@
         remarks=#{remarks}
         WHERE id = #{id}
     </update>
+
+    <!-- DS116 A: the generic CrudService.doUpdate calls dao.update, but
+         this mapper only had updateById, so every generic save() with an
+         id failed with 500 Invalid bound statement. Same SET list as
+         updateById EXCEPT create_by/create_date: an update must not
+         rewrite creation audit fields, and a generic-save payload does
+         not carry them (their NULL 500d the first version of this
+         statement); updateById keeps its own list for the allSave flow,
+         whose payload round-trips the stored values. -->
+    <update id="update">
+        UPDATE recipetemplate SET
+        company_id=#{company.id},
+        recipetemplate_name=#{recipetemplateName},
+        code=#{code},
+        type=#{type.value},
+        category=#{category},
+        diagnosis=#{diagnosis},
+        update_by=#{updateBy},
+        update_date=#{updateDate},
+        del_flag=#{delFlag},
+        remarks=#{remarks}
+        WHERE id = #{id}
+    </update>
     
     <update id="delete">
         UPDATE recipetemplate SET

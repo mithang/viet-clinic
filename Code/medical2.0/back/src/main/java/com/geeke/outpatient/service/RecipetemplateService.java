@@ -71,12 +71,109 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
     @Autowired
     private RecipeTemplateInfoDao recipeTemplateInfoDao;
 
+    // DS116 A: generic save/bulk* had no overrides (CrudService only), so
+    // the CrudController surface at /outpatient/recipetemplate failed open:
+    // save with any id 500d (RecipetemplateDao.xml has no <update>
+    // statement, only updateById), bulkInsert/bulkUpdate [null] NPEd 500,
+    // bulk rows missing a NOT NULL column 500d (bulk bypasses @Valid),
+    // bulkUpdate with a nonexistent id silently updated 0 rows 200.
+    // Validate the DB NOT NULL columns here (company_id,
+    // recipetemplate_name, code, type, category); single save() keeps the
+    // @Valid behaviour of CrudController.save for the same fields.
+    // No internal caller omits these: generic save/bulk are only reached
+    // via the controller, allSave goes through saveTemplate/updateTemplate
+    // below, and K3 does not touch recipetemplate.
+    private void validateRequired(Recipetemplate entity) {
+        if (entity == null) {
+            throw new ServiceException("Mẫu đơn thuốc không được để trống");
+        }
+        if (entity.getCompany() == null
+                || StringUtils.isBlank(entity.getCompany().getId())) {
+            throw new ServiceException("Phòng khám không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getRecipetemplateName())) {
+            throw new ServiceException("Tên mẫu không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getCode())) {
+            throw new ServiceException("Mã mẫu không được để trống");
+        }
+        if (entity.getType() == null
+                || StringUtils.isBlank(entity.getType().getValue())) {
+            throw new ServiceException("Loại mẫu không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getCategory())) {
+            throw new ServiceException("Loại mẫu không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Recipetemplate save(Recipetemplate entity) {
+        validateRequired(entity);
+        if (StringUtils.isNotBlank(entity.getId())
+                && dao.get(entity.getId()) == null) {
+            throw new ServiceException("Mẫu đơn thuốc không tồn tại: "
+                    + entity.getId());
+        }
+        return super.save(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Recipetemplate> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách mẫu đơn thuốc thêm mới không được để trống");
+        }
+        for (Recipetemplate entity : entitys) {
+            validateRequired(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Recipetemplate> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách mẫu đơn thuốc cập nhật không được để trống");
+        }
+        for (Recipetemplate entity : entitys) {
+            validateRequired(entity);
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của mẫu đơn thuốc đã tồn tại");
+            }
+            if (dao.get(entity.getId()) == null) {
+                throw new ServiceException("Mẫu đơn thuốc không tồn tại: "
+                        + entity.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<Recipetemplate> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách mẫu đơn thuốc xóa không được để trống");
+        }
+        for (Recipetemplate entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Mẫu đơn thuốc xóa không được để trống");
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
+
     // Ghi: entry-point phải là read-write. Lớp này là readOnly=true và
     // saveTemplate()/updateTemplate() được gọi nội bộ (this.*) nên
     // @Transactional trên chính chúng bị proxy bỏ qua; chỉ annotation
     // ở đây mới tạo transaction ghi cho toàn bộ chuỗi allSave.
     @Transactional(readOnly = false)
     public void allSave(Recipetemplate recipetemplate){
+        // DS116 A: null body reaches here as a null entity (Spring only
+        // 400s a missing body, not a JSON null); getId() below NPEd 500.
+        if (recipetemplate == null) {
+            throw new ServiceException("Mẫu đơn thuốc không được để trống");
+        }
         if(StringUtils.isBlank(recipetemplate.getId())){
             this.saveTemplate(recipetemplate);
         }else {
@@ -137,9 +234,20 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         }
         recipetemplate.setUpdateDate(new Date());
         int i = this.dao.updateById(recipetemplate);
+        // DS116 A: a nonexistent id updated 0 rows and returned 200
+        // silent no-op; fail-closed 400 instead.
+        if (i == 0) {
+            throw new ServiceException("Mẫu đơn thuốc không tồn tại: "
+                    + recipetemplate.getId());
+        }
         if(i>0){
             //mẫuĐơn thuốcThông tinSửa
-            recipetemplateInfoService.updateInfo(recipetemplate.getRecipeTemplateInfo());
+            // DS116 A: info null (payload without an info block) made
+            // updateInfo NPE 500 in the mapper (#{company.id} on null);
+            // a template without info simply has no info row to update.
+            if (recipetemplate.getRecipeTemplateInfo() != null) {
+                recipetemplateInfoService.updateInfo(recipetemplate.getRecipeTemplateInfo());
+            }
             //mẫuĐơn thuốcChi tiếtSửa
             recipetemplateDetailService.updateDetail(recipetemplate.getRecipeTemplateDetail(),recipetemplate.getCompany(),recipetemplate.getRecipeTemplateInfo());
         }
@@ -147,6 +255,25 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
 
     @Transactional(readOnly = false)
     public void saveTemplate(Recipetemplate recipetemplate){
+        // DS116 A: null entity NPEd at getCompany() below; a null/blank
+        // company NPEd at dao.listOne(getCompany().getId()) -- both 500.
+        // A template always belongs to a tenant (the generic save path
+        // requires company too), so fail-closed 400 here.
+        if (recipetemplate == null) {
+            throw new ServiceException("Mẫu đơn thuốc không được để trống");
+        }
+        if (recipetemplate.getCompany() == null
+                || StringUtils.isBlank(recipetemplate.getCompany().getId())) {
+            throw new ServiceException("Phòng khám không được để trống");
+        }
+        // DS116 A: a payload without a detail list (null) NPEd in the
+        // for-loop below and in DetailService.allSave; a header-only
+        // template is valid domain state, so treat null as an empty list.
+        List<RecipeTemplateDetail> recipeTemplateDetails = recipetemplate.getRecipeTemplateDetail();
+        if (recipeTemplateDetails == null) {
+            recipeTemplateDetails = new java.util.ArrayList<>();
+            recipetemplate.setRecipeTemplateDetail(recipeTemplateDetails);
+        }
         // Q2 (iteration 40): create ghi thẳng company từ payload (template
         // + info + chi tiết) — chặn company lạ trước khi sinh uuid/code.
         blockForeignPayloadCompany(recipetemplate.getCompany());
@@ -184,17 +311,28 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             recipetemplateInfoService.allSave(recipeTemplateInfo);
         }
         //Lưumẫu của Đơn thuốcChi tiết
-        List<RecipeTemplateDetail> recipeTemplateDetails = recipetemplate.getRecipeTemplateDetail();
+        // DS116 A: recipeTemplateDetails was already normalised to a
+        // non-null list at the top of this method (null payload list
+        // means a header-only template); reuse it here.
         Company templateCompany = recipetemplate.getCompany();
         // Phòng khámcấpcách ly: qualọcrơikhông phảinàyPhòng khám của Thuốc/Vật tư/Hạng mục khám chữa bệnh
         if (templateCompany != null && recipeTemplateDetails != null) {
             List<RecipeTemplateDetail> validDetails = new java.util.ArrayList<>();
             for (RecipeTemplateDetail detail : recipeTemplateDetails) {
+                // DS116 A: a null detail row, or a detail without a
+                // drugStuffId, NPEd in the warn call below (the filter
+                // itself returns false for them); skip null rows and
+                // log the id null-safely -- the row is filtered out.
+                if (detail == null) {
+                    continue;
+                }
                 if (isDetailBelongsToCompany(detail, templateCompany.getId())) {
                     validDetails.add(detail);
                 } else {
+                    String drugStuffId = detail.getDrugStuffId() == null
+                            ? null : detail.getDrugStuffId().getDrugStuffId();
                     logger.warn("Khi lưu mẫu, bỏ qua thuốc không thuộc phòng khám này: companyId={}, drugStuffId={}, stuffType={}",
-                        templateCompany.getId(), detail.getDrugStuffId().getDrugStuffId(), detail.getStuffType());
+                        templateCompany.getId(), drugStuffId, detail.getStuffType());
                 }
             }
             recipeTemplateDetails.clear();
@@ -278,15 +416,39 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
     // và ghi DB, nên entry-point này phải là read-write.
     @Transactional(readOnly = false)
     public String aiSave(Recipetemplate recipetemplate){
+        // DS116 A: null entity NPEd at getRegisterId(); a nonexistent
+        // registration NPEd at medicalRecord.getPatientId() -- both 500.
+        if (recipetemplate == null) {
+            throw new ServiceException("Mẫu đơn thuốc không được để trống");
+        }
         Registration medicalRecord = registrationService.get(recipetemplate.getRegisterId());
+        if (medicalRecord == null) {
+            throw new ServiceException("Đăng ký khám không tồn tại: "
+                    + recipetemplate.getRegisterId());
+        }
         recipetemplate.setPatientId(medicalRecord.getPatientId().getId());
         recipetemplate.setCompany(medicalRecord.getCompany());
         String a = "";
+        // DS116 A: a payload without a detail list (null) NPEd in the
+        // for-loop below; same null->empty treatment as saveTemplate.
+        List<RecipeTemplateDetail> details = recipetemplate.getRecipeTemplateDetail();
+        if (details == null) {
+            details = new java.util.ArrayList<>();
+            recipetemplate.setRecipeTemplateDetail(details);
+        }
         List<RecipeTemplateDetail> validDetails = new java.util.ArrayList<>();
-        for (RecipeTemplateDetail r :recipetemplate.getRecipeTemplateDetail()){
+        for (RecipeTemplateDetail r : details){
+            // DS116 A: a null detail row, or a detail without a
+            // drugStuffId, NPEd in the warn call below; skip null rows
+            // and log the id null-safely -- the row is filtered out.
+            if (r == null) {
+                continue;
+            }
             if (!isDetailBelongsToCompany(r, medicalRecord.getCompany().getId())) {
+                String drugStuffId = r.getDrugStuffId() == null
+                        ? null : r.getDrugStuffId().getDrugStuffId();
                 logger.warn("AIKhi lưu mẫu, bỏ qua thuốc không thuộc phòng khám này: companyId={}, drugStuffId={}, stuffType={}",
-                    medicalRecord.getCompany().getId(), r.getDrugStuffId().getDrugStuffId(), r.getStuffType());
+                    medicalRecord.getCompany().getId(), drugStuffId, r.getStuffType());
                 continue;
             }
             String id = drugService.getId(r.getDrugStuffId().getName(),r.getCompany().getId());

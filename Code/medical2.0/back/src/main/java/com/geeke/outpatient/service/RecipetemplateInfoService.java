@@ -37,6 +37,11 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
 
     @Transactional(readOnly = false)
     public void allSave(RecipeTemplateInfo recipeTemplateInfo){
+        // DS116 A: null info NPEd at preInsert() (called from
+        // saveTemplate via RecipetemplateService); fail-closed 400.
+        if (recipeTemplateInfo == null) {
+            throw new com.geeke.common.service.ServiceException("Thông tin mẫu đơn thuốc không được để trống");
+        }
         recipeTemplateInfo.preInsert();
         recipeTemplateInfo.setId(IdGen.uuid());
         recipeTemplateInfoDao.allSave(recipeTemplateInfo);
@@ -59,6 +64,12 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
 
     @Transactional(readOnly = false)
     public void updateInfo(RecipeTemplateInfo recipeTemplateInfo) {
+        // DS116 A: null info NPEd in the mapper (#{company.id} on null);
+        // the caller (updateTemplate) now skips a null info, this guard
+        // is defence in depth for any other caller.
+        if (recipeTemplateInfo == null) {
+            throw new com.geeke.common.service.ServiceException("Thông tin mẫu đơn thuốc không được để trống");
+        }
         this.dao.updateInfo(recipeTemplateInfo);
     }
 }
