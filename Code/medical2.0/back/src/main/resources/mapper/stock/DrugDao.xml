@@ -668,8 +668,8 @@
             #{entity.locationNumber},
             #{entity.inventoryLimit},
             #{entity.inventoryFloor},
-            #{entity.indate}
-            ,#{entity.ypgg})
+            #{entity.indate},
+            #{entity.ypgg}
             )
         </foreach>
     </insert>

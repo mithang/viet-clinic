@@ -38,8 +38,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Thông tin thuốcService
@@ -80,6 +82,13 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     @Override
     @Transactional(readOnly = false)
     public Drug save(Drug drug) {
+        // DS122 A: id khong ton tai truoc day roi qua super.save -> doUpdate
+        // 0 dong roi chi 400 nho initStock resolve (sau khi super.save da
+        // ghi audit UPDATED, duoc rollback theo transaction); chan som
+        // truoc moi ghi, cung lop DS94/DS99.
+        if (StringUtils.isNotBlank(drug.getId()) && drugDao.get(drug.getId()) == null) {
+            throw new ServiceException("Thuốc không tồn tại: " + drug.getId());
+        }
         // Kiểm traThuốcCó hay khôngtrùng lặp
         int repeat = this.repeat(drug);
         if (repeat!=0){
@@ -107,6 +116,119 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         Drug drugTemp = super.save(drug);
         this.medicinalStockControlService.initStock(drugTemp);
         return drugTemp;
+    }
+
+    /**
+     * DS122 A: bulk* fail-closed 400. bulkInsert/bulkUpdate khong qua
+     * save() nen khong co repeat(), initStock hay @Valid (CrudController
+     * bulk* khong @Valid): dong thieu goodsName/status -> 500 NOT NULL,
+     * id ma -> 200 silent no-op, [null] -> NPE 500. Validate toan bo list
+     * truoc moi ghi (1 dong loi thi khong dong nao duoc ghi, cung
+     * transaction): null/empty/[null] -> 400; thieu truong @NotNull
+     * (goodsName, type, status, preparationUnit, pack) -> 400; trung lap
+     * (repeat() voi DB + trung trong list) -> 400; bulkUpdate/bulkDelete
+     * id khong ton tai -> 400 (kiem tra stored-row tenant truoc repeat()
+     * vi repeat() ghi de company theo session). Sau ghi, initStock tung
+     * dong nhu save() de giu bat bien thuoc <-> medicinal_stock_control.
+     */
+    private void checkDrugRequired(Drug drug) {
+        if (drug == null) {
+            throw new ServiceException("Thông tin thuốc không được để trống");
+        }
+        if (StringUtils.isBlank(drug.getGoodsName())
+                || drug.getType() == null
+                || StringUtils.isBlank(drug.getType().getValue())
+                || StringUtils.isBlank(drug.getStatus())
+                || drug.getPreparationUnit() == null
+                || StringUtils.isBlank(drug.getPreparationUnit().getValue())
+                || drug.getPack() == null
+                || StringUtils.isBlank(drug.getPack().getValue())) {
+            throw new ServiceException("Tên thuốc, loại thuốc, trạng thái, đơn vị bào chế và đóng gói không được để trống");
+        }
+    }
+
+    private void checkDrugRepeatInList(List<Drug> entitys) {
+        Set<String> seen = new HashSet<>();
+        for (Drug drug : entitys) {
+            if (drug == null) {
+                continue;
+            }
+            String key = String.valueOf(drug.getGoodsName()) + "|"
+                    + String.valueOf(drug.getDosis()) + "|"
+                    + String.valueOf(drug.getPreparation()) + "|"
+                    + String.valueOf(drug.getPrice());
+            if (!seen.add(key)) {
+                throw new ServiceException("Thông tin thuốc trùng lặp");
+            }
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Drug> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thuốc không được để trống");
+        }
+        checkDrugRepeatInList(entitys);
+        for (Drug drug : entitys) {
+            checkDrugRequired(drug);
+            // repeat() ep company theo session + kiem tra trung voi DB
+            // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
+            if (this.repeat(drug) != 0) {
+                throw new ServiceException("Thông tin thuốc trùng lặp");
+            }
+        }
+        List<String> ids = super.bulkInsert(entitys);
+        for (Drug drug : entitys) {
+            this.medicinalStockControlService.initStock(drug);
+        }
+        return ids;
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Drug> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thuốc không được để trống");
+        }
+        for (Drug drug : entitys) {
+            if (drug == null || StringUtils.isBlank(drug.getId())) {
+                throw new ServiceException("Thông tin thuốc không được để trống");
+            }
+            if (drugDao.get(drug.getId()) == null) {
+                throw new ServiceException("Thuốc không tồn tại: " + drug.getId());
+            }
+            verifyTenantOwnershipAgainstStoredRow(drug);
+            checkDrugRequired(drug);
+            // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
+            // voi thuoc khac -> 400.
+            if (this.repeat(drug) != 0) {
+                throw new ServiceException("Thông tin thuốc trùng lặp");
+            }
+        }
+        List<String> ids = super.bulkUpdate(entitys);
+        for (Drug drug : entitys) {
+            this.medicinalStockControlService.initStock(drug);
+        }
+        return ids;
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<Drug> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thuốc không được để trống");
+        }
+        for (Drug drug : entitys) {
+            if (drug == null || StringUtils.isBlank(drug.getId())) {
+                throw new ServiceException("Thông tin thuốc không được để trống");
+            }
+            if (drugDao.get(drug.getId()) == null) {
+                throw new ServiceException("Thuốc không tồn tại: " + drug.getId());
+            }
+            verifyTenantOwnershipAgainstStoredRow(drug);
+        }
+        return super.bulkDelete(entitys);
     }
 
 
