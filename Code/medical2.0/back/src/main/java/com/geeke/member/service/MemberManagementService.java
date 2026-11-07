@@ -101,6 +101,37 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             }
             return memberManagement;
         }
+    /**
+     * DS132 C: single delete fail-closed 400. Truoc day khong co
+     * delete() override; mapper <delete> khong dung del_flag ma set
+     * status='2' (da vo hieu hoa) KHONG loc status, bang cung khong
+     * co cot del_flag (status 0=chua dung, 1=da dung, 2=da vo hieu
+     * hoa, 4=het han) -- cung lop DS123/DS129/DS130/DS131: ghost/
+     * blank -> 200 data 0 im lang, xoa lap (status da '2') -> 200
+     * rows 1. Chan truoc bang dao.get (khong loc status nen tra ca
+     * dong da vo hieu hoa, status phan biet) theo mau CodeRule/
+     * DS129 A, chi status '2' tinh la da xoa; the live o status 0/1/4
+     * van vo hieu hoa duoc nhu cu (UI goi day la "Vo hieu hoa").
+     * checkExists (DS103) KHONG tai dung (cho qua blank, khong check
+     * trang thai, dung chung voi save/bulkUpdate). bulkDelete ghost
+     * CO TINH GIU 200 rows 0 (DS99/DS106/DS126 B idempotency) --
+     * khong doi. Luu y: mapper bulkDelete la HARD DELETE trong khi
+     * single delete chi set status='2' -- lech nay ghi nhan lam ung
+     * vien DS133, khong doi o day.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(MemberManagement memberManagement) {
+        if (memberManagement == null || StringUtils.isBlank(memberManagement.getId())) {
+            throw new ServiceException("Không xác định được thẻ hội viên cần xóa.");
+        }
+        MemberManagement stored = dao.get(memberManagement.getId());
+        if (stored == null || "2".equals(stored.getStatus())) {
+            throw new ServiceException("Thẻ hội viên không tồn tại: " + memberManagement.getId());
+        }
+        return super.delete(memberManagement);
+    }
+
     @Transactional(readOnly = false)
     public List<MemberManagement> getByMemberSetId(String memberSetId) {
         List<MemberManagement> memberManagements = this.dao.getByMemberSetId(memberSetId);
