@@ -181,6 +181,17 @@ public class UserGridController extends CrudController<UserGridService, UserGrid
 		if (entity.getUserId() != null && !isOwnUser(entity.getUserId())) {
 			return forbidden();
 		}
+		// DS118 B: save() con thieu guard stored-row ma delete/bulkUpdate
+		// da co (DS48) -- save mang id dong cua user khac + userId cua
+		// minh qua duoc kiem tra payload, roi doUpdate WHERE id AND
+		// user_id khop 0 dong -> 200 silent no-op (probe live). Dong
+		// khong ton tai hoac userId rong cho qua nhu cu.
+		if (entity.getId() != null) {
+			UserGrid stored = getService().get(entity.getId());
+			if (stored != null && stored.getUserId() != null && !isOwnUser(stored.getUserId())) {
+				return forbidden();
+			}
+		}
 		if (!beforeSave(entity)) {
 			return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
 		}
