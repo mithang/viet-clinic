@@ -3,6 +3,7 @@ package com.geeke.collect.service;
 import java.util.*;
 
 import com.geeke.admin.common.dao.PermissionDAO;
+import com.geeke.admin.dao.RouterDao;
 import com.geeke.admin.entity.Router;
 import com.geeke.common.service.ServiceException;
 import com.geeke.utils.StringUtils;
@@ -30,7 +31,52 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
     private SysCollectDao sysCollectDao;
 
     @Autowired
+    private RouterDao routerDao;
+
+    @Autowired
     private PermissionDAO permissionDAO;
+
+    /**
+     * DS121 B: save fail-closed 400. Ba lo probe-proven (chi mo khi payload
+     * vuot qua @Valid, tuc co company -- xem ds121b-verify.py):
+     * (1) save voi id khong ton tai -> 200 silent no-op (mapper UPDATE chi
+     * set sort); bat buoc dong phai ton tai.
+     * (2) save-create voi routerId ma -> 200 + dong mo coi (sys_collect
+     * khong co FK tren router_id); bat buoc router phai ton tai.
+     * (3) save voi id dong cua user khac + userId cua minh trong payload
+     * lot qua guard chi-doi-chieu-payload cua controller va ghi de sort
+     * cua dong do (cung lop DS118 B / iter62 updateBatch, nhung tren
+     * nhanh save); doi chieu dong da luu voi payload userId (controller
+     * da dam bao payload userId == session).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public SysCollect save(SysCollect entity) {
+        if (entity == null) {
+            throw new ServiceException("Dữ liệu yêu thích không được để trống");
+        }
+        if (StringUtils.isNotBlank(entity.getId())) {
+            SysCollect stored = sysCollectDao.get(entity.getId());
+            if (stored == null) {
+                throw new ServiceException("Mục yêu thích không tồn tại");
+            }
+            String storedUserId = stored.getUserId() != null
+                    ? stored.getUserId().getId() : null;
+            String payloadUserId = entity.getUserId() != null
+                    ? entity.getUserId().getId() : null;
+            if (StringUtils.isBlank(storedUserId)
+                    || !storedUserId.equals(payloadUserId)) {
+                throw new ServiceException("Không có quyền truy cập dữ liệu của người dùng khác");
+            }
+        } else {
+            if (entity.getRouterId() == null
+                    || StringUtils.isBlank(entity.getRouterId().getId())
+                    || routerDao.get(entity.getRouterId().getId()) == null) {
+                throw new ServiceException("Định tuyến không tồn tại");
+            }
+        }
+        return super.save(entity);
+    }
 
 
     /**
