@@ -77,6 +77,17 @@
         #{auditstatus}
         )
     </insert>
+    <!-- DS121 A: statement `get` tung thieu. CrudService.save goi dao.get
+         trong stored-row check nen MOI save-update deu 500 BindingException.
+         Lay theo articleColumns/joins nhu cac mapper khac (khong loc
+         del_flag, parity voi SysCollectDao.get). -->
+    <select id="get" resultType="com.geeke.taskmanagement.entity.article">
+        SELECT
+        <include refid="articleColumns"/>
+        FROM article a
+        <include refid="articleJoins"/>
+        WHERE a.id = #{id}
+    </select>
     <select id="count" resultType="int">
         SELECT COUNT(*)  FROM article a
         <include refid="articleJoins"></include>

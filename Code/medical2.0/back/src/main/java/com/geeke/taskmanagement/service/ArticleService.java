@@ -121,6 +121,65 @@ public class ArticleService extends CrudService<ArticleDao, article>{
         return updatecount;
     }
 
+    /**
+     * DS121 A: save fail-closed 400. Ba lo probe-proven:
+     * (1) create thieu truong NOT NULL (companyid/userid/title/abstracts/
+     * content/username) -> 500 NOT NULL (entity khong co @Valid, controller
+     * khong @Valid); bat buoc day du o day, theo dung cac cot NOT NULL.
+     * (2) companyid la STRING, con guard tenant generic
+     * (CrudService.verifyTenantOwnership) chi doc object `company` ma UI
+     * (articleForm.vue) khong bao gio gui, nen save voi companyid cua
+     * tenant khac ghi thang dong vao tenant do; doi chieu companyid voi
+     * session tenant o nhanh create (nhanh update: mapper UPDATE khong bao
+     * gio ghi company_id, stored-row check generic bao ve dong da luu).
+     * (3) save voi id khong ton tai -> 400 (pre: 500 BindingException vi
+     * Article.xml khong co statement `get`, dong thoi lam chet MOI
+     * save-update; them `get` vao Article.xml de stored-row check generic
+     * chay duoc). auditstatus null -> mac dinh "0" theo DB default (mapper
+     * INSERT truyen NULL tuong minh nen default DB khong bao gio ap dung;
+     * UI cung gui "0").
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public article save(article entity) {
+        if (entity == null) {
+            throw new ServiceException("Dữ liệu bài viết không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getId())) {
+            if (StringUtils.isBlank(entity.getCompanyid())) {
+                throw new ServiceException("Định danh phòng khám không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getUserid())) {
+                throw new ServiceException("Định danh người dùng không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getTitle())) {
+                throw new ServiceException("Tiêu đề không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getAbstracts())) {
+                throw new ServiceException("Tóm tắt không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getContent())) {
+                throw new ServiceException("Nội dung chính không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getUsername())) {
+                throw new ServiceException("Tên người phát hành không được để trống");
+            }
+            String tenantId = SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)
+                    && !tenantId.equals(entity.getCompanyid())) {
+                throw new ServiceException("Không có quyền truy cập tenant khác");
+            }
+            if (StringUtils.isBlank(entity.getAuditstatus())) {
+                entity.setAuditstatus("0");
+            }
+        } else {
+            if (articleDao.getArticleCompanyId(entity.getId()) == null) {
+                throw new ServiceException("Bài viết không tồn tại");
+            }
+        }
+        return super.save(entity);
+    }
+
     public Page<article> listPages(List<Parameter> params, int offset, int limit, String orderby) {
         ensureCompanyFilter(params);
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
