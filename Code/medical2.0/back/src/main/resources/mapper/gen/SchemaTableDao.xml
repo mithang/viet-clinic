@@ -16,7 +16,7 @@
             <include refid="schemaTableColumns"/>
         FROM information_schema.tables a
         <include refid="schemaTableJoins"/>
-        WHERE a.id = #{id}
+        WHERE a.table_name = #{id}
 			AND a.TABLE_SCHEMA = (select database())
     </select>
     

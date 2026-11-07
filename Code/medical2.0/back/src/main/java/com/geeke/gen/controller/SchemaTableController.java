@@ -53,27 +53,14 @@ public class SchemaTableController extends BaseController {
         }
         List<GenTable> result = schemaTableService.listAll(searchParams.getParams(), searchParams.getOrderby());
         return ResponseEntity.ok(ResultUtil.successJson(result));
-    }   
-
-    @PostMapping(value = "save")
-    public ResponseEntity<JSONObject> save(@RequestBody GenTable entity) {
-        if (!hasAnySessionPermission()) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
-                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
-        }
-    	String id = schemaTableService.save(entity).getId();
-        return ResponseEntity.ok(ResultUtil.successJson(id));
-    }
-  
-    @PostMapping(value = "delete")
-    public ResponseEntity<JSONObject> delete(@RequestBody GenTable entity) {
-        if (!hasAnySessionPermission()) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
-                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_502));
-        }
-        int rows = schemaTableService.delete(entity);
-        return ResponseEntity.ok(ResultUtil.successJson(rows));
     }
 
-	
+    // DS115 B: khong co endpoint save/delete -- day la trinh duyet
+    // READ-ONLY tren information_schema.tables (bang he thong chi doc
+    // cua MySQL): moi INSERT/UPDATE/DELETE deu loi, va DS94 chi map
+    // loi SQL do thanh 400 nen endpoint chet van tra 400 nhu loi
+    // dau vao. Khong co menu/router/frontend nao goi ghi o day;
+    // duong ghi dung cho bang code-gen la GenTableService (/gen/genTable,
+    // DS99 fail-closed). getById nhan TEN BANG lam id (identity that
+    // cua schema browser) vi information_schema.tables khong co cot id.
 }
