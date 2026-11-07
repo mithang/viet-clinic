@@ -88,6 +88,18 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (entity == null || StringUtils.isBlank(entity.getId())) {
             throw new ServiceException("Không xác định được lượt đăng ký cần xóa.");
         }
+        // DS134 C: ghost / da xoa mem (del_flag '1') -> 400 fail-closed
+        // (truoc day: ghost -> 200 data 0 im lang, xoa lan 2 -> 200 rows 1
+        // vi mapper soft-delete khong loc del_flag; CrudService chi
+        // check tenant tren stored row, stored null thi bo qua -- lop
+        // DS123). checkExists (DS103) KHONG tai dung: cho qua blank id,
+        // khong check delFlag. bulkDelete ghost CO TINH GIU 200 rows 0
+        // (DS99/DS106/DS126 B idempotency).
+        Registration stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Lượt đăng ký không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
         return super.delete(entity);
     }
 
