@@ -346,6 +346,31 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
         return super.bulkInsert(entitys);
     }
 
+    // DS129 C: single delete fail-closed 400 -- mau DrugService.delete.
+    // Truoc day delete ghost/blank deu 200 data 0 silent no-op (mapper
+    // UPDATE clinic_version SET del_flag='1' WHERE id, KHONG loc del_flag;
+    // probe DS129 C pre-fix 8/10). Chuoi guard tren role (DS120 B / N3b)
+    // KHONG chan duoc ghost/blank: getRoleIdById tra blank nen bo qua het,
+    // roi this.delete -> rows 0 -> 200. deleteClinic goi this.delete nen
+    // override nay bao ca duong controller duy nhat. dao.get KHONG loc
+    // del_flag nen tra ca dong da xoa mem, delFlag phan biet.
+    // Double-delete cua version CO role tu truoc da 400 nho guard xoa role
+    // DS123 (role da xoa mem); override nay dong lo o tang version, truoc
+    // moi buoc role. bulkDelete ghost GIU NGUYEN 200 rows 0 idempotent
+    // (DS99/DS106/DS126 B).
+    @Override
+    public int delete(ClinicVersion entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được phiên bản cần xóa.");
+        }
+        ClinicVersion stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Phiên bản không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     // DS120 B: deleteClinic truoc day tin roleId trong PAYLOAD, khong
     // phai dong da luu -- goi {id: version-cua-minh, roleId: role-nan-nhan}
     // tra 200 rows 1, xoa mem role nan nhan + xoa sach quyen cua no
