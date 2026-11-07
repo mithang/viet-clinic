@@ -146,6 +146,22 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         return super.save(medicalRecord);
     }
 
+    /**
+     * DS119 A: mapper <update id="delete"> co nhanh <otherwise> xoa mem
+     * theo registration_id khi id rong -- delete khong id + registration
+     * se xoa sach moi benh an cua luot kham. Chan o service: chi xoa
+     * khi co id; khong caller noi bo nao dung duong khong id (kiem tra
+     * 2026-11-07).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(MedicalRecord entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được bệnh án cần xóa.");
+        }
+        return super.delete(entity);
+    }
+
     @Transactional(readOnly = false)
     public MedicalRecord save(MedicalRecord medicalRecord,
                               MultipartFile[] fileIdUploads,

@@ -176,10 +176,16 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
     @Override
     @Transactional(readOnly = false)
     public int delete(TollDetail entity) {
-        // ITER63: kiểm tra phiếu cha đã lưu trước khi xóa.
-        if (entity != null) {
-            checkStoredTollTenant(entity.getId());
+        // DS119 A: mapper <update id="delete"> co nhanh <otherwise> xoa
+        // CUNG (DELETE FROM toll_detail) theo toll_id khi id rong --
+        // delete khong id + tollId se xoa sach moi dong cua phieu thu.
+        // Chan o service: chi xoa khi co id; khong caller noi bo nao
+        // dung duong khong id (kiem tra 2026-11-07).
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được chi tiết thu phí cần xóa.");
         }
+        // ITER63: kiểm tra phiếu cha đã lưu trước khi xóa.
+        checkStoredTollTenant(entity.getId());
         return super.delete(entity);
     }
 

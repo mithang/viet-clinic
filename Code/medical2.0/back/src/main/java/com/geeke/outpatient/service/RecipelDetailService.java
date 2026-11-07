@@ -74,6 +74,23 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         return super.save(entity);
     }
 
+    /**
+     * DS119 A: mapper <update id="delete"> co nhanh <otherwise> xoa mem
+     * theo recipel_info_id khi id rong -- delete khong id + recipelInfo
+     * se xoa sach moi dong cua don thuoc. Chan o service: chi xoa khi
+     * co id; khong caller noi bo nao dung duong khong id (kiem tra
+     * 2026-11-07). Mau guard giong Department/Role (DS50) va
+     * GenTableColumn (DS118).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(RecipelDetail entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được chi tiết đơn thuốc cần xóa.");
+        }
+        return super.delete(entity);
+    }
+
     // DS108 C3-C6/C10: bulkInsert truoc day de lo: null/rong roi xuong
     // MyBatis <foreach> rong -> 500 (hien tai global handler anh xa mot
     // so loi thanh 400, nhung van chan ro o service de hanh vi khong phu

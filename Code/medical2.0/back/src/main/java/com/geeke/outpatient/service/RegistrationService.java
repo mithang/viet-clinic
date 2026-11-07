@@ -5,6 +5,7 @@ import com.geeke.common.data.Page;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.service.MdRegistrationService;
 import com.geeke.outpatient.dao.MedicalRecordDao;
 import com.geeke.outpatient.dao.RecipelInfoDao;
@@ -72,6 +73,22 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             assignQueueNumber(entity);
         }
         return super.save(entity);
+    }
+
+    /**
+     * DS119 A: mapper <update id="delete"> co nhanh <otherwise> xoa mem
+     * theo patient_id khi id rong -- delete khong id + patientId se xoa
+     * sach moi luot dang ky cua benh nhan. Chan o service: chi xoa khi
+     * co id; khong caller noi bo nao dung duong khong id (kiem tra
+     * 2026-11-07).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Registration entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được lượt đăng ký cần xóa.");
+        }
+        return super.delete(entity);
     }
 
     private void assignQueueNumber(Registration entity) {
