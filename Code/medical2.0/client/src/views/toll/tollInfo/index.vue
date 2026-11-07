@@ -2315,7 +2315,7 @@
           this.ChineseUseOption = data;
           if (this.isSpecial) {
             this.ChineseUseOption = this.ChineseUseOption.filter(
-              (item) => item.name === "水冲"
+              (item) => item.value === "chineseMedicineRecipelUse_2"
             );
           }
         });

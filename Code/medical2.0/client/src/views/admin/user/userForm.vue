@@ -195,12 +195,12 @@
                 <el-option v-if="bizFormModel.userExt.jobType === 'Bác sĩ'" label="Y sĩ" value="235"></el-option>
 
                 <!-- Các lựa chọn liên quan đến dược sĩ -->
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ hành nghề" value="1"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ phụ trách" value="2.3"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ trưởng" value="2.1"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Phó dược sĩ trưởng" value="2.2"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược sĩ" value="2.4"></el-option>
-                <el-option v-if="bizFormModel.userExt.jobType === '药师'" label="Dược tá" value="2.5"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Dược sĩ'" label="Dược sĩ hành nghề" value="1"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Dược sĩ'" label="Dược sĩ phụ trách" value="2.3"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Dược sĩ'" label="Dược sĩ trưởng" value="2.1"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Dược sĩ'" label="Phó dược sĩ trưởng" value="2.2"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Dược sĩ'" label="Dược sĩ" value="2.4"></el-option>
+                <el-option v-if="bizFormModel.userExt.jobType === 'Dược sĩ'" label="Dược tá" value="2.5"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -209,7 +209,7 @@
           <el-col>
             <el-form-item label="Loại" prop="userExt.jobType">
               <el-radio v-model="bizFormModel.userExt.jobType" label="Bác sĩ">Bác sĩ</el-radio>
-              <el-radio v-model="bizFormModel.userExt.jobType" label="药师">Dược sĩ</el-radio>
+              <el-radio v-model="bizFormModel.userExt.jobType" label="Dược sĩ">Dược sĩ</el-radio>
               <el-radio v-model="bizFormModel.userExt.jobType" label="Điều dưỡng">Điều dưỡng</el-radio>
               <el-radio v-model="bizFormModel.userExt.jobType" label="Khác">Khác</el-radio>
             </el-form-item>

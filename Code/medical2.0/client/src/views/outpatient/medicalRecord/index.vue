@@ -183,7 +183,7 @@
               <el-col :span="7">
                 <el-form-item label="Loại điều trị" prop="treatType">
                   <el-radio-group v-model="BasicInfoModel.treatType">
-                    <el-radio label="初诊">Khám lần đầu</el-radio>
+                    <el-radio label="Khám lần đầu">Khám lần đầu</el-radio>
                     <el-radio label="Tái khám">Tái khám</el-radio>
                   </el-radio-group>
                 </el-form-item>
@@ -196,8 +196,8 @@
               <el-col :span="6">
                 <el-form-item label="Giới tính" prop="gender">
                   <el-radio-group v-model="BasicInfoModel.gender.name">
-                    <el-radio label="男">Nam</el-radio>
-                    <el-radio label="女">Nữ</el-radio>
+                    <el-radio label="Nam">Nam</el-radio>
+                    <el-radio label="Nữ">Nữ</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>

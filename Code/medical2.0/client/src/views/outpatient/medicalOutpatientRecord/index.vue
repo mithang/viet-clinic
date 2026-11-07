@@ -6582,7 +6582,7 @@
         getDictItemsByCode(DICT_CODE.CHINESE_MEDICINE_RECIPEL_USE).then((data) => {
           this.ChineseUseOption = data;
           if (this.isSpecial) {
-            this.ChineseUseOption = this.ChineseUseOption.filter((item) => item.name === "水冲");
+            this.ChineseUseOption = this.ChineseUseOption.filter((item) => item.value === "chineseMedicineRecipelUse_2");
           }
         });
         getDictItemsByCode(DICT_CODE.CHINESE_MEDICINE_RECIPEL_TAKE_FREQUENCY).then((data) => { this.FrequencyOption = data; });
@@ -7374,7 +7374,7 @@
           drugStuffId: drugStuff,
         };
 
-        if(row.itemName === '煎药费'){
+        if(['煎药费', 'Phí sắc thuốc'].includes(row.itemName)){
           let totalDosage = 0;
           this.medicalEditTabs.forEach(item => {
             totalDosage += Number(item.content.recipelInfo.dosage);

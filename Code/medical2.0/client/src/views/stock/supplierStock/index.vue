@@ -1610,7 +1610,7 @@ export default {
           this.ChineseUseOption = responseData.data;
           if (this.isSpecial) {
             this.ChineseUseOption = this.ChineseUseOption.filter(
-              (item) => item.name === "水冲"
+              (item) => item.value === "chineseMedicineRecipelUse_2"
             );
           }
         }else if (optionId === "1014474470772899985")
