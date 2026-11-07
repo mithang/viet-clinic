@@ -270,7 +270,37 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	 * @return
 	 */
 	public int bulkDelete(List<T> entitys) {
+		// DS126 B: fail-closed 400 for malformed lists (DS106/DS107
+		// pattern, now at the base so the 41 services with no bulkDelete
+		// override -- and every overrider that calls super -- are covered):
+		// - null/empty list used to reach dao.bulkDelete, where an empty
+		//   MyBatis <foreach> produced BadSqlGrammarException (mapped to
+		//   400 only by the DS94 handler, with a misleading sort/filter
+		//   message) or, where no bulkDelete mapper exists, a 500
+		//   BindingException (probe-proven on SysCollect).
+		// - a null element used to NPE at entity.preUpdate() below -> 500
+		//   (probe-proven on Clinic/CostItem/Patient).
+		// - a blank-id element used to return 200 rows 0, a silent no-op
+		//   (probe-proven; same class as DS123 single-delete blank -> 400).
+		// Deliberately UNCHANGED: a ghost id still returns 200 rows 0
+		// (idempotent by design, DS99 G11 / DS106 -- the tenant checks
+		// below skip a null stored row on purpose). The loop still runs
+		// before dao.bulkDelete, so a throw writes nothing. No internal
+		// service-level caller passes null/blank-id entities: the only
+		// one, ClinicVersionService.bulkDeleteClinic, already rejects
+		// null/blank ids first; UserService/DepartmentService have custom
+		// bulkDelete implementations that do not call super; DAO-level
+		// bulkDelete calls are unaffected.
+		if (entitys == null || entitys.isEmpty()) {
+			throw new ServiceException("Danh sách xóa không được để trống");
+		}
 		for(T entity: entitys) {
+			if (entity == null) {
+				throw new ServiceException("Dòng xóa không được để trống");
+			}
+			if (StringUtils.isBlank(entity.getId())) {
+				throw new ServiceException("Dòng xóa không xác định được id cần xóa");
+			}
 			verifyTenantOwnership(entity);
 			// ITER35 M2: stored-row cross-check (same as M1 bulkUpdate).
 			// A mixed list [own, foreign] previously returned 200 and

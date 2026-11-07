@@ -138,4 +138,24 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
         List<SysCollect> sysCollectList = sysCollectDao.listAllByUserId(userId);
         return sysCollectList != null ? sysCollectList : new ArrayList<>();
     }
+
+    /**
+     * DS126 B: bulkDelete fail-closed 400. SysCollectDao.xml has NO
+     * bulkDelete statement (DS121 noted "bulk* untouched, 500 with no
+     * write"), so the generic CrudController endpoint always died with
+     * a 500 BindingException for ANY list -- probe-proven in
+     * tools/ds126b-verify.py ([], [blank-id], [ghost] all 500). There
+     * is no UI bulk-delete path for favourites (the UI removes one
+     * favourite at a time via the single delete, DS121), and no
+     * internal caller uses bulkDelete on this service, so fail closed
+     * with a clear 400 instead of a 500 (SysSeting /
+     * MedicinalStockRecord precedent). The base CrudService.bulkDelete
+     * guard (DS126 B) would only fix the null/empty cases; the throw
+     * here covers every list.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<SysCollect> entitys) {
+        throw new ServiceException("Mục yêu thích không hỗ trợ xóa hàng loạt!");
+    }
 }
