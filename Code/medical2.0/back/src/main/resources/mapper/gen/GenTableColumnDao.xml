@@ -423,5 +423,11 @@
             #{entity.id}
         </foreach>
     </update>
-    
+
+    <!-- DS118 C: dem bang gen_table ton tai, phuc vu guard fail-closed
+         o save (khong co FK tren gen_table_id). -->
+    <select id="countGenTableById" resultType="int">
+        SELECT COUNT(*) FROM gen_table WHERE id = #{id}
+    </select>
+
 </mapper>
