@@ -150,6 +150,26 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         return stuffTemp;
     }
 
+    // DS125 A: single delete fail-closed 400 (mau DS123/DS124) -- truoc day
+    // delete id ma / dong da xoa mem deu 200 silent (CrudService.delete chi
+    // chan qua stored-row tenant check ma check do bo qua stored==null;
+    // mapper delete khong loc del_flag nen double-delete tra 200 rows=1).
+    // Kiem tra ton tai + con live (del_flag='0') truoc moi xoa; khong co
+    // caller noi bo nao goi delete() cua service nay.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Stuff stuff) {
+        if (stuff == null || StringUtils.isBlank(stuff.getId())) {
+            throw new ServiceException("Không xác định được vật tư cần xóa.");
+        }
+        Stuff stored = stuffDao.get(stuff.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Vật tư không tồn tại: " + stuff.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(stuff);
+        return super.delete(stuff);
+    }
+
     // DS105 B3-B8/B10-B12: bulkInsert/bulkUpdate/bulkDelete generic truoc
     // day de lo: null/rong roi xuong MyBatis <foreach> rong -> 500 SQL
     // syntax, thieu truong NOT NULL (name/pinyin_code) -> 500

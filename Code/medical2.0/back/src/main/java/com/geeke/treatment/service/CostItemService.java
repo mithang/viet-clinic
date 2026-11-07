@@ -75,6 +75,26 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         return costItemTemp;
     }
 
+    // DS125 A: single delete fail-closed 400 (mau DS123/DS124) -- truoc day
+    // delete id ma / dong da xoa mem deu 200 silent (CrudService.delete chi
+    // chan qua stored-row tenant check ma check do bo qua stored==null;
+    // mapper delete khong loc del_flag nen double-delete tra 200 rows=1).
+    // Kiem tra ton tai + con live (del_flag='0') truoc moi xoa; khong co
+    // caller noi bo nao goi delete() cua service nay.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(CostItem costItem) {
+        if (costItem == null || StringUtils.isBlank(costItem.getId())) {
+            throw new ServiceException("Không xác định được hạng mục cần xóa.");
+        }
+        CostItem stored = dao.get(costItem.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Hạng mục không tồn tại: " + costItem.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(costItem);
+        return super.delete(costItem);
+    }
+
     @Transactional(readOnly = true)
     public List<MedicalProject> listPageForMedical(List<Parameter> parameters, String orderby) {
         // ITER65 item 4: tenant guard kieu W2 cho duong listForMedical (probe-proven:

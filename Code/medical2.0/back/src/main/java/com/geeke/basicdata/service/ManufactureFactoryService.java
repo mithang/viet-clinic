@@ -70,6 +70,26 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
         return manufactureFactoryTemp;
     }
 
+    // DS125 A: single delete fail-closed 400 (mau DS123/DS124) -- truoc day
+    // delete id ma / dong da xoa mem deu 200 silent (CrudService.delete chi
+    // chan qua stored-row tenant check ma check do bo qua stored==null;
+    // mapper delete khong loc del_flag nen double-delete tra 200 rows=1).
+    // Kiem tra ton tai + con live (del_flag='0') truoc moi xoa; khong co
+    // caller noi bo nao goi delete() cua service nay.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(ManufactureFactory manufactureFactory) {
+        if (manufactureFactory == null || StringUtils.isBlank(manufactureFactory.getId())) {
+            throw new ServiceException("Không xác định được nhà sản xuất cần xóa.");
+        }
+        ManufactureFactory stored = manufactureFactoryDao.get(manufactureFactory.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Nhà sản xuất không tồn tại: " + manufactureFactory.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(manufactureFactory);
+        return super.delete(manufactureFactory);
+    }
+
     // DS105 A3-A8/A10-A12: bulkInsert/bulkUpdate/bulkDelete generic truoc
     // day de lo: null/rong roi xuong MyBatis <foreach> rong -> 500 SQL
     // syntax, thieu truong NOT NULL (name/type) -> 500
