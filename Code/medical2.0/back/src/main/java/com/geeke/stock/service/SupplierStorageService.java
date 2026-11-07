@@ -6,6 +6,7 @@ import com.geeke.common.data.Page;
 import com.geeke.common.service.ServiceException;
 import com.geeke.common.sequence.service.SequenceService;
 import com.geeke.common.service.CrudService;
+import com.geeke.org.entity.Company;
 import com.geeke.stock.dao.SupplierStorageDao;
 import com.geeke.stock.entity.SupplierStock;
 import com.geeke.stock.entity.SupplierStorage;
@@ -47,6 +48,13 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     @Override
     @Transactional(readOnly = false)
     public SupplierStorage save(SupplierStorage supplierStorage) {
+        // DS122 B: id khong ton tai truoc day roi qua super.save -> doUpdate
+        // 0 dong roi van 200 silent no-op (lop DS94/DS99); chan truoc moi ghi.
+        if (StringUtils.isNotBlank(supplierStorage.getId())
+                && this.get(supplierStorage.getId()) == null) {
+            throw new ServiceException("Phiếu nhập kho không tồn tại: "
+                    + supplierStorage.getId());
+        }
         // Khi thêm mới, Xử lý trường tự động đánh số
         supplierStorage.setCreateDate(new Date());
         if (StringUtils.isBlank(supplierStorage.getId())){
@@ -55,6 +63,74 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         }
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
+    }
+
+    /**
+     * DS122 B: bulk* fail-closed 400. bulkInsert/bulkUpdate khong qua
+     * save() nen khong co @Valid (CrudController bulk* khong @Valid):
+     * dong thieu supplier -> 500 NOT NULL (supplier_id NOT NULL),
+     * id ma -> 200 silent no-op, [null] -> NPE 500. Validate toan bo list
+     * truoc moi ghi: null/empty/[null] -> 400; supplier (bat buoc tren
+     * entity) -> 400; bulkUpdate/bulkDelete id khong ton tai -> 400
+     * (kiem tra stored-row tenant). Company rong -> ep theo session
+     * (mau BookingRequest); company la de guard generic cua
+     * super.bulk* chan 400.
+     */
+    private void checkSupplierStorageRequired(SupplierStorage entity) {
+        if (entity == null) {
+            throw new ServiceException("Phiếu nhập kho không được để trống");
+        }
+        if (entity.getSupplier() == null
+                || StringUtils.isBlank(entity.getSupplier().getId())) {
+            throw new ServiceException("Nhà cung cấp không được để trống");
+        }
+    }
+
+    private void forceSessionCompanyWhenBlank(SupplierStorage entity) {
+        if (entity.getCompany() != null
+                && StringUtils.isNotBlank(entity.getCompany().getId())) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        Company company = new Company();
+        company.setId(tenantId);
+        entity.setCompany(company);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<SupplierStorage> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu nhập kho không được để trống");
+        }
+        for (SupplierStorage entity : entitys) {
+            checkSupplierStorageRequired(entity);
+            forceSessionCompanyWhenBlank(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<SupplierStorage> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu nhập kho không được để trống");
+        }
+        for (SupplierStorage entity : entitys) {
+            if (entity == null || StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Phiếu nhập kho không được để trống");
+            }
+            if (this.get(entity.getId()) == null) {
+                throw new ServiceException("Phiếu nhập kho không tồn tại: "
+                        + entity.getId());
+            }
+            verifyTenantOwnershipAgainstStoredRow(entity);
+            checkSupplierStorageRequired(entity);
+        }
+        return super.bulkUpdate(entitys);
     }
 
     /**
@@ -85,15 +161,24 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<SupplierStorage> entitys) {
-        if (entitys != null) {
-            for (SupplierStorage entity : entitys) {
-                if (entity != null && StringUtils.isNotBlank(entity.getId())) {
-                    SupplierStorage stored = this.get(entity.getId());
-                    if (stored != null && (stored.getExamine() == null
-                            || !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(stored.getExamine().getValue()))) {
-                        throw new ServiceException("Phiếu nhập kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu nhập kho trước.");
-                    }
-                }
+        // DS122 B: null/empty/[null]/id rong/id ma -> 400 truoc moi ghi
+        // (truoc day id ma roi qua super.bulkDelete -> 0 dong roi van 200).
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu nhập kho không được để trống");
+        }
+        for (SupplierStorage entity : entitys) {
+            if (entity == null || StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Phiếu nhập kho không được để trống");
+            }
+            SupplierStorage stored = this.get(entity.getId());
+            if (stored == null) {
+                throw new ServiceException("Phiếu nhập kho không tồn tại: "
+                        + entity.getId());
+            }
+            verifyTenantOwnershipAgainstStoredRow(entity);
+            if (stored.getExamine() == null
+                    || !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(stored.getExamine().getValue())) {
+                throw new ServiceException("Phiếu nhập kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu nhập kho trước.");
             }
         }
         return super.bulkDelete(entitys);
