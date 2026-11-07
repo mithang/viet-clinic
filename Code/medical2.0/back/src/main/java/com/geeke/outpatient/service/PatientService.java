@@ -50,6 +50,24 @@ public class PatientService extends CrudService<PatientDao, Patient>{
     @Override
     @Transactional(readOnly = false)
     public Patient save(Patient patient) {
+        // DS127 C: save ghost id fail-closed 400 (DS94/DS120 class).
+        // Truoc day id la roi thang vao CrudService.save -> doUpdate 0
+        // dong -> 200 silent no-op (probe C1). Chi chap nhan update khi
+        // dong da ton tai (dao.get chi LEFT JOIN nen khong tra null oan
+        // nhu get() cua Review); insert (id rong) giu nguyen. Dat truoc
+        // cac guard trung SDT/CCCD vi chung deref getCompany().getId().
+        // Caller noi bo (MedicalRecordService saveAllRecordInfo /
+        // reception, TollInfoService processRetailCharge) chi gui id
+        // rong (benh nhan moi) hoac id dong da ton tai; nhanh ghost o
+        // processRetailCharge truoc day von chi la silent no-op vi
+        // CrudService.save khong upsert, nay 400 ro rang thay vi lang.
+        if (patient == null) {
+            throw new ServiceException("Thông tin bệnh nhân không được để trống");
+        }
+        if (patient.getId() != null && !patient.getId().trim().isEmpty()
+                && this.dao.get(patient.getId()) == null) {
+            throw new ServiceException("Bệnh nhân không tồn tại: " + patient.getId());
+        }
         Map<String, String> colMaps = Maps.newHashMap();
         // Thông tin liên hệ của bệnh nhân đã tồn tại
         colMaps.clear();
@@ -165,6 +183,75 @@ public class PatientService extends CrudService<PatientDao, Patient>{
     @Transactional(readOnly = false)
     public Patient saveSuper(Patient patient) {
         return super.save(patient);
+    }
+
+    /**
+     * DS127 C: bulkInsert/bulkUpdate fail-closed 400 (DS94/DS120 class).
+     * Duong bulk bypass @Valid nen cac truong @NotNull cua Patient
+     * (DS79: name/gender/age/month/phone/card) phai kiem tra tay o day:
+     * bulkInsert thieu name truoc day 500 NOT NULL o mapper (probe C5),
+     * [null] NPE 500 o preInsert (C4). bulkUpdate ghost id 200 silent,
+     * mixed ghi mot phan (C6/C7). Tien kiem TOAN BO list truoc khi ghi
+     * dong nao. null/[] giu 400 nhu hien co (C2/C3/C8/C9). Delete KHONG
+     * dung toi: delete ghost giu 200 rows 0 theo parity DS123 (C15).
+     * Khong them guard trung SDT/CCCD vao bulk — ngoai pham vi probe,
+     * duong bulk hien khong co guard do.
+     */
+    private void validateRequiredForBulk(Patient patient) {
+        if (patient == null) {
+            throw new ServiceException("Thông tin bệnh nhân không được để trống");
+        }
+        if (patient.getName() == null || patient.getName().trim().isEmpty()) {
+            throw new ServiceException("Tên bệnh nhân không được để trống");
+        }
+        if (patient.getGender() == null || patient.getGender().getValue() == null
+                || patient.getGender().getValue().trim().isEmpty()) {
+            throw new ServiceException("Giới tính không được để trống");
+        }
+        if (patient.getAge() == null || patient.getAge().trim().isEmpty()) {
+            throw new ServiceException("Tuổi không được để trống");
+        }
+        if (patient.getMonth() == null || patient.getMonth().trim().isEmpty()) {
+            throw new ServiceException("Tháng không được để trống");
+        }
+        if (patient.getPhone() == null || patient.getPhone().trim().isEmpty()) {
+            throw new ServiceException("Số điện thoại liên hệ không được để trống");
+        }
+        if (patient.getCard() == null || patient.getCard().trim().isEmpty()) {
+            throw new ServiceException("Số CMND/CCCD không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Patient> entitys) {
+        if (CollectionUtils.isEmpty(entitys)) {
+            throw new ServiceException("Danh sách bệnh nhân thêm mới không được để trống");
+        }
+        for (Patient entity : entitys) {
+            validateRequiredForBulk(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Patient> entitys) {
+        if (CollectionUtils.isEmpty(entitys)) {
+            throw new ServiceException("Danh sách bệnh nhân cập nhật không được để trống");
+        }
+        for (Patient entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Thông tin bệnh nhân không được để trống");
+            }
+            if (entity.getId() == null || entity.getId().trim().isEmpty()) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của bệnh nhân đã tồn tại");
+            }
+            if (this.dao.get(entity.getId()) == null) {
+                throw new ServiceException("Bệnh nhân không tồn tại: " + entity.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
     }
 
     public Patient getPatientByPhone(String phoneNumber){
