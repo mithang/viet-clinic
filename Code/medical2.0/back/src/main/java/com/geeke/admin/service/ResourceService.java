@@ -110,6 +110,19 @@ public class ResourceService extends CrudService<ResourceDao, Resource>{
         if (entity == null || StringUtils.isBlank(entity.getId())) {
             throw new ServiceException("Không xác định được tài nguyên cần xóa.");
         }
+        // DS131 A: blank da 400 (DS119 B) nhung ghost id van lot qua
+        // super.delete -> 200 rows 0 im lang, xoa lap 200 rows 1 (mapper
+        // soft-delete khong loc del_flag) -- cung lop DS123/DS129/DS130.
+        // Chan truoc bang dao.get (khong loc del_flag nen tra ca dong da
+        // xoa mem, delFlag phan biet) theo mau CodeRuleService.delete
+        // (DS129 A); KHONG tai dung checkExists (DS103): no cho qua blank
+        // va khong check delFlag, lai dung chung voi save/bulkUpdate.
+        // bulkDelete ghost GIU NGUYEN 200 rows 0 (DS99/DS106/DS126 B).
+        Resource stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Tài nguyên không tồn tại: "
+                    + entity.getId());
+        }
         return super.delete(entity);
     }
 
