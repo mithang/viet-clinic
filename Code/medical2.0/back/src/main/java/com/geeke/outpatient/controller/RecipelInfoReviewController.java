@@ -312,6 +312,12 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
         if (!hasAnySessionPermission()) { return forbidden(); }
         if (CollectionUtil.isNotEmpty(entitys)) {
             for (RecipelInfoReview e : entitys) {
+                // DS127 B: phan tu null truoc day NPE 500 o e.getId()
+                // (guard DS126 B o base khong bao gio toi vi vong lap
+                // nay chay truoc) — 400 fail-closed.
+                if (e == null) {
+                    throw new ServiceException("Danh sách rà soát đơn thuốc không được chứa phần tử trống");
+                }
                 if (isForeignReview(e.getId()) || isForeignRecipel(e)) {
                     return forbidden();
                 }
@@ -326,6 +332,10 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
         if (!hasAnySessionPermission()) { return forbidden(); }
         if (CollectionUtil.isNotEmpty(entitys)) {
             for (RecipelInfoReview e : entitys) {
+                // DS127 B: nhu bulkInsert — phan tu null NPE 500 o e.getId().
+                if (e == null) {
+                    throw new ServiceException("Danh sách rà soát đơn thuốc không được chứa phần tử trống");
+                }
                 if (isForeignReview(e.getId()) || isForeignRecipel(e)) {
                     return forbidden();
                 }
@@ -340,6 +350,12 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
         if (!hasAnySessionPermission()) { return forbidden(); }
         if (CollectionUtil.isNotEmpty(entitys)) {
             for (RecipelInfoReview e : entitys) {
+                // DS127 B: phan tu null truoc day NPE 500 o e.getId()
+                // (probe B10; guard DS126 B o base khong toi vi vong
+                // lap nay chay truoc) — 400 fail-closed.
+                if (e == null) {
+                    throw new ServiceException("Danh sách rà soát đơn thuốc không được chứa phần tử trống");
+                }
                 if (isForeignReview(e.getId())) {
                     return forbidden();
                 }

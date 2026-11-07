@@ -8,6 +8,7 @@ import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.outpatient.dao.RecipelInfoReviewDao;
 import com.geeke.outpatient.entity.*;
 import com.geeke.outpatient.vo.PrescriptionStatisticsVO;
@@ -61,6 +62,76 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
     /** N1: recipel_info_id của stored review row (lookup trực tiếp một cột). */
     public String getRecipelInfoIdByReviewId(String reviewId) {
         return this.recipelInfoReviewDao.getRecipelInfoIdByReviewId(reviewId);
+    }
+
+    /**
+     * DS127 B: save/bulkInsert/bulkUpdate fail-closed 400 (DS94/DS120
+     * class). Guard tenant hien co (N1) khong chan duoc id la: lookup
+     * tra null thi cho qua, nen save voi id la roi thang vao
+     * CrudService.save -> doUpdate 0 dong -> 200 silent no-op
+     * (probe B1); saveList goi thang service.save tung dong nen cung
+     * lo (B11). Chi chap nhan update khi dong da ton tai, kiem tra
+     * bang getRecipelInfoIdByReviewId truc tiep (cot recipel_info_id
+     * NOT NULL nen lookup null dong nghia dong khong ton tai); insert
+     * (id rong) giu nguyen. bulkInsert: null/[]/[null] -> 400 (mau
+     * DS120; truoc day [null] NPE 500 o vong lap controller va o
+     * CrudService.bulkInsert), thieu recipelInfo -> 400 thay vi 500
+     * NOT NULL o mapper (B5; bulk bypass @Valid, chi FK don moi co
+     * the 500 vi entity defaults cover reviewResult/reviewerName/
+     * reviewStatus). bulkUpdate: null/[]/[null]/id rong/id la -> 400,
+     * tien kiem TOAN BO list truoc khi ghi dong nao (B6/B7: truoc day
+     * ghost 200 silent, mixed ghi mot phan). Delete KHONG dung toi:
+     * delete ghost giu 200 rows 0 theo parity DS123 (probe B16).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public RecipelInfoReview save(RecipelInfoReview entity) {
+        if (ObjectUtil.isNull(entity)) {
+            throw new ServiceException("Rà soát đơn thuốc không được để trống");
+        }
+        if (StrUtil.isNotBlank(entity.getId())
+                && StrUtil.isBlank(getRecipelInfoIdByReviewId(entity.getId()))) {
+            throw new ServiceException("Rà soát đơn thuốc không tồn tại: " + entity.getId());
+        }
+        return super.save(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<RecipelInfoReview> entitys) {
+        if (CollUtil.isEmpty(entitys)) {
+            throw new ServiceException("Danh sách rà soát đơn thuốc thêm mới không được để trống");
+        }
+        for (RecipelInfoReview entity : entitys) {
+            if (ObjectUtil.isNull(entity)) {
+                throw new ServiceException("Rà soát đơn thuốc không được để trống");
+            }
+            if (entity.getRecipelInfo() == null
+                    || StrUtil.isBlank(entity.getRecipelInfo().getId())) {
+                throw new ServiceException("Rà soát đơn thuốc phải gắn với một đơn thuốc");
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<RecipelInfoReview> entitys) {
+        if (CollUtil.isEmpty(entitys)) {
+            throw new ServiceException("Danh sách rà soát đơn thuốc cập nhật không được để trống");
+        }
+        for (RecipelInfoReview entity : entitys) {
+            if (ObjectUtil.isNull(entity)) {
+                throw new ServiceException("Rà soát đơn thuốc không được để trống");
+            }
+            if (StrUtil.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của rà soát đơn thuốc đã tồn tại");
+            }
+            if (StrUtil.isBlank(getRecipelInfoIdByReviewId(entity.getId()))) {
+                throw new ServiceException("Rà soát đơn thuốc không tồn tại: " + entity.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
     }
 
     public ReviewVO reviewForm(String recipelInfoId) {
