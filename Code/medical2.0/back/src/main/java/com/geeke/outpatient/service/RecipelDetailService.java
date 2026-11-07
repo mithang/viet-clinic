@@ -218,6 +218,18 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
 
     @Transactional(readOnly = false)
     public void updateById(BigDecimal executions, String id, String stuffType, int infuseType, String cureId){
+        // DS111: fail-closed 400 thay vi NPE 500 — (a) id khong ton tai
+        // (nhanh thuong khong co guard i>0 nhu nhanh "3"; service save
+        // DS109 da chan ghost id truoc khi toi day, day la phong thu
+        // them), (b) dong detail luu recipel_info_id NULL (cot nullable,
+        // khong @NotNull; service save chi kiem tra info id trong payload,
+        // khong kiem tra dong da luu) — ca hai deu NPE o
+        // dao.get(id).getRecipelInfo().getId() (:225/:274).
+        RecipelDetail target = this.dao.get(id);
+        if (target == null || target.getRecipelInfo() == null) {
+            throw new ServiceException("Chi tiết đơn thuốc không tồn tại hoặc thiếu đơn thuốc: "
+                    + id);
+        }
         if("3".equals(stuffType)){
             int i = recipelDetailDao.updateById(executions, id,0);
             if(i>0){
@@ -227,7 +239,16 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                 if(recipelDetails!=null){
                     for (RecipelDetail recipelDetail1:
                             recipelDetails) {
-                        if(recipelDetail1.getTotal().equals(recipelDetail1.getExecutions())){
+                        // DS111: total/executions nullable (cot DB nullable;
+                        // total khong @NotNull) — dong null coi nhu chua hoan
+                        // thanh, khong NPE. GIU NGUYEN ngu nghia hien tai:
+                        // Integer.equals(BigDecimal) von luon false nen count
+                        // khong doi voi cap non-null; khong doi thanh so
+                        // sanh gia tri (do la thay doi hanh vi hoan thanh
+                        // don, can quyet dinh lam sang — xem bao cao DS111).
+                        if(recipelDetail1.getTotal() != null
+                                && recipelDetail1.getExecutions() != null
+                                && recipelDetail1.getTotal().equals(recipelDetail1.getExecutions())){
                             count++;
                         }
                     }
@@ -288,7 +309,17 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             if(recipelDetails2!=null){
                 for (RecipelDetail recipelDetail1:
                         recipelDetails2) {
-                    if(recipelDetail1.getDays().getName()==recipelDetail1.getExecutions().toString()){
+                    // DS111: executions nullable (44 dong live NULL; chi
+                    // dong cung infuseGroup duoc set o vong tren) va days co
+                    // the null — dong null coi nhu chua hoan thanh, khong
+                    // NPE. GIU NGUYEN phep so sanh == hien tai (khong doi
+                    // thanh equals — thay doi hanh vi hoan thanh don, can
+                    // quyet dinh lam sang; xem bao cao DS111).
+                    String daysName = recipelDetail1.getDays() == null
+                            ? null : recipelDetail1.getDays().getName();
+                    String execStr = recipelDetail1.getExecutions() == null
+                            ? null : recipelDetail1.getExecutions().toString();
+                    if(daysName != null && execStr != null && daysName == execStr){
                         count++;
                     }
                 }
