@@ -127,6 +127,22 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     @Override
     @Transactional(readOnly = false)
     public int delete(FollowupReminder entity) {
+        // DS130 B: checkRowOwnership cho qua im lang id trong/ghost
+        // (getCompanyIdById tra blank) nen ghost delete 200 rows 0 im
+        // lang, blank 200, xoa lap 200 rows 1 (mapper soft-delete khong
+        // loc del_flag) -- cung lop DS123/DS129. Chan truoc bang
+        // dao.get (khong loc del_flag nen tra ca dong da xoa mem,
+        // delFlag phan biet) theo mau CodeRuleService.delete (DS129 A);
+        // KHONG tai dung checkExists o day: no cho qua blank va khong
+        // check delFlag, lai dung chung voi save/bulkUpdate; giu
+        // checkRowOwnership sau do (dong live la tenant van 403).
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được nhắc lịch tái khám cần xóa.");
+        }
+        FollowupReminder stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Nhắc lịch tái khám không tồn tại: " + entity.getId());
+        }
         checkRowOwnership(entity.getId());
         return super.delete(entity);
     }
