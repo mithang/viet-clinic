@@ -96,6 +96,23 @@ public class ResourceService extends CrudService<ResourceDao, Resource>{
         return super.bulkDelete(entitys);
     }
 
+    /**
+     * DS119 B: mapper <update id="delete"> co nhanh <otherwise> xoa mem
+     * theo router_id khi id rong -- delete khong id + router se xoa
+     * sach moi resource cua router do. Chan o service: chi xoa khi co
+     * id; khong caller noi bo nao goi save/delete/bulk* cua service nay
+     * (chi PermissionController doc listAllByVersion/listAll), nen khoa
+     * o service la du va khong vo luong noi bo.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Resource entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được tài nguyên cần xóa.");
+        }
+        return super.delete(entity);
+    }
+
     private void checkResourceRequired(Resource entity) {
         if (entity == null) {
             throw new ServiceException("Tài nguyên không được để trống");

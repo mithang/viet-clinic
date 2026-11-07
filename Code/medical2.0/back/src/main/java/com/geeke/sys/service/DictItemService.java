@@ -153,6 +153,16 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
         @CacheEvict(value = "dict:itemsByCode", allEntries = true)
     })
     public int delete(DictItem entity) {
+        // DS119 B: mapper <update id="delete"> co nhanh <otherwise> xoa
+        // mem theo dict_type_id khi id rong -- delete khong id + dictType
+        // se xoa sach moi muc cua loai tu dien (DS41 da probe-proven
+        // wipe, luc do chi sua loi audit 500, wipe van mo). Chan o
+        // service: chi xoa khi co id. DictTypeService.delete xoa muc con
+        // DAO-truc-tiep (dictItemDao.bulkDelete theo id that) nen khong
+        // bi anh huong; khong caller noi bo nao dung duong khong id.
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new com.geeke.common.service.ServiceException("Không xác định được mục từ điển cần xóa.");
+        }
         return super.delete(entity);
     }
 
