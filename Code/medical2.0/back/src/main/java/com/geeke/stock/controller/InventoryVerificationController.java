@@ -44,6 +44,13 @@ public class InventoryVerificationController extends CrudController<InventoryVer
     @PostMapping(value = "delete")
     public ResponseEntity<JSONObject> delete(@RequestBody InventoryVerification entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        // DS116 B: the generic CrudController.delete null-checks the body
+        // (400); this override did not -- a null body reached
+        // service.delete(null) and NPEd 500. (Spring already 400s a JSON
+        // null body before the controller runs; this is parity/defence.)
+        if (entity == null) {
+            return ResponseEntity.ok(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+        }
         int rows = inventoryVerificationService.delete(entity);
         if(rows>0){
             inventoryVerificationDetailService.deleteByInventoryVerificationId(entity.getId());

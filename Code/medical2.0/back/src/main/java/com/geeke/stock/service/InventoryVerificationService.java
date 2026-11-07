@@ -70,6 +70,86 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
     @Autowired
     private MedicinalStockRecordService medicinalStockRecordService;
 
+    // DS116 B: generic save/bulk* had no overrides (CrudService only), so
+    // the CrudController surface at /stock/inventoryVerification failed
+    // open: save with a nonexistent id returned 200 silent no-op,
+    // bulkInsert/bulkUpdate [null] NPEd 500, bulk rows missing a NOT NULL
+    // column 500d (bulk bypasses @Valid), bulkUpdate with a nonexistent
+    // id silently updated 0 rows 200. Validate the DB NOT NULL columns
+    // here (code, status); type/company are nullable in the DB and the
+    // custom save(type, variety) path sets them itself, so they are not
+    // required. No internal caller omits code/status: generic save/bulk
+    // are only reached via the controller, and the custom save() below
+    // sets code (sequence) + status '0' before calling super.save.
+    private void validateRequired(InventoryVerification entity) {
+        if (entity == null) {
+            throw new ServiceException("Phiếu kiểm kê không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getCode())) {
+            throw new ServiceException("Số phiếu kiểm kê không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getStatus())) {
+            throw new ServiceException("Trạng thái kiểm kê không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public InventoryVerification save(InventoryVerification entity) {
+        validateRequired(entity);
+        if (StringUtils.isNotBlank(entity.getId())
+                && dao.get(entity.getId()) == null) {
+            throw new ServiceException("Phiếu kiểm kê không tồn tại: "
+                    + entity.getId());
+        }
+        return super.save(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<InventoryVerification> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu kiểm kê thêm mới không được để trống");
+        }
+        for (InventoryVerification entity : entitys) {
+            validateRequired(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<InventoryVerification> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu kiểm kê cập nhật không được để trống");
+        }
+        for (InventoryVerification entity : entitys) {
+            validateRequired(entity);
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của phiếu kiểm kê đã tồn tại");
+            }
+            if (dao.get(entity.getId()) == null) {
+                throw new ServiceException("Phiếu kiểm kê không tồn tại: "
+                        + entity.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<InventoryVerification> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu kiểm kê xóa không được để trống");
+        }
+        for (InventoryVerification entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Phiếu kiểm kê xóa không được để trống");
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
+
     /** L1 (iteration 34): doc phieu goc khong qua san tenant, de ben goi tu
      * kiem tra chu so huu theo dong DB truoc khi ghi tong tien. */
     public InventoryVerification getRaw(String id) {
@@ -143,6 +223,12 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
 
     @Transactional(readOnly = false)
     public InventoryVerification accomplishInventoryVerification(InventoryVerification inventoryVerification) {
+        // DS116 B: null entity NPEd at getId() below. (A JSON-null body
+        // is already 400d by Spring before reaching here; this guard is
+        // defence in depth for direct/service callers.)
+        if (inventoryVerification == null) {
+            throw new ServiceException("Phiếu kiểm kê không được để trống");
+        }
         // N2 (iteration 61): guard tenant TRUOC DAO update, vi DAO update chi
         // WHERE id (khong dieu kien company) va la lenh dau tien cua method —
         // guard sau khong cuu duoc status da lat neu adjustStock loi sau do.
