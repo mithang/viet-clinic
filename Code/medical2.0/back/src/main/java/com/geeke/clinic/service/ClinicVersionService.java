@@ -187,6 +187,11 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
         return clinicVersionDao.listAll(pageRequest);
     }
     public ClinicVersion save(ClinicVersion entity) {
+        // DS120 B: code trung lap truoc day roi xuong doInsert -> 500 UNIQUE
+        // (code co UNI index), sau khi roleService.save da tao role moi
+        // (duoc rollback nho @Transactional cap class, nhung van la 500
+        // thay vi 400 ro nghia). Kiem tra TRUOC moi ghi, ca 2 nhanh.
+        checkDuplicateCode(entity.getCode(), entity.getId());
         Role role = new Role();
         role.setName(entity.getName());
         role.setCode(entity.getCode());
@@ -239,14 +244,64 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
     // only name/price/description/remarks). Pre-check every row
     // with the N3b read guard before any write (whole list fails
     // closed, N1 pattern). Shared rows pass, as for reads.
+    // DS120 B: them fail-closed 400 -- null/rong/[null] -> 400 (truoc
+    // day null NPE 500 o super.bulkUpdate, [] 500 o foreach rong),
+    // id khong ton tai -> 400 (truoc day 200 silent, checkVersionReadTenant
+    // bo qua khi stored lookup tra null), thieu name/price/code -> 400
+    // (truoc day 500 NOT NULL vi bulk khong qua @Valid), doi code sang
+    // code cua dong khac -> 400 (truoc day 500 UNIQUE). Kiem tra truoc
+    // moi ghi de batch hon hop khong doi dong hop le.
     @Override
     public List<String> bulkUpdate(List<ClinicVersion> entitys) {
-        if (entitys != null) {
-            for (ClinicVersion entity : entitys) {
-                checkVersionReadTenant(entity.getId());
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiên bản không được để trống");
+        }
+        for (ClinicVersion entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Phiên bản không được để trống");
             }
+            checkVersionReadTenant(entity.getId());
+            if (StringUtils.isNotBlank(entity.getId())
+                    && dao.get(entity.getId()) == null) {
+                throw new ServiceException("Phiên bản không tồn tại: " + entity.getId());
+            }
+            validateBulkVersion(entity);
+            checkDuplicateCode(entity.getCode(), entity.getId());
         }
         return super.bulkUpdate(entitys);
+    }
+
+    // DS120 B: bulkDelete generic -- null/rong -> 400 (duong chinh cua
+    // controller la bulkDeleteClinic, nhung giu parity cho duong generic).
+    @Override
+    public int bulkDelete(List<ClinicVersion> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiên bản không được để trống");
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    private void validateBulkVersion(ClinicVersion entity) {
+        if (StringUtils.isBlank(entity.getName())) {
+            throw new ServiceException("Tên phiên bản không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getCode())) {
+            throw new ServiceException("Mã phiên bản không được để trống");
+        }
+        if (entity.getPrice() == null) {
+            throw new ServiceException("Giá phiên bản không được để trống");
+        }
+    }
+
+    private void checkDuplicateCode(String code, String selfId) {
+        if (StringUtils.isBlank(code)) {
+            return;
+        }
+        String ownerId = clinicVersionDao.getIdByCode(code);
+        if (StringUtils.isNotBlank(ownerId)
+                && (StringUtils.isBlank(selfId) || !ownerId.equals(selfId))) {
+            throw new ServiceException("Mã phiên bản đã tồn tại: " + code);
+        }
     }
 
     // DS78: bulkInsert bypasses save(), so it is the only path that
@@ -262,30 +317,59 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
     // no sys_role row (role_id is NOT NULL DEFAULT 0; "0" = no role).
     // Single save() needs no check: it always creates a real role and
     // overwrites roleId. bulkUpdate cannot change roleId.
+    // DS120 B: them fail-closed 400 -- null/rong/[null] -> 400 (truoc
+    // day null NPE 500 o vong DS78, [] 500 o foreach rong), thieu
+    // name/price/code -> 400 (truoc day 500 NOT NULL), trung code trong
+    // cung list hoac voi dong live -> 400 (truoc day 500 UNIQUE).
     @Override
     public List<String> bulkInsert(List<ClinicVersion> entitys) {
-        if (entitys != null) {
-            for (ClinicVersion entity : entitys) {
-                String roleId = entity.getRoleId();
-                if (StringUtils.isNotBlank(roleId) && !"0".equals(roleId)
-                        && roleService.get(roleId) == null) {
-                    throw new ServiceException("Vai trò liên kết của phiên bản không tồn tại");
-                }
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiên bản không được để trống");
+        }
+        java.util.Set<String> seenCodes = new java.util.HashSet<>();
+        for (ClinicVersion entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Phiên bản không được để trống");
+            }
+            validateBulkVersion(entity);
+            if (!seenCodes.add(entity.getCode())) {
+                throw new ServiceException("Mã phiên bản trùng trong danh sách: "
+                        + entity.getCode());
+            }
+            checkDuplicateCode(entity.getCode(), null);
+            String roleId = entity.getRoleId();
+            if (StringUtils.isNotBlank(roleId) && !"0".equals(roleId)
+                    && roleService.get(roleId) == null) {
+                throw new ServiceException("Vai trò liên kết của phiên bản không tồn tại");
             }
         }
         return super.bulkInsert(entitys);
     }
 
+    // DS120 B: deleteClinic truoc day tin roleId trong PAYLOAD, khong
+    // phai dong da luu -- goi {id: version-cua-minh, roleId: role-nan-nhan}
+    // tra 200 rows 1, xoa mem role nan nhan + xoa sach quyen cua no
+    // (probe-proven, cung mau DS5 ma nhanh save-update da sua). Nay lay
+    // roleId tu dong da luu; payload roleId lech -> 400 truoc moi ghi;
+    // roleId rong/"0" (khong co role) thi bo qua buoc xoa role.
     public int deleteClinic(ClinicVersion entity) {
-        String roleId = entity.getRoleId();
+        String storedRoleId = null;
+        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
+            storedRoleId = clinicVersionDao.getRoleIdById(entity.getId());
+            if (StringUtils.isNotBlank(entity.getRoleId())
+                    && StringUtils.isNotBlank(storedRoleId)
+                    && !storedRoleId.equals(entity.getRoleId())) {
+                throw new ServiceException("Vai trò liên kết của phiên bản không khớp");
+            }
+        }
         //XóaPhòng khám
         int num = this.delete(entity);
-        if(num>0)
-        {
+        if (num > 0 && StringUtils.isNotBlank(storedRoleId)
+                && !"0".equals(storedRoleId)) {
             //XóaQuyền và Vai trò
-            Role delete = new Role(roleId);
+            Role delete = new Role(storedRoleId);
             roleService.delete(delete);
-            removePermisson(roleId);
+            removePermisson(storedRoleId);
         }
         return num;
     }
@@ -296,15 +380,35 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
         this.permissionDAO.removeDataPermssionByRoleId(roleId);
     }
 
+    // DS120 B: nhu deleteClinic -- bulkDeleteClinic truoc day xoa role theo
+    // roleId trong payload tung dong. Nay kiem tra truoc moi ghi (lech ->
+    // 400, ca batch khong doi), roi xoa role theo id da luu.
     public int bulkDeleteClinic(List<ClinicVersion> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiên bản không được để trống");
+        }
+        java.util.Map<String, String> storedRoleIds = new java.util.HashMap<>();
+        for (ClinicVersion e : entitys) {
+            if (e == null || StringUtils.isBlank(e.getId())) {
+                throw new ServiceException("Phiên bản không xác định được id cần xóa");
+            }
+            String storedRoleId = clinicVersionDao.getRoleIdById(e.getId());
+            if (StringUtils.isNotBlank(e.getRoleId())
+                    && StringUtils.isNotBlank(storedRoleId)
+                    && !storedRoleId.equals(e.getRoleId())) {
+                throw new ServiceException("Vai trò liên kết của phiên bản không khớp");
+            }
+            storedRoleIds.put(e.getId(), storedRoleId);
+        }
         int num = this.bulkDelete(entitys);
-        if(num>0)
-        {
-            entitys.stream().forEach(e->{
-                String roleId = e.getRoleId();
-                roleService.delete(new Role(roleId));
-                removePermisson(roleId);
-            });
+        if (num > 0) {
+            for (ClinicVersion e : entitys) {
+                String roleId = storedRoleIds.get(e.getId());
+                if (StringUtils.isNotBlank(roleId) && !"0".equals(roleId)) {
+                    roleService.delete(new Role(roleId));
+                    removePermisson(roleId);
+                }
+            }
         }
         return num;
     }
