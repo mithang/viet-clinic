@@ -23,6 +23,26 @@ import com.google.common.collect.Maps;
 public class SupplierService extends CrudService<SupplierDao, Supplier>{
      @Autowired
      private SupplierDao supplierDao;
+    // DS125 C: single delete truoc day de lo: ghost id / dong da xoa mem
+    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
+    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
+    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
+    // Khong caller noi bo nao goi delete() nay; UI xoa hang live van 200
+    // nhu cu.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Supplier entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được nhà cung cấp cần xóa.");
+        }
+        Supplier stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Nhà cung cấp không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Supplier save(Supplier supplier) {

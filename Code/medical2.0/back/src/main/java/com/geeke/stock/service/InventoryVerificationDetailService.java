@@ -46,6 +46,31 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
     }
 
 
+    // DS125 C: single delete truoc day de lo: ghost id / dong da xoa roi
+    // van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo qua
+    // khi stored==null, cung mau DS123/DS124/DS125A). Bang KHONG CO cot
+    // del_flag, delete la HARD DELETE nen chi can kiem tra ton tai qua
+    // dao.get (mau DS124C InventoryVerification). Chan o service de 400
+    // ro nghia truoc khi xoa. Khong caller noi bo nao goi delete() nay
+    // (InventoryVerificationService.delete dung dao-level
+    // deleteByInventoryVerificationId); endpoint co expose qua
+    // CrudController + api export du UI khong co nut xoa. Xoa hang live
+    // van 200 nhu cu.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(InventoryVerificationDetail entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new com.geeke.common.service.ServiceException("Không xác định được chi tiết kiểm kê cần xóa.");
+        }
+        InventoryVerificationDetail stored = dao.get(entity.getId());
+        if (stored == null) {
+            throw new com.geeke.common.service.ServiceException("Chi tiết kiểm kê không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
+
     @Autowired
     private InventoryVerificationService inventoryVerificationService;
 

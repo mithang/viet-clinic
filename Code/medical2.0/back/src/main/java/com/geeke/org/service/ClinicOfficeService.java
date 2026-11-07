@@ -29,6 +29,27 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
         clinicOfficeDao.updateDefault(companyId);
     }
 
+    // DS125 C: single delete truoc day de lo: ghost id / dong da xoa mem
+    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
+    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
+    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
+    // Dong la (ITER35 M2) da 403 nho stored-row check; ghost la khoang
+    // trong con lai. Khong caller noi bo nao goi delete() nay; UI xoa
+    // hang live van 200 nhu cu.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(ClinicOffice entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được khoa cần xóa.");
+        }
+        ClinicOffice stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Khoa không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Transactional(readOnly = false)
     public ClinicOffice save(ClinicOffice clinicOffice){
        if(StringUtils.isBlank(clinicOffice.getId())){
