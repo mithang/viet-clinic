@@ -91,6 +91,31 @@ public class ScheduleJobService extends CrudService<ScheduleJobDao, ScheduleJob>
         return super.bulkDelete(entitys);
     }
 
+    /**
+     * DS123 C: single delete fail-closed 400. Service nay khong override
+     * delete nen delete id ma tra 200 data=0 (DS120 C18 parity; stored-row
+     * tenant check cua CrudService bo qua stored==null); mapper delete
+     * khong loc del_flag nen xoa dong da xoa mem tra 200 rows=1 va ghi
+     * them 1 audit DELETED. Kiem tra ton tai truoc: id rong/id ma/dong
+     * da xoa mem (del_flag != '0') -> 400. Khong co caller noi bo nao.
+     * Luu y: xoa dong job khong unschedule Quartz (hanh vi co san, giu
+     * nguyen -- chi chan id ma, khong doi hanh vi xoa dong song).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(ScheduleJob entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được tác vụ định kỳ cần xóa.");
+        }
+        ScheduleJob stored = this.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Tác vụ định kỳ không tồn tại: "
+                    + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     private void validateBulkJob(ScheduleJob entity) {
         if (entity == null) {
             throw new ServiceException("Tác vụ định kỳ không được để trống");

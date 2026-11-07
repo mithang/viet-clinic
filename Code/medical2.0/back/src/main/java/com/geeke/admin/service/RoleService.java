@@ -130,6 +130,17 @@ public class RoleService extends CrudService<RoleDao, Role>{
         if (role == null || StringUtils.isBlank(role.getId())) {
             throw new ServiceException("Không xác định được vai trò cần xóa.");
         }
+        // DS123 C: id ma/dong da xoa mem -> 400 (truoc day roi qua
+        // super.delete -> 0 dong roi van 200, DS120 A15 parity; mapper
+        // delete khong loc del_flag nen xoa dong da xoa mem tra 200
+        // rows=1 va ghi them 1 audit DELETED). Caller noi bo duy nhat
+        // ClinicVersionService.deleteClinic/bulkDeleteClinic truyen id
+        // vai tro song lay tu dong da luu (DS120 B) nen khong doi.
+        Role stored = this.get(role.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Vai trò không tồn tại: " + role.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(role);
         return super.delete(role);
     }
 
