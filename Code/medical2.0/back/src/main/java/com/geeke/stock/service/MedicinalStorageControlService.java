@@ -77,26 +77,28 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
      * Internal callers use saveInternal() below, which keeps the old
      * CrudService.save behaviour (tenant check + audit action).
      */
-    // DS125 D: single delete truoc day de lo: ghost id / dong da xoa mem
-    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
-    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
-    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
-    // Chi dong lop silent no-op; xoa hang live van 200 nhu cu (hang ton
-    // kho tong van chi thay doi qua nhap/kham/xuat/kiem ke o cac duong
-    // khac, save/bulk* da chan). Khong caller noi bo nao goi delete()
-    // nay; khong co nut xoa o UI.
+    // DS126 A: live delete is now blocked entirely (DS125 D only closed
+    // the silent no-op class: ghost / already-deleted / blank -> 400,
+    // but a LIVE row could still be soft-deleted by any token, 200 --
+    // probe-proven in tools/ds126a-verify.py A2). This table is
+    // system-managed -- save()/bulkInsert()/bulkUpdate already throw
+    // (DS69) and stock only moves via the guarded import / prescribe /
+    // dispense / inventory flows; there is no Vue view and no UI delete
+    // button. The generic CrudController delete endpoint is still
+    // exposed, so the check must sit here. No internal caller calls
+    // delete() or bulkDelete() on this service (verified by grep), and
+    // the guarded flows use saveInternal()/adjustDetailStocks() instead.
+    // Same fail-closed shape as DS72 MedicinalStockRecordService.
     @Override
     @Transactional(readOnly = false)
     public int delete(MedicinalStorageControl entity) {
-        if (entity == null || StringUtils.isBlank(entity.getId())) {
-            throw new ServiceException("Không xác định được tồn kho chi tiết cần xóa.");
-        }
-        MedicinalStorageControl stored = dao.get(entity.getId());
-        if (stored == null || !"0".equals(stored.getDelFlag())) {
-            throw new ServiceException("Tồn kho chi tiết không tồn tại: " + entity.getId());
-        }
-        verifyTenantOwnershipAgainstStoredRow(entity);
-        return super.delete(entity);
+        throw new ServiceException("Tồn kho chi tiết chỉ thay đổi qua nhập kho / kê đơn / xuất kho / kiểm kê, không hỗ trợ xóa trực tiếp!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<MedicinalStorageControl> entitys) {
+        throw new ServiceException("Tồn kho chi tiết chỉ thay đổi qua nhập kho / kê đơn / xuất kho / kiểm kê, không hỗ trợ xóa trực tiếp!");
     }
 
     @Override

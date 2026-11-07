@@ -43,26 +43,19 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
      * @return
      */
 
-    // DS125 D: single delete truoc day de lo: ghost id / dong da xoa mem
-    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
-    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
-    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
-    // Khong caller noi bo nao goi delete() nay; trang login chi doc
-    // listAll, khong dong den delete; xoa hang live van 200 nhu cu.
-    // sys_seting khong co cot company_id nen stored-row check cho qua
-    // (stored.getCompany() == null) -- dung nhu CrudService goc.
+    // DS126 A: live delete is now blocked entirely (DS125 D only closed
+    // the silent no-op class: ghost / already-deleted / blank -> 400,
+    // but the LIVE fixture row could still be soft-deleted by any token,
+    // 200 -- probe-proven in tools/ds126a-verify.py B2). System config:
+    // 1 live row (id 613672228698857510, never touched); saveWithFile is
+    // the UI path and bulk* already throw. No internal caller calls
+    // delete() on this service (verified by grep); the login page only
+    // reads listAll. Same fail-closed shape as DS72
+    // MedicinalStockRecordService.
     @Override
     @Transactional(readOnly = false)
     public int delete(SysSeting entity) {
-        if (entity == null || StringUtils.isBlank(entity.getId())) {
-            throw new ServiceException("Không xác định được cài đặt hệ thống cần xóa.");
-        }
-        SysSeting stored = dao.get(entity.getId());
-        if (stored == null || !"0".equals(stored.getDelFlag())) {
-            throw new ServiceException("Cài đặt hệ thống không tồn tại: " + entity.getId());
-        }
-        verifyTenantOwnershipAgainstStoredRow(entity);
-        return super.delete(entity);
+        throw new ServiceException("Cấu hình hệ thống chỉ sửa từng mục qua trang Cài đặt, không hỗ trợ xóa trực tiếp!");
     }
 
     @Transactional(readOnly = false)
