@@ -84,6 +84,23 @@ public class CureManagementController extends BaseController {
             }
         }
 
+        // DS109 CM2/CM3: controller dereference entity.getRecipelDetail()
+        // (getStuffType, dong duoi) va, tren nhanh thuong voi id trong,
+        // getRecipelInfo().getId() TRUOC khi toi service save, nen null
+        // detail / null info NPE 500. Service save cung validate cac
+        // truong nay, nhung chi duoc goi SAU cac dereference do; chan
+        // null o day truoc voi 400 ro nghia.
+        if (entity.getRecipelDetail() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+        if (!"3".equals(entity.getRecipelDetail().getStuffType())
+                && (entity.getId() == null || entity.getId().isEmpty())
+                && entity.getRecipelDetail().getRecipelInfo() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_400));
+        }
+
         String crueId=entity.getId();
         String id="";
         if("3".equals(entity.getRecipelDetail().getStuffType())){
