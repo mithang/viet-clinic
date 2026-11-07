@@ -100,6 +100,22 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     @Override
     @Transactional(readOnly = false)
     public int delete(NoticeSend entity) {
+        // DS130 C: checkNoticeOwnership cho qua im lang id trong/ghost
+        // (getCompanyIdById tra blank) nen ghost delete 200 rows 0 im
+        // lang, blank 200, xoa lap 200 rows 1 (mapper soft-delete khong
+        // loc del_flag) -- cung lop DS123/DS129. Chan truoc bang
+        // dao.get (khong loc del_flag nen tra ca dong da xoa mem,
+        // delFlag phan biet) theo mau CodeRuleService.delete (DS129 A);
+        // KHONG tai dung checkExists o day: no cho qua blank va khong
+        // check delFlag, lai dung chung voi save/bulkUpdate; giu
+        // checkNoticeOwnership sau do (dong live la tenant van 403).
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được thông báo cần xóa.");
+        }
+        NoticeSend stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Thông báo không tồn tại: " + entity.getId());
+        }
         checkNoticeOwnership(entity.getId());
         return super.delete(entity);
     }
