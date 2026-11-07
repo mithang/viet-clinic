@@ -134,6 +134,31 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
         return super.bulkUpdate(entitys);
     }
 
+    /**
+     * DS128 B: single delete fail-closed 400 -- id rong / id ma / dong
+     * da xoa cung (mapper DELETE WHERE id, khong loc del_flag nen xoa
+     * lan 2 cung la id ma). Deep search: DS123/DS124/DS125 da doi
+     * single delete ghost sang 400 o ~25 service anh em; DS127 giu 200
+     * o day theo "parity DS123" la nguoc -- chinh DS123 la vong pha
+     * parity 200 do. Chi bulkDelete ghost moi giu 200 idempotent
+     * (DS99/DS106/DS126 B), khong doi o day. Kiem tra ton tai bang
+     * getRecipelInfoIdByReviewId (DS127 B: recipel_info_id NOT NULL
+     * nen lookup rong dong nghia dong khong ton tai). Controller delete
+     * chay checkReviewWriteTenant truoc (id ma cho qua, lookup rong);
+     * guard nay chay sau do, truoc super.delete().
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(RecipelInfoReview entity) {
+        if (ObjectUtil.isNull(entity) || StrUtil.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được rà soát đơn thuốc cần xóa.");
+        }
+        if (StrUtil.isBlank(getRecipelInfoIdByReviewId(entity.getId()))) {
+            throw new ServiceException("Rà soát đơn thuốc không tồn tại: " + entity.getId());
+        }
+        return super.delete(entity);
+    }
+
     public ReviewVO reviewForm(String recipelInfoId) {
         RecipelInfoReview recipelInfoReview = this.getByRecipelInfoId(recipelInfoId);
         if (ObjectUtil.isNull(recipelInfoReview)) {
