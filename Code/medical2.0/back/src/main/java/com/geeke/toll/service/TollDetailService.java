@@ -220,6 +220,17 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
         if (entity == null || StringUtils.isBlank(entity.getId())) {
             throw new ServiceException("Không xác định được chi tiết thu phí cần xóa.");
         }
+        // DS128 A: single delete fail-closed 400 -- id ma / dong da xoa
+        // cung (mapper DELETE WHERE id, khong loc del_flag nen xoa lan 2
+        // cung la id ma). Deep search: DS123/DS124/DS125 da doi single
+        // delete ghost sang 400 o ~25 service anh em; DS127 giu 200 o
+        // day theo "parity DS123" la nguoc -- chinh DS123 la vong pha
+        // parity 200 do. Chi bulkDelete ghost moi giu 200 idempotent
+        // (DS99/DS106/DS126 B), khong doi o day. Kiem tra ton tai bang
+        // countById (DS127 A; get() co JOIN, count la truth truc tiep).
+        if (dao.countById(entity.getId()) == 0) {
+            throw new ServiceException("Chi tiết thu phí không tồn tại: " + entity.getId());
+        }
         // ITER63: kiểm tra phiếu cha đã lưu trước khi xóa.
         checkStoredTollTenant(entity.getId());
         return super.delete(entity);
