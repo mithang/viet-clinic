@@ -9,6 +9,7 @@ import com.geeke.utils.IdGen;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.geeke.cure.dao.InspectionCheckDao;
 import com.geeke.cure.entity.InspectionCheck;
@@ -34,6 +35,116 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
 
     @Autowired
     private InspectionCheckDetailService inspectionCheckDetailService;
+
+    // DS108 A1/A10-A12: save/bulkInsert/bulkUpdate truoc day de lo:
+    // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
+    // dong roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow
+    // bo qua khi stored==null, cung mau DS94/DS99); bulkInsert/bulkUpdate
+    // bypass @Valid nen patient/registration/costItem/type thieu van ghi
+    // duoc (cac cot NOT NULL trong DB) -> 500. Kiem tra ton tai + truong
+    // bat buoc truoc moi ghi. @Transactional (readOnly = false) tuong minh
+    // vi class-level la readOnly = true (mau DS105/DS106/DS107). Luu y:
+    // registration table hien rong (0 dong) nhung khong co FK, id stub
+    // van insert duoc; cac caller noi bo (RecipelDetailService.updateById,
+    // InspectionCheckInfoController) deu save entity day du nap tu DB.
+    @Override
+    @Transactional(readOnly = false)
+    public InspectionCheck save(InspectionCheck entity) {
+        if (entity != null && StringUtils.isNotBlank(entity.getId())
+                && dao.get(entity.getId()) == null) {
+            throw new ServiceException("Phiếu kiểm tra không tồn tại: "
+                    + entity.getId());
+        }
+        checkInspectionCheckRequired(entity);
+        return super.save(entity);
+    }
+
+    // DS108 A3-A6/A10-A11: bulkInsert truoc day de lo: null/rong roi xuong
+    // MyBatis <foreach> rong -> 500 (hien tai global handler anh xa mot
+    // so loi thanh 400, nhung van chan ro o service de hanh vi khong phu
+    // thuoc vao exception mapping); thieu patient/type -> 500 NOT NULL.
+    // Chan het o service de 400 ro nghia.
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<InspectionCheck> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu kiểm tra không được để trống");
+        }
+        for (InspectionCheck entity : entitys) {
+            checkInspectionCheckRequired(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    // DS108 A2/A3/A5/A9/A12: bulkUpdate truoc day de lo: id khong ton tai
+    // -> 200 silent no-op; batch hon hop [valid, nonexistent] doi ca dong
+    // hop le truoc khi cham id ma; patient bi drop -> CASE set
+    // patient_id=NULL -> 500 NOT NULL. Tien kiem TOAN BO list truoc moi ghi
+    // (fail-closed ca list, mau N1).
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<InspectionCheck> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu kiểm tra không được để trống");
+        }
+        for (InspectionCheck entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Phiếu kiểm tra không được để trống");
+            }
+            if (StringUtils.isNotBlank(entity.getId())
+                    && dao.get(entity.getId()) == null) {
+                throw new ServiceException("Phiếu kiểm tra không tồn tại: "
+                        + entity.getId());
+            }
+            checkInspectionCheckRequired(entity);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    // DS108 A7-A8: bulkDelete null/rong -> 400 ro nghia thay vi roi xuong
+    // MyBatis <foreach> rong. bulkDelete id khong ton tai GIU NGUYEN
+    // 200 rows 0 idempotent (DS99 G11) -- khong chan o day.
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<InspectionCheck> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách phiếu kiểm tra không được để trống");
+        }
+        return super.bulkDelete(entitys);
+    }
+
+    // Tat ca cac truong nay deu NOT NULL trong inspection_check (company/
+    // type/status them @NotNull tren single save; patient/registration/
+    // costItem khong co @NotNull nen chi bulk + save o service moi chan
+    // duoc). Company khong co trong bulkInsert cua CrudService (khong ep
+    // theo session) nen thieu company cung 500 NOT NULL.
+    private void checkInspectionCheckRequired(InspectionCheck entity) {
+        if (entity == null) {
+            throw new ServiceException("Phiếu kiểm tra không được để trống");
+        }
+        if (entity.getCompany() == null
+                || StringUtils.isBlank(entity.getCompany().getId())) {
+            throw new ServiceException("Phòng khám không được để trống");
+        }
+        if (entity.getPatient() == null
+                || StringUtils.isBlank(entity.getPatient().getId())) {
+            throw new ServiceException("Bệnh nhân không được để trống");
+        }
+        if (entity.getRegistration() == null
+                || StringUtils.isBlank(entity.getRegistration().getId())) {
+            throw new ServiceException("Thông tin đăng ký không được để trống");
+        }
+        if (entity.getCostItem() == null
+                || StringUtils.isBlank(entity.getCostItem().getId())) {
+            throw new ServiceException("Hạng mục khám chữa bệnh không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getType())) {
+            throw new ServiceException("Loại phiếu kiểm tra không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getStatus())) {
+            throw new ServiceException("Trạng thái phiếu kiểm tra không được để trống");
+        }
+    }
 
     @Transactional(readOnly = false)
     public void allSave(InspectionCheck inspectionCheck) {
