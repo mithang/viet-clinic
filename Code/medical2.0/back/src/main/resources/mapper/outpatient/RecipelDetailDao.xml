@@ -546,10 +546,18 @@
         WHERE a.recipel_info_id = #{id}
     </select>
 
+    <!-- DS110 RD4: sum(executions) la NULL khi chua co dong nao duoc thuc
+         hien (executions NULL) -> NULL - sum(total) = NULL -> MyBatis
+         khong map NULL sang int primitive -> BindingException 500 o
+         CureManagementController.save NGAY SAU khi updateById da commit
+         xong (flag 1,1 + treatment_date da ghi). COALESCE ca hai ve
+         0: chua thuc hien dong nao -> am (= -total, "chua hoan thanh",
+         dung ngu nghia ghi trong service); don khong co detail nao ->
+         0-0=0, giu ngu nghia vacuous-complete nhu updateById. -->
     <select id="schedule" parameterType="java.lang.String"
             resultType="int">
         SELECT
-        sum(a.executions) - sum(total) as treatment
+        COALESCE(sum(a.executions),0) - COALESCE(sum(total),0) as treatment
         FROM recipel_detail a
         WHERE a.recipel_info_id = #{id}
     </select>
