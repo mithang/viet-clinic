@@ -34,6 +34,26 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
     @Autowired
     private MemberManagementService memberManagementService;
 
+    // DS125 B: single delete truoc day de lo: ghost id / dong da xoa mem
+    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
+    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
+    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
+    // Khong caller noi bo nao goi delete() nay (save dung dao-level
+    // deleteByMemberSet); UI xoa hang live van 200 nhu cu.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(MemberSet entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được cài đặt thẻ hội viên cần xóa.");
+        }
+        MemberSet stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Cài đặt thẻ hội viên không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Transactional(readOnly = false)
     public MemberSet save(MemberSet memberSet){
        if(StringUtils.isBlank(memberSet.getId())){

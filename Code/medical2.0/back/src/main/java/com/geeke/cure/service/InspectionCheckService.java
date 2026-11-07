@@ -36,6 +36,26 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
     @Autowired
     private InspectionCheckDetailService inspectionCheckDetailService;
 
+    // DS125 B: single delete truoc day de lo: ghost id / dong da xoa mem
+    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
+    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
+    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
+    // Khong caller noi bo nao goi delete() nay; UI xoa hang live van 200
+    // nhu cu.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(InspectionCheck entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được phiếu kiểm tra cần xóa.");
+        }
+        InspectionCheck stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Phiếu kiểm tra không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     // DS108 A1/A10-A12: save/bulkInsert/bulkUpdate truoc day de lo:
     // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
     // dong roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow
