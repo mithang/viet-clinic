@@ -199,6 +199,22 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         @CacheEvict(value = "dict:itemsByCode", allEntries = true)
     })
     public int delete(DictType dictType) {
+        // DS134 B: blank/ghost/da xoa mem (del_flag '1') -> 400 fail-closed
+        // (truoc day: blank/ghost -> 200 data 0 im lang, xoa lan 2 -> 200
+        // rows 1 vi mapper soft-delete khong loc del_flag; sys_dict_type
+        // la bang GLOBAL khong co company_id nen khong co tenant guard
+        // nao -- lop DS123, tien le Theme/DS131 B). Check DAT TRUOC
+        // cascade xoa muc con: ghost khong duoc cham vao muc con.
+        // checkExists (DS103) KHONG tai dung: cho qua blank id, khong
+        // check delFlag. bulkDelete ghost CO TINH GIU 200 rows 0
+        // (DS99/DS106/DS126 B idempotency).
+        if (dictType == null || StringUtils.isBlank(dictType.getId())) {
+            throw new ServiceException("Không xác định được loại từ điển cần xóa.");
+        }
+        DictType stored = dao.get(dictType.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Loại từ điển không tồn tại: " + dictType.getId());
+        }
         /* Xử lý bảng con     Mục từ điển */
         List<Parameter> params = SearchParamsBuilder.create()
                 .eq("dict_type_id", dictType.getId())
