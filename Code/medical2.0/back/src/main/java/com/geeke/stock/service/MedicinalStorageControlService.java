@@ -77,6 +77,28 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
      * Internal callers use saveInternal() below, which keeps the old
      * CrudService.save behaviour (tenant check + audit action).
      */
+    // DS125 D: single delete truoc day de lo: ghost id / dong da xoa mem
+    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
+    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
+    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
+    // Chi dong lop silent no-op; xoa hang live van 200 nhu cu (hang ton
+    // kho tong van chi thay doi qua nhap/kham/xuat/kiem ke o cac duong
+    // khac, save/bulk* da chan). Khong caller noi bo nao goi delete()
+    // nay; khong co nut xoa o UI.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(MedicinalStorageControl entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được tồn kho chi tiết cần xóa.");
+        }
+        MedicinalStorageControl stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Tồn kho chi tiết không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public MedicinalStorageControl save(MedicinalStorageControl entity) {

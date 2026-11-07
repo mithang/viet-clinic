@@ -43,6 +43,28 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
      * @return
      */
 
+    // DS125 D: single delete truoc day de lo: ghost id / dong da xoa mem
+    // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
+    // qua khi stored==null, cung mau DS123/DS124/DS125A; mapper delete
+    // khong loc del_flag). Chan o service de 400 ro nghia truoc khi xoa.
+    // Khong caller noi bo nao goi delete() nay; trang login chi doc
+    // listAll, khong dong den delete; xoa hang live van 200 nhu cu.
+    // sys_seting khong co cot company_id nen stored-row check cho qua
+    // (stored.getCompany() == null) -- dung nhu CrudService goc.
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(SysSeting entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được cài đặt hệ thống cần xóa.");
+        }
+        SysSeting stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Cài đặt hệ thống không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Transactional(readOnly = false)
     public SysSeting save(SysSeting entity, MultipartFile[] multipartFiles) {
         // DS87: the six *Index fields are transient (no such columns exist
