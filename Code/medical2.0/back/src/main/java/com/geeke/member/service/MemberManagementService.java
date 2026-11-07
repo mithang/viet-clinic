@@ -132,6 +132,73 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         return super.delete(memberManagement);
     }
 
+    /**
+     * DS133 B: bulkDelete ap dung dung ngu nghia cua single delete
+     * (DS132 C). Truoc day khong co override: CrudService.bulkDelete
+     * chay thang dao.bulkDelete, ma mapper bulkDelete la HARD DELETE
+     * trong khi single delete chi set status='2' (vo hieu hoa) --
+     * bulk xoa vinh vien dong the, mat lich su, VA KHONG hoan tra
+     * so luong set (addNumber) nhu single delete lam o controller,
+     * nen xoa hang loat ro ri ton set (tai hien live: bulk [valid]
+     * -> 200 rows 1, dong BIEN MAT, set giu 10). Khong co caller
+     * noi bo va khong co .vue nao goi bulkDeleteMemberManagement
+     * (chi api file export), nen khong doi hanh vi luong hien co.
+     * Hai luot nhu vong lap cua base + bai hoc ITER37: luot 1
+     * kiem tra TAT CA phan tu (malformed -> 400 theo guard DS126 B
+     * o base; kiem tra tenant; giai quyet + kiem tra tenant cua
+     * set da luu TRUOC moi ghi) de mot phan tu xau khong de lai
+     * the da vo hieu hoa; luot 2 ap dung tung the live qua
+     * super.delete() + addNumber(storedSetId). Ghost / da vo hieu
+     * hoa (status '2') duoc BO QUA, 0 rows (idempotency bulk DS99
+     * G11 / DS106 / DS126 B giu nguyen). The tro toi set khong ton
+     * tai / number null -> 400 o luot 1, truoc khi ghi gi (cung
+     * dieu kien addNumber nem ra o luot 2).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<MemberManagement> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách xóa không được để trống");
+        }
+        List<MemberManagement> live = new ArrayList<>();
+        List<String> liveSetIds = new ArrayList<>();
+        for (MemberManagement entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Dòng xóa không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Dòng xóa không xác định được id cần xóa");
+            }
+            verifyTenantOwnership(entity);
+            verifyTenantOwnershipAgainstStoredRow(entity);
+            MemberManagement stored = dao.get(entity.getId());
+            if (stored == null || "2".equals(stored.getStatus())) {
+                continue;
+            }
+            String storedSetId = stored.getMemberSet() != null ? stored.getMemberSet().getId() : null;
+            if (StringUtils.isNotBlank(storedSetId)) {
+                MemberSet storedSet = memberSetService.get(storedSetId);
+                if (storedSet == null || storedSet.getNumber() == null) {
+                    throw new ServiceException("Thẻ hội viên chưa có số lượng còn lại, không thể hoàn trả!");
+                }
+            }
+            live.add(entity);
+            liveSetIds.add(storedSetId);
+        }
+        int rows = 0;
+        for (int i = 0; i < live.size(); i++) {
+            int r = super.delete(live.get(i));
+            if (r > 0) {
+                rows += r;
+                String setId = liveSetIds.get(i);
+                if (StringUtils.isNotBlank(setId)) {
+                    memberSetService.addNumber(setId);
+                }
+            }
+        }
+        return rows;
+    }
+
     @Transactional(readOnly = false)
     public List<MemberManagement> getByMemberSetId(String memberSetId) {
         List<MemberManagement> memberManagements = this.dao.getByMemberSetId(memberSetId);
