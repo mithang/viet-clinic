@@ -470,7 +470,7 @@
             </trim>
             <trim prefix="small_type=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.smallType}
+                    when id=#{entity.id} then #{entity.smallType.value}
                 </foreach>
             </trim>
             <trim prefix="entrust=case" suffix="end,">

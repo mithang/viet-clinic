@@ -14,6 +14,7 @@ import com.geeke.utils.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import com.geeke.outpatient.dao.RecipelInfoDao;
@@ -41,6 +42,115 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
 
     @Autowired
     private MedicinalStorageControlService medicinalStorageControlService;
+
+    /**
+     * DS115 A: RecipelInfoService khong co save/bulk override nao nen
+     * ke thua CrudService dang zero-exception: save id khong ton tai
+     * tra 200 silent no-op (probe A4, lop DS94/DS99); bulkInsert/
+     * bulkUpdate khong qua @Valid nen thieu seq/isFollowUp se 500 o
+     * cot NOT NULL (probe A9/A10) va thieu smallType thi ghi lang
+     * dong NULL (probe A11, small_type nullable trong DB); [null]
+     * NPE 500 (probe A8/A15). Chi kiem tra TON TAI + truong bat
+     * buoc, khong kiem tra so huu: san 403 theo tenant nam o
+     * RecipelInfoController/CrudService (verifyTenantOwnership o
+     * super.save/bulk*) chay sau validate va giu nguyen. Delete la
+     * XOA MEM (del_flag) nen bulkDelete id khong ton tai giu 200
+     * rows 0 IDEMPOTENT (DS99 G11, probe A22). Luu y: lop nay co
+     * @Transactional(readOnly = true) o cap class nen moi override
+     * ghi phai mang @Transactional(readOnly = false) rieng (nhu
+     * claimDispensed/...), neu khong ghi se bi chan o che do chi doc.
+     * Mapper: bulkUpdate dung #{entity.smallType} (DictItem, khong
+     * co MyBatis type handler) nen MOI bulkUpdate deu 500 -- sua
+     * thanh #{entity.smallType.value} nhu insert/update/bulkInsert
+     * (RecipelInfoDao.xml L473, probe A19).
+     * DS115 fix-forward (K3 hoi quy): save() DON KHONG doi smallType.
+     * Cot small_type NULLABLE trong DB va luong noi bo that allSave
+     * (FinishVisit, MedicalRecordService) khong gui smallType theo
+     * thiet ke (ghi chu K3 o do: khong bia gia tri mac dinh vi du
+     * lieu hien huu khong thong nhat); bat buoc no o service lam
+     * allSave 400 (K3 allsave_finishvisit_payload_100). Duong don
+     * le expose van 400 nho @Valid o CrudController.save (@NotNull
+     * tren entity.smallType) nen khong mat fail-closed ngoai. Chi
+     * bulkInsert/bulkUpdate (khong qua @Valid) moi giu kiem tra
+     * smallType (probe A11).
+     */
+    private void validateRequired(RecipelInfo entity) {
+        if (entity == null) {
+            throw new ServiceException("Đơn thuốc không được để trống");
+        }
+        if (entity.getSeq() == null) {
+            throw new ServiceException("Sắp xếp đơn thuốc không được để trống");
+        }
+        if (entity.getIsFollowUp() == null) {
+            throw new ServiceException("Tái khám đơn thuốc không được để trống");
+        }
+    }
+
+    private void validateSmallType(RecipelInfo entity) {
+        if (entity.getSmallType() == null
+                || StringUtils.isBlank(entity.getSmallType().getValue())) {
+            throw new ServiceException("Loại nhỏ đơn thuốc không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public RecipelInfo save(RecipelInfo entity) {
+        validateRequired(entity);
+        if (StringUtils.isNotBlank(entity.getId())
+                && dao.get(entity.getId()) == null) {
+            throw new ServiceException("Đơn thuốc không tồn tại: "
+                    + entity.getId());
+        }
+        return super.save(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<RecipelInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách đơn thuốc thêm mới không được để trống");
+        }
+        for (RecipelInfo entity : entitys) {
+            validateRequired(entity);
+            validateSmallType(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<RecipelInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách đơn thuốc cập nhật không được để trống");
+        }
+        for (RecipelInfo entity : entitys) {
+            validateRequired(entity);
+            validateSmallType(entity);
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của đơn thuốc đã tồn tại");
+            }
+            if (dao.get(entity.getId()) == null) {
+                throw new ServiceException("Đơn thuốc không tồn tại: "
+                        + entity.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<RecipelInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách đơn thuốc xóa không được để trống");
+        }
+        for (RecipelInfo entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Đơn thuốc xóa không được để trống");
+            }
+        }
+        return super.bulkDelete(entitys);
+    }
 
     /**
      * DS52: atomic claim for dispensing. Sets is_dispension='1' only when it
