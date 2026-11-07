@@ -94,6 +94,29 @@ public class QueryConditionService extends CrudService<QueryConditionDao, QueryC
         return super.bulkUpdate(entitys);
     }
 
+    /**
+     * DS124 A: single delete fail-closed 400. CrudService.delete chi chan
+     * qua stored-row tenant check ma check do bo qua stored==null, nen
+     * delete id ma tra 200 data=0 im lang; mapper delete la UPDATE
+     * del_flag khong loc del_flag nen delete dong da xoa mem tra 200
+     * rows=1 + audit DELETED trung. Kiem tra ton tai len dau qua dao.get
+     * (mapper get khong loc del_flag nen phai kiem tra del_flag='0').
+     * San 403 theo user giu o controller.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(QueryCondition entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được điều kiện truy vấn cần xóa.");
+        }
+        QueryCondition stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Điều kiện truy vấn không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     public int bulkDelete(List<QueryCondition> entitys) {
         if (entitys == null || entitys.isEmpty()) {

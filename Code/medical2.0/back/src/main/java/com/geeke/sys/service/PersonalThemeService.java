@@ -89,6 +89,27 @@ public class PersonalThemeService extends CrudService<PersonalThemeDao, Personal
         return super.bulkUpdate(entitys);
     }
 
+    /**
+     * DS124 A: single delete fail-closed 400. CrudService.delete chi chan
+     * qua stored-row tenant check ma check do bo qua stored==null, nen
+     * delete id ma tra 200 data=0 im lang. Delete la XOA CUNG (mapper
+     * DELETE FROM) nen chi can kiem tra ton tai qua dao.get; khong co
+     * del_flag de kiem tra them. San 403 theo user giu o controller.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(PersonalTheme entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được chủ đề cá nhân cần xóa.");
+        }
+        PersonalTheme stored = dao.get(entity.getId());
+        if (stored == null) {
+            throw new ServiceException("Chủ đề cá nhân không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     public int bulkDelete(List<PersonalTheme> entitys) {
         if (entitys == null || entitys.isEmpty()) {

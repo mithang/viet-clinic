@@ -93,6 +93,28 @@ public class PropertySetService extends CrudService<PropertySetDao, PropertySet>
         return super.bulkUpdate(entitys);
     }
 
+    /**
+     * DS124 A: single delete fail-closed 400. CrudService.delete chi chan
+     * qua stored-row tenant check ma check do bo qua stored==null, nen
+     * delete id ma tra 200 data=0 im lang; mapper delete la UPDATE
+     * del_flag khong loc del_flag nen delete dong da xoa mem tra 200
+     * rows=1 + audit DELETED trung. Kiem tra ton tai len dau qua dao.get
+     * (mapper get khong loc del_flag nen phai kiem tra del_flag='0').
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(PropertySet entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được tập thuộc tính cần xóa.");
+        }
+        PropertySet stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Tập thuộc tính không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     @Transactional
     public int bulkDelete(List<PropertySet> entitys) {
