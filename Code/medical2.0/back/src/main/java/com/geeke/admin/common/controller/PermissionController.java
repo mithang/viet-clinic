@@ -120,6 +120,21 @@ public class PermissionController extends BaseController {
     @PostMapping("/{roleId}/savePermission")
     public ResponseEntity<JSONObject> savePermission(@PathVariable("roleId") String roleId, @RequestBody Permission permission) {
         if (!hasSessionPermission("role:update") && !hasSessionPermission("clinicVersion:update")) { return forbidden(); }
+        // DS118 A: mapper saveDataPermission chen #{item.roleId}, khong
+        // phai roleId tren path -- item mang roleId cua role khac se ghi
+        // quyen du lieu cho role do (probe live). Dialog that luon gui
+        // item.roleId == role dang sua (load tu listDataPermissionByRoleId
+        // cua chinh role do); luong copy noi bo cua CompanyService
+        // (item.roleId = role mau) khong qua controller nen khong anh
+        // huong. Item roleId rong de service 400.
+        if (permission != null && permission.getDataPermissions() != null) {
+            for (DataPermission item : permission.getDataPermissions()) {
+                if (item != null && StringUtils.isNotBlank(item.getRoleId())
+                        && !roleId.equals(item.getRoleId())) {
+                    return forbidden();
+                }
+            }
+        }
         this.permissionService.verifyRoleTenant(roleId); // ITER65 item 1, truoc moi remove*
         int rows = this.permissionService.savePermission(roleId, permission);
         return ResponseEntity.ok(ResultUtil.successJson(rows));

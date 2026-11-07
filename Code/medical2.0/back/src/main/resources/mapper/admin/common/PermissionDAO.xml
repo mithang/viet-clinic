@@ -154,4 +154,20 @@
                 AND router_id IN <foreach collection="routers" item="router" index="index" open="(" close=")" separator=",">#{router.id}</foreach> 
     </select>
 
-</mapper>  
+    <!-- DS118 A: dem role/router/resource ton tai, phuc vu guard
+         fail-closed o savePermission (khong co FK o 3 bang quyen). -->
+    <select id="countRoleById" resultType="int">
+        SELECT COUNT(*) FROM sys_role WHERE id = #{roleId} AND del_flag = '0'
+    </select>
+
+    <select id="countRoutersByIds" resultType="int">
+        SELECT COUNT(*) FROM sys_router WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">#{id}</foreach>
+    </select>
+
+    <select id="countResourcesByIds" resultType="int">
+        SELECT COUNT(*) FROM sys_resource WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">#{id}</foreach>
+    </select>
+
+</mapper>

@@ -140,4 +140,23 @@ public interface PermissionDAO {
 	 * @return
 	 */
 	List<String> listDefaultResourceByRouters(@Param("routers") List<Router> routers);
+
+    /**
+     * DS118 A: role co ton tai khong (del_flag='0'), phuc vu guard
+     * fail-closed o savePermission -- ghi quyen cho role ma la tao
+     * dong mo coi o sys_router_permission (khong co FK).
+     */
+    int countRoleById(@Param("roleId") String roleId);
+
+    /**
+     * DS118 A: so router ton tai trong danh sach id, phuc vu guard
+     * fail-closed o savePermission -- id la tao dong mo coi.
+     */
+    int countRoutersByIds(@Param("ids") List<String> ids);
+
+    /**
+     * DS118 A: so resource ton tai trong danh sach id, phuc vu guard
+     * fail-closed o savePermission -- id la tao dong mo coi.
+     */
+    int countResourcesByIds(@Param("ids") List<String> ids);
 }

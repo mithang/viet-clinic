@@ -1,10 +1,12 @@
 package com.geeke.clinic.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.geeke.admin.common.entity.DataPermission;
 import com.geeke.admin.common.entity.Permission;
 import com.geeke.clinic.service.ClinicPermissionService;
 import com.geeke.sys.controller.BaseController;
 import com.geeke.utils.ResultUtil;
+import com.geeke.utils.StringUtils;
 import com.geeke.utils.constants.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,19 @@ public class ClinicPermissionController extends BaseController {
         if (!hasSessionPermission("role:update") && !hasSessionPermission("clinicVersion:update")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
+        // DS118 A: nhu PermissionController.savePermission -- chan
+        // dataPermission mang roleId cua role khac (mapper chen
+        // #{item.roleId}); luong copy noi bo cua CompanyService khong
+        // qua controller nen khong anh huong.
+        if (permission != null && permission.getDataPermissions() != null) {
+            for (DataPermission item : permission.getDataPermissions()) {
+                if (item != null && StringUtils.isNotBlank(item.getRoleId())
+                        && !roleId.equals(item.getRoleId())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body(ResultUtil.errorJson(ErrorEnum.E_502));
+                }
+            }
         }
         int rows = permissionService.savePermission(roleId, permission);
         return ResponseEntity.ok(ResultUtil.successJson(rows));

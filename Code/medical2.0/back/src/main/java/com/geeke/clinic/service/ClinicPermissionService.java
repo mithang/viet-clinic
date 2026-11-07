@@ -4,6 +4,7 @@ package com.geeke.clinic.service;
 import com.geeke.admin.common.dao.PermissionDAO;
 import com.geeke.admin.common.entity.DataPermission;
 import com.geeke.admin.common.entity.Permission;
+import com.geeke.admin.common.service.PermissionService;
 import com.geeke.clinic.dao.ClinicPermissionDAO;
 import com.geeke.common.service.ServiceException;
 import com.geeke.utils.IdGen;
@@ -31,6 +32,8 @@ public class ClinicPermissionService {
     private ClinicPermissionDAO clinicPermissionDAO;
     @Autowired
     private PermissionDAO permissionDAO;
+    @Autowired
+    private PermissionService permissionService;
 
     /**
      * Lưuphiên bản của Vai tròQuyền
@@ -72,6 +75,10 @@ public class ClinicPermissionService {
     }
 
     private int saveAllPermission(String roleId, Permission permission) {
+        // DS118 A: cung validate nhu PermissionService.savePermission
+        // (null, role ma, id la, dataPermission thieu truong) truoc khi
+        // xoa/ghi; xem PermissionService.validateSavePermission.
+        this.permissionService.validateSavePermission(roleId, permission);
         String[] routerIds = permission.getRouterIds();
         String[] resourceIds = permission.getResourceIds();
         List<DataPermission> dataPermissions = permission.getDataPermissions();

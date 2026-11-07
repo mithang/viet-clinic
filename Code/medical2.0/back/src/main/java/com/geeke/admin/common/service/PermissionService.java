@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 
@@ -109,12 +112,92 @@ public class PermissionService {
     }
 
     /**
+     * DS118 A: validate toan bo payload TRUOC khi xoa/ghi quyen.
+     * - permission null -> 400 (truoc day NPE 500 o getRouterIds()).
+     * - roleId khong ton tai -> 400 (truoc day 200 + dong mo coi o
+     *   sys_router_permission/sys_resource_permission -- khong co FK;
+     *   verifyRoleTenant cho role ma qua theo tien le orphan N3c cua
+     *   iter65, nhung do la quy tac phia DOC, khong phai giay phep
+     *   GHI cho role khong ton tai).
+     * - routerId/resourceId la -> 400 (truoc day 200 + dong mo coi).
+     * - dataPermission null / thieu routerId/metaId/roleId -> 400
+     *   (truoc day 500 NOT NULL hoac NPE o mapper).
+     * - routerId trong dataPermissions cung phai ton tai.
+     * CO Y KHONG kiem tra item.roleId == roleId o day:
+     * CompanyService.savePermisson goi noi bo de copy quyen mau tu
+     * role template sang role moi -- item.roleId mang id role mau
+     * (xem ghi chu o verifyRoleTenant). Rang buoc do chi ap o tang
+     * controller (2 endpoint ngoai), noi dialog that luon gui
+     * item.roleId == role dang sua.
+     * Goi truoc moi lenh remove* de role khong bi trang quyen khi
+     * payload sai (giong mau pre-check cua DS94/DS99/DS112).
+     */
+    public void validateSavePermission(String roleId, Permission permission) {
+        if (permission == null) {
+            throw new ServiceException("Quyền không được để trống");
+        }
+        if (StringUtils.isBlank(roleId)
+                || this.permissionDAO.countRoleById(roleId) == 0) {
+            throw new ServiceException("Vai trò không tồn tại");
+        }
+        Set<String> routerIds = new LinkedHashSet<>();
+        if (permission.getRouterIds() != null) {
+            for (String id : permission.getRouterIds()) {
+                if (StringUtils.isBlank(id)) {
+                    throw new ServiceException("Định tuyến không được để trống");
+                }
+                routerIds.add(id);
+            }
+            if (!routerIds.isEmpty()
+                    && this.permissionDAO.countRoutersByIds(new ArrayList<>(routerIds)) != routerIds.size()) {
+                throw new ServiceException("Định tuyến không tồn tại");
+            }
+        }
+        Set<String> resourceIds = new LinkedHashSet<>();
+        if (permission.getResourceIds() != null) {
+            for (String id : permission.getResourceIds()) {
+                if (StringUtils.isBlank(id)) {
+                    throw new ServiceException("Tài nguyên không được để trống");
+                }
+                resourceIds.add(id);
+            }
+            if (!resourceIds.isEmpty()
+                    && this.permissionDAO.countResourcesByIds(new ArrayList<>(resourceIds)) != resourceIds.size()) {
+                throw new ServiceException("Tài nguyên không tồn tại");
+            }
+        }
+        if (permission.getDataPermissions() != null) {
+            for (DataPermission item : permission.getDataPermissions()) {
+                if (item == null) {
+                    throw new ServiceException("Quyền dữ liệu không được để trống");
+                }
+                if (StringUtils.isBlank(item.getRouterId())) {
+                    throw new ServiceException("Định tuyến của quyền dữ liệu không được để trống");
+                }
+                if (StringUtils.isBlank(item.getMetaId())) {
+                    throw new ServiceException("Nguồn dữ liệu của quyền dữ liệu không được để trống");
+                }
+                if (StringUtils.isBlank(item.getRoleId())) {
+                    throw new ServiceException("Vai trò của quyền dữ liệu không được để trống");
+                }
+                routerIds.add(item.getRouterId());
+            }
+            if (!routerIds.isEmpty()
+                    && this.permissionDAO.countRoutersByIds(new ArrayList<>(routerIds)) != routerIds.size()) {
+                throw new ServiceException("Định tuyến không tồn tại");
+            }
+        }
+    }
+
+    /**
      * LưuVai tròQuyền
      * @param roleId
      * @return
      */
     @Transactional
     public int savePermission(String roleId, Permission permission) {
+        // DS118 A: validate truoc khi xoa/ghi (xem validateSavePermission).
+        this.validateSavePermission(roleId, permission);
     	String[] routerIds = permission.getRouterIds();
     	String[] resourceIds = permission.getResourceIds();
     	List<DataPermission> dataPermissions = permission.getDataPermissions();
