@@ -318,6 +318,24 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
     @Override
     @Transactional(readOnly = false)
     public int delete(Lessee entity) {
+        // DS131 C: checkLesseeTenant cho qua im lang id trong/ghost
+        // (getCompanyNameById tra blank) nen ghost delete 200 rows 0 im
+        // lang, blank 200, xoa lap 200 rows 1 (mapper soft-delete khong
+        // loc del_flag) -- cung lop DS123/DS129/DS130. Chan truoc bang
+        // dao.get (khong loc del_flag nen tra ca dong da xoa mem,
+        // delFlag phan biet) theo mau CodeRuleService.delete (DS129 A);
+        // KHONG tai dung checkExists (DS103): no cho qua blank va khong
+        // check delFlag, lai dung chung voi save/bulkUpdate; giu
+        // checkLesseeTenant sau do (dong live la tenant van 400).
+        // bulkDelete ghost GIU NGUYEN 200 rows 0 (DS99/DS106/DS126 B).
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được thuê bao cần xóa.");
+        }
+        Lessee stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Thuê bao không tồn tại: "
+                    + entity.getId());
+        }
         checkLesseeTenant(entity);
         return super.delete(entity);
     }
