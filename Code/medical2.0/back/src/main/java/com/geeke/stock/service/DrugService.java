@@ -231,6 +231,29 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         return super.bulkDelete(entitys);
     }
 
+    /**
+     * DS123 A: single delete fail-closed 400. CrudService.delete chi
+     * chan qua stored-row tenant check, ma check do bo qua stored==null
+     * nen delete id ma tra 200 data=0 (DS94 class, nhu bulkDelete truoc
+     * DS122); mapper delete khong loc del_flag nen xoa dong da xoa mem
+     * tra 200 rows=1 va ghi them 1 audit DELETED (probe A4). Kiem tra
+     * ton tai truoc: id rong/id ma/dong da xoa mem (del_flag != '0')
+     * -> 400. Khong co caller noi bo nao goi delete() cua service nay.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Drug drug) {
+        if (drug == null || StringUtils.isBlank(drug.getId())) {
+            throw new ServiceException("Không xác định được thuốc cần xóa.");
+        }
+        Drug stored = drugDao.get(drug.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Thuốc không tồn tại: " + drug.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(drug);
+        return super.delete(drug);
+    }
+
 
     public int addDurg(Drug drug) {
         return dao.insert(drug);

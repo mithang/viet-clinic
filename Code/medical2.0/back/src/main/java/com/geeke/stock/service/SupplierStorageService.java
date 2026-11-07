@@ -143,17 +143,25 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
      * known id could still repair it). Fail-closed: refuse unless the
      * slip is already voided (examine _2, stock already zeroed by
      * cancel()); a null examine is refused too (stock state unknown).
-     * Nonexistent ids delegate to super (0 rows, no harm).
+     * DS123 A: id rong/id ma/dong da xoa mem -> 400 truoc guard DS39
+     * (truoc day id ma roi qua super.delete -> 0 dong roi van 200).
      */
     @Override
     @Transactional(readOnly = false)
     public int delete(SupplierStorage entity) {
-        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
-            SupplierStorage stored = this.get(entity.getId());
-            if (stored != null && (stored.getExamine() == null
-                    || !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(stored.getExamine().getValue()))) {
-                throw new ServiceException("Phiếu nhập kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu nhập kho trước.");
-            }
+        // DS123 A: id rong/id ma/dong da xoa mem -> 400 truoc guard DS39
+        // (truoc day id ma roi qua super.delete -> 0 dong roi van 200).
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được phiếu nhập kho cần xóa.");
+        }
+        SupplierStorage stored = this.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Phiếu nhập kho không tồn tại: "
+                    + entity.getId());
+        }
+        if (stored.getExamine() == null
+                || !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(stored.getExamine().getValue())) {
+            throw new ServiceException("Phiếu nhập kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu nhập kho trước.");
         }
         return super.delete(entity);
     }
