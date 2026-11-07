@@ -36,7 +36,9 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:7016',
+        // Docker: đặt API_TARGET=http://backend:7016 (xem docker-compose.yml).
+        // Không đặt thì mặc định localhost:7016 như chạy tay trước giờ.
+        target: process.env.API_TARGET || 'http://localhost:7016',
         changeOrigin: true,
         pathRewrite: { '^/api': '' }
       }

@@ -1,0 +1,112 @@
+# Viet Clinic — chạy toàn bộ dự án bằng Docker (1 lệnh: ./setup.sh).
+#
+# Dịch vụ:
+#   mysql    — MySQL 8.0, DB md_yzs, tự import dump gốc + migrations v1..v19
+#               + seed (notice_send, role full 4000) lần đầu chạy.
+#   redis    — Redis 7 (cache/session, không mật khẩu, như máy dev).
+#   backend  — Spring Boot 2.1 / Java 8, build thành jar rồi chạy, cổng 7016.
+#   frontend — Vue CLI dev server, cổng 7020, proxy /api -> backend:7016.
+#
+# Secrets (mật khẩu MySQL root, JWT secret, mật khẩu tài khoản test) KHÔNG
+# nằm trong file này: setup.sh sinh ngẫu nhiên và ghi vào docker/.env
+# (đã gitignore), lần chạy sau dùng lại.
+# Cổng publish ra máy host: MySQL 3306, Redis 6379, backend 7016, frontend 7020
+# (chỉ bind 127.0.0.1 cho MySQL/Redis).
+
+name: viet-clinic
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: vietclinic-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD chua co trong docker/.env — chay ./setup.sh de sinh}
+      MYSQL_DATABASE: md_yzs
+    # Backend JDBC driver 8.0 + mysql CLI đều chạy tốt với native password;
+    # đặt rõ để tránh khác biệt giữa các máy.
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # Dump + migrations gốc của repo (chỉ đọc). Script init tự chạy đúng
+      # thứ tự, không dựa vào thứ tự alphabet của docker-entrypoint-initdb.d.
+      - ./DB:/repo-db:ro
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+      - ./docker/mysql/seed.sql:/seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uroot", "-p${MYSQL_ROOT_PASSWORD:?}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7
+    container_name: vietclinic-redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: vietclinic-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      # Ghi đè URL trong application-dev.yml (localhost:3306) sang service mysql.
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/md_yzs?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B7&useSSL=false
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:?}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET chua co trong docker/.env — chay ./setup.sh de sinh}
+    ports:
+      - "7016:7016"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # JRE image không có curl/wget: kiểm tra TCP bằng bash.
+      test: ["CMD-SHELL", "(exec 3<>/dev/tcp/127.0.0.1/7016) 2>/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    container_name: vietclinic-frontend
+    restart: unless-stopped
+    environment:
+      # vue.config.js đọc API_TARGET làm proxy target cho /api.
+      # Không đặt biến này thì mặc định http://localhost:7016 (chạy tay).
+      API_TARGET: http://backend:7016
+      NODE_OPTIONS: --openssl-legacy-provider
+    ports:
+      - "7020:7020"
+    depends_on:
+      backend:
+        condition: service_started
+    volumes:
+      # Mount source để sửa code là hot-reload ngay; node_modules giữ trong
+      # volume riêng để không bị mount đè mất (đã npm install trong image).
+      - ./Code/medical2.0/client:/app
+      - frontend-node-modules:/app/node_modules
+
+volumes:
+  mysql-data:
+  redis-data:
+  frontend-node-modules:
