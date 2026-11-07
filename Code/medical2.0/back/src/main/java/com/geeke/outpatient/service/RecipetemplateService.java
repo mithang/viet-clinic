@@ -426,6 +426,14 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             throw new ServiceException("Đăng ký khám không tồn tại: "
                     + recipetemplate.getRegisterId());
         }
+        // DS116 A fix-forward (post-restore): a registration without a
+        // patient (patient_id nullable; the DS110 REG2 fixture has none)
+        // NPEd at getPatientId().getId() below -- 500. Fail-closed 400.
+        if (medicalRecord.getPatientId() == null
+                || StringUtils.isBlank(medicalRecord.getPatientId().getId())) {
+            throw new ServiceException("Đăng ký khám không có bệnh nhân: "
+                    + recipetemplate.getRegisterId());
+        }
         recipetemplate.setPatientId(medicalRecord.getPatientId().getId());
         recipetemplate.setCompany(medicalRecord.getCompany());
         String a = "";
