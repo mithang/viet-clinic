@@ -67,6 +67,19 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         checkLength(costItem.getItemCountryCode(), 64, "quốc gia Độ dài mã phải nằm trong khoảng 0 đến 64");
         checkLength(costItem.getPinyinCode(), 64, "Độ dài phải nằm trong khoảng 1 đến 64 ");
         checkLength(costItem.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        // DS147 B: gia tri DictItem unit/itemType viet thang vao cot varchar(64)
+        // (mapper #{entity.unit.value} / #{entity.itemType.value}) -- @Length(128)
+        // cua DictItem chi guard bang dict, khong guard cot dich (probe B2/B3:
+        // unit/itemType value 65 deu 500). Null-safe: DictItem null hoac value
+        // null thi bo qua nhu cu (mapper viet NULL).
+        checkDictLength(costItem.getUnit(), 64, "Đơn vị Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(costItem.getItemType(), 64, "Loại hạng mục Độ dài phải nằm trong khoảng 0 đến 64");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
     }
 
     private static void checkLength(String value, int max, String message) {
