@@ -5863,7 +5863,13 @@
                 .catch();
               allQueryMedicalRecord(this.registration.id).then((responseData) => {
                 if (responseData.code === 100) {
-                  let recipelInfoEvtList = responseData.data.recipelInfoEvtList;
+                  // DS140 B: lượt Đã khám chưa có medical_record -> backend
+                  // trả medicalRecord null (fail-soft, đúng); gán thẳng sẽ
+                  // null model rồi .registration.id ném TypeError + template
+                  // patientTell vỡ theo. Theo đúng mẫu đã có ở :6047:
+                  // null thì giữ model mới từ ReturnMedicalModel() và chép
+                  // registration từ lượt khám đang mở.
+                  let recipelInfoEvtList = responseData.data.recipelInfoEvtList || [];
                   recipelInfoEvtList.forEach((element) => {
                     this.AlreadyPatientDescriptions.push(
                       JSON.parse(JSON.stringify(element.recipelInfo))
@@ -5874,7 +5880,9 @@
                     b.seq = b.seq ? b.seq : 0;
                     return a.seq - b.seq;
                   });
-                  this.MedicalRecordModel = responseData.data.medicalRecord;
+                  if (responseData.data.medicalRecord) {
+                    this.MedicalRecordModel = responseData.data.medicalRecord;
+                  }
                   this.MedicalRecordModel.registration.id = itemCopy.id;
                   this.MedicalRecordModel.registration.treatType =
                     itemCopy.treatType;
@@ -5956,8 +5964,10 @@
                 allQueryMedicalRecord(this.registration.id).then(
                   (responseData) => {
                     if (responseData.code === 100) {
+                      // DS140 B: như nhánh trên (medicalRecord null -> giữ
+                      // model mới, không gán null).
                       let recipelInfoEvtList =
-                        responseData.data.recipelInfoEvtList;
+                        responseData.data.recipelInfoEvtList || [];
                       recipelInfoEvtList.forEach((element) => {
                         this.AlreadyPatientDescriptions.push(
                           JSON.parse(JSON.stringify(element
@@ -5969,7 +5979,9 @@
                         b.seq = b.seq ? b.seq : 0;
                         return a.seq - b.seq;
                       });
-                      this.MedicalRecordModel = responseData.data.medicalRecord;
+                      if (responseData.data.medicalRecord) {
+                        this.MedicalRecordModel = responseData.data.medicalRecord;
+                      }
                       this.MedicalRecordModel.registration.id = itemCopy.id;
                       this.MedicalRecordModel.registration.treatType =
                         itemCopy.treatType;
