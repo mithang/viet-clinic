@@ -61,6 +61,36 @@ public class RouterService extends TreeService<RouterDao, Router> {
         return super.save(entity);
     }
 
+    /**
+     * DS135 C: single delete fail-closed 400 khi id rong / khong ton tai /
+     * da xoa mem (del_flag '1'). Truoc day: ghost -> 200 data 0 im lang,
+     * xoa lan 2 -> 200 rows 1, blank id -> 200 data 0 (mapper soft-delete
+     * UPDATE sys_router SET del_flag='1' WHERE id khong loc del_flag;
+     * CrudService stored-row tenant check bo qua stored row null -- lop
+     * DS123; TreeService-based services chua bao gio duoc quet vi sweep
+     * truoc chi nhin subclass truc tiep cua CrudService). checkExists
+     * (DS103) KHONG tai dung: cho qua blank id, khong check delFlag.
+     * bulkDelete ghost CO TINH GIU 200 rows 0 (DS99/DS106/DS126 B
+     * idempotency -- RouterService.bulkDelete goi mapper-direct
+     * super.bulkDelete, khong qua delete() guard nay). sys_router la
+     * bang GLOBAL khong co company_id nen
+     * verifyTenantOwnershipAgainstStoredRow bo qua -- vo hai
+     * (tien le DictType/DS134 B).
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Router entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được tuyến đường cần xóa.");
+        }
+        Router stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Tuyến đường không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<Router> entitys) {
