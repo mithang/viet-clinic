@@ -76,6 +76,59 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS145 B: CrudController bulk routes goi thang CrudService.bulkInsert/
+     * bulkUpdate, bo qua moi guard cua save()/delete(): bulkUpdate id ma
+     * 200 im lang (probe B1 -- CrudService stored-row check bo qua
+     * stored==null theo thiet ke ITER35); bulkInsert luot co bac si
+     * khong duoc gan so thu tu (probe B4 -- save() gan qua
+     * assignQueueNumber, bulk thi khong). Ghi de theo mau DS99/DS108:
+     * null/rong -> 400, entry null -> 400, bulkUpdate id trong / dong
+     * khong ton tai / da xoa mem -> 400; bulkInsert gan so nhu save().
+     * KHONG them rule bat buoc patient/doctor: BookingRequestService.
+     * confirm tao luot khong patient khong doctor mot cach hop le (G2),
+     * va single save {} -> 200 nhu bulk (do o tang save, follow-up,
+     * khong phai lo bulk). bulkDelete ghost giu 200 rows 0 theo parity
+     * DS99 G11/DS126 B.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Registration> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách lượt đăng ký thêm mới không được để trống");
+        }
+        for (Registration entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Lượt đăng ký không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
+                assignQueueNumber(entity);
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Registration> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách lượt đăng ký cập nhật không được để trống");
+        }
+        for (Registration entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Lượt đăng ký không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của lượt đăng ký đã tồn tại");
+            }
+            Registration stored = dao.get(entity.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
+                throw new ServiceException("Lượt đăng ký không tồn tại: " + entity.getId());
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    /**
      * DS119 A: mapper <update id="delete"> co nhanh <otherwise> xoa mem
      * theo patient_id khi id rong -- delete khong id + patientId se xoa
      * sach moi luot dang ky cua benh nhan. Chan o service: chi xoa khi
