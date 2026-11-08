@@ -47,6 +47,54 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
         return super.save(entity);
     }
 
+    // DS136 B: single delete fail-closed 400. SchedulingService truoc
+    // day KHONG CO delete() override: mapper <update id="delete"> xoa
+    // theo KHOA COMPOSITE (userid, schedulingtime, company_id) -- id
+    // cua entity khong bao gio duoc dung -- voi loc del_flag='0' AND
+    // is_locked='0'. CrudService.delete chi kiem tra dong da luu qua
+    // dao.get(entity.getId()) nen ghost id -> stored null -> bo qua
+    // (lop DS123). He qua: khoa la/rong -> 200 data 0 im lang; xoa lan
+    // 2 -> 200 data 0; dong khoa (is_locked='1') -> 200 data 0; va
+    // XOA NHAM DONG SONG: payload mang id la nhung khoa (userid, ngay,
+    // companyid) that se xoa dong song do (probe B6 pre-fix: 200 rows 1).
+    // UI that (scheduling/index.vue delrowdata) gui model khong co id
+    // nen id rong la duong hop le -- chi kiem tra id khi payload co gui:
+    // id non-blank ma khong khop dong song nao cua khoa -> 400.
+    // checkExists (DS103) KHONG tai dung: cho qua blank id, khong check
+    // delFlag. bulkDelete khong co route, khong caller, mapper thieu
+    // statement -- khong them (dead code, ngoai pham vi).
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Scheduling entity) {
+        if (entity == null || StringUtils.isBlank(entity.getUserid())
+                || entity.getSchedulingtime() == null
+                || StringUtils.isBlank(entity.getCompanyid())) {
+            throw new ServiceException("Không xác định được lịch trực cần xóa");
+        }
+        List<Scheduling> live = schedulingDao.listcount(entity);
+        if (live == null || live.isEmpty()) {
+            throw new ServiceException("Lịch trực không tồn tại");
+        }
+        for (Scheduling row : live) {
+            if ("1".equals(row.getIsLocked())) {
+                throw new ServiceException("Lịch trực đã khóa không thể xóa");
+            }
+        }
+        if (StringUtils.isNotBlank(entity.getId())) {
+            boolean idMatches = false;
+            for (Scheduling row : live) {
+                if (entity.getId().equals(row.getId())) {
+                    idMatches = true;
+                    break;
+                }
+            }
+            if (!idMatches) {
+                throw new ServiceException("Lịch trực không tồn tại: " + entity.getId());
+            }
+        }
+        return super.delete(entity);
+    }
+
     public List<SchedulingDTO> getHisuserpblist(SchedulingDTO pageRequest) {
         List<SchedulingDTO> buserlist= schedulingDao.getpbuserlist(pageRequest);
         if (Objects.nonNull(buserlist)){
