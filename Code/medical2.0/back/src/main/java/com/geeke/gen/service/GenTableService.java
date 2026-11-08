@@ -151,6 +151,21 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
                 GenTableColumnService.checkLengths(genTableColumn);
             }
         }
+        // DS142 B: khong co ConstraintService nao -- rang buoc con
+        // duoc luu qua constraintDao.bulkInsert TRUC TIEP, bo qua moi
+        // guard: constraintColumn null 500 NOT NULL; comments 65 ky
+        // tu 500 (entity max 500 nhung DB varchar(64)); name 129 ky
+        // tu 500 (DB varchar(128)); constraintColumn 2049 ky tu 500
+        // (DB varchar(2048)). Kiem tra o day, TRUOC super.save.
+        // Gioi han lay min(entity max, DB max); name blank chan theo
+        // dung rule required cua UI (genTableForm formRules.
+        // constraint_name). (Null entry trong list va id ma thuoc ve
+        // bang khac thuoc nhom C.)
+        for (Constraint constraint : genTable.getConstraintList()) {
+            if (constraint != null) {
+                checkConstraint(constraint);
+            }
+        }
         // DS99: CrudService.save rẽ nhánh update khi id khác rỗng, doUpdate
         // khong dong den dong nao neu id khong ton tai ma van tra 200
         // (probe G5: save id la + null lists het NPE nhung van 200 trong
@@ -252,6 +267,42 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         return genTable;
     }
 
+
+    /**
+     * DS142 B: kiem tra mot rang buoc con truoc khi luu kem qua
+     * GenTableService.save (khong co ConstraintService; bulkInsert
+     * truc tiep bo qua moi guard). Gioi han lay min(@Length entity,
+     * do dai cot DB): name entity max 100 (DB varchar(128));
+     * comments entity max 500 nhung DB varchar(64); constraintColumn
+     * entity max 500 (DB varchar(2048)); remarks entity = DB 255.
+     * name/constraintColumn blank -> 400: name theo rule required
+     * cua UI, constraintColumn la cot NOT NULL duy nhat co y nghia
+     * nghiep vu (ten rang buoc chi la nhan hien thi, DB cho NULL
+     * nhung UI bat buoc nhap).
+     */
+    private static void checkConstraint(Constraint constraint) {
+        if (constraint == null) {
+            throw new ServiceException("Ràng buộc không được để trống");
+        }
+        if (StringUtils.isBlank(constraint.getName())) {
+            throw new ServiceException("Tên ràng buộc không được để trống");
+        }
+        if (constraint.getName().length() > 100) {
+            throw new ServiceException("Tên ràng buộc Độ dài phải nằm trong khoảng 1 đến 100");
+        }
+        if (StringUtils.isBlank(constraint.getConstraintColumn())) {
+            throw new ServiceException("Trường ràng buộc không được để trống");
+        }
+        if (constraint.getConstraintColumn().length() > 500) {
+            throw new ServiceException("Trường ràng buộc Độ dài phải nằm trong khoảng 0 đến 500");
+        }
+        if (constraint.getComments() != null && constraint.getComments().length() > 64) {
+            throw new ServiceException("Mô tả Độ dài phải nằm trong khoảng 0 đến 64");
+        }
+        if (constraint.getRemarks() != null && constraint.getRemarks().length() > 255) {
+            throw new ServiceException("Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        }
+    }
 
     /**
      * DS99: bulkInsert/bulkUpdate/bulkDelete ke thua tu CrudService di
