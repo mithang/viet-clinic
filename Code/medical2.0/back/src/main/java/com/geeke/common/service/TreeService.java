@@ -54,7 +54,37 @@ public abstract class TreeService<D extends TreeDao<T>, T extends TreeEntity<T>>
 		} else if(entity.getParent().getId().equals("0")) {	// gốcNútĐối tượng
 			entity.getParent().setIds("0.");
 		} else {	// gốcNútĐối tượng
-			entity.setParent(super.get(entity.getParent().getId()));
+			// DS152 A: parent id la phai ton tai, dang song, khong phai
+			// chinh dong nay va khong phai cap duoi cua no. Truoc day
+			// super.get(ghost) tra null -> setParent(null) -> @NotNull
+			// parent 500 o save don (probe A1/A2); parent da xoa mem
+			// van duoc dao.get tra ve (khong loc del_flag) nen dong moi
+			// duoc tao duoi parent da xoa (probe A5); parent=self hoac
+			// descendant thi preUpdate tinh ids = parent.ids + id + "."
+			// nen ids chua id cua chinh dong / vong lap cay con (probe
+			// A3/A4/A9). Tat ca fail-closed 400 o day, truoc khi ghi.
+			// super.get giu kiem tra tenant (parent tenant khac -> 400
+			// nhu cu, probe A6). Tao moi (id rong) bo qua self/
+			// descendant (chua co dong de so sanh).
+			T parent = super.get(entity.getParent().getId());
+			if (parent == null) {
+				throw new ServiceException("Cấp cha không tồn tại: " + entity.getParent().getId());
+			}
+			if (!"0".equals(parent.getDelFlag())) {
+				throw new ServiceException("Cấp cha không tồn tại: " + entity.getParent().getId());
+			}
+			if (StringUtils.isNotBlank(entity.getId())) {
+				if (entity.getId().equals(parent.getId())) {
+					throw new ServiceException("Cấp cha không thể là chính nút này");
+				}
+				T stored = dao.get(entity.getId());
+				if (stored != null && StringUtils.isNotBlank(stored.getIds())
+						&& StringUtils.isNotBlank(parent.getIds())
+						&& parent.getIds().startsWith(stored.getIds())) {
+					throw new ServiceException("Cấp cha không thể là cấp dưới của chính nút này");
+				}
+			}
+			entity.setParent(parent);
 		}
 
 		
