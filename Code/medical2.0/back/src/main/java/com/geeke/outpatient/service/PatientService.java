@@ -64,6 +64,10 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         if (patient == null) {
             throw new ServiceException("Thông tin bệnh nhân không được để trống");
         }
+        // DS148 B: chan do dai truoc moi xu ly (name 46..100 qua @Valid
+        // roi 500 o DB do @Length lech cot; cardType/openId khong @Length;
+        // gia tri DictItem gender/nexus viet thang vao varchar(64)).
+        checkPatientLengths(patient);
         if (patient.getId() != null && !patient.getId().trim().isEmpty()
                 && this.dao.get(patient.getId()) == null) {
             throw new ServiceException("Bệnh nhân không tồn tại: " + patient.getId());
@@ -223,6 +227,54 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         }
     }
 
+    /**
+     * DS148 B: chan do dai qua dai qua bulk/save. bulkInsert/bulkUpdate
+     * khong qua @Valid nen cac truong co @Length van 500 o mapper khi
+     * qua bulk; name @Length(max=100) LECH voi DB varchar(45) nen single
+     * save name 46..100 qua @Valid roi 500 o DB (probe B1). cardType la
+     * String thuong varchar(10) khong co @Length (probe B2); openId
+     * varchar(255) khong co @Length (probe B3); gia tri DictItem
+     * gender/withPatientNexus viet thang vao varchar(64) trong khi
+     * DictItem @Length(128) khong guard cot dich (probe B4). Gioi han
+     * lay theo cot DB, mau checkCostItemLengths (DS146 A / DS147 B);
+     * KHONG sua annotation @Length(max=100) cua name -- service check
+     * la diem chan thuc thi cho ca save() + bulk*. Null-safe.
+     */
+    private static void checkPatientLengths(Patient patient) {
+        if (patient == null) {
+            return;
+        }
+        checkLength(patient.getName(), 45, "Tên bệnh nhân độ dài phải nằm trong khoảng 1 đến 45");
+        checkLength(patient.getAge(), 45, "Tuổi Độ dài phải nằm trong khoảng 1 đến 45");
+        checkLength(patient.getMonth(), 45, "Tháng Độ dài phải nằm trong khoảng 1 đến 45");
+        checkLength(patient.getPhone(), 45, "liên hệ cách Độ dài phải nằm trong khoảng 1 đến 45");
+        checkLength(patient.getCard(), 45, "số CMND/CCCD Độ dài phải nằm trong khoảng 1 đến 45");
+        checkLength(patient.getCardType(), 10, "Loại giấy tờ Độ dài phải nằm trong khoảng 0 đến 10");
+        checkLength(patient.getHealthCardNo(), 45, "sức khỏe thẻ số Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(patient.getProvince(), 45, "Độ dài tỉnh phải nằm trong khoảng 0 đến 45");
+        checkLength(patient.getCity(), 45, "Độ dài thành phố phải nằm trong khoảng 0 đến 45");
+        checkLength(patient.getArea(), 45, "Độ dài quận phải nằm trong khoảng 0 đến 45");
+        checkLength(patient.getAddress(), 45, "Độ dài địa chỉ chi tiết phải nằm trong khoảng 0 đến 45");
+        checkLength(patient.getGuardianName(), 100, "người giám hộ Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(patient.getGuardianPhone(), 100, "người giám hộ Độ dài số điện thoại phải nằm trong khoảng 0 đến 100");
+        checkLength(patient.getOpenId(), 255, "Độ dài định danh WeChat phải nằm trong khoảng 0 đến 255");
+        checkLength(patient.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(patient.getGender(), 64, "Giới tính Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(patient.getWithPatientNexus(), 64, "Quan hệ với bệnh nhân Độ dài phải nằm trong khoảng 0 đến 64");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<Patient> entitys) {
@@ -231,6 +283,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         }
         for (Patient entity : entitys) {
             validateRequiredForBulk(entity);
+            checkPatientLengths(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -251,6 +304,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             if (this.dao.get(entity.getId()) == null) {
                 throw new ServiceException("Bệnh nhân không tồn tại: " + entity.getId());
             }
+            checkPatientLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }
