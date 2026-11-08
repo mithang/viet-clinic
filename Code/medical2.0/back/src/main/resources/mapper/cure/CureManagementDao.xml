@@ -126,8 +126,6 @@
         company_id=#{company.id},
         recipel_detail_id=#{recipelDetail.id},
         executions=#{executions},
-        create_by=#{createBy},
-        create_date=#{createDate},
         update_by=#{updateBy},
         update_date=#{updateDate},
         del_type=#{delType},

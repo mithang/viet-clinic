@@ -77,6 +77,22 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         if (recipelInfoService.get(info.getId()) == null) {
             throw new ServiceException("Đơn thuốc không tồn tại: " + info.getId());
         }
+        // DS150 B: recipelInfoId la String nhung cot cure.recipel_info_id
+        // la bigint (nullable): "abc" hoac "" qua mapper deu 500 o DB
+        // (error 1366, probe B1/B2 pre). Chan truoc moi ghi: chi cho
+        // null hoac so nguyen vua long (parse that bai -> 400 ro nghia);
+        // "" cung 400 (khong de MySQL tu ep). Ap cho ca create lan
+        // update vi ca hai deu qua save() nay.
+        String recipelInfoId = entity.getRecipelInfoId();
+        if (recipelInfoId != null && StringUtils.isNotBlank(recipelInfoId)) {
+            try {
+                Long.parseLong(recipelInfoId);
+            } catch (NumberFormatException e) {
+                throw new ServiceException("Mã đơn thuốc không hợp lệ: " + recipelInfoId);
+            }
+        } else if (recipelInfoId != null) {
+            throw new ServiceException("Mã đơn thuốc không được để trống");
+        }
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). remarks la
         // field rieng cua entity (Lombok @Data, khong ke thua @Length(255)
         // cua DataEntity) nhung cure.remarks chi varchar(100) (probe C6:
