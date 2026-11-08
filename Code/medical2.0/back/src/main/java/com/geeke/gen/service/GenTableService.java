@@ -66,6 +66,12 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
     @Override
     @Transactional(readOnly = false)
     public GenTable save(GenTable genTable) {
+        // DS141 C: defence-in-depth (framework 400 JSON-null truoc khi
+        // toi service, nhu DS118 C1); guard that giu hanh vi khi service
+        // duoc goi noi bo.
+        if (genTable == null) {
+            throw new ServiceException("Bảng không được để trống");
+        }
         // DS80: gen_table la metadata toan cuc, khong co cot company nen
         // controller save KHONG co @Valid — them @Valid se bat ca @NotNull
         // ke thua tren DataEntity.getCompany (form UI khong gui company)
@@ -84,6 +90,39 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         if (StringUtils.isBlank(genTable.getIsAssociation())) {
             throw new ServiceException("Liên kết bảng không được để trống");
         }
+        // DS141 C: khong co @Valid nen moi @Length tren entity deu chet --
+        // gia tri qua dai 500 DataIntegrityViolationException o DB.
+        // Gioi han lay min(entity max, DB max): comments entity 500
+        // nhung DB varchar(64); parentTableFk entity 100 nhung DB
+        // varchar(64); className/filter lay entity max (DB rong hon);
+        // orderColumns khong co @Length, lay DB varchar(2048).
+        if (genTable.getName().length() > 128) {
+            throw new ServiceException("Tên Độ dài phải nằm trong khoảng 1 đến 128");
+        }
+        if (genTable.getComments() != null && genTable.getComments().length() > 64) {
+            throw new ServiceException("Giải thích Độ dài phải nằm trong khoảng 0 đến 64");
+        }
+        if (genTable.getSource().length() > 128) {
+            throw new ServiceException("đến nguồn Độ dài phải nằm trong khoảng 0 đến 128");
+        }
+        if (genTable.getClassName().length() > 100) {
+            throw new ServiceException("thực thể Lớp Tên Độ dài phải nằm trong khoảng 1 đến 100");
+        }
+        if (genTable.getParentTableFk() != null && genTable.getParentTableFk().length() > 64) {
+            throw new ServiceException("cha bảng ngoài khóa Độ dài phải nằm trong khoảng 0 đến 64");
+        }
+        if (genTable.getIsAssociation().length() > 1) {
+            throw new ServiceException("có liên kết bảng Độ dài phải nằm trong khoảng 1 đến 1");
+        }
+        if (genTable.getFilter() != null && genTable.getFilter().length() > 2000) {
+            throw new ServiceException("lọc Điều kiện Độ dài phải nằm trong khoảng 0 đến 2000");
+        }
+        if (genTable.getOrderColumns() != null && genTable.getOrderColumns().length() > 2048) {
+            throw new ServiceException("sắp xếp Trường Độ dài phải nằm trong khoảng 0 đến 2048");
+        }
+        if (genTable.getRemarks() != null && genTable.getRemarks().length() > 255) {
+            throw new ServiceException("Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        }
         // DS99: Jackson dat null tuong minh (constraintList/genTableColumnList
         // : null trong JSON) ghi de Lists.newArrayList() khoi tao o field,
         // roi vong lap ben duoi NPE -> 500 (probe G5). Null o day nghia la
@@ -93,6 +132,18 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         }
         if (genTable.getGenTableColumnList() == null) {
             genTable.setGenTableColumnList(Lists.newArrayList());
+        }
+        // DS141 C14: cot con gui kem duoc luu xuong qua
+        // genTableColumnDao.bulkInsert/bulkUpdate TRUC TIEP, bo qua moi
+        // guard cua GenTableColumnService.save -- ten cot con qua dai
+        // 500 o bulkInsert. Kiem tra do dai cot con o day, TRUOC
+        // super.save, de ca bang cha cung khong duoc tao khi cot con sai.
+        // (Chi kiem do dai: guard null/blank cua cot con thuoc ve
+        // GenTableColumnService.save, khong ap cho duong luu kem nay.)
+        for (GenTableColumn genTableColumn : genTable.getGenTableColumnList()) {
+            if (genTableColumn != null) {
+                GenTableColumnService.checkLengths(genTableColumn);
+            }
         }
         // DS99: CrudService.save rẽ nhánh update khi id khác rỗng, doUpdate
         // khong dong den dong nao neu id khong ton tai ma van tra 200
