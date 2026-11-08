@@ -8762,7 +8762,13 @@
           // }).catch()
           allQueryMedicalRecord(row.regid).then((responseData) => {
             if (responseData.code === 100) {
-              let recipelInfoEvtList = responseData.data.recipelInfoEvtList;
+              // DS140 C: như DS140 B — lượt Đã khám chưa có medical_record
+              // -> medicalRecord null; gán thẳng sẽ null model rồi
+              // .registration.id ném TypeError + template patientTell vỡ.
+              // Chỉ gán khi non-null, không thì giữ model mới từ
+              // ReturnMedicalModel() (đã gán ở đầu $nextTick); registration
+              // lấy từ responseData.data.registration (allNewQuery luôn set).
+              let recipelInfoEvtList = responseData.data.recipelInfoEvtList || [];
               recipelInfoEvtList.forEach((element) => {
                 this.AlreadyPatientDescriptions.push(
                   JSON.parse(JSON.stringify(element.recipelInfo))
@@ -8773,7 +8779,9 @@
                 b.seq = b.seq ? b.seq : 0;
                 return a.seq - b.seq;
               });
-              this.MedicalRecordModel = responseData.data.medicalRecord;
+              if (responseData.data.medicalRecord) {
+                this.MedicalRecordModel = responseData.data.medicalRecord;
+              }
               this.MedicalRecordModel.registration.id =
                 responseData.data.registration.id;
               this.MedicalRecordModel.registration.treatType =
