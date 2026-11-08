@@ -87,7 +87,7 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         // DS99: Jackson dat null tuong minh (constraintList/genTableColumnList
         // : null trong JSON) ghi de Lists.newArrayList() khoi tao o field,
         // roi vong lap ben duoi NPE -> 500 (probe G5). Null o day nghia la
-        // "khong co dong con", nhu khi bo qua truong: chuan hoa ve rong.
+        // "không có dòng con", nhu khi bo qua truong: chuan hoa ve rong.
         if (genTable.getConstraintList() == null) {
             genTable.setConstraintList(Lists.newArrayList());
         }

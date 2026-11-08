@@ -61,7 +61,7 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
             // dong do — chi gan sync_id=1, giu nguyen ten/gia cua phong kham —
             // thay vi chen dong thu 2 cung ma (danh sach UI hien 2 dong cung
             // ma, gia khac nhau, chon nham se thu sai gia). Skip lang thi
-            // trang dong bo van hien "chua dong bo" mai (syncNum theo
+            // trang dong bo van hien "chưa đồng bộ" mai (syncNum theo
             // sync_id=1), nen nhan la trang thai cuoi nhat quan duy nhat.
             // Dong xoa mem khong duoc nhan (find chi loc del_flag=0).
             if (entity.getSfxmCode() != null && !entity.getSfxmCode().trim().isEmpty()) {

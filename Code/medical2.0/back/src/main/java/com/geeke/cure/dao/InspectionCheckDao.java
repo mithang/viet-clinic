@@ -24,7 +24,7 @@ public interface InspectionCheckDao extends CrudDao<InspectionCheck> {
     String getCompanyIdById(String id);
 
     // T1 (iteration 42): getCompanyIdById tra null cho ca hai truong hop
-    // "dong khong ton tai" va "dong co company_id null" nen can lookup
+    // "dòng không tồn tại" và "dòng có company_id null" nen can lookup
     // ton tai rieng de chi chan dung truong hop cha khong ton tai (cha
     // co company rong giu hanh vi cu nhu guard R3).
     int existsById(String id);

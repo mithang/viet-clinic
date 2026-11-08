@@ -248,10 +248,10 @@ public class ColumnViewService {
 			// tra successJson(0) = HTTP 200 im lang (probe C1; ho silent
 			// no-op DS94/DS99). Chi chap nhan update khi dong da ton tai.
 			if (existing == null) {
-				throw new ServiceException("Cau hinh cot khong ton tai: " + cv.getId());
+				throw new ServiceException("Cấu hình cột không tồn tại: " + cv.getId());
 			}
 			if (!userId.equals(existing.getUserId())) {
-				throw new ServiceException("Khong co quyen sua cau hinh cot cua nguoi dung khac");
+				throw new ServiceException("Không có quyền sửa cấu hình cột của người dùng khác");
 			}
 			rows = dao.update(cv);
 		}

@@ -258,11 +258,11 @@ public class HosDepartmentStorageController extends BaseController {
                 Boolean ok = httpUtil.UpdateHosData(ApiUrl.HOS_UPDATE_DRUGS_STORAGE_STATUS, item.getCrkmxId());
                 if (!Boolean.TRUE.equals(ok)) {
                     callbackFailed.add(item.getCrkmxId());
-                    logger.warn("HIS callback tra ve khong phai 200 cho crkmxId {}", item.getCrkmxId());
+                    logger.warn("HIS callback trả về không phải 200 cho crkmxId {}", item.getCrkmxId());
                 }
             } catch (Exception e) {
                 callbackFailed.add(item.getCrkmxId());
-                logger.warn("HIS callback that bai cho crkmxId {} (nhap kho van giu nguyen): {}", item.getCrkmxId(), e.getMessage());
+                logger.warn("HIS callback thất bại cho crkmxId {} (nhập kho vẫn giữ nguyên): {}", item.getCrkmxId(), e.getMessage());
             }
         });
         JSONObject data = new JSONObject();

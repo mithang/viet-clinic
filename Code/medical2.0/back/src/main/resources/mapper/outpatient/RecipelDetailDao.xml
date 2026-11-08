@@ -551,7 +551,7 @@
          khong map NULL sang int primitive -> BindingException 500 o
          CureManagementController.save NGAY SAU khi updateById da commit
          xong (flag 1,1 + treatment_date da ghi). COALESCE ca hai ve
-         0: chua thuc hien dong nao -> am (= -total, "chua hoan thanh",
+         0: chua thuc hien dong nao -> am (= -total, "chưa hoàn thành",
          dung ngu nghia ghi trong service); don khong co detail nao ->
          0-0=0, giu ngu nghia vacuous-complete nhu updateById. -->
     <select id="schedule" parameterType="java.lang.String"

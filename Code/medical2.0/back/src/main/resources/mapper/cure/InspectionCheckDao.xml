@@ -55,7 +55,7 @@
         SELECT company_id FROM inspection_check WHERE id = #{id}
     </select>
 
-    <!-- T1 (iteration 42): dem rieng de phan biet "khong ton tai" voi "company null" -->
+    <!-- T1 (iteration 42): dem rieng de phan biet "không tồn tại" voi "company null" -->
     <select id="existsById" resultType="int">
         SELECT COUNT(1) FROM inspection_check WHERE id = #{id}
     </select>

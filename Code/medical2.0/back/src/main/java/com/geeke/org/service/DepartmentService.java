@@ -47,7 +47,7 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
                 if (old != null && old.getCompany() != null
                         && StringUtils.isNotBlank(old.getCompany().getId())
                         && !tenantId.equals(old.getCompany().getId())) {
-                    throw new ServiceException("Khong co quyen truy cap tenant khac");
+                    throw new ServiceException("Không có quyền truy cập tenant khác");
                 }
             }
             department.setCompany(new Company(tenantId));

@@ -706,7 +706,7 @@ export default {
     },
     setLimitNumber() {
       // Tinh so nhom menu cap mot vua trong khung menu that, phan con lai
-      // gop vao submenu "Them". Truoc day ca hai nhanh deu gan cung 10
+      // gop vao submenu "Thêm". Truoc day ca hai nhanh deu gan cung 10
       // nen menu tran xuong nhieu hang (cao 270px) va bi tab bar che mat,
       // o man 1366px chi thay 2 nhom dau.
       this.$nextTick(() => {
@@ -987,7 +987,7 @@ export default {
       background: none;
       border-bottom: 0;
       width: 100%;
-      // Khong cho menu xuong hang: phan thua do setLimitNumber gom vao "Them".
+      // Khong cho menu xuong hang: phan thua do setLimitNumber gom vao "Thêm".
       white-space: nowrap;
       flex-wrap: nowrap;
     }

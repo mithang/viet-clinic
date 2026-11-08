@@ -53,9 +53,9 @@ public class QueryConditionController extends CrudController<QueryConditionServi
 	// khong sua duoc lo cheo user (proxy chi kiem tra quyen session,
 	// khong kiem tra payload userId co bang session user hay khong).
 	// - Luong hop le duy nhat, co that: component chung
-	// views/components/queryForm.vue (47 view dung) -> nut "Luu" ->
+	// views/components/queryForm.vue (47 view dung) -> nut "Lưu" ->
 	// saveQueryCondition (userId = currentUser.id) va icon xoa tren
-	// danh sach "Tra cuu cua toi" -> deleteQueryCondition. init() chi
+	// danh sach "Tra cứu của tôi" -> deleteQueryCondition. init() chi
 	// liet ke dieu kien cua chinh user tren chinh trang do.
 	// - Doc (get/list/listAll) GIU NGUYEN.
 	// San nay (chi o controller, khong doi service):

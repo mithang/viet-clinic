@@ -195,7 +195,7 @@ public class UserService extends CrudService<UserDao, User>{
                 syncUserTenantLoginName(created.getId(), user.getLoginName());
                 return created;
             } catch (java.io.IOException e) {
-                throw new ServiceException("Luu nguoi dung that bai: " + e.getMessage());
+                throw new ServiceException("Lưu người dùng thất bại: " + e.getMessage());
             }
         }
         // Update-by-id: chi chan doi ten sang loginName cua user khac

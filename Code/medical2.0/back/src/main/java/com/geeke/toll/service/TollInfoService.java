@@ -457,13 +457,13 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * Xử lýbình thườngThu phí(không phảibán lẻ): Lưu đơn thuốc, TạoThu phíBản ghi, BHYTTải lên, Trừ thẻ trải nghiệm, Xét nghiệm và kiểm tra
      */
     private Registration processNormalCharge(TollEvt tollEvt, TollInfo tollInfo, Patient patient, List<RecipelInfoEvt> recipelInfoEvts) {
-        // DS53: claim tung don la "da thu" TRUOC moi dong tac thu phi/kho,
+        // DS53: claim tung don la "đã thu" TRUOC moi dong tac thu phi/kho,
         // nguyen tu (UPDATE ... WHERE is_pay='0', chi 1 luong song song
         // thang claim; mau DS52). Guard getInRecipeIds o saveToll chi la
         // SELECT-then-act nen cac lan thu song song deu vuot qua roi moi
         // ghi TollInfo + goi deduction -> okOccupyStock, lam used tang gap
         // N (probe: x8 deu 200, used 40 thay vi 5, 8 phieu). Claim o day,
-        // truoc vong chinh, nen don da thu / da duoc claim boi luong khac
+        // truoc vong chinh, nen don đã thu / da duoc claim boi luong khac
         // deu 400 truoc khi ghi dong nao; don trong cung TollEvt bi lap
         // cung bi chan (claim lan 2 tra 0 dong). Id trong duoc bo qua nhu
         // cu (vong chinh giu hanh vi cu). Thong bao giong guard trung lap
@@ -590,14 +590,14 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * Xử lýhoàn phílogic: Kiểm tra, Cập nhật trạng thái đơn thuốc, Tạohoàn phíBản ghi, trảcònTồn kho, BHYThoàn phí
      */
     private void processRefund(TollEvt tollEvt, TollInfo tollInfo, List<RecipelInfoEvt> recipelInfoEvts) {
-        // DS54: claim tung don la "da hoan" TRUOC moi dong tac hoan phi/kho,
+        // DS54: claim tung don la "đã hoàn" TRUOC moi dong tac hoan phi/kho,
         // nguyen tu (UPDATE ... WHERE is_pay='1', chi 1 luong song song
         // thang claim; mau DS53). Guard getInRecipeIds o saveToll chi la
         // SELECT-then-act nen cac lan hoan song song deu vuot qua roi moi
         // ghi phieu hoan + audit REFUND + materialRefund, lam phieu/audit
         // nhan doi va ton kho lech (probe pre: x8 deu 200, 8 phieu, 8
         // audit, surplus 10035 thay vi 10000). Claim o day, truoc vong
-        // chinh, nen don da hoan / chua thu / da duoc claim boi luong khac
+        // chinh, nen don đã hoàn / chua thu / da duoc claim boi luong khac
         // deu 400 truoc khi ghi dong nao; don trong cung TollEvt bi lap
         // cung bi chan (claim lan 2 tra 0 dong). Id trong duoc bo qua nhu
         // cu (vong chinh giu hanh vi cu). Thong bao giong guard trung lap
