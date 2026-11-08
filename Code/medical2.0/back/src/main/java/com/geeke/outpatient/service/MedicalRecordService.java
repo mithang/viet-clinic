@@ -9,6 +9,7 @@ import com.geeke.common.constants.BizConstants;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
+import com.geeke.common.persistence.DataEntity;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.cure.entity.InspectionCheck;
@@ -17,8 +18,11 @@ import com.geeke.cure.service.InspectionCheckDetailService;
 import com.geeke.cure.service.InspectionCheckInfoService;
 import com.geeke.cure.service.InspectionCheckService;
 import com.geeke.org.entity.Company;
+import com.geeke.org.service.CompanyService;
 import com.geeke.outpatient.dao.MedicalRecordDao;
 import com.geeke.outpatient.entity.*;
+import com.geeke.stock.dao.DrugDao;
+import com.geeke.stock.dao.StuffDao;
 import com.geeke.stock.entity.Drug;
 import com.geeke.stock.entity.InstantPatient;
 import com.geeke.stock.entity.MedicinalStockControl;
@@ -32,6 +36,7 @@ import com.geeke.stock.service.StuffService;
 import com.geeke.sys.entity.DictItem;
 import com.geeke.sys.service.SysFileService;
 import com.geeke.toll.service.TollInfoService;
+import com.geeke.treatment.dao.CostItemDao;
 import com.geeke.treatment.entity.CostItem;
 import com.geeke.treatment.service.CostItemService;
 import com.geeke.treatment.service.impl.CostItemPackageService;
@@ -83,6 +88,20 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
 
     @Autowired
     private StuffService stuffService;
+
+    // DS140 A v2: DAO đọc thẳng để kiểm tenant TRƯỚC khi enrich (xem
+    // getDrugStuffEvt). Không dùng service.get ở đây.
+    @Autowired
+    private DrugDao drugDao;
+
+    @Autowired
+    private CostItemDao costItemDao;
+
+    @Autowired
+    private StuffDao stuffDao;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private MedicalRecordDao medicalRecordDao;
@@ -1253,6 +1272,39 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         return receptionEvt;
     }
 
+    /**
+     * DS140 A v2: bản sao đúng luật của CrudService.verifyTenantOwnership,
+     * chỉ dùng để QUYẾT ĐỊNH CÓ ĐỌC hay không trước khi enrich (không ném).
+     * Ném ở đây sẽ poison transaction giống service.get nên chỉ trả boolean.
+     * Parity: tenant session trống/"null" -> cho qua; company trống -> cho
+     * qua; bằng tenant -> cho qua; từ điển dùng chung của cơ sở
+     * (institutionShared, vd Thuốc/Vật tư) mà company là institution của
+     * tenant -> cho qua; còn lại (tenant khác) -> không đọc, evt rỗng.
+     */
+    private boolean isReadableDrugStuff(DataEntity<?> entity, boolean institutionShared) {
+        if (entity == null || entity.getCompany() == null) {
+            return true;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return true;
+        }
+        String entityCompanyId = entity.getCompany().getId();
+        if (StringUtils.isBlank(entityCompanyId)) {
+            return true;
+        }
+        if (tenantId.equals(entityCompanyId)) {
+            return true;
+        }
+        if (institutionShared) {
+            String institution = companyService.getInstitution(tenantId);
+            if (StringUtils.isNotBlank(institution) && institution.equals(entityCompanyId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public DrugStuffEvt getDrugStuffEvt(RecipelDetail recipelDetail) {
         DrugStuffEvt drugStuffEvt = new DrugStuffEvt();
         // I1: chi tiết đơn có stuffType nhưng drugStuffId null (dữ liệu cũ/lệch) trước
@@ -1305,9 +1357,20 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 drug.setGoodsName(presDrug.getRegname());
                 drugStuffEvt.setDrug(drug);
             }else{
-                Drug drug = this.drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                // DS140 A v2: thuốc thuộc tenant khác (dữ liệu legacy/demo
+                // lệch tenant) KHÔNG được đọc qua drugService.get: CrudService
+                // là @Transactional cấp class nên ServiceException 400 của
+                // verifyTenantOwnership đánh dấu transaction rollback-only
+                // ngay khi vượt qua proxy get, dù caller có catch — commit
+                // sau đó vẫn UnexpectedRollbackException và cả đơn 400.
+                // Đọc qua drugDao.get (plain SELECT, không ném) rồi kiểm
+                // tenant trước, giống hệt verifyTenantOwnership: evt rỗng
+                // như tiền lệ I1 cho thuốc đã xóa; 1 dòng lệch không làm
+                // hỏng cả đơn của tenant mình. getById trực tiếp thuốc lệch
+                // tenant vẫn 400 (đường đó không đổi).
+                Drug drug = this.drugDao.get(recipelDetail.getDrugStuffId().getDrugStuffId());
                 // I1: thuốc gốc đã xóa -> drug null, tránh NPE ở drug.getId() dưới đây.
-                if (drug == null) {
+                if (drug == null || !isReadableDrugStuff(drug, true)) {
                     return drugStuffEvt;
                 }
                 drugStuffEvt.setDrugStuffId(drug.getId());
@@ -1322,9 +1385,12 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             }
         } else if ("3".equals(stuffType)) {
             //Truy vấn thông tin hạng mục khám chữa bệnh
-            CostItem costItem = this.costItemService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+            // DS140 A v2: như nhánh thuốc — đọc qua costItemDao.get + kiểm
+            // tenant trước, không qua service.get (tránh poison transaction).
+            // CostItem không override isInstitutionShared nên false.
+            CostItem costItem = this.costItemDao.get(recipelDetail.getDrugStuffId().getDrugStuffId());
             // I1: hạng mục đã xóa -> costItem null, tránh NPE ở costItem.getId() dưới đây.
-            if (costItem == null) {
+            if (costItem == null || !isReadableDrugStuff(costItem, false)) {
                 return drugStuffEvt;
             }
 
@@ -1351,7 +1417,13 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
 
 
         } else if ("4".equals(stuffType)) {
-            Stuff stuff = this.stuffService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+            // DS140 A v2: như nhánh thuốc — đọc qua stuffDao.get + kiểm
+            // tenant trước, không qua service.get (tránh poison transaction).
+            // Stuff là từ điển dùng chung của cơ sở nên institutionShared true.
+            Stuff stuff = this.stuffDao.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+            if (stuff != null && !isReadableDrugStuff(stuff, true)) {
+                return drugStuffEvt;
+            }
             if(stuff!=null){
             drugStuffEvt.setDrugStuffId(stuff.getId());
             drugStuffEvt.setName(stuff.getName());
