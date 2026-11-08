@@ -165,6 +165,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             throw new ServiceException("Phiếu thu không tồn tại: "
                     + tollInfo.getId());
         }
+        // DS148 C: chan do dai truoc moi xu ly (gia tri DictItem
+        // paymentType/amountStatus/tollType viet thang vao varchar(64),
+        // @Valid khong guard gia tri DictItem).
+        checkTollInfoLengths(tollInfo);
         // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
@@ -186,6 +190,41 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * bulkDelete id khong ton tai -> 400 (kiem tra stored-row tenant).
      * Company rong -> ep theo session; company la de guard generic chan.
      */
+    /**
+     * DS148 C: chan do dai qua dai qua bulk/save. bulkInsert/bulkUpdate
+     * khong qua @Valid nen tollNumber (co @Length 64) van 500 o mapper
+     * khi qua bulk (probe C1; bulkUpdate KHONG viet tollNumber nen C1
+     * chi bulkInsert). Gia tri DictItem paymentType/amountStatus/tollType
+     * viet thang vao varchar(64) -- DictItem @Length(128) khong guard
+     * cot dich, ca duong save don cung 500 (probe C2/C3/C4). jgid/jgmc/
+     * department/doseUnit khong co cot DB (transient) nen khong guard.
+     * Gioi han theo cot DB, mau checkCostItemLengths (DS146 A / DS147 B).
+     * Null-safe: nhanh REFUNDED cua controller luu phieu hoan chi co
+     * amountStatus (paymentType/tollType null) van qua nhu cu.
+     */
+    private static void checkTollInfoLengths(TollInfo tollInfo) {
+        if (tollInfo == null) {
+            return;
+        }
+        checkLength(tollInfo.getTollNumber(), 64, "Thu phí đơn số Độ dài phải nằm trong khoảng 1 đến 64");
+        checkLength(tollInfo.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(tollInfo.getPaymentType(), 64, "Loại thanh toán Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(tollInfo.getAmountStatus(), 64, "Trạng thái phiếu thu Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(tollInfo.getTollType(), 64, "Loại thu phí Độ dài phải nằm trong khoảng 0 đến 64");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
+    }
+
     private void checkTollInfoRequired(TollInfo tollInfo) {
         if (tollInfo == null) {
             throw new ServiceException("Phiếu thu không được để trống");
@@ -222,6 +261,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         }
         for (TollInfo tollInfo : entitys) {
             checkTollInfoRequired(tollInfo);
+            checkTollInfoLengths(tollInfo);
             forceSessionCompanyWhenBlank(tollInfo);
         }
         return super.bulkInsert(entitys);
@@ -243,6 +283,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             }
             verifyTenantOwnershipAgainstStoredRow(tollInfo);
             checkTollInfoRequired(tollInfo);
+            checkTollInfoLengths(tollInfo);
         }
         return super.bulkUpdate(entitys);
     }
