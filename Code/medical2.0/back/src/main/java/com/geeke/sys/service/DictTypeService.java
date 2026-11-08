@@ -86,8 +86,22 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
     }
 
     /** Theo từ điểnnameLấy từ điểnvalue */
+    // DS151: tra null khi khong tim thay, KHONG nem exception. getValue
+    // chay sau proxy @Transactional(readOnly = true) cua service nay:
+    // bat ky exception nao thoat khoi day (truoc day: NPE o
+    // value.getValue() khi ten la, TooManyResultsException khi ten
+    // trung) deu danh dau transaction cua excel() rollback-only -> ca
+    // file upload rollback voi warning 50001 mo, khong con dong nao
+    // luu (probe pre A1/A2). Tra null de ExcelImportBuilder nem
+    // IllegalArgumentException ngay trong builder (khong vuot proxy)
+    // va bao loi tung dong ro ten muc. Ten trung (vd "Viên" x3):
+    // DAO da LIMIT 1 + del_flag='0' + ORDER BY create_date, id nen
+    // lay dong som nhat mot cach xac dinh (medicalPreparationUnit_0).
     public String getValue(String name, String id) {
         DictItem value = dictItemDao.getValue(name, id);
+        if (value == null) {
+            return null;
+        }
         return value.getValue();
     }
 

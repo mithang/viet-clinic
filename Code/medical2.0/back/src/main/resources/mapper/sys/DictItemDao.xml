@@ -209,11 +209,23 @@
     </select>
 
     <!-- Theo từ điểnnameLấy từ điểnvalue -->
+    <!-- DS151: selectOne cu khong LIMIT/khong loc del_flag/khong ORDER
+         BY: seed co 3 dong "Viên" (del_flag='0') cung dict_type_id
+         medicalPreparationUnit nen getValue nem TooManyResultsException,
+         vuot qua proxy @Transactional cua DictTypeService danh dau
+         transaction excel() rollback-only -> ca file upload rollback
+         voi warning 50001 mo (probe pre A1). Them del_flag='0' +
+         ORDER BY create_date, id + LIMIT 1 de lay dong som nhat mot
+         cach xac dinh (medicalPreparationUnit_0; _0/_1 cung
+         create_date, id tiebreak chon _0; _12 moi hon). -->
     <select id="getValue" resultType="com.geeke.sys.entity.DictItem">
         SELECT a.value
         FROM sys_dict_item a
         WHERE a.name = #{name}
         and a.dict_type_id = #{id}
+        and a.del_flag = '0'
+        ORDER BY a.create_date, a.id
+        LIMIT 1
     </select>
 
     <!-- Theo loại từ điểncodeLấy tất cả mục từ điển -->
