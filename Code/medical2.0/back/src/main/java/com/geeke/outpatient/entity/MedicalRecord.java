@@ -288,7 +288,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="thểôKiểm traĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Khám thực thểĐộ dài phải nằm trong khoảng 0 đến 128 ")
 	public String getPhysiqueCheck() {
 		return physiqueCheck;
 	}
