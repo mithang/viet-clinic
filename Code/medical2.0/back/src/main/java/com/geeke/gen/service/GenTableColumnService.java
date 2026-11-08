@@ -64,6 +64,12 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
         if (genTableColumn.getWidth() == null) {
             throw new ServiceException("Cột rộng Không thể là trống");
         }
+        // DS141 A: controller khong co @Valid nen moi @Length tren entity
+        // deu chet -- gia tri qua dai 500 DataIntegrityViolationException
+        // o DB (xem checkLengths: gioi han lay min(entity max, DB max);
+        // jdbcType entity 100 nhung DB varchar(64); javaType/queryType/
+        // showType/customType khong co @Length, DB varchar(64)).
+        checkLengths(genTableColumn);
         // DS99: nhu GenTableService.save -- CrudService.save re nhanh update
         // khi id khac rong, doUpdate khong dong den dong nao neu id khong
         // ton tai ma van tra 200 (probe G5c: column save id la -> 200 im
@@ -74,6 +80,104 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
             throw new ServiceException("Trường bảng không tồn tại: " + genTableColumn.getId());
         }
         return super.save(genTableColumn);
+    }
+
+    private static boolean tooLong(String value, int max) {
+        return value != null && value.length() > max;
+    }
+
+    /**
+     * DS141 A: kiem tra do dai moi truong chuoi duoc persist, theo dung
+     * gioi han ma DB chap nhan (min cua @Length tren entity va do dai
+     * cot DB; noi khong co @Length thi lay do dai cot DB). Chi fail khi
+     * gia tri qua dai -- null duoc bo qua o day (cac guard null/blank
+     * rieng o save() lo phan do; GenTableService chi dung ham nay de
+     * kiem tra cot con truoc bulkInsert). Public static de
+     * GenTableService.save tai dung cho cot con gui kem (luu con qua
+     * DAO bulkInsert truc tiep, bo qua moi guard cua save() nay).
+     */
+    public static void checkLengths(GenTableColumn genTableColumn) {
+        if (tooLong(genTableColumn.getName(), 128)) {
+            throw new ServiceException("Tên Độ dài phải nằm trong khoảng 1 đến 128");
+        }
+        if (tooLong(genTableColumn.getJdbcType(), 64)) {
+            throw new ServiceException("vật lý Loại Độ dài phải nằm trong khoảng 1 đến 64");
+        }
+        if (tooLong(genTableColumn.getJavaField(), 200)) {
+            throw new ServiceException("thuộc tính tên Độ dài phải nằm trong khoảng 1 đến 200");
+        }
+        if (tooLong(genTableColumn.getDefVal(), 2000)) {
+            throw new ServiceException("Mặc định Giá trị Độ dài phải nằm trong khoảng 0 đến 2000");
+        }
+        if (tooLong(genTableColumn.getQueryVal(), 2000)) {
+            throw new ServiceException("Điều kiện truy vấn Độ dài phải nằm trong khoảng 0 đến 2000");
+        }
+        if (tooLong(genTableColumn.getInteraction(), 255)) {
+            throw new ServiceException("liên động thay đổi lượng Độ dài phải nằm trong khoảng 0 đến 255");
+        }
+        if (tooLong(genTableColumn.getInteractionVal(), 2048)) {
+            throw new ServiceException("liên động Giá trị Độ dài phải nằm trong khoảng 0 đến 2048");
+        }
+        if (tooLong(genTableColumn.getParameters(), 2000)) {
+            throw new ServiceException("liên động Tham số Độ dài phải nằm trong khoảng 0 đến 2000");
+        }
+        if (tooLong(genTableColumn.getSettings(), 2000)) {
+            throw new ServiceException("của nó nó Đặt (mở rộng Trường JSON) Độ dài phải từ 0 và 2000 Giữa");
+        }
+        if (tooLong(genTableColumn.getRemarks(), 255)) {
+            throw new ServiceException("Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        }
+        if (genTableColumn.getJavaType() != null
+                && tooLong(genTableColumn.getJavaType().getValue(), 64)) {
+            throw new ServiceException("JAVA Loại Độ dài phải nằm trong khoảng 1 đến 64");
+        }
+        if (genTableColumn.getQueryType() != null
+                && tooLong(genTableColumn.getQueryType().getValue(), 64)) {
+            throw new ServiceException("Truy vấn cách Độ dài phải nằm trong khoảng 0 đến 64");
+        }
+        if (genTableColumn.getShowType() != null
+                && tooLong(genTableColumn.getShowType().getValue(), 64)) {
+            throw new ServiceException("điều khiển Độ dài phải nằm trong khoảng 0 đến 64");
+        }
+        if (genTableColumn.getCustomType() != null
+                && tooLong(genTableColumn.getCustomType().getId(), 64)) {
+            throw new ServiceException("tùy chỉnh Loại Độ dài phải nằm trong khoảng 0 đến 64");
+        }
+        // Co 1 ky tu (DB varchar(1), isEdit varchar(2) nhung entity max 1)
+        // va NOT NULL: null 500 vi insert liet ke cot tuong minh.
+        if (genTableColumn.getIsPk() == null) {
+            throw new ServiceException("chính khóa không được để trống");
+        }
+        if (genTableColumn.getIsPk().length() > 1) {
+            throw new ServiceException("chính khóa Độ dài phải nằm trong khoảng 0 đến 1");
+        }
+        if (genTableColumn.getIsNull() == null) {
+            throw new ServiceException("có thể trống không được để trống");
+        }
+        if (genTableColumn.getIsNull().length() > 1) {
+            throw new ServiceException("có thể trống Độ dài phải nằm trong khoảng 0 đến 1");
+        }
+        if (genTableColumn.getIsInsert() == null) {
+            throw new ServiceException("có thể chèn không được để trống");
+        }
+        if (genTableColumn.getIsInsert().length() > 1) {
+            throw new ServiceException("có thể chèn Độ dài phải nằm trong khoảng 0 đến 1");
+        }
+        if (genTableColumn.getIsEdit() != null && genTableColumn.getIsEdit().length() > 1) {
+            throw new ServiceException("Có thể biên Độ dài phải nằm trong khoảng 0 đến 1");
+        }
+        if (genTableColumn.getIsList() == null) {
+            throw new ServiceException("Cột hiển thị không được để trống");
+        }
+        if (genTableColumn.getIsList().length() > 1) {
+            throw new ServiceException("Cột hiển thị Độ dài phải nằm trong khoảng 0 đến 1");
+        }
+        if (genTableColumn.getIsQuery() == null) {
+            throw new ServiceException("Truy vấn không được để trống");
+        }
+        if (genTableColumn.getIsQuery().length() > 1) {
+            throw new ServiceException("Truy vấn Độ dài phải nằm trong khoảng 0 đến 1");
+        }
     }
 
     /**
