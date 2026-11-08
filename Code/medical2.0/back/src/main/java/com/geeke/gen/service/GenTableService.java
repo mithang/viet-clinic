@@ -3,6 +3,7 @@ package com.geeke.gen.service;
 import com.geeke.common.constants.ActionConstants;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.persistence.BaseEntity;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.gen.dao.ConstraintDao;
@@ -146,10 +147,13 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         // truoc DS142 A; null entry trong list va id ma thuoc ve bang
         // khac thuoc nhom C.)
         for (GenTableColumn genTableColumn : genTable.getGenTableColumnList()) {
-            if (genTableColumn != null) {
-                GenTableColumnService.checkRequired(genTableColumn);
-                GenTableColumnService.checkLengths(genTableColumn);
+            if (genTableColumn == null) {
+                // DS142 C: entry null trong list -- vong lap xu ly con
+                // ben duoi goi genTableColumn.getId() NPE -> 500.
+                throw new ServiceException("Trường bảng không được để trống");
             }
+            GenTableColumnService.checkRequired(genTableColumn);
+            GenTableColumnService.checkLengths(genTableColumn);
         }
         // DS142 B: khong co ConstraintService nao -- rang buoc con
         // duoc luu qua constraintDao.bulkInsert TRUC TIEP, bo qua moi
@@ -159,12 +163,11 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         // (DB varchar(2048)). Kiem tra o day, TRUOC super.save.
         // Gioi han lay min(entity max, DB max); name blank chan theo
         // dung rule required cua UI (genTableForm formRules.
-        // constraint_name). (Null entry trong list va id ma thuoc ve
-        // bang khac thuoc nhom C.)
+        // DS142 C: checkConstraint(null) nem 400 -- entry null trong
+        // list truoc day roi xuong vong lap ben duoi, goi
+        // constraint.getId() NPE -> 500.
         for (Constraint constraint : genTable.getConstraintList()) {
-            if (constraint != null) {
-                checkConstraint(constraint);
-            }
+            checkConstraint(constraint);
         }
         // DS99: CrudService.save rẽ nhánh update khi id khác rỗng, doUpdate
         // khong dong den dong nao neu id khong ton tai ma van tra 200
@@ -174,6 +177,20 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         // gui id rong (UI tao moi khong gui id, sua gui id lay tu list).
         if (StringUtils.isNotBlank(genTable.getId()) && super.get(genTable.getId()) == null) {
             throw new ServiceException("Bảng không tồn tại: " + genTable.getId());
+        }
+        // DS142 C: con gui kem co id khac rong di nhanh bulkUpdate, ma
+        // mapper bulkUpdate chi match theo id (khong kiem gen_table_id):
+        // id ma (ghost) la silent 200 no-op dang DS99, id cua bang KHAC
+        // ghi de luon dong cua bang do (cross-table hijack). Chan
+        // TRUOC super.save: tao moi (chua co id bang cha) thi bat ky id
+        // con nao cung sai -- bang cha chua ton tai nen khong the co con;
+        // sua thi id con phai ton tai, chua xoa mem, va thuoc dung bang
+        // nay (dao.get khong loc del_flag nen kiem delFlag o day).
+        for (GenTableColumn genTableColumn : genTable.getGenTableColumnList()) {
+            checkChildColumnOwner(genTable, genTableColumn);
+        }
+        for (Constraint constraint : genTable.getConstraintList()) {
+            checkChildConstraintOwner(genTable, constraint);
         }
 
         String id = super.save(genTable).getId();
@@ -301,6 +318,47 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         }
         if (constraint.getRemarks() != null && constraint.getRemarks().length() > 255) {
             throw new ServiceException("Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        }
+    }
+
+    /**
+     * DS142 C: con co id khac rong chi duoc sua khi dong do ton tai,
+     * chua xoa mem, va thuoc dung bang cha dang luu (mapper bulkUpdate
+     * chi match theo id nen khong kiem o day se ghi de dong cua bang
+     * khac). Tao moi: bang cha chua co id nen bat ky id con nao cung
+     * sai. GenTableColumnEx tra tu dao.get co genTable.id map tu
+     * a.gen_table_id.
+     */
+    private void checkChildColumnOwner(GenTable genTable, GenTableColumn genTableColumn) {
+        if (StringUtils.isBlank(genTableColumn.getId())) {
+            return;
+        }
+        if (StringUtils.isBlank(genTable.getId())) {
+            throw new ServiceException("Trường bảng không tồn tại hoặc không thuộc bảng này: " + genTableColumn.getId());
+        }
+        GenTableColumn saved = genTableColumnDao.get(genTableColumn.getId());
+        if (saved == null || !BaseEntity.DEL_FLAG_NORMAL.equals(saved.getDelFlag())
+                || saved.getGenTable() == null
+                || !genTable.getId().equals(saved.getGenTable().getId())) {
+            throw new ServiceException("Trường bảng không tồn tại hoặc không thuộc bảng này: " + genTableColumn.getId());
+        }
+    }
+
+    /**
+     * DS142 C: nhu checkChildColumnOwner, cho rang buoc con.
+     */
+    private void checkChildConstraintOwner(GenTable genTable, Constraint constraint) {
+        if (StringUtils.isBlank(constraint.getId())) {
+            return;
+        }
+        if (StringUtils.isBlank(genTable.getId())) {
+            throw new ServiceException("Ràng buộc không tồn tại hoặc không thuộc bảng này: " + constraint.getId());
+        }
+        Constraint saved = constraintDao.get(constraint.getId());
+        if (saved == null || !BaseEntity.DEL_FLAG_NORMAL.equals(saved.getDelFlag())
+                || saved.getGenTable() == null
+                || !genTable.getId().equals(saved.getGenTable().getId())) {
+            throw new ServiceException("Ràng buộc không tồn tại hoặc không thuộc bảng này: " + constraint.getId());
         }
     }
 
