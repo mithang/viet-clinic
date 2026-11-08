@@ -184,8 +184,25 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	 * @return
 	 */
 	public List<String> bulkInsert(List<T> entitys) {
+		// DS146 C: fail-closed 400 cho list sai dinh dang, theo mau DS126 B
+		// cua bulkDelete (chi co bulkDelete duoc guard o base; bulkInsert/
+		// bulkUpdate truoc day khong co: [null] NPE 500 o vong lap duoi,
+		// [] roi toi dao.bulkInsert voi <foreach> rong -> BadSqlGrammar
+		// (DS94 handler map thanh 400 voi message sai lech), probe C2/C3.
+		// Null list khong toi duoc service qua HTTP (framework JSON guard
+		// 400 truoc, probe C1) nen guard null o day la defence-in-depth
+		// cho caller noi bo -- giong DS126 B. Khong caller noi bo nao truyen
+		// list rong/null hop le: moi super.bulkInsert deu nhan list tu
+		// @RequestBody (controller) hoac list da validate o override rieng;
+		// cac bulk* cap DAO (GenTable/DictType/UserRole/...) khong qua day.
+		if (entitys == null || entitys.isEmpty()) {
+			throw new ServiceException("Danh sách thêm mới không được để trống");
+		}
 		List<String> ids = Lists.newArrayList();
 		for(T entity: entitys) {
+			if (entity == null) {
+				throw new ServiceException("Dòng thêm mới không được để trống");
+			}
 			// ITER30: bulkInsert truoc day khong verify tenant (bulkUpdate/
 			// bulkDelete thi co) nen POST bulkInsert voi company cua tenant
 			// khac ghi thang dong vao tenant do (tai hien live o
@@ -207,8 +224,22 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	 * @return
 	 */
 	public List<String> bulkUpdate(List<T> entitys) {
+		// DS146 C: nhu bulkInsert tren (mau DS126 B): [null] NPE 500,
+		// [] BadSqlGrammar 400-voi-message-sai, [{}] id trong 200 im lang
+		// (dao ghi 0 dong, probe C5/C6/C7). Blank-id cung 400 nhu cac
+		// override rieng kieu DS99/DS108/DS145 da lam; null list la
+		// defence-in-depth (framework 400 truoc, probe C4).
+		if (entitys == null || entitys.isEmpty()) {
+			throw new ServiceException("Danh sách cập nhật không được để trống");
+		}
 		List<String> ids = Lists.newArrayList();
 		for(T entity: entitys) {
+			if (entity == null) {
+				throw new ServiceException("Dòng cập nhật không được để trống");
+			}
+			if (StringUtils.isBlank(entity.getId())) {
+				throw new ServiceException("Dòng cập nhật không xác định được id cần cập nhật");
+			}
 			verifyTenantOwnership(entity);
 			// ITER35 M1: also verify against the STORED row, not only the
 			// payload company. Payload-only verification let a foreign row
