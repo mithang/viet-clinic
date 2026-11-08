@@ -191,6 +191,11 @@ public class RouterService extends TreeService<RouterDao, Router> {
     // Giai quyet parent tu DB de TreeEntity.preInsert/preUpdate tinh
     // ids dung ("0." cho nut goc, ids cua parent that cho nut con).
     // Goi sau khi da validate parent co id; parent la phai ton tai.
+    // DS152 C: them self / descendant -- truoc day bulkUpdate [R
+    // parent=R] va [R parent=RC] deu 200 va lam hong R.ids (chua id
+    // cua chinh no / vong lap cay con, probe C1/C2); single save da
+    // duoc guard TreeService.save (DS152 A) chan, bulk bypass save
+    // nen can chan o day. Tao moi (id rong) bo qua self/descendant.
     private void resolveParent(Router entity) {
         String parentId = entity.getParent().getId();
         if ("0".equals(parentId)) {
@@ -203,6 +208,17 @@ public class RouterService extends TreeService<RouterDao, Router> {
         Router stored = dao.get(parentId);
         if (stored == null) {
             throw new ServiceException("Tuyến đường cha không tồn tại");
+        }
+        if (StringUtils.isNotBlank(entity.getId())) {
+            if (entity.getId().equals(parentId)) {
+                throw new ServiceException("Tuyến đường cha không thể là chính tuyến đường này");
+            }
+            Router self = dao.get(entity.getId());
+            if (self != null && StringUtils.isNotBlank(self.getIds())
+                    && StringUtils.isNotBlank(stored.getIds())
+                    && stored.getIds().startsWith(self.getIds())) {
+                throw new ServiceException("Tuyến đường cha không thể là cấp dưới của chính tuyến đường này");
+            }
         }
         entity.setParent(stored);
     }
