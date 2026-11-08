@@ -73,6 +73,86 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     }
 
     /**
+     * DS145 D: controller bulk* chi gate quyen company:create/update/
+     * delete roi goi thang CrudService.bulk -- bo qua moi guard cua
+     * save(): bulkInsert thieu truong 500 NOT NULL (probe D1),
+     * bulkUpdate id ma 200 im lang (probe D2 -- CrudService stored-row
+     * check bo qua stored==null theo thiet ke ITER35, va Company khong
+     * co cot company_id nen check tenant tren stored row cung bo qua),
+     * bulkInsert entry null 500 NPE o vong lap CrudService (probe D3).
+     * Ghi de theo mau DS99/DS108: null/rong -> 400, entry null -> 400,
+     * bulkUpdate id trong / dong khong ton tai / da xoa mem -> 400;
+     * truong bat buoc null-only theo dung hop dong DS85 cua saveWithFile
+     * (name/sort/addressProvince/addressCity/addressRegion/address/
+     * phoneNumber -- '' duoc chap nhan vi company live mang '');
+     * chay checkCompanySaveOwnership tung dong nhu save() (chan tao/cap
+     * nhat xuyen nhom goc). bulkDelete ghost giu 200 rows 0 theo parity
+     * DS99 G11/DS126 B.
+     */
+    private void checkCompanyRequired(Company company) {
+        if (company == null) {
+            throw new ServiceException("Công ty không được để trống");
+        }
+        if (company.getName() == null) {
+            throw new ServiceException("Tên công ty không được để trống");
+        }
+        if (company.getSort() == null) {
+            throw new ServiceException("Sắp xếp không được để trống");
+        }
+        if (company.getAddressProvince() == null) {
+            throw new ServiceException("Địa chỉ (Tỉnh) không được để trống");
+        }
+        if (company.getAddressCity() == null) {
+            throw new ServiceException("Địa chỉ (Thành phố) không được để trống");
+        }
+        if (company.getAddressRegion() == null) {
+            throw new ServiceException("Địa chỉ (Quận) không được để trống");
+        }
+        if (company.getAddress() == null) {
+            throw new ServiceException("Địa chỉ không được để trống");
+        }
+        if (company.getPhoneNumber() == null) {
+            throw new ServiceException("Số điện thoại không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Company> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách công ty thêm mới không được để trống");
+        }
+        for (Company company : entitys) {
+            checkCompanyRequired(company);
+            checkCompanySaveOwnership(company);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Company> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách công ty cập nhật không được để trống");
+        }
+        for (Company company : entitys) {
+            if (company == null) {
+                throw new ServiceException("Công ty không được để trống");
+            }
+            if (StringUtils.isBlank(company.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của công ty đã tồn tại");
+            }
+            Company stored = dao.get(company.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
+                throw new ServiceException("Công ty không tồn tại: " + company.getId());
+            }
+            checkCompanyRequired(company);
+            checkCompanySaveOwnership(company);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    /**
      * DS135 A: single delete fail-closed 400 khi id rong / khong ton tai /
      * da xoa mem (del_flag '1'). Truoc day: ghost -> 200 data 0 im lang,
      * xoa lan 2 -> 200 rows 1, blank id -> 200 data 0 (mapper soft-delete
