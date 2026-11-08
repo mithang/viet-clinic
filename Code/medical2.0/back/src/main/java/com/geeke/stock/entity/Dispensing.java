@@ -41,7 +41,7 @@ public class Dispensing extends DataEntity<Dispensing> {
         this.company = company;
     }
     
-	@NotNull(message="Đăng ký khámidKhông được để trống")
+	@NotNull(message="Đăng ký khám id Không được để trống")
     public Registration getRegistration() {
         return registration;
     }
@@ -50,7 +50,7 @@ public class Dispensing extends DataEntity<Dispensing> {
         this.registration = registration;
     }
     
-	@NotNull(message="Tồn khoidKhông được để trống")
+	@NotNull(message="Tồn kho id Không được để trống")
     public SupplierStock getSupplierStock() {
         return supplierStock;
     }

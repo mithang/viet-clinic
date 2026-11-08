@@ -55,12 +55,12 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
     // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
     @Override
     @NotNull(message="Tên cột không được để trống")
-    @Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+    @Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
     public String getName() {
     	return super.getName();
     }
 
-	@NotNull(message="bảngmã sốKhông thể là trống")
+	@NotNull(message="bảng mã số Không thể là trống")
     public GenTable getGenTable() {
         return genTable;
     }
@@ -70,7 +70,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
     }
     
 	@NotNull(message="Giải thích không được để trống")
-	@Length(min=0, max=64, message="Giải thíchĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="Giải thích Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getComments() {
 		return comments;
 	}
@@ -80,7 +80,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	
 	
 	@NotNull(message="Loại vật lý không được để trống")
-	@Length(min=1, max=100, message="vật lýLoạiĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@Length(min=1, max=100, message="vật lý Loại Độ dài phải nằm trong khoảng 1 đến 100")
 	public String getJdbcType() {
 		return jdbcType;
 	}
@@ -89,7 +89,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@NotNull(message="JAVALoạiKhông thể là trống")
+	@NotNull(message="JAVA Loại Không thể là trống")
     public DictItem getJavaType() {
         return javaType;
     }
@@ -107,7 +107,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
     }
     
 	@NotNull(message="Tên thuộc tính không được để trống")
-	@Length(min=1, max=200, message="thuộc tínhtênĐộ dài phải nằm trong khoảng 1 đến 200 ")
+	@Length(min=1, max=200, message="thuộc tính tên Độ dài phải nằm trong khoảng 1 đến 200")
 	public String getJavaField() {
 		return javaField;
 	}
@@ -116,7 +116,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="Mặc địnhGiá trịĐộ dài phải nằm trong khoảng 0 đến 2000 ")
+	@Length(min=0, max=2000, message="Mặc định Giá trị Độ dài phải nằm trong khoảng 0 đến 2000")
 	public String getDefVal() {
 		return defVal;
 	}
@@ -125,7 +125,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="chínhkhóaĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="chính khóa Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsPk() {
 		return isPk;
 	}
@@ -134,7 +134,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="có thểtrốngĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="có thể trống Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsNull() {
 		return isNull;
 	}
@@ -143,7 +143,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="có thểchènĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="có thể chèn Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsInsert() {
 		return isInsert;
 	}
@@ -153,7 +153,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	
 	
 	@NotNull(message="Có thể biên không được để trống")
-	@Length(min=0, max=1, message="có thểbiênĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="có thể biên Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsEdit() {
 		return isEdit;
 	}
@@ -162,7 +162,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="Cộthiển thịĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Cột hiển thị Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsList() {
 		return isList;
 	}
@@ -171,7 +171,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@NotNull(message="CộtrộngKhông thể là trống")
+	@NotNull(message="Cột rộng Không thể là trống")
 	public Integer getWidth() {
 		return width;
 	}
@@ -180,7 +180,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=1, message="Truy vấnĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Truy vấn Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsQuery() {
 		return isQuery;
 	}
@@ -197,7 +197,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.queryType = queryType;
     }
     
-	@Length(min=0, max=2000, message="Điều kiện truy vấnĐộ dài phải nằm trong khoảng 0 đến 2000 ")
+	@Length(min=0, max=2000, message="Điều kiện truy vấn Độ dài phải nằm trong khoảng 0 đến 2000")
 	public String getQueryVal() {
 		return queryVal;
 	}
@@ -214,7 +214,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
         this.showType = showType;
     }
     
-	@Length(min=0, max=255, message="liên độngthay đổilượngĐộ dài phải nằm trong khoảng 0 đến 255 ")
+	@Length(min=0, max=255, message="liên động thay đổi lượng Độ dài phải nằm trong khoảng 0 đến 255")
 	public String getInteraction() {
 		return interaction;
 	}
@@ -223,7 +223,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2048, message="liên độngGiá trịĐộ dài phải nằm trong khoảng 0 đến 2048 ")
+	@Length(min=0, max=2048, message="liên động Giá trị Độ dài phải nằm trong khoảng 0 đến 2048")
 	public String getInteractionVal() {
 		return interactionVal;
 	}
@@ -232,7 +232,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="liên độngTham sốĐộ dài phải nằm trong khoảng 0 đến 2000 ")
+	@Length(min=0, max=2000, message="liên động Tham số Độ dài phải nằm trong khoảng 0 đến 2000")
 	public String getParameters() {
 		return parameters;
 	}
@@ -241,7 +241,7 @@ public class GenTableColumn extends DataEntity<GenTableColumn> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="của nónóĐặt(mở rộngTrườngJSON)Độ dài phải từ 0  và  2000 Giữa")
+	@Length(min=0, max=2000, message="của nó nó Đặt (mở rộng Trường JSON) Độ dài phải từ 0 và 2000 Giữa")
 	public String getSettings() {
 		return settings;
 	}

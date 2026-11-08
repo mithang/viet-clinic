@@ -632,7 +632,7 @@
             }
           })
         } else {
-          this.$message.error('Nhập dữ liệu thất bại, Vui lòng chọn đúngxlsxTệp mẫu')
+          this.$message.error('Nhập dữ liệu thất bại, Vui lòng chọn đúng xlsx Tệp mẫu')
           this.cancellation();
         }
         this.load();

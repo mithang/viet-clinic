@@ -84,7 +84,7 @@ public class AuthController {
         try {
             currentUser.login(token);
         } catch (UnknownAccountException e) {
-            logger.info("Người dùng {} Đăng nhậpTài khoản hoặc mật khẩu sai", loginName);
+            logger.info("Người dùng {} Đăng nhập Tài khoản hoặc mật khẩu sai", loginName);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10010));
         } catch (DisabledAccountException e) {
             logger.info("Người dùng {} Tài khoản bị vô hiệu hóa", loginName);
@@ -130,7 +130,7 @@ public class AuthController {
             //Cập nhậtNgười dùng, Trả vềHiện tạiđăng nhậpngườiThông tin
             response = getLoginUserInfo(request, user, companyId);
         } catch (Exception e) {
-            logger.error("Đăng nhậpThất bại", e);
+            logger.error("Đăng nhập Thất bại", e);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
         } finally {
             //ĐưaXóa của Sửatrả lạiđến
@@ -166,7 +166,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<JSONObject> logout() {
         loginService.logout();
-        return ResponseEntity.ok(ResultUtil.successJson("ThoátThành công"));
+        return ResponseEntity.ok(ResultUtil.successJson("Thoát Thành công"));
     }
 
     /**
@@ -216,10 +216,10 @@ public class AuthController {
             //TODO:Sẽ isLogined, loginedSecondsgánGiá trịĐếnNgười dùngĐăng nhậpThông tin, Trả vềchotrangmặt
             String days = secondToTime(loginedSeconds);
             if (isLogined){
-                u.setStatus("ĐãĐăng nhập");
+                u.setStatus("Đã Đăng nhập");
                 u.setLoginDuration(days);
             }else {
-                u.setStatus("ChưaĐăng nhập");
+                u.setStatus("Chưa Đăng nhập");
                 u.setLoginDuration("--");
             }
         }
@@ -384,7 +384,7 @@ public class AuthController {
             //Cập nhậtNgười dùng, Trả vềHiện tạiđăng nhậpngườiThông tin
             response = getLoginUserInfo(request, user, companyId);
         } catch (Exception e) {
-            logger.error("Đăng nhậpThất bại", e);
+            logger.error("Đăng nhập Thất bại", e);
             return ResponseEntity.ok(ResultUtil.errorJson(ErrorEnum.E_10012));
         } finally {
             //ĐưaXóa của Sửatrả lạiđến

@@ -31,7 +31,7 @@
               </el-option>
               <el-option
                 :key="2"
-                label="Bản phòng khámHIS"
+                label="Bản phòng khám HIS"
                 :value="2">
               </el-option>
             </el-select>

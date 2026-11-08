@@ -190,7 +190,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             }
             else
             {
-                throw new ServiceException("Nhập kho thất bại, tạmchỉhỗ trợThuốc hoặc Vật tưnhập kho!");
+                throw new ServiceException("Nhập kho thất bại, tạm chỉ hỗ trợ Thuốc hoặc Vật tư nhập kho!");
             }
 
             medicinalStorageControl.setStorageStock(new BigDecimal(supplierStock.getInitial()));
@@ -348,7 +348,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 SearchParamsBuilder.create().eq("supplier_storage_id", supplierStorage.getId()).build(), "");
         if (CollectionUtils.isEmpty(list))
         {
-            throw new ServiceException("nhập khoThông tinhủyThất bại, Chưatìm kiếmĐếnCầnhủy của Chi tiết nhập khoThông tin. ");
+            throw new ServiceException("nhập kho Thông tin hủy Thất bại, Chưa tìm kiếm Đến Cần hủy của Chi tiết nhập kho Thông tin.");
         }
 
         for (SupplierStock supplierStock:list)
@@ -366,7 +366,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 BigDecimal surplusStock = medicinalStorageControl.getSurplusStock();    //Số lượng tồn kho còn khả dụng
                 if (storageStock.compareTo(surplusStock) != 0)
                 {
-                    throw new ServiceException("độngTồn khokiểm soátĐãphátthay đổi, Không thểhủyXóanhập khoDữ liệu!");
+                    throw new ServiceException("động Tồn kho kiểm soát Đã phát thay đổi, Không thể hủy Xóa nhập kho Dữ liệu!");
                 }
 
                 // DS35: refuse the void while the detail row is still
@@ -428,7 +428,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                             && fresh.getSurplusStock().compareTo(BigDecimal.ZERO) == 0) {
                         continue;
                     }
-                    throw new ServiceException("độngTồn khokiểm soátĐãphátthay đổi, Không thểhủyXóanhập khoDữ liệu!");
+                    throw new ServiceException("động Tồn kho kiểm soát Đã phát thay đổi, Không thể hủy Xóa nhập kho Dữ liệu!");
                 }
 
                 // DS28: a missing aggregate row must not abort the void. The
@@ -473,7 +473,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         List<MedicinalStockRecord> medicinalStockRecords = this.medicinalStockRecordService.getStockRecordByStorageId(supplierStock.getId());
         if (!CollectionUtils.isEmpty(medicinalStockRecords))
         {
-            throw new ServiceException("Hiện vẫn còn tình trạng tồn kho bị chiếm dụng hoặc trả thuốc chưa hoàn phí và tồn kho chưa được giải phóng, Vui lòngtrướcXử lýsaulạithao tác!");
+            throw new ServiceException("Hiện vẫn còn tình trạng tồn kho bị chiếm dụng hoặc trả thuốc chưa hoàn phí và tồn kho chưa được giải phóng, Vui lòng trước Xử lý sau lại thao tác!");
         }
 
         List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
@@ -624,7 +624,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStockRecord.setType(1);
                 if(Objects.equals(drug.getStatus(), "0"))
                 {
-                    throw new ServiceException("ThuốcĐãdừngdùng");
+                    throw new ServiceException("Thuốc Đã dừng dùng");
                 }
             }
             else if (Objects.nonNull(stuff) && StringUtils.isNotBlank(stuff.getId()))
@@ -634,7 +634,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 medicinalStockRecord.setType(2);
                 if(Objects.equals(stuff.getStatus(), "0"))
                 {
-                    throw new ServiceException("Vật tưĐãdừngdùng");
+                    throw new ServiceException("Vật tư Đã dừng dùng");
                 }
             }
             else
@@ -664,7 +664,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
             
             if (totalBigDecimal.compareTo(BigDecimal.ZERO) < 0)
             {
-                throw new ServiceException("Đơn thuốcdùnglượngTồn tạikêâmsố của tình hình, Vui lòngđúngđiềnĐơn thuốckêThông tin!");
+                throw new ServiceException("Đơn thuốc dùng lượng Tồn tại kê âm số của tình hình, Vui lòng đúng điền Đơn thuốc kê Thông tin!");
             }
             if (totalBigDecimal.compareTo(BigDecimal.ZERO) == 0)
             {
@@ -812,7 +812,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho [Chi tiết ID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             // DS32: atomic detail confirm (used +op, occupy -op).
             this.adjustDetailStocks(medicinalStorageControlList.get(0),
@@ -904,7 +904,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho [Chi tiết ID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             // DS32: atomic detail return (used -op, return-todo-fee +op).
             // The old code null-guarded returnTodoFeeStock in Java; the
@@ -967,7 +967,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho [Chi tiết ID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             // DS32: atomic detail refund (surplus +op, return-todo-fee -op).
             this.adjustDetailStocks(medicinalStorageControlList.get(0),
@@ -1044,7 +1044,7 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
             {
-                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho[Chi tiếtID=" + medicinalStockRecord.getStorageId() + "]. ");
+                throw new ServiceException("Kiểm soát tồn kho động thất bại, Không tìm thấy chi tiết nhập kho cần kiểm soát tồn kho [Chi tiết ID=" + medicinalStockRecord.getStorageId() + "]. ");
             }
             // DS32: atomic detail material refund (used -op, surplus +op).
             this.adjustDetailStocks(medicinalStorageControlList.get(0),

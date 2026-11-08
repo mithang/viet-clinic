@@ -397,12 +397,12 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             Date parse = simpleDateFormat.parse(dateTime);
             pageRegistration.setUpdateDate(parse);
         } catch (ParseException e) {
-            logger.warn("phân tíchNgàyThất bại: {}", dateTime, e);
+            logger.warn("phân tích Ngày Thất bại: {}", dateTime, e);
         }
 
         List<String> strings = registrationService.whetherTheDispensing(pageRegistration);
         if(!CollectionUtils.isEmpty(strings)){
-            throw new ServiceException("Tồn tạiThuốc/Vật tưcònChưaphát thuốc, Không thểtiến hành dòngkiểm kê!");
+            throw new ServiceException("Tồn tại Thuốc/Vật tư còn Chưa phát thuốc, Không thể tiến hành dòng kiểm kê!");
         }
 
     }
@@ -422,11 +422,11 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             Date parse = simpleDateFormat.parse(dateTime);
             pageRegistration.setUpdateDate(parse);
         } catch (ParseException e) {
-            logger.warn("phân tíchNgàyThất bại: {}", dateTime, e);
+            logger.warn("phân tích Ngày Thất bại: {}", dateTime, e);
         }
         List<String> strings = registrationService.whetherChargeOrNot(pageRegistration);
         if(!CollectionUtils.isEmpty(strings)){
-            throw new ServiceException("Tồn tạiThuốc/Vật tưcònChưaThu phí, Không thểtiến hành dòngkiểm kê!");
+            throw new ServiceException("Tồn tại Thuốc/Vật tư còn Chưa Thu phí, Không thể tiến hành dòng kiểm kê!");
         }
     }
 

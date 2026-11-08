@@ -154,7 +154,7 @@ public class PatientController extends CrudController<PatientService, Patient> {
             entity.setCompany(new Company(tenant));
         }
         if (!beforeSave(entity)) {
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "Lưu trước Kiểm tra Chưa Qua"));
         }
         boolean wasExisting = entity.getId() != null && !entity.getId().trim().isEmpty()
                 && getService().get(entity.getId()) != null;
@@ -188,7 +188,7 @@ public class PatientController extends CrudController<PatientService, Patient> {
             return forbidden();
         }
         if (!beforeDelete(entity)) {
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "XóatrướcKiểm traChưaQua"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "Xóa trước Kiểm tra Chưa Qua"));
         }
         String id = entity.getId();
         String name = entity.getName();
@@ -405,7 +405,7 @@ public class PatientController extends CrudController<PatientService, Patient> {
         // Truy vấnThông tin bệnh nhân
         Patient result = patientService.inquire(patient);
         if (result==null){
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50001, "Truy vấnThất bại, khôngđóThông tin bệnh nhân"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50001, "Truy vấn Thất bại, không đó Thông tin bệnh nhân"));
         }
         // Đăng ký khám
         Registration registration = new Registration();

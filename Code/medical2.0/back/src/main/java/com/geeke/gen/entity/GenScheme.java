@@ -35,7 +35,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 
-	@NotNull(message="mẫu phútLớpKhông thể là trống")
+	@NotNull(message="mẫu phút Lớp Không thể là trống")
     public DictItem getCategory() {
         return category;
     }
@@ -44,7 +44,7 @@ public class GenScheme extends DataEntity<GenScheme> {
         this.category = category;
     }
     
-	@Length(min=1, max=500, message="góiđường dẫnĐộ dài phải nằm trong khoảng 1 đến 500 ")
+	@Length(min=1, max=500, message="gói đường dẫn Độ dài phải nằm trong khoảng 1 đến 500")
 	public String getPackageName() {
 		return packageName;
 	}
@@ -53,7 +53,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=30, message="mô-đuntênĐộ dài phải nằm trong khoảng 1 đến 30 ")
+	@Length(min=1, max=30, message="mô-đun tên Độ dài phải nằm trong khoảng 1 đến 30")
 	public String getModuleName() {
 		return moduleName;
 	}
@@ -62,7 +62,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=0, max=30, message="conmô-đuntênĐộ dài phải nằm trong khoảng 0 đến 30 ")
+	@Length(min=0, max=30, message="con mô-đun tên Độ dài phải nằm trong khoảng 0 đến 30")
 	public String getSubModuleName() {
 		return subModuleName;
 	}
@@ -71,7 +71,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=500, message="chức năngtênĐộ dài phải nằm trong khoảng 1 đến 500 ")
+	@Length(min=1, max=500, message="chức năng tên Độ dài phải nằm trong khoảng 1 đến 500")
 	public String getFunctionName() {
 		return functionName;
 	}
@@ -80,7 +80,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=100, message="chức năngtênviết tắtĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@Length(min=1, max=100, message="chức năng tên viết tắt Độ dài phải nằm trong khoảng 1 đến 100")
 	public String getFunctionNameSimple() {
 		return functionNameSimple;
 	}
@@ -89,7 +89,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=0, max=100, message="làmngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="làm người Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getFunctionAuthor() {
 		return functionAuthor;
 	}
@@ -98,7 +98,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@Length(min=1, max=20, message="chỉnh sửarộngđộĐộ dài phải nằm trong khoảng 1 đến 20 ")
+	@Length(min=1, max=20, message="chỉnh sửa rộng độ Độ dài phải nằm trong khoảng 1 đến 20")
 	public String getDialogWidth() {
 		return dialogWidth;
 	}
@@ -107,7 +107,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@NotNull(message="chỉnh sửaCộtsốKhông thể là trống")
+	@NotNull(message="chỉnh sửa Cột số Không thể là trống")
 	public Integer getColCounts() {
 		return colCounts;
 	}
@@ -116,7 +116,7 @@ public class GenScheme extends DataEntity<GenScheme> {
 	}
 	
 	
-	@NotNull(message="nghiệp vụbảngKhông thể là trống")
+	@NotNull(message="nghiệp vụ bảng Không thể là trống")
     public GenTable getGenTable() {
         return genTable;
     }

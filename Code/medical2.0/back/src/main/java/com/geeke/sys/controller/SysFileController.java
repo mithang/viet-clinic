@@ -144,7 +144,7 @@ public class SysFileController extends CrudController<SysFileService, SysFile> {
 			return forbidden();
 		}
 		if (!beforeDelete(entity)) {
-			return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "XóatrướcKiểm traChưaQua"));
+			return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "Xóa trước Kiểm tra Chưa Qua"));
 		}
 		getService().verifySysFileDeleteOwnership(java.util.Collections.singletonList(entity.getId()));
 		int rows = getService().delete(entity);

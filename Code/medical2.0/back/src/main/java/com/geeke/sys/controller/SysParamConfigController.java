@@ -39,7 +39,7 @@ public class SysParamConfigController extends CrudController<SysParamConfigServi
             entitys.forEach(sysParamConfigService::checkParamWriteTenant);
             entitys.forEach(sysParamConfigService::save);
         }
-        return ResponseEntity.ok(ResultUtil.successJson("thao tácThành công"));
+        return ResponseEntity.ok(ResultUtil.successJson("thao tác Thành công"));
     }
 
     @DeleteMapping(value = "delete")

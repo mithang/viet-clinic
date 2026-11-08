@@ -33,7 +33,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	}
 	
 
-	@NotNull(message="Người dùngIdKhông được để trống")
+	@NotNull(message="Người dùng Id Không được để trống")
 	public Long getUserId() {
 		return userId;
 	}
@@ -42,7 +42,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	}
 	
 	
-	@NotNull(message="Định tuyếnIdKhông được để trống")
+	@NotNull(message="Định tuyến Id Không được để trống")
 	public Long getRouterId() {
 		return routerId;
 	}
@@ -53,7 +53,7 @@ public class QueryCondition extends DataEntity<QueryCondition> {
 	
 	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot conditions NOT NULL.
 	@NotNull(message="Điều kiện không được để trống")
-	@Length(min=1, max=4000, message="Điều kiệnĐộ dài phải nằm trong khoảng 1 đến 4000 ")
+	@Length(min=1, max=4000, message="Điều kiện Độ dài phải nằm trong khoảng 1 đến 4000")
 	public String getConditions() {
 		return conditions;
 	}

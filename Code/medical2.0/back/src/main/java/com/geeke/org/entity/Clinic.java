@@ -47,7 +47,7 @@ public class Clinic extends DataEntity<Clinic> {
 		this.lesseeId = lesseeId;
 	}
 
-	@NotNull(message="tenantKhông thể là trống")
+	@NotNull(message="tenant Không thể là trống")
     public Lessee getLesseeId() {
         return lesseeId;
     }
@@ -119,7 +119,7 @@ public class Clinic extends DataEntity<Clinic> {
 	}
 	
 	
-	@NotNull(message="sản phẩmphiên bảnKhông thể là trống")
+	@NotNull(message="sản phẩm phiên bản Không thể là trống")
     public ClinicVersion getVersion() {
         return version;
     }
@@ -128,7 +128,7 @@ public class Clinic extends DataEntity<Clinic> {
         this.version = version;
     }
     
-	@NotNull(message="Trạng tháiKhông thể là trống")
+	@NotNull(message="Trạng thái Không thể là trống")
 	public Integer getStatus() {
 		return status;
 	}
@@ -136,7 +136,7 @@ public class Clinic extends DataEntity<Clinic> {
 		this.status = status;
 	}
 
-	@NotNull(message="Có hay không là Cơ sởKhông thể là trống")
+	@NotNull(message="Có hay không là Cơ sở Không thể là trống")
 	public Integer getIsInstitution() {
 		return isInstitution;
 	}

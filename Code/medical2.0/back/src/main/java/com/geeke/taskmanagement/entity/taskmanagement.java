@@ -23,14 +23,14 @@ public class taskmanagement {
     private String updatedBy ;
     /** Thời gian cập nhật */
     private Date updatedTime ;
-    private  String tasktype;//'tác vụLoại;tasktype_0: Tác vụ thông thường, tasktype_1: tuyên truyềntruyềnsốngđộng' ,
+    private  String tasktype;//'tác vụ Loại; tasktype_0: Tác vụ thông thường, tasktype_1: tuyên truyền truyền sống động' ,
     private  String taskname;
     private  String taskdescribe;
     private  String taskaccessory;
     private  String taskinitiator;
     private  Date taskdeadline;
     private String taskstatus;//'tác vụTrạng thái;0: Không đạt; 1: Qua
-    private String auditresult;//'xét duyệtKết quả;auditresult_0: Qua; auditresult_1: ChưaQua' ,
+    private String auditresult;//'xét duyệt Kết quả; auditresult_0: Qua; auditresult_1: Chưa Qua' ,
     private String taskremark;
     private String taskinitiatorname;//tác vụphátbắt đầungười
 

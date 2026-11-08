@@ -95,7 +95,7 @@ public class ChronicDiseaseEvt implements Serializable {
 	/**
 	 * lớnsố tiềnĐơn thuốcBệnh nhâný kiến
 	 */
-	private String patientOpinion = "lớnsố tiềnĐơn thuốcBệnh nhâný kiến: cùngý khác nhauý";
+	private String patientOpinion = "lớn số tiền Đơn thuốc Bệnh nhân ý kiến: cùng ý khác nhau ý";
 	/**
 	 * Bệnh nhânchữ ký
 	 */
@@ -143,7 +143,7 @@ public class ChronicDiseaseEvt implements Serializable {
 	}
 
 	private void buildRecipelInfo(RecipelInfo recipelInfo) {
-		this.smallType = recipelInfo.getChronicDisease() ? "Đơn thuốc bệnh mạn tính" : "thông thườngĐơn thuốc";
+		this.smallType = recipelInfo.getChronicDisease() ? "Đơn thuốc bệnh mạn tính" : "thông thường Đơn thuốc";
 		this.doctorAdvice = "Ghi chú: " + (StrUtil.isBlank(recipelInfo.getEntrust()) ? "" : recipelInfo.getEntrust());
 	}
 

@@ -39,7 +39,7 @@ public class MedicinalStockControl extends DataEntity<MedicinalStockControl> {
 	}
 	
 
-	@NotNull(message="Phòng khámIDKhông được để trống")
+	@NotNull(message="Phòng khám ID Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -48,7 +48,7 @@ public class MedicinalStockControl extends DataEntity<MedicinalStockControl> {
         this.company = company;
     }
     
-	@Length(min=1, max=20, message="Thuốc/Vật tưIDĐộ dài phải từ 1  và  20 Giữa")
+	@Length(min=1, max=20, message="Thuốc/Vật tư ID Độ dài phải từ 1 và 20 Giữa")
 	public String getDrugStuffId() {
 		return drugStuffId;
 	}
@@ -75,7 +75,7 @@ public class MedicinalStockControl extends DataEntity<MedicinalStockControl> {
 	}
 	
 	
-	@NotNull(message="Tổng lượng nhập khoKhông thể là trống")
+	@NotNull(message="Tổng lượng nhập kho Không thể là trống")
 	public BigDecimal getStorageStock() {
 		return storageStock;
 	}
@@ -84,7 +84,7 @@ public class MedicinalStockControl extends DataEntity<MedicinalStockControl> {
 	}
 	
 	
-	@NotNull(message="Số lượng tồn kho đã sử dụngKhông thể là trống")
+	@NotNull(message="Số lượng tồn kho đã sử dụng Không thể là trống")
 	public BigDecimal getUsedStock() {
 		return usedStock;
 	}
@@ -93,7 +93,7 @@ public class MedicinalStockControl extends DataEntity<MedicinalStockControl> {
 	}
 	
 	
-	@NotNull(message="Số lượng tồn kho đang bị chiếm dụngKhông thể là trống")
+	@NotNull(message="Số lượng tồn kho đang bị chiếm dụng Không thể là trống")
 	public BigDecimal getOccupyStock() {
 		return occupyStock;
 	}
@@ -102,7 +102,7 @@ public class MedicinalStockControl extends DataEntity<MedicinalStockControl> {
 	}
 	
 	
-	@NotNull(message="Số lượng tồn kho còn khả dụngKhông thể là trống")
+	@NotNull(message="Số lượng tồn kho còn khả dụng Không thể là trống")
 	public BigDecimal getSurplusStock() {
 		return surplusStock;
 	}
@@ -111,7 +111,7 @@ public class MedicinalStockControl extends DataEntity<MedicinalStockControl> {
 	}
 	
 	
-	@NotNull(message="Số lượng tồn kho báo hỏngKhông thể là trống")
+	@NotNull(message="Số lượng tồn kho báo hỏng Không thể là trống")
 	public BigDecimal getReimburseStock() {
 		return reimburseStock;
 	}

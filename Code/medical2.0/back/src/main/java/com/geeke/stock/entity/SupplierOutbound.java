@@ -51,7 +51,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
         this.company = company;
     }
     
-	@NotNull(message="Nhà cung cấpidKhông được để trống")
+	@NotNull(message="Nhà cung cấp id Không được để trống")
     public Supplier getSupplier() {
         return supplier;
     }
@@ -60,7 +60,7 @@ public class SupplierOutbound extends DataEntity<SupplierOutbound> {
         this.supplier = supplier;
     }
     
-	@Length(min=0, max=64, message="Xuất khođơnĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="Xuất kho đơn Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getCode() {
 		return code;
 	}

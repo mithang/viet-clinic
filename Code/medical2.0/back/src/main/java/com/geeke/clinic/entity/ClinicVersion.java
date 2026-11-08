@@ -31,12 +31,12 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên phiên bản không được để trống")
-	@Length(min=1, max=50, message="TênĐộ dài phải nằm trong khoảng 1 đến 50 ")
+	@Length(min=1, max=50, message="Tên Độ dài phải nằm trong khoảng 1 đến 50")
 	public String getName() {
 		return super.getName();
 	}
 
-	@NotNull(message="phiên bảnMãKhông thể là trống")
+	@NotNull(message="phiên bản Mã Không thể là trống")
 	public String getCode() {
 		return code;
 	}
@@ -44,7 +44,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 		this.code = code;
 	}
 
-	@NotNull(message="phiên bảnVai tròKhông thể là trống")
+	@NotNull(message="phiên bản Vai trò Không thể là trống")
 	public String getRoleId() {
 		return roleId;
 	}
@@ -52,7 +52,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 		this.roleId = roleId;
 	}
 
-	@NotNull(message="phiên bảnGiáKhông thể là trống")
+	@NotNull(message="phiên bản Giá Không thể là trống")
 	public BigDecimal getPrice() {
 		return price;
 	}
@@ -61,7 +61,7 @@ public class ClinicVersion extends DataEntity<ClinicVersion> {
 	}
 
 
-	@Length(min=0, max=200, message="phiên bảnMô tảĐộ dài phải nằm trong khoảng 0 đến 200 ")
+	@Length(min=0, max=200, message="phiên bản Mô tả Độ dài phải nằm trong khoảng 0 đến 200")
 	public String getDescription() {
 		return description;
 	}

@@ -57,7 +57,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 		this.registerId = registerId;
 	}
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -67,7 +67,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
     }
     
 	@NotNull(message="Tên mẫu không được để trống")
-	@Length(min=1, max=100, message="Tên mẫuĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@Length(min=1, max=100, message="Tên mẫu Độ dài phải nằm trong khoảng 1 đến 100")
 	public String getRecipetemplateName() {
 		return recipetemplateName;
 	}
@@ -76,7 +76,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 	}
 	
 	
-	@NotNull(message="Loại mẫuKhông thể là trống")
+	@NotNull(message="Loại mẫu Không thể là trống")
     public DictItem getType() {
         return type;
     }
@@ -86,7 +86,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
     }
     
 	@NotNull(message="Loại mẫu không được để trống")
-	@Length(min=1, max=1, message="mẫuLớploạiĐộ dài phải nằm trong khoảng 1 đến 1 ")
+	@Length(min=1, max=1, message="mẫu Lớp loại Độ dài phải nằm trong khoảng 1 đến 1")
 	public String getCategory() {
 		return category;
 	}
@@ -104,7 +104,7 @@ public class Recipetemplate extends DataEntity<Recipetemplate> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Liều dùng mỗi lầnĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Liều dùng mỗi lần Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getSingleDosage() {
 		return singleDosage;
 	}

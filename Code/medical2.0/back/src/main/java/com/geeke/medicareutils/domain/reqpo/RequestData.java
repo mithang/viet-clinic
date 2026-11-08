@@ -37,7 +37,7 @@ public class RequestData {
     // infver: Số phiên bản giao diện, cho biếtHiện tạigiao diệnphiên bản của chuỗi, thông thường có 6ký tự, Ví dụ "V1.0"
     private String infver;
 
-    // opter_type: Người thực hiệnLớploại, Cho biết nhân viên thao tácLoại của định danh, Ví dụ"Y1"cho biếtNgười thực hiện, "Y2"cho biếtcuốiđầuthao tác v.v. 
+    // opter_type: Người thực hiệnLớploại, Cho biết nhân viên thao tácLoại của định danh, Ví dụ"Y1"cho biết Người thực hiện,"Y2"cho biếtcuốiđầuthao tác v.v. 
     private String opter_type;
 
     // opter: Người thực hiện hoặc thao tácnhân viên, Xác định mã nhân viên hoặc mã thiết bị đầu cuối thực hiện giao dịch này, Tối đa30Ký tự

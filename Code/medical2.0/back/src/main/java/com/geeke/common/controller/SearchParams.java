@@ -43,7 +43,7 @@ public class SearchParams implements Serializable {
 		if (StringUtils.isNotBlank(this.columnName)) {
 			String columnName = this.columnName.trim();
 			if (columnName.indexOf("`") >= 0) {
-				throw new ServiceException("sắp xếpTrườngChứa ký tự không hợp lệ");
+				throw new ServiceException("sắp xếp Trường Chứa ký tự không hợp lệ");
 			}
 			if (StringUtils.isNotBlank(this.order)) {
 				if (!Arrays.asList(ORDER_LIST).contains(this.order.toLowerCase(Locale.ROOT).trim())) {
@@ -81,7 +81,7 @@ public class SearchParams implements Serializable {
 				if (StringUtils.isNotBlank(columnName) && StringUtils.isNotBlank(columnName.trim())) {
 					columnName = columnName.trim();
 					if (columnName.indexOf("`") >= 0) {
-						throw new ServiceException("Điều kiệnTên trườngChứa ký tự không hợp lệ");
+						throw new ServiceException("Điều kiện Tên trường Chứa ký tự không hợp lệ");
 					} else if (Parameter.isAllowedRemainingStockExpression(columnName)) {
 						// Biểu thức hiệu tồn kho của trang Tồn kho hiện tại phải giữ
 						// nguyên, không được bọc backtick (bọc sẽ biến cả biểu thức

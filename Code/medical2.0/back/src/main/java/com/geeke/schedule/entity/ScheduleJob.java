@@ -28,7 +28,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 
-	@Length(min=1, max=100, message="tác vụmã sốĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@Length(min=1, max=100, message="tác vụ mã số Độ dài phải nằm trong khoảng 1 đến 100")
 	public String getCode() {
 		return code;
 	}
@@ -37,7 +37,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 	
-	@Length(min=1, max=30, message="tác vụbiểu thứcĐộ dài phải nằm trong khoảng 1 đến 30 ")
+	@Length(min=1, max=30, message="tác vụ biểu thức Độ dài phải nằm trong khoảng 1 đến 30")
 	public String getCron() {
 		return cron;
 	}
@@ -46,7 +46,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 	
-	@Length(min=0, max=100, message="tác vụĐộ dài trạng thái phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="tác vụ Độ dài trạng thái phải nằm trong khoảng 0 đến 100")
 	public String getStatus() {
 		return status;
 	}
@@ -55,7 +55,7 @@ public class ScheduleJob extends DataEntity<ScheduleJob> {
 	}
 	
 	
-	@Length(min=0, max=1, message="Có hay khôngVô hiệu hóaĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Có hay không Vô hiệu hóa Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsLock() {
 		return isLock;
 	}

@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<JSONObject> runtimeExceptionHandler(RuntimeException e) {
         logger.error("Ngoại lệ khi vận hành: {}", e.getMessage(), e);
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Hệ thốngtrongbộLỗi", Constants.MSG_TYPE_ERROR);
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Hệ thống trong bộ Lỗi", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
 
@@ -106,8 +106,8 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .reduce((a, b) -> a + "; " + b)
-                .orElse("Tham sốKiểm traThất bại");
-        logger.warn("Tham sốKiểm traThất bại: {}", message);
+                .orElse("Tham số Kiểm tra Thất bại");
+        logger.warn("Tham số Kiểm tra Thất bại: {}", message);
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), message, Constants.MSG_TYPE_WARNING);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
@@ -117,8 +117,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<JSONObject> httpRequestMethodHandler(HttpRequestMethodNotSupportedException e) {
-        logger.warn("Vui lòngyêu cầuPhương thứckhônghỗ trợ: {}", e.getMessage());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Vui lòngyêu cầuPhương thứckhônghỗ trợ: " + e.getMethod(), Constants.MSG_TYPE_ERROR);
+        logger.warn("Vui lòng yêu cầu Phương thức không hỗ trợ: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Vui lòng yêu cầu Phương thức không hỗ trợ:" + e.getMethod(), Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(result);
     }
 
@@ -168,8 +168,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<JSONObject> missingParamHandler(MissingServletRequestParameterException e) {
-        logger.warn("thiếuVui lòngyêu cầuTham số: {}", e.getMessage());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "thiếubắt buộcTham số: " + e.getParameterName(), Constants.MSG_TYPE_ERROR);
+        logger.warn("thiếu Vui lòng yêu cầu Tham số: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "thiếu bắt buộc Tham số:" + e.getParameterName(), Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
@@ -178,8 +178,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<JSONObject> noHandlerFoundHandler(NoHandlerFoundException e) {
-        logger.warn("đường dẫnKhông tồn tại: {} {}", e.getHttpMethod(), e.getRequestURL());
-        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Vui lòngyêu cầuđường dẫnKhông tồn tại", Constants.MSG_TYPE_ERROR);
+        logger.warn("đường dẫn Không tồn tại: {} {}", e.getHttpMethod(), e.getRequestURL());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Vui lòng yêu cầu đường dẫn Không tồn tại", Constants.MSG_TYPE_ERROR);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
     }
 

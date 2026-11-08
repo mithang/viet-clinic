@@ -73,7 +73,7 @@ public class Patient extends DataEntity<Patient> {
 		return super.getName();
 	}
 
-	@NotNull(message="Giới tínhKhông thể là trống")
+	@NotNull(message="Giới tính Không thể là trống")
     public DictItem getGender() {
         return gender;
     }
@@ -84,7 +84,7 @@ public class Patient extends DataEntity<Patient> {
     
 	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot NOT NULL.
 	@NotNull(message="Tuổi không được để trống")
-	@Length(min=1, max=45, message="TuổiĐộ dài phải nằm trong khoảng 1 đến 45 ")
+	@Length(min=1, max=45, message="Tuổi Độ dài phải nằm trong khoảng 1 đến 45")
 	public String getAge() {
 		return age;
 	}
@@ -95,7 +95,7 @@ public class Patient extends DataEntity<Patient> {
 	
 	// DS79: xem getAge.
 	@NotNull(message="Tháng không được để trống")
-	@Length(min=1, max=45, message="ThángĐộ dài phải nằm trong khoảng 1 đến 45 ")
+	@Length(min=1, max=45, message="Tháng Độ dài phải nằm trong khoảng 1 đến 45")
 	public String getMonth() {
 		return month;
 	}
@@ -115,7 +115,7 @@ public class Patient extends DataEntity<Patient> {
 	
 	// DS79: xem getAge.
 	@NotNull(message="Số điện thoại liên hệ không được để trống")
-	@Length(min=1, max=45, message="liên hệcáchĐộ dài phải nằm trong khoảng 1 đến 45 ")
+	@Length(min=1, max=45, message="liên hệ cách Độ dài phải nằm trong khoảng 1 đến 45")
 	public String getPhone() {
 		return phone;
 	}
@@ -143,7 +143,7 @@ public class Patient extends DataEntity<Patient> {
         this.withPatientNexus = withPatientNexus;
     }
     
-	@Length(min=0, max=45, message="sức khỏethẻsốĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="sức khỏe thẻ số Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getHealthCardNo() {
 		return healthCardNo;
 	}
@@ -188,7 +188,7 @@ public class Patient extends DataEntity<Patient> {
 	}
 	
 	
-	@Length(min=0, max=100, message="người giám hộĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="người giám hộ Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getGuardianName(){
 		return guardianName;
 	}
@@ -197,7 +197,7 @@ public class Patient extends DataEntity<Patient> {
 		this.guardianPhone = guardianPhone;
 	}
 
-	@Length(min=0, max=100, message="người giám hộĐộ dài số điện thoại phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="người giám hộ Độ dài số điện thoại phải nằm trong khoảng 0 đến 100")
 	public String getGuardianPhone(){
 		return guardianPhone;
 	}

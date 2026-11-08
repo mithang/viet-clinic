@@ -102,7 +102,7 @@ public class ExcelImportBuilder<T> implements Closeable {
                         // độ dàiKiểm tra
                         if (mapping.annotation.maxLength() > 0 && cellValue.length() > mapping.annotation.maxLength()) {
                             result.addError(new ImportError(rowNum, label,
-                                    "độ dàiKhông thểvượtqua" + mapping.annotation.maxLength() + "Cáichữký tự"));
+                                    "độ dài Không thể vượt qua" + mapping.annotation.maxLength() + "Cáichữký tự"));
                             hasError = true;
                             continue;
                         }
@@ -122,8 +122,8 @@ public class ExcelImportBuilder<T> implements Closeable {
                         result.addSuccess(entity);
                     }
                 } catch (Exception e) {
-                    logger.warn("phân tíchDòng {} dòng thất bại", rowNum, e);
-                    result.addError(new ImportError(rowNum, null, "phân tíchThất bại: " + e.getMessage()));
+                    logger.warn("phân tích Dòng {} dòng thất bại", rowNum, e);
+                    result.addError(new ImportError(rowNum, null, "phân tích Thất bại:" + e.getMessage()));
                 }
             }
 
@@ -196,7 +196,7 @@ public class ExcelImportBuilder<T> implements Closeable {
         // mục từ điểnXử lý
         if (!dictTypeId.isEmpty() && fieldType == DictItem.class) {
             if (dictTypeService == null) {
-                throw new IllegalStateException("sử dụngtừ điểnphân tích giờPhảiĐặt dictTypeService");
+                throw new IllegalStateException("sử dụng từ điển phân tích giờ Phải Đặt dictTypeService");
             }
             String dictValue = dictTypeService.getValue(cellValue, dictTypeId);
             if (dictValue == null) {

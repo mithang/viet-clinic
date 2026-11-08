@@ -45,7 +45,7 @@ public class WechatUtil {
 			String response = restTemplate.getForObject(url, String.class, uriVars);
 			return JSONObject.parseObject(response);
 		} catch (Exception e) {
-			log.error("WeChatVui lòngyêu cầuThất bại", e);
+			log.error("WeChat Vui lòng yêu cầu Thất bại", e);
 		}
 		return null;
 	}
@@ -62,7 +62,7 @@ public class WechatUtil {
 			String response = restTemplate.getForObject(url, String.class, uriVars);
 			return JSONObject.parseObject(response);
 		} catch (Exception e) {
-			log.error("WeChatVui lòngyêu cầuThất bại", e);
+			log.error("WeChat Vui lòng yêu cầu Thất bại", e);
 		}
 		return null;
 	}
@@ -78,7 +78,7 @@ public class WechatUtil {
 			String response = restTemplate.postForObject(url, data, String.class);
 			return JSONObject.parseObject(response);
 		} catch (Exception e) {
-			log.error("WeChatLấysố điện thoại di độngThất bại", e);
+			log.error("WeChat Lấy số điện thoại di động Thất bại", e);
 		}
 		return null;
 	}

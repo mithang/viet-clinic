@@ -26,7 +26,7 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Phòng khámHệ thống")
+                .title("Phòng khám Hệ thống")
                 .description("powered by Viet Clinic")
                 .version("1.0")
                 .build();

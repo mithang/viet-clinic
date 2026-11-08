@@ -59,7 +59,7 @@ public class Lessee extends DataEntity<Lessee> {
 	
 
 	@NotNull(message="Tên tenant không được để trống")
-	@Length(min=1, max=100, message="tenanttênĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@Length(min=1, max=100, message="tenant tên Độ dài phải nằm trong khoảng 1 đến 100")
 	public String getUserName() {
 		return userName;
 	}
@@ -69,7 +69,7 @@ public class Lessee extends DataEntity<Lessee> {
 	
 	
 	@NotNull(message="Số điện thoại không được để trống")
-	@Length(min=1, max=20, message="Số điện thoạisốĐộ dài phải nằm trong khoảng 1 đến 20 ")
+	@Length(min=1, max=20, message="Số điện thoại số Độ dài phải nằm trong khoảng 1 đến 20")
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -82,7 +82,7 @@ public class Lessee extends DataEntity<Lessee> {
 	 * gửi/nhận, nhưng KHÔNG dùng property `company` của DataEntity (kiểu
 	 * Company, tenant id) để tránh shadow và tránh Jackson/MyBatis lẫn lộn.
 	 */
-	@Length(min=0, max=100, message="Tên công tyĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Tên công ty Độ dài phải nằm trong khoảng 0 đến 100")
 	@JsonProperty("company")
 	public String getCompanyName() {
 		return companyName;
@@ -113,7 +113,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 
 
-	@Length(min=0, max=50, message="người liên hệTênĐộ dài phải nằm trong khoảng 0 đến 50 ")
+	@Length(min=0, max=50, message="người liên hệ Tên Độ dài phải nằm trong khoảng 0 đến 50")
 	public String getContactName() {
 		return contactName;
 	}
@@ -149,7 +149,7 @@ public class Lessee extends DataEntity<Lessee> {
 	}
 	
 	
-	@Length(min=0, max=100, message="liên hệĐộ dài địa chỉ phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="liên hệ Độ dài địa chỉ phải nằm trong khoảng 0 đến 100")
 	public String getAddress() {
 		return address;
 	}

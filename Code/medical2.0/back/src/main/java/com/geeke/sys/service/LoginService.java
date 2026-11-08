@@ -47,7 +47,7 @@ public class LoginService extends CrudService<UserDao, User> {
         try {
             currentUser.login(token);
         } catch (UnknownAccountException e) {
-        	logger.info("Người dùng {} Đăng nhậpTài khoản hoặc mật khẩu sai", username);
+        	logger.info("Người dùng {} Đăng nhập Tài khoản hoặc mật khẩu sai", username);
         	return HttpStatus.UNAUTHORIZED;			// Tài khoản hoặc mật khẩu sai
         }catch(DisabledAccountException e) {
         	logger.info("Người dùng {} Tài khoản bị vô hiệu hóa", username);
@@ -109,7 +109,7 @@ public class LoginService extends CrudService<UserDao, User> {
             if(currentUser.isAuthenticated())
             	currentUser.logout();
         } catch (Exception e) {
-            logger.error("ThoátĐăng nhậpThất bại", e);
+            logger.error("Thoát Đăng nhập Thất bại", e);
         }
     }
 

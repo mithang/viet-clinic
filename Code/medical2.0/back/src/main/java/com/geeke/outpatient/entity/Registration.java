@@ -234,7 +234,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=45, message="mạchĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="mạch Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getPulse() {
 		return pulse;
 	}
@@ -243,7 +243,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=45, message="hô hấpĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="hô hấp Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getBreathe() {
 		return breathe;
 	}
@@ -252,7 +252,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=45, message="Nhiệt độ cơ thểĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="Nhiệt độ cơ thể Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getTemperature() {
 		return temperature;
 	}
@@ -261,7 +261,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=64, message="Có hay khôngđiquadịchĐộ dài quận phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="Có hay không đi qua dịch Độ dài quận phải nằm trong khoảng 0 đến 64")
 	public String getIsGoHigharea() {
 		return isGoHigharea;
 	}
@@ -270,7 +270,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=128, message="dịchQuậnđịa phươngđiểmĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="dịch Quận địa phương điểm Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getHighArea() {
 		return highArea;
 	}
@@ -279,7 +279,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=64, message="miễnPhí đăng ký khámĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="miễn Phí đăng ký khám Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getFreeRegistrationFee() {
 		return freeRegistrationFee;
 	}
@@ -312,7 +312,7 @@ public class Registration extends DataEntity<Registration> {
         this.status = status;
     }
     
-	@Length(min=0, max=1, message="phát thuốcĐộ dài trạng thái phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="phát thuốc Độ dài trạng thái phải nằm trong khoảng 0 đến 1")
 	public String getDispensingStatus() {
 		return dispensingStatus;
 	}
@@ -330,7 +330,7 @@ public class Registration extends DataEntity<Registration> {
 	}
 	
 	
-	@Length(min=0, max=1, message="Thu phíĐộ dài trạng thái phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Thu phí Độ dài trạng thái phải nằm trong khoảng 0 đến 1")
 	public String getChargeStatus() {
 		return chargeStatus;
 	}

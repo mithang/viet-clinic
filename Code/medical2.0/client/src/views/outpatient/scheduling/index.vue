@@ -355,7 +355,7 @@
               >
                 <el-table-column
                   prop="userid"
-                  label="Nhân viênID"
+                  label="Nhân viên ID"
                   v-if="false"
                   width="180"
                 >

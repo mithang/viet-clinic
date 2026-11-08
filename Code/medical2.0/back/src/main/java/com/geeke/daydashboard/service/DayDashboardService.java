@@ -166,7 +166,7 @@ public class DayDashboardService {
         definitions.put("pendingChargeCount", "Trong các lượt trên, số lượt có "
                 + "charge_status '0' (chờ thu phí) hoặc '1' (thu một phần).");
         definitions.put("charges", "Tái sử dụng nguyên vẹn tổng kết G6 cùng ngày: "
-                + "chargeCount/tổng tiền/byPaymentMethod từ toll_info, "
+                + "chargeCount/tổng tiền/byPaymentMethod từ toll_info,"
                 + "refundCount/refundTotal từ toll_audit_log action = 'REFUND'. "
                 + "Hoàn phí trình bày riêng, KHÔNG trừ ngầm vào tổng thu.");
         definitions.put("stock", "Trạng thái HIỆN TẠI lúc truy vấn, không phải số "

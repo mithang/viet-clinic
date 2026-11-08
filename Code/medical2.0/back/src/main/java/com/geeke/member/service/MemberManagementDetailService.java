@@ -68,7 +68,7 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
                             && dbRow.getMemberManagement() != null
                             && StringUtils.isNotBlank(dbRow.getMemberManagement().getId())
                             && !memberManagement.getId().equals(dbRow.getMemberManagement().getId())) {
-                        throw new com.geeke.common.service.ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                        throw new com.geeke.common.service.ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                     }
                     dbRows.put(memberManagementDetail.getId(), dbRow);
                 }

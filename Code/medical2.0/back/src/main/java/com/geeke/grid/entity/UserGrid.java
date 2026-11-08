@@ -35,7 +35,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	}
 	
 
-	@NotNull(message="Người dùngidKhông được để trống")
+	@NotNull(message="Người dùng id Không được để trống")
 	public Long getUserId() {
 		return userId;
 	}
@@ -44,7 +44,7 @@ public class UserGrid extends DataEntity<UserGrid> {
 	}
 	
 	
-	@Length(min=0, max=1000, message="Bố cục tùy chỉnhThông tinĐộ dài phải nằm trong khoảng 0 đến 1000 ")
+	@Length(min=0, max=1000, message="Bố cục tùy chỉnh Thông tin Độ dài phải nằm trong khoảng 0 đến 1000")
 	public String getGridInfo() {
 		return gridInfo;
 	}

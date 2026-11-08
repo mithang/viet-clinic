@@ -41,7 +41,7 @@ public class Supplier extends DataEntity<Supplier> {
     // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
     @Override
     @NotNull(message="Tên nhà cung cấp không được để trống")
-    @Length(min=1, max=64, message="TênĐộ dài phải nằm trong khoảng 1 đến 64 ")
+    @Length(min=1, max=64, message="Tên Độ dài phải nằm trong khoảng 1 đến 64")
     public String getName() {
     	return super.getName();
     }
@@ -54,7 +54,7 @@ public class Supplier extends DataEntity<Supplier> {
         this.company = company;
     }
     
-	@Length(min=0, max=45, message="người liên hệĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="người liên hệ Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getLinkman() {
 		return linkman;
 	}
@@ -72,7 +72,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=128, message="emailĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="email Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getMail() {
 		return mail;
 	}
@@ -99,7 +99,7 @@ public class Supplier extends DataEntity<Supplier> {
 	}
 	
 	
-	@Length(min=0, max=128, message="tindùngĐộ dài mã phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="tin dùng Độ dài mã phải nằm trong khoảng 0 đến 128")
 	public String getCreditCode() {
 		return creditCode;
 	}

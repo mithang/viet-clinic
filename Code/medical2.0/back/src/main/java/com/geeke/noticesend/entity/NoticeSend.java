@@ -50,7 +50,7 @@ public class NoticeSend extends DataEntity<NoticeSend> {
         super(id);
     }
 
-    @NotNull(message = "Phòng khámIDKhông được để trống")
+    @NotNull(message = "Phòng khám ID Không được để trống")
     public Company getCompany() {
         if (company == null) {
             String tenantId = SessionUtils.getLoginTenantId();
@@ -75,7 +75,7 @@ public class NoticeSend extends DataEntity<NoticeSend> {
         this.senderId = senderId;
     }
 
-    @Length(min = 1, max = 50, message = "Tiêu đềĐộ dài phải nằm trong khoảng 1 đến 50 ")
+    @Length(min = 1, max = 50, message = "Tiêu đề Độ dài phải nằm trong khoảng 1 đến 50")
     public String getTitle() {
         return title;
     }
@@ -84,7 +84,7 @@ public class NoticeSend extends DataEntity<NoticeSend> {
         this.title = title;
     }
 
-    @Length(min = 0, max = 1, message = "Có phải tin nhắn trong hệ thống khôngĐộ dài phải nằm trong khoảng 0 đến 1 ")
+    @Length(min = 0, max = 1, message = "Có phải tin nhắn trong hệ thống không Độ dài phải nằm trong khoảng 0 đến 1")
     public String getIsSite() {
         return isSite;
     }
@@ -93,7 +93,7 @@ public class NoticeSend extends DataEntity<NoticeSend> {
         this.isSite = isSite;
     }
 
-    @Length(min = 0, max = 1, message = "Có phải tin nhắn WeChat khôngĐộ dài phải nằm trong khoảng 0 đến 1 ")
+    @Length(min = 0, max = 1, message = "Có phải tin nhắn WeChat không Độ dài phải nằm trong khoảng 0 đến 1")
     public String getIsWechat() {
         return isWechat;
     }
@@ -102,7 +102,7 @@ public class NoticeSend extends DataEntity<NoticeSend> {
         this.isWechat = isWechat;
     }
 
-    @Length(min = 0, max = 1, message = "Có phải thông báo email khôngĐộ dài phải nằm trong khoảng 0 đến 1 ")
+    @Length(min = 0, max = 1, message = "Có phải thông báo email không Độ dài phải nằm trong khoảng 0 đến 1")
     public String getIsEmail() {
         return isEmail;
     }
@@ -111,7 +111,7 @@ public class NoticeSend extends DataEntity<NoticeSend> {
         this.isEmail = isEmail;
     }
 
-    @Length(min = 0, max = 1, message = "Có gửi SMS khôngĐộ dài phải nằm trong khoảng 0 đến 1 ")
+    @Length(min = 0, max = 1, message = "Có gửi SMS không Độ dài phải nằm trong khoảng 0 đến 1")
     public String getIsSms() {
         return isSms;
     }

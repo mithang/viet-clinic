@@ -212,7 +212,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             throw new ServiceException("Thẻ hội viên chưa có số lượng còn lại, không thể phát hành thêm!");
         }
         if(memberSet.getNumber()==0){
-            throw new ServiceException("Hội viênthẻSố lượng còn lại là 0, Không thểlạiThêmHội viên!");
+            throw new ServiceException("Hội viên thẻ Số lượng còn lại là 0, Không thể lại Thêm Hội viên!");
 
         }else {
             // DS61: tru tuyet doi number = number - 1 WHERE number > 0.
@@ -222,7 +222,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             // (rows == 0) bi tu choi nhu truong hop het the, khong ghi de.
             int i = this.dao.decrementNumber(id);
             if (i == 0) {
-                throw new ServiceException("Hội viênthẻSố lượng còn lại là 0, Không thểlạiThêmHội viên!");
+                throw new ServiceException("Hội viên thẻ Số lượng còn lại là 0, Không thể lại Thêm Hội viên!");
             }
             return i;
         }

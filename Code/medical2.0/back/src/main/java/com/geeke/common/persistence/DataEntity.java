@@ -73,7 +73,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 		this.updateDate = new Date();
 	}
 
-	@NotNull(message="Phòng khámIDKhông được để trống")
+	@NotNull(message="Phòng khám ID Không được để trống")
 	public Company getCompany() {
 		return company;
 	}
@@ -82,7 +82,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
 		this.company = company;
 	}
 	
-	@Length(min=1, max=100, message="TênĐộ dài phải nằm trong khoảng 1 đến 64 ")
+	@Length(min=1, max=100, message="Tên Độ dài phải nằm trong khoảng 1 đến 64")
 	public String getName() {
 		return name;
 	}

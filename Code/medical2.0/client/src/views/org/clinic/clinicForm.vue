@@ -114,7 +114,7 @@
         <el-row>
           <!-- appId -->
           <el-col :span='24/1'>
-            <el-form-item label='Khóa bí mậtId' prop='appId'>
+            <el-form-item label='Khóa bí mật Id' prop='appId'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.appId' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>
@@ -123,7 +123,7 @@
         <el-row>
           <!-- appSecret -->
           <el-col :span='24/1'>
-            <el-form-item label='Khóa bí mậtKey' prop='appSecret'>
+            <el-form-item label='Khóa bí mật Key' prop='appSecret'>
               <el-input :disabled='dialogProps.action === "view"' v-model='bizFormModel.appSecret' :maxlength='100'></el-input>
             </el-form-item>
           </el-col>

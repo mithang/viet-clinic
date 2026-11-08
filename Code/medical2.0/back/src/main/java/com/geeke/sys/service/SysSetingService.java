@@ -166,7 +166,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
                 }
                 super.save(entity);
             } else {
-                logger.info("Cài đặt hệ thốngLưuThất bại");
+                logger.info("Cài đặt hệ thống Lưu Thất bại");
             }
         } catch (Exception e) {
             // E3: không nuốt lỗi thành false-success nữa — trước đây NPE ở
@@ -174,8 +174,8 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
             // logo chưa lưu và lần save thứ hai không chạy. Ném lại để
             // GlobalExceptionHandler trả lỗi 500 và transaction rollback lần
             // save đầu, giữ nguyên trạng thái cài đặt khi lưu file thất bại.
-            logger.error("Cài đặt hệ thốngLưungoại lệ", e);
-            throw new RuntimeException("Cài đặt hệ thốngLưuthất bại", e);
+            logger.error("Cài đặt hệ thống Lưu ngoại lệ", e);
+            throw new RuntimeException("Cài đặt hệ thống Lưu thất bại", e);
         }
         return entity;
     }

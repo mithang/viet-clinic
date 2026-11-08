@@ -140,7 +140,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 		this.recipelType = recipelType;
 	}
 
-	@Length(min=0, max=45, message="liềulượngĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="liều lượng Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getDosage() {
 		return dosage;
 	}
@@ -173,7 +173,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 		this.takeFrequency = takeFrequency;
 	}
 
-	@Length(min=0, max=11, message="Liều dùng mỗi lầnĐộ dài phải nằm trong khoảng 0 đến 11 ")
+	@Length(min=0, max=11, message="Liều dùng mỗi lần Độ dài phải nằm trong khoảng 0 đến 11")
 	public String getSingleDosage() {
 		return singleDosage;
 	}
@@ -197,7 +197,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 		this.amountReceivedTotal = amountReceivedTotal;
 	}
 
-	@Length(min=0, max=1, message="Có hay khôngthanh toánĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Có hay không thanh toán Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsPay() {
 		return isPay;
 	}
@@ -215,7 +215,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=1, message="Có hay khôngphát thuốcĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Có hay không phát thuốc Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsDispension() {
 		return isDispension;
 	}
@@ -233,7 +233,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@NotNull(message="sắp xếpKhông thể là trống")
+	@NotNull(message="sắp xếp Không thể là trống")
 	public Integer getSeq() {
 		return seq;
 	}
@@ -242,7 +242,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@NotNull(message="nhỏLớpnhỏLớp[Dữ liệu từ điển]Không được để trống")
+	@NotNull(message="nhỏ Lớp nhỏ Lớp [Dữ liệu từ điển] Không được để trống")
 	public DictItem getSmallType() {
 		return smallType;
 	}
@@ -251,7 +251,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=4000, message="Y lệnhĐộ dài phải nằm trong khoảng 0 đến 4000 ")
+	@Length(min=0, max=4000, message="Y lệnh Độ dài phải nằm trong khoảng 0 đến 4000")
 	public String getEntrust() {
 		return entrust;
 	}
@@ -311,7 +311,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@NotNull(message="Có hay khôngtái khámĐơn thuốcKhông thể là trống")
+	@NotNull(message="Có hay không tái khám Đơn thuốc Không thể là trống")
 	public Integer getIsFollowUp() {
 		return isFollowUp;
 	}
@@ -329,7 +329,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="thanh toánthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="thanh toán thao tác người Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getPayUser() {
 		return payUser;
 	}
@@ -338,7 +338,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="hoàn phíthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="hoàn phí thao tác người Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getRetreatChargeUser() {
 		return retreatChargeUser;
 	}
@@ -347,7 +347,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="Trả thuốcthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Trả thuốc thao tác người Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getRetreatDispensionUser() {
 		return retreatDispensionUser;
 	}
@@ -356,7 +356,7 @@ public class RecipelInfo extends DataEntity<RecipelInfo> {
 	}
 
 
-	@Length(min=0, max=100, message="phát thuốcthao tácngườiĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="phát thuốc thao tác người Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getDispensionUser() {
 		return dispensionUser;
 	}

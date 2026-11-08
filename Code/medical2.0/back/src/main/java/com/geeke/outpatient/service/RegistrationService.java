@@ -240,7 +240,7 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             if (stored == null) {
                 return 0;
             }
-            throw new com.geeke.common.service.ServiceException("bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!");
+            throw new com.geeke.common.service.ServiceException("bạn Đã lấy hủy đặt lịch, không có thể lại lần lấy hủy!");
         }
         return i;
     }
@@ -357,7 +357,7 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // tuan tu, khong ghi gi, thu lai tren luot kham moi thi duoc.
         int i = dao.claimRefund(registrations);
         if (i != 1) {
-            throw new com.geeke.common.service.ServiceException("bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!");
+            throw new com.geeke.common.service.ServiceException("bạn Đã lấy hủy đặt lịch, không có thể lại lần lấy hủy!");
         }
 
         return i;

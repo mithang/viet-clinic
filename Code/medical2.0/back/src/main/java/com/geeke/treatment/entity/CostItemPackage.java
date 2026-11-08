@@ -36,7 +36,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
 
-    @NotNull(message="Phòng khámidKhông được để trống")
+    @NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -45,7 +45,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
         this.company = company;
     }
 
-    @Length(min=0, max=64, message="hạng mụcĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
+    @Length(min=0, max=64, message="hạng mục Độ dài mã phải nằm trong khoảng 0 đến 64")
     public String getItemCode() {
         return itemCode;
     }
@@ -54,7 +54,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
     }
 
 
-    @Length(min=1, max=64, message="hạng mụcTênĐộ dài phải nằm trong khoảng 1 đến 64 ")
+    @Length(min=1, max=64, message="hạng mục Tên Độ dài phải nằm trong khoảng 1 đến 64")
     public String getItemName() {
         return itemName;
     }
@@ -112,7 +112,7 @@ public class CostItemPackage extends DataEntity<CostItemPackage> {
         this.isDeduct = isDeduct;
     }
 
-    @NotNull(message="Hạng mục khám chữa bệnhidKhông được để trống")
+    @NotNull(message="Hạng mục khám chữa bệnh id Không được để trống")
     public String getCostItemId() {
         return costItemId;
     }

@@ -69,7 +69,7 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         String id = this.dao.GetIDByName(costItem.getItemName(),SessionUtils.getLoginTenantId());
         if(null!=id && !id.equals(costItem.getId()))
         {
-            throw new ServiceException("ĐãTồn tạimộtCáigiống hệt của hạng mụctên, Vui lòng nhập lại!");
+            throw new ServiceException("Đã Tồn tại một Cái giống hệt của hạng mục tên, Vui lòng nhập lại!");
         }
         CostItem costItemTemp = super.save(costItem);
         return costItemTemp;

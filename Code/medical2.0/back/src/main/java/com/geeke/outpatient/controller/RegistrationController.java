@@ -142,19 +142,19 @@ public class RegistrationController extends CrudController<RegistrationService, 
         if (BizConstants.REG_STATUS_REFUNDED.equals(refundRegistrationRemarks)) {
             Registration registration = registrationService.get(id);
             if (BizConstants.REG_STATUS_PENDING.equals(registration.getStatus().getValue())) {
-                String message = "bạnĐãhoàn thànhkýĐến, Như cầnhủy số khámVui lòngĐếnBệnh việntiến hành dòng!";
+                String message = "bạn Đã hoàn thành ký Đến, Như cần hủy số khám Vui lòng Đến Bệnh viện tiến hành dòng!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             if (BizConstants.REG_STATUS_VISITED.equals(registration.getStatus().getValue())) {
-                String message = "bạnĐãhoàn thànhkhám bệnh, Nếu có thắc mắc, vui lòng đến bệnh viện để tìm hiểu chi tiết!";
+                String message = "bạn Đã hoàn thành khám bệnh, Nếu có thắc mắc, vui lòng đến bệnh viện để tìm hiểu chi tiết!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             if (BizConstants.REG_STATUS_REFUNDED.equals(registration.getStatus().getValue())) {
-                String message = "bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!";
+                String message = "bạn Đã lấy hủy đặt lịch, không có thể lại lần lấy hủy!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             if (BizConstants.REG_STATUS_FEE_REFUNDED.equals(registration.getStatus().getValue())) {
-                String message = "đóđặt lịchĐãhết hiệu lực!";
+                String message = "đó đặt lịch Đã hết hiệu lực!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
             }
             String remarks = "";
@@ -177,19 +177,19 @@ public class RegistrationController extends CrudController<RegistrationService, 
         Date exitNumberDate = new Date();
         Registration registrations = registrationService.get(registration.getId());
         if (BizConstants.REG_STATUS_PENDING.equals(registrations.getStatus().getValue())) {
-            String message = "bạnĐãhoàn thànhkýĐến, Như cầnhủy số khámVui lòngĐếnBệnh việntiến hành dòng!";
+            String message = "bạn Đã hoàn thành ký Đến, Như cần hủy số khám Vui lòng Đến Bệnh viện tiến hành dòng!";
             throw new ServiceException(message);
         }
         if (BizConstants.REG_STATUS_VISITED.equals(registrations.getStatus().getValue())) {
-            String message = "bạnĐãhoàn thànhkhám bệnh, Nếu có thắc mắc, vui lòng đến bệnh viện để tìm hiểu chi tiết!";
+            String message = "bạn Đã hoàn thành khám bệnh, Nếu có thắc mắc, vui lòng đến bệnh viện để tìm hiểu chi tiết!";
             throw new ServiceException(message);
         }
         if (BizConstants.REG_STATUS_REFUNDED.equals(registrations.getStatus().getValue())) {
-            String message = "bạnĐãlấyhủyđặt lịch, khôngcó thểlại lầnlấyhủy!";
+            String message = "bạn Đã lấy hủy đặt lịch, không có thể lại lần lấy hủy!";
             throw new ServiceException(message);
         }
         if (BizConstants.REG_STATUS_FEE_REFUNDED.equals(registrations.getStatus().getValue())) {
-            String message = "đóđặt lịchĐãhết hiệu lực!";
+            String message = "đó đặt lịch Đã hết hiệu lực!";
             throw new ServiceException(message);
         }
         registrations.setExitNumberDate(exitNumberDate);

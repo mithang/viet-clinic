@@ -430,7 +430,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
             entitys.forEach(this::checkReviewWriteTenant);
             entitys.forEach(recipelInfoReviewService::save);
         }
-        return ResponseEntity.ok(ResultUtil.successJson("thao tácThành công"));
+        return ResponseEntity.ok(ResultUtil.successJson("thao tác Thành công"));
     }
 
 
@@ -526,7 +526,7 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
          recipelInfoReview.setReviewerId(SessionUtils.getUserJson().getString("id"));
          recipelInfoReview.setReviewStatus(2);
          recipelInfoReviewService.save(recipelInfoReview);
-        return ResponseEntity.ok(ResultUtil.successJson("hủyThành công!"));
+        return ResponseEntity.ok(ResultUtil.successJson("hủy Thành công!"));
 
     }
 

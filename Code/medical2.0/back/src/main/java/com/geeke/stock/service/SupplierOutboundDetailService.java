@@ -105,7 +105,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
             MedicinalStorageControl medicinalStorageControl = d.getMedicinalStorage();
             MedicinalStorageControl queryStorageControl = medicinalStorageControlService.get(d.getMedicinalStorage().getId());
             if (queryStorageControl == null) {
-                throw new ServiceException("độngTồn khoBản ghiKhông tồn tại");
+                throw new ServiceException("động Tồn kho Bản ghi Không tồn tại");
             }
 
             // DS33: freeze with the atomic guarded bump (occupy +N, surplus
@@ -117,7 +117,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
             // a RuntimeException), so no outbound header is left behind.
             int frozen = medicinalStorageControlService.freezeDetailStocks(queryStorageControl, d.getNumber());
             if (frozen != 1) {
-                throw new ServiceException("khả dụngTồn khokhôngđủ");
+                throw new ServiceException("khả dụng Tồn kho không đủ");
             }
 
             super.save(d);
@@ -282,7 +282,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     public void deleteSupplierOutboundDetail(String detailId) {
         SupplierOutboundDetail detail = supplierOutboundDetailDao.get(detailId);
         if (detail == null) {
-            throw new ServiceException("Xuất khođơnChi tiếtKhông tồn tại");
+            throw new ServiceException("Xuất kho đơn Chi tiết Không tồn tại");
         }
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
@@ -355,7 +355,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     @Transactional(readOnly = false)
     public void updateSupplierOutboundDetail(SupplierOutboundDetail detail) {
         SupplierOutboundDetail old = supplierOutboundDetailDao.get(detail.getId());
-        if (old == null) throw new ServiceException("Xuất khođơnChi tiếtKhông tồn tại");
+        if (old == null) throw new ServiceException("Xuất kho đơn Chi tiết Không tồn tại");
 
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(old.getMedicinalStorage().getId());
         BigDecimal addNumber = detail.getNumber().subtract(old.getNumber());//tăngđóng băng của Số lượng
@@ -398,7 +398,7 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         }
         int frozen = medicinalStorageControlService.freezeDetailStocks(medicinalStorageControl, addNumber);
         if (frozen != 1) {
-            throw new ServiceException("khả dụngTồn khokhôngđủ");
+            throw new ServiceException("khả dụng Tồn kho không đủ");
         }
         old.setNumber(detail.getNumber());
         // DS68: super.save -- the quantity was already claimed (DS66)

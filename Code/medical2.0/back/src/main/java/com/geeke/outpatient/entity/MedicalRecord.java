@@ -143,7 +143,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.registration = registration;
 	}
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -152,7 +152,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
         this.company = company;
     }
     
-	@NotNull(message="Bác sĩidKhông được để trống")
+	@NotNull(message="Bác sĩ id Không được để trống")
     public User getDoctor() {
         return doctor;
     }
@@ -161,7 +161,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
         this.doctor = doctor;
     }
     
-	@NotNull(message="Đăng ký khámidKhông được để trống")
+	@NotNull(message="Đăng ký khám id Không được để trống")
     public Registration getRegistration() {
         return registration;
     }
@@ -170,8 +170,8 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
         this.registration = registration;
     }
     
-	@NotNull(message="Lý do khám chínhKhông được để trống")
-	@Length(min=1, max=128, message="Lý do khám chínhĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@NotNull(message="Lý do khám chính Không được để trống")
+	@Length(min=1, max=128, message="Lý do khám chính Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getPatientTell() {
 		return patientTell;
 	}
@@ -180,7 +180,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Bệnh sử hiện tạiĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Bệnh sử hiện tại Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getNowHistory() {
 		return nowHistory;
 	}
@@ -189,7 +189,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sửĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getBeforeHistory() {
 		return beforeHistory;
 	}
@@ -207,7 +207,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử cá nhânĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử cá nhân Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getPersonalHistory() {
 		return personalHistory;
 	}
@@ -216,7 +216,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử dị ứngĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử dị ứng Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getAllergyHistory() {
 		return allergyHistory;
 	}
@@ -225,7 +225,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử bệnhĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử bệnh Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getDiseaseHistory() {
 		return diseaseHistory;
 	}
@@ -234,7 +234,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="tiền sử hôn nhân và mang thaiĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="tiền sử hôn nhân và mang thai Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getPregnancyHistory() {
 		return pregnancyHistory;
 	}
@@ -243,7 +243,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử bệnh truyền nhiễmĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử bệnh truyền nhiễm Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getInfectiousHistory() {
 		return infectiousHistory;
 	}
@@ -252,7 +252,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử kinh nguyệtĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử kinh nguyệt Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getLunariaHistory() {
 		return lunariaHistory;
 	}
@@ -261,7 +261,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử gia đìnhĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử gia đình Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getFamilyHistory() {
 		return familyHistory;
 	}
@@ -270,7 +270,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử phẫu thuậtĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử phẫu thuật Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getSurgeryHistory() {
 		return surgeryHistory;
 	}
@@ -279,7 +279,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Tiền sử truyền máuĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử truyền máu Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getTransfusionHistory() {
 		return transfusionHistory;
 	}
@@ -288,7 +288,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Khám thực thểĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Khám thực thể Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getPhysiqueCheck() {
 		return physiqueCheck;
 	}
@@ -297,7 +297,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Kiểm tra hỗ trợĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Kiểm tra hỗ trợ Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getAssistCheck() {
 		return assistCheck;
 	}
@@ -306,7 +306,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="cấp cứuĐộ dài chẩn đoán phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="cấp cứu Độ dài chẩn đoán phải nằm trong khoảng 0 đến 128")
 	public String getEmergencyDiagnose() {
 		return emergencyDiagnose;
 	}
@@ -315,7 +315,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Hiệu quả cấp cứuĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Hiệu quả cấp cứu Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getEmergencyEffect() {
 		return emergencyEffect;
 	}
@@ -324,7 +324,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Kiểm tra khácĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Kiểm tra khác Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getOtherCheck() {
 		return otherCheck;
 	}
@@ -332,7 +332,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.otherCheck = otherCheck;
 	}
 
-	@Length(min=0, max=128, message="Tình hình xử lýĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tình hình xử lý Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getHandlingSituation() {
 		return handlingSituation;
 	}
@@ -340,7 +340,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.handlingSituation = handlingSituation;
 	}
 
-	@Length(min=0, max=128, message="Giáo dục sức khỏe cá thể hóaĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Giáo dục sức khỏe cá thể hóa Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getHealthEducation() {
 		return healthEducation;
 	}
@@ -348,7 +348,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 		this.healthEducation = healthEducation;
 	}
 
-	@Length(min=0, max=128, message="Tiền sử dịch tễĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tiền sử dịch tễ Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getEpidemicDisease() {
 		return epidemicDisease;
 	}
@@ -366,7 +366,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Y lệnhviệchạng mụcĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Y lệnh việc hạng mục Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getDoctorAdvice() {
 		return doctorAdvice;
 	}
@@ -383,7 +383,7 @@ public class MedicalRecord extends DataEntity<MedicalRecord> {
 	}
 	
 	
-	@Length(min=0, max=45, message="Tải lên tệp đính kèmĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="Tải lên tệp đính kèm Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getFileId() {
 		return fileId;
 	}

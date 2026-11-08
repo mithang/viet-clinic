@@ -50,12 +50,12 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
     @Override
     @NotNull(message="Tên phòng khám không được để trống")
-    @Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+    @Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
     public String getName() {
     	return super.getName();
     }
 
-    @NotNull(message="thuộc vềPhòng khámKhông thể là trống")
+    @NotNull(message="thuộc về Phòng khám Không thể là trống")
     public Company getCompany() {
         return company;
     }
@@ -64,7 +64,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
         this.company = company;
     }
     @NotNull(message="Mã khoa không được để trống")
-    @Length(min=1, max=64, message="Khoamã sốĐộ dài phải nằm trong khoảng 1 đến 64 ")
+    @Length(min=1, max=64, message="Khoa mã số Độ dài phải nằm trong khoảng 1 đến 64")
     public String getCode() {
         return code;
     }
@@ -74,7 +74,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
 
 
     @NotNull(message="Vô hiệu hóa không được để trống")
-    @Length(min=1, max=1, message="Vô hiệu hóa(0: ChưaVô hiệu hóa; 1: Vô hiệu hóa)Độ dài phải từ 1  và  1 Giữa")
+    @Length(min=1, max=1, message="Vô hiệu hóa (0: Chưa Vô hiệu hóa; 1: Vô hiệu hóa) Độ dài phải từ 1 và 1 Giữa")
     public String getIsLocked() {
         return isLocked;
     }
@@ -83,7 +83,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
-    @Length(min=0, max=21, message="sắp xếpĐộ dài phải nằm trong khoảng 0 đến 21 ")
+    @Length(min=0, max=21, message="sắp xếp Độ dài phải nằm trong khoảng 0 đến 21")
     public String getSort() {
         return sort;
     }
@@ -92,7 +92,7 @@ public class ClinicOffice extends DataEntity<ClinicOffice> {
     }
 
 
-    @Length(min=0, max=128, message="KhoalớnLớpĐộ dài phải nằm trong khoảng 0 đến 128 ")
+    @Length(min=0, max=128, message="Khoa lớn Lớp Độ dài phải nằm trong khoảng 0 đến 128")
     public String getCategory() {
         return category;
     }

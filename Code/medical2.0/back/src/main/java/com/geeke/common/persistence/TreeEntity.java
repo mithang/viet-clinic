@@ -73,7 +73,7 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 	}	
 	
 	//@JsonBackReference
-	@NotNull(message="chacấpđịnh danhKhông thể là trống")
+	@NotNull(message="cha cấp định danh Không thể là trống")
 	public T getParent() {
 		return parent;
 	}

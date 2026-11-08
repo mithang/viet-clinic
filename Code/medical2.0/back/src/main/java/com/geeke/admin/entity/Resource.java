@@ -40,7 +40,7 @@ public class Resource extends DataEntity<Resource> {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên tài nguyên không được để trống")
-	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getName() {
 		return super.getName();
 	}
@@ -56,7 +56,7 @@ public class Resource extends DataEntity<Resource> {
 	
 	
 	@NotNull(message="Url không được để trống")
-	@Length(min=1, max=128, message="UrlĐộ dài phải từ 1  và  128 Giữa")
+	@Length(min=1, max=128, message="Url Độ dài phải từ 1 và 128 Giữa")
 	public String getUrl() {
 		return url;
 	}
@@ -65,7 +65,7 @@ public class Resource extends DataEntity<Resource> {
 	}
 	
 	
-	@Length(min=1, max=32, message="QuyềnĐộ dài phải nằm trong khoảng 1 đến 32 ")
+	@Length(min=1, max=32, message="Quyền Độ dài phải nằm trong khoảng 1 đến 32")
 	public String getPermission() {
 		return permission;
 	}
@@ -75,7 +75,7 @@ public class Resource extends DataEntity<Resource> {
 	
 	
 	@NotNull(message="Có thể ủy quyền không được để trống")
-	@Length(min=1, max=1, message="có thểủy quyềnĐộ dài phải nằm trong khoảng 1 đến 1 ")
+	@Length(min=1, max=1, message="có thể ủy quyền Độ dài phải nằm trong khoảng 1 đến 1")
 	public String getCanPermission() {
 		return canPermission;
 	}
@@ -85,7 +85,7 @@ public class Resource extends DataEntity<Resource> {
 	
 	
 	@NotNull(message="Mặc định quyền không được để trống")
-	@Length(min=1, max=1, message="Mặc địnhQuyềnĐộ dài phải nằm trong khoảng 1 đến 1 ")
+	@Length(min=1, max=1, message="Mặc định Quyền Độ dài phải nằm trong khoảng 1 đến 1")
 	public String getIsDefault() {
 		return isDefault;
 	}
@@ -102,7 +102,7 @@ public class Resource extends DataEntity<Resource> {
 	}
 	
 	
-	@NotNull(message="tuyến đườngKhông thể là trống")
+	@NotNull(message="tuyến đường Không thể là trống")
     public Router getRouter() {
         return router;
     }

@@ -261,7 +261,7 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 				return;
 			}
 		}
-		throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+		throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
 	}
 
 	/**
@@ -438,14 +438,14 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		// Phòng khámcấpDữ liệucách ly: nghiệp vụDữ liệuchỉthuộctạiĐăng nhậpPhòng khámbản thân(Với danh sách ensureCompanyFilter  của chính xác company_id Nhất quán). 
 		if (!tenantId.equals(entityCompanyId)) {
 			// Cơ sởtừ điển dùng chungthực thể(Thuốc/vật tư tiêu hao/Chi phíhạng mục v.v. , Danh sách SQL  là  company_id=#{id} or #{institution}): 
-			// cho phéptruy cậpthuộc về"Cơ sởPhòng khám"(cùng parent dưới is_institution=1) Dữ liệu của, Với danh sáchcó thểthấyphạmviGiữ nhất quán
+			// cho phéptruy cậpthuộc về"Cơ sở Phòng khám"(cùng parent dưới is_institution=1) Dữ liệu của, Với danh sáchcó thểthấyphạmviGiữ nhất quán
 			if (isInstitutionShared()) {
 				String institution = companyService.getInstitution(tenantId);
 				if (StringUtils.isNotBlank(institution) && institution.equals(entityCompanyId)) {
 					return;
 				}
 			}
-			throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+			throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
 		}
 	}
 

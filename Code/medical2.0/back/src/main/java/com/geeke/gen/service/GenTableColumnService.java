@@ -59,10 +59,10 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
         }
         if (genTableColumn.getJavaType() == null
                 || StringUtils.isBlank(genTableColumn.getJavaType().getValue())) {
-            throw new ServiceException("JAVALoạiKhông thể là trống");
+            throw new ServiceException("JAVA Loại Không thể là trống");
         }
         if (genTableColumn.getWidth() == null) {
-            throw new ServiceException("CộtrộngKhông thể là trống");
+            throw new ServiceException("Cột rộng Không thể là trống");
         }
         // DS99: nhu GenTableService.save -- CrudService.save re nhanh update
         // khi id khac rong, doUpdate khong dong den dong nao neu id khong

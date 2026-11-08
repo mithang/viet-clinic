@@ -406,11 +406,11 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                     // Từ mớiTồn khoHệ thốngđọckhả dụngTồn kho(MedicinalStockControl.surplusStock)
                     List<MedicinalStockControl> stockList = medicinalStockControlDao.inventory(companyId, ocId);
                     if (stockList == null || stockList.isEmpty()) {
-                        throw new ServiceException("Hiện tạivật liệukhông ởDữ liệubảng trong . ");
+                        throw new ServiceException("Hiện tại vật liệu không ở Dữ liệu bảng trong .");
                     }
                     BigDecimal surplusStock = stockList.get(0).getSurplusStock();
                     if (surplusStock == null || surplusStock.compareTo(new BigDecimal(total)) < 0) {
-                        throw new ServiceException("Hiện tạivật liệuTồn khokhông đủ, khôngphương pháplàm thủ tục. ");
+                        throw new ServiceException("Hiện tại vật liệu Tồn kho không đủ, không phương pháp làm thủ tục.");
                     }
                 }
             }
@@ -644,14 +644,14 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         //Tiếp nhận thông thường
         if (InstantPatient.NORMAL.getCode() == receptionEvt.getType()) {
             if (!org.springframework.util.StringUtils.hasText(receptionEvt.getId())) {
-                throw new ServiceException("đăng kýtiếp nhậnThông tinKhông thể là trống.");
+                throw new ServiceException("đăng ký tiếp nhận Thông tin Không thể là trống.");
             }
             Registration registration = this.registrationService.get(receptionEvt.getId());
             if (Objects.isNull(registration)) {
-                throw new ServiceException("đăng kýtiếp nhậnThông tinKhông tồn tại.");
+                throw new ServiceException("đăng ký tiếp nhận Thông tin Không tồn tại.");
             }
             if (!(Objects.equals(registration.getStatus().getValue(), BizConstants.REG_STATUS_PENDING) || Objects.equals(registration.getStatus().getValue(), BizConstants.REG_STATUS_VISITED))) {
-                throw new ServiceException("đăng kýtiếp nhậnThông tinkhông có [chờtiếp nhận] hoặc [Đãhoàn thành tiếp nhận]Trạng thái.");
+                throw new ServiceException("đăng ký tiếp nhận Thông tin không có [chờ tiếp nhận] hoặc [Đã hoàn thành tiếp nhận] Trạng thái.");
             }
             // I1: guard ca 2 danh sach xoa cua NORMAL (delFileIds param +
             // deleteFileIdList trong entity JSON) TRUOC moi upload/xoa/ghi.
@@ -708,7 +708,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             Registration registration = this.registrationService.get(receptionEvt.getId());
             if (Objects.isNull(registration)) {
                 if (Objects.isNull(receptionEvt.getPatient())) {
-                    throw new ServiceException("[Bệnh nhâncơ bảnThông tin]Không được để trống.");
+                    throw new ServiceException("[Bệnh nhân cơ bản Thông tin] Không được để trống.");
                 }
                 //Xử lýcơ bảnThông tin(tức làThông tin bệnh nhân)
                 if (!org.springframework.util.StringUtils.hasText(receptionEvt.getPatient().getId()) || Objects.isNull(this.patientService.get(receptionEvt.getPatient().getId()))) {
@@ -827,7 +827,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         * */
         if (CollectionUtils.isEmpty(recipelInfoEvtList)) {
             return;
-            //throw new RuntimeException("Đơn thuốcThông tinKhông thể là trống.");
+            //throw new RuntimeException("Đơn thuốc Thông tin Không thể là trống.");
         }
 
 
@@ -1021,7 +1021,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
          * */
         if (CollectionUtils.isEmpty(recipelInfoEvtList)) {
             //return;
-           throw new ServiceException("Đơn thuốcThông tinKhông thể là trống.");
+           throw new ServiceException("Đơn thuốc Thông tin Không thể là trống.");
         }
         String registrationId = entity.getRegistrationId();
         // Lấyđăng kýThông tin
@@ -1139,8 +1139,8 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                     drug.setStatus("1");
                     drug.setCreateDate(new Date());
                     drug.setUpdateDate(new Date());
-                    drug.setCreateBy("từ xaBệnh viện");
-                    drug.setUpdateBy("từ xaBệnh viện");
+                    drug.setCreateBy("từ xa Bệnh viện");
+                    drug.setUpdateBy("từ xa Bệnh viện");
                     // K6: ep company theo luot kham da verify nhu J3 (chi khi
                     // luot co company id, neu khong giu hanh vi cu); khong doi
                     // DrugService.add() (duong tao thuoc chinh).

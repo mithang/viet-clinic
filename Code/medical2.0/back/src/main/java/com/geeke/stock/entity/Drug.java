@@ -44,7 +44,7 @@ public class Drug extends DataEntity<Drug> {
 	private ManufactureFactory factory;      // Nhà sản xuất 
 	@ExcelImportField(columnIndex = 7, maxLength = 64, label = "Số đăng ký thuốc quốc gia")
 	private String standardCode;		// Số đăng ký thuốc quốc gia
-	@ExcelImportField(columnIndex = 8, maxLength = 64, label = "nàyvịmã")
+	@ExcelImportField(columnIndex = 8, maxLength = 64, label = "này vị mã")
 	private String bitCode;		// nàyvịmã
 	@ExcelImportField(columnIndex = 9, maxLength = 64, label = "Mã vạch")
 	private String barCode;		// Mã vạch
@@ -131,7 +131,7 @@ public class Drug extends DataEntity<Drug> {
 	// DS79: @Length(min=1) cho phep null lot qua @Valid; truoc day save
 	// khong co @Valid nen loi DB lo ra 400 kem SQL. Them @Valid o controller.
 	@NotNull(message="Tên thuốc không được để trống")
-	@Length(min=1, max=128, message="ThuốcTênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Thuốc Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getGoodsName() {
 		return goodsName;
 	}
@@ -148,7 +148,7 @@ public class Drug extends DataEntity<Drug> {
         this.company = company;
     }
     
-	@Length(min=0, max=128, message="Tên hàng hóaĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Tên hàng hóa Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getBrandName() {
 		return brandName;
 	}
@@ -157,7 +157,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@NotNull(message="Loại thuốcKhông thể là trống")
+	@NotNull(message="Loại thuốc Không thể là trống")
     public DictItem getType() {
         return type;
     }
@@ -166,7 +166,7 @@ public class Drug extends DataEntity<Drug> {
         this.type = type;
     }
     
-	@Length(min=0, max=64, message="ThuốcĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="Thuốc Độ dài mã phải nằm trong khoảng 0 đến 64")
 	public String getCode() {
 		return code;
 	}
@@ -175,7 +175,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Nguồn thuốcĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Nguồn thuốc Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getSource() {
 		return source;
 	}
@@ -209,7 +209,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=64, message="nàyvịmãĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="này vị mã Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getBitCode() {
 		return bitCode;
 	}
@@ -218,7 +218,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=64, message="mã vạchĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="mã vạch Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getBarCode() {
 		return barCode;
 	}
@@ -236,7 +236,7 @@ public class Drug extends DataEntity<Drug> {
 	}
 	
 	
-	@Length(min=0, max=45, message="liềulượngĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="liều lượng Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getDosis() {
 		return dosis;
 	}
@@ -253,7 +253,7 @@ public class Drug extends DataEntity<Drug> {
         this.dosisUnit = dosisUnit;
     }
     
-	@Length(min=0, max=45, message="bào chếĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="bào chế Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getPreparation() {
 		return preparation;
 	}
@@ -309,7 +309,7 @@ public class Drug extends DataEntity<Drug> {
 
 	// DS79: xem getGoodsName.
 	@NotNull(message="Trạng thái thuốc không được để trống")
-	@Length(min=0, max=1, message="Cờ bậtĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Cờ bật Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getStatus() {
 		return status;
 	}

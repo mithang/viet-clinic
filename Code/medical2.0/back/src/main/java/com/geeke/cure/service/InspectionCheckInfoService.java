@@ -144,7 +144,7 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                 String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
                 if (tenantId != null && !tenantId.isEmpty() && !"null".equals(tenantId)
                         && !tenantId.equals(parentCompanyId)) {
-                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                 }
             } else if (inspectionCheckDao.existsById(
                     inspectionCheckInfo.getInspectionCheck().getId()) == 0) {
@@ -164,7 +164,7 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                     continue;
                 }
                 if (infoId == null || infoId.isEmpty() || !infoId.equals(fileObjectId)) {
-                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                 }
             }
         }

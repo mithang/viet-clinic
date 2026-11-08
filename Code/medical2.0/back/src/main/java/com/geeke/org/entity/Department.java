@@ -39,7 +39,7 @@ public class Department extends TreeEntity<Department> {
     // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
     @Override
     @NotNull(message="Tên khoa/phòng không được để trống")
-    @Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+    @Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
     public String getName() {
     	return super.getName();
     }

@@ -56,7 +56,7 @@ public class BookingRequest extends DataEntity<BookingRequest> {
         super(id);
     }
 
-    @NotNull(message = "Phòng khámIDKhông được để trống")
+    @NotNull(message = "Phòng khám ID Không được để trống")
     public Company getCompany() {
         if (company == null) {
             String tenantId = SessionUtils.getLoginTenantId();

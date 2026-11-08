@@ -56,13 +56,13 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
            //tiến hành dòngmã sốKiểm tra
            List<ClinicOffice> clinicOffices = this.dao.getByCode(clinicOffice);
            if(!CollectionUtils.isEmpty(clinicOffices)){
-               throw new ServiceException("Đã tồn tạigiống hệtmã sốKhoa,Vui lòng nhập lại");
+               throw new ServiceException("Đã tồn tại giống hệt mã số Khoa, Vui lòng nhập lại");
            }
 
            //tiến hành dòngTên khoaKiểm tra
            List<ClinicOffice> clinicOfficeList = this.dao.getByName(clinicOffice);
            if(!CollectionUtils.isEmpty(clinicOfficeList)){
-               throw new ServiceException("Đã tồn tạigiống hệtTênKhoa,Vui lòng nhập lại");
+               throw new ServiceException("Đã tồn tại giống hệt Tên Khoa, Vui lòng nhập lại");
            }
        }
        // DS100: CrudService.save rẽ nhánh update khi id khác rỗng,

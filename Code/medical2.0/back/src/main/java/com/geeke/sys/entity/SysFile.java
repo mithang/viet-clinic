@@ -37,7 +37,7 @@ public class SysFile extends DataEntity<SysFile> {
 	}
 	
 
-	@NotNull(message="nghiệp vụbảngKhông thể là trống")
+	@NotNull(message="nghiệp vụ bảng Không thể là trống")
 	public Long getObjectId() {
 		return objectId;
 	}
@@ -63,7 +63,7 @@ public class SysFile extends DataEntity<SysFile> {
 	}
 	
 	
-	@Length(min=0, max=255, message="Tệpđường dẫnĐộ dài phải nằm trong khoảng 0 đến 255 ")
+	@Length(min=0, max=255, message="Tệp đường dẫn Độ dài phải nằm trong khoảng 0 đến 255")
 	public String getFileUrl() {
 		return fileUrl;
 	}

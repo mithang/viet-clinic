@@ -47,7 +47,7 @@ public class CostItem extends DataEntity<CostItem> {
 	}
 	
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -56,7 +56,7 @@ public class CostItem extends DataEntity<CostItem> {
         this.company = company;
     }
     
-	@Length(min=0, max=64, message="hạng mụcĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="hạng mục Độ dài mã phải nằm trong khoảng 0 đến 64")
 	public String getItemCode() {
 		return itemCode;
 	}
@@ -69,7 +69,7 @@ public class CostItem extends DataEntity<CostItem> {
 	// without itemName passed validation and 500d on the NOT NULL
 	// column instead of failing closed with 400.
 	@NotNull(message="Hạng mục tên không được để trống")
-	@Length(min=1, max=64, message="hạng mụcTênĐộ dài phải nằm trong khoảng 1 đến 64 ")
+	@Length(min=1, max=64, message="hạng mục Tên Độ dài phải nằm trong khoảng 1 đến 64")
 	public String getItemName() {
 		return itemName;
 	}
@@ -142,7 +142,7 @@ public class CostItem extends DataEntity<CostItem> {
 		this.isDeduct = isDeduct;
 	}
 
-	@Length(min=0, max=64, message="quốc giaĐộ dài mã phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="quốc gia Độ dài mã phải nằm trong khoảng 0 đến 64")
 	public String getItemCountryCode() {
 		return itemCountryCode;
 	}

@@ -69,7 +69,7 @@ public class MapperLoader implements DisposableBean, InitializingBean, Applicati
 			service.scheduleAtFixedRate(new Task(), 5, 5, TimeUnit.SECONDS);
 
 		} catch (Exception e1) {
-			logger.error("MapperLoaderKhởi tạoThất bại", e1);
+			logger.error("MapperLoader Khởi tạo Thất bại", e1);
 		}
 
 	}
@@ -79,12 +79,12 @@ public class MapperLoader implements DisposableBean, InitializingBean, Applicati
 		public void run() {
 			try {
 				if (scanner.isChanged()) {
-					logger.info("*Mapper.xmlTệpthay đổi,Lạitải.");
+					logger.info("*Mapper.xml Tệp thay đổi, Lại tải.");
 					scanner.reloadXML();
 					logger.info("tảixong.");
 				}
 			} catch (Exception e) {
-				logger.error("Mapper.xmlLạitảiThất bại", e);
+				logger.error("Mapper.xml Lại tải Thất bại", e);
 			}
 		}
 

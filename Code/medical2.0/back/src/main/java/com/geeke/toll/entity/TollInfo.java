@@ -114,7 +114,7 @@ public class TollInfo extends DataEntity<TollInfo> {
 	}
 	
 	
-	@NotNull(message="thanh toánLoạiKhông thể là trống")
+	@NotNull(message="thanh toán Loại Không thể là trống")
     public DictItem getPaymentType() {
         return paymentType;
     }
@@ -123,7 +123,7 @@ public class TollInfo extends DataEntity<TollInfo> {
         this.paymentType = paymentType;
     }
     
-	@NotNull(message="đơndữ liệuTrạng thái, enum tham khảoKhông thể là trống")
+	@NotNull(message="đơn dữ liệu Trạng thái, enum tham khảo Không thể là trống")
     public DictItem getAmountStatus() {
         return amountStatus;
     }
@@ -132,7 +132,7 @@ public class TollInfo extends DataEntity<TollInfo> {
         this.amountStatus = amountStatus;
     }
     
-	@Length(min=1, max=64, message="Thu phíđơnsốĐộ dài phải nằm trong khoảng 1 đến 64 ")
+	@Length(min=1, max=64, message="Thu phí đơn số Độ dài phải nằm trong khoảng 1 đến 64")
 	public String getTollNumber() {
 		return tollNumber;
 	}
@@ -141,7 +141,7 @@ public class TollInfo extends DataEntity<TollInfo> {
 	}
 	
 	
-	@NotNull(message="Loại thu phí, enum tham khảoKhông thể là trống")
+	@NotNull(message="Loại thu phí, enum tham khảo Không thể là trống")
     public DictItem getTollType() {
         return tollType;
     }

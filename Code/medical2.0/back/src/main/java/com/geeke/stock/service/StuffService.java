@@ -359,7 +359,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         // Kiểm traTệpđịnh dạng
         String fileName = file.getOriginalFilename();
         if (!fileName.matches("^.+\\.(?i)(xls)$") && !fileName.matches("^.+\\.(?i)(xlsx)$")) {
-            throw new Exception("Tải lênTệpđịnh dạngkhôngđúng");
+            throw new Exception("Tải lên Tệp định dạng không đúng");
         }
 
         int chengGong = 0;
@@ -412,7 +412,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                     rowMsg.append("[").append(err.getFieldName()).append("]");
                 }
             }
-            rowMsg.append("Dữ liệuKiểm traThất bại: ");
+            rowMsg.append("Dữ liệu Kiểm tra Thất bại:");
             for (ImportError err : entry.getValue()) {
                 rowMsg.append(err.getMessage()).append("; ");
             }
@@ -476,7 +476,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 this.save(stuff).getId();
                 chengGong++;
             } catch (Exception e) {
-                logger.warn("NhậpDòng {} dòng thất bại", rowNum, e);
+                logger.warn("Nhập Dòng {} dòng thất bại", rowNum, e);
                 String a = "";
                 if (e.getMessage() != null) {
                     a = e.getMessage().equals("Thông tin vật tư trùng lặp") ? "Thông tin vật tư trùng lặp," : "";

@@ -32,7 +32,7 @@ public class MemberItem extends DataEntity<MemberItem> {
 	}
 	
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -41,7 +41,7 @@ public class MemberItem extends DataEntity<MemberItem> {
         this.company = company;
     }
     
-	@NotNull(message="Thẻ hội viênidKhông được để trống")
+	@NotNull(message="Thẻ hội viên id Không được để trống")
     public MemberSet getMember() {
         return member;
     }
@@ -50,7 +50,7 @@ public class MemberItem extends DataEntity<MemberItem> {
         this.member = member;
     }
     
-	@NotNull(message="tương ứng của hạng mụcidKhông được để trống")
+	@NotNull(message="tương ứng của hạng mục id Không được để trống")
     public CostItem getCostItem() {
         return costItem;
     }

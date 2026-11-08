@@ -41,7 +41,7 @@ public class Attachment extends DataEntity<Attachment> {
 		this.fileContent = fContent;
 	}
 
-	@Length(min=1, max=20, message="nghiệp vụđịnh danhĐộ dài phải nằm trong khoảng 1 đến 20 ")
+	@Length(min=1, max=20, message="nghiệp vụ định danh Độ dài phải nằm trong khoảng 1 đến 20")
 	public String getBizId() {
 		return bizId;
 	}

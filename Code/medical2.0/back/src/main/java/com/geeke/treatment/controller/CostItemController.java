@@ -104,7 +104,7 @@ public class CostItemController extends CrudController<CostItemService, CostItem
                     if(costItemDTO.getCostItemPackage().get(i).getCostItemId()!=null ){
                         if(costItemDTO.getCostItemPackage().get(i).getCostItemId().equals(costItemPackages.get(j).getCostItemId())){
                             costItemDTO.getCostItemPackage().get(i).setId(costItemPackages.get(j).getCostItemId());
-                            logger.debug("khớpĐếnhạng mục conID: {}", costItemDTO.getCostItemPackage().get(i).getId());
+                            logger.debug("khớp Đến hạng mục con ID: {}", costItemDTO.getCostItemPackage().get(i).getId());
                         }
                     }
                 }

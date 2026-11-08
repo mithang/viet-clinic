@@ -51,7 +51,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -60,7 +60,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
         this.company = company;
     }
     
-	@NotNull(message="Bảng chínhidKhông được để trống")
+	@NotNull(message="Bảng chính id Không được để trống")
     public InspectionCheck getInspectionCheck() {
         return inspectionCheck;
     }
@@ -69,7 +69,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
         this.inspectionCheck = inspectionCheck;
     }
     
-	@Length(min=0, max=20, message="TệpidĐộ dài phải từ 0  và  20 Giữa")
+	@Length(min=0, max=20, message="Tệp id Độ dài phải từ 0 và 20 Giữa")
 	public String getFileId() {
 		return fileId;
 	}
@@ -78,7 +78,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@NotNull(message="Bệnh nhânidKhông được để trống")
+	@NotNull(message="Bệnh nhân id Không được để trống")
     public Patient getPatient() {
         return patient;
     }
@@ -96,7 +96,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="nhưnàysốĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="như này số Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getSamplingNum() {
 		return samplingNum;
 	}
@@ -105,7 +105,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Xét nghiệmthiết bịĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Xét nghiệm thiết bị Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getInstrument() {
 		return instrument;
 	}
@@ -114,7 +114,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Xét nghiệmsốĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Xét nghiệm số Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getCheckoutNum() {
 		return checkoutNum;
 	}
@@ -132,7 +132,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Xét nghiệmKhoaĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Xét nghiệm Khoa Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getCheckoutOffice() {
 		return checkoutOffice;
 	}
@@ -141,7 +141,7 @@ public class InspectionCheckInfo extends DataEntity<InspectionCheckInfo> {
 	}
 	
 	
-	@Length(min=0, max=255, message="kết luận báo cáoĐộ dài phải nằm trong khoảng 0 đến 255 ")
+	@Length(min=0, max=255, message="kết luận báo cáo Độ dài phải nằm trong khoảng 0 đến 255")
 	public String getReportConclusion() {
 		return reportConclusion;
 	}

@@ -17,7 +17,7 @@ public class ExcelCellProcessor {
             } else if (BizConstants.GENDER_FEMALE.equals(strValue)) {
                 return "Nữ";
             }
-            return "Chưabiết";
+            return "Chưa biết";
         });
         /** ban đầu/Tái khám */
         converterMap.put("OutpatientLog-initialVisit", value -> {

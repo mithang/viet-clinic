@@ -132,7 +132,7 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
      */
     public List<SysCollect> listAllByUserId(String  userId) {
         if (StringUtils.isBlank(userId)) {
-            throw new ServiceException("Tham sốNgười dùngidKhông được để trống. ");
+            throw new ServiceException("Tham số Người dùng id Không được để trống.");
         }
 
         List<SysCollect> sysCollectList = sysCollectDao.listAllByUserId(userId);

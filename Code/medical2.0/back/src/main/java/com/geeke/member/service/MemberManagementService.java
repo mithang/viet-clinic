@@ -69,7 +69,7 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             //Khi liên kết thẻ, kiểm tra người dùng đã làm thẻ chưa
             List<MemberManagement> memberManagements = this.dao.getByPatientAndMember(memberManagement.getPatient().getId(),memberManagement.getMemberSet().getId());
             if(!CollectionUtils.isEmpty(memberManagements)){
-                throw new ServiceException("đóNgười dùngĐãliên kếtchỉ địnhrồiđóHội viênthẻ, Không thểtrùng lặpliên kếtchỉ định");
+                throw new ServiceException("đó Người dùng Đã liên kết chỉ định rồi đó Hội viên thẻ, Không thể trùng lặp liên kết chỉ định");
             }
             int insert = this.dao.insert(memberManagement);
             //LưutốtsauSẽ Dữ liệuLưuĐếnChi tiếtbảng trong 

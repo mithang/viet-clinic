@@ -120,7 +120,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             if (drug == null) return null;
             // Phòng khámcấpcách ly: Bỏ quakhácPhòng khám của Thuốc
             if (detailCompanyId != null && drug.getCompany() != null && !detailCompanyId.equals(drug.getCompany().getId())) {
-                logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámThuốc, Đã bỏ qua: detailCompanyId={}, drugCompanyId={}, drugName={}",
+                logger.warn("mẫu Chi tiết bao gồm không phải này Phòng khám Thuốc, Đã bỏ qua: detailCompanyId={}, drugCompanyId={}, drugName={}",
                     detailCompanyId, drug.getCompany().getId(), drug.getGoodsName());
                 return null;
             }
@@ -138,7 +138,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             CostItem costItem = this.costItemDao.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (costItem == null) return null;
             if (detailCompanyId != null && costItem.getCompany() != null && !detailCompanyId.equals(costItem.getCompany().getId())) {
-                logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámhạng mục khám chữa bệnh, Đã bỏ qua: detailCompanyId={}, costItemCompanyId={}, itemName={}",
+                logger.warn("mẫu Chi tiết bao gồm không phải này Phòng khám hạng mục khám chữa bệnh, Đã bỏ qua: detailCompanyId={}, costItemCompanyId={}, itemName={}",
                     detailCompanyId, costItem.getCompany().getId(), costItem.getItemName());
                 return null;
             }
@@ -155,7 +155,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             Stuff stuff = this.stuffDao.get(recipeTemplateDetail.getDrugStuffId().getDrugStuffId());
             if (stuff == null) return null;
             if (detailCompanyId != null && stuff.getCompany() != null && !detailCompanyId.equals(stuff.getCompany().getId())) {
-                logger.warn("mẫuChi tiếtbao gồmkhông phảinàyPhòng khámVật tư, Đã bỏ qua: detailCompanyId={}, stuffCompanyId={}, stuffName={}",
+                logger.warn("mẫu Chi tiết bao gồm không phải này Phòng khám Vật tư, Đã bỏ qua: detailCompanyId={}, stuffCompanyId={}, stuffName={}",
                     detailCompanyId, stuff.getCompany().getId(), stuff.getName());
                 return null;
             }

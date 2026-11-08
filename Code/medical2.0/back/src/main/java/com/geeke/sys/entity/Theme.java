@@ -33,7 +33,7 @@ public class Theme extends DataEntity<Theme> {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên chủ đề không được để trống")
-	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getName() {
 		return super.getName();
 	}
@@ -48,7 +48,7 @@ public class Theme extends DataEntity<Theme> {
 	}
 	
 	
-	@Length(min=0, max=1, message="Mặc địnhĐộ dài phải nằm trong khoảng 0 đến 1 ")
+	@Length(min=0, max=1, message="Mặc định Độ dài phải nằm trong khoảng 0 đến 1")
 	public String getIsDefault() {
 		return isDefault;
 	}

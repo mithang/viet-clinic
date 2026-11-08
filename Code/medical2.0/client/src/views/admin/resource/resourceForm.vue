@@ -96,7 +96,7 @@ export default {
             { required: true, message: 'Vui lòng nhập mã', trigger: 'blur' }
         ],
         'url': [
-            { required: true, message: 'Vui lòng nhậpUrl', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập Url', trigger: 'blur' }
         ],
         'permission': [
             { required: true, message: 'Vui lòng nhập quyền', trigger: 'blur' }

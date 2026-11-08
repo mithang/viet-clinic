@@ -50,7 +50,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
        if(manufactureFactory.getId()==null){
            String by = manufactureFactoryDao.findBy(manufactureFactory.getName(), manufactureFactory.getCompany().getId());
            if(by!=null){
-               throw new ServiceException("Nhà sản xuấtĐã tồn tại");
+               throw new ServiceException("Nhà sản xuất Đã tồn tại");
 
            }
        }

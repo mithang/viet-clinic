@@ -64,7 +64,7 @@ public class ActionService extends CrudService<ActionDao, Action> {
 			if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
 				String companyId = actionDao.getCompanyIdById(id);
 				if (StringUtils.isBlank(companyId) || !tenantId.equals(companyId)) {
-					throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+					throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
 				}
 			}
 		}

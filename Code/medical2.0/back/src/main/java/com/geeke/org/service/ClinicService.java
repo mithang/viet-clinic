@@ -220,7 +220,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         }
         userRoleDao.insert(userRole);
         userDao.insertUserTenant(IdGen.uuid(), id1, user.getCompanyId(), user.getLoginName());
-        logger.info("saumáytự độngTạoNgười dùng: {}", id1);
+        logger.info("sau máy tự động Tạo Người dùng: {}", id1);
     }
 
     @Transactional(readOnly = false)

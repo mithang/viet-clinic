@@ -40,7 +40,7 @@ public class UserRole extends DataEntity<UserRole> {
 		this.user = user;
 	}
 
-	@NotNull(message="Định danh người dùngKhông thể là trống")
+	@NotNull(message="Định danh người dùng Không thể là trống")
     public User getUser() {
         return user;
     }
@@ -49,7 +49,7 @@ public class UserRole extends DataEntity<UserRole> {
         this.user = user;
     }
     
-	@NotNull(message="Vai tròđịnh danhKhông thể là trống")
+	@NotNull(message="Vai trò định danh Không thể là trống")
     public Role getRole() {
         return role;
     }

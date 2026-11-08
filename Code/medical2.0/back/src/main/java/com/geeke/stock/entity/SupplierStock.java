@@ -104,7 +104,7 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
         return stuff;
     }
 
-	@Length(min=0, max=64, message="Quy cáchĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="Quy cách Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getNorms() {
 		return norms;
 	}
@@ -121,7 +121,7 @@ public class SupplierStock extends DataEntity<SupplierStock>  {
         this.factory = factory;
     }
     
-	@Length(min=0, max=45, message="lôsốĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="lô số Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getBatchNo() {
 		return batchNo;
 	}

@@ -52,7 +52,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
         this.company = company;
     }
     
-	@NotNull(message="Nhà cung cấpidKhông được để trống")
+	@NotNull(message="Nhà cung cấp id Không được để trống")
     public Supplier getSupplier() {
         return supplier;
     }
@@ -61,7 +61,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
         this.supplier = supplier;
     }
     
-	@Length(min=0, max=64, message="phiếu nhập khoĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="phiếu nhập kho Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getCode() {
 		return code;
 	}
@@ -137,7 +137,7 @@ public class SupplierStorage extends DataEntity<SupplierStorage> {
 	}
 	
 	
-	@Length(min=0, max=64, message="phátphiếusốĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="phát phiếu số Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getInvoiceNumber() {
 		return invoiceNumber;
 	}

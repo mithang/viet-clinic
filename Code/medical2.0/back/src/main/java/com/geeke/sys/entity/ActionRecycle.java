@@ -34,7 +34,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
 		this.action = action;
 	}
 
-	@NotNull(message="Ngàynhật kýKhông thể là trống")
+	@NotNull(message="Ngày nhật ký Không thể là trống")
     public Action getAction() {
         return action;
     }
@@ -43,7 +43,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
         this.action = action;
     }
     
-	@Length(min=1, max=200, message="bảngtênĐộ dài phải nằm trong khoảng 1 đến 200 ")
+	@Length(min=1, max=200, message="bảng tên Độ dài phải nằm trong khoảng 1 đến 200")
 	public String getTableName() {
 		return tableName;
 	}
@@ -52,7 +52,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
 	}
 	
 	
-	@Length(min=1, max=40, message="Đối tượng nghiệp vụĐộ dài phải nằm trong khoảng 1 đến 40 ")
+	@Length(min=1, max=40, message="Đối tượng nghiệp vụ Độ dài phải nằm trong khoảng 1 đến 40")
 	public String getObjectId() {
 		return objectId;
 	}
@@ -61,7 +61,7 @@ public class ActionRecycle extends DataEntity<ActionRecycle> {
 	}
 	
 	
-	@Length(min=0, max=200, message="Tên đối tượnggọi làĐộ dài phải nằm trong khoảng 0 đến 200 ")
+	@Length(min=0, max=200, message="Tên đối tượng gọi là Độ dài phải nằm trong khoảng 0 đến 200")
 	public String getObjectName() {
 		return objectName;
 	}

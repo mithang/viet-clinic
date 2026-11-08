@@ -37,7 +37,7 @@ public class MemberManagementDetail extends DataEntity<MemberManagementDetail> {
 	}
 	
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }

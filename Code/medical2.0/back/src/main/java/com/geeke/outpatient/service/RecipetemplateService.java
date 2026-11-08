@@ -225,7 +225,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
                 if (storedInfo.getRecipetemplate() != null
                         && StringUtils.isNotBlank(storedInfo.getRecipetemplate().getId())
                         && !storedInfo.getRecipetemplate().getId().equals(recipetemplate.getId())) {
-                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                 }
             }
         }
@@ -241,7 +241,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
                 String detailInfoId = first.getRecipeTemplateInfo().getId();
                 if (info != null && StringUtils.isNotBlank(info.getId())) {
                     if (!detailInfoId.equals(info.getId())) {
-                        throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                        throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                     }
                 } else {
                     RecipeTemplateInfo storedDetailInfo = recipeTemplateInfoDao.getOwnership(detailInfoId);
@@ -380,7 +380,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             return;
         }
         if (!tenantId.equals(company.getId())) {
-            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+            throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
         }
     }
 
@@ -396,7 +396,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             return;
         }
         if (!tenantId.equals(storedInfo.getCompany().getId())) {
-            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+            throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
         }
     }
 
@@ -478,7 +478,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             if (!isDetailBelongsToCompany(r, medicalRecord.getCompany().getId())) {
                 String drugStuffId = r.getDrugStuffId() == null
                         ? null : r.getDrugStuffId().getDrugStuffId();
-                logger.warn("AIKhi lưu mẫu, bỏ qua thuốc không thuộc phòng khám này: companyId={}, drugStuffId={}, stuffType={}",
+                logger.warn("AI Khi lưu mẫu, bỏ qua thuốc không thuộc phòng khám này: companyId={}, drugStuffId={}, stuffType={}",
                     medicalRecord.getCompany().getId(), drugStuffId, r.getStuffType());
                 continue;
             }
@@ -487,7 +487,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
                 r.getDrugStuffId().setDrugStuffId(id);
                 validDetails.add(r);
             }else {
-                a += r.getDrugStuffId().getName()+ "ThuốckhôngTồn khoThông tin\n";
+                a += r.getDrugStuffId().getName()+ "Thuốc không Tồn kho Thông tin\n";
             }
         }
         recipetemplate.setRecipeTemplateDetail(validDetails);
@@ -499,7 +499,7 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         }else {
             this.updateTemplate(recipetemplate);
         }
-        a = "Đơn thuốcThông tinThêmThành công";
+        a = "Đơn thuốc Thông tin Thêm Thành công";
         return a;
     }
 

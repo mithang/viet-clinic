@@ -37,7 +37,7 @@
               <div style="width: 80px;">Nguồn dữ liệu</div>
               <el-select @change="handleSource" v-model="source">
                 <el-option label="Đơn vị thuê" value="1"></el-option>
-                <el-option label="Bản phòng khámHis" value="2"></el-option>
+                <el-option label="Bản phòng khám His" value="2"></el-option>
               </el-select>
             </div>
             </div>

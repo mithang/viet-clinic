@@ -103,7 +103,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             }
         } else {
             if (!CollectionUtils.isEmpty(inventoryVerifications)) {
-                throw new ServiceException("Đang tiến hành kiểm kê, không thể tiến hành dòngTrả thuốcthao tác!");
+                throw new ServiceException("Đang tiến hành kiểm kê, không thể tiến hành dòng Trả thuốc thao tác!");
 
             }
         }
@@ -120,10 +120,10 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             for (String recipelInfoId : dispensingEvt.getRecipelInfoIdList()) {
                 RecipelInfo recipelInfo = this.recipelInfoService.get(recipelInfoId);
                 if (recipelInfo == null || !"0".equals(recipelInfo.getIsDispension())) {
-                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc Đãphát thuốcqua");
+                    throw new ServiceException("Đơn thuốc Thông tin Kiểm tra Thất bại, Không tồn tại hoặc Đã phát thuốc qua");
                 }
                 if (this.recipelInfoService.claimDispensed(recipelInfoId) == 0) {
-                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc Đãphát thuốcqua");
+                    throw new ServiceException("Đơn thuốc Thông tin Kiểm tra Thất bại, Không tồn tại hoặc Đã phát thuốc qua");
                 }
             }
             for (String recipelInfoId : dispensingEvt.getRecipelInfoIdList()) {
@@ -135,7 +135,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             //Cập nhật trạng thái đơn thuốc
             List<String> recipelInfoIdList = dispensingEvt.getRecipelInfoIdList();
             if (CollectionUtils.isEmpty(recipelInfoIdList)) {
-                throw new ServiceException("phát thuốc của Đơn thuốcThông tinKhông thể là trống");
+                throw new ServiceException("phát thuốc của Đơn thuốc Thông tin Không thể là trống");
             }
 
             for (String recipelInfoId : recipelInfoIdList) {
@@ -145,7 +145,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                 // missing-row guard stays here; the old !"0" test would
                 // always throw now because this same call claimed the row.
                 if (recipelInfo == null) {
-                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc Đãphát thuốcqua");
+                    throw new ServiceException("Đơn thuốc Thông tin Kiểm tra Thất bại, Không tồn tại hoặc Đã phát thuốc qua");
                 }
                 recipelInfo.setIsDispension("1");
                 recipelInfo.setDispensionDate(new Date());
@@ -167,19 +167,19 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             //Cập nhật trạng thái đơn thuốc
             List<String> recipelInfoIdList = dispensingEvt.getRecipelInfoIdList();
             if (CollectionUtils.isEmpty(recipelInfoIdList)) {
-                throw new ServiceException("phát thuốc của Đơn thuốcThông tinKhông thể là trống");
+                throw new ServiceException("phát thuốc của Đơn thuốc Thông tin Không thể là trống");
             }
             for (String recipelInfoId : recipelInfoIdList) {
                 RecipelInfo recipelInfo = this.recipelInfoService.get(recipelInfoId);
                 if (recipelInfo == null || !"1".equals(recipelInfo.getIsDispension())) {
-                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc ĐãTrả thuốcqua");
+                    throw new ServiceException("Đơn thuốc Thông tin Kiểm tra Thất bại, Không tồn tại hoặc Đã Trả thuốc qua");
                 }
                 if (BizConstants.RECIPEL_TYPE_INFUSION.equals(recipelInfo.getRecipelType().getValue())) {
                     List<RecipelDetail> recipelDetails = recipelDetailService.getByRecipelInfoId(recipelInfo.getId());
                     for (RecipelDetail recipelDetail :
                             recipelDetails) {
                         if (recipelDetail.getExecutions() != null) {
-                            throw new ServiceException("Truyền dịchĐơn thuốcĐãhành nghề dòng, Không thể hoàn phí!");
+                            throw new ServiceException("Truyền dịch Đơn thuốc Đã hành nghề dòng, Không thể hoàn phí!");
                         }
                     }
                 }
@@ -190,7 +190,7 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                 // "1" truoc khi commit roi moi ap adjustment DS32, lam
                 // used am va return_todo_fee tang gap N.
                 if (this.recipelInfoService.claimReturned(recipelInfoId) == 0) {
-                    throw new ServiceException("Đơn thuốcThông tinKiểm traThất bại, Không tồn tại hoặc ĐãTrả thuốcqua");
+                    throw new ServiceException("Đơn thuốc Thông tin Kiểm tra Thất bại, Không tồn tại hoặc Đã Trả thuốc qua");
                 }
                 //Trả thuốctạmkhônghoàn phí
                 medicinalStorageControlService.drugRepercussion(recipelInfo);

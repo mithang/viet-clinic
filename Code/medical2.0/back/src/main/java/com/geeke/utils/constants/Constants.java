@@ -13,9 +13,9 @@ public class Constants {
 	public static final String RETURN_MSG_TYPE = "type";
 
     public static final String SUCCESS_CODE = "100";
-    public static final String SUCCESS_MSG = "Vui lòngyêu cầuThành công";
+    public static final String SUCCESS_MSG = "Vui lòng yêu cầu Thành công";
 
-    public static final String SUCCESS_SAVE_DRAFT = "Lưubản nhápThành công";
+    public static final String SUCCESS_SAVE_DRAFT = "Lưu bản nháp Thành công";
 
     public static final String MSG_TYPE_ERROR = "error";
     public static final String MSG_TYPE_WARNING = "warning";

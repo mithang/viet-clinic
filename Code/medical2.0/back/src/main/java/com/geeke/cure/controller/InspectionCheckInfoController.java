@@ -88,7 +88,7 @@ public class InspectionCheckInfoController extends CrudController<InspectionChec
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
         }
-        logger.debug("LưuChi tiết xét nghiệm và kiểm tra: {}", inspectionCheckInfo);
+        logger.debug("Lưu Chi tiết xét nghiệm và kiểm tra: {}", inspectionCheckInfo);
         inspectionCheckInfoService.save(inspectionCheckInfo,fileIdUploads,deleteIds);
         InspectionCheck inspectionCheck = inspectionCheckService.get(inspectionCheckInfo.getInspectionCheck().getId());
         if (inspectionCheckInfo.getInspectionCheckDetails() != null && !inspectionCheckInfo.getInspectionCheckDetails().isEmpty()) {

@@ -168,7 +168,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
         this.infuseUse = infuseUse;
     }
     
-	@Length(min=0, max=45, message="tốc độ truyềnĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="tốc độ truyền Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getDrippingSpeed() {
 		return drippingSpeed;
 	}
@@ -193,7 +193,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
 	}
 
 
-	@Length(min=0, max=1, message="retail_typeĐộ dài phải từ 0  và  1 Giữa")
+	@Length(min=0, max=1, message="retail_type Độ dài phải từ 0 và 1 Giữa")
 	public String getRetailType() {
 		return retailType;
 	}
@@ -218,7 +218,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
 	}
 
 
-	@NotNull(message="Có bán lẻ khôngKhông thể là trống")
+	@NotNull(message="Có bán lẻ không Không thể là trống")
 	public Integer getIsUnpackSell() {
 		return isUnpackSell;
 	}
@@ -235,7 +235,7 @@ public class RecipelDetail extends DataEntity<RecipelDetail> {
 	}
 
 
-	@Length(min=0, max=100, message="đơn giáĐơn vịĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="đơn giá Đơn vị Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getUnitType() {
 		return unitType;
 	}

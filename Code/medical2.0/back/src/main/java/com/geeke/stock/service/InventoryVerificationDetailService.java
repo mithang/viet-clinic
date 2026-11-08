@@ -146,7 +146,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                                     && StringUtils.isNotBlank(detail.getCompany().getId())
                                     && dbRow.getCompany() != null
                                     && !detail.getCompany().getId().equals(dbRow.getCompany().getId())) {
-                                throw new com.geeke.common.service.ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                                throw new com.geeke.common.service.ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                             }
                         }
                     }
@@ -270,7 +270,7 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                 BigDecimal dbAllPrice = this.dao.sumProfitAndLossPriceForUpdate(totalParentId);
                 inventoryVerificationService.updateAllPrice(totalParentId, dbAllPrice == null ? BigDecimal.ZERO : dbAllPrice);
             }
-            return "hành nghề dòngThành công";
+            return "hành nghề dòng Thành công";
         }else {
             return "Dữ liệu là trống";
         }
@@ -375,11 +375,11 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                         new ExcelExportBuilder.Column("Nhà cung cấp", "supplier"),
                         new ExcelExportBuilder.Column("Số lô", "norms"),
                         new ExcelExportBuilder.Column("Thời hạn hiệu lực", "endDate"),
-                        new ExcelExportBuilder.Column("Hiện tạiSố lượng tồn kho", "currentInventory"),
+                        new ExcelExportBuilder.Column("Hiện tại Số lượng tồn kho", "currentInventory"),
                         new ExcelExportBuilder.Column("Tồn kho kiểm kê", "checkInventory"),
                         new ExcelExportBuilder.Column("Lãi lỗ kiểm kê", "profitAndLoss"),
                         new ExcelExportBuilder.Column("Ghi chú", "remarks"),
-                        new ExcelExportBuilder.Column("lãi lỗSố tiền( đồng)", "profitAndLossPrice")
+                        new ExcelExportBuilder.Column("lãi lỗ Số tiền ( đồng)", "profitAndLossPrice")
                 )
                 .data(exportData)
                 .write(response, "Kiểm kê tồn kho.xlsx");

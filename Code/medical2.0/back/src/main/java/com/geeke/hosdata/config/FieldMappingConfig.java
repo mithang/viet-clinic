@@ -33,7 +33,7 @@ public class FieldMappingConfig {
                 }
             }
         } catch (Exception e) {
-            logger.error("đọcTrườngánh xạcấu hìnhThất bại", e);
+            logger.error("đọc Trường ánh xạ cấu hình Thất bại", e);
         }
         return fieldMapping;
     }

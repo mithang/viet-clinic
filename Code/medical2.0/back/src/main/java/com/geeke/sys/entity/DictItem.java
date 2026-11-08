@@ -41,7 +41,7 @@ public class DictItem extends DataEntity<DictItem> {
 		this.company = company;
 	}
 
-	@NotNull(message="Bảng loại từ điểnIDKhông được để trống")
+	@NotNull(message="Bảng loại từ điển ID Không được để trống")
     public DictType getDictType() {
         return dictType;
     }
@@ -52,7 +52,7 @@ public class DictItem extends DataEntity<DictItem> {
     
 	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot value NOT NULL.
 	@NotNull(message="Giá trị từ điển không được để trống")
-	@Length(min=1, max=128, message="Giá trịĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Giá trị Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getValue() {
 		return value;
 	}

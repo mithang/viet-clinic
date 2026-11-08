@@ -28,7 +28,7 @@ public class ScheduleJobService extends CrudService<ScheduleJobDao, ScheduleJob>
     public ScheduleJob save(ScheduleJob entity) {
         String cron = entity.getCron();
         if (StringUtils.isEmpty(cron)|| ! CronUtils.isValid(cron)){
-            throw new ServiceException("cronbiểu thứcTham sốngoại lệ");
+            throw new ServiceException("cron biểu thức Tham số ngoại lệ");
         }
         // DS120 C: save voi id khong ton tai truoc day roi qua
         // CrudService.save -> doUpdate 0 dong roi van 200 silent no-op
@@ -122,7 +122,7 @@ public class ScheduleJobService extends CrudService<ScheduleJobDao, ScheduleJob>
         }
         String cron = entity.getCron();
         if (StringUtils.isEmpty(cron) || !CronUtils.isValid(cron)) {
-            throw new ServiceException("cronbiểu thứcTham sốngoại lệ");
+            throw new ServiceException("cron biểu thức Tham số ngoại lệ");
         }
     }
 }

@@ -94,7 +94,7 @@ public class UserRealm extends AuthorizingRealm {
                     userService.updatePassword(user.getId(), md5New.toHex());
                     logger.info("Người dùng {} Mật khẩu đã tự động chuyển sang số lần lặp băm mới", loginName);
                 } catch (Exception e) {
-                    logger.warn("Người dùng {} Mật khẩutự độngchuyển đổiThất bại: {}", loginName, e.getMessage());
+                    logger.warn("Người dùng {} Mật khẩu tự động chuyển đổi Thất bại: {}", loginName, e.getMessage());
                 }
             }
         }
@@ -135,7 +135,7 @@ public class UserRealm extends AuthorizingRealm {
     	        .build();
         List<User> list = userService.listAll(parms, null);
         if (list == null || list.size() < 1) {
-            logger.info("{} Người dùngTài khoảnKhông tồn tại", loginName);
+            logger.info("{} Người dùng Tài khoản Không tồn tại", loginName);
             return null;
         }
         return list.get(0);

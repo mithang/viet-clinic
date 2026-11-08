@@ -36,7 +36,7 @@ public class SysCollect extends DataEntity<SysCollect> {
 	}
 	
 
-	@NotNull(message="Người dùngidKhông được để trống")
+	@NotNull(message="Người dùng id Không được để trống")
     public User getUserId() {
         return userId;
     }
@@ -45,7 +45,7 @@ public class SysCollect extends DataEntity<SysCollect> {
         this.userId = userId;
     }
     
-	@NotNull(message="Định tuyếnidKhông được để trống")
+	@NotNull(message="Định tuyến id Không được để trống")
     public Router getRouterId() {
         return routerId;
     }

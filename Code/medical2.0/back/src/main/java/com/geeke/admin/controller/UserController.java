@@ -381,7 +381,7 @@ public class UserController extends CrudController<UserService, User> {
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
         if(medicareConfigProperties.getIsDemo().equals("true")){
-            throw new ServiceException("demoHệ thốngVui lòngđừngXóaNgười dùng!");
+            throw new ServiceException("demo Hệ thống Vui lòng đừng Xóa Người dùng!");
         }
         // Iteration 29: request khong id khong con di duong fallback dem
         // theo phone (countClinicIdByPhone khong loc tenant, roi
@@ -424,7 +424,7 @@ public class UserController extends CrudController<UserService, User> {
         }
         int rows = 0;
          if(medicareConfigProperties.getIsDemo().equals("true")){
-             throw new ServiceException("demoHệ thốngVui lòngđừngSửaMật khẩu!");
+             throw new ServiceException("demo Hệ thống Vui lòng đừng Sửa Mật khẩu!");
          }
         if(!StringUtils.isBlank(id)) {
             rows = service.changeLoginPassword(id, password);

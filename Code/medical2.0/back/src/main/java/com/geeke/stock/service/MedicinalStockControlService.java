@@ -289,7 +289,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Drug drug = drugService.get(dataEntity.getId());
             if (Objects.isNull(drug) || StringUtils.isBlank(drug.getId()))
             {
-                throw new ServiceException("Khởi tạo[ThuốcTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của thuốc!");
+                throw new ServiceException("Khởi tạo [Thuốc Tồn kho] Khi kiểm soát tổng, Không lấy được thông tin bảo trì cơ bản của thuốc!");
             }
             drugStuffId = drug.getId();
             drugStuffName = drug.getGoodsName();
@@ -301,7 +301,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Stuff stuff = stuffService.get(dataEntity.getId());
             if (Objects.isNull(stuff) || StringUtils.isBlank(stuff.getId()))
             {
-                throw new ServiceException("Khởi tạo[Vật tưTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của vật tư!");
+                throw new ServiceException("Khởi tạo [Vật tư Tồn kho] Khi kiểm soát tổng, Không lấy được thông tin bảo trì cơ bản của vật tư!");
             }
             drugStuffId = stuff.getId();
             drugStuffName = stuff.getName();
@@ -347,7 +347,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Drug drug = drugService.get(dataEntity.getId());
             if (Objects.isNull(drug) || StringUtils.isBlank(drug.getId()))
             {
-                throw new ServiceException("Khởi tạo[ThuốcTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của thuốc!");
+                throw new ServiceException("Khởi tạo [Thuốc Tồn kho] Khi kiểm soát tổng, Không lấy được thông tin bảo trì cơ bản của thuốc!");
             }
             drugStuffId = drug.getId();
             drugStuffName = drug.getGoodsName();
@@ -358,7 +358,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             Stuff stuff = stuffService.get(dataEntity.getId());
             if (Objects.isNull(stuff) || StringUtils.isBlank(stuff.getId()))
             {
-                throw new ServiceException("Khởi tạo[Vật tưTồn kho]Khi kiểm soát tổng,Không lấy được thông tin bảo trì cơ bản của vật tư!");
+                throw new ServiceException("Khởi tạo [Vật tư Tồn kho] Khi kiểm soát tổng, Không lấy được thông tin bảo trì cơ bản của vật tư!");
             }
             drugStuffId = stuff.getId();
             drugStuffName = stuff.getName();
@@ -392,7 +392,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
             //TODO: tạiBậtđộngTồn khokiểm soátchức năng giờ, củatrước của lịch sửsảnsinhDữ liệuNhư như thế nàoXử lý???   khôngquản lý, còn có taycông việcbùghiDữ liệuĐếnDữ liệukho
             return;
         }else {
-            throw new ServiceException("đóThuốcTồn tạiTồn khoKhông thểXóa!");
+            throw new ServiceException("đó Thuốc Tồn tại Tồn kho Không thể Xóa!");
         }
 
 //        MedicinalStockControl medicinalStockControl = list.get(0);
@@ -400,7 +400,7 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
 //        BigDecimal surplusStock = medicinalStockControl.getSurplusStock();    //Số lượng tồn kho còn khả dụng
 //        if (storageStock.compareTo(surplusStock) != 0)
 //        {
-//            throw new RuntimeException("độngTồn khokiểm soátĐãphátthay đổi, Không thểhủyXóacơ bảncấu hìnhDữ liệu!");
+//            throw new RuntimeException("động Tồn kho kiểm soát Đã phát thay đổi, Không thể hủy Xóa cơ bản cấu hình Dữ liệu!");
 //        }
 //
 //        //tổngTồn khokiểm soátDữ liệuđánhtrênhủyXóađánh dấu

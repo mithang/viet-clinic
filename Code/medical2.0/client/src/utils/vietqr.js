@@ -24,7 +24,7 @@
 function tlv(tag, value) {
   const text = String(value);
   if (text.length > 99) {
-    throw new Error("Giá trị VietQR vượt quá 99 ký tự: " + tag);
+    throw new Error("Giá trị VietQR vượt quá 99 ký tự:" + tag);
   }
   return tag + String(text.length).padStart(2, "0") + text;
 }

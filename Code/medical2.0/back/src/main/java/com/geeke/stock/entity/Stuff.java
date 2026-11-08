@@ -104,7 +104,7 @@ public class Stuff extends DataEntity<Stuff> {
 
     
 	@ExcelImportField(columnIndex = 1, label = "Tên chung", maxLength = 45)
-	@Length(min=0, max=45, message="thườngdùngtênĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="thường dùng tên Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getCommonName() {
 		return commonName;
 	}
@@ -113,7 +113,7 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@Length(min=0, max=45, message="Vật tưĐộ dài mã phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="Vật tư Độ dài mã phải nằm trong khoảng 0 đến 45")
 	public String getCode() {
 		return code;
 	}
@@ -149,7 +149,7 @@ public class Stuff extends DataEntity<Stuff> {
     }
     
 	@ExcelImportField(columnIndex = 6, label = "mụcmã", maxLength = 64)
-	@Length(min=0, max=64, message="mã vạchĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="mã vạch Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getBarCode() {
 		return barCode;
 	}
@@ -158,8 +158,8 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 7, label = "đăng kýTên", maxLength = 64)
-	@Length(min=0, max=64, message="đăng kýchứngTênĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@ExcelImportField(columnIndex = 7, label = "đăng ký Tên", maxLength = 64)
+	@Length(min=0, max=64, message="đăng ký chứng Tên Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getRegistrationName() {
 		return registrationName;
 	}
@@ -169,7 +169,7 @@ public class Stuff extends DataEntity<Stuff> {
 	
 	
 	@ExcelImportField(columnIndex = 8, label = "đăng kýchứngsố", maxLength = 64)
-	@Length(min=0, max=64, message="đăng kýchứngsốĐộ dài phải nằm trong khoảng 0 đến 64 ")
+	@Length(min=0, max=64, message="đăng ký chứng số Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getRegistrationCode() {
 		return registrationCode;
 	}
@@ -179,7 +179,7 @@ public class Stuff extends DataEntity<Stuff> {
 	
 	
 	@ExcelImportField(columnIndex = 9, label = "Quy cách", maxLength = 45)
-	@Length(min=0, max=45, message="Quy cáchĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="Quy cách Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getSpecifications() {
 		return specifications;
 	}
@@ -189,7 +189,7 @@ public class Stuff extends DataEntity<Stuff> {
 	
 	
 	@ExcelImportField(columnIndex = 10, label = "Số lượng đóng gói")
-	@NotNull(message="Số lượng đóng góiKhông thể là trống")
+	@NotNull(message="Số lượng đóng gói Không thể là trống")
 	public Integer getPackNumber() {
 		return packNumber;
 	}
@@ -199,7 +199,7 @@ public class Stuff extends DataEntity<Stuff> {
 	
 	
 	@ExcelImportField(columnIndex = 11, label = "Đơn vị bào chế", dictTypeId = "1004406758192578593")
-	@NotNull(message="Đơn vị nhỏ nhấtKhông thể là trống")
+	@NotNull(message="Đơn vị nhỏ nhất Không thể là trống")
     public DictItem getMinUnit() {
         return minUnit;
     }
@@ -209,7 +209,7 @@ public class Stuff extends DataEntity<Stuff> {
     }
     
 	@ExcelImportField(columnIndex = 12, label = "Đơn vị đóng gói", dictTypeId = "1004406758192578597")
-	@NotNull(message="Đơn vị đóng góiKhông thể là trống")
+	@NotNull(message="Đơn vị đóng gói Không thể là trống")
     public DictItem getPackUnit() {
         return packUnit;
     }
@@ -219,7 +219,7 @@ public class Stuff extends DataEntity<Stuff> {
     }
     
 	@ExcelImportField(columnIndex = 13, label = "Có hay khôngbán ra ngoài", maxLength = 2)
-	@Length(min=0, max=2, message="Cho phép bán ra ngoàiĐộ dài phải nằm trong khoảng 0 đến 2 ")
+	@Length(min=0, max=2, message="Cho phép bán ra ngoài Độ dài phải nằm trong khoảng 0 đến 2")
 	public String getIsOutSell() {
 		return isOutSell;
 	}
@@ -228,7 +228,7 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 	
 	
-	@ExcelImportField(columnIndex = 14, label = "bán ra ngoàiGiá")
+	@ExcelImportField(columnIndex = 14, label = "bán ra ngoài Giá")
 	public BigDecimal getPriceOutSell() {
 		return priceOutSell;
 	}
@@ -259,7 +259,7 @@ public class Stuff extends DataEntity<Stuff> {
 	@ExcelImportField(columnIndex = 19, label = "Trạng thái", maxLength = 1)
 	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot status NOT NULL.
 	@NotNull(message="Trạng thái không được để trống")
-	@Length(min=1, max=1, message="Cờ bậtĐộ dài phải nằm trong khoảng 1 đến 1 ")
+	@Length(min=1, max=1, message="Cờ bật Độ dài phải nằm trong khoảng 1 đến 1")
 	public String getStatus() {
 		return status;
 	}
@@ -271,7 +271,7 @@ public class Stuff extends DataEntity<Stuff> {
 	@ExcelImportField(columnIndex = 2, label = "Mã pinyin", maxLength = 100)
 	// DS79: @Length(min=0) cho phep null lot qua @Valid roi 500 o cot pinyin_code NOT NULL.
 	@NotNull(message="Mã pinyin không được để trống")
-	@Length(min=0, max=100, message="PinyinmãĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Pinyin mã Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getPinyinCode() {
 		return pinyinCode;
 	}

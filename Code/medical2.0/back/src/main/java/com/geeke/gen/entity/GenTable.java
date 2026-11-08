@@ -40,12 +40,12 @@ public class GenTable extends DataEntity<GenTable> {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên bảng không được để trống")
-	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getName() {
 		return super.getName();
 	}
 
-	@Length(min=0, max=500, message="Giải thíchĐộ dài phải nằm trong khoảng 0 đến 500 ")
+	@Length(min=0, max=500, message="Giải thích Độ dài phải nằm trong khoảng 0 đến 500")
 	public String getComments() {
 		return comments;
 	}
@@ -55,7 +55,7 @@ public class GenTable extends DataEntity<GenTable> {
 	
 	
 	@NotNull(message="Nguồn không được để trống")
-	@Length(min=0, max=128, message="đếnnguồnĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="đến nguồn Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getSource() {
 		return source;
 	}
@@ -65,7 +65,7 @@ public class GenTable extends DataEntity<GenTable> {
 	
 	
 	@NotNull(message="Tên lớp thực thể không được để trống")
-	@Length(min=1, max=100, message="thực thểLớpTênĐộ dài phải nằm trong khoảng 1 đến 100 ")
+	@Length(min=1, max=100, message="thực thể Lớp Tên Độ dài phải nằm trong khoảng 1 đến 100")
 	public String getClassName() {
 		return className;
 	}
@@ -82,7 +82,7 @@ public class GenTable extends DataEntity<GenTable> {
         this.parentTable = parentTable;
     }
     
-	@Length(min=0, max=100, message="chabảngngoàikhóaĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="cha bảng ngoài khóa Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getParentTableFk() {
 		return parentTableFk;
 	}
@@ -92,7 +92,7 @@ public class GenTable extends DataEntity<GenTable> {
 	
 	
 	@NotNull(message="Liên kết bảng không được để trống")
-	@Length(min=1, max=1, message=" có liên kếtbảngĐộ dài phải nằm trong khoảng 1 đến 1 ")
+	@Length(min=1, max=1, message="có liên kết bảng Độ dài phải nằm trong khoảng 1 đến 1")
 	public String getIsAssociation() {
 		return isAssociation;
 	}
@@ -101,7 +101,7 @@ public class GenTable extends DataEntity<GenTable> {
 	}
 	
 	
-	@Length(min=0, max=2000, message="lọcĐiều kiệnĐộ dài phải nằm trong khoảng 0 đến 2000 ")
+	@Length(min=0, max=2000, message="lọc Điều kiện Độ dài phải nằm trong khoảng 0 đến 2000")
 	public String getFilter() {
 		return filter;
 	}

@@ -50,7 +50,7 @@ public class Company extends TreeEntity<Company> {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên công ty không được để trống")
-	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getName() {
 		return super.getName();
 	}
@@ -96,7 +96,7 @@ public class Company extends TreeEntity<Company> {
 	}
 	
 
-	@Length(min=1, max=512, message="toàn bộgọi làĐộ dài phải nằm trong khoảng 1 đến 512 ")
+	@Length(min=1, max=512, message="toàn bộ gọi là Độ dài phải nằm trong khoảng 1 đến 512")
 	public String getFullName() {
 		return fullName;
 	}
@@ -221,7 +221,7 @@ public class Company extends TreeEntity<Company> {
 		this.expireDate = expireDate;
 	}
 
-	@NotNull(message="tenantKhông thể là trống")
+	@NotNull(message="tenant Không thể là trống")
 	public Company getLesseeId() {
 		return lesseeId;
 	}

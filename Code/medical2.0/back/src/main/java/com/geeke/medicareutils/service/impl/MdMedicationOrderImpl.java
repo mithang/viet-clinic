@@ -285,7 +285,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
                 mdtrtinfo.put("drProfttlName", "Phó bác sĩ trưởng khoa");
                 break;
             case  "233":
-                mdtrtinfo.put("drProfttlName", "chẩn đoán chínhBác sĩ");
+                mdtrtinfo.put("drProfttlName", "chẩn đoán chính Bác sĩ");
                 break;
             case  "234":
                 mdtrtinfo.put("drProfttlName", "Bác sĩ");
@@ -407,7 +407,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         // thẩm định đơnDược sĩchức vụgọi làMã
         switch (ysDoctor.getUserExt().getPost()){
             case  "1":
-                top20.put("drProfttlName", "hành nghềnghiệp vụDược sĩ");
+                top20.put("drProfttlName", "hành nghề nghiệp vụ Dược sĩ");
                 break;
             case  "2":
                 top20.put("drProfttlName", "Chức danh kỹ thuật y tế");
@@ -419,7 +419,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
                 top20.put("drProfttlName", "Phó bác sĩ trưởng khoa");
                 break;
             case  "2.3":
-                top20.put("drProfttlName", "chínhquản lýDược sĩ");
+                top20.put("drProfttlName", "chính quản lý Dược sĩ");
                 break;
             case  "2.4":
                 top20.put("drProfttlName", "Dược sĩ");
@@ -501,7 +501,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         data.put("pharDeptCode", ysDoctor.getUserExt().getOfficeCode());
         switch (ysDoctor.getUserExt().getPost()){
             case  "1":
-                data.put("drProfttlName", "hành nghềnghiệp vụDược sĩ");
+                data.put("drProfttlName", "hành nghề nghiệp vụ Dược sĩ");
                 break;
             case  "2":
                 data.put("drProfttlName", "Chức danh kỹ thuật y tế");
@@ -513,7 +513,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
                 data.put("drProfttlName", "Phó bác sĩ trưởng khoa");
                 break;
             case  "2.3":
-                data.put("drProfttlName", "chínhquản lýDược sĩ");
+                data.put("drProfttlName", "chính quản lý Dược sĩ");
                 break;
             case  "2.4":
                 data.put("drProfttlName", "Dược sĩ");

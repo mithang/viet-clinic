@@ -69,9 +69,9 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             if (old == null)
                 throw new ServiceException("Phiếu xuất kho không tồn tại");
             if (old.getStatus() == 2)
-                throw new ServiceException("Xuất khođơnĐãxét duyệt, Không thểSửa");
+                throw new ServiceException("Xuất kho đơn Đã xét duyệt, Không thể Sửa");
             if (old.getStatus() == 3)
-                throw new ServiceException("Xuất khođơnĐãhủy, Không thểSửa");
+                throw new ServiceException("Xuất kho đơn Đã hủy, Không thể Sửa");
         }
 
         // Khi thêm mới, Xử lý trường tự động đánh số
@@ -178,9 +178,9 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         if (supplierOutbound == null)
             throw new ServiceException("Phiếu xuất kho không tồn tại");
         if (supplierOutbound.getStatus() == 3)
-            throw new ServiceException("Xuất khođơnĐãhủy, Không thểtrùng lặpthao tác");
+            throw new ServiceException("Xuất kho đơn Đã hủy, Không thể trùng lặp thao tác");
         if (supplierOutbound.getStatus() == 2)
-            throw new ServiceException("Xuất khođơnĐãxét duyệt, Không thểhủy");
+            throw new ServiceException("Xuất kho đơn Đã xét duyệt, Không thể hủy");
         supplierOutbound.setStatus(3);
         //super.save(supplierOutbound);
         supplierOutbound.setCancelDate(new Date());
@@ -194,12 +194,12 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         if (claimed != 1) {
             SupplierOutbound fresh = this.get(id);
             if (fresh != null && fresh.getStatus() == 3) {
-                throw new ServiceException("Xuất khođơnĐãhủy, Không thểtrùng lặpthao tác");
+                throw new ServiceException("Xuất kho đơn Đã hủy, Không thể trùng lặp thao tác");
             }
             if (fresh != null && fresh.getStatus() == 2) {
-                throw new ServiceException("Xuất khođơnĐãxét duyệt, Không thểhủy");
+                throw new ServiceException("Xuất kho đơn Đã xét duyệt, Không thể hủy");
             }
-            throw new ServiceException("Xuất khođơnĐãhủy, Không thểtrùng lặpthao tác");
+            throw new ServiceException("Xuất kho đơn Đã hủy, Không thể trùng lặp thao tác");
         }
 
         //giải phóngTồn kho
@@ -218,9 +218,9 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         if (supplierOutbound == null)
             throw new ServiceException("Phiếu xuất kho không tồn tại");
         if (supplierOutbound.getStatus() == 3)
-            throw new ServiceException("Xuất khođơnĐãhủy bỏ, Không thểxét duyệt");
+            throw new ServiceException("Xuất kho đơn Đã hủy bỏ, Không thể xét duyệt");
         if (supplierOutbound.getStatus() == 2)
-            throw new ServiceException("Xuất khođơnKhông thểtrùng lặpxét duyệt");
+            throw new ServiceException("Xuất kho đơn Không thể trùng lặp xét duyệt");
 
         // DS34: atomically claim the slip for examining BEFORE any stock
         // move. The status checks above are read-then-act and status was
@@ -235,12 +235,12 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         if (claimed != 1) {
             SupplierOutbound fresh = this.get(id);
             if (fresh != null && fresh.getStatus() == 3) {
-                throw new ServiceException("Xuất khođơnĐãhủy bỏ, Không thểxét duyệt");
+                throw new ServiceException("Xuất kho đơn Đã hủy bỏ, Không thể xét duyệt");
             }
             if (fresh != null && fresh.getStatus() == 2) {
-                throw new ServiceException("Xuất khođơnKhông thểtrùng lặpxét duyệt");
+                throw new ServiceException("Xuất kho đơn Không thể trùng lặp xét duyệt");
             }
-            throw new ServiceException("Xuất khođơnKhông thểtrùng lặpxét duyệt");
+            throw new ServiceException("Xuất kho đơn Không thể trùng lặp xét duyệt");
         }
 
         //TheoChi tiếtvòng lặptrừđiTồn kho
@@ -262,9 +262,9 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             String companyId = supplierOutboundService.get(id).getCompany().getId();
             List<MedicinalStockControl> stockControls = medicinalStockControlService.getByDrugOrStuffId(drugOrStuffId,companyId);
             if (stockControls.size() == 0)
-                throw new ServiceException("ChưatìmĐếnThuốcVật tưTồn khoBản ghi");
+                throw new ServiceException("Chưa tìm Đến Thuốc Vật tư Tồn kho Bản ghi");
             if (stockControls.size() > 1)
-                throw new ServiceException("tìmĐếnnhiềumụcThuốcVật tưTồn khoBản ghi");
+                throw new ServiceException("tìm Đến nhiều mục Thuốc Vật tư Tồn kho Bản ghi");
             MedicinalStockControl medicinalStockControl = stockControls.get(0);
             // DS32: atomic aggregate confirm (used +N, surplus -N).
             medicinalStockControlService.adjustStocks(medicinalStockControl,

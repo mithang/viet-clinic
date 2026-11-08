@@ -34,7 +34,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 	 * Quy tắc mã là dữ liệu cấp hệ thống: bảng sys_code_rule không có cột
 	 * company_id và form gốc cũng không gửi company, nhưng DataEntity bắt
 	 * @NotNull company nên @Valid ở CrudController.save luôn trả 400
-	 * "Phòng khámIDKhông được để trống" — tức Tạo/Sửa codeRule không bao giờ
+	 * "Phòng khám ID Không được để trống" — tức Tạo/Sửa codeRule không bao giờ
 	 * thành công qua UI, dù mã/quy tắc đã đúng. Sửa theo đúng mẫu
 	 * NoticeSend đợt 2: khi company null thì lấy tenant của phiên đăng nhập;
 	 * nếu phiên không có tenant (tài khoản hệ thống) thì dùng id "0" cấp hệ
@@ -45,7 +45,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên quy tắc mã không được để trống")
-	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getName() {
 		return super.getName();
 	}
@@ -76,7 +76,7 @@ public class CodeRule extends DataEntity<CodeRule> {
 	
 	
 	@NotNull(message="Quy tắc không được để trống")
-	@Length(min=1, max=512, message="quy tắcĐộ dài phải nằm trong khoảng 1 đến 512 ")
+	@Length(min=1, max=512, message="quy tắc Độ dài phải nằm trong khoảng 1 đến 512")
 	public String getRuleDef() {
 		return ruleDef;
 	}

@@ -47,12 +47,12 @@ public class MemberSet extends DataEntity<MemberSet> {
     // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
     @Override
     @NotNull(message="Tên gói hội viên không được để trống")
-    @Length(min=1, max=255, message="TênĐộ dài phải nằm trong khoảng 1 đến 255 ")
+    @Length(min=1, max=255, message="Tên Độ dài phải nằm trong khoảng 1 đến 255")
     public String getName() {
     	return super.getName();
     }
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -61,7 +61,7 @@ public class MemberSet extends DataEntity<MemberSet> {
         this.company = company;
     }
     
-	@NotNull(message="Hội viênthẻLoạiKhông được để trống")
+	@NotNull(message="Hội viên thẻ Loại Không được để trống")
 	public DictItem getType() {
 		return type;
 	}
@@ -70,7 +70,7 @@ public class MemberSet extends DataEntity<MemberSet> {
 	}
 	
 	
-	@NotNull(message="Hội viênthẻSố tiềnKhông thể là trống")
+	@NotNull(message="Hội viên thẻ Số tiền Không thể là trống")
 	public BigDecimal getMoney() {
 		return money;
 	}

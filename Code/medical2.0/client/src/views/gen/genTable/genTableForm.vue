@@ -12,7 +12,7 @@
             <el-tab-pane label='Thông tin cơ bản' name='1'></el-tab-pane>
             <el-tab-pane label='Điều kiện ràng buộc' name='2'></el-tab-pane>
             <el-tab-pane label='Cấu hình lưu trữ' name='3'></el-tab-pane>
-            <el-tab-pane label='JavaCấu hình' name='4'></el-tab-pane>
+            <el-tab-pane label='Java Cấu hình' name='4'></el-tab-pane>
             <el-tab-pane label='Cấu hình danh sách' name='5'></el-tab-pane>
             <el-tab-pane label='Cấu hình chỉnh sửa' name='6'></el-tab-pane>
           </el-tabs>
@@ -161,7 +161,7 @@
         <template slot='header'><span style="color:#F56C6C;margin-right: 4px">*</span>JAVALoại</template>
         <template slot-scope='{row,$index}'>
           <el-form-item v-if='dialogProps.action !== "view" && row === genTableColumnCurrentRow' :prop="`genTableColumnList.${$index}.javaType`" :rules='formRules.genTableColumn_javaType' label-width=0>
-            <el-select v-model='row.javaType' value-key='value' @change='onJavaTypeChange' filterable clearable placeholder='Vui lòng chọnJAVALoại' @focus='setCurrentFocus(row)'>
+            <el-select v-model='row.javaType' value-key='value' @change='onJavaTypeChange' filterable clearable placeholder='Vui lòng chọn JAVA Loại' @focus='setCurrentFocus(row)'>
               <el-option v-for='javaType in javaType_GenTableColumn_List' :key='javaType.value' :label='javaType.name' :value='javaType'></el-option>
             </el-select>
           </el-form-item>
@@ -419,7 +419,7 @@ export default {
             { required: true, message: 'Vui lòng nhập kiểu dữ liệu vật lý', trigger: 'blur' }
         ],
         'genTableColumn_javaType': [
-            { required: true, message: 'Vui lòng nhậpJAVALoại', trigger: 'blur' }
+            { required: true, message: 'Vui lòng nhập JAVA Loại', trigger: 'blur' }
         ],
         'genTableColumn_javaField': [
             { required: true, message: 'Vui lòng nhập tên thuộc tính', trigger: 'blur' }

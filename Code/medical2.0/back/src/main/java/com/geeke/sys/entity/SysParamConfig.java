@@ -40,7 +40,7 @@ public class SysParamConfig extends DataEntity<SysParamConfig> {
 		this.category = category;
 	}
 
-	@NotNull(message="cấu hìnhhạng mụcTênKhông thể là trống")
+	@NotNull(message="cấu hình hạng mục Tên Không thể là trống")
 	public String getConfigName() {
 		return configName;
 	}

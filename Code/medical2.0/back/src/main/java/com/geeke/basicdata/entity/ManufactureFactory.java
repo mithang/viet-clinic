@@ -39,7 +39,7 @@ public class ManufactureFactory extends DataEntity<ManufactureFactory> {
     // Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
     @Override
     @NotNull(message="Tên nhà sản xuất không được để trống")
-    @Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+    @Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
     public String getName() {
     	return super.getName();
     }
@@ -52,7 +52,7 @@ public class ManufactureFactory extends DataEntity<ManufactureFactory> {
         this.company = company;
     }
     
-	@Length(min=0, max=45, message="người liên hệĐộ dài phải nằm trong khoảng 0 đến 45 ")
+	@Length(min=0, max=45, message="người liên hệ Độ dài phải nằm trong khoảng 0 đến 45")
 	public String getPeople() {
 		return people;
 	}

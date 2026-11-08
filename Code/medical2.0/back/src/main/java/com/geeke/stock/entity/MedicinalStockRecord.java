@@ -36,7 +36,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 
-	@NotNull(message="Phòng khámIDKhông được để trống")
+	@NotNull(message="Phòng khám ID Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -45,7 +45,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
         this.company = company;
     }
     
-	@Length(min=1, max=20, message="Thuốc/Vật tưIDĐộ dài phải từ 1  và  20 Giữa")
+	@Length(min=1, max=20, message="Thuốc/Vật tư ID Độ dài phải từ 1 và 20 Giữa")
 	public String getDrugStuffId() {
 		return drugStuffId;
 	}
@@ -80,7 +80,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@NotNull(message="Số lượng tồn kho thao tácKhông thể là trống")
+	@NotNull(message="Số lượng tồn kho thao tác Không thể là trống")
 	public BigDecimal getOperationStock() {
 		return operationStock;
 	}
@@ -89,7 +89,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@Length(min=1, max=20, message="Chi tiết nhập khoIDĐộ dài phải từ 1  và  20 Giữa")
+	@Length(min=1, max=20, message="Chi tiết nhập kho ID Độ dài phải từ 1 và 20 Giữa")
 	public String getStorageId() {
 		return storageId;
 	}
@@ -98,7 +98,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@Length(min=0, max=20, message="Đơn thuốcIDĐộ dài phải từ 0  và  20 Giữa")
+	@Length(min=0, max=20, message="Đơn thuốc ID Độ dài phải từ 0 và 20 Giữa")
 	public String getRecipelInfoId() {
 		return recipelInfoId;
 	}
@@ -107,7 +107,7 @@ public class MedicinalStockRecord extends DataEntity<MedicinalStockRecord> {
 	}
 	
 	
-	@Length(min=0, max=255, message="liên kếtBản ghiIDĐộ dài phải từ 0  và  255 Giữa")
+	@Length(min=0, max=255, message="liên kết Bản ghi ID Độ dài phải từ 0 và 255 Giữa")
 	public String getRefId() {
 		return refId;
 	}

@@ -87,7 +87,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 
-	@Length(min=0, max=255, message="Hệ thốngTênĐộ dài phải nằm trong khoảng 0 đến 255 ")
+	@Length(min=0, max=255, message="Hệ thống Tên Độ dài phải nằm trong khoảng 0 đến 255")
 	public String getSysName() {
 		return sysName;
 	}
@@ -96,7 +96,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 	
-	@Length(min=0, max=128, message="Hệ thốnggiới thiệuĐộ dài phải nằm trong khoảng 0 đến 128 ")
+	@Length(min=0, max=128, message="Hệ thống giới thiệu Độ dài phải nằm trong khoảng 0 đến 128")
 	public String getSysAbbrname() {
 		return sysAbbrname;
 	}
@@ -114,7 +114,7 @@ public class SysSeting extends DataEntity<SysSeting> {
 	}
 	
 	
-	@Length(min=0, max=20, message="đăng nhậpphát hànhcụcĐộ dài phải nằm trong khoảng 0 đến 20 ")
+	@Length(min=0, max=20, message="đăng nhập phát hành cục Độ dài phải nằm trong khoảng 0 đến 20")
 	public String getLoginLayout() {
 		return loginLayout;
 	}

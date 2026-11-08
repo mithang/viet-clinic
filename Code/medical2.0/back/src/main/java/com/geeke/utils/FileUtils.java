@@ -50,12 +50,12 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		File srcFile = new File(srcFileName);
 		// Kiểm tranguồnTệpCó tồn tại không
 		if (!srcFile.exists()) {
-			logger.debug("Sao chép tệp thất bại, nguồnTệp " + srcFileName + " Không tồn tại!");
+			logger.debug("Sao chép tệp thất bại, nguồn Tệp" + srcFileName + " Không tồn tại!");
 			return false;
 		}
 		// Kiểm tranguồnTệpCó hay không có hợp lệ của Tệp
 		else if (!srcFile.isFile()) {
-			logger.debug("Sao chép tệp thất bại, " + srcFileName + " không có mộtCáiTệp!");
+			logger.debug("Sao chép tệp thất bại, " + srcFileName + "không có một Cái Tệp!");
 			return false;
 		}
 		File descFile = new File(descFileName);
@@ -63,22 +63,22 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		if (descFile.exists()) {
 			// NếuđíchTệpTồn tại, vàvàcho phépghi đè
 			if (coverlay) {
-				logger.debug("đíchTệpĐã tồn tại, chuẩn bịXóa!");
+				logger.debug("đích Tệp Đã tồn tại, chuẩn bị Xóa!");
 				if (!FileUtils.delFile(descFileName)) {
-					logger.debug("XóađíchTệp " + descFileName + " Thất bại!");
+					logger.debug("Xóa đích Tệp" + descFileName + " Thất bại!");
 					return false;
 				}
 			} else {
-				logger.debug("Sao chép tệp thất bại, đíchTệp " + descFileName + " Đã tồn tại!");
+				logger.debug("Sao chép tệp thất bại, đích Tệp" + descFileName + " Đã tồn tại!");
 				return false;
 			}
 		} else {
 			if (!descFile.getParentFile().exists()) {
 				// NếuđíchTệpnơi của danh mụcKhông tồn tại, Thì tạo thư mục
-				logger.debug("đíchTệpnơi của danh mụcKhông tồn tại, Tạo thư mục!");
+				logger.debug("đích Tệp nơi của danh mục Không tồn tại, Tạo thư mục!");
 				// tạođíchTệpnơi của danh mục
 				if (!descFile.getParentFile().mkdirs()) {
-					logger.debug("tạođíchTệpnơi của danh mụcThất bại!");
+					logger.debug("tạo đích Tệp nơi của danh mục Thất bại!");
 					return false;
 				}
 			}
@@ -112,14 +112,14 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				try {
 					outs.close();
 				} catch (IOException oute) {
-					logger.error("đóngLuồng xuấtThất bại", oute);
+					logger.error("đóng Luồng xuất Thất bại", oute);
 				}
 			}
 			if (ins != null) {
 				try {
 					ins.close();
 				} catch (IOException ine) {
-					logger.error("đóngNhậpluồngThất bại", ine);
+					logger.error("đóng Nhập luồng Thất bại", ine);
 				}
 			}
 		}
@@ -148,12 +148,12 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		File srcDir = new File(srcDirName);
 		// Kiểm tranguồndanh mụcCó tồn tại không
 		if (!srcDir.exists()) {
-			logger.debug("sao chép thư mụcThất bại, nguồndanh mục " + srcDirName + " Không tồn tại!");
+			logger.debug("sao chép thư mục Thất bại, nguồn danh mục" + srcDirName + " Không tồn tại!");
 			return false;
 		}
 		// Kiểm tranguồndanh mụcCó hay không có danh mục
 		else if (!srcDir.isDirectory()) {
-			logger.debug("sao chép thư mụcThất bại, " + srcDirName + " không có mộtCáidanh mục!");
+			logger.debug("sao chép thư mục Thất bại," + srcDirName + "không có một Cá idanh mục!");
 			return false;
 		}
 		// Nếu tên thư mục đích không kết thúc bằng dấu phân cách tệp, tự độngThêmTệp phútcáchký tự
@@ -166,20 +166,20 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		if (descDir.exists()) {
 			if (coverlay) {
 				// Cho phép ghi đè thư mục đích
-				logger.debug("thư mục đíchĐã tồn tại, chuẩn bịXóa!");
+				logger.debug("thư mục đích Đã tồn tại, chuẩn bị Xóa!");
 				if (!FileUtils.delFile(descDirNames)) {
 					logger.debug("Xóa thư mục " + descDirNames + " Thất bại!");
 					return false;
 				}
 			} else {
-				logger.debug("thư mục đíchsao chépThất bại, thư mục đích " + descDirNames + " Đã tồn tại!");
+				logger.debug("thư mục đích sao chép Thất bại, thư mục đích" + descDirNames + " Đã tồn tại!");
 				return false;
 			}
 		} else {
 			// Tạo thư mục đích
-			logger.debug("thư mục đíchKhông tồn tại, chuẩn bịtạo!");
+			logger.debug("thư mục đích Không tồn tại, chuẩn bị tạo!");
 			if (!descDir.mkdirs()) {
-				logger.debug("Tạo thư mục đíchThất bại!");
+				logger.debug("Tạo thư mục đích Thất bại!");
 				return false;
 			}
 
@@ -228,7 +228,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 	public static boolean delFile(String fileName) {
  		File file = new File(fileName);
 		if (!file.exists()) {
-			logger.debug(fileName + " TệpKhông tồn tại!");
+			logger.debug(fileName + "Tệp Không tồn tại!");
 			return true;
 		} else {
 			if (file.isFile()) {
@@ -257,7 +257,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				return false;
 			}
 		} else {
-			logger.debug(fileName + " TệpKhông tồn tại!");
+			logger.debug(fileName + "Tệp Không tồn tại!");
 			return true;
 		}
 	}
@@ -276,7 +276,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		}
 		File dirFile = new File(dirNames);
 		if (!dirFile.exists() || !dirFile.isDirectory()) {
-			logger.debug(dirNames + " danh mụcKhông tồn tại!");
+			logger.debug(dirNames + "danh mục Không tồn tại!");
 			return true;
 		}
 		boolean flag = true;
@@ -303,7 +303,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		}
 
 		if (!flag) {
-			logger.debug("Xóa thư mụcThất bại!");
+			logger.debug("Xóa thư mục Thất bại!");
 			return false;
 		}
 		// XóaHiện tạidanh mục
@@ -329,13 +329,13 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 			return false;
 		}
 		if (descFileName.endsWith(File.separator)) {
-			logger.debug(descFileName + "  là danh mục, Không thểTạo thư mục!");
+			logger.debug(descFileName + "là danh mục, Không thể Tạo thư mục!");
 			return false;
 		}
 		if (!file.getParentFile().exists()) {
 			// NếuTệpnơi của danh mụcKhông tồn tại, Thì tạo thư mục
 			if (!file.getParentFile().mkdirs()) {
-				logger.debug("tạoTệpnơi của danh mụcThất bại!");
+				logger.debug("tạo Tệp nơi của danh mục Thất bại!");
 				return false;
 			}
 		}
@@ -343,14 +343,14 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		// tạoTệp
 		try {
 			if (file.createNewFile()) {
-				logger.debug(descFileName + " TệptạoThành công!");
+				logger.debug(descFileName + "Tệp tạo Thành công!");
 				return true;
 			} else {
-				logger.debug(descFileName + " TệptạoThất bại!");
+				logger.debug(descFileName + "Tệp tạo Thất bại!");
 				return false;
 			}
 		} catch (Exception e) {
-			logger.error(descFileName + " TệptạoThất bại!", e);
+			logger.error(descFileName + "Tệp tạo Thất bại!", e);
 			return false;
 		}
 
@@ -373,10 +373,10 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		}
 		// Tạo thư mục
 		if (descDir.mkdirs()) {
-			logger.debug("Danh mục " + descDirNames + " tạoThành công!");
+			logger.debug("Danh mục " + descDirNames + "tạo Thành công!");
 			return true;
 		} else {
-			logger.debug("Danh mục " + descDirNames + " tạoThất bại!");
+			logger.debug("Danh mục " + descDirNames + "tạo Thất bại!");
 			return false;
 		}
 
@@ -389,9 +389,9 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 	public static void writeToFile(String fileName, String content, boolean append) {
 		try {
 			FileUtils.write(new File(fileName), content, "utf-8", append);
-			logger.debug("Tệp " + fileName + " ghiThành công!");
+			logger.debug("Tệp " + fileName + "ghi Thành công!");
 		} catch (IOException e) {
-			logger.debug("Tệp " + fileName + " ghiThất bại! " + e.getMessage());
+			logger.debug("Tệp " + fileName + "ghi Thất bại!" + e.getMessage());
 		}
 	}
 
@@ -402,9 +402,9 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 	public static void writeToFile(String fileName, String content, String encoding, boolean append) {
 		try {
 			FileUtils.write(new File(fileName), content, encoding, append);
-			logger.debug("Tệp " + fileName + " ghiThành công!");
+			logger.debug("Tệp " + fileName + "ghi Thành công!");
 		} catch (IOException e) {
-			logger.debug("Tệp " + fileName + " ghiThất bại! " + e.getMessage());
+			logger.debug("Tệp " + fileName + "ghi Thất bại!" + e.getMessage());
 		}
 	}
 	
@@ -418,12 +418,12 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 			String descFileName) {
 		// Kiểm tradanh mụcCó tồn tại không
 		if (srcDirName == null) {
-			logger.debug("TệpnénThất bại, Danh mục " + srcDirName + " Không tồn tại!");
+			logger.debug("Tệp nén Thất bại, Danh mục" + srcDirName + " Không tồn tại!");
 			return;
 		}
 		File fileDir = new File(srcDirName);
 		if (!fileDir.exists() || !fileDir.isDirectory()) {
-			logger.debug("TệpnénThất bại, Danh mục " + srcDirName + " Không tồn tại!");
+			logger.debug("Tệp nén Thất bại, Danh mục" + srcDirName + " Không tồn tại!");
 			return;
 		}
 		String dirPath = fileDir.getAbsolutePath();
@@ -443,9 +443,9 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				}
 			}
 			zouts.close();
-			logger.debug(descFileName + " TệpnénThành công!");
+			logger.debug(descFileName + "Tệp nén Thành công!");
 		} catch (Exception e) {
-			logger.error("nénTệpThất bại", e);
+			logger.error("nén Tệp Thất bại", e);
 		}
 
 	}*/
@@ -497,10 +497,10 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				is.close();
 			}
 			zipFile.close();
-			logger.debug("Tệpgiải nénThành công!");
+			logger.debug("Tệp giải nén Thành công!");
 			return true;
 		} catch (Exception e) {
-			logger.debug("Tệpgiải nénThất bại: " + e.getMessage());
+			logger.debug("Tệp giải nén Thất bại:" + e.getMessage());
 			return false;
 		}
 	}*/
@@ -522,7 +522,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 					zouts.putNextEntry(entry);
 					zouts.closeEntry();
 				} catch (Exception e) {
-					logger.error("đóngzipmụcmụcThất bại", e);
+					logger.error("đóng zip mục mục Thất bại", e);
 				}
 				return;
 			}
@@ -695,13 +695,13 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		if (file != null && file.exists()) {
 			if (file.isFile()) {
 				if (file.length() <= 0) {
-					error = "đóTệp có mộtCáitrốngTệp. ";
+					error = "đó Tệp có một Cái trống Tệp.";
 				}
 				if (!file.canRead()) {
-					error = "đóTệpKhông cóđọcQuyền. ";
+					error = "đó Tệp Không có đọc Quyền.";
 				}
 			} else {
-				error = "đóTệp có mộtCáiTệpkẹp. ";
+				error = "đó Tệp có một Cái Tệp kẹp.";
 			}
 		} else {
 			error = "Tệp đã mất hoặc không tồn tại!";
@@ -750,7 +750,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		if (pastLength != 0) {
 			response.setHeader("Accept-Ranges", "bytes");// Nếu có Dòng một lầndưới,cònKhông cótải tiếp khi đứt đoạn,Trạng thái có Mặc định của  200,khôngcầnhiển thịkiểuĐặt;Định dạng của phản hồi là:HTTP/1.1 200 OK
 			// không có Từ nhấtBắt đầuTải xuống, Định dạng của phản hồi là: Content-Range: bytes [Tệpkhối của Bắt đầubyte]-[Tổng kích thước tệp - 1]/[Tổng kích thước tệp]
-			logger.debug("---------------không có Từ Bắt đầutiến hành dòngTải xuống!dịch vụthiết bịtức làSẽ Bắt đầutải tiếp khi đứt đoạn...");
+			logger.debug("--------------- không có Từ Bắt đầu tiến hành dòng Tải xuống! dịch vụ thiết bị tức là Sẽ Bắt đầu tải tiếp khi đứt đoạn...");
 			switch (rangeSwitch) {
 				case 1: { // Đối với bytes=27000- Yêu cầu
 					String contentRange = new StringBuffer("bytes ").append(new Long(pastLength).toString()).append("-")
@@ -769,7 +769,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 			}
 		} else {
 			//  có Từ Bắt đầuTải xuống
-			logger.debug("--------------- có Từ Bắt đầutiến hành dòngTải xuống!");
+			logger.debug("--------------- có Từ Bắt đầu tiến hành dòng Tải xuống!");
 		}
 
 		try {

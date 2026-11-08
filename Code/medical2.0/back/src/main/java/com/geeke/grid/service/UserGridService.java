@@ -46,10 +46,10 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
             throw new ServiceException("Bố cục tùy chỉnh không được để trống");
         }
         if (userGrid.getUserId() == null) {
-            throw new ServiceException("Người dùngidKhông được để trống");
+            throw new ServiceException("Người dùng id Không được để trống");
         }
         if (userGrid.getRouterId() == null) {
-            throw new ServiceException("Định tuyếnidKhông được để trống");
+            throw new ServiceException("Định tuyến id Không được để trống");
         }
         if (StringUtils.isNotBlank(userGrid.getId())
                 && dao.get(userGrid.getId()) == null) {
@@ -79,14 +79,14 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
                     List<String> clinics = userDao.getClinicId(targetUserId);
                     if (clinics != null && !clinics.isEmpty()) {
                         if (!clinics.contains(loginTenant)) {
-                            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                            throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                         }
                     } else {
                         User stored = userDao.get(targetUserId);
                         if (stored != null && stored.getCompany() != null) {
                             String storedCompanyId = stored.getCompany().getId();
                             if (StringUtils.isNotBlank(storedCompanyId) && !loginTenant.equals(storedCompanyId)) {
-                                throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                                throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                             }
                         }
                     }
@@ -146,10 +146,10 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
                 throw new ServiceException("Bố cục tùy chỉnh không được để trống");
             }
             if (entity.getUserId() == null) {
-                throw new ServiceException("Người dùngidKhông được để trống");
+                throw new ServiceException("Người dùng id Không được để trống");
             }
             if (entity.getRouterId() == null) {
-                throw new ServiceException("Định tuyếnidKhông được để trống");
+                throw new ServiceException("Định tuyến id Không được để trống");
             }
         }
         return super.bulkInsert(entitys);
@@ -172,7 +172,7 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
                 throw new ServiceException("Bố cục tùy chỉnh không tồn tại");
             }
             if (entity.getRouterId() == null) {
-                throw new ServiceException("Định tuyếnidKhông được để trống");
+                throw new ServiceException("Định tuyến id Không được để trống");
             }
         }
         return super.bulkUpdate(entitys);

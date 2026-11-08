@@ -110,7 +110,7 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
         if (tenantId.equals(storedCompanyId)) {
             return;
         }
-        throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+        throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
     }
 
     @Transactional

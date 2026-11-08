@@ -44,7 +44,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -53,7 +53,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
         this.company = company;
     }
     
-	@NotNull(message="Thông tin bệnh nhânKhông thể là trống")
+	@NotNull(message="Thông tin bệnh nhân Không thể là trống")
     public Patient getPatient() {
         return patient;
     }
@@ -62,7 +62,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
         this.patient = patient;
     }
     
-	@NotNull(message="Thẻ hội viênidKhông được để trống")
+	@NotNull(message="Thẻ hội viên id Không được để trống")
     public MemberSet getMemberSet() {
         return memberSet;
     }
@@ -71,7 +71,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
         this.memberSet = memberSet;
     }
     
-	@Length(min=0, max=100, message="TuổiĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Tuổi Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getAge() {
 		return age;
 	}
@@ -96,7 +96,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	// min=1 cũ làm Tạo qua UI không bao giờ qua được @Valid. Đổi về min=0
 	// (vẫn giữ max=100): cho phép trống để service sinh, không đổi hành vi
 	// sinh card hay độ dài tối đa.
-	@Length(min=0, max=100, message="thẻsốĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="thẻ số Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getCard() {
 		return card;
 	}
@@ -105,7 +105,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@NotNull(message="Hội viênthẻLoạiKhông được để trống")
+	@NotNull(message="Hội viên thẻ Loại Không được để trống")
 	public DictItem getType() {
 		return type;
 	}
@@ -114,7 +114,7 @@ public class MemberManagement extends DataEntity<MemberManagement> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Hội viênthẻTênĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Hội viên thẻ Tên Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getMemberName() {
 		return memberName;
 	}

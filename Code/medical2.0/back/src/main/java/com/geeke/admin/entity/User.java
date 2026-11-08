@@ -42,7 +42,7 @@ public class User extends DataEntity<User> implements IUser {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên người dùng không được để trống")
-	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getName() {
 		return super.getName();
 	}
@@ -122,7 +122,7 @@ public class User extends DataEntity<User> implements IUser {
         this.company = company;
     }
     
-	@NotNull(message="Phòng banKhông thể là trống")
+	@NotNull(message="Phòng ban Không thể là trống")
     public Department getDepartment() {
         return department;
     }
@@ -132,7 +132,7 @@ public class User extends DataEntity<User> implements IUser {
     }
     
 	@NotNull(message="Tên đăng nhập không được để trống")
-	@Length(min=1, max=11, message="Đăng nhậptênĐộ dài phải nằm trong khoảng 1 đến 11 ")
+	@Length(min=1, max=11, message="Đăng nhập tên Độ dài phải nằm trong khoảng 1 đến 11")
 	public String getLoginName() {
 		return loginName;
 	}
@@ -141,7 +141,7 @@ public class User extends DataEntity<User> implements IUser {
 	}
 	
 	
-	@Length(min=1, max=64, message="Mật khẩuĐộ dài phải nằm trong khoảng 1 đến 64 ")
+	@Length(min=1, max=64, message="Mật khẩu Độ dài phải nằm trong khoảng 1 đến 64")
 	@JsonIgnore
 	public String getLoginPassword() {
 		return loginPassword;
@@ -172,7 +172,7 @@ public class User extends DataEntity<User> implements IUser {
 	// DS83: @Length(min=0) cho phep null lot qua @Valid roi 500 o cot
 	// phone NOT NULL (plain save); null-only, live data co '' phone.
 	@NotNull(message="Số điện thoại không được để trống")
-	@Length(min=0, max=20, message="số điện thoại di độngĐộ dài phải nằm trong khoảng 0 đến 20 ")
+	@Length(min=0, max=20, message="số điện thoại di động Độ dài phải nằm trong khoảng 0 đến 20")
 	public String getPhone() {
 		return phone;
 	}
@@ -182,7 +182,7 @@ public class User extends DataEntity<User> implements IUser {
 
 
 	@NotNull(message="Email không được để trống")
-	@Length(min=0, max=36, message="emailĐộ dài phải nằm trong khoảng 0 đến 36 ")
+	@Length(min=0, max=36, message="email Độ dài phải nằm trong khoảng 0 đến 36")
 	public String getEmail() {
 		return email;
 	}
@@ -191,7 +191,7 @@ public class User extends DataEntity<User> implements IUser {
 	}
 
 
-	@Length(min=0, max=100, message="doanh nghiệpnghiệp vụopenidĐộ dài phải từ 0  và  100 Giữa")
+	@Length(min=0, max=100, message="doanh nghiệp nghiệp vụ openid Độ dài phải từ 0 và 100 Giữa")
 	public String getQyOpenId() {
 		return qyOpenId;
 	}

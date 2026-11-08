@@ -30,7 +30,7 @@ public class PersonalTheme extends DataEntity<PersonalTheme> {
 	}
 	
 
-	@NotNull(message="Người dùngKhông thể là trống")
+	@NotNull(message="Người dùng Không thể là trống")
 	public Long getUserId() {
 		return userId;
 	}

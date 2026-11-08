@@ -158,9 +158,9 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             return patient;
         }else if(!CollectionUtils.isEmpty(patientByCard) && !ObjectUtils.isEmpty(patientByCard.get(0)) && !ObjectUtils.isEmpty(patientByCard.get(0).getOpenId())){
             if(Objects.equals(patient.getOpenId(),patientByCard.get(0).getOpenId())){
-                throw new ServiceException("đóBệnh nhânsố CMND/CCCDĐãliên kếtchỉ định!");
+                throw new ServiceException("đó Bệnh nhân số CMND/CCCD Đã liên kết chỉ định!");
             }else {
-                throw new ServiceException("Số CMND/CCCD của bệnh nhân này đã liên kết với tài khoản WeChat khác, Không thểtrùng lặpliên kếtchỉ định!");
+                throw new ServiceException("Số CMND/CCCD của bệnh nhân này đã liên kết với tài khoản WeChat khác, Không thể trùng lặp liên kết chỉ định!");
             }
         }else {
             patient.setId(IdGen.uuid());

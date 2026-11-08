@@ -32,7 +32,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 	// Khong them @NotNull vao DataEntity.getName vi nhieu entity con khong co cot name / name nullable.
 	@Override
 	@NotNull(message="Tên quy tắc mã công ty không được để trống")
-	@Length(min=1, max=128, message="TênĐộ dài phải nằm trong khoảng 1 đến 128 ")
+	@Length(min=1, max=128, message="Tên Độ dài phải nằm trong khoảng 1 đến 128")
 	public String getName() {
 		return super.getName();
 	}
@@ -45,7 +45,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 		this.companyId = companyId;
 	}
 
-	@NotNull(message="Hệ thốngmã sốquy tắcKhông thể là trống")
+	@NotNull(message="Hệ thống mã số quy tắc Không thể là trống")
     public CodeRule getSysRule() {
         return sysRule;
     }
@@ -65,7 +65,7 @@ public class CompanyCodeRule extends DataEntity<CompanyCodeRule> {
 	
 	
 	@NotNull(message="Quy tắc không được để trống")
-	@Length(min=1, max=512, message="quy tắcĐộ dài phải nằm trong khoảng 1 đến 512 ")
+	@Length(min=1, max=512, message="quy tắc Độ dài phải nằm trong khoảng 1 đến 512")
 	public String getRuleDef() {
 		return ruleDef;
 	}

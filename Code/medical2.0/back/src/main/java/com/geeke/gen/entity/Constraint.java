@@ -31,7 +31,7 @@ public class Constraint extends DataEntity<Constraint> {
 		this.genTable = genTable;
 	}
 
-	@NotNull(message="thuộc vềbảngmã sốKhông thể là trống")
+	@NotNull(message="thuộc về bảng mã số Không thể là trống")
     public GenTable getGenTable() {
         return genTable;
     }
@@ -40,7 +40,7 @@ public class Constraint extends DataEntity<Constraint> {
         this.genTable = genTable;
     }
     
-	@Length(min=0, max=500, message="Mô tảĐộ dài phải nằm trong khoảng 0 đến 500 ")
+	@Length(min=0, max=500, message="Mô tả Độ dài phải nằm trong khoảng 0 đến 500")
 	public String getComments() {
 		return comments;
 	}
@@ -49,7 +49,7 @@ public class Constraint extends DataEntity<Constraint> {
 	}
 	
 	
-	@Length(min=0, max=500, message="Trường ràng buộcĐộ dài phải nằm trong khoảng 0 đến 500 ")
+	@Length(min=0, max=500, message="Trường ràng buộc Độ dài phải nằm trong khoảng 0 đến 500")
 	public String getConstraintColumn() {
 		return constraintColumn;
 	}

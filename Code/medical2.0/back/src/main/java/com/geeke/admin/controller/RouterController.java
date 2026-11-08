@@ -85,7 +85,7 @@ public class RouterController extends CrudController<RouterService, Router> {
             return forbidden();
         }
         if (!beforeSave(entity)) {
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "LưutrướcKiểm traChưaQua"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "Lưu trước Kiểm tra Chưa Qua"));
         }
         String id = getService().save(entity).getId();
         afterSave(entity);
@@ -102,7 +102,7 @@ public class RouterController extends CrudController<RouterService, Router> {
             return forbidden();
         }
         if (!beforeDelete(entity)) {
-            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "XóatrướcKiểm traChưaQua"));
+            return ResponseEntity.ok(ResultUtil.warningJson(ErrorEnum.E_50002, "Xóa trước Kiểm tra Chưa Qua"));
         }
         int rows = getService().delete(entity);
         afterDelete(entity);

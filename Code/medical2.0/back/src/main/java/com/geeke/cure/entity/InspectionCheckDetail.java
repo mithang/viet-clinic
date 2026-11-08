@@ -34,7 +34,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 	}
 	
 
-	@NotNull(message="Chi tiếtbảngidKhông được để trống")
+	@NotNull(message="Chi tiết bảng id Không được để trống")
     public InspectionCheckInfo getInspectionCheckInfo() {
         return inspectionCheckInfo;
     }
@@ -43,7 +43,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
         this.inspectionCheckInfo = inspectionCheckInfo;
     }
     
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -52,7 +52,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
         this.company = company;
     }
     
-	@NotNull(message="Hạng mục tương ứngidKhông được để trống")
+	@NotNull(message="Hạng mục tương ứng id Không được để trống")
     public CostItem getCostItem() {
         return costItem;
     }
@@ -61,7 +61,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
         this.costItem = costItem;
     }
     
-	@Length(min=0, max=255, message="Kết quảĐộ dài phải nằm trong khoảng 0 đến 255 ")
+	@Length(min=0, max=255, message="Kết quả Độ dài phải nằm trong khoảng 0 đến 255")
 	public String getConclusion() {
 		return conclusion;
 	}
@@ -78,7 +78,7 @@ public class InspectionCheckDetail extends DataEntity<InspectionCheckDetail> {
 	}
 	
 	
-	@Length(min=0, max=255, message="Mô tảĐộ dài phải nằm trong khoảng 0 đến 255 ")
+	@Length(min=0, max=255, message="Mô tả Độ dài phải nằm trong khoảng 0 đến 255")
 	public String getDescribes() {
 		return describes;
 	}

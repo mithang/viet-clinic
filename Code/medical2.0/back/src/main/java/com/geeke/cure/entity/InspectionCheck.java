@@ -48,7 +48,7 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 	}
 	
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -91,8 +91,8 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 	}
 	
 	
-	@NotNull(message="điềnTrạng thái(0: Chưađiền; 1: Đãđiền)Không được để trống")
-	@Length(min=1, max=1, message="điềnTrạng thái(0: Chưađiền; 1: Đãđiền)Độ dài phải từ 1  và  1 Giữa")
+	@NotNull(message="điền Trạng thái (0: Chưa điền; 1: Đã điền) Không được để trống")
+	@Length(min=1, max=1, message="điền Trạng thái (0: Chưa điền; 1: Đã điền) Độ dài phải từ 1 và 1 Giữa")
 	public String getStatus() {
 		return status;
 	}
@@ -101,7 +101,7 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Bệnh nhânTênĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Bệnh nhân Tên Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getPatientName() {
 		return patientName;
 	}
@@ -110,7 +110,7 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 	}
 	
 	
-	@Length(min=0, max=100, message="Giới tínhĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="Giới tính Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getSex() {
 		return sex;
 	}
@@ -119,7 +119,7 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 	}
 	
 	
-	@Length(min=0, max=100, message="số điện thoại di độngĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="số điện thoại di động Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getPhone() {
 		return phone;
 	}
@@ -137,7 +137,7 @@ public class InspectionCheck extends DataEntity<InspectionCheck> {
 	}
 	
 	
-	@Length(min=0, max=100, message="lập đơnBác sĩĐộ dài phải nằm trong khoảng 0 đến 100 ")
+	@Length(min=0, max=100, message="lập đơn Bác sĩ Độ dài phải nằm trong khoảng 0 đến 100")
 	public String getCompleteBy() {
 		return completeBy;
 	}

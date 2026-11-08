@@ -1,5 +1,5 @@
 <template>
-    <OperationIcon type='primary' content='XuấtexcelTệp' placement='top-start' icon-name='el-icon-download' @click='onExport'></OperationIcon>
+    <OperationIcon type='primary' content='Xuất excel Tệp' placement='top-start' icon-name='el-icon-download' @click='onExport'></OperationIcon>
 </template>
 
 <script>

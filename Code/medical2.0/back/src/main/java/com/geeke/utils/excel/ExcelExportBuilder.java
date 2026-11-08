@@ -17,14 +17,14 @@ import java.util.*;
  *
  * <p>Ví dụ sử dụng:</p>
  * <pre>{@code
- * new ExcelExportBuilder("ThuốcChi tiết")
+ * new ExcelExportBuilder("Thuốc Chi tiết")
  *     .addColumns(
  *         new ExcelExportBuilder.Column("Tên thuốc", "drugName"),
  *         new ExcelExportBuilder.Column("Quy cách", "spec"),
  *         new ExcelExportBuilder.Column("Số lượng", "quantity")
  *     )
  *     .data(dataList)
- *     .write(response, "ThuốcChi tiết.xlsx");
+ *     .write(response, "Thuốc Chi tiết.xlsx");
  * }</pre>
  *
  * <p>Hỗ trợ truy cập thuộc tính lồng nhau, Ví dụ "company.name" Sẽ gọi getCompany().getName(). </p>

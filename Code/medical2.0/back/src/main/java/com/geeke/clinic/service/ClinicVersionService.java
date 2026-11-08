@@ -224,7 +224,7 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
             if (StringUtils.isNotBlank(entity.getRoleId())) {
                 String storedRoleId = clinicVersionDao.getRoleIdById(entity.getId());
                 if (StringUtils.isBlank(storedRoleId) || !storedRoleId.equals(entity.getRoleId())) {
-                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                 }
             }
             role.setId(entity.getRoleId());

@@ -32,7 +32,7 @@
                       <div style="width: 80px;">Nguồn dữ liệu</div>
                       <el-select @change="handleSource" v-model="source">
                         <el-option label="Đơn vị thuê" value="1"></el-option>
-                        <el-option label="Bản phòng khámHis" value="2"></el-option>
+                        <el-option label="Bản phòng khám His" value="2"></el-option>
                       </el-select>
                     </div>
                   </div>
@@ -549,7 +549,7 @@ export default {
         })
       }
       else {
-        this.$message.error('Nhập dữ liệu thất bại, Vui lòng chọn đúngxlsxTệp mẫu')
+        this.$message.error('Nhập dữ liệu thất bại, Vui lòng chọn đúng xlsx Tệp mẫu')
         this.cancellation();
       }
       this.load();

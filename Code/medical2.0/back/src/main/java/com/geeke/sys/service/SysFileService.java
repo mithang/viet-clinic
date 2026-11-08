@@ -271,7 +271,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
                 continue;
             }
             if (!allowedObjectIds.contains(fileObjectId)) {
-                throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
             }
         }
     }
@@ -318,7 +318,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
             }
             for (String owner : owners) {
                 if (owner != null && !owner.isEmpty() && !tenantId.equals(owner)) {
-                    throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+                    throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
                 }
             }
         }
@@ -372,7 +372,7 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     @Transactional(readOnly = true)
     public void verifySysFileReadOwnership(String fileId) {
         if (isSysFileForeignOwned(fileId)) {
-            throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
+            throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
         }
     }
     /**

@@ -43,7 +43,7 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
         colMaps.put("code", "code");
         
         if(exists(dao, codeRule, colMaps)) {
-            throw new ServiceException("Đã tồn tạigiống hệtMã");
+            throw new ServiceException("Đã tồn tại giống hệt Mã");
         }
 
         CodeRule codeRuleTemp = super.save(codeRule);
@@ -101,7 +101,7 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
             }
             if (!seenCodes.add(codeRule.getCode())
                     || exists(dao, codeRule, colMaps)) {
-                throw new ServiceException("Đã tồn tạigiống hệtMã");
+                throw new ServiceException("Đã tồn tại giống hệt Mã");
             }
         }
         return super.bulkInsert(entitys);

@@ -41,7 +41,7 @@ public class InventoryVerificationDetail extends DataEntity<InventoryVerificatio
 	}
 	
 
-	@NotNull(message="Phòng khámidKhông được để trống")
+	@NotNull(message="Phòng khám id Không được để trống")
     public Company getCompany() {
         return company;
     }
@@ -50,7 +50,7 @@ public class InventoryVerificationDetail extends DataEntity<InventoryVerificatio
         this.company = company;
     }
     
-	@NotNull(message="Kiểm kê tồn khoidKhông được để trống")
+	@NotNull(message="Kiểm kê tồn kho id Không được để trống")
     public InventoryVerification getInventoryVerification() {
         return inventoryVerification;
     }

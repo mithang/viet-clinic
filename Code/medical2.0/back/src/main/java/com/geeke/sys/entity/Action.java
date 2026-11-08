@@ -66,7 +66,7 @@ public class Action extends DataEntity<Action> {
         this.objectType = objectType;
     }
     
-	@Length(min=0, max=40, message="Đối tượng nghiệp vụĐộ dài phải nằm trong khoảng 0 đến 40 ")
+	@Length(min=0, max=40, message="Đối tượng nghiệp vụ Độ dài phải nằm trong khoảng 0 đến 40")
 	public String getObjectId() {
 		return objectId;
 	}
@@ -75,7 +75,7 @@ public class Action extends DataEntity<Action> {
 	}
 	
 	
-	@Length(min=0, max=512, message="Tên đối tượnggọi làĐộ dài phải nằm trong khoảng 0 đến 512 ")
+	@Length(min=0, max=512, message="Tên đối tượng gọi là Độ dài phải nằm trong khoảng 0 đến 512")
 	public String getObjectName() {
 		return objectName;
 	}
@@ -84,7 +84,7 @@ public class Action extends DataEntity<Action> {
 	}
 	
 	
-	@Length(min=1, max=1, message="khôi phụcĐộ dài phải nằm trong khoảng 1 đến 1 ")
+	@Length(min=1, max=1, message="khôi phục Độ dài phải nằm trong khoảng 1 đến 1")
 	public String getStatus() {
 		return status;
 	}
@@ -100,7 +100,7 @@ public class Action extends DataEntity<Action> {
 	// list chay o muc SQL (param company_id), con get() dung lookup
 	// rieng getCompanyIdById o ActionService (mau N1).
 	@Override
-	@NotNull(message="Phòng khámIDKhông được để trống")
+	@NotNull(message="Phòng khám ID Không được để trống")
 	public Company getCompany() {
 		return company;
 	}

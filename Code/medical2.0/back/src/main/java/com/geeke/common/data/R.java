@@ -11,7 +11,7 @@ import com.geeke.utils.constants.ErrorEnum;
  * <pre>
  *   // Thành công
  *   return ResponseEntity.ok(R.ok(entity));
- *   return ResponseEntity.ok(R.ok("LưuThành công", id));
+ *   return ResponseEntity.ok(R.ok("Lưu Thành công", id));
  *
  *   // Cảnh báo nghiệp vụ(biểu mẫuKiểm traThất bại v.v. )
  *   return ResponseEntity.ok(R.warning(ErrorEnum.E_50001));
