@@ -101,6 +101,10 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             drug.setCode(sn);
             //ThêmThuốcggTrường
         }
+        // DS148 A: chan do dai truoc moi xu ly (ca duong save don voi
+        // truong khong @Length nhu pinyinCode, va duong bulk* goi save
+        // dau -- bulkInsert/bulkUpdate goi helper rieng duoi day).
+        checkDrugLengths(drug);
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
         // buoc preparationUnit + pack (da @NotNull), nhung dosisUnit
@@ -113,6 +117,11 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 ? drug.getPack().getName() : "";
         String ypgg = drug.getDosis() + dosisUnitName + "*" + drug.getPreparation() + preparationUnitName + "/" + packName;
         drug.setYpgg(ypgg);
+        // DS148 A: ypgg tinh toan co the vuot varchar(100) ngay ca khi
+        // tung truong dau vao deu trong gioi han (dosis 45 + preparation
+        // 45 + ten don vi dai) -- truoc day 500/400-lo-SQL o mapper
+        // (probe A6: ypgg 212). Chan sach o day thay vi de DB nem.
+        checkLength(ypgg, 100, "Quy cách thuốc Độ dài phải nằm trong khoảng 0 đến 100");
         Drug drugTemp = super.save(drug);
         this.medicinalStockControlService.initStock(drugTemp);
         return drugTemp;
@@ -147,6 +156,69 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    /**
+     * DS148 A: chan do dai qua dai qua bulk/save. bulkInsert/bulkUpdate
+     * khong qua @Valid (CrudController bulk* khong @Valid) nen cac truong
+     * co @Length (goodsName 128, brandName 128, code 64, source 128,
+     * standardCode/bitCode/barCode/insuranceCode 64, dosis/preparation/
+     * isUnpackSell 45, status 1) van 500 o mapper khi qua bulk (probe
+     * A1/A4); cac truong KHONG co @Length: pinyinCode(64),
+     * locationNumber/inventoryLimit/inventoryFloor/indate(255), ypgg(100)
+     * 500 ca duong save don (probe A2: single save pinyinCode 65 ve 400
+     * nhung msg van lo SQL tho qua DS94 handler, khong phai 400 sach).
+     * Gia tri DictItem type/nature/dosisUnit/preparationUnit/pack viet
+     * thang vao varchar(64), western/chinese use, frequency, days vao
+     * varchar(255) -- @Length(128) cua DictItem chi guard bang dict
+     * (probe A3: type value 65 -> 500). Gioi han lay theo cot DB, giong
+     * mau checkCostItemLengths (DS146 A / DS147 B). Null-safe: truong
+     * null thi bo qua nhu cu (mapper viet NULL).
+     */
+    private static void checkDrugLengths(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        checkLength(drug.getGoodsName(), 128, "Thuốc Tên Độ dài phải nằm trong khoảng 1 đến 128");
+        checkLength(drug.getBrandName(), 128, "Tên hàng hóa Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(drug.getCode(), 64, "Thuốc Độ dài mã phải nằm trong khoảng 0 đến 64");
+        checkLength(drug.getSource(), 128, "Nguồn thuốc Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(drug.getStandardCode(), 64, "Độ dài số chuẩn thuốc quốc gia phải nằm trong khoảng 0 đến 64");
+        checkLength(drug.getBitCode(), 64, "này vị mã Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(drug.getBarCode(), 64, "mã vạch Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(drug.getInsuranceCode(), 64, "BHYT Độ dài mã phải nằm trong khoảng 0 đến 64");
+        checkLength(drug.getDosis(), 45, "liều lượng Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(drug.getPreparation(), 45, "bào chế Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(drug.getIsUnpackSell(), 45, "Độ dài cho phép bán lẻ phải nằm trong khoảng 0 đến 45");
+        checkLength(drug.getStatus(), 1, "Cờ bật Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(drug.getPinyinCode(), 64, "Mã pinyin Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(drug.getLocationNumber(), 255, "Số vị trí hàng Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(drug.getInventoryLimit(), 255, "Giới hạn trên tồn kho Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(drug.getInventoryFloor(), 255, "Giới hạn dưới tồn kho Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(drug.getIndate(), 255, "Thời hạn hiệu lực Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(drug.getYpgg(), 100, "Quy cách thuốc Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(drug.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(drug.getType(), 64, "Loại thuốc Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(drug.getNature(), 64, "Tính chất Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(drug.getDosisUnit(), 64, "Đơn vị liều lượng Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(drug.getPreparationUnit(), 64, "Đơn vị bào chế Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(drug.getPack(), 64, "Đóng gói Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(drug.getWesternMedicineUse(), 255, "Cách dùng thuốc Tây Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(drug.getChineseMedicineUse(), 255, "Cách dùng thuốc Đông y Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(drug.getFrequency(), 255, "Tần suất và liều dùng Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(drug.getDays(), 255, "Số ngày Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
+    }
+
     private void checkDrugRepeatInList(List<Drug> entitys) {
         Set<String> seen = new HashSet<>();
         for (Drug drug : entitys) {
@@ -172,6 +244,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDrugRepeatInList(entitys);
         for (Drug drug : entitys) {
             checkDrugRequired(drug);
+            checkDrugLengths(drug);
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
             if (this.repeat(drug) != 0) {
@@ -200,6 +273,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             }
             verifyTenantOwnershipAgainstStoredRow(drug);
             checkDrugRequired(drug);
+            checkDrugLengths(drug);
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
             if (this.repeat(drug) != 0) {
