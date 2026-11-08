@@ -89,6 +89,17 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 	 * co chu y o cac mapper khac (DictItem theo dict_type_id, ...) khong
 	 * bi anh huong vi chung khong qua service nay. bulkDelete cua
 	 * service nay (DS50) da bo qua dong khong id nen khong doi.
+	 *
+	 * DS135 B: ghost / da xoa mem (del_flag '1') -> 400 fail-closed.
+	 * Truoc day ghost di qua guard DS51 (id khong rong) roi toi
+	 * CrudService.delete, stored-row tenant check bo qua stored row
+	 * null (lop DS123) va mapper soft-delete khong loc del_flag nen
+	 * ghost -> 200 data 0 im lang, xoa lan 2 -> 200 rows 1. Kiem tra
+	 * ton tai qua dao.get (delFlag phan biet) + verifyTenantOwnership-
+	 * AgainstStoredRow truoc super.delete (department mang company_id
+	 * nen stored check CO tac dung: xoa phong tenant khac -> 400).
+	 * checkExists (DS103) KHONG tai dung: cho qua blank id, khong
+	 * check delFlag.
 	 */
 	@Override
 	@Transactional(readOnly = false)
@@ -96,6 +107,11 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 		if (department == null || StringUtils.isBlank(department.getId())) {
 			throw new ServiceException("Không xác định được phòng ban cần xóa.");
 		}
+		Department stored = dao.get(department.getId());
+		if (stored == null || !"0".equals(stored.getDelFlag())) {
+			throw new ServiceException("Phòng ban không tồn tại: " + department.getId());
+		}
+		verifyTenantOwnershipAgainstStoredRow(department);
 		return super.delete(department);
 	}
 
@@ -162,16 +178,33 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 		if (entitys == null || entitys.isEmpty()) {
 			throw new ServiceException("Danh sách phòng ban không được để trống");
 		}
-		int rows = 0;
+		// DS135 B: bulkDelete chay vong lap qua this.delete() (khong co
+		// bulkDelete mapper statement -- DS50), nen guard delete() moi
+		// (ghost -> 400) se lat bulkDelete [ghost] tu 200 rows 0 thanh
+		// 400 va lam [valid, ghost] rollback ca dong valid. Giu
+		// idempotency DS99/DS106/DS126 B: pass 1 chi thu thap dong
+		// CON SONG (dao.get != null va del_flag '0'), bo qua ghost /
+		// da xoa mem / khong id; pass 2 moi goi this.delete() tren
+		// dong song (van giu tenant check + audit tung dong). Dong
+		// tenant khac van 400 o pass 2 va @Transactional rollback
+		// toan bo -- dung bai DS133 B (dong xau khong ghi gi).
+		List<Department> live = Lists.newArrayList();
 		if (entitys != null) {
 			for (Department department : entitys) {
 				// Dong khong co id khong neu doi tuong nao (mau DS41):
 				// bo qua thay vi de mapper <delete> nhanh otherwise
 				// xoa theo company_id va quet sach ca cong ty.
 				if (department != null && StringUtils.isNotBlank(department.getId())) {
-					rows += this.delete(department);
+					Department stored = dao.get(department.getId());
+					if (stored != null && "0".equals(stored.getDelFlag())) {
+						live.add(department);
+					}
 				}
 			}
+		}
+		int rows = 0;
+		for (Department department : live) {
+			rows += this.delete(department);
 		}
 		return rows;
 	}
