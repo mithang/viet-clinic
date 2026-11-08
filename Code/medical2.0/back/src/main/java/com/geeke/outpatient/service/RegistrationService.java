@@ -120,6 +120,38 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkLength(entity.getChargeStatus(), 1, "Thu phí Độ dài trạng thái phải nằm trong khoảng 0 đến 1");
         checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
         checkLength(entity.getSubscribeProject(), 255, "Đặt lịch hạng mục Độ dài phải nằm trong khoảng 0 đến 255");
+        // DS147 A: cac truong String khong @Length nhung mapper co viet
+        // (bulkInsert/bulkUpdate/save-insert) -- gioi han theo cot DB.
+        // refundRegistrationRemarks/mdtrtCertNo KHONG viet o bat ky mapper
+        // nao (mdtrtCertNo khong co cot DB) nen khong guard; isPre la Boolean.
+        checkLength(entity.getBloodPressure(), 100, "Huyết áp Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getGuardianName(), 64, "Tên người giám hộ Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getGuardianPhone(), 64, "Số điện thoại người giám hộ Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getWorkplace(), 255, "Nơi làm việc Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getNation(), 255, "Dân tộc Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getOccupation(), 255, "Nghề nghiệp Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getMdtrtId(), 30, "Mã giao dịch BHYT Độ dài phải nằm trong khoảng 0 đến 30");
+        checkLength(entity.getIptOtpNo(), 100, "Số khám ngoại trú Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getSetlId(), 64, "Mã quyết toán BHYT Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getPracticalRegistrationPayRemarks(), 255, "Ghi chú thanh toán thực tế Độ dài phải nằm trong khoảng 0 đến 255");
+        // DS147 B: gia tri DictItem viet thang vao cot varchar (mapper
+        // #{entity.xxx.value}) -- @Length(128) cua DictItem chi guard bang
+        // dict, khong guard cot dich (med/cardType varchar(10), cac cot
+        // con lai varchar(64)). Null-safe: DictItem null hoac value null
+        // thi bo qua nhu cu (mapper viet NULL).
+        checkDictLength(entity.getMedType(), 10, "Loại hình y tế Độ dài phải nằm trong khoảng 0 đến 10");
+        checkDictLength(entity.getCardType(), 10, "Loại giấy tờ khám bệnh Độ dài phải nằm trong khoảng 0 đến 10");
+        checkDictLength(entity.getPayType(), 64, "Hình thức thanh toán Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getTreatType(), 64, "Loại khám Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getInfectType(), 64, "Loại lây nhiễm Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getSource(), 64, "Nguồn đăng ký Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getStatus(), 64, "Trạng thái đăng ký Độ dài phải nằm trong khoảng 0 đến 64");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
     }
 
     private static void checkLength(String value, int max, String message) {
