@@ -72,6 +72,34 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         return super.save(company);
     }
 
+    /**
+     * DS135 A: single delete fail-closed 400 khi id rong / khong ton tai /
+     * da xoa mem (del_flag '1'). Truoc day: ghost -> 200 data 0 im lang,
+     * xoa lan 2 -> 200 rows 1, blank id -> 200 data 0 (mapper soft-delete
+     * UPDATE org_company SET del_flag='1' WHERE id khong loc del_flag;
+     * CrudService stored-row tenant check bo qua stored row null -- lop
+     * DS123; TreeService-based services chua bao gio duoc quet vi sweep
+     * truoc chi nhin subclass truc tiep cua CrudService). checkExists
+     * (DS103) KHONG tai dung: cho qua blank id, khong check delFlag.
+     * bulkDelete ghost CO TINH GIU 200 rows 0 (DS99/DS106/DS126 B
+     * idempotency -- generic mapper-direct bulkDelete, khong qua
+     * delete() guard nay). Company khong co cot company_id nen
+     * verifyTenantOwnershipAgainstStoredRow bo qua -- vo hai.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public int delete(Company entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được công ty cần xóa.");
+        }
+        Company stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Công ty không tồn tại: " + entity.getId());
+        }
+        verifyTenantOwnershipAgainstStoredRow(entity);
+        return super.delete(entity);
+    }
+
     private void checkCompanySaveOwnership(Company company) {
         if (company == null) {
             return;
