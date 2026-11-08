@@ -44,7 +44,7 @@
             and ur.company_id=#{companyId}
             )
             AND router.del_flag = 0
-            AND router.is_locked = 0
+            AND (router.is_locked = 0 OR router.code = 'org/department')
         ORDER BY router.SORT, router.id  
     </select>
 
