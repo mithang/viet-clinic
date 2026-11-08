@@ -998,6 +998,14 @@
         if (this.doctors_List.length !== 0) {
           //Lọc bác sĩ
           this.selects_doctor = this.doctors_List.filter(doctor => doctor.office === clinicOffice)
+          // DS138 A: như DS137 A ở registrationForm — office của bác sĩ lấy
+          // từ join theo TÊN khoa (o.name = e.office) nên tên cũ/không khớp
+          // là lọc ra rỗng (bác sĩ duy nhất của tenant này có office NULL
+          // qua /doctor) và dialog kẹt ở ô Bác sĩ bắt buộc — rơi về toàn
+          // bộ bác sĩ.
+          if (this.selects_doctor.length === 0) {
+            this.selects_doctor = this.doctors_List;
+          }
         }
       },
       reset() {
@@ -1105,7 +1113,15 @@
         if (status === "registrationStatus_0") this.bizFormModel.status = "registrationStatus_2";
         if (status === "registrationStatus_3") this.bizFormModel.status = "registrationStatus_0";
 
-        if (doctor && clinicOffice) {
+        // DS138 A: mapper RegistrationDao.xml dùng IFNULL(x.name,'') cho mọi
+        // object lồng nhau nên list luôn trả doctor/clinicOffice là object
+        // RỖNG ({name:''}, id null) thay vì null — kiểm tra `doctor &&
+        // clinicOffice` kiểu truthiness luôn đúng và gọi updateStatus với
+        // id undefined -> backend 400 "thiếu bắt buộc Tham số:departmentId",
+        // dialog điểm danh không bao giờ mở, lượt _3 không bác sĩ/khoa
+        // không thể check-in. Chỉ đi đường cập nhật trực tiếp khi cả hai
+        // đều có id thật; còn lại mở dialog để người dùng chọn.
+        if (doctor && doctor.id && clinicOffice && clinicOffice.id) {
           updateStatus(this.bizFormModel.id, this.bizFormModel.status, clinicOffice.id, doctor.id).then((res) => {
             if (res.code === 100) {
 
