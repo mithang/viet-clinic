@@ -47,9 +47,10 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // name 255 (DataEntity @Length 100 chan truoc o save don),
             // age/card/memberName 100, status 1, identityCard 255.
             // Gioi han theo cot DB; null-safe. Luu y: bulkInsert cua
-            // mapper bind NGUYEN object #{entity.gender}/#{entity.type}
-            // (khong .value) -- quirk rieng da ghi nhan, khong sua o day;
-            // guard .value van chan truoc duong bulk neu value qua dai.
+            // mapper truoc day bind NGUYEN object #{entity.gender}/
+            // #{entity.type} (khong .value) -- quirk rieng da sua o
+            // DS150 A (mapper -> .value); guard .value van chan truoc
+            // duong bulk neu value qua dai.
             checkMemberManagementLengths(memberManagement);
             // Sửa (id đã có) trước đây rơi vào cùng nhánh INSERT với Tạo nên
             // luôn lỗi trùng khóa chính — form Sửa qua UI không bao giờ lưu
@@ -117,10 +118,16 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
 
     // DS149 C: bulk* moi them de guard duong bulkInsert/bulkUpdate
     // (truoc day khong co override, CrudService thang khong guard do
-    // dai). Luu y quirk o save(): mapper bulk bind nguyen object
-    // #{entity.gender}/#{entity.type} nen bulkInsert voi gender/type
-    // la DictItem van 500 o MyBatis (probe INFO) -- guard .value chi
-    // chan truoc truong hop value qua dai, khong sua quirk do.
+    // dai).
+    // DS150 A: bulkInsert/bulkUpdate truoc day van 500 sau khi sua
+    // mapper .value: cot card NOT NULL nhung chi save() don sinh card
+    // (8 ky tu cuoi timestamp) truoc insert; duong bulk ghi thang
+    // #{entity.card} = null. Sinh card thieu o bulkInsert (cung cach
+    // nhu save()); bulkUpdate giu card da luu khi payload khong kem
+    // card (nhu nhanh update cua save()), chi sinh moi khi ca dong da
+    // luu cung khong co card. Khong sao chep cac tac dung phu khac cua
+    // save() (kiem tra trung the / tru so luong the) -- bulk* theo
+    // thiet ke khong qua save().
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<MemberManagement> entitys) {
         if (entitys == null || entitys.isEmpty()) {
@@ -128,6 +135,10 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         }
         for (MemberManagement entity : entitys) {
             checkMemberManagementLengths(entity);
+            if (StringUtils.isBlank(entity.getCard())) {
+                String card = new Date().getTime() + "";
+                entity.setCard(card.substring(card.length() - 8));
+            }
         }
         return super.bulkInsert(entitys);
     }
@@ -139,6 +150,15 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         }
         for (MemberManagement entity : entitys) {
             checkMemberManagementLengths(entity);
+            if (StringUtils.isBlank(entity.getCard())) {
+                MemberManagement stored = this.dao.get(entity.getId());
+                if (stored != null && StringUtils.isNotBlank(stored.getCard())) {
+                    entity.setCard(stored.getCard());
+                } else {
+                    String card = new Date().getTime() + "";
+                    entity.setCard(card.substring(card.length() - 8));
+                }
+            }
         }
         return super.bulkUpdate(entitys);
     }

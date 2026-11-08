@@ -209,9 +209,9 @@
             #{entity.memberSet.id},                    
             #{entity.name},
             #{entity.age},
-            #{entity.gender},
+            #{entity.gender.value},
             #{entity.card},
-            #{entity.type},
+            #{entity.type.value},
             #{entity.memberName},
             #{entity.status},
             #{entity.identityCard},
@@ -254,7 +254,7 @@
             </trim>
             <trim prefix="gender=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.gender}
+                    when id=#{entity.id} then #{entity.gender.value}
                 </foreach>
             </trim>
             <trim prefix="card=case" suffix="end,">
@@ -264,7 +264,7 @@
             </trim>
             <trim prefix="type=case" suffix="end,">
                 <foreach collection="entitys" item="entity" index="index">
-                    when id=#{entity.id} then #{entity.type}
+                    when id=#{entity.id} then #{entity.type.value}
                 </foreach>
             </trim>
             <trim prefix="member_name=case" suffix="end,">
