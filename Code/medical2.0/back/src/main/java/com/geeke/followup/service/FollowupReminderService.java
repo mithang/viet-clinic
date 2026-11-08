@@ -121,6 +121,12 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         if (entity.getStatus() == null) {
             entity.setStatus("0");
         }
+        // DS149 C: chan do dai truoc moi ghi (mau DS148 A). Tat ca cac
+        // truong chu deu KHONG co @Length: patientName -> varchar(100),
+        // followupType -> varchar(50), status -> varchar(1) (probe
+        // C15/C16), remarks -> varchar(255). Gioi han theo cot DB;
+        // null-safe. Guard dat sau mac dinh status "0" o tren.
+        checkFollowupReminderLengths(entity);
         return super.save(entity);
     }
 
@@ -159,6 +165,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
                 entity.setStatus("0");
             }
             validateRequired(entity);
+            checkFollowupReminderLengths(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -172,6 +179,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             // statement CASE duy nhat) nen [valid, khong ton tai] nem
             // truoc khi ghi gi -- dong valid khong bi doi (probe A8).
             checkExists(entity.getId());
+            checkFollowupReminderLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -183,6 +191,23 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             checkRowOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkFollowupReminderLengths(FollowupReminder entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getPatientName(), 100, "Tên bệnh nhân Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getFollowupType(), 50, "Loại tái khám Độ dài phải nằm trong khoảng 0 đến 50");
+        checkLength(entity.getStatus(), 1, "Trạng thái Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     /**

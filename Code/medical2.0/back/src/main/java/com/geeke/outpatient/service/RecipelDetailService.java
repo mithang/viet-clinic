@@ -71,6 +71,15 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                     + entity.getId());
         }
         checkRecipelDetailRequired(entity);
+        // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
+        // @Valid nen truong co @Length van 500 o mapper khi qua bulk
+        // (drippingSpeed 45, retailType 1, unitType 100); gia tri
+        // DictItem westernMedicineUse/frequency/chineseMedicineUse/
+        // infuseUse/skinTest .value -> varchar(64), days .name ->
+        // varchar(64) (mapper bind #{days.name}, khong phai .value);
+        // truong KHONG co @Length: stuffType -> varchar(100), remarks
+        // -> varchar(255). Gioi han theo cot DB; null-safe.
+        checkRecipelDetailLengths(entity);
         return super.save(entity);
     }
 
@@ -104,6 +113,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
         for (RecipelDetail entity : entitys) {
             checkRecipelDetailRequired(entity);
+            checkRecipelDetailLengths(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -129,6 +139,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                         + entity.getId());
             }
             checkRecipelDetailRequired(entity);
+            checkRecipelDetailLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -143,6 +154,43 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             throw new ServiceException("Danh sách chi tiết đơn thuốc không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkRecipelDetailLengths(RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getDrippingSpeed(), 45, "tốc độ truyền Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getRetailType(), 1, "retail_type Độ dài phải từ 0 và 1 Giữa");
+        checkLength(entity.getUnitType(), 100, "đơn giá Đơn vị Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getStuffType(), 100, "Loại vật liệu Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(entity.getWesternMedicineUse(), 64, "Cách dùng thuốc Tây Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getFrequency(), 64, "Tần suất và liều dùng Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictNameLength(entity.getDays(), 64, "Số ngày Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getChineseMedicineUse(), 64, "Cách dùng thuốc Đông y Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getInfuseUse(), 64, "Cách dùng truyền dịch Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(entity.getSkinTest(), 64, "Test da Độ dài phải nằm trong khoảng 0 đến 64");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    // Mapper bind #{days.name} (ten hien thi), khong phai #{days.value}.
+    private static void checkDictNameLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getName(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     // min_total la cot NOT NULL duy nhat co the bi drop qua bulk (cac cot

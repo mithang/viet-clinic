@@ -76,6 +76,12 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
                     + entity.getId());
         }
         checkInspectionCheckRequired(entity);
+        // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
+        // @Valid nen truong co @Length van 500 o mapper khi qua bulk
+        // (name 100, patientName/sex/phone/diagnose/completeBy 100,
+        // type/status 1); remarks -> varchar(255). Gioi han theo cot DB;
+        // null-safe.
+        checkInspectionCheckLengths(entity);
         return super.save(entity);
     }
 
@@ -92,6 +98,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         }
         for (InspectionCheck entity : entitys) {
             checkInspectionCheckRequired(entity);
+            checkInspectionCheckLengths(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -117,6 +124,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
                         + entity.getId());
             }
             checkInspectionCheckRequired(entity);
+            checkInspectionCheckLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -131,6 +139,28 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             throw new ServiceException("Danh sách phiếu kiểm tra không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkInspectionCheckLengths(InspectionCheck entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getName(), 100, "Tên Độ dài phải nằm trong khoảng 1 đến 100");
+        checkLength(entity.getType(), 1, "Loại(0: Xét nghiệm; 1: Kiểm tra)Độ dài phải từ 1  và  1 Giữa");
+        checkLength(entity.getStatus(), 1, "điền Trạng thái (0: Chưa điền; 1: Đã điền) Độ dài phải từ 1 và 1 Giữa");
+        checkLength(entity.getPatientName(), 100, "Bệnh nhân Tên Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getSex(), 100, "Giới tính Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getPhone(), 100, "số điện thoại di động Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getDiagnose(), 100, "Chẩn đoán Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getCompleteBy(), 100, "lập đơn Bác sĩ Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     // Tat ca cac truong nay deu NOT NULL trong inspection_check (company/

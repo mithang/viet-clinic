@@ -130,6 +130,13 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
         if (entity.getStatus() == null) {
             entity.setStatus("0");
         }
+        // DS149 C: chan do dai truoc moi ghi (mau DS148 A). Tat ca cac
+        // truong chu deu KHONG co @Length: patientName/service ->
+        // varchar(100), phone -> varchar(20), status -> varchar(1)
+        // (probe C13/C14), rejectReason/remarks -> varchar(255).
+        // Gioi han theo cot DB; null-safe. Guard dat sau mac dinh
+        // status "0" o tren.
+        checkBookingRequestLengths(entity);
         return super.save(entity);
     }
 
@@ -159,6 +166,7 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     public List<String> bulkInsert(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
             forceSessionCompany(entity);
+            checkBookingRequestLengths(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -168,6 +176,7 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     public List<String> bulkUpdate(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
             checkRowOwnership(entity.getId());
+            checkBookingRequestLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -179,6 +188,25 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
             checkRowOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkBookingRequestLengths(BookingRequest entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getPatientName(), 100, "Tên bệnh nhân Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getPhone(), 20, "Số điện thoại Độ dài phải nằm trong khoảng 0 đến 20");
+        checkLength(entity.getService(), 100, "Dịch vụ Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getStatus(), 1, "Trạng thái Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getRejectReason(), 255, "Lý do từ chối Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     public static LocalDate clinicToday() {

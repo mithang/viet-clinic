@@ -108,6 +108,14 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         if (inspectionCheckInfo.getInspectionCheckDetails() == null) {
             throw new ServiceException("Thiếu chi tiết kiểm tra");
         }
+        // DS149 C: chan do dai truoc moi thao tac file/ghi (mau DS148 A).
+        // Cac truong KHONG co @Length: checkType/checkPart/checkAdvise/
+        // opinion/doctor/checkProject -> varchar(255) (probe C4/C5);
+        // truong co @Length van can guard cho duong bulk (bulkInsert/
+        // bulkUpdate moi them duoi day, bypass @Valid): fileId 20,
+        // samplingNum/instrument/checkoutNum/checkoutOffice 100,
+        // reportConclusion 255. Gioi han theo cot DB; null-safe.
+        checkInspectionCheckInfoLengths(inspectionCheckInfo);
         // R3 (iteration 41): guard cha InspectionCheck + deleteIds, cung
         // TRUOC moi thao tac file/ghi.
         // (a) Cha: controller doi cha sang status "1" SAU khi save() tra
@@ -186,6 +194,65 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
             inspectionCheckDetailService.update(inspectionCheckDetail);
         }
 
+    }
+
+    // DS149 C: duong /save chung truoc day khong co override (CrudService
+    // thang) nen payload dai qua @Valid -> 500 o mapper (probe C5);
+    // bulk* moi them de guard duong bulkInsert/bulkUpdate (probe C4).
+    @Override
+    @Transactional(readOnly = false)
+    public InspectionCheckInfo save(InspectionCheckInfo inspectionCheckInfo) {
+        checkInspectionCheckInfoLengths(inspectionCheckInfo);
+        return super.save(inspectionCheckInfo);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<InspectionCheckInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết kiểm tra không được để trống");
+        }
+        for (InspectionCheckInfo entity : entitys) {
+            checkInspectionCheckInfoLengths(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<InspectionCheckInfo> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách chi tiết kiểm tra không được để trống");
+        }
+        for (InspectionCheckInfo entity : entitys) {
+            checkInspectionCheckInfoLengths(entity);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkInspectionCheckInfoLengths(InspectionCheckInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getFileId(), 20, "Tệp id Độ dài phải nằm trong khoảng 0 đến 20");
+        checkLength(entity.getSamplingNum(), 100, "lấy như số Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getInstrument(), 100, "Xét nghiệm thiết bị Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getCheckoutNum(), 100, "Xét nghiệm số Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getCheckoutOffice(), 100, "Xét nghiệm Khoa Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getReportConclusion(), 255, "kết luận báo cáo Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getCheckType(), 255, "Kiểm tra Loại Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getCheckPart(), 255, "Kiểm tra bộ vị Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getCheckAdvise(), 255, "Kiểm tra nhìn thấy Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getOpinion(), 255, "ý kiến Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getDoctor(), 255, "Bác sĩ Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getCheckProject(), 255, "Kiểm tra hạng mục Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     @Transactional

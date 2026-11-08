@@ -56,6 +56,12 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
 
     @Transactional(readOnly = false)
     public MemberSet save(MemberSet memberSet){
+       // DS149 C: chan do dai truoc moi ghi (mau DS148 A), ca hai nhanh
+       // insert/update ben duoi (deu goi thang dao, khong qua super.save).
+       // Gia tri DictItem type .value -> varbinary(100) (probe C9/C10);
+       // name 255, status/failure 1 co @Length nhung van can guard cho
+       // duong bulk. Gioi han theo cot DB; null-safe.
+       checkMemberSetLengths(memberSet);
        if(StringUtils.isBlank(memberSet.getId())){
            // ITER64 item 1: this insert branch bypassed super.save, so the
            // generic insert guard does not cover it. Verify BEFORE
@@ -153,6 +159,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         }
         for (MemberSet memberSet : entitys) {
             validateRequiredFields(memberSet);
+            checkMemberSetLengths(memberSet);
         }
         return super.bulkInsert(entitys);
     }
@@ -170,6 +177,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
                         + memberSet.getId());
             }
             validateRequiredFields(memberSet);
+            checkMemberSetLengths(memberSet);
         }
         return super.bulkUpdate(entitys);
     }
@@ -181,6 +189,29 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkMemberSetLengths(MemberSet memberSet) {
+        if (memberSet == null) {
+            return;
+        }
+        checkLength(memberSet.getName(), 255, "Tên Độ dài phải nằm trong khoảng 1 đến 255");
+        checkLength(memberSet.getStatus(), 1, "Có bật không(0: Kích hoạt, 1:Vô hiệu hóa)Độ dài phải từ 1  và  1 Giữa");
+        checkLength(memberSet.getFailure(), 1, "Có hay khônghết hiệu lực(0:  không , 1:  có )Độ dài phải từ 1  và  1 Giữa");
+        checkDictLength(memberSet.getType(), 100, "Hội viên thẻ Loại Độ dài phải nằm trong khoảng 0 đến 100");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     // DS105 C10-C12: bulkInsert/bulkUpdate bo qua @Valid, truong NOT NULL

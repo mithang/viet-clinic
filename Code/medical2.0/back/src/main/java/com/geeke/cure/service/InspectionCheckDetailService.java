@@ -77,6 +77,11 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
                     + entity.getId());
         }
         checkInspectionCheckDetailRequired(entity);
+        // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
+        // @Valid nen truong co @Length van 500 o mapper khi qua bulk
+        // (conclusion/describes 255, probe C18). Gioi han theo cot DB;
+        // null-safe.
+        checkInspectionCheckDetailLengths(entity);
         return super.save(entity);
     }
 
@@ -93,6 +98,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
         }
         for (InspectionCheckDetail entity : entitys) {
             checkInspectionCheckDetailRequired(entity);
+            checkInspectionCheckDetailLengths(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -118,6 +124,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
                         + entity.getId());
             }
             checkInspectionCheckDetailRequired(entity);
+            checkInspectionCheckDetailLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -132,6 +139,21 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
             throw new ServiceException("Danh sách chi tiết phiếu kiểm tra không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkInspectionCheckDetailLengths(InspectionCheckDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getConclusion(), 255, "Kết quả Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getDescribes(), 255, "Mô tả Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     // inspectionCheckInfo/company la NOT NULL trong DB (company them

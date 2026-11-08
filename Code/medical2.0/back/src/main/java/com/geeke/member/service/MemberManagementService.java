@@ -38,6 +38,19 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
 
         @Transactional(readOnly = false)
         public MemberManagement save(MemberManagement memberManagement){
+            // DS149 C: chan do dai truoc moi ghi (mau DS148 A), ca hai
+            // nhanh insert/update ben duoi (deu goi thang dao, khong qua
+            // super.save). Truong KHONG co @Length: phone -> varchar(255)
+            // (probe C7); gia tri DictItem gender/type .value ->
+            // varchar(100) (probe C8, duong save don bind .value);
+            // truong co @Length van can guard cho duong bulk moi them:
+            // name 255 (DataEntity @Length 100 chan truoc o save don),
+            // age/card/memberName 100, status 1, identityCard 255.
+            // Gioi han theo cot DB; null-safe. Luu y: bulkInsert cua
+            // mapper bind NGUYEN object #{entity.gender}/#{entity.type}
+            // (khong .value) -- quirk rieng da ghi nhan, khong sua o day;
+            // guard .value van chan truoc duong bulk neu value qua dai.
+            checkMemberManagementLengths(memberManagement);
             // Sửa (id đã có) trước đây rơi vào cùng nhánh INSERT với Tạo nên
             // luôn lỗi trùng khóa chính — form Sửa qua UI không bao giờ lưu
             // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
@@ -101,6 +114,62 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             }
             return memberManagement;
         }
+
+    // DS149 C: bulk* moi them de guard duong bulkInsert/bulkUpdate
+    // (truoc day khong co override, CrudService thang khong guard do
+    // dai). Luu y quirk o save(): mapper bulk bind nguyen object
+    // #{entity.gender}/#{entity.type} nen bulkInsert voi gender/type
+    // la DictItem van 500 o MyBatis (probe INFO) -- guard .value chi
+    // chan truoc truong hop value qua dai, khong sua quirk do.
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<MemberManagement> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thẻ hội viên không được để trống");
+        }
+        for (MemberManagement entity : entitys) {
+            checkMemberManagementLengths(entity);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<MemberManagement> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách thẻ hội viên không được để trống");
+        }
+        for (MemberManagement entity : entitys) {
+            checkMemberManagementLengths(entity);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkMemberManagementLengths(MemberManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getName(), 255, "Tên hội viên Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getPhone(), 255, "Số điện thoại Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getAge(), 100, "Tuổi Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getCard(), 100, "Thẻ Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getMemberName(), 100, "Tên hội viên Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getStatus(), 1, "Trạng thái Độ dài phải nằm trong khoảng 1 đến 1");
+        checkLength(entity.getIdentityCard(), 255, "Chứng minh nhân dân Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(entity.getGender(), 100, "Giới tính Độ dài phải nằm trong khoảng 0 đến 100");
+        checkDictLength(entity.getType(), 100, "Loại thẻ hội viên Độ dài phải nằm trong khoảng 0 đến 100");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
+    }
     /**
      * DS132 C: single delete fail-closed 400. Truoc day khong co
      * delete() override; mapper <delete> khong dung del_flag ma set

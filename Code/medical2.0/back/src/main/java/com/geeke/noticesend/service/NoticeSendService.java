@@ -94,6 +94,14 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
             checkNoticeOwnership(entity.getId());
             checkExists(entity.getId());
         }
+        // DS149 C: chan do dai truoc moi ghi (mau DS148 A). Tat ca cac
+        // truong chu deu KHONG co @Length: senderId -> varchar(100)
+        // (probe C11), title -> varchar(50), receivedBy -> varchar(255)
+        // (probe C12), isSite/isWechat/isEmail/isSms -> varchar(1),
+        // remarks -> varchar(255). Cac truong noi dung (site/wechat/
+        // email/smsContent) la cot text, khong guard. Gioi han theo cot
+        // DB; null-safe.
+        checkNoticeSendLengths(entity);
         return super.save(entity);
     }
 
@@ -124,6 +132,9 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<NoticeSend> entitys) {
         forceSessionCompany(entitys);
+        for (NoticeSend entity : entitys) {
+            checkNoticeSendLengths(entity);
+        }
         return super.bulkInsert(entitys);
     }
 
@@ -136,8 +147,30 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
             // statement CASE duy nhat) nen [valid, khong ton tai] nem
             // truoc khi ghi gi -- dong valid khong bi doi (probe B8).
             checkExists(entity.getId());
+            checkNoticeSendLengths(entity);
         }
         return super.bulkUpdate(entitys);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkNoticeSendLengths(NoticeSend entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getSenderId(), 100, "Người gửi Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getTitle(), 50, "Tiêu đề Độ dài phải nằm trong khoảng 0 đến 50");
+        checkLength(entity.getIsSite(), 1, "Gửi nội bộ Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getIsWechat(), 1, "Gửi WeChat Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getIsEmail(), 1, "Gửi email Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getIsSms(), 1, "Gửi SMS Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getReceivedBy(), 255, "Người nhận Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     @Override

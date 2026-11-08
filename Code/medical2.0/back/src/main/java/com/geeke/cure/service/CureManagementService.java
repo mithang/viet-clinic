@@ -77,7 +77,30 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         if (recipelInfoService.get(info.getId()) == null) {
             throw new ServiceException("Đơn thuốc không tồn tại: " + info.getId());
         }
+        // DS149 C: chan do dai truoc moi ghi (mau DS148 A). remarks la
+        // field rieng cua entity (Lombok @Data, khong ke thua @Length(255)
+        // cua DataEntity) nhung cure.remarks chi varchar(100) (probe C6:
+        // remarks 101 -> 500); delType -> varchar(1). Khong co route
+        // bulk (mapper khong co bulkInsert/bulkUpdate) nen chi guard
+        // save() don. recipelInfoId (String -> bigint) la loi kieu,
+        // khong phai loi do dai, ngoai pham vi.
+        checkCureManagementLengths(entity);
         return super.save(entity);
+    }
+
+    // DS149 C: xem ghi chu o save().
+    private static void checkCureManagementLengths(CureManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getRemarks(), 100, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(entity.getDelType(), 1, "Loại xóa Độ dài phải nằm trong khoảng 0 đến 1");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
 }
