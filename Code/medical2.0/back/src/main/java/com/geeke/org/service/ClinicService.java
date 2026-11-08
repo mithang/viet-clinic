@@ -266,4 +266,53 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         }
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public int bulkDelete(List<Clinic> entitys) {
+        // DS137 B: bulkDelete goc (CrudService -> ClinicDao) chi chay
+        // `UPDATE clinic SET del_flag=1` -- bang `clinic` la mirror legacy,
+        // khong phai org_company (danh sach phong kham doc tu org_company
+        // qua CompanyService.listClinicPage; single create/delete cung ghi
+        // org_company). Nen xoa hang loat phong kham dang hien trong UI la
+        // no-op lang le 200 rows 0, va khong bao gio don user_tenant nhu
+        // deleteClinic (DS136 A) -- probe B1 pre-fix. Ghi de: kiem tra het
+        // truoc khi ghi (null/blank id -> 400, giong DS126 B; clinic ngoai
+        // tenant -> 400; ghost / da xoa -> bo qua, giu idempotency 200
+        // rows 0 cua DS99 G11; id trung lap -> xoa 1 lan), roi xoa that
+        // qua deleteClinic cho tung Company con song (soft-delete org_company
+        // + don user_tenant cua admin). Khong cham bang `clinic`.
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách xóa không được để trống");
+        }
+        List<Company> toDelete = new ArrayList<>();
+        Set<String> seenIds = new HashSet<>();
+        for (Clinic entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Dòng xóa không được để trống");
+            }
+            if (StringUtils.isBlank(entity.getId())) {
+                throw new ServiceException("Dòng xóa không xác định được id cần xóa");
+            }
+            verifyTenantOwnership(entity);
+            verifyTenantOwnershipAgainstStoredRow(entity);
+            if (!seenIds.add(entity.getId())) {
+                continue;
+            }
+            Company stored = companyService.get(entity.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
+                continue;
+            }
+            if (!companyService.isCompanyVisibleToSession(stored)) {
+                throw new ServiceException("Phòng khám không thuộc phòng khám hiện tại");
+            }
+            toDelete.add(stored);
+        }
+        int rows = 0;
+        for (Company stored : toDelete) {
+            deleteClinic(stored);
+            rows++;
+        }
+        return rows;
+    }
+
 }
