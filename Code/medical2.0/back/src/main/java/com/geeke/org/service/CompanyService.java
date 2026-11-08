@@ -65,10 +65,42 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
      * moi cua Clinic; dong khong ton tai / session rong / khong tim thay
      * dong tenant giu hanh vi cu, dung mau Z3a-Z3g.
      */
+    /**
+     * DS146 A: @Length tren entity (name/fullName/code/dia-chi/phone/
+     * licenseSubject) + remarks theo gioi han cot DB 255 (mau DS141).
+     * Generic /save co @Valid, nhung saveWithFile parse tu String
+     * (khong @Valid) va bulk* bo qua ca save() lan @Valid nen gia tri
+     * qua dai 500 o DB (probe A5: name 129). Guard o day dung chung
+     * cho save() (ca saveWithFile qua 1-arg save) va bulk*.
+     */
+    private static void checkCompanyLengths(Company company) {
+        if (company == null) {
+            return;
+        }
+        checkLength(company.getName(), 128, "Tên Độ dài phải nằm trong khoảng 1 đến 128");
+        checkLength(company.getFullName(), 512, "toàn bộ gọi là Độ dài phải nằm trong khoảng 1 đến 512");
+        checkLength(company.getCode(), 64, "Độ dài mã phải nằm trong khoảng 1 đến 64 ");
+        checkLength(company.getAddressProvince(), 10, "Địa chỉ(Tỉnh)Độ dài phải từ 1  và  10 Giữa");
+        checkLength(company.getAddressCity(), 10, "Địa chỉ(Thành phố)Độ dài phải từ 1  và  10 Giữa");
+        checkLength(company.getAddressRegion(), 10, "Địa chỉ(Quận)Độ dài phải từ 1  và  10 Giữa");
+        checkLength(company.getAddress(), 100, "Độ dài địa chỉ phải nằm trong khoảng 1 đến 100 ");
+        checkLength(company.getPhoneNumber(), 21, "Độ dài số điện thoại phải nằm trong khoảng 1 đến 21 ");
+        checkLength(company.getLicenseSubject(), 100, "Độ dài môn học trong giấy phép hành nghề phải nằm trong khoảng 0 đến 100 ");
+        checkLength(company.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Company save(Company company) {
         checkCompanySaveOwnership(company);
+        // DS146 A: chan do dai (ca duong saveWithFile khong @Valid).
+        checkCompanyLengths(company);
         return super.save(company);
     }
 
@@ -125,6 +157,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         for (Company company : entitys) {
             checkCompanyRequired(company);
             checkCompanySaveOwnership(company);
+            // DS146 A: bulk cung chan do dai nhu save().
+            checkCompanyLengths(company);
         }
         return super.bulkInsert(entitys);
     }
@@ -148,6 +182,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             }
             checkCompanyRequired(company);
             checkCompanySaveOwnership(company);
+            // DS146 A: bulk cung chan do dai nhu save().
+            checkCompanyLengths(company);
         }
         return super.bulkUpdate(entitys);
     }

@@ -66,9 +66,44 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
      * Chỉ gán khi tạo mới (id rỗng) và client chưa gửi số: cập nhật sau đó
      * không đánh lại số, tránh xáo trộn thứ tự gọi khám.
      */
+    /**
+     * DS146 A: @Length tren entity (pulse/breathe/temperature 45,
+     * isGoHigharea 64, highArea 128, freeRegistrationFee 64,
+     * dispensingStatus/chargeStatus 1) + remarks/subscribeProject theo
+     * gioi han cot DB 255 (mau DS141: truong khong @Length thi guard o
+     * gioi han DB). RegistrationController.save KHONG co @Valid va
+     * service save() truoc day khong guard nen gia tri qua dai 500 o DB
+     * (probe A7/A8/A9: pulse 46). Guard o day dung chung cho save()
+     * (funnel duy nhat, truoc ca assignQueueNumber de khong dot so
+     * thu tu cua luot bi tu choi) va bulk*.
+     */
+    private static void checkRegistrationLengths(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getPulse(), 45, "mạch Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getBreathe(), 45, "hô hấp Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getTemperature(), 45, "Nhiệt độ cơ thể Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getIsGoHigharea(), 64, "Có hay không đi qua dịch Độ dài quận phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getHighArea(), 128, "dịch Quận địa phương điểm Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(entity.getFreeRegistrationFee(), 64, "miễn Phí đăng ký khám Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getDispensingStatus(), 1, "phát thuốc Độ dài trạng thái phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getChargeStatus(), 1, "Thu phí Độ dài trạng thái phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(entity.getSubscribeProject(), 255, "Đặt lịch hạng mục Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
+        // DS146 A: chan do dai truoc khi gan so thu tu.
+        checkRegistrationLengths(entity);
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
@@ -100,6 +135,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             if (entity == null) {
                 throw new ServiceException("Lượt đăng ký không được để trống");
             }
+            // DS146 A: bulk cung chan do dai nhu save().
+            checkRegistrationLengths(entity);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -124,6 +161,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             if (stored == null || !"0".equals(stored.getDelFlag())) {
                 throw new ServiceException("Lượt đăng ký không tồn tại: " + entity.getId());
             }
+            // DS146 A: bulk cung chan do dai nhu save().
+            checkRegistrationLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }

@@ -178,36 +178,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         // chinaSyndrome varchar(100); diagnosisCode varchar(50)).
         // Chi kiem do dai, khong them chan null/blank: cac cot deu nullable
         // (tru patientTell da guard null o tren theo DS81).
-        checkLength(medicalRecord.getPatientTell(), 128, "Lý do khám chính Độ dài phải nằm trong khoảng 1 đến 128");
-        checkLength(medicalRecord.getNowHistory(), 128, "Bệnh sử hiện tại Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getBeforeHistory(), 128, "Tiền sử Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getDiagnose(), 128, "Độ dài chẩn đoán phải nằm trong khoảng 1 đến 128 ");
-        checkLength(medicalRecord.getPersonalHistory(), 128, "Tiền sử cá nhân Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getAllergyHistory(), 128, "Tiền sử dị ứng Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getDiseaseHistory(), 128, "Tiền sử bệnh Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getPregnancyHistory(), 128, "tiền sử hôn nhân và mang thai Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getInfectiousHistory(), 128, "Tiền sử bệnh truyền nhiễm Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getLunariaHistory(), 128, "Tiền sử kinh nguyệt Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getFamilyHistory(), 128, "Tiền sử gia đình Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getSurgeryHistory(), 128, "Tiền sử phẫu thuật Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getTransfusionHistory(), 128, "Tiền sử truyền máu Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getPhysiqueCheck(), 128, "Khám thực thể Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getAssistCheck(), 128, "Kiểm tra hỗ trợ Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getEmergencyDiagnose(), 128, "cấp cứu Độ dài chẩn đoán phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getEmergencyEffect(), 128, "Hiệu quả cấp cứu Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getOtherCheck(), 128, "Kiểm tra khác Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getHandlingSituation(), 128, "Tình hình xử lý Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getHealthEducation(), 128, "Giáo dục sức khỏe cá thể hóa Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getEpidemicDisease(), 128, "Tiền sử dịch tễ Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getDoctorAdvice(), 128, "Y lệnh việc hạng mục Độ dài phải nằm trong khoảng 0 đến 128");
-        checkLength(medicalRecord.getFileId(), 45, "Tải lên tệp đính kèm Độ dài phải nằm trong khoảng 0 đến 45");
-        checkLength(medicalRecord.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
-        checkLength(medicalRecord.getWesternDiagnose(), 100, "Chẩn đoán tây y Độ dài phải nằm trong khoảng 0 đến 100");
-        checkLength(medicalRecord.getChinaDiagnose(), 100, "Chẩn đoán đông y Độ dài phải nằm trong khoảng 0 đến 100");
-        checkLength(medicalRecord.getDiseaseId(), 100, "Chẩn đoán id Độ dài phải nằm trong khoảng 0 đến 100");
-        checkLength(medicalRecord.getSyndromeId(), 100, "chứng chờ id Độ dài phải nằm trong khoảng 0 đến 100");
-        checkLength(medicalRecord.getChinaSyndrome(), 100, "Chứng hậu Đông y Độ dài phải nằm trong khoảng 0 đến 100");
-        checkLength(medicalRecord.getDiagnosisCode(), 50, "Mã chẩn đoán Độ dài phải nằm trong khoảng 0 đến 50");
+        checkMedicalRecordLengths(medicalRecord);
         return super.save(medicalRecord);
     }
 
@@ -257,6 +228,8 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         }
         for (MedicalRecord medicalRecord : entitys) {
             checkMedicalRecordRequired(medicalRecord, true);
+            // DS146 A: bulk cung chan do dai nhu save() (DS141 B).
+            checkMedicalRecordLengths(medicalRecord);
         }
         return super.bulkInsert(entitys);
     }
@@ -279,8 +252,49 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 throw new ServiceException("Bệnh án không tồn tại: " + medicalRecord.getId());
             }
             checkMedicalRecordRequired(medicalRecord, false);
+            // DS146 A: bulk cung chan do dai nhu save() (DS141 B).
+            checkMedicalRecordLengths(medicalRecord);
         }
         return super.bulkUpdate(entitys);
+    }
+
+    /**
+     * DS146 A: do dai cac truong (DS141 B) tach thanh helper dung chung cho
+     * save() va bulkInsert/bulkUpdate -- bulk truoc day bo qua moi guard cua
+     * save() nen gia tri qua dai 500 DataIntegrityViolationException o DB
+     * (probe A1/A2: patientTell 129 / diagnose 129).
+     */
+    private static void checkMedicalRecordLengths(MedicalRecord medicalRecord) {
+        checkLength(medicalRecord.getPatientTell(), 128, "Lý do khám chính Độ dài phải nằm trong khoảng 1 đến 128");
+        checkLength(medicalRecord.getNowHistory(), 128, "Bệnh sử hiện tại Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getBeforeHistory(), 128, "Tiền sử Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getDiagnose(), 128, "Độ dài chẩn đoán phải nằm trong khoảng 1 đến 128 ");
+        checkLength(medicalRecord.getPersonalHistory(), 128, "Tiền sử cá nhân Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getAllergyHistory(), 128, "Tiền sử dị ứng Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getDiseaseHistory(), 128, "Tiền sử bệnh Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getPregnancyHistory(), 128, "tiền sử hôn nhân và mang thai Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getInfectiousHistory(), 128, "Tiền sử bệnh truyền nhiễm Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getLunariaHistory(), 128, "Tiền sử kinh nguyệt Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getFamilyHistory(), 128, "Tiền sử gia đình Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getSurgeryHistory(), 128, "Tiền sử phẫu thuật Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getTransfusionHistory(), 128, "Tiền sử truyền máu Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getPhysiqueCheck(), 128, "Khám thực thể Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getAssistCheck(), 128, "Kiểm tra hỗ trợ Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getEmergencyDiagnose(), 128, "cấp cứu Độ dài chẩn đoán phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getEmergencyEffect(), 128, "Hiệu quả cấp cứu Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getOtherCheck(), 128, "Kiểm tra khác Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getHandlingSituation(), 128, "Tình hình xử lý Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getHealthEducation(), 128, "Giáo dục sức khỏe cá thể hóa Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getEpidemicDisease(), 128, "Tiền sử dịch tễ Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getDoctorAdvice(), 128, "Y lệnh việc hạng mục Độ dài phải nằm trong khoảng 0 đến 128");
+        checkLength(medicalRecord.getFileId(), 45, "Tải lên tệp đính kèm Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(medicalRecord.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(medicalRecord.getWesternDiagnose(), 100, "Chẩn đoán tây y Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(medicalRecord.getChinaDiagnose(), 100, "Chẩn đoán đông y Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(medicalRecord.getDiseaseId(), 100, "Chẩn đoán id Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(medicalRecord.getSyndromeId(), 100, "chứng chờ id Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(medicalRecord.getChinaSyndrome(), 100, "Chứng hậu Đông y Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(medicalRecord.getDiagnosisCode(), 50, "Mã chẩn đoán Độ dài phải nằm trong khoảng 0 đến 50");
     }
 
     private static void checkLength(String value, int max, String message) {

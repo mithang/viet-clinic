@@ -48,9 +48,38 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
     @Autowired
     RecipelDetailService recipelDetailService;
 
+    /**
+     * DS146 A: @Length tren entity (itemCode/itemName/isUse/isDeduct/
+     * itemCountryCode/pinyinCode) + remarks theo gioi han cot DB 255 (mau
+     * DS141: truong khong @Length thi guard o gioi han DB). Generic /save
+     * co @Valid o CrudController, nhung /saveDto goi thang service.save()
+     * va bulk* bo qua ca save() lan @Valid nen gia tri qua dai 500 o DB
+     * (probe A3/A4: itemName 65). Guard o day dung chung cho ca 3 duong.
+     */
+    private static void checkCostItemLengths(CostItem costItem) {
+        if (costItem == null) {
+            return;
+        }
+        checkLength(costItem.getItemCode(), 64, "hạng mục Độ dài mã phải nằm trong khoảng 0 đến 64");
+        checkLength(costItem.getItemName(), 64, "hạng mục Tên Độ dài phải nằm trong khoảng 1 đến 64");
+        checkLength(costItem.getIsUse(), 2, "Độ dài trạng thái phải nằm trong khoảng 0 đến 2 ");
+        checkLength(costItem.getIsDeduct(), 2, "Độ dài có thực hiện khấu trừ phải nằm trong khoảng 0 đến 2 ");
+        checkLength(costItem.getItemCountryCode(), 64, "quốc gia Độ dài mã phải nằm trong khoảng 0 đến 64");
+        checkLength(costItem.getPinyinCode(), 64, "Độ dài phải nằm trong khoảng 1 đến 64 ");
+        checkLength(costItem.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public CostItem save(CostItem costItem) {
+        // DS146 A: chan do dai truoc moi xu ly (ca duong /saveDto khong @Valid).
+        checkCostItemLengths(costItem);
         // DS78: is_package is NOT NULL DEFAULT '0', but the insert
         // lists the column unconditionally, so a generic /save body
         // without isPackage 500s ("Column 'is_package' cannot be
@@ -143,6 +172,8 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         java.util.Set<String> namesInList = new java.util.HashSet<>();
         for (CostItem costItem : entitys) {
             checkCostItemRequired(costItem);
+            // DS146 A: bulk cung chan do dai nhu save().
+            checkCostItemLengths(costItem);
             if (StringUtils.isBlank(costItem.getIsPackage())) {
                 costItem.setIsPackage("0");
             }
@@ -173,6 +204,8 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
                 throw new ServiceException("Hạng mục không tồn tại: " + costItem.getId());
             }
             checkCostItemRequired(costItem);
+            // DS146 A: bulk cung chan do dai nhu save().
+            checkCostItemLengths(costItem);
             if (StringUtils.isBlank(costItem.getItemCode())) {
                 throw new ServiceException("Mã hạng mục không được để trống");
             }
