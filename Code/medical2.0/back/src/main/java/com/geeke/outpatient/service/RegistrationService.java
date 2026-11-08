@@ -67,6 +67,35 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
      * không đánh lại số, tránh xáo trộn thứ tự gọi khám.
      */
     /**
+     * DS146 B: tao moi (id trong) phai co it nhat mot trong ba: benh nhan,
+     * bac si, hoac ngay hen dat lich. Truoc day save {} / bulkInsert [{}]
+     * tra 200 va tao hang rac (patient/doctor/subscribe deu NULL, probe B1/B2
+     * -- them 1 dong rac moi lan goi, chi de lai 1 dong cu tu 15:34).
+     * Quyet dinh dua tren audit TOAN BO caller cua save() (xem report):
+     * moi luot tao hop le deu co patient va/hoac doctor -- TRU BookingRequest
+     * Service.confirm (G2) tao luot khong patient khong doctor nhung LUON co
+     * subscribeDate (+ subscribeProject/remarks); PatientController inquire/add,
+     * MedicalRecordService instant/retail, TollInfo addRetailRegistration deu co
+     * patient (+ doctor). Chi ap cho TAO MOI: update (id khac rong) khong bi
+     * anh huong -- cac luot setTreatmentDate/status-only (RecipelDetailService,
+     * SupplierStockService, TollInfoService, MedicalRecordService) giu nguyen.
+     * wxSave la method rieng, khong qua day, khong doi.
+     */
+    private static void checkRegistrationHasSubject(Registration entity) {
+        if (entity == null || StringUtils.isNotBlank(entity.getId())) {
+            return;
+        }
+        boolean hasPatient = entity.getPatientId() != null
+                && StringUtils.isNotBlank(entity.getPatientId().getId());
+        boolean hasDoctor = entity.getDoctor() != null
+                && StringUtils.isNotBlank(entity.getDoctor().getId());
+        boolean hasSubscribeDate = entity.getSubscribeDate() != null;
+        if (!hasPatient && !hasDoctor && !hasSubscribeDate) {
+            throw new ServiceException("Lượt đăng ký khám phải có bệnh nhân, bác sĩ hoặc ngày hẹn đặt lịch");
+        }
+    }
+
+    /**
      * DS146 A: @Length tren entity (pulse/breathe/temperature 45,
      * isGoHigharea 64, highArea 128, freeRegistrationFee 64,
      * dispensingStatus/chargeStatus 1) + remarks/subscribeProject theo
@@ -104,6 +133,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     public Registration save(Registration entity) {
         // DS146 A: chan do dai truoc khi gan so thu tu.
         checkRegistrationLengths(entity);
+        // DS146 B: chan hang rac {} o tang save (bulkInsert mirror ben duoi).
+        checkRegistrationHasSubject(entity);
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
@@ -137,6 +168,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             }
             // DS146 A: bulk cung chan do dai nhu save().
             checkRegistrationLengths(entity);
+            // DS146 B: chan hang rac {} qua bulk nhu save().
+            checkRegistrationHasSubject(entity);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
