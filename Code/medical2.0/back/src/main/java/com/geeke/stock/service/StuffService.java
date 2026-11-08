@@ -143,6 +143,16 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             stuff.setCode(sn);
         }
 
+        // DS149 B: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
+        // @Valid nen truong co @Length van 500 o mapper khi qua bulk
+        // (name 64/pinyinCode 64 sau khi sua annotation nhom A,
+        // commonName/code 45, barCode/registrationName/registrationCode 64,
+        // specifications 45, isOutSell/isUnpackSell 2, status 1); truong
+        // KHONG co @Length: type/nature .value -> varchar(64),
+        // minUnit/packUnit .value -> varchar(45), locationNumber/
+        // inventoryLimit/inventoryFloor/indate -> varchar(255), remarks
+        // -> varchar(255). Gioi han theo cot DB; null-safe.
+        checkStuffLengths(stuff);
         Stuff stuffTemp = super.save(stuff);
 
         //LưuđộngTồn kho
@@ -191,6 +201,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             if (StringUtils.isBlank(stuff.getPinyinCode())) {
                 throw new ServiceException("Mã pinyin không được để trống");
             }
+            checkStuffLengths(stuff);
         }
         return super.bulkInsert(entitys);
     }
@@ -213,8 +224,48 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             if (StringUtils.isBlank(stuff.getPinyinCode())) {
                 throw new ServiceException("Mã pinyin không được để trống");
             }
+            checkStuffLengths(stuff);
         }
         return super.bulkUpdate(entitys);
+    }
+
+    // DS149 B: xem ghi chu o save().
+    private static void checkStuffLengths(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        checkLength(stuff.getName(), 64, "Tên vật tư độ dài phải nằm trong khoảng 1 đến 64");
+        checkLength(stuff.getCommonName(), 45, "thường dùng tên Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(stuff.getPinyinCode(), 64, "Pinyin mã Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(stuff.getCode(), 45, "Vật tư Độ dài mã phải nằm trong khoảng 0 đến 45");
+        checkLength(stuff.getBarCode(), 64, "mã vạch Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(stuff.getRegistrationName(), 64, "đăng ký chứng Tên Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(stuff.getRegistrationCode(), 64, "đăng ký chứng số Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(stuff.getSpecifications(), 45, "Quy cách Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(stuff.getIsOutSell(), 2, "Cho phép bán ra ngoài Độ dài phải nằm trong khoảng 0 đến 2");
+        checkLength(stuff.getIsUnpackSell(), 2, "Độ dài cho phép bán lẻ phải nằm trong khoảng 0 đến 2");
+        checkLength(stuff.getStatus(), 1, "Cờ bật Độ dài phải nằm trong khoảng 1 đến 1");
+        checkLength(stuff.getLocationNumber(), 255, "Số vị trí hàng Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(stuff.getInventoryLimit(), 255, "Giới hạn trên tồn kho Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(stuff.getInventoryFloor(), 255, "Giới hạn dưới tồn kho Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(stuff.getIndate(), 255, "Thời hạn hiệu lực Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(stuff.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(stuff.getType(), 64, "Loại vật tư Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(stuff.getNature(), 64, "Tính chất Độ dài phải nằm trong khoảng 0 đến 64");
+        checkDictLength(stuff.getMinUnit(), 45, "Đơn vị nhỏ nhất Độ dài phải nằm trong khoảng 0 đến 45");
+        checkDictLength(stuff.getPackUnit(), 45, "Đơn vị đóng gói Độ dài phải nằm trong khoảng 0 đến 45");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     @Override

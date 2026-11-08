@@ -102,7 +102,29 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             throw new ServiceException("Phiếu kiểm kê không tồn tại: "
                     + entity.getId());
         }
+        // DS149 B: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
+        // @Valid nen truong co @Length van 500 o mapper khi qua bulk
+        // (code 255, status 1); truong KHONG co @Length: type ->
+        // varchar(1) (probe B8/B9). bulkUpdate cua mapper chi viet code
+        // nhung guard chung cho ca 3 duong. Gioi han theo cot DB.
+        checkInventoryVerificationLengths(entity);
         return super.save(entity);
+    }
+
+    // DS149 B: xem ghi chu o save().
+    private static void checkInventoryVerificationLengths(InventoryVerification entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getCode(), 255, "Số phiếu kiểm kê Độ dài phải nằm trong khoảng 1 đến 255");
+        checkLength(entity.getStatus(), 1, "Trạng thái kiểm kê Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getType(), 1, "Loại kiểm kê Độ dài phải nằm trong khoảng 0 đến 1");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     @Override
@@ -113,6 +135,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         }
         for (InventoryVerification entity : entitys) {
             validateRequired(entity);
+            checkInventoryVerificationLengths(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -125,6 +148,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         }
         for (InventoryVerification entity : entitys) {
             validateRequired(entity);
+            checkInventoryVerificationLengths(entity);
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của phiếu kiểm kê đã tồn tại");
             }
@@ -224,6 +248,8 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             String sn = sequenceService.generate(SessionUtils.getUser().getCompanyId(), "check_inventory_code", inventoryVerification);
             inventoryVerification.setCode(sn);
         }
+        // DS149 B: cung guard nhu save() chung (type = variety "0"/"1").
+        checkInventoryVerificationLengths(inventoryVerification);
         InventoryVerification save = super.save(inventoryVerification);
 
         if(!StringUtils.isNullOrEmpty(save)){

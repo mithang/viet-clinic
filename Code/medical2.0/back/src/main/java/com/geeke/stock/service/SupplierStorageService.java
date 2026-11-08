@@ -61,8 +61,39 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             String oldCode = supplierStorageDao.getCode(supplierStorage.getCompany().getId());
             supplierStorage.setCode(generateDatePrefixCode(oldCode));
         }
+        // DS149 B: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
+        // @Valid nen truong co @Length van 500 o mapper khi qua bulk
+        // (code/withGoodsNo/invoiceNumber 64); truong KHONG co @Length:
+        // examine .value -> varchar(64), type -> varchar(1), remarks ->
+        // varchar(255). Gioi han theo cot DB; null-safe.
+        checkSupplierStorageLengths(supplierStorage);
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
+    }
+
+    // DS149 B: xem ghi chu o save().
+    private static void checkSupplierStorageLengths(SupplierStorage entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getCode(), 64, "Phiếu nhập kho Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getWithGoodsNo(), 64, "theo hàng đơn Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getInvoiceNumber(), 64, "Số hóa đơn Độ dài phải nằm trong khoảng 0 đến 64");
+        checkLength(entity.getType(), 1, "nhập kho Loại Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        checkDictLength(entity.getExamine(), 64, "Trạng thái xét duyệt Độ dài phải nằm trong khoảng 0 đến 64");
+    }
+
+    private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
+        if (item != null) {
+            checkLength(item.getValue(), max, message);
+        }
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     /**
@@ -108,6 +139,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         }
         for (SupplierStorage entity : entitys) {
             checkSupplierStorageRequired(entity);
+            checkSupplierStorageLengths(entity);
             forceSessionCompanyWhenBlank(entity);
         }
         return super.bulkInsert(entitys);
@@ -129,6 +161,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             }
             verifyTenantOwnershipAgainstStoredRow(entity);
             checkSupplierStorageRequired(entity);
+            checkSupplierStorageLengths(entity);
         }
         return super.bulkUpdate(entitys);
     }

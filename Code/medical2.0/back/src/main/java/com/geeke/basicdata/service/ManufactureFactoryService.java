@@ -66,8 +66,38 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
                     + manufactureFactory.getId());
         }
 
+        // DS149 B: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
+        // @Valid nen truong co @Length van 500 o mapper khi qua bulk
+        // (name/address 128, people/phone/province/city/area 45, type 1);
+        // status @Length(45) LECH voi varchar(1) -- da sua annotation
+        // nhom A, service guard them cho duong bulk. remarks ->
+        // varchar(255). Gioi han theo cot DB; null-safe.
+        checkManufactureFactoryLengths(manufactureFactory);
         ManufactureFactory manufactureFactoryTemp = super.save(manufactureFactory);
         return manufactureFactoryTemp;
+    }
+
+    // DS149 B: xem ghi chu o save().
+    private static void checkManufactureFactoryLengths(ManufactureFactory entity) {
+        if (entity == null) {
+            return;
+        }
+        checkLength(entity.getName(), 128, "Tên nhà sản xuất Độ dài phải nằm trong khoảng 1 đến 128");
+        checkLength(entity.getPeople(), 45, "Người liên hệ Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getPhone(), 45, "Số điện thoại Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getProvince(), 45, "Tỉnh Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getCity(), 45, "Thành phố Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getArea(), 45, "Quận huyện Độ dài phải nằm trong khoảng 0 đến 45");
+        checkLength(entity.getAddress(), 128, "Độ dài địa chỉ phải nằm trong khoảng 0 đến 128");
+        checkLength(entity.getStatus(), 1, "Trạng thái Độ dài phải nằm trong khoảng 0 đến 1");
+        checkLength(entity.getType(), 1, "Loại nhà sản xuất Độ dài phải nằm trong khoảng 1 đến 1");
+        checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    private static void checkLength(String value, int max, String message) {
+        if (value != null && value.length() > max) {
+            throw new ServiceException(message);
+        }
     }
 
     // DS125 A: single delete fail-closed 400 (mau DS123/DS124) -- truoc day
@@ -111,6 +141,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             if (StringUtils.isBlank(manufactureFactory.getType())) {
                 throw new ServiceException("Loại nhà sản xuất không được để trống");
             }
+            checkManufactureFactoryLengths(manufactureFactory);
         }
         return super.bulkInsert(entitys);
     }
@@ -133,6 +164,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             if (StringUtils.isBlank(manufactureFactory.getType())) {
                 throw new ServiceException("Loại nhà sản xuất không được để trống");
             }
+            checkManufactureFactoryLengths(manufactureFactory);
         }
         return super.bulkUpdate(entitys);
     }
