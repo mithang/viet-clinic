@@ -172,6 +172,12 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             checkCompanySaveOwnership(company);
             // DS146 A: bulk cung chan do dai nhu save().
             checkCompanyLengths(company);
+            // DS152 B: giai quyet parent tu DB (mau RouterService.
+            // resolveParent) -- bulk* bypass TreeService.save nen
+            // parent chi co id: ghost duoc luu tho parent_id + ids
+            // goc (probe B1), ids khong tinh theo parent that
+            // (probe B4).
+            resolveCompanyParent(company);
         }
         return super.bulkInsert(entitys);
     }
@@ -197,6 +203,9 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             checkCompanySaveOwnership(company);
             // DS146 A: bulk cung chan do dai nhu save().
             checkCompanyLengths(company);
+            // DS152 B: nhu bulkInsert -- ghost / self / descendant
+            // parent -> 400 truoc khi ghi.
+            resolveCompanyParent(company);
         }
         return super.bulkUpdate(entitys);
     }
@@ -227,6 +236,42 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         }
         verifyTenantOwnershipAgainstStoredRow(entity);
         return super.delete(entity);
+    }
+
+    /**
+     * DS152 B: giai quyet parent tu DB cho bulk* (mau RouterService.
+     * resolveParent + guard TreeService.save o DS152 A). bulk* bypass
+     * TreeService.save nen parent payload chi co id: truoc day ghost
+     * duoc luu tho parent_id + ids goc, va ids khong tinh theo parent
+     * that (parent OWN nhung ids van "<id>."). Parent null/rong/"0"
+     * giu hanh vi cu (ids goc nhu hien tai); parent id khac phai ton
+     * tai + dang song + khong phai chinh dong nay + khong phai cap
+     * duoi cua no, neu khong fail-closed 400. Parent tenant khac da
+     * bi checkCompanySaveOwnership chan truoc khi toi day.
+     */
+    private void resolveCompanyParent(Company company) {
+        if (company.getParent() == null
+                || StringUtils.isBlank(company.getParent().getId())
+                || "0".equals(company.getParent().getId())) {
+            return;
+        }
+        String parentId = company.getParent().getId();
+        Company parent = this.dao.get(parentId);
+        if (parent == null || !"0".equals(parent.getDelFlag())) {
+            throw new ServiceException("Công ty mẹ không tồn tại: " + parentId);
+        }
+        if (StringUtils.isNotBlank(company.getId())) {
+            if (company.getId().equals(parentId)) {
+                throw new ServiceException("Công ty mẹ không thể là chính công ty này");
+            }
+            Company stored = this.dao.get(company.getId());
+            if (stored != null && StringUtils.isNotBlank(stored.getIds())
+                    && StringUtils.isNotBlank(parent.getIds())
+                    && parent.getIds().startsWith(stored.getIds())) {
+                throw new ServiceException("Công ty mẹ không thể là cấp dưới của chính công ty này");
+            }
+        }
+        company.setParent(parent);
     }
 
     private void checkCompanySaveOwnership(Company company) {
