@@ -87,6 +87,19 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         checkLength(company.getPhoneNumber(), 21, "Độ dài số điện thoại phải nằm trong khoảng 1 đến 21 ");
         checkLength(company.getLicenseSubject(), 100, "Độ dài môn học trong giấy phép hành nghề phải nằm trong khoảng 0 đến 100 ");
         checkLength(company.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+        // DS147 C: cac truong khong @Length nhung mapper co viet -- gioi han
+        // theo cot DB. contactName viet ca o bulkInsert (probe C1); appId/
+        // appSecret/fixmedinsName/fixmedinsCode/mdtrtareaAdmvs chi viet o
+        // save-insert thuong (probe C2/C3 qua saveWithFile, duong UI that --
+        // generic /save @Valid-400 moi create vi @NotNull company/lesseeId
+        // nen khong bao gio toi duoc guard do dai). file_id la bigint va
+        // private/public key la TEXT nen khong guard do dai.
+        checkLength(company.getContactName(), 100, "Tên người liên hệ Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(company.getAppId(), 255, "Mã ứng dụng Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(company.getAppSecret(), 255, "Khóa bí mật ứng dụng Độ dài phải nằm trong khoảng 0 đến 255");
+        checkLength(company.getFixmedinsName(), 100, "Tên cơ sở y tế được chỉ định Độ dài phải nằm trong khoảng 0 đến 100");
+        checkLength(company.getFixmedinsCode(), 12, "Mã cơ sở y tế được chỉ định Độ dài phải nằm trong khoảng 0 đến 12");
+        checkLength(company.getMdtrtareaAdmvs(), 255, "Mã địa phương BHYT Độ dài phải nằm trong khoảng 0 đến 255");
     }
 
     private static void checkLength(String value, int max, String message) {
