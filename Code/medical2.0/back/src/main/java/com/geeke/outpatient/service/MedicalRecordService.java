@@ -211,6 +211,78 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         return super.save(medicalRecord);
     }
 
+    /**
+     * DS145 C: CrudController bulk routes goi thang CrudService.bulkInsert/
+     * bulkUpdate, bo qua moi guard cua save()/delete(): bulkUpdate id ma
+     * 200 im lang (probe C1 -- CrudService stored-row check bo qua
+     * stored==null theo thiet ke ITER35), bulkInsert {} 500 NOT NULL
+     * (probe C2 -- company_id/doctor_id/registration_id/patient_tell
+     * deu NOT NULL o DB). Ghi de theo mau DS99/DS108: null/rong -> 400,
+     * entry null -> 400, bulkUpdate id trong / dong khong ton tai / da
+     * xoa mem -> 400; truong bat buoc mirror save() funnel + DB NOT NULL:
+     * company/doctor/registration (id khac rong) + patientTell (chi chan
+     * null, '' duoc chap nhan nhu save() DS81 -- 7 dong live mang '').
+     * bulkUpdate KHONG doi company (mapper khong viet company_id) nen
+     * khong yeu cau company o duong update. bulkDelete ghost giu 200
+     * rows 0 theo parity DS99 G11/DS126 B (khong doi trong vong nay).
+     * Chua chan do dai qua bulk (save() funnel DS141 B khong ap cho
+     * bulk) -- ung vien DS146.
+     */
+    private void checkMedicalRecordRequired(MedicalRecord medicalRecord, boolean requireCompany) {
+        if (medicalRecord == null) {
+            throw new ServiceException("Bệnh án không được để trống");
+        }
+        if (requireCompany && (medicalRecord.getCompany() == null
+                || StringUtils.isBlank(medicalRecord.getCompany().getId()))) {
+            throw new ServiceException("Phòng khám id Không được để trống");
+        }
+        if (medicalRecord.getDoctor() == null
+                || StringUtils.isBlank(medicalRecord.getDoctor().getId())) {
+            throw new ServiceException("Bác sĩ id Không được để trống");
+        }
+        if (medicalRecord.getRegistration() == null
+                || StringUtils.isBlank(medicalRecord.getRegistration().getId())) {
+            throw new ServiceException("Đăng ký khám id Không được để trống");
+        }
+        if (medicalRecord.getPatientTell() == null) {
+            throw new ServiceException("Lý do khám chính không được để trống");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<MedicalRecord> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách bệnh án thêm mới không được để trống");
+        }
+        for (MedicalRecord medicalRecord : entitys) {
+            checkMedicalRecordRequired(medicalRecord, true);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<MedicalRecord> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách bệnh án cập nhật không được để trống");
+        }
+        for (MedicalRecord medicalRecord : entitys) {
+            if (medicalRecord == null) {
+                throw new ServiceException("Bệnh án không được để trống");
+            }
+            if (StringUtils.isBlank(medicalRecord.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của bệnh án đã tồn tại");
+            }
+            MedicalRecord stored = dao.get(medicalRecord.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
+                throw new ServiceException("Bệnh án không tồn tại: " + medicalRecord.getId());
+            }
+            checkMedicalRecordRequired(medicalRecord, false);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
