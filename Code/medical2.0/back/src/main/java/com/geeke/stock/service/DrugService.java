@@ -504,7 +504,15 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         try (InputStream is = file.getInputStream()) {
             result = new ExcelImportBuilder<>(Drug.class, is)
                     .dictTypeService(dictTypeService)
-                    .skipRows(2)
+                    // DS151 B: skipRows(2) nuot dong du lieu dau (dong 3)
+                    // (cung loi DS150 C da sua o StuffService): template
+                    // co 2 dong header nhung EasyExcel da tieu thu dong
+                    // 1 lam header rieng, nen chi can bo dong 2. Dong 3
+                    // bi mat tren MOI import + manufacturerNames/
+                    // remarksList o Step 2 (doc tu dong 3) lech 1 so voi
+                    // dataList nen thuoc dong 4 luu duoi factory +
+                    // remarks cua dong 3.
+                    .skipRows(1)
                     .read();
         }
 
