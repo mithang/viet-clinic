@@ -95,6 +95,95 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         return super.delete(costItem);
     }
 
+    /**
+     * DS145 A: CrudController bulk routes goi thang CrudService.bulkInsert/
+     * bulkUpdate, bo qua moi guard cua save(): bulkInsert thieu itemName
+     * 500 NOT NULL (probe A2), bulkUpdate id ma 200 im lang (probe A3),
+     * bulkUpdate itemName null 500 (probe A4), bulkInsert 2 ten trung nhau
+     * 200 + 2 dong (probe A6 -- save() chan trung ten qua GetIDByName).
+     * Ghi de theo mau DS99/DS108: null/rong -> 400, entry null -> 400,
+     * truong bat buoc theo @NotNull entity (company/itemName/pinyinCode)
+     * -> 400, id ma / dong da xoa mem o bulkUpdate -> 400, trung ten
+     * (trong list + voi dong da luu, dung GetIDByName nhu save()) -> 400.
+     * Mirror save(): isPackage trong -> '0', itemCode trong khi tao moi
+     * -> sinh qua sequence. bulkDelete ghost giu 200 rows 0 theo parity
+     * DS99 G11/DS126 B (probe A5).
+     */
+    private void checkCostItemRequired(CostItem costItem) {
+        if (costItem == null) {
+            throw new ServiceException("Hạng mục không được để trống");
+        }
+        if (costItem.getCompany() == null || StringUtils.isBlank(costItem.getCompany().getId())) {
+            throw new ServiceException("Phòng khám id Không được để trống");
+        }
+        if (StringUtils.isBlank(costItem.getItemName())) {
+            throw new ServiceException("Hạng mục tên không được để trống");
+        }
+        if (StringUtils.isBlank(costItem.getPinyinCode())) {
+            throw new ServiceException("Mã pinyin không được để trống");
+        }
+    }
+
+    private void checkCostItemDuplicate(CostItem costItem, java.util.Set<String> namesInList) {
+        if (!namesInList.add(costItem.getItemName())) {
+            throw new ServiceException("Đã Tồn tại một Cái giống hệt của hạng mục tên, Vui lòng nhập lại!");
+        }
+        String dupId = this.dao.GetIDByName(costItem.getItemName(), SessionUtils.getLoginTenantId());
+        if (dupId != null && !dupId.equals(costItem.getId())) {
+            throw new ServiceException("Đã Tồn tại một Cái giống hệt của hạng mục tên, Vui lòng nhập lại!");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<CostItem> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách hạng mục thêm mới không được để trống");
+        }
+        java.util.Set<String> namesInList = new java.util.HashSet<>();
+        for (CostItem costItem : entitys) {
+            checkCostItemRequired(costItem);
+            if (StringUtils.isBlank(costItem.getIsPackage())) {
+                costItem.setIsPackage("0");
+            }
+            if (StringUtils.isBlank(costItem.getId()) && StringUtils.isBlank(costItem.getItemCode())) {
+                costItem.setItemCode(sequenceService.generate(SessionUtils.getLoginTenantId(), "treatment_item_code", costItem));
+            }
+            checkCostItemDuplicate(costItem, namesInList);
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<CostItem> entitys) {
+        if (entitys == null || entitys.isEmpty()) {
+            throw new ServiceException("Danh sách hạng mục cập nhật không được để trống");
+        }
+        java.util.Set<String> namesInList = new java.util.HashSet<>();
+        for (CostItem costItem : entitys) {
+            if (costItem == null) {
+                throw new ServiceException("Hạng mục không được để trống");
+            }
+            if (StringUtils.isBlank(costItem.getId())) {
+                throw new ServiceException("Cập nhật hàng loạt yêu cầu id của hạng mục đã tồn tại");
+            }
+            CostItem stored = dao.get(costItem.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
+                throw new ServiceException("Hạng mục không tồn tại: " + costItem.getId());
+            }
+            checkCostItemRequired(costItem);
+            if (StringUtils.isBlank(costItem.getItemCode())) {
+                throw new ServiceException("Mã hạng mục không được để trống");
+            }
+            if (StringUtils.isBlank(costItem.getIsPackage())) {
+                costItem.setIsPackage("0");
+            }
+            checkCostItemDuplicate(costItem, namesInList);
+        }
+        return super.bulkUpdate(entitys);
+    }
+
     @Transactional(readOnly = true)
     public List<MedicalProject> listPageForMedical(List<Parameter> parameters, String orderby) {
         // ITER65 item 4: tenant guard kieu W2 cho duong listForMedical (probe-proven:
