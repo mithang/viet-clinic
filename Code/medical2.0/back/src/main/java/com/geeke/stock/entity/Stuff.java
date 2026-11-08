@@ -259,7 +259,10 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 
 
-	@ExcelImportField(columnIndex = 19, label = "Trạng thái", maxLength = 1)
+	@ExcelImportField(columnIndex = 17, label = "Trạng thái", maxLength = 1)
+	// DS150 C: columnIndex 19 LECH template stuff.xlsx (是否启用 o cot
+	// 17, 0-based) nen builder doc cot 19 trong -> moi dong import deu
+	// luu status "0" du file ghi "是"; ve 17.
 	// DS79: @Length(min=1) cho phep null lot qua @Valid roi 500 o cot status NOT NULL.
 	@NotNull(message="Trạng thái không được để trống")
 	@Length(min=1, max=1, message="Cờ bật Độ dài phải nằm trong khoảng 1 đến 1")
@@ -271,7 +274,11 @@ public class Stuff extends DataEntity<Stuff> {
 	}
 
 
-	@ExcelImportField(columnIndex = 2, label = "Mã pinyin", maxLength = 100)
+	@ExcelImportField(columnIndex = 2, label = "Mã pinyin", maxLength = 64)
+	// DS150 C: maxLength 100 LECH stuff.pinyin_code varchar(64) (da
+	// @Length(max=64) tu DS149 A): builder de lot 65-100 roi save guard
+	// nem loi chung, nguoi dung khong thay loi do dai that; ve 64 de
+	// builder tu choi kem message "64".
 	// DS79: @Length(min=0) cho phep null lot qua @Valid roi 500 o cot pinyin_code NOT NULL.
 	@NotNull(message="Mã pinyin không được để trống")
 	// DS149 A: @Length(max=100) LECH voi stuff.pinyin_code varchar(64)

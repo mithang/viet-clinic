@@ -422,7 +422,13 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         try (InputStream is = file.getInputStream()) {
             result = new ExcelImportBuilder<>(Stuff.class, is)
                     .dictTypeService(dictTypeService)
-                    .skipRows(2)
+                    // DS150 C: skipRows(2) nuot dong du lieu dau (dong 3):
+                    // template co 2 dong header nhung EasyExcel da tieu
+                    // thu dong 1 lam header rieng, nen chi can bo dong 2.
+                    // Dong 3 bi mat tren MOI import + dataList lech 1 so
+                    // voi nameList o Step 2/4 (doc tu dong 3) nen dong 4
+                    // luu duoi ten dong 3.
+                    .skipRows(1)
                     .read();
         }
 
