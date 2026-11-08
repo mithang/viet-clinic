@@ -105,7 +105,10 @@ public class ManufactureFactory extends DataEntity<ManufactureFactory> {
 		this.address = address;
 	}
 
-	@Length(min=0, max=45, message="Độ dài địa chỉ phải nằm trong khoảng 0 đến 45 ")
+	// DS149 A: @Length(max=45) LECH voi manufacture_factory.status
+	// varchar(1) (probe A4: single save status "12" -> 500); ve 1 theo
+	// cot DB (message cu ghi nham "địa chỉ" cung sua theo).
+	@Length(min=0, max=1, message="Trạng thái Độ dài phải nằm trong khoảng 0 đến 1 ")
 	public String getStatus() {
 		return status;
 	}

@@ -97,7 +97,10 @@ public class Stuff extends DataEntity<Stuff> {
 	// co cot name / name nullable — chi cac entity da probe moi override.
 	@Override
 	@NotNull(message="Tên vật tư không được để trống")
-	@Length(min=1, max=100, message="Tên vật tư độ dài phải nằm trong khoảng 1 đến 100 ")
+	// DS149 A: @Length(max=100) LECH voi stuff.name varchar(64) --
+	// single save name 65 qua @Valid roi 400-lo-SQL o DB (probe A3);
+	// sua annotation ve 64 theo cot DB.
+	@Length(min=1, max=64, message="Tên vật tư độ dài phải nằm trong khoảng 1 đến 64 ")
 	public String getName() {
 		return super.getName();
 	}
@@ -271,7 +274,9 @@ public class Stuff extends DataEntity<Stuff> {
 	@ExcelImportField(columnIndex = 2, label = "Mã pinyin", maxLength = 100)
 	// DS79: @Length(min=0) cho phep null lot qua @Valid roi 500 o cot pinyin_code NOT NULL.
 	@NotNull(message="Mã pinyin không được để trống")
-	@Length(min=0, max=100, message="Pinyin mã Độ dài phải nằm trong khoảng 0 đến 100")
+	// DS149 A: @Length(max=100) LECH voi stuff.pinyin_code varchar(64)
+	// (probe A2: single save pinyinCode 65 ve 400-lo-SQL); ve 64 theo cot DB.
+	@Length(min=0, max=64, message="Pinyin mã Độ dài phải nằm trong khoảng 0 đến 64")
 	public String getPinyinCode() {
 		return pinyinCode;
 	}

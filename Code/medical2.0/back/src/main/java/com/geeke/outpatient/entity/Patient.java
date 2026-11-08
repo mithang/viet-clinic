@@ -68,7 +68,10 @@ public class Patient extends DataEntity<Patient> {
 	// co cot name / name nullable — chi cac entity da probe moi override.
 	@Override
 	@NotNull(message="Tên bệnh nhân không được để trống")
-	@Length(min=1, max=100, message="Tên bệnh nhân độ dài phải nằm trong khoảng 1 đến 100 ")
+	// DS149 A: @Length(max=100) LECH voi patient.name varchar(45) --
+	// single save name 50 qua @Valid roi 500 o DB (DS148 B chi chan o
+	// service); sua annotation ve 45 theo cot DB.
+	@Length(min=1, max=45, message="Tên bệnh nhân độ dài phải nằm trong khoảng 1 đến 45 ")
 	public String getName() {
 		return super.getName();
 	}
