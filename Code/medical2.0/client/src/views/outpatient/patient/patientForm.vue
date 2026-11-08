@@ -498,10 +498,14 @@ export default {
   },
   methods: {
     //Lấy ngày tháng năm sinh qua số CMND/CCCD
+    // DS137: CCCD Việt Nam 12 số không mã hóa ngày sinh (chữ số thứ 4 chỉ
+    // mã giới tính: chẵn Nam, lẻ Nữ); CMND 9 số cũng không mã hóa ngày sinh.
+    // Không suy ngày sinh từ số giấy tờ nữa — nhánh 18 số cũ (layout CMND
+    // Trung Quốc) ghi đè ngày sinh đã chọn, và xóa ô giấy tờ thì xóa luôn
+    // ngày sinh + giới tính đã nhập, khiến bệnh nhân lưu với birthday NULL.
     getBirthday() {
       if (this.bizFormModel.card.length === 12) {
-        // CCCD 12 số của Việt Nam không mã hóa tháng/ngày sinh nên chỉ suy
-        // giới tính từ chữ số thứ 4 (chẵn: Nam, lẻ: Nữ), không tự điền ngày sinh.
+        // CCCD 12 số: chỉ suy giới tính từ chữ số thứ 4, không chạm ngày sinh.
         let sexDigit = parseInt(this.bizFormModel.card.substring(3, 4), 10)
         let sexName = sexDigit % 2 === 0 ? "Nam" : "Nữ";
         if (this.gender_List && this.gender_List.length > 0) {
@@ -509,33 +513,6 @@ export default {
             return item.name === sexName
           })
         }
-      } else if (this.bizFormModel.card.length === 18) {
-        let birthDay = this.bizFormModel.card.substring(6, 14)
-        let year = birthDay.substring(0, 4)
-        let month = birthDay.substring(4, 6)
-        let day = birthDay.substring(6)
-        let newBirthday = year + "-" + month + "-" + day
-        this.bizFormModel.birthday = newBirthday
-        this.birthdayChanges()
-
-        // Giới tính (CMND 18 số: lẻ là Nam, chẵn là Nữ)
-        let sexStr = this.bizFormModel.card.substring(16, 17)
-        let sexName = "Nam";
-        if (parseInt(sexStr) % 2 === 0) {
-          sexName = "Nữ";
-        }
-        if (this.gender_List && this.gender_List.length > 0) {
-          this.bizFormModel.gender = this.gender_List.find(item => {
-            return item.name === sexName
-          })
-        }
-      } else if (this.bizFormModel.card.length === 0) {
-        this.bizFormModel.birthday = ""
-        this.bizFormModel.gender = {
-          value: null,
-          name: null,
-        }
-        this.birthdayChanges()
       }
     },
     //Sự kiện thay đổi tuổi
