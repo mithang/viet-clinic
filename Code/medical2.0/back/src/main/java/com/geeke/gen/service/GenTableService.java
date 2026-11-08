@@ -175,8 +175,14 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         // khi khong co dong nao duoc tao; cung ho silent no-op nhu DS94
         // MyTask). Chi chap nhan update khi dong da ton tai; tao moi phai
         // gui id rong (UI tao moi khong gui id, sua gui id lay tu list).
-        if (StringUtils.isNotBlank(genTable.getId()) && super.get(genTable.getId()) == null) {
-            throw new ServiceException("Bảng không tồn tại: " + genTable.getId());
+        // DS143 B: dao.get KHONG loc del_flag nen dong da xoa mem van tra
+        // ve non-null -- luu lai bang da xoa se 200 va ghi them cot con
+        // song duoi bang cha da xoa (probe B1). Chi chap nhan dong chua xoa.
+        if (StringUtils.isNotBlank(genTable.getId())) {
+            GenTable stored = super.get(genTable.getId());
+            if (stored == null || !BaseEntity.DEL_FLAG_NORMAL.equals(stored.getDelFlag())) {
+                throw new ServiceException("Bảng không tồn tại: " + genTable.getId());
+            }
         }
         // DS142 C: con gui kem co id khac rong di nhanh bulkUpdate, ma
         // mapper bulkUpdate chi match theo id (khong kiem gen_table_id):
@@ -415,7 +421,11 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
             if (StringUtils.isBlank(genTable.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của bảng đã tồn tại");
             }
-            if (super.get(genTable.getId()) == null) {
+            // DS143 B3: nhu save() -- dao.get khong loc del_flag nen dong
+            // da xoa mem van tra ve non-null; bulkUpdate bang da xoa se 200
+            // va ghi de dong da xoa. Chi chap nhan dong chua xoa.
+            GenTable stored = super.get(genTable.getId());
+            if (stored == null || !BaseEntity.DEL_FLAG_NORMAL.equals(stored.getDelFlag())) {
                 throw new ServiceException("Bảng không tồn tại: " + genTable.getId());
             }
         }
@@ -438,6 +448,19 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
     @Override
     @Transactional(readOnly = false)
     public int delete(GenTable genTable) {
+        // DS143 A: delete khong kiem tra ton tai -- id ma/id rong di thang
+        // xuong mapper (UPDATE ... WHERE id=...) tra 0 dong roi 200 rows 0
+        // im lang; id cua dong da xoa mem cung tra rows 1 vi mapper khong
+        // loc del_flag. Theo mau GenTableColumnService.delete (DS132 A) va
+        // DS123/DS136: null/rong -> 400, khong ton tai hoac da xoa -> 400.
+        // Chi controller nay goi delete() (khong caller noi bo nao).
+        if (genTable == null || StringUtils.isBlank(genTable.getId())) {
+            throw new ServiceException("Không xác định được bảng cần xóa.");
+        }
+        GenTable stored = super.get(genTable.getId());
+        if (stored == null || !BaseEntity.DEL_FLAG_NORMAL.equals(stored.getDelFlag())) {
+            throw new ServiceException("Bảng không tồn tại: " + genTable.getId());
+        }
         List<Parameter> params = null;
         PageRequest pageRequest;
         /* Xử lý bảng con     Trường ràng buộc */
