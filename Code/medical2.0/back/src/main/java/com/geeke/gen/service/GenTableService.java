@@ -138,10 +138,16 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         // guard cua GenTableColumnService.save -- ten cot con qua dai
         // 500 o bulkInsert. Kiem tra do dai cot con o day, TRUOC
         // super.save, de ca bang cha cung khong duoc tao khi cot con sai.
-        // (Chi kiem do dai: guard null/blank cua cot con thuoc ve
-        // GenTableColumnService.save, khong ap cho duong luu kem nay.)
+        // DS142 A: them checkRequired() -- cot con thieu truong bat
+        // buoc (name/javaField/jdbcType/comments/isEdit/javaType/width)
+        // cung 500 NOT NULL o bulkInsert vi duong luu kem nay khong qua
+        // save(). (Guard null/blank cua cot con thuoc ve
+        // GenTableColumnService.save, khong ap cho duong luu kem nay
+        // truoc DS142 A; null entry trong list va id ma thuoc ve bang
+        // khac thuoc nhom C.)
         for (GenTableColumn genTableColumn : genTable.getGenTableColumnList()) {
             if (genTableColumn != null) {
+                GenTableColumnService.checkRequired(genTableColumn);
                 GenTableColumnService.checkLengths(genTableColumn);
             }
         }

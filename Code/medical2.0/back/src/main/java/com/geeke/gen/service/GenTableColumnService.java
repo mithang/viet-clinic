@@ -32,6 +32,53 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
         if (genTableColumn == null) {
             throw new ServiceException("Trường bảng không được để trống");
         }
+        // DS142 A: cac guard bat buoc tach ra checkRequired() de
+        // GenTableService.save tai dung cho cot con gui kem (luu con qua
+        // DAO bulkInsert truc tiep, bo qua moi guard cua save() nay) --
+        // truoc day cot con thieu name/javaField/jdbcType/comments/
+        // isEdit/javaType/width 500 NOT NULL o DB vi bulkInsert liet ke
+        // cot tuong minh; chuoi rong chen duoc ('') nen cung chan o day.
+        checkRequired(genTableColumn);
+        if (genTableColumn.getGenTable() == null
+                || StringUtils.isBlank(genTableColumn.getGenTable().getId())) {
+            throw new ServiceException("Bảng mã số không thể là trống");
+        }
+        if (dao.countGenTableById(genTableColumn.getGenTable().getId()) == 0) {
+            throw new ServiceException("Bảng mã số không tồn tại");
+        }
+        // DS141 A: controller khong co @Valid nen moi @Length tren entity
+        // deu chet -- gia tri qua dai 500 DataIntegrityViolationException
+        // o DB (xem checkLengths: gioi han lay min(entity max, DB max);
+        // jdbcType entity 100 nhung DB varchar(64); javaType/queryType/
+        // showType/customType khong co @Length, DB varchar(64)).
+        checkLengths(genTableColumn);
+        // DS99: nhu GenTableService.save -- CrudService.save re nhanh update
+        // khi id khac rong, doUpdate khong dong den dong nao neu id khong
+        // ton tai ma van tra 200 (probe G5c: column save id la -> 200 im
+        // lang, khong co dong nao duoc tao). Chi chap nhan update khi dong
+        // da ton tai; tao moi phai gui id rong.
+        if (StringUtils.isNotBlank(genTableColumn.getId())
+                && super.get(genTableColumn.getId()) == null) {
+            throw new ServiceException("Trường bảng không tồn tại: " + genTableColumn.getId());
+        }
+        return super.save(genTableColumn);
+    }
+
+    /**
+     * DS142 A: kiem tra cac truong bat buoc cua mot cot (null/blank),
+     * theo dung cac guard da co o save() -- tru cac kiem tra chi dung
+     * cho duong luu truc tiep (genTable ton tai, id ma). Public static
+     * de GenTableService.save tai dung cho cot con gui kem: duong do
+     * luu con qua DAO bulkInsert truc tiep, bo qua moi guard cua
+     * save() nay. Khong kiem tra co null -- checkLengths() lo phan
+     * do (isPk/isNull/isInsert/isList/isQuery null deu 400 o do).
+     * comments > 64 o day (DB varchar(64)), khong phai o
+     * checkLengths (no chi kiem remarks 255).
+     */
+    public static void checkRequired(GenTableColumn genTableColumn) {
+        if (genTableColumn == null) {
+            throw new ServiceException("Trường bảng không được để trống");
+        }
         if (StringUtils.isBlank(genTableColumn.getName())) {
             throw new ServiceException("Tên cột không được để trống");
         }
@@ -50,13 +97,6 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
         if (StringUtils.isBlank(genTableColumn.getIsEdit())) {
             throw new ServiceException("Có thể biên không được để trống");
         }
-        if (genTableColumn.getGenTable() == null
-                || StringUtils.isBlank(genTableColumn.getGenTable().getId())) {
-            throw new ServiceException("Bảng mã số không thể là trống");
-        }
-        if (dao.countGenTableById(genTableColumn.getGenTable().getId()) == 0) {
-            throw new ServiceException("Bảng mã số không tồn tại");
-        }
         if (genTableColumn.getJavaType() == null
                 || StringUtils.isBlank(genTableColumn.getJavaType().getValue())) {
             throw new ServiceException("JAVA Loại Không thể là trống");
@@ -64,22 +104,6 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
         if (genTableColumn.getWidth() == null) {
             throw new ServiceException("Cột rộng Không thể là trống");
         }
-        // DS141 A: controller khong co @Valid nen moi @Length tren entity
-        // deu chet -- gia tri qua dai 500 DataIntegrityViolationException
-        // o DB (xem checkLengths: gioi han lay min(entity max, DB max);
-        // jdbcType entity 100 nhung DB varchar(64); javaType/queryType/
-        // showType/customType khong co @Length, DB varchar(64)).
-        checkLengths(genTableColumn);
-        // DS99: nhu GenTableService.save -- CrudService.save re nhanh update
-        // khi id khac rong, doUpdate khong dong den dong nao neu id khong
-        // ton tai ma van tra 200 (probe G5c: column save id la -> 200 im
-        // lang, khong co dong nao duoc tao). Chi chap nhan update khi dong
-        // da ton tai; tao moi phai gui id rong.
-        if (StringUtils.isNotBlank(genTableColumn.getId())
-                && super.get(genTableColumn.getId()) == null) {
-            throw new ServiceException("Trường bảng không tồn tại: " + genTableColumn.getId());
-        }
-        return super.save(genTableColumn);
     }
 
     private static boolean tooLong(String value, int max) {
