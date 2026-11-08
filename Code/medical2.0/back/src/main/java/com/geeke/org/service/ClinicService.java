@@ -225,14 +225,40 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
 
     @Transactional(readOnly = false)
     public void deleteClinic(Company entity) {
-        companyService.delete(entity);
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được phòng khám cần xóa");
+        }
+        // DS136 A (L6 remainder): deleteClinic truoc day tin phoneNumber
+        // cua PAYLOAD de tim admin user (userDao.getByPhone). Payload
+        // xoa that chi gui {id} nen phoneNumber null -> getByPhone(null)
+        // khong khop ai -> user_tenant cua admin KHONG bao gio bi danh
+        // co, admin giu quyen tenant cua phong kham da xoa (probe A5
+        // pre-fix: company del_flag 1 nhung user_tenant van 0). Doc
+        // dong da luu TRUOC khi xoa (companyService.get la dao.get tran,
+        // nhu save() da lam) va dung phoneNumber da luu khi payload
+        // khong gui; payload co phone thi giu hanh vi cu. Guard them
+        // userRoleList / role company null (de phong NPE) -- getByPhone
+        // khong nap userRoleList nen nhanh xoa role hien la no-op, chi
+        // user_tenant moi la phan lien quan toi quyen truy cap.
+        Company stored = companyService.get(entity.getId());
         String phoneNumber = entity.getPhoneNumber();
+        if (StringUtils.isBlank(phoneNumber) && stored != null) {
+            phoneNumber = stored.getPhoneNumber();
+        }
+        companyService.delete(entity);
+        if (StringUtils.isBlank(phoneNumber)) {
+            return;
+        }
         User user = userDao.getByPhone(phoneNumber);
         if (ObjUtil.isNotNull(user)) {
             List<UserRole> userRoleList = user.getUserRoleList();
-            List<UserRole> collect = userRoleList.stream().filter(u -> u.getCompany().getId().equals(entity.getId())).collect(Collectors.toList());
-            if (!collect.isEmpty()) {
-                userRoleDao.delete(collect.get(0));
+            if (userRoleList != null) {
+                List<UserRole> collect = userRoleList.stream().filter(u -> u.getCompany() != null
+                        && u.getCompany().getId() != null
+                        && u.getCompany().getId().equals(entity.getId())).collect(Collectors.toList());
+                if (!collect.isEmpty()) {
+                    userRoleDao.delete(collect.get(0));
+                }
             }
             // H2: xoa phong kham chi danh co tenant cua phong kham bi xoa,
             // khong danh co tenant khac cua cung user quan tri.
