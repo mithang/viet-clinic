@@ -1647,7 +1647,7 @@ export default {
     //Tính tổng lượng và giá theo bán lẻ hay không
     GetWesternFee(index, row) {
       if (row) {
-        if (row.frequency && row.days) {
+        if (row.frequency && row.frequency.value && row.days && row.days.name) {
           row.singleDosage = row.singleDosage ? row.singleDosage : 0;
           if (row.isUnpackSell === "1") {
             row.total = Math.ceil(

@@ -7599,7 +7599,7 @@
                 rowElement.allFee = rowElement.allFee ? rowElement.allFee : 0;
                 rowElement.dosageUnitType = rowElement.dosageUnitType || 'dosis'; // Đơn vị liều lượng mặc định
 
-                if (rowElement.frequency && rowElement.days) {
+                if (rowElement.frequency && rowElement.frequency.value && rowElement.days && rowElement.days.name) {
                   // Tính tổng lượng (Đơn vị bào chế)
                   let calculatedTotalInPreparation;
                   if (rowElement.dosageUnitType === 'preparation') {
@@ -8102,7 +8102,7 @@
         }
       },
       calculateTotalByDays(row) {
-        if (!row.singleDosage || !row.frequency || !row.days) return;
+        if (!row.singleDosage || !row.frequency || !row.frequency.value || !row.days || !row.days.name) return;
 
         row.dosageUnitType = row.dosageUnitType || 'dosis';
 
