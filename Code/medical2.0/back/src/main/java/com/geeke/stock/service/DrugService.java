@@ -474,11 +474,13 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         if ("null".equals(id)) {
             id = null;
         }
-        String institution = null;
-        if (id != null) {
-            Company company = companyService.get(id);
-            institution = company.getParent().getId();
-        }
+        // DS165 B: truoc day lay institution qua companyService.get(id)
+        // .getParent().getId() — session he thong (tenant "0", khong co dong
+        // org_company) hoac company khong co parent -> get() null -> NPE 500
+        // o POST /stock/drug/inventory. Dung getInstitution(id) null-safe nhu
+        // CrudService.buildTenantPageRequest (DAO: parent NULL/0 -> chinh id;
+        // id la -> null); cung gia tri cho phong kham thuong (parent cua OWN).
+        String institution = companyService.getInstitution(id);
         PageRequest pageRequest = new PageRequest(parameters, orderby, id, institution);
         return dao.inventory(pageRequest);
     }
