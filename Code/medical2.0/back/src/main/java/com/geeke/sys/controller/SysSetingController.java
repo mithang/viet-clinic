@@ -3,6 +3,7 @@ package com.geeke.sys.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
+import com.geeke.common.service.ServiceException;
 import com.geeke.sys.entity.SysFile;
 import com.geeke.sys.entity.SysFileContent;
 import com.geeke.sys.entity.SysSeting;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
@@ -165,7 +167,16 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
         if (StringUtils.isNotBlank(modifiedSice)) {
             //Thu, 04 Feb 2021 07:02:25 GMT   chuyển hóaNgày
-            Date modifiedSiceDate = simpleDateFormat.parse(modifiedSice);
+            // DS157 A: header If-Modified-Since sai dinh dang (khong phai
+            // ngay RFC) truoc day ParseException -> 500 (method throws
+            // Exception, khong catch). Fail-closed 400 truoc moi ghi byte;
+            // header dung dinh dang giu hanh vi cu (304 khi khop).
+            Date modifiedSiceDate;
+            try {
+                modifiedSiceDate = simpleDateFormat.parse(modifiedSice);
+            } catch (ParseException e) {
+                throw new ServiceException("Header If-Modified-Since không hợp lệ: " + modifiedSice);
+            }
             SysFile sysFile = sysFileService.get(id);
             if (sysFile != null) {
                 Date updateDate = sysFile.getUpdateDate();
@@ -211,7 +222,14 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
         if (StringUtils.isNotBlank(modifiedSice)) {
             //Thu, 04 Feb 2021 07:02:25 GMT   chuyển hóaNgày
-            Date modifiedSiceDate = simpleDateFormat.parse(modifiedSice);
+            // DS157 A: nhu getFile ben tren — header sai dinh dang
+            // ParseException -> 500; fail-closed 400 truoc moi ghi byte.
+            Date modifiedSiceDate;
+            try {
+                modifiedSiceDate = simpleDateFormat.parse(modifiedSice);
+            } catch (ParseException e) {
+                throw new ServiceException("Header If-Modified-Since không hợp lệ: " + modifiedSice);
+            }
             SysFile sysFile = sysFileService.get(fileId);
             if (sysFile != null) {
                 Date updateDate = sysFile.getUpdateDate();
