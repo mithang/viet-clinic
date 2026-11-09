@@ -335,11 +335,18 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     @Transactional(readOnly = false)
     public void saveToll(TollEvt tollEvt,String type) {
+        // DS156 C: checkTollInfoRequired chi duoc goi tu save()/bulk*,
+        // chua bao gio goi tu saveToll; tollInfo/amountStatus null truoc
+        // day NPE -> 500 ngay o dong validateInventoryNotInProgress
+        // duoi (controller nhan @NotNull TollEvt nhung khong @Valid nen
+        // khong co validation nao 400 truoc). Goi guard o day, truoc
+        // moi deref/getAmountStatus().getValue(), fail-closed 400.
+        TollInfo tollInfo = tollEvt == null ? null : tollEvt.getTollInfo();
+        checkTollInfoRequired(tollInfo);
         Company company = SessionUtils.getUser().getCompany();
         String seltId="";//BHYTQuyết toánid thangphísaulưu vàoĐăng ký khámbảng
         //Đang tiến hành kiểm kê giờKhông thểtiến hành dòngThu phí/Hoàn phí
-        validateInventoryNotInProgress(company.getId(), tollEvt.getTollInfo().getAmountStatus().getValue());
-        TollInfo tollInfo = tollEvt.getTollInfo();
+        validateInventoryNotInProgress(company.getId(), tollInfo.getAmountStatus().getValue());
         // DS98: discount null unboxes to NPE at :232
         // (BigDecimal.valueOf(getDiscount())) AFTER the charge already
         // ran -- validate up front so a missing discount fails closed
