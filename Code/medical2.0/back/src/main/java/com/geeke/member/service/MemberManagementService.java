@@ -371,7 +371,18 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
 
                 //Tồn tạiChưasử dụngxong của Hội viênthẻ giờ, tiến hành dòngKiểm tra
                 boolean flage = false;
+                // DS161 A: the tro toi member_set_id ghost (NOT NULL nhung
+                // khong FK, nhu DS160 C) thi get() tra null; truoc day
+                // getId() tren null NPE 500 o :375, ca man hinh thu phi
+                // (getMember) vo theo vi 1 the hong. The ghost khong bao
+                // phu duoc gi (khong lay duoc danh sach hang muc) nen SKIP
+                // the do (continue), nhu DS154 A1 skip orphaned details --
+                // day la READ/coverage query, khong phai payload sai nen
+                // khong 400.
                 MemberSet memberSet = memberSetService.get(memberManagement.getMemberSet().getId());
+                if (memberSet == null) {
+                    continue;
+                }
                 //Lấytrải nghiệmthẻChi tiết
                 List<MemberItem> memberItems = memberItemService.getByMemberSetId(memberSet.getId());
                 for (MemberItem memberItem : memberItems) {
