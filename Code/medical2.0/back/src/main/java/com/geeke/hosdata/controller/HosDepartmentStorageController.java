@@ -174,6 +174,19 @@ public class HosDepartmentStorageController extends BaseController {
             if (factor > 1 && (drug.getPreparation() == null || !drug.getPreparation().contains("."))) {
                 throw new ServiceException("Quy cách của thuốc mã " + hisItem.getYpdm() + " không có dạng số thập phân nên không đổi được đơn vị chuẩn");
             }
+            // DS155: tien to truoc '.' cua preparation phai la so nguyen —
+            // "Hộp 10.5 viên" (tien to "Hộp 10") / ".5g" (tien to rong)
+            // lam Integer.parseInt o duoi nem NumberFormatException 500
+            // giua vong lap; kiem chung truoc moi ghi, fail-closed 400
+            // ke ten ma thuoc va quy cach. Duong hop le khong doi.
+            int packSize = 0;
+            if (factor > 1) {
+                try {
+                    packSize = Integer.parseInt(drug.getPreparation().substring(0, drug.getPreparation().indexOf(".")));
+                } catch (NumberFormatException e) {
+                    throw new ServiceException("Quy cách của thuốc mã " + hisItem.getYpdm() + " không hợp lệ: " + drug.getPreparation());
+                }
+            }
             SupplierStock supplierStock = new SupplierStock();
             //sinhsảnLô
             supplierStock.setBatchNo(hisDrugsStorages.get(i).getPc());
@@ -186,7 +199,7 @@ public class HosDepartmentStorageController extends BaseController {
             //Kiểm tra số lượng theo bản viện là đơn vị nhỏ nhất hay đơn vị chuẩn
             if(factor > 1){
                 //tiêu chuẩnĐơn vị
-                supplierStock.setNumber(hisDrugsStorages.get(i).getSl() * Integer.parseInt( (drug.getPreparation().substring(0,drug.getPreparation().indexOf(".")))));
+                supplierStock.setNumber(hisDrugsStorages.get(i).getSl() * packSize);
                 supplierStock.setLeastBid(hisDrugsStorages.get(i).getPfj().divide(new BigDecimal(factor),2,BigDecimal.ROUND_HALF_UP));
             }else {
                 supplierStock.setNumber(hisDrugsStorages.get(i).getSl());
