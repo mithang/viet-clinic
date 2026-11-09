@@ -608,6 +608,15 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
         for (RecipelDetail recipelDetail:recipelDetailList)
         {
+            // DS159 C: chi tiet khong co thuoc/vat tu (drugStuffId null)
+            // truoc day NPE 500 o getDrugStuffId() ben duoi. Nhanh else
+            // phia duoi da skip cac id khong resolve duoc thuoc/vat tu
+            // ("chi thuoc, vat tu moi kiem soat ton kho") -- null id
+            // cung la dong khong kiem soat ton kho, skip giong vay.
+            if (recipelDetail.getDrugStuffId() == null
+                    || StringUtils.isBlank(recipelDetail.getDrugStuffId().getDrugStuffId())) {
+                continue;
+            }
             String drugStuffId = recipelDetail.getDrugStuffId().getDrugStuffId();
             BigDecimal calculationBigDecimal = BigDecimal.ZERO;                       //dùng đểTính, nhấtsau và  totalBigDecimal làmso vớisotiến hành dòngkiểm soát
             

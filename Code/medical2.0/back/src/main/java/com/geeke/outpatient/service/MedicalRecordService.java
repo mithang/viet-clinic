@@ -977,6 +977,17 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 this.save(medicalRecord);
             }
 
+            // DS159 C: INSTANT/RETAIL tao registration moi voi id moi
+            // (setId(null) truoc save) trong khi receptionEvt.id van la
+            // uuid placeholder khi caller khong gui id (:870) -- luu
+            // thong tin don thuoc nhan uuid -> get() null -> NPE 500
+            // o :1129 (registration.getSource()). Dong bo id ve
+            // registration vua luu truoc khi luu don thuoc.
+            if (registration != null
+                    && org.springframework.util.StringUtils.hasText(registration.getId())) {
+                receptionEvt.setId(registration.getId());
+            }
+
             //Lưu thông tin đơn thuốc
             this.saveRecipelInfoEvt(receptionEvt.getRecipelInfoEvtList(), receptionEvt.getId());
         }
@@ -996,13 +1007,33 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
 
 
         Registration registration = this.registrationService.get(registrationId);
+        // DS159 C: registrationId lạ (vd: INSTANT gui uuid placeholder)
+        // truoc day get() null -> NPE 500 o deref dau tien (:1129
+        // getSource()). Fail-closed 400, mau DS88 o saveRecipelInfoEvtTo.
+        if (registration == null) {
+            throw new ServiceException("Không tìm thấy lượt khám của đơn thuốc");
+        }
         for (int i = 0; i < recipelInfoEvtList.size(); i++) {
             RecipelInfoEvt recipelInfoEvt = recipelInfoEvtList.get(i);
             RecipelInfo recipelInfo = recipelInfoEvt.getRecipelInfo();
-            if (ObjectUtil.isNull(recipelInfo.getChronicDisease()) || !StrUtil.equals(BizConstants.RECIPEL_TYPE_WESTERN,recipelInfo.getRecipelType().getValue())) {
+            // DS159 C: evt khong co don thuoc truoc day NPE 500 o
+            // getChronicDisease() ben duoi. Fail-closed 400.
+            if (recipelInfo == null) {
+                throw new ServiceException("Đơn thuốc không được để trống");
+            }
+            // DS159 C: recipelType null (cot DB nullable, dong legacy co
+            // null) truoc day NPE 500 o getRecipelType().getValue().
+            // Null type duoc xu nhu khong phai tay y -- giong nhanh
+            // khong-phai-western hien co (chi western giu
+            // chronicDisease/isPre), khong 400 vi he thong tu tao don
+            // khong co loai (vd: fixture DS110 ...247).
+            boolean isWestern = recipelInfo.getRecipelType() != null
+                    && StrUtil.equals(BizConstants.RECIPEL_TYPE_WESTERN,
+                            recipelInfo.getRecipelType().getValue());
+            if (ObjectUtil.isNull(recipelInfo.getChronicDisease()) || !isWestern) {
                 recipelInfo.setChronicDisease(Boolean.FALSE);
             }
-            if (ObjectUtil.isNull(recipelInfo.getChronicDisease()) || !StrUtil.equals(BizConstants.RECIPEL_TYPE_WESTERN,recipelInfo.getRecipelType().getValue())) {
+            if (ObjectUtil.isNull(recipelInfo.getChronicDisease()) || !isWestern) {
                 recipelInfo.setIsPre(Boolean.FALSE);
             }
             // DS59: K3-class gap on the v2 path — FinishVisit sends no
