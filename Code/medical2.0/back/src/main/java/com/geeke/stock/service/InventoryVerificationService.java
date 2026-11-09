@@ -308,6 +308,17 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             //Thuốctiến hành dòngTồn khotăngtrừ
             List<InventoryVerificationDetail> list = inventoryVerificationDetailService.getByInfoId(inventoryVerification.getId());
             for (InventoryVerificationDetail inventoryVerificationDetail : list) {
+                // DS167 A: detail khong co dong ton kho chi tiet
+                // (medicinal_storage_id NULL/ma) thi IFNULL(msc.id,'')=''
+                // va eq("id","") bi Common.whereParams bo qua -> listAll
+                // tra TOAN BO aggregate -> adjustStock danh nham dong khac
+                // (probe: +5 vao aggregate cua thuoc khong lien quan).
+                // Fail-closed 400 thay vi dieu chinh nham; transaction
+                // rollback nen phieu van o '0'.
+                if (inventoryVerificationDetail.getMedicinalStorageControl() == null
+                        || StringUtils.isBlank(inventoryVerificationDetail.getMedicinalStorageControl().getId())) {
+                    throw new ServiceException("Dòng chi tiết kiểm kê thiếu dữ liệu tồn kho chi tiết");
+                }
                 List<Parameter> parameters = SearchParamsBuilder.create()
                         .eq("id", inventoryVerificationDetail.getMedicinalStorageControl().getId())
                         .build();
@@ -321,6 +332,13 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
             //Vật tưtiến hành dòngTồn khotăngtrừ
             List<InventoryVerificationDetail> list = inventoryVerificationDetailService.getByInfoId(inventoryVerification.getId());
             for (InventoryVerificationDetail inventoryVerificationDetail : list) {
+                // DS167 A: nhu nhanh thuoc o tren -- detail khong co dong
+                // ton kho chi tiet thi fail-closed 400 thay vi danh nham
+                // aggregate dau tien theo create_date.
+                if (inventoryVerificationDetail.getMedicinalStorageControl() == null
+                        || StringUtils.isBlank(inventoryVerificationDetail.getMedicinalStorageControl().getId())) {
+                    throw new ServiceException("Dòng chi tiết kiểm kê thiếu dữ liệu tồn kho chi tiết");
+                }
                 List<Parameter> parameters = SearchParamsBuilder.create()
                         .eq("id", inventoryVerificationDetail.getMedicinalStorageControl().getId())
                         .build();
