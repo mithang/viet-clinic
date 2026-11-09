@@ -126,14 +126,21 @@ public class ChronicDiseaseEvt implements Serializable {
 
 	private void buildRecipelDetail(List<RecipelDetail> detailList) {
 		if (CollUtil.isNotEmpty(detailList)) {
+			// DS169: is_extra / all_fee deu nullable (cot DEFAULT NULL;
+			// live 44 dong is_extra NULL, 1 dong all_fee NULL). Ban cu
+			// unbox `getIsExtra()==1/0` va `BigDecimal::add(null)` ->
+			// NPE 500 ca trang in don benh man tinh (probe A1/A2).
+			// Dong is_extra NULL coi nhu khong phai phi phu them (nhu 0);
+			// all_fee NULL coi nhu 0 — chi anh huong tong in, khong doi
+			// du lieu goc.
 			BigDecimal injectionFeeSum = detailList.stream()
-					.filter(detail -> detail.getIsExtra() == 1)
-					.map(RecipelDetail::getAllFee)
+					.filter(detail -> Integer.valueOf(1).equals(detail.getIsExtra()))
+					.map(detail -> detail.getAllFee() == null ? BigDecimal.ZERO : detail.getAllFee())
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
 			this.injectionFee = "Phí phụ thêm: ￥" + injectionFeeSum;
 			BigDecimal amountSum = detailList.stream()
-					.filter(detail -> detail.getIsExtra() == 0)
-					.map(RecipelDetail::getAllFee)
+					.filter(detail -> Integer.valueOf(0).equals(detail.getIsExtra()))
+					.map(detail -> detail.getAllFee() == null ? BigDecimal.ZERO : detail.getAllFee())
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
 			this.amount = "Số tiền thuốc: ￥" + amountSum;
 		}else {
@@ -143,7 +150,10 @@ public class ChronicDiseaseEvt implements Serializable {
 	}
 
 	private void buildRecipelInfo(RecipelInfo recipelInfo) {
-		this.smallType = recipelInfo.getChronicDisease() ? "Đơn thuốc bệnh mạn tính" : "thông thường Đơn thuốc";
+		// DS169: chronic_disease nullable (47 dong live NULL; cot
+		// DEFAULT 0 nhung dong cu co the NULL tuong minh) — ternary
+		// unbox NPE 500 khi in. NULL coi nhu khong phai benh man tinh.
+		this.smallType = Boolean.TRUE.equals(recipelInfo.getChronicDisease()) ? "Đơn thuốc bệnh mạn tính" : "thông thường Đơn thuốc";
 		this.doctorAdvice = "Ghi chú: " + (StrUtil.isBlank(recipelInfo.getEntrust()) ? "" : recipelInfo.getEntrust());
 	}
 
