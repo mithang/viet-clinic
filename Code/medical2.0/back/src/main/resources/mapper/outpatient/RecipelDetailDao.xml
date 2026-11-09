@@ -546,14 +546,14 @@
         WHERE a.recipel_info_id = #{id}
     </select>
 
-    <!-- DS110 RD4: sum(executions) la NULL khi chua co dong nao duoc thuc
-         hien (executions NULL) -> NULL - sum(total) = NULL -> MyBatis
-         khong map NULL sang int primitive -> BindingException 500 o
-         CureManagementController.save NGAY SAU khi updateById da commit
-         xong (flag 1,1 + treatment_date da ghi). COALESCE ca hai ve
-         0: chua thuc hien dong nao -> am (= -total, "chưa hoàn thành",
-         dung ngu nghia ghi trong service); don khong co detail nao ->
-         0-0=0, giu ngu nghia vacuous-complete nhu updateById. -->
+    <!-- DS110 RD4: sum(executions) là NULL khi chưa có dòng nào được thực
+         hiện (executions NULL) -> NULL - sum(total) = NULL -> MyBatis
+         không map NULL sang int primitive -> BindingException 500 ở
+         CureManagementController.save NGÀY SAU khi updateById đã commit
+         xong (flag 1,1 + treatment_date đã ghi). COALESCE cả hai vế
+         0: chưa thực hiện dòng nào -> âm (= -total, "chưa hoàn thành",
+         đúng ngữ nghĩa ghi trong service); đơn không có detail nào ->
+         0-0=0, giữ ngữ nghĩa vacuous-complete như updateById. -->
     <select id="schedule" parameterType="java.lang.String"
             resultType="int">
         SELECT
