@@ -61,9 +61,21 @@ public class MemberManagementController extends CrudController<MemberManagementS
         if (entity == null) {
             return ResponseEntity.ok(ResultUtil.successJson(entity));
         }
-        MemberSet memberSet = memberSetService.get(entity.getMemberSet().getId());
-        List<MemberItem> byMemberSetId = memberItemService.getByMemberSetId(memberSet.getId());
-        memberSet.setMemberItem(byMemberSetId);
+        // DS160 C: set da xoa (member_set_id tro toi id khong ton tai) thi
+        // get() tra null; truoc day getId() tren null NPE 500 o :66, ca
+        // form the vo theo. Day la loi DOC (the van co that: benh nhan,
+        // so the, trang thai) nen tra 200 voi memberSet null + chi tiet
+        // van load nhu cu (tien le DS42 ghost id -> 200 data null, U2
+        // placeholder khi doc gap du lieu hong) thay vi 400 chan ca form.
+        MemberSet memberSet = null;
+        if (entity.getMemberSet() != null
+                && StringUtils.isNotBlank(entity.getMemberSet().getId())) {
+            memberSet = memberSetService.get(entity.getMemberSet().getId());
+        }
+        if (memberSet != null) {
+            List<MemberItem> byMemberSetId = memberItemService.getByMemberSetId(memberSet.getId());
+            memberSet.setMemberItem(byMemberSetId);
+        }
         entity.setMemberSet(memberSet);
         //TheoQuản lýidLấyChi tiếtid
         List<MemberManagementDetail> memberManagementDetails = memberManagementDetailService.getByManagementId(id);
