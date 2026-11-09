@@ -255,6 +255,17 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             //độngTồn khogiải phóngthao tác
             this.medicinalStorageControlService.cancelOccupy(recipelInfo);
 
+            // DS167 B: don thuoc khong co dang ky (registration_id NULL)
+            // thi getRegistration() null -> getId() NPE 500 o
+            // getByMedicalId duoi day (probe: log RecipelInfoService:259).
+            // Don mo coi van huy duoc (claim + save + giai phong occupy o
+            // tren); chi bo qua buoc cap nhat trang thai don cua dang ky
+            // vi khong co dang ky de cap nhat.
+            if (recipelInfo.getRegistration() == null
+                    || StringUtils.isBlank(recipelInfo.getRegistration().getId())) {
+                return 1;
+            }
+
             //Theoca bệnhidLấytất cả của Đơn thuốcThông tin
             List<RecipelInfo> byMedicalId = recipelInfoDao.getByMedicalId(recipelInfo.getRegistration().getId());
             int recipelInfoLength=byMedicalId.size();
