@@ -231,27 +231,57 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
     @Transactional(readOnly = false)
     public void saves(StorageEvt storageEvt) {
+        // DS166 A: fail-closed 400 truoc moi doc/ghi. Truoc day:
+        // - storageEvt/list null -> NPE 500 o vong for (A7).
+        // - entity.getCompany() null -> NPE 500 (A3).
+        // - entity.getDrug().getId() NPE khi drug null (A2) — phep kiem
+        //   `drugID != null` ben duoi chay SAU deref nen vo dung; cung
+        //   vay entity.getStuff().getId() khi stuff null.
+        // - drugService.get(ghost) -> null roi drugTemp.getCompany()
+        //   NPE 500 (A1); tuong tu stuff ghost (A4).
+        // Dong phai chi ro thuoc hoac vat tu (id khong rong); id la ma
+        // khong ton tai -> 400, khong NPE. Luong hop le khong doi:
+        // drug/stuff co id rong duoc coi nhu khong co (nhu cu), chi khi
+        // ca hai deu rong moi 400; drugTemp.getCompany() doi sang
+        // company cua dong truoc khi initStockTo nhu cu (M4).
+        if (storageEvt == null || storageEvt.getSupplierStockList() == null) {
+            throw new ServiceException("Danh sách nhập kho không được để trống");
+        }
         // Thêm mớiThuốc hoặc Vật tưTồn kho giờ, Nếu là khởi tạo tồn kho thì khởi tạo trước dữ liệu bản ghi kiểm soát tổng tồn kho
         for (SupplierStock entity : storageEvt.getSupplierStockList()) {
+            if (entity == null) {
+                throw new ServiceException("Dòng nhập kho không được để trống");
+            }
+            if (entity.getCompany() == null || StringUtils.isBlank(entity.getCompany().getId())) {
+                throw new ServiceException("Dòng nhập kho chưa xác định được phòng khám");
+            }
             String companyID = entity.getCompany().getId();
-            String drugID = entity.getDrug().getId();
-            // String drug_stuff_ID = drugID != null ? drugID : stuffID;
+            String drugID = entity.getDrug() == null ? null : entity.getDrug().getId();
+            String stuffID = entity.getStuff() == null ? null : entity.getStuff().getId();
+            if (StringUtils.isBlank(drugID) && StringUtils.isBlank(stuffID)) {
+                throw new ServiceException("Dòng nhập kho phải chọn thuốc hoặc vật tư");
+            }
 
-            if (null != drugID) {
+            if (StringUtils.isNotBlank(drugID)) {
                 List<MedicinalStockControl> inventory = medicinalStockControlDao.inventory(companyID, drugID);
                 if (inventory.isEmpty()) {
                     Drug drugTemp = drugService.get(drugID);
+                    if (drugTemp == null || drugTemp.getCompany() == null) {
+                        throw new ServiceException("Thuốc nhập kho không tồn tại: " + drugID);
+                    }
                     drugTemp.getCompany().setId(companyID);
                     this.medicinalStockControlService.initStockTo(drugTemp);
                 }
             }
-            String stuffID = entity.getStuff().getId();
-            if (null != stuffID) {
+            if (StringUtils.isNotBlank(stuffID)) {
                 List<MedicinalStockControl> inventory = medicinalStockControlDao.inventory(companyID, stuffID);
                 if (inventory.isEmpty()) {
-                    Stuff drugTemp = stuffService.get(stuffID);
-                    drugTemp.getCompany().setId(companyID);
-                    this.medicinalStockControlService.initStockTo(drugTemp);
+                    Stuff stuffTemp = stuffService.get(stuffID);
+                    if (stuffTemp == null || stuffTemp.getCompany() == null) {
+                        throw new ServiceException("Vật tư nhập kho không tồn tại: " + stuffID);
+                    }
+                    stuffTemp.getCompany().setId(companyID);
+                    this.medicinalStockControlService.initStockTo(stuffTemp);
                 }
             }
         }
@@ -260,6 +290,12 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
     //thônphiếu nhập kho và Tồn kho
     @Transactional(readOnly = false)
     public void savesTo(StorageEvt storageEvt) {
+        // DS166 A: fail-closed 400 khi event/phieu null (truoc day NPE
+        // 500 o getSupplierStorage().setInitial; phieu id la da 400 nho
+        // guard DS122 B cua SupplierStorageService.save).
+        if (storageEvt == null || storageEvt.getSupplierStorage() == null) {
+            throw new ServiceException("Phiếu nhập kho không được để trống");
+        }
         //trướcLưuphiếu nhập kho
         SupplierStorage supplierStorage = storageEvt.getSupplierStorage();
         supplierStorage.setInitial(supplierStorage.getNumber());
@@ -535,6 +571,10 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
      */
     @Transactional
     public void savesToAudit(StorageEvt storageEvt) {
+        // DS166 A: nhu savesTo — event/phieu null -> 400 thay vi NPE 500.
+        if (storageEvt == null || storageEvt.getSupplierStorage() == null) {
+            throw new ServiceException("Phiếu nhập kho không được để trống");
+        }
         //trướcLưuphiếu nhập kho
         SupplierStorage supplierStorage = storageEvt.getSupplierStorage();
         supplierStorage.setInitial(supplierStorage.getNumber());
