@@ -492,6 +492,12 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     public Page<Registration> getRegistrationByOpenId(List<Parameter> parameters, int offset, int limit, String orderby) {
         PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
         List<Parameter> params = pageRequest.getParams();
+        // DS154 C1/C2: caller gui < 2 params -> params.get(1)
+        // IndexOutOfBounds 500 (service doc params[0]=companyId,
+        // params[1]=openId theo vi tri). Fail-closed 400 truoc moi doc.
+        if (params == null || params.size() < 2) {
+            throw new ServiceException("Thiếu tham số truy vấn đăng ký (company_id, open_id)");
+        }
         String openId = (String) params.get(1).getValue();
         String companyId = (String) params.get(0).getValue();
 
