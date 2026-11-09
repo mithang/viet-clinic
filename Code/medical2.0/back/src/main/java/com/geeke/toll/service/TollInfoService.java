@@ -482,6 +482,12 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     //hạng mục khám chữa bệnhtiến hành dòngphí phụ thêmVật tưkhấu trừ
     private void deduction(RecipelInfo recipelInfo) {
+        // DS171 C: don dieu tri co registration_id NULL (dong luu) ->
+        // getRegistration() null, getId() NPE 500 giua thu phi (probe
+        // C1). Fail-closed 400 nhu DS171 A/B; giao dich rollback.
+        if (recipelInfo.getRegistration() == null) {
+            throw new ServiceException("Không tìm thấy lượt đăng ký khám");
+        }
         medicinalStorageControlService.okOccupyStock(recipelInfo.getRegistration().getId(),recipelInfo.getId());
     }
 
