@@ -218,10 +218,9 @@
           </el-col>
         </el-row>
         <el-row>
-
-          <!-- <el-col :span="24 / 2">
+          <el-col :span="24 / 2">
             <el-form-item label="Tỉnh/Thành phố" prop="province">
-               <el-select
+              <el-select
                 :disabled="dialogProps.action === 'view'"
                 v-model="bizFormModel.province"
                 value-key="value"
@@ -232,7 +231,7 @@
                   bizFormModel.province = '';
                   bizFormModel.city= '';
                   bizFormModel.area= '';
-
+                  area_List = [];
                 "
                 @change="changeProvince"
               >
@@ -244,40 +243,9 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col> -->
-        </el-row>
-        <el-row>
-
-          <!-- <el-form-item label="Thành phố" prop="city">
-            <el-select
-              :disabled="dialogProps.action === 'view'"
-              v-model="bizFormModel.city"
-              :maxlength="45"
-              value-key="value"
-              filterable
-              clearable
-              :placeholder="dialogProps.action === 'view' ? '' : 'Chọn quận/huyện'"
-              @clear="
-                bizFormModel.city= '';
-                bizFormModel.area= '';
-              "
-              @change="changeCity"
-            >
-              <el-option
-                v-for="city in city_List"
-                :key="city.id"
-                :label="city.name"
-                :value="city.id"
-              ></el-option>
-            </el-select>
-          </el-form-item> -->
-          <el-form-item label='Khu vực' prop=''>
-            <v-distpicker :disabled='dialogProps.action === "view"' :province="province" :city="city" :area="area"
-                          @province="onChangeProvince" @city="onChangeCity" @area="onChangeArea"></v-distpicker>
-          </el-form-item>
-
-          <!-- <el-col :span="24 / 2">
-            <el-form-item label="Quận/Huyện" prop="area">
+          </el-col>
+          <el-col :span="24 / 2">
+            <el-form-item label="Xã/Phường" prop="area">
               <el-select
                 :disabled="dialogProps.action === 'view'"
                 :maxlength="45"
@@ -298,7 +266,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col> -->
+          </el-col>
         </el-row>
         <el-row>
           <el-col :span="24 / 2">
@@ -432,24 +400,18 @@ import {listAdministrativeDivisionAll} from "@/api/org/administrativeDivision";
 import {savePatient, lookupDuplicates, getPatientById} from "@/api/outpatient/patient";
 import BaseUI from "@/views/components/baseUI";
 import OperationIcon from "@/components/OperationIcon";
-import VDistpicker from 'v-distpicker'
 
 export default {
   extends: BaseUI,
   name: "patient-form",
   components: {
-    OperationIcon,
-    VDistpicker
+    OperationIcon
   },
   data() {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: "1",
       gender_List: [], // Giới tính
-      //Liên kết ba cấp tỉnh/thành phố/quận/huyện
-      province: '',
-      city: '',
-      area: '',
       flag: false,//Ngăn gửi trùng lặp
       duplicateMatches: [],
       duplicateChecking: false,
@@ -486,8 +448,7 @@ export default {
         guardianPhone: [{required: false, message: "Vui lòng nhập số điện thoại người giám hộ", trigger: "change"},]
       },
       province_List: [], // Tỉnh/Thành phố
-      city_List: [], //Thành phố
-      area_List: [] //Quận/Huyện
+      area_List: [] // Xã/Phường (level 2)
     };
   },
   props: {
@@ -563,7 +524,15 @@ export default {
       if (!this.bizFormModel.province) return;
       this.bizFormModel.city = '';
       this.bizFormModel.area = '';
-      this.area_List = [];
+      this.loadAreaList();
+    },
+    // Nạp xã/phường (level 2) của tỉnh đã chọn — hệ 2 cấp từ 01/07/2025
+    // (huyện đã bãi bỏ, không còn level 3).
+    loadAreaList() {
+      if (!this.bizFormModel.province) {
+        this.area_List = [];
+        return;
+      }
       let division_search = {
         params: [
           {
@@ -575,29 +544,6 @@ export default {
             columnName: "level",
             queryType: "=",
             value: "2",
-          }
-        ],
-      };
-
-      listAdministrativeDivisionAll(division_search).then((responseData) => {
-        this.city_List = responseData.data;
-      });
-    },
-    changeCity() {
-      if (!this.bizFormModel.city) return;
-
-      this.bizFormModel.area = '';
-      let division_search = {
-        params: [
-          {
-            columnName: "parten_id",
-            queryType: "=",
-            value: this.bizFormModel.city,
-          },
-          {
-            columnName: "level",
-            queryType: "=",
-            value: "3",
           }
         ],
       };
@@ -711,9 +657,7 @@ export default {
           this.duplicateAppliedKey = this.duplicateLookupKey();
           this.duplicateMatches = [];
           this.bizFormModel = {...this.initFormModel(), ...responseData.data};
-          this.province = this.bizFormModel.province;
-          this.city = this.bizFormModel.city;
-          this.area = this.bizFormModel.area;
+          this.loadAreaList();
         }
       }).catch(() => {
         this.outputError({ message: "Không nạp được hồ sơ bệnh nhân đã chọn" });
@@ -774,9 +718,9 @@ export default {
       }
 
       this.setLoad()
-      this.bizFormModel.province = this.province
-      this.bizFormModel.city = this.city
-      this.bizFormModel.area = this.area
+      // Hệ 2 cấp: tỉnh + xã lưu thẳng mã vào bizFormModel qua el-select;
+      // city không còn cấp huyện — xóa tên quận/huyện Trung Quốc cũ còn sót.
+      this.bizFormModel.city = ''
       // this.bizFormModel.id=""
       savePatient(this.bizFormModel).then(responseData => {
         this.flag = false
@@ -801,6 +745,7 @@ export default {
       this.dialogProps.action = "edit";
       this.dialogProps.title = "Sửa thông tin bệnh nhân";
       this.initOptions(this.bizFormModel);
+      this.loadAreaList();
     },
     onDialogClose() {
       this.dialogProps.visible = false;
@@ -868,21 +813,6 @@ export default {
         this.withPatientNexus_List = data;
       })
     },
-    // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện
-    onChangeProvince(data) {
-      this.province = data.value
-
-    },
-    onChangeCity(data) {
-
-      this.city = data.value
-
-    },
-    onChangeArea(data) {
-
-      this.area = data.value
-
-    },
     openViewPatientDialog(patient) {
       this.resetDuplicates()
       this.dialogProps.action = 'view'
@@ -891,9 +821,7 @@ export default {
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
       this.dialogProps.visible = true
-      this.province = this.bizFormModel.province
-      this.city = this.bizFormModel.city
-      this.area = this.bizFormModel.area
+      this.loadAreaList()
     },
     openEditPatientDialog(patient) {
       this.resetDuplicates()
@@ -906,9 +834,7 @@ export default {
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
       this.dialogProps.visible = true
-      this.province = this.bizFormModel.province
-      this.city = this.bizFormModel.city
-      this.area = this.bizFormModel.area
+      this.loadAreaList()
     },
     openAddPatientDialog() {
       this.resetDuplicates()
@@ -918,9 +844,6 @@ export default {
       this.initOptions(this.bizFormModel)
       this.tabIndex = '1'
       this.dialogProps.visible = true
-      this.province = ''
-      this.city = ''
-      this.area = ''
     },
     openCopyPatientDialog(patient) {
       this.resetDuplicates()
@@ -928,6 +851,7 @@ export default {
       this.dialogProps.title = 'Thêm thông tin bệnh nhân'
       this.bizFormModel = {...this.initFormModel(this.user), ...patient}
       this.initOptions(this.bizFormModel)
+      this.loadAreaList()
       this.tabIndex = '1'
       this.bizFormModel.id = null
       this.dialogProps.visible = true
@@ -948,13 +872,3 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-.distpicker-address-wrapper {
-  select {
-    padding: 0px 10px !important;
-    height: 30px !important;
-    font-size: 15px !important;
-    line-height: 30px !important;
-  }
-}
-</style>
