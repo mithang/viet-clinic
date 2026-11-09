@@ -68,9 +68,16 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             SupplierOutbound old = this.get(outboundEvt.getSupplierOutbound().getId());
             if (old == null)
                 throw new ServiceException("Phiếu xuất kho không tồn tại");
-            if (old.getStatus() == 2)
+            // DS169: status nullable (cot DEFAULT NULL; generic /save chi
+            // @NotNull supplier nen tao duoc phieu status NULL, probe B0).
+            // Ban cu unbox `old.getStatus()==2/3` -> NPE 500. Theo quy
+            // uoc delete/bulkDelete (DS40: status null -> 400), phieu
+            // chua co trang thai thi fail-closed 400 thay vi sua.
+            if (old.getStatus() == null)
+                throw new ServiceException("Phiếu xuất kho chưa có trạng thái, không thể sửa");
+            if (Integer.valueOf(2).equals(old.getStatus()))
                 throw new ServiceException("Xuất kho đơn Đã xét duyệt, Không thể Sửa");
-            if (old.getStatus() == 3)
+            if (Integer.valueOf(3).equals(old.getStatus()))
                 throw new ServiceException("Xuất kho đơn Đã hủy, Không thể Sửa");
         }
 
@@ -177,9 +184,12 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         SupplierOutbound supplierOutbound = this.get(id);
         if (supplierOutbound == null)
             throw new ServiceException("Phiếu xuất kho không tồn tại");
-        if (supplierOutbound.getStatus() == 3)
+        // DS169: nhu save() — status NULL fail-closed 400 (xem ghi chu o save()).
+        if (supplierOutbound.getStatus() == null)
+            throw new ServiceException("Phiếu xuất kho chưa có trạng thái, không thể hủy");
+        if (Integer.valueOf(3).equals(supplierOutbound.getStatus()))
             throw new ServiceException("Xuất kho đơn Đã hủy, Không thể trùng lặp thao tác");
-        if (supplierOutbound.getStatus() == 2)
+        if (Integer.valueOf(2).equals(supplierOutbound.getStatus()))
             throw new ServiceException("Xuất kho đơn Đã xét duyệt, Không thể hủy");
         supplierOutbound.setStatus(3);
         //super.save(supplierOutbound);
@@ -193,10 +203,12 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         int claimed = supplierOutboundDao.cancel(supplierOutbound);
         if (claimed != 1) {
             SupplierOutbound fresh = this.get(id);
-            if (fresh != null && fresh.getStatus() == 3) {
+            // DS169: fresh co the status NULL (phieu tao qua generic
+            // /save) — so sanh null-safe, khong unbox.
+            if (fresh != null && Integer.valueOf(3).equals(fresh.getStatus())) {
                 throw new ServiceException("Xuất kho đơn Đã hủy, Không thể trùng lặp thao tác");
             }
-            if (fresh != null && fresh.getStatus() == 2) {
+            if (fresh != null && Integer.valueOf(2).equals(fresh.getStatus())) {
                 throw new ServiceException("Xuất kho đơn Đã xét duyệt, Không thể hủy");
             }
             throw new ServiceException("Xuất kho đơn Đã hủy, Không thể trùng lặp thao tác");
@@ -217,9 +229,12 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         SupplierOutbound supplierOutbound = this.get(id);
         if (supplierOutbound == null)
             throw new ServiceException("Phiếu xuất kho không tồn tại");
-        if (supplierOutbound.getStatus() == 3)
+        // DS169: nhu save() — status NULL fail-closed 400 (xem ghi chu o save()).
+        if (supplierOutbound.getStatus() == null)
+            throw new ServiceException("Phiếu xuất kho chưa có trạng thái, không thể xét duyệt");
+        if (Integer.valueOf(3).equals(supplierOutbound.getStatus()))
             throw new ServiceException("Xuất kho đơn Đã hủy bỏ, Không thể xét duyệt");
-        if (supplierOutbound.getStatus() == 2)
+        if (Integer.valueOf(2).equals(supplierOutbound.getStatus()))
             throw new ServiceException("Xuất kho đơn Không thể trùng lặp xét duyệt");
 
         // DS34: atomically claim the slip for examining BEFORE any stock
@@ -234,10 +249,11 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         int claimed = supplierOutboundDao.claimExamine(id, 2);
         if (claimed != 1) {
             SupplierOutbound fresh = this.get(id);
-            if (fresh != null && fresh.getStatus() == 3) {
+            // DS169: nhu cancel() — so sanh status null-safe.
+            if (fresh != null && Integer.valueOf(3).equals(fresh.getStatus())) {
                 throw new ServiceException("Xuất kho đơn Đã hủy bỏ, Không thể xét duyệt");
             }
-            if (fresh != null && fresh.getStatus() == 2) {
+            if (fresh != null && Integer.valueOf(2).equals(fresh.getStatus())) {
                 throw new ServiceException("Xuất kho đơn Không thể trùng lặp xét duyệt");
             }
             throw new ServiceException("Xuất kho đơn Không thể trùng lặp xét duyệt");
