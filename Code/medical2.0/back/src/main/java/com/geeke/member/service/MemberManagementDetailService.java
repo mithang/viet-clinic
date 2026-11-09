@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -129,14 +130,36 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
     @Transactional(readOnly = false)
     public List<MemberManagementDetail> getByManagementId(String managementId) {
         List<MemberManagementDetail> memberManagementDetails = this.dao.getByManagementId(managementId);
+        // DS154 A1: MemberSetService.save (update) hard-deletes ALL items of
+        // the set (deleteByMemberSet) and re-inserts new ones with fresh ids,
+        // so cards issued from the set keep details pointing at the OLD item
+        // ids. get() then returns null and memberItem.getCostItem() NPEd 500
+        // on GET /member/memberManagement/{card}. Skip orphaned detail rows
+        // instead (same filter as RecipetemplateDetailService.
+        // getByRecipeTemplateInfoId, which drops details whose drug is gone);
+        // a fully-orphaned card reads with an empty detail list, and
+        // getMember treats it as not covering (count 0 == size 0 -> skip).
+        List<MemberManagementDetail> live = new ArrayList<>();
         for (MemberManagementDetail memberManagementDetail : memberManagementDetails) {
+            if (memberManagementDetail.getMemberItem() == null
+                    || StringUtils.isBlank(memberManagementDetail.getMemberItem().getId())) {
+                continue;
+            }
             MemberItem memberItem = memberItemService.get(memberManagementDetail.getMemberItem().getId());
+            if (memberItem == null) {
+                continue;
+            }
             //TheoChi tiết thẻ hội viênLấyhạng mụcnội dung
-            CostItem costItem = costItemService.get(memberItem.getCostItem().getId());
+            CostItem costItem = null;
+            if (memberItem.getCostItem() != null
+                    && StringUtils.isNotBlank(memberItem.getCostItem().getId())) {
+                costItem = costItemService.get(memberItem.getCostItem().getId());
+            }
             memberItem.setCostItem(costItem);
             memberManagementDetail.setMemberItem(memberItem);
+            live.add(memberManagementDetail);
         }
-        return memberManagementDetails;
+        return live;
     }
 
 

@@ -327,6 +327,18 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
     
     @Transactional(readOnly = false)
     public List<MemberManagement> getMember(RecipelInfoEvt recipelInfoEvt) {
+        // DS154 A3: body thieu recipelInfo/registration/patientId hoac
+        // recipelDetailEvtList truoc day NPE 500 o chuoi deref ben duoi
+        // (getRecipelInfo().getRegistration().getPatientId().getId(),
+        // vong for tren recipelDetailEvtList null). Fail-closed 400 truoc
+        // moi doc, theo mau DS153 B.
+        if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null
+                || recipelInfoEvt.getRecipelInfo().getRegistration() == null
+                || recipelInfoEvt.getRecipelInfo().getRegistration().getPatientId() == null
+                || StringUtils.isBlank(recipelInfoEvt.getRecipelInfo().getRegistration().getPatientId().getId())
+                || recipelInfoEvt.getRecipelDetailEvtList() == null) {
+            throw new ServiceException("Thiếu thông tin đơn thuốc hoặc bệnh nhân để kiểm tra thẻ hội viên");
+        }
             //Lấyhạng mục khám chữa bệnhid
         List<RecipelDetail> recipelDetailEvtList = recipelInfoEvt.getRecipelDetailEvtList();
 
@@ -341,7 +353,14 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
 
                 int count=0;
                 for (MemberManagementDetail memberManagementDetail : memberManagementDetails) {
-                    if(memberManagementDetail.getNumber()==memberManagementDetail.getUseNumber()){
+                    // DS154 A4: number/use_number nullable (cot DB nullable;
+                    // set item khong co number -> detail number NULL) nen
+                    // `==` unbox NPE 500. Chi dem khi ca hai deu co gia tri;
+                    // number NULL nghia la khong gioi han -> khong coi la
+                    // dung het.
+                    Integer total = memberManagementDetail.getNumber();
+                    Integer used = memberManagementDetail.getUseNumber();
+                    if (total != null && used != null && total.equals(used)) {
                         count++;
                     }
                 }
@@ -357,12 +376,30 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                 List<MemberItem> memberItems = memberItemService.getByMemberSetId(memberSet.getId());
                 for (MemberItem memberItem : memberItems) {
                     for (RecipelDetail recipelDetail : recipelDetailEvtList) {
-                            if(Objects.equals(recipelDetail.getDrugStuffId().getCostItem().getId(),memberItem.getCostItem().getId())){
+                            // DS154 A2/A4: (a) chi tiet don thieu drugStuffId/
+                            // costItem -> deref NPE; (b) getByManagementIdAndMemberItemId
+                            // tra null khi the khong co dong chi tiet cho item
+                            // nay — xay ra sau khi set update tao lai item moi
+                            // (DS154 A1): the khong bao phu item do, khong NPE.
+                            // (c) number NULL = khong gioi han (nhu vong dem
+                            // ben tren), useNumber NULL coi nhu 0.
+                            String recipelCostItemId = recipelDetail.getDrugStuffId() != null
+                                    && recipelDetail.getDrugStuffId().getCostItem() != null
+                                    ? recipelDetail.getDrugStuffId().getCostItem().getId() : null;
+                            String itemCostItemId = memberItem.getCostItem() != null
+                                    ? memberItem.getCostItem().getId() : null;
+                            if (Objects.equals(recipelCostItemId, itemCostItemId)
+                                    && recipelCostItemId != null) {
                                 //Nếu bằng nhau thì lấy tiếp người dùng đó đã dùng hết chưa
                                 MemberManagementDetail memberManagementDetail = memberManagementDetailService.getByManagementIdAndMemberItemId(memberManagement.getId(),memberItem.getId());
-                                if(memberManagementDetail.getNumber()>memberManagementDetail.getUseNumber()) {
-                                    flage = true;
-                                    break;
+                                if (memberManagementDetail != null) {
+                                    Integer total = memberManagementDetail.getNumber();
+                                    int used = memberManagementDetail.getUseNumber() == null
+                                            ? 0 : memberManagementDetail.getUseNumber();
+                                    if (total == null || total > used) {
+                                        flage = true;
+                                        break;
+                                    }
                                 }
                             }
                     }
