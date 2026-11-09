@@ -185,7 +185,7 @@ USERS
   wait_for 300 "frontend 7020 trả 200" bash -c 'curl -s -m 5 -o /dev/null -w "%{http_code}" http://localhost:7020/ | grep -q "^200$"'
   info "Frontend đã lên (7020)."
 
-  # 6. Kiểm chứng login thật bằng testfull (phải trả 126 router).
+  # 6. Kiểm chứng login thật bằng testfull (phải trả 127 router).
   info "Kiểm chứng đăng nhập bằng testfull..."
   routers=$(curl -s -m 30 -X POST \
     --data-urlencode "loginName=testfull" \
@@ -210,8 +210,8 @@ try:
 except Exception:
     print(-1)
 ")
-  if [ "${routers:-0}" != "126" ]; then
-    fail "Đăng nhập testfull không trả 126 router (đo được: ${routers:-không rõ}). Xem log backend: ./setup.sh logs backend"
+  if [ "${routers:-0}" != "127" ]; then
+    fail "Đăng nhập testfull không trả 127 router (đo được: ${routers:-không rõ}). Xem log backend: ./setup.sh logs backend"
   fi
 
   echo
