@@ -428,6 +428,13 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             medicalRecord.setRegistration(bindedRegistration);
         } else {
             bindedRegistration = registrationService.get(medicalRecipelEvt.getMedicalRecord().getRegistration().getId());
+            // DS154 B1: registration id la (controller chi chan id trong,
+            // DS87) -> get() tra null, bindedRegistration.getCompany() o
+            // khoi ep company ben duoi NPE 500 truoc moi ghi. Fail-closed
+            // 400 nhu DS153 B (registerSave).
+            if (bindedRegistration == null) {
+                throw new ServiceException("Không tìm thấy lượt đăng ký khám");
+            }
         }
         //Lưuca bệnhThông tin
         medicalRecord.setDiagnoseDate(new Date());
