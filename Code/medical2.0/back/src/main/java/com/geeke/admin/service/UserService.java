@@ -210,6 +210,13 @@ public class UserService extends CrudService<UserDao, User>{
         // H3: super.save chi doi sys_user.login_name, user_tenant giu ten
         // cu lam lech CheckNewUserByPhone/countClinicIdByPhone (dem theo
         // login_name) va delete fallback theo phone — dong bo sau save.
+        // DS163 A7: update voi id khong ton tai truoc day roi qua super.save
+        // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99; probe
+        // A7; syncUserTenantLoginName sau do cung ghi 0 dong). Chi chap
+        // nhan update khi dong da ton tai.
+        if (super.get(user.getId()) == null) {
+            throw new ServiceException("Người dùng không tồn tại: " + user.getId());
+        }
         User saved = super.save(user);
         syncUserTenantLoginName(saved.getId(), user.getLoginName());
         return saved;
@@ -407,6 +414,13 @@ public class UserService extends CrudService<UserDao, User>{
         else
         {
             //không phảigiống hệtNgười dùng  lưu vàongười
+            // DS163 A7 (duong file): cung lop ghost-id nhu save(User) don —
+            // id ma roi qua super.save -> doUpdate 0 dong roi van 200,
+            // sau do saveUserRoleInfo ghi role cho id ma. Chan truoc moi ghi.
+            if (StringUtils.isNotBlank(user.getId())
+                    && super.get(user.getId()) == null) {
+                throw new ServiceException("Người dùng không tồn tại: " + user.getId());
+            }
             String id = super.save(user).getId();
             // K7 (iteration 58): guard deleteIds truoc moi upload/xoa
             // (mau J2): file avatar co object_id = id user vua tao;

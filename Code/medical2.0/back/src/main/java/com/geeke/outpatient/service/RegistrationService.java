@@ -170,6 +170,14 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
+        // DS163 A4: save voi id khong ton tai truoc day roi qua super.save
+        // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99; probe
+        // A4; ca audit UPDATED ma cho id ma). Chi chap nhan update khi
+        // dong da ton tai; tao moi phai gui id rong.
+        if (StringUtils.isNotBlank(entity.getId())
+                && super.get(entity.getId()) == null) {
+            throw new ServiceException("Đăng ký khám không tồn tại: " + entity.getId());
+        }
         return super.save(entity);
     }
 

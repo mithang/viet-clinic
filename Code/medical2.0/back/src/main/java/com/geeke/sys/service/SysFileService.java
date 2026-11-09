@@ -66,7 +66,14 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     @Override
     @Transactional(readOnly = false)
     public SysFile save(SysFile sysFile) {
-	
+        // DS163 A1: save voi id khong ton tai truoc day roi qua super.save
+        // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99; probe
+        // A1). Chi chap nhan update khi dong da ton tai; tao moi phai gui
+        // id rong. super.get verify tenant cua dong da luu (dong la -> 400).
+        if (StringUtils.isNotBlank(sysFile.getId())
+                && super.get(sysFile.getId()) == null) {
+            throw new ServiceException("Tệp không tồn tại: " + sysFile.getId());
+        }
         SysFile sysFileTemp = super.save(sysFile);
         if (StringUtils.isNoneBlank(sysFileTemp.getId())) {
 

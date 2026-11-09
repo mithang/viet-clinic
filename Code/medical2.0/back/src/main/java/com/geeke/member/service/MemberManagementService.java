@@ -65,6 +65,15 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
             // (giữ nguyên card, không sinh lại, không trừ số lượng thẻ lại).
             if (StringUtils.isNotBlank(memberManagement.getId())) {
+                // DS163 A6: nhanh update truoc day goi thang dao.update ma
+                // khong kiem tra ton tai: id ma -> update 0 dong roi van
+                // 200 silent no-op (lop DS94/DS99; probe A6). Mapper get()
+                // chi LEFT JOIN nen tra null dung khi dong that su khong
+                // ton tai (khac bai hoc N3d ve INNER JOIN).
+                if (this.dao.get(memberManagement.getId()) == null) {
+                    throw new ServiceException("Thẻ hội viên không tồn tại: "
+                            + memberManagement.getId());
+                }
                 // ITER36 N1: this override bypassed the generic save guards
                 // (M1/M2) by calling dao.update directly, so a foreign card id
                 // + own-tenant payload company overwrote + re-homed the card

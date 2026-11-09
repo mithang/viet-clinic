@@ -179,6 +179,14 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         // Chi kiem do dai, khong them chan null/blank: cac cot deu nullable
         // (tru patientTell da guard null o tren theo DS81).
         checkMedicalRecordLengths(medicalRecord);
+        // DS163 A5: save voi id khong ton tai truoc day roi qua super.save
+        // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99; probe
+        // A5 qua /registerSave; /save bi 405 do controller override save
+        // thanh /saveAdd). Chi chap nhan update khi dong da ton tai.
+        if (StringUtils.isNotBlank(medicalRecord.getId())
+                && super.get(medicalRecord.getId()) == null) {
+            throw new ServiceException("Bệnh án không tồn tại: " + medicalRecord.getId());
+        }
         return super.save(medicalRecord);
     }
 
