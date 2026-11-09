@@ -221,11 +221,24 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
             // role through roleService.save below (its update writes
             // company_id from the forced company "0").
             checkVersionReadTenant(entity.getId());
-            if (StringUtils.isNotBlank(entity.getRoleId())) {
-                String storedRoleId = clinicVersionDao.getRoleIdById(entity.getId());
-                if (StringUtils.isBlank(storedRoleId) || !storedRoleId.equals(entity.getRoleId())) {
-                    throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
-                }
+            // DS165: ghost-id save (update branch) created an orphan sys_role
+            // then 200 under a system session (tenant "0"): checkVersionReadTenant
+            // passes (lookups null), blank roleId skipped the match guard below,
+            // role.setId("") -> roleService.save INSERTs a new role, doUpdate 0
+            // rows -> 200. Same hole for a REAL id + blank roleId (new orphan
+            // role with the version's code; mapper update never writes role_id,
+            // so the version keeps its old roleId). Fail closed: the row must
+            // exist (dao.get null = not exist; bulkUpdate pattern) and roleId
+            // must be present and equal to the stored roleId (the UI round-trips
+            // the stored roleId, so blank on update is never legitimate).
+            if (dao.get(entity.getId()) == null) {
+                throw new ServiceException("Phiên bản không tồn tại: " + entity.getId());
+            }
+            String storedRoleId = clinicVersionDao.getRoleIdById(entity.getId());
+            if (StringUtils.isBlank(entity.getRoleId())
+                    || StringUtils.isBlank(storedRoleId)
+                    || !storedRoleId.equals(entity.getRoleId())) {
+                throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
             }
             role.setId(entity.getRoleId());
             roleService.save(role);
