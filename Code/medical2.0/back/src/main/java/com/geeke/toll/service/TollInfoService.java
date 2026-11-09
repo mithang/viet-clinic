@@ -422,7 +422,13 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 List<RecipelDetail> entity = recipelDetailService.getRecipelDetail(recipelInfo.getRecipelInfo().getId());
                 for (RecipelDetail e:entity){
                     BigDecimal c = BigDecimal.valueOf(tollEvt.getTollInfo().getDiscount());
-                    e.setActualPayment(e.getAllFee().multiply(c));
+                    // DS170 A: allFee NULL (chi tiet chua tinh tien, DS90)
+                    // thi getAllFee().multiply(c) NPE 500 o day, sau khi
+                    // claimPaid + thu phi da ghi (cung transaction nen
+                    // rollback, don van chua thu duoc); chi tiet chua tinh
+                    // tien dong gop 0 nhu DS90/DS169, khong phai loi.
+                    BigDecimal allFee = e.getAllFee() == null ? BigDecimal.ZERO : e.getAllFee();
+                    e.setActualPayment(allFee.multiply(c));
                     recipelDetailDao.updateActualPayment(e.getActualPayment(),e.getId());
                 }
             }
