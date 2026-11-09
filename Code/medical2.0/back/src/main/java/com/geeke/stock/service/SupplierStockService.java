@@ -109,6 +109,13 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         }
         String registrationId = dispensingEvt.getRegistrationId();
         Registration registration = registrationService.get(registrationId);
+        // DS171 B: registration ghost (payload) -> get() tra null,
+        // setDispensingDate/setReturnDate/save ben duoi NPE 500
+        // (probe B4). Fail-closed 400 nhu DS171 A; dao.get tra ca
+        // dong da xoa mem nen chi id that su khong ton tai moi bi chan.
+        if (registration == null) {
+            throw new ServiceException("Không tìm thấy lượt đăng ký khám");
+        }
         if ("0".equals(dispensingEvt.getDispensingType())) {
 
             //Phát thuốc
@@ -117,6 +124,12 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             // thang claim). Code cu chi kiem tra isDispension SAU khi
             // okOccupyStock, nen cac lan phat song song deu tru kho truoc
             // roi moi bi chan, lam used tang gap N va occupy am.
+            // DS171 B: recipelInfoIdList null -> for-each o claim loop
+            // NPE 500 (probe B1). Guard rong o day, truoc moi vong lap,
+            // cung thong diep nhu guard co san ben duoi.
+            if (CollectionUtils.isEmpty(dispensingEvt.getRecipelInfoIdList())) {
+                throw new ServiceException("phát thuốc của Đơn thuốc Thông tin Không thể là trống");
+            }
             for (String recipelInfoId : dispensingEvt.getRecipelInfoIdList()) {
                 RecipelInfo recipelInfo = this.recipelInfoService.get(recipelInfoId);
                 if (recipelInfo == null || !"0".equals(recipelInfo.getIsDispension())) {
