@@ -98,6 +98,42 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * DS160 A: IllegalArgumentException — trong app này chỉ xảy ra khi
+     * tham số do client gửi không hợp lệ (tên cột sắp xếp/lọc ở
+     * RegistrationService.listPages/wxListPages/wxDispensingListPages,
+     * offset/limit/orderby ở PageRequest ctor qua mọi CrudController
+     * list/listPage/listAll, cron expression ở CronUtils, giá trị dict
+     * ở ExcelImportBuilder). Trước đây rơi vào RuntimeException handler
+     * -> 500, trong khi đây là lỗi đầu vào của client -> 400. Các
+     * controller G2/G4/G5/G6 đã tự catch IAE nên không đổi hành vi;
+     * IAE nội bộ (Reflections...) cũng về 400 — đánh đổi như DS94
+     * (BadSqlGrammar): log warn giữ message đầy đủ để phân biệt.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<JSONObject> illegalArgumentExceptionHandler(IllegalArgumentException e) {
+        logger.warn("Tham số yêu cầu không hợp lệ: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), e.getMessage(), Constants.MSG_TYPE_WARNING);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    /**
+     * DS160 A: DataIntegrityViolationException — tên cột sắp xếp HỢP LỆ
+     * về dạng nhưng MƠ HỒ trong câu SQL (vd "create_date" có ở nhiều
+     * bảng join của RegistrationDao.listPages) làm MyBatis ném
+     * SQLIntegrityConstraintViolationException -> Spring dịch thành
+     * DataIntegrityViolationException -> 500. Cột không tồn tại đã về
+     * 400 qua DS94 (BadSqlGrammar); chỉ dạng mơ hồ này rơi qua. Đây là
+     * lỗi do tham số client -> 400 với message chung (không lộ SQL
+     * text; message đầy đủ giữ trong warn log như DS94).
+     */
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<JSONObject> dataIntegrityViolationExceptionHandler(org.springframework.dao.DataIntegrityViolationException e) {
+        logger.warn("Vi phạm ràng buộc dữ liệu (tham số không hợp lệ?): {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Dữ liệu không hợp lệ hoặc vi phạm ràng buộc", Constants.MSG_TYPE_WARNING);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    /**
      * @Valid Tham sốKiểm traThất bạichặn
      * khi @RequestBody trên của thực thểTrườngkhôngđủđủ @NotNull  v.v. ràng buộc giờkích hoạt
      */
