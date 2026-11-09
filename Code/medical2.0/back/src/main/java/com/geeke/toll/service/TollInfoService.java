@@ -514,6 +514,41 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * Xử lýbình thườngThu phí(không phảibán lẻ): Lưu đơn thuốc, TạoThu phíBản ghi, BHYTTải lên, Trừ thẻ trải nghiệm, Xét nghiệm và kiểm tra
      */
     private Registration processNormalCharge(TollEvt tollEvt, TollInfo tollInfo, Patient patient, List<RecipelInfoEvt> recipelInfoEvts) {
+        // DS158 A: fail-closed truoc moi ghi (claimPaid + vong chinh).
+        // Vong claim ben duoi `continue` khi id trong, roi vong chinh
+        // get("") tra null -> NPE 500 o :542; medical null NPE 500 o :552
+        // (sau khi recipel da save); fee null / amountReceived null NPE
+        // 500 o :555 (subtract); ten don null/ngan hon 2 ky tu NPE /
+        // StringIndexOutOfBounds 500 o :557 (substring(0,2)). Tat ca deu
+        // la payload sai dinh dang, khong phai du lieu that -- chan 400
+        // ro nghia truoc khi claim bat ky don nao. Don ghost van 400
+        // (khong ton tai, thay cho bao trung lap cua claimPaid).
+        if (tollInfo.getMedical() == null
+                || StringUtils.isBlank(tollInfo.getMedical().getId())) {
+            throw new ServiceException("Ca bệnh của phiếu thu không được để trống");
+        }
+        if (tollInfo.getAmountReceived() == null) {
+            throw new ServiceException("Số tiền thực thu không được để trống");
+        }
+        for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
+            if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null
+                    || StringUtils.isBlank(recipelInfoEvt.getRecipelInfo().getId())) {
+                throw new ServiceException("Đơn thuốc của phiếu thu không được để trống");
+            }
+            RecipelInfo stored = recipelInfoService.get(recipelInfoEvt.getRecipelInfo().getId());
+            if (stored == null) {
+                throw new ServiceException("Đơn thuốc không tồn tại: "
+                        + recipelInfoEvt.getRecipelInfo().getId());
+            }
+            if (stored.getFee() == null) {
+                throw new ServiceException("Phí đơn thuốc không được để trống: "
+                        + stored.getId());
+            }
+            if (stored.getName() == null || stored.getName().length() < 2) {
+                throw new ServiceException("Tên đơn thuốc phải có ít nhất 2 ký tự để xác định loại thu phí: "
+                        + stored.getId());
+            }
+        }
         // DS53: claim tung don la "đã thu" TRUOC moi dong tac thu phi/kho,
         // nguyen tu (UPDATE ... WHERE is_pay='0', chi 1 luong song song
         // thang claim; mau DS52). Guard getInRecipeIds o saveToll chi la
@@ -647,6 +682,16 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * Xử lýhoàn phílogic: Kiểm tra, Cập nhật trạng thái đơn thuốc, Tạohoàn phíBản ghi, trảcònTồn kho, BHYThoàn phí
      */
     private void processRefund(TollEvt tollEvt, TollInfo tollInfo, List<RecipelInfoEvt> recipelInfoEvts) {
+        // DS158 A5: cung dang skip-roi-deref nhu processNormalCharge (A1):
+        // vong claim ben duoi `continue` khi id trong, roi vong chinh
+        // get("") tra null -> NPE 500 khi doc getIsDispension(). Chan 400
+        // truoc moi claim.
+        for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
+            if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null
+                    || StringUtils.isBlank(recipelInfoEvt.getRecipelInfo().getId())) {
+                throw new ServiceException("Đơn thuốc của phiếu hoàn không được để trống");
+            }
+        }
         // DS54: claim tung don la "đã hoàn" TRUOC moi dong tac hoan phi/kho,
         // nguyen tu (UPDATE ... WHERE is_pay='1', chi 1 luong song song
         // thang claim; mau DS53). Guard getInRecipeIds o saveToll chi la
