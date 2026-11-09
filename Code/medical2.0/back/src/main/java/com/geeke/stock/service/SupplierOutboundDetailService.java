@@ -102,6 +102,14 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
             if (!StringUtils.isNullOrEmpty(d.getId())) continue;
 
             //khóachỉ địnhTồn kho
+            // DS158 B: chi tiet khong co medicinalStorage (id trong) truoc
+            // day NPE 500 o getId() ben duoi -- phieu da super.save o
+            // service tren (cung tx, rollback) nhung loi 500 khong ro
+            // nghia. Chan 400 truoc moi deref.
+            if (d.getMedicinalStorage() == null
+                    || StringUtils.isBlank(d.getMedicinalStorage().getId())) {
+                throw new ServiceException("Chi tiết xuất kho thiếu thông tin tồn kho động");
+            }
             MedicinalStorageControl medicinalStorageControl = d.getMedicinalStorage();
             MedicinalStorageControl queryStorageControl = medicinalStorageControlService.get(d.getMedicinalStorage().getId());
             if (queryStorageControl == null) {
