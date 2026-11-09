@@ -71,7 +71,7 @@
               <template v-for="(cv, index) in columnViews">
               <el-table-column v-if="cv.display"  :prop='cv.prop' :key="`columnViews_${index}`" :label='cv.label' sortable='custom' :align='cv.align'   header-align='center' :column-key='index.toString()'>
                 <template slot-scope='{row}'>
-                  <span>{{ getAttrValue(row, cv.prop, cv.javaType )}}</span>
+                  <span>{{ formatCellValue(row, cv) }}</span>
                 </template>
               </el-table-column>
               </template>
@@ -115,6 +115,7 @@
 <script>
 import { validatenull } from '@/utils/validate'
 import { listPatientPage, getPatientById, deletePatient } from '@/api/outpatient/patient'
+import { listAdministrativeDivisionAll } from '@/api/org/administrativeDivision'
 import PatientForm from '@/views/outpatient/patient/patientForm'
 import QueryForm from '@/views/components/queryForm'
 import MainUI from '@/views/components/mainUI'
@@ -152,6 +153,10 @@ export default {
       currentPage: 1,
       patientTotal: 0,
       patientList: [],
+      // Tra cứu tên tỉnh/xã từ administrative_division: danh sách lưu mã
+      // (province/area) nên tra tên để hiển thị thay mã.
+      divisionNameMap: {},
+      divisionAreaLoaded: {},
       loading: false,
       moreCodition: false,
       moreParm: {},
@@ -194,6 +199,7 @@ export default {
         if(responseData.code === 100) {
           this.patientTotal = responseData.data.total
           this.patientList = responseData.data.rows
+          this.loadDivisionAreasForRows()
         } else {
           this.showMessage(responseData)
         }
@@ -245,6 +251,7 @@ export default {
         if(listPatientRespData.code === 100) {
           this.patientTotal = listPatientRespData.data.total
           this.patientList = listPatientRespData.data.rows
+          this.loadDivisionAreasForRows()
         }
         this.resetLoad()
       } catch(error) {
@@ -324,7 +331,50 @@ export default {
       }
       this.getPatientList()
     },
-    initOptions() {},
+    // Tra cứu tên tỉnh/xã: tỉnh (level=1) tải một lần khi mở trang; xã
+    // (level=2) tải theo từng tỉnh xuất hiện trong trang rồi cache lại.
+    formatCellValue(row, cv) {
+      const raw = this.getAttrValue(row, cv.prop, cv.javaType)
+      if ((cv.prop === 'province' || cv.prop === 'city' || cv.prop === 'area') && raw !== undefined && raw !== null && raw !== '') {
+        return this.divisionNameMap[String(raw)] || raw
+      }
+      return raw
+    },
+    loadDivisionProvinces() {
+      const search = { params: [
+        { columnName: 'parten_id', queryType: '=', value: '0' },
+        { columnName: 'level', queryType: '=', value: '1' }
+      ] }
+      return listAdministrativeDivisionAll(search).then((responseData) => {
+        const entries = {}
+        ;(responseData.data || []).forEach((item) => { entries[String(item.id)] = item.name })
+        this.divisionNameMap = Object.assign({}, this.divisionNameMap, entries)
+      }).catch(() => {})
+    },
+    loadDivisionAreasForRows() {
+      const provinces = []
+      ;(this.patientList || []).forEach((row) => {
+        const p = row.province
+        if (p !== undefined && p !== null && p !== '' && !this.divisionAreaLoaded[String(p)] && provinces.indexOf(String(p)) === -1) {
+          provinces.push(String(p))
+        }
+      })
+      provinces.forEach((provinceId) => {
+        this.divisionAreaLoaded[provinceId] = true
+        const search = { params: [
+          { columnName: 'parten_id', queryType: '=', value: provinceId },
+          { columnName: 'level', queryType: '=', value: '2' }
+        ] }
+        listAdministrativeDivisionAll(search).then((responseData) => {
+          const entries = {}
+          ;(responseData.data || []).forEach((item) => { entries[String(item.id)] = item.name })
+          this.divisionNameMap = Object.assign({}, this.divisionNameMap, entries)
+        }).catch(() => {})
+      })
+    },
+    initOptions() {
+      return this.loadDivisionProvinces()
+    },
     setLoad() {
       this.loading = true
     },
