@@ -51,6 +51,19 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     @Transactional(readOnly = false)
     public void save(InspectionCheckInfo inspectionCheckInfo, MultipartFile[] fileIdUploads, String[] deleteIds) throws IOException {
 
+        // DS164 A: ghost-id save -> 400 TRUOC moi thao tac file/ghi (mau
+        // DS163/DS105/DS112). Truoc day dao.update 0 dong -> 200 silent
+        // no-op, lai them tao file mo coi (object_id = id ma) qua
+        // changeAndSaveSysFileList (probe A2: empty.txt mo coi).
+        // verifyTenantOwnershipAgainstStoredRow o duoi KHONG chan duoc
+        // id ma (stored row null -> bo qua nhu hanh vi cu). Bang khong
+        // co cot del_flag (hard delete, DS133) nen dao.get null CHINH
+        // LA khong ton tai. Tao moi (id rong) khong doi; phuong thuc
+        // nay chi dung dao.update nen id phai ton tai truoc.
+        if (inspectionCheckInfo != null && StringUtils.isNotBlank(inspectionCheckInfo.getId())
+                && dao.get(inspectionCheckInfo.getId()) == null) {
+            throw new ServiceException("Chi tiết kiểm tra không tồn tại: " + inspectionCheckInfo.getId());
+        }
         // R1 (iteration 41): guard tenant TRUOC moi thao tac file/ghi.
         // Truoc day save() goi thang dao.update (mapper UPDATE WHERE id
         // tran, khong company_id) nen ne ca hai guard cua CrudService.save:
@@ -199,9 +212,17 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     // DS149 C: duong /save chung truoc day khong co override (CrudService
     // thang) nen payload dai qua @Valid -> 500 o mapper (probe C5);
     // bulk* moi them de guard duong bulkInsert/bulkUpdate (probe C4).
+    // DS164 A: ghost-id single save -> 400 (mau DS163): base
+    // CrudService.save KHONG kiem tra ton tai khi update (doUpdate 0
+    // dong -> 200 silent no-op); dao.get null la khong ton tai (bang
+    // khong co cot del_flag, hard delete). Tao moi (id rong) khong doi.
     @Override
     @Transactional(readOnly = false)
     public InspectionCheckInfo save(InspectionCheckInfo inspectionCheckInfo) {
+        if (inspectionCheckInfo != null && StringUtils.isNotBlank(inspectionCheckInfo.getId())
+                && dao.get(inspectionCheckInfo.getId()) == null) {
+            throw new ServiceException("Chi tiết kiểm tra không tồn tại: " + inspectionCheckInfo.getId());
+        }
         checkInspectionCheckInfoLengths(inspectionCheckInfo);
         return super.save(inspectionCheckInfo);
     }
