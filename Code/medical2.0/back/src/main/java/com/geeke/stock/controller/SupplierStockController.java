@@ -2,6 +2,7 @@ package com.geeke.stock.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.CrudController;
+import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.config.MedicareConfigProperties;
 import com.geeke.medicareutils.service.MdInventoryService;
 import com.geeke.org.entity.Company;
@@ -102,6 +103,20 @@ public class SupplierStockController extends CrudController<SupplierStockService
     @PostMapping(value = "inStorage")
     public ResponseEntity<JSONObject> inStorage(@RequestBody StorageEvt storageEvt) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        // DS166 C: vong tra cuu thuoc ben duoi deref item.getDrug()
+        // .getGoodsName() khong guard -- list null / item null / drug null
+        // -> NPE 500 truoc moi ghi. Fail-closed 400 truoc moi buoc, ke ca
+        // khi storageEvt / supplierStorage null (savesTo() NPE o service,
+        // nhung chan som o controller cho ro rang).
+        if (storageEvt == null || storageEvt.getSupplierStorage() == null
+                || storageEvt.getSupplierStockList() == null) {
+            throw new ServiceException("Dữ liệu nhập kho không được để trống");
+        }
+        for (SupplierStock item : storageEvt.getSupplierStockList()) {
+            if (item == null || item.getDrug() == null) {
+                throw new ServiceException("Dòng nhập kho thiếu thông tin thuốc");
+            }
+        }
         // M4 (iteration 60): ep tenant theo session cho phieu + tung dong
         // nhap kho, mau L5 (save don). Ly do: savesTo() luu phieu/dong
         // qua CrudService.save nhanh INSERT (khong verify tenant) nen
