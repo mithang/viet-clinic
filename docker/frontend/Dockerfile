@@ -7,7 +7,7 @@
 
 FROM node:18-bookworm-slim
 WORKDIR /app
-COPY Code/medical2.0/client/package.json Code/medical2.0/client/package-lock.json ./
+COPY Code/medical2.0/client/package.json ./
 RUN npm install --no-audit --no-fund
 COPY Code/medical2.0/client/ ./
 EXPOSE 7020

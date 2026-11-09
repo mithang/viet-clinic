@@ -130,14 +130,20 @@ cmd_up() {
   "${DC[@]}" up -d mysql redis
   wait_for 120 "MySQL trả PONG" "${DC[@]}" exec -T mysql mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD"
   info "MySQL đã lên. Chờ import DB (dump + migrations v1..v19 + seed, khoảng 1–3 phút)..."
+  # Đủ 149 router CHƯA chắc DB đã import xong: dump tạo/bơm bảng theo thứ tự
+  # alphabet nên sys_router (149 dòng) có trước khi sys_user được tạo và trước
+  # khi migrations/seed chạy. Role 4000 chỉ được seed ở bước cuối cùng, nên
+  # dùng nó làm mốc "DB đã khởi tạo xong".
   i=0
   while [ "$i" -lt 600 ]; do
     n=$(mysql_exec -N -e "SELECT COUNT(*) FROM md_yzs.sys_router;" 2>/dev/null || echo 0)
-    if [ "$n" = "149" ]; then break; fi
+    seeded=$(mysql_exec -N -e "SELECT COUNT(*) FROM md_yzs.sys_role WHERE id=4000 AND del_flag='0';" 2>/dev/null || echo 0)
+    if [ "$n" = "149" ] && [ "$seeded" = "1" ]; then break; fi
     sleep 5; i=$((i + 5))
   done
   [ "${n:-0}" = "149" ] || fail "DB chưa đủ 149 router sau 600s (đo được: ${n:-không rõ}). Xem log: ./setup.sh logs mysql"
-  info "DB đã đủ 149 router."
+  [ "${seeded:-0}" = "1" ] || fail "DB chưa chạy xong migrations/seed sau 600s (role 4000 chưa có). Xem log: ./setup.sh logs mysql"
+  info "DB đã đủ 149 router và seed xong."
 
   # 4. Tài khoản test (mật khẩu = TEST_PASSWORD trong docker/.env,
   #    hash Shiro Md5Hash salt=userId 10000 vòng — khớp backend HashPwd).
@@ -152,10 +158,12 @@ cmd_up() {
   while IFS='|' read -r uid login uname company role urid; do
     [ -z "$uid" ] && continue
     h=$(hash_for "$uid")
+    # </dev/null: mysql (qua docker compose exec -T) đọc hết stdin, nếu không
+    # chặn sẽ nuốt luôn các dòng USERS còn lại của heredoc.
     mysql_exec --default-character-set=utf8mb4 -N -e \
-      "INSERT INTO md_yzs.sys_user (id, company_id, name, login_name, login_password, is_locked, phone, email, create_by, create_date, update_by, update_date, del_flag, is_admin) VALUES (${uid}, ${company}, '${uname}', '${login}', '${h}', '0', '', '', 'system', NOW(), 'system', NOW(), '0', '0') ON DUPLICATE KEY UPDATE login_password='${h}', del_flag='0';" >/dev/null
+      "INSERT INTO md_yzs.sys_user (id, company_id, name, login_name, login_password, is_locked, phone, email, create_by, create_date, update_by, update_date, del_flag, is_admin) VALUES (${uid}, ${company}, '${uname}', '${login}', '${h}', '0', '', '', 'system', NOW(), 'system', NOW(), '0', '0') ON DUPLICATE KEY UPDATE login_password='${h}', del_flag='0';" >/dev/null </dev/null
     mysql_exec -N -e \
-      "INSERT INTO md_yzs.sys_user_role (id, user_id, role_id, company_id, create_by, create_date, update_by, update_date, del_flag) VALUES (${urid}, ${uid}, ${role}, ${company}, 'system', NOW(), 'system', NOW(), '0') ON DUPLICATE KEY UPDATE del_flag='0', company_id=${company};" >/dev/null
+      "INSERT INTO md_yzs.sys_user_role (id, user_id, role_id, company_id, create_by, create_date, update_by, update_date, del_flag) VALUES (${urid}, ${uid}, ${role}, ${company}, 'system', NOW(), 'system', NOW(), '0') ON DUPLICATE KEY UPDATE del_flag='0', company_id=${company};" >/dev/null </dev/null
   done <<'USERS'
 3000|testdoctor|Bác sĩ test|2077468568630584464|2099436828135891044|9000
 3001|testys|Bác sĩ YS test|2077468568630583309|2298416718726168646|9001

@@ -59,30 +59,36 @@ export default function () {
           }
         }
 
-        if (!this.chalk) {
-          // const url = `https://unpkg.zhimg.com/element-ui@${version}/lib/theme-chalk/index.css`
-          const url = 'public/lib/element/theme-chalk@2.15.6.css'
-          await this.getCSSString(url, 'chalk')
+        try {
+          if (!this.chalk) {
+            // const url = `https://unpkg.zhimg.com/element-ui@${version}/lib/theme-chalk/index.css`
+            // public/ được webpack phục vụ ở gốc, không phải dưới /public — phải
+            // khớp với href trong index.html (`lib/element/...`).
+            const url = 'lib/element/theme-chalk@2.15.6.css'
+            await this.getCSSString(url, 'chalk')
+          }
+
+          const chalkHandler = getHandler('chalk', 'chalk-style')
+
+          chalkHandler()
+
+          const styles = [].slice.call(document.querySelectorAll('style'))
+          .filter(style => {
+            const text = style.innerText
+            return new RegExp(oldVal, 'i').test(text) && !/Chalk Variables/.test(text)
+          })
+          styles.forEach(style => {
+            const { innerText } = style
+            if (typeof innerText !== 'string') return
+            style.innerText = this.updateStyle(innerText, originalCluster, themeCluster)
+          })
+
+          this.$emit('change', val)
+        } catch (e) {
+          this.$message.error(e.message || 'Đổi màu chủ đề thất bại')
+        } finally {
+          $message.close()
         }
-
-        const chalkHandler = getHandler('chalk', 'chalk-style')
-
-        chalkHandler()
-
-        const styles = [].slice.call(document.querySelectorAll('style'))
-        .filter(style => {
-          const text = style.innerText
-          return new RegExp(oldVal, 'i').test(text) && !/Chalk Variables/.test(text)
-        })
-        styles.forEach(style => {
-          const { innerText } = style
-          if (typeof innerText !== 'string') return
-          style.innerText = this.updateStyle(innerText, originalCluster, themeCluster)
-        })
-
-        this.$emit('change', val)
-
-        $message.close()
       },
       updateStyle(style, oldCluster, newCluster) {
         let newStyle = style;
@@ -92,14 +98,18 @@ export default function () {
         return newStyle;
       },
       getCSSString(url, variable) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest()
           xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4 && xhr.status === 200) {
+            if (xhr.readyState !== 4) return
+            if (xhr.status === 200) {
               this[variable] = xhr.responseText.replace(/@font-face{[^}]+}/, '')
               resolve()
+            } else {
+              reject(new Error(`Không tải được ${url} (HTTP ${xhr.status})`))
             }
           }
+          xhr.onerror = () => reject(new Error(`Không tải được ${url}`))
           xhr.open('GET', url)
           xhr.send()
         })

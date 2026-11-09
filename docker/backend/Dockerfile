@@ -8,6 +8,9 @@
 FROM maven:3.9.9-eclipse-temurin-8 AS build
 WORKDIR /build
 COPY Code/medical2.0/back/pom.xml ./pom.xml
+# pom.xml khai báo 2 dependency system-scope trỏ tới ./lib/*.jar, nên phải copy
+# lib vào trước khi resolve dependency.
+COPY Code/medical2.0/back/lib ./lib
 # Tải trước dependencies để layer này được cache khi chỉ sửa src.
 RUN mvn -q dependency:go-offline
 COPY Code/medical2.0/back/src ./src
