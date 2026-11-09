@@ -60,6 +60,15 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
     @Override
     @Transactional(readOnly = false)
     public MemberItem save(MemberItem entity) {
+        // DS158 C: single save() never called checkMemberItemRequired
+        // (bulkInsert/bulkUpdate do, DS107). The direct /memberItem/save
+        // endpoint is still 400 via @Valid @NotNull on costItem, but the
+        // MemberSet save cascade calls this service method INTERNALLY
+        // (MemberSetService:92/:136), building costItem from the item's
+        // transient `name` -- a nameless item yields costItem id null ->
+        // DAO insert on the NOT NULL cost_item_id column -> 500. Call the
+        // check here so API + internal callers fail closed 400 alike.
+        checkMemberItemRequired(entity);
         if (entity != null && StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Chi tiết thẻ hội viên không tồn tại: "
