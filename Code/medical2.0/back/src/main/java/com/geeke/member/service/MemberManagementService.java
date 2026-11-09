@@ -52,6 +52,14 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // DS150 A (mapper -> .value); guard .value van chan truoc
             // duong bulk neu value qua dai.
             checkMemberManagementLengths(memberManagement);
+            // DS153 C: patient / memberSet thieu -> @Valid chan o duong
+            // save don (ca hai deu @NotNull) nhung duong bulk khong co
+            // @Valid: bulkInsert/bulkUpdate ghi thang #{patient.id} /
+            // #{memberSet.id} xuong cot NOT NULL nen 500
+            // DataIntegrityViolation. Chan o day cho ca hai nhanh
+            // (update cung ghi de patient_id/member_set_id qua mapper)
+            // va lap lai o bulk* ben duoi truoc moi ghi; null-safe.
+            checkMemberHasSubject(memberManagement);
             // Sửa (id đã có) trước đây rơi vào cùng nhánh INSERT với Tạo nên
             // luôn lỗi trùng khóa chính — form Sửa qua UI không bao giờ lưu
             // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
@@ -135,6 +143,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         }
         for (MemberManagement entity : entitys) {
             checkMemberManagementLengths(entity);
+            // DS153 C: nhu save() ben tren -- bulk khong co @Valid.
+            checkMemberHasSubject(entity);
             if (StringUtils.isBlank(entity.getCard())) {
                 String card = new Date().getTime() + "";
                 entity.setCard(card.substring(card.length() - 8));
@@ -150,6 +160,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         }
         for (MemberManagement entity : entitys) {
             checkMemberManagementLengths(entity);
+            // DS153 C: nhu bulkInsert ben tren.
+            checkMemberHasSubject(entity);
             if (StringUtils.isBlank(entity.getCard())) {
                 MemberManagement stored = this.dao.get(entity.getId());
                 if (stored != null && StringUtils.isNotBlank(stored.getCard())) {
@@ -164,6 +176,25 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
     }
 
     // DS149 C: xem ghi chu o save().
+    // DS153 C: the khong co benh nhan / khong co set thi mapper ghi NULL
+    // xuong cot NOT NULL patient_id / member_set_id -> 500. Duong save
+    // don da duoc @Valid chan (ca hai deu @NotNull tren entity); helper
+    // nay phuc vu duong bulk (khong @Valid) va defence-in-depth cho
+    // caller noi bo cua save().
+    private static void checkMemberHasSubject(MemberManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getPatient() == null
+                || StringUtils.isBlank(entity.getPatient().getId())) {
+            throw new ServiceException("Thông tin bệnh nhân không được để trống");
+        }
+        if (entity.getMemberSet() == null
+                || StringUtils.isBlank(entity.getMemberSet().getId())) {
+            throw new ServiceException("Thẻ hội viên không được để trống");
+        }
+    }
+
     private static void checkMemberManagementLengths(MemberManagement entity) {
         if (entity == null) {
             return;
