@@ -397,6 +397,15 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 throw new ServiceException("Dữ liệuĐã tồn tạiVui lòngđừngtrùng lặpđề xuấtgiao");
             }
             Patient patient = tollEvt.getTollInfo().getPatient();
+            // DS157 B: patient null truoc day NPE -> 500 o patient.getId()
+            // ben duoi; checkTollInfoRequired chi bat paymentType /
+            // amountStatus / tollType, khong bat patient; discount da guard
+            // rieng (DS98). Fail-closed 400 truoc moi ghi (claimPaid va
+            // vong chinh chay sau dong nay). Patient co id rong giu hanh
+            // vi cu (luong ban le tao benh nhan moi tu payload).
+            if (patient == null) {
+                throw new ServiceException("Bệnh nhân của phiếu thu không được để trống");
+            }
             if (StringUtils.isNotBlank(patient.getId())) {
                 patient = patientService.get(patient.getId());
             }
