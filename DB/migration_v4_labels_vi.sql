@@ -1,5 +1,5 @@
 -- Migration v4 (ĐÃ ÁP DỤNG lên DB test ngày 2026-10-31, đã kiểm chứng: các cột hiển thị
--- dưới đây còn 0 ký tự CJK, trừ đúng 2 dòng TAM GIU bên dưới).
+-- dưới đây còn 0 ký tự CJK (2 dòng giữ lại trước đây nay đã áp theo quyết định của chủ 2026-11-09).
 -- LƯU Ý ÁP DỤNG: file chứa literal chữ Trung trong mệnh đề WHERE nên BẮT BUỘC chạy với
 -- --default-character-set=utf8mb4; nếu không, literal gửi đi sai encoding, UPDATE khớp 0 dòng
 -- mà vẫn exit 0 (đã gặp thực tế ngày 2026-10-31). restore_all.sh đã nối v4 với cờ này sau v3.
@@ -15,7 +15,7 @@
 --    tên người trong create_by/update_by, tên font trong mẫu UReport, footer hard-code frontend.
 --  * 2 trường hợp dùng TRIM() vì giá trị cũ có khoảng trắng cuối trong dump:
 --    sys_dict_item 2256779862649512120 và gen_table 723817798886907905.
---  * 2 bản dịch suy luận từ ngữ cảnh anh em (cần chủ xác nhận trước khi áp):
+--  * 2 bản dịch suy luận từ ngữ cảnh anh em (chủ đã quyết ngày 2026-11-09, đã áp):
 --    sys_dict_item 1039656585586679847 子 -> 'Con trai' (cùng nhóm quan hệ: Vợ/chồng, Nữ, Cháu...);
 --    sys_dict_item 1294206996438737800 待Phút诊 -> 'Chờ phân khám' (待分诊 = chờ phân khám/phân loại).
 -- Áp dụng: mysql --default-character-set=utf8mb4 md_yzs < DB/migration_v4_labels_vi.sql
@@ -83,15 +83,15 @@ UPDATE `sys_dict_type` SET `remarks`='Mô-đun sinh mã của bảng nghiệp v�
 UPDATE `sys_dict_type` SET `name`='Trạng thái đăng ký khám (gồm trạng thái khám bệnh)' WHERE `id`=1008898177293385773 AND `del_flag`='0' AND `name`='Trạng thái đăng ký khám(Gói含Trạng thái khám bệnh)';
 
 -- 5. sys_dict_item.name (24 dòng đang hiển thị; KHÔNG đổi value) + 1 remarks --
--- TAM GIU (cho chu xac nhan, chua ap): ban dich suy luan 子 -> 'Con trai'.
--- UPDATE `sys_dict_item` SET `name`='Con trai' WHERE `id`=1039656585586679847 AND `del_flag`='0' AND `name`='子';
+-- Đã áp theo quyết định của chủ 2026-11-09: 子 -> 'Con trai'.
+UPDATE `sys_dict_item` SET `name`='Con trai' WHERE `id`=1039656585586679847 AND `del_flag`='0' AND `name`='子';
 UPDATE `sys_dict_item` SET `name`='Pha nước uống' WHERE `id`=1107842936624948600 AND `del_flag`='0' AND `name`='水冲服';
 UPDATE `sys_dict_item` SET `name`='Lần (một bên)' WHERE `id`=1128689556829987285 AND `del_flag`='0' AND `name`='Lần(单侧)';
 UPDATE `sys_dict_item` SET `name`='Lần (một bên/hai bên)' WHERE `id`=1128689556829987286 AND `del_flag`='0' AND `name`='Lần(单侧/双侧)';
 UPDATE `sys_dict_item` SET `name`='Tiếp nhận khám nhanh' WHERE `id`=1140922001646142209 AND `del_flag`='0' AND `name`='快速Tiếp nhận khám';
 UPDATE `sys_dict_item` SET `name`='Thẻ trải nghiệm' WHERE `id`=1229966431858024522 AND `del_flag`='0' AND `name`='体验Thẻ';
--- TAM GIU (cho chu xac nhan, chua ap): ban dich suy luan 待Phút诊 -> 'Chờ phân khám'.
--- UPDATE `sys_dict_item` SET `name`='Chờ phân khám' WHERE `id`=1294206996438737800 AND `del_flag`='0' AND `name`='待Phút诊';
+-- Đã áp theo quyết định của chủ 2026-11-09: 待Phút诊 -> 'Chờ phân khám'.
+UPDATE `sys_dict_item` SET `name`='Chờ phân khám' WHERE `id`=1294206996438737800 AND `del_flag`='0' AND `name`='待Phút诊';
 UPDATE `sys_dict_item` SET `name`='Hãm uống' WHERE `id`=1440747964863602939 AND `del_flag`='0' AND `name`='泡服';
 UPDATE `sys_dict_item` SET `name`='Pha uống' WHERE `id`=1440747964863602940 AND `del_flag`='0' AND `name`='冲服';
 UPDATE `sys_dict_item` SET `name`='Tiêm huyệt vị' WHERE `id`=1440747964863602941 AND `del_flag`='0' AND `name`='穴位Chú ý射';
