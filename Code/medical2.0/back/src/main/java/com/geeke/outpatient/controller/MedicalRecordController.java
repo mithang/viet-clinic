@@ -286,7 +286,19 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
     @PostMapping(value = "registerSave")
     public ResponseEntity<JSONObject> registerSave(@RequestBody MedicalRecord entity) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
+        // DS153 B: registration null trong body -> getId() NPE 500;
+        // registration id la -> get() tra null, getCompany() ben duoi
+        // NPE 500, truoc khi MedicalRecordService.save (doi patientTell,
+        // DS141 B) chay. Fail-closed 400 truoc moi ghi (ServiceException
+        // nhu cac guard cung controller).
+        if (entity.getRegistration() == null
+                || entity.getRegistration().getId() == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám");
+        }
         Registration medicalRecord = registrationService.get(entity.getRegistration().getId());
+        if (medicalRecord == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám");
+        }
         entity.setCompany(medicalRecord.getCompany());
         String id = medicalRecordService.save(entity).getId();
         return ResponseEntity.ok(ResultUtil.successJson(id));
