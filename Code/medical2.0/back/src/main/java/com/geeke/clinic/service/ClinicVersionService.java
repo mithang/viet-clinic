@@ -231,7 +231,12 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
             // exist (dao.get null = not exist; bulkUpdate pattern) and roleId
             // must be present and equal to the stored roleId (the UI round-trips
             // the stored roleId, so blank on update is never legitimate).
-            if (dao.get(entity.getId()) == null) {
+            // DS166 B: dao.get KHONG loc del_flag nen tra ca dong da xoa mem
+            // (mau delete() DS129 C) -- save update tren version da xoa mem
+            // truoc day 200 + doi ten role lien ket. Fail-closed 400 khi
+            // stored row khong ton tai hoac del_flag != "0".
+            ClinicVersion stored = dao.get(entity.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
                 throw new ServiceException("Phiên bản không tồn tại: " + entity.getId());
             }
             String storedRoleId = clinicVersionDao.getRoleIdById(entity.getId());
@@ -274,9 +279,14 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
                 throw new ServiceException("Phiên bản không được để trống");
             }
             checkVersionReadTenant(entity.getId());
-            if (StringUtils.isNotBlank(entity.getId())
-                    && dao.get(entity.getId()) == null) {
-                throw new ServiceException("Phiên bản không tồn tại: " + entity.getId());
+            // DS166 B: nhu save() update -- bulkUpdate tren version da xoa
+            // mem truoc day 200 + ghi de (mapper bulkUpdate WHERE id IN
+            // khong loc del_flag). Fail-closed 400 khi stored del_flag != "0".
+            if (StringUtils.isNotBlank(entity.getId())) {
+                ClinicVersion stored = dao.get(entity.getId());
+                if (stored == null || !"0".equals(stored.getDelFlag())) {
+                    throw new ServiceException("Phiên bản không tồn tại: " + entity.getId());
+                }
             }
             validateBulkVersion(entity);
             checkDuplicateCode(entity.getCode(), entity.getId());
