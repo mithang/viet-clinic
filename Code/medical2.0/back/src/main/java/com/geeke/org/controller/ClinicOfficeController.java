@@ -2,6 +2,7 @@ package com.geeke.org.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.CrudController;
+import com.geeke.common.service.ServiceException;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
 import com.geeke.medicareutils.config.MedicareConfigProperties;
@@ -48,6 +49,15 @@ public class ClinicOfficeController extends CrudController<ClinicOfficeService, 
             return forbidden();
         }
         entity.setCompany(SessionUtils.getLoginTenant());
+        // DS162: session khong co tenant (login voi companyId mo coi:
+        // co dong sys_user_role nhung khong co org_company) thi
+        // getCompany() null, dong duoi getId() NPE 500 khi
+        // isDefault=1; duong isDefault=0 cung chi 400 nho NOT NULL o
+        // insert. Chan som 400 truoc moi ghi, ca hai duong.
+        if (entity.getCompany() == null
+                || StringUtils.isBlank(entity.getCompany().getId())) {
+            throw new ServiceException("Phiên đăng nhập không có phòng khám (tenant), không thể lưu khoa");
+        }
         if("1".equals(entity.getIsDefault())){
             clinicOfficeService.updateDefault(entity.getCompany().getId());
         }
