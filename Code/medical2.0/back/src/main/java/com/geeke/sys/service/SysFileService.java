@@ -169,7 +169,20 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
             String suffix = begin >= 0 ? originalFilename.substring(begin, last) : "";
             sysFile.setFileType(suffix); // Loại tệp
 
-            sysFile.setObjectId(Long.parseLong(objectId)); // Bảng nghiệp vụID
+            // DS156 A: objectId la fileId/id thuc the do caller truyen
+            // (clinic/company fileId do payload quyet dinh, chi blank moi
+            // duoc thay bang IdGen.uuid); fileId tu che khong phai so
+            // nguyen truoc day NFE -> 500 giua transaction thay vi 400.
+            // Fail-closed 400 truoc moi ghi, kem theo objectId de de
+            // truy vet. Tat ca caller hien tai truyen id so (uuid so)
+            // nen duong hop le khong doi.
+            long objectIdLong;
+            try {
+                objectIdLong = Long.parseLong(objectId);
+            } catch (NumberFormatException e) {
+                throw new ServiceException("Mã đối tượng đính kèm không hợp lệ: " + objectId);
+            }
+            sysFile.setObjectId(objectIdLong); // Bảng nghiệp vụID
             sysFile.setName(file.getOriginalFilename()); // Tên tệp
             sysFile.setFileSize(file.getSize()); // Tệpkích thước
 

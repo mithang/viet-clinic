@@ -111,6 +111,19 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     @Override
     @Transactional(readOnly = false)
     public Company save(Company company) {
+        // DS156 A: fileId la String nhung cot file_id la bigint; fileId
+        // tu che khong phai so nguyen truoc day 500 o mapper update
+        // (Incorrect integer value) ngay ca khi khong co file dinh kem
+        // (duong parseLong o SysFileService khong chay). UI chi gui
+        // IdGen.uuid (so) hoac de trong (NULL) nen duong hop le khong
+        // doi; fail-closed 400 truoc moi ghi.
+        if (company != null && StringUtils.isNotBlank(company.getFileId())) {
+            try {
+                Long.parseLong(company.getFileId());
+            } catch (NumberFormatException e) {
+                throw new ServiceException("Mã tệp đính kèm không hợp lệ: " + company.getFileId());
+            }
+        }
         checkCompanySaveOwnership(company);
         // DS146 A: chan do dai (ca duong saveWithFile khong @Valid).
         checkCompanyLengths(company);
