@@ -791,6 +791,15 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         RecipelInfo recipelInfo = new RecipelInfo();
         recipelInfo.setId(recipelInfoIds);
         Registration entity = registrationService.get(registrationId);
+        // DS171 A: registration ghost (payload) -> get() tra null,
+        // getCompany() ben duoi NPE 500 giua dispense/charge (probe A1:
+        // updateStock ghost registration -> 500 tai :794). Fail-closed
+        // 400 nhu DS154 B1; dao.get tra ca dong da xoa mem nen chi id
+        // that su khong ton tai moi bi chan (probe A2: registration da
+        // xoa mem van 200).
+        if (entity == null) {
+            throw new ServiceException("Không tìm thấy lượt đăng ký khám");
+        }
         recipelInfo.setCompany(entity.getCompany());
 
         if (!MedicinalStockControlService.enable)
