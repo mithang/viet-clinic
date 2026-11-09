@@ -83,15 +83,28 @@
         <el-row>
           <el-col :span="24 / 2">
             <el-form-item label="Khu vực" prop="">
-              <v-distpicker
+              <el-select
+                v-model="province"
+                placeholder="Chọn tỉnh/thành phố"
+                filterable
+                clearable
                 :disabled="dialogProps.action === 'view'"
-                :province="province"
-                :city="city"
-                :area="area"
-                @province="onChangeProvince"
-                @city="onChangeCity"
-                @area="onChangeArea"
-              ></v-distpicker>
+                @change="onChangeProvince"
+                style="width: 48%; margin-right: 4%"
+              >
+                <el-option v-for="item in province_List" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+              <el-select
+                v-model="area"
+                placeholder="Chọn xã/phường"
+                filterable
+                clearable
+                :disabled="dialogProps.action === 'view'"
+                @change="onChangeArea"
+                style="width: 48%"
+              >
+                <el-option v-for="item in area_List" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24 / 2">
@@ -157,25 +170,26 @@
 </template>
 <script>
 import "@/utils/validate";
+import { listAdministrativeDivisionAll } from "@/api/org/administrativeDivision";
 import { saveManufactureFactory } from "@/api/basicdata/manufactureFactory";
 import BaseUI from "@/views/components/baseUI";
 import OperationIcon from "@/components/OperationIcon";
-import VDistpicker from "v-distpicker";
 export default {
   extends: BaseUI,
   name: "manufactureFactory-form",
   components: {
     OperationIcon,
-    VDistpicker,
   },
   data() {
     return {
       bizFormModel: this.initFormModel(),
       tabIndex: "1",
-      //Liên kết ba cấp tỉnh/thành phố/quận/huyện
+      //Liên kết hai cấp tỉnh/xã lấy từ bảng administrative_division
       province: "",
       city: "",
       area: "",
+      province_List: [],
+      area_List: [],
       value: "1",
       flag: false, //Ngăn gửi trùng lặp
       dialogProps: {
@@ -212,7 +226,7 @@ export default {
     doSave() {
       this.setLoad();
       this.bizFormModel.province = this.province;
-      this.bizFormModel.city = this.city;
+      this.bizFormModel.city = ""; // Không còn cấp huyện/quận từ khi dùng bảng 34 tỉnh
       this.bizFormModel.area = this.area;
       this.bizFormModel.status = this.value;
       saveManufactureFactory(this.bizFormModel)
@@ -261,16 +275,39 @@ export default {
         remarks: "", // Thông tin ghi chú
       };
     },
-    initOptions() {},
-    // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện
-    onChangeProvince(data) {
-      this.province = data.value;
+    initOptions() {
+      this.loadProvinceList();
     },
-    onChangeCity(data) {
-      this.city = data.value;
+    // Tỉnh/xã lấy từ bảng administrative_division (34 tỉnh, không còn cấp huyện).
+    loadProvinceList() {
+      const search = { params: [
+        { columnName: "parten_id", queryType: "=", value: "0" },
+        { columnName: "level", queryType: "=", value: "1" },
+      ] };
+      listAdministrativeDivisionAll(search).then((responseData) => {
+        this.province_List = responseData.data || [];
+      }).catch(() => {});
     },
-    onChangeArea(data) {
-      this.area = data.value;
+    loadAreaList() {
+      if (!this.province) {
+        this.area_List = [];
+        return;
+      }
+      const search = { params: [
+        { columnName: "parten_id", queryType: "=", value: this.province },
+        { columnName: "level", queryType: "=", value: "2" },
+      ] };
+      listAdministrativeDivisionAll(search).then((responseData) => {
+        this.area_List = responseData.data || [];
+      }).catch(() => {});
+    },
+    onChangeProvince(value) {
+      this.province = value;
+      this.area = "";
+      this.loadAreaList();
+    },
+    onChangeArea(value) {
+      this.area = value;
     },
       openViewManufactureFactoryDialog(manufactureFactory) {
           this.dialogProps.action = "view";
@@ -284,8 +321,9 @@ export default {
           this.value = this.bizFormModel.status;
           this.dialogProps.visible = true;
           this.province = this.bizFormModel.province;
-          this.city = this.bizFormModel.city;
+          this.city = "";
           this.area = this.bizFormModel.area;
+          this.loadAreaList();
         },
     openEditManufactureFactoryDialog(manufactureFactory) {
           this.dialogProps.action = "edit";
@@ -299,8 +337,9 @@ export default {
           this.tabIndex = "1";
           this.dialogProps.visible = true;
           this.province = this.bizFormModel.province;
-          this.city = this.bizFormModel.city;
+          this.city = "";
           this.area = this.bizFormModel.area;
+          this.loadAreaList();
         },
     openAddManufactureFactoryDialog() {
         this.dialogProps.action = "add";
@@ -312,6 +351,7 @@ export default {
         this.province = "";
         this.city = "";
         this.area = "";
+        this.loadAreaList();
       },
     openCopyManufactureFactoryDialog(manufactureFactory) {
           this.dialogProps.action = "add";
@@ -323,6 +363,10 @@ export default {
           this.initOptions(this.bizFormModel);
           this.tabIndex = "1";
           this.bizFormModel.id = null; //ĐặtidĐặt thành trống, Thêm mới một
+          this.province = this.bizFormModel.province;
+          this.city = "";
+          this.area = this.bizFormModel.area;
+          this.loadAreaList();
           this.dialogProps.visible = true;
         },
 },
@@ -330,13 +374,3 @@ export default {
   
 };
 </script>
-<style lang="scss">
-.distpicker-address-wrapper {
-  select {
-    padding: 0px 10px !important;
-    height: 30px !important;
-    font-size: 15px !important;
-    line-height: 30px !important;
-  }
-}
-</style>

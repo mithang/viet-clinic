@@ -632,13 +632,4 @@
     },
   }
 </script>
-<style lang="scss">
-  .distpicker-address-wrapper {
-    select {
-      padding: 0px 10px !important;
-      height: 30px !important;
-      font-size: 15px !important;
-      line-height: 30px !important;
-    }
-  }
-</style>
+

@@ -1494,10 +1494,6 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <!--<el-form-item label='Khu vực' prop=''>
-                <v-distpicker :province="province" :city="city" :area="area"
-                              @province="onChangeProvince" @city="onChangeCity" @area="onChangeArea"></v-distpicker>
-              </el-form-item>-->
               <el-form-item label="Địa chỉ người nhận">
                 Tỉnh:
                 <el-input  :rows="3" v-model="diagnosis.province"></el-input>
@@ -1579,11 +1575,6 @@
         }
       };
       return {
-        //Liên kết ba cấp tỉnh/thành phố/quận/huyện
-        province:"",
-        market:"",
-        distinguish:"",
-
         hisPatient: null, //hisThông tin hội chẩn bệnh nhân
         tokenData: null, // hisToken
         orderForm: null, // Thông tin đơn hàng
@@ -1849,20 +1840,6 @@
       },
     },
     methods: {
-      // Lấy giá trị liên kết ba cấp tỉnh/thành phố/quận/huyện: trước đây
-      // nằm nhầm trong computed (vừa side effect vừa không trả giá trị);
-      // template dùng chúng làm handler @province/@city/@area của v-distpicker
-      // nên chuyển sang methods để handler thật sự chạy.
-      onChangeProvince(data) {
-        this.province = data.value
-      },
-      onChangeCity(data) {
-        this.city = data.value
-      },
-      onChangeArea(data) {
-        this.area = data.value
-      },
-
       // Lấy phòng khám từ xatoken
       async getToken() {
         await this.$axios.post('/token/Auth/GetAppFrienAuthToken', loginForm, config)

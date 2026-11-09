@@ -17,15 +17,8 @@ if (typeof window !== 'undefined' && window.ELEMENT && window.ELEMENT.locale) {
   window.ELEMENT.locale(elementViLocale)
 }
 
-// Import liên kết ba cấp tỉnh/thành phố/quận/huyện
-import Distpicker from 'v-distpicker'
-
-
 Vue.prototype.$moment = moment
 Vue.prototype.$axios = axios
-
-// Toàn cục sử dụng liên kết ba cấp tỉnh/thành phố/quận/huyện
-Vue.component('v-distpicker', Distpicker)
 
 // Import thư viện chuyển Hán tự sang bính âm
 import pinyin from 'js-pinyin'
