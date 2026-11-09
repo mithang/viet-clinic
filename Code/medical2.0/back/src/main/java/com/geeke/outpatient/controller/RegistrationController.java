@@ -141,6 +141,15 @@ public class RegistrationController extends CrudController<RegistrationService, 
         Date exitNumberDate = new Date();
         if (BizConstants.REG_STATUS_REFUNDED.equals(refundRegistrationRemarks)) {
             Registration registration = registrationService.get(id);
+            // DS153 A: id la / id trong -> get() tra null, deref
+            // getStatus() ben duoi NPE 500. Fail-closed 400 truoc khi
+            // doc trang thai (mau print/registationupdate cung file).
+            // Nhanh else (remarks khac) khong bi anh huong: service
+            // refundRegistrationPay xu ly ghost bang claim 0 dong -> 0.
+            if (registration == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResultUtil.errorJson(ErrorEnum.E_400));
+            }
             if (BizConstants.REG_STATUS_PENDING.equals(registration.getStatus().getValue())) {
                 String message = "bạn Đã hoàn thành ký Đến, Như cần hủy số khám Vui lòng Đến Bệnh viện tiến hành dòng!";
                 return ResponseEntity.ok(ResultUtil.successJson(message));
@@ -176,6 +185,13 @@ public class RegistrationController extends CrudController<RegistrationService, 
         int res;
         Date exitNumberDate = new Date();
         Registration registrations = registrationService.get(registration.getId());
+        // DS153 A: nhu refundRegistrationPay ben tren -- id la ->
+        // get() tra null, deref getStatus() ben duoi NPE 500 truoc
+        // khi claim DS64 chay. Fail-closed 400 (ServiceException nhu
+        // cac guard trang thai ben duoi).
+        if (registrations == null) {
+            throw new ServiceException("Lượt đăng ký khám không tồn tại");
+        }
         if (BizConstants.REG_STATUS_PENDING.equals(registrations.getStatus().getValue())) {
             String message = "bạn Đã hoàn thành ký Đến, Như cần hủy số khám Vui lòng Đến Bệnh viện tiến hành dòng!";
             throw new ServiceException(message);
