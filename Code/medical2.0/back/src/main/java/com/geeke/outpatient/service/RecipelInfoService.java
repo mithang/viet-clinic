@@ -271,7 +271,9 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             int recipelInfoLength=byMedicalId.size();
             int count=0;
             for (RecipelInfo recipelInfos : byMedicalId  ) {
-                if(recipelInfos.getStatus()==-1){
+                // DS168: status NULL-able (29 live rows) -> unbox ==-1
+                // NPE 500 khi don cung dang ky co status NULL; null-safe.
+                if(Integer.valueOf(-1).equals(recipelInfos.getStatus())){
                     count++;
                 }
             }
