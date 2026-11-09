@@ -388,6 +388,18 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                     }
                 }
             }
+            // DS170 B: phan tu null trong recipelInfos (evt null hoac
+            // recipelInfo null) lam stream map ben duoi NPE 500 o
+            // getRecipelInfo().getId() truoc moi guard/claim. DS158 A1
+            // chi chan id TRONG, khong chan evt null. Fail-closed 400
+            // truoc moi doc; id trong KHONG chan o day vi luong ban le
+            // tao don moi co id trong hop le (addRetailRecipelInfo),
+            // duong thuong van duoc guard DS158 o processNormalCharge.
+            for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvts) {
+                if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null) {
+                    throw new ServiceException("Đơn thuốc của phiếu thu không được để trống");
+                }
+            }
             //Kiểm tratrùng lặpđề xuấtgiao
             List<String> InRecipeIds = recipelInfoEvts.stream().map(recipelInfoEvt -> {
                 return recipelInfoEvt.getRecipelInfo().getId();
