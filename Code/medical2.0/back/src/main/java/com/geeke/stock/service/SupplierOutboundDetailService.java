@@ -18,7 +18,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -69,6 +71,29 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
 
         SupplierOutbound outbound = supplierOutboundService.get(outboundId);
         if (outbound == null) throw new ServiceException("Phiếu xuất kho không tồn tại");
+
+        // DS176 B: request line id khong resolve duoc qua
+        // getByOutboundId (INNER JOIN medicinal_storage_control lam
+        // dong ms-NULL/ghost bien mat khoi exist) truoc day edit 200
+        // silent no-op, dong giu nguyen (probe-proven). Fail-closed
+        // 400: dong co that nhung khong hop le / id ma.
+        Set<String> existIds = new HashSet<>();
+        for (SupplierOutboundDetail d : exist) {
+            if (d.getId() != null) {
+                existIds.add(d.getId());
+            }
+        }
+        List<String> rawIds = this.listIdsByOutboundId(outboundId);
+        for (SupplierOutboundDetail n : supplierOutboundDetails) {
+            if (n.getId() == null || n.getId().isEmpty()
+                    || existIds.contains(n.getId())) {
+                continue;
+            }
+            if (rawIds.contains(n.getId())) {
+                throw new ServiceException("Chi tiết xuất kho không hợp lệ (thiếu thông tin tồn kho)");
+            }
+            throw new ServiceException("Chi tiết xuất kho không tồn tại: " + n.getId());
+        }
 
         //Cập nhậtĐãcóChi tiết, tìm raCầnXóa của Chi tiết
         List<SupplierOutboundDetail> willDeleteDetail = new ArrayList<>();
@@ -471,5 +496,24 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
             }
         }
         return kept;
+    }
+
+    /**
+     * DS176 B: raw line count for one slip (no INNER JOIN resolve).
+     * examine() compares it against the resolved detail size to catch
+     * phantom approvals of lines whose medicinal_storage_id is
+     * NULL/ghost.
+     */
+    public int countByOutboundId(String outboundId) {
+        return supplierOutboundDetailDao.countByOutboundId(outboundId);
+    }
+
+    /**
+     * DS176 B: raw line ids for one slip (no INNER JOIN resolve).
+     * save() uses it to tell a request line that exists but does not
+     * resolve (corrupt medicinal_storage_id) apart from a ghost id.
+     */
+    public List<String> listIdsByOutboundId(String outboundId) {
+        return supplierOutboundDetailDao.listIdsByOutboundId(outboundId);
     }
 }

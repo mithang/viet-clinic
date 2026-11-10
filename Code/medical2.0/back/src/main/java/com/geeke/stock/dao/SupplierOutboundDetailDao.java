@@ -22,6 +22,22 @@ public interface SupplierOutboundDetailDao extends CrudDao<SupplierOutboundDetai
 
     List<SupplierOutboundDetail> getByOutboundId(String outboundId);
 
+    /**
+     * DS176 B: raw line count for one slip (plain table count, no
+     * INNER JOIN resolve). getByOutboundId INNER JOINs
+     * medicinal_storage_control, so a line whose medicinal_storage_id
+     * is NULL/ghost vanishes from the resolved list; examine compares
+     * this count against the resolved size to catch phantom approvals.
+     */
+    int countByOutboundId(String outboundId);
+
+    /**
+     * DS176 B: raw line ids for one slip (no INNER JOIN resolve).
+     * save() uses it to tell a request line that exists but does not
+     * resolve (corrupt medicinal_storage_id) apart from a ghost id.
+     */
+    List<String> listIdsByOutboundId(String outboundId);
+
     void deleteByOutboundId(String outboundId);
 
     /**

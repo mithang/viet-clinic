@@ -103,6 +103,18 @@
         </where>
     </select>
 
+    <!-- DS176 B: raw line count / ids (no INNER JOIN resolve); see
+         SupplierOutboundDetailDao.countByOutboundId/listIdsByOutboundId. -->
+    <select id="countByOutboundId" resultType="int">
+        SELECT COUNT(*) FROM supplier_outbound_detail
+        WHERE supplier_outbound_id = #{outboundId}
+    </select>
+
+    <select id="listIdsByOutboundId" resultType="String">
+        SELECT id FROM supplier_outbound_detail
+        WHERE supplier_outbound_id = #{outboundId}
+    </select>
+
     <delete id="deleteByOutboundId">
         DELETE FROM supplier_outbound_detail a
         <where>

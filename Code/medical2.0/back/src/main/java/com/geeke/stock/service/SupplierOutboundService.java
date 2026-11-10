@@ -261,6 +261,18 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
 
         //TheoChi tiếtvòng lặptrừđiTồn kho
         List<SupplierOutboundDetail> details = supplierOutboundDetailService.getByOutboundId(id);
+        // DS176 B: getByOutboundId INNER JOINs medicinal_storage_control,
+        // nen dong co medicinal_storage_id NULL/ghost bien mat khoi danh
+        // sach va phieu duoc duyet "thanh cong" nhung khong tru ton kho
+        // nao (phantom approval, probe-proven: 200, slip -> 2, ton giu
+        // nguyen). Fail-closed 400 khi so dong luu khac so dong resolve
+        // duoc. Luu y: getByOutboundId loc tenant (Z1a) chi bo dong
+        // ngoai session tenant; phieu da qua get() kiem so huu nen dong
+        // cua no cung tenant, so sanh nay khong false-positive.
+        int storedLines = supplierOutboundDetailService.countByOutboundId(id);
+        if (storedLines != details.size()) {
+            throw new ServiceException("Chi tiết xuất kho không hợp lệ (tồn kho động thiếu)");
+        }
         for (SupplierOutboundDetail detail : details) {
             // DS174 A: number null o dong da luu (chi qua sua tay DB, vi
             // duong API tao da chan) truoc day NPE 500 o negate() ben
@@ -269,6 +281,16 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             // kho giu nguyen.
             if (detail.getNumber() == null) {
                 throw new ServiceException("Số lượng xuất kho của chi tiết đã lưu không hợp lệ");
+            }
+            // DS176 B: defense-in-depth truoc moi deref (cung ho voi
+            // guard count o tren; bao ve neu mapper doi cach resolve).
+            if (detail.getMedicinalStorage() == null
+                    || StringUtils.isBlank(detail.getMedicinalStorage().getId())) {
+                throw new ServiceException("Chi tiết xuất kho thiếu thông tin tồn kho động");
+            }
+            if ((detail.getDrug() == null || StringUtils.isBlank(detail.getDrug().getId()))
+                    && (detail.getStuff() == null || StringUtils.isBlank(detail.getStuff().getId()))) {
+                throw new ServiceException("Chi tiết xuất kho thiếu thông tin thuốc/vật tư");
             }
             //Cập nhậtđộngTồn kho
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();

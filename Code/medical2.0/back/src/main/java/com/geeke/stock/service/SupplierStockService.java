@@ -654,6 +654,13 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             return;
         }
         DictItem examine = storageEvt.getSupplierStorage().getExamine();
+        // DS176 B: examine null da no-op (DS55) nhung examine.getValue()
+        // null thi claimForAudit ghi examine=NULL + cong kho (probe:
+        // audit voi examine {} -> 200, phieu examine NULL, ton +5).
+        // Fail-closed 400 truoc claimForAudit.
+        if (StringUtils.isBlank(examine.getValue())) {
+            throw new ServiceException("Trạng thái xét duyệt không được để trống");
+        }
         storageEvt.getSupplierStockList().forEach(stock -> {
             if (stock == null || StringUtils.isBlank(stock.getId())) {
                 return;
