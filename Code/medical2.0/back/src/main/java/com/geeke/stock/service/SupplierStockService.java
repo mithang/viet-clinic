@@ -309,13 +309,23 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         if (storageEvt == null || storageEvt.getSupplierStorage() == null) {
             throw new ServiceException("Phiếu nhập kho không được để trống");
         }
+        // DS175 A: number la Integer nullable, initial la int primitive --
+        // setInitial(getNumber()) unbox NPE 500 khi number null (probe
+        // DS175 A1/A3: phieu number null -> 500 truoc moi ghi; A2/A4:
+        // dong number null -> 500 sau khi phieu da luu, rollback nho tx).
+        // Chan 400 truoc moi ghi, cung quy uoc DS174 (fail-closed 400).
+        if (storageEvt.getSupplierStorage().getNumber() == null) {
+            throw new ServiceException("Số lượng phiếu nhập kho không được để trống");
+        }
         //trướcLưuphiếu nhập kho
         SupplierStorage supplierStorage = storageEvt.getSupplierStorage();
         supplierStorage.setInitial(supplierStorage.getNumber());
         SupplierStorage save = supplierStorageService.save(supplierStorage);
         if (null != storageEvt.getSupplierStockList() && !storageEvt.getSupplierStockList().isEmpty()) {
             for (SupplierStock entity : storageEvt.getSupplierStockList()) {
-
+                if (entity == null || entity.getNumber() == null) {
+                    throw new ServiceException("Số lượng dòng nhập kho không được để trống");
+                }
 
                 //Lưu số phiếu nhập kho vào từng bảng nhập kho
                 entity.setSupplierStorage(save);
@@ -588,6 +598,12 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         if (storageEvt == null || storageEvt.getSupplierStorage() == null) {
             throw new ServiceException("Phiếu nhập kho không được để trống");
         }
+        // DS175 A: nhu savesTo -- number Integer nullable, setInitial
+        // unbox NPE 500 khi number null (probe DS175 A1/A2 qua
+        // inStorageByCompany). Chan 400 truoc moi ghi.
+        if (storageEvt.getSupplierStorage().getNumber() == null) {
+            throw new ServiceException("Số lượng phiếu nhập kho không được để trống");
+        }
         //trướcLưuphiếu nhập kho
         SupplierStorage supplierStorage = storageEvt.getSupplierStorage();
         supplierStorage.setInitial(supplierStorage.getNumber());
@@ -596,6 +612,9 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
 
         if (null != storageEvt.getSupplierStockList() && !storageEvt.getSupplierStockList().isEmpty()) {
             for (SupplierStock entity : storageEvt.getSupplierStockList()) {
+                if (entity == null || entity.getNumber() == null) {
+                    throw new ServiceException("Số lượng dòng nhập kho không được để trống");
+                }
 
                 //Lưu số phiếu nhập kho vào từng bảng nhập kho
                 entity.setSupplierStorage(save);
