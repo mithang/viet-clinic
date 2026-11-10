@@ -659,39 +659,64 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         //ĐặtĐơn thuốcThông tin
         RecipelInfoEvt recipelInfoEvt = new RecipelInfoEvt();
         recipelInfoEvt.setRecipelInfo(recipelInfo);
+        // DS184: loại đơn lấy null-safe một lần (recipel_info.recipel_type
+        // NULL vẫn trả 200 live — DictItem rỗng — nhưng guard để không NPE
+        // nếu mapper/orphan trả recipelInfo/recipelType null).
+        String recipelType = null;
+        if (recipelInfo != null && recipelInfo.getRecipelType() != null) {
+            recipelType = recipelInfo.getRecipelType().getValue();
+        }
         if (null != recipelDetails && !recipelDetails.isEmpty()) {
             for (RecipelDetail recipelDetail : recipelDetails) {
 
                 //Truy vấnThông tin thuốc
                 DrugStuffEvt drugStuffEvt = new DrugStuffEvt();
-                if (BizConstants.RECIPEL_TYPE_WESTERN.equals(recipelInfo.getRecipelType().getValue()) || BizConstants.RECIPEL_TYPE_CHINESE.equals(recipelInfo.getRecipelType().getValue()) || BizConstants.RECIPEL_TYPE_INFUSION.equals(recipelInfo.getRecipelType().getValue())) {
+                // DS184 (I1, đường đọc): chi tiết thiếu drugStuffId, hoặc
+                // thuốc/hạng mục/vật tư gốc đã xóa (service.get trả null)
+                // thì trả evt rỗng thay vì NPE 500 — không bịa tên/giá.
+                // Không dùng getDrugStuffEvt ở đây: nó rẽ nhánh theo
+                // stuffType của chi tiết, còn 32 chi tiết live có
+                // stuff_type NULL vẫn phân giải đúng qua recipelType.
+                String drugStuffId = recipelDetail.getDrugStuffId() == null
+                        ? null : recipelDetail.getDrugStuffId().getDrugStuffId();
+                if (drugStuffId == null || drugStuffId.trim().isEmpty()) {
+                    recipelDetail.setDrugStuffId(drugStuffEvt);
+                    continue;
+                }
+                if (BizConstants.RECIPEL_TYPE_WESTERN.equals(recipelType) || BizConstants.RECIPEL_TYPE_CHINESE.equals(recipelType) || BizConstants.RECIPEL_TYPE_INFUSION.equals(recipelType)) {
                     //Thuốc đông y, Thuốc tây, Đơn truyền dịch tra cứu thông tin thuốc
-                    Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
-                    drugStuffEvt.setDrugStuffId(drug.getId());
-                    drugStuffEvt.setName(drug.getGoodsName());
-                    drugStuffEvt.setPrice(drug.getPrice());
-                    drugStuffEvt.setDosisUnit(drug.getDosisUnit());
-                    drugStuffEvt.setPack(drug.getPack());
-                    drugStuffEvt.setDrug(drug);
-                } else if (BizConstants.RECIPEL_TYPE_OTHER.equals(recipelInfo.getRecipelType().getValue())) {
+                    Drug drug = drugService.get(drugStuffId);
+                    if (null != drug) {
+                        drugStuffEvt.setDrugStuffId(drug.getId());
+                        drugStuffEvt.setName(drug.getGoodsName());
+                        drugStuffEvt.setPrice(drug.getPrice());
+                        drugStuffEvt.setDosisUnit(drug.getDosisUnit());
+                        drugStuffEvt.setPack(drug.getPack());
+                        drugStuffEvt.setDrug(drug);
+                    }
+                } else if (BizConstants.RECIPEL_TYPE_OTHER.equals(recipelType)) {
                     //Truy vấn thông tin hạng mục khám chữa bệnh
-                    CostItem costItem = costItemService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
-                    drugStuffEvt.setDrugStuffId(costItem.getId());
-                    drugStuffEvt.setName(costItem.getItemName());
-                    drugStuffEvt.setPrice(costItem.getSalePrice());
-                    drugStuffEvt.setDosisUnit(costItem.getUnit());
-                    drugStuffEvt.setCostItem(costItem);
-                } else if (BizConstants.RECIPEL_TYPE_PATENT.equals(recipelInfo.getRecipelType().getValue())) {
+                    CostItem costItem = costItemService.get(drugStuffId);
+                    if (null != costItem) {
+                        drugStuffEvt.setDrugStuffId(costItem.getId());
+                        drugStuffEvt.setName(costItem.getItemName());
+                        drugStuffEvt.setPrice(costItem.getSalePrice());
+                        drugStuffEvt.setDosisUnit(costItem.getUnit());
+                        drugStuffEvt.setCostItem(costItem);
+                    }
+                } else if (BizConstants.RECIPEL_TYPE_PATENT.equals(recipelType)) {
                     //Truy vấnThông tin vật tư&Thông tin thuốc là khác của Thông tin
-                    Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                    Drug drug = drugService.get(drugStuffId);
                     if (null == drug) {
-                        Stuff stuff = stuffService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
-                        drugStuffEvt.setDrugStuffId(stuff.getId());
-                        drugStuffEvt.setName(stuff.getName());
-                        drugStuffEvt.setPrice(stuff.getPriceOutSell());
-                        drugStuffEvt.setDosisUnit(stuff.getPackUnit());
-                        drugStuffEvt.setPack(stuff.getPackUnit());
-                        drugStuffEvt.setStuff(stuff);
+                        Stuff stuff = stuffService.get(drugStuffId);
+                        if (null != stuff) {
+                            drugStuffEvt.setDrugStuffId(stuff.getId());
+                            drugStuffEvt.setName(stuff.getName());
+                            drugStuffEvt.setPrice(stuff.getPriceOutSell());
+                            drugStuffEvt.setDosisUnit(stuff.getPackUnit());
+                            drugStuffEvt.setPack(stuff.getPackUnit());
+                            drugStuffEvt.setStuff(stuff);
+                        }
                     } else {
                         drugStuffEvt.setDrugStuffId(drug.getId());
                         drugStuffEvt.setName(drug.getGoodsName());
@@ -700,37 +725,43 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                         drugStuffEvt.setPack(drug.getPack());
                         drugStuffEvt.setDrug(drug);
                     }
-                } else if (BizConstants.RECIPEL_TYPE_EXTERNAL.equals(recipelInfo.getRecipelType().getValue())) {
+                } else if (BizConstants.RECIPEL_TYPE_EXTERNAL.equals(recipelType)) {
                     //bán lẻĐơn thuốc
                     String retailType = recipelDetail.getRetailType();
                     if ("0".equals(retailType) || "1".equals(retailType) || "2".equals(retailType)) {
                         //Thuốc đông y, Thuốc tây, Đơn truyền dịch tra cứu thông tin thuốc
-                        Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
-                        drugStuffEvt.setDrugStuffId(drug.getId());
-                        drugStuffEvt.setName(drug.getGoodsName());
-                        drugStuffEvt.setPrice(drug.getPrice());
-                        drugStuffEvt.setDosisUnit(drug.getDosisUnit());
-                        drugStuffEvt.setPack(drug.getPack());
-                        drugStuffEvt.setDrug(drug);
+                        Drug drug = drugService.get(drugStuffId);
+                        if (null != drug) {
+                            drugStuffEvt.setDrugStuffId(drug.getId());
+                            drugStuffEvt.setName(drug.getGoodsName());
+                            drugStuffEvt.setPrice(drug.getPrice());
+                            drugStuffEvt.setDosisUnit(drug.getDosisUnit());
+                            drugStuffEvt.setPack(drug.getPack());
+                            drugStuffEvt.setDrug(drug);
+                        }
                     } else if ("3".equals(retailType)) {
                         //Truy vấn thông tin hạng mục khám chữa bệnh
-                        CostItem costItem = costItemService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
-                        drugStuffEvt.setDrugStuffId(costItem.getId());
-                        drugStuffEvt.setName(costItem.getItemName());
-                        drugStuffEvt.setPrice(costItem.getSalePrice());
-                        drugStuffEvt.setDosisUnit(costItem.getUnit());
-                        drugStuffEvt.setCostItem(costItem);
+                        CostItem costItem = costItemService.get(drugStuffId);
+                        if (null != costItem) {
+                            drugStuffEvt.setDrugStuffId(costItem.getId());
+                            drugStuffEvt.setName(costItem.getItemName());
+                            drugStuffEvt.setPrice(costItem.getSalePrice());
+                            drugStuffEvt.setDosisUnit(costItem.getUnit());
+                            drugStuffEvt.setCostItem(costItem);
+                        }
                     } else if ("4".equals(retailType)) {
                         //Truy vấnThông tin vật tư&Thông tin thuốc là khác của Thông tin
-                        Drug drug = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
+                        Drug drug = drugService.get(drugStuffId);
                         if (null == drug) {
-                            Stuff stuff = stuffService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
-                            drugStuffEvt.setDrugStuffId(stuff.getId());
-                            drugStuffEvt.setName(stuff.getName());
-                            drugStuffEvt.setPrice(stuff.getPriceOutSell());
-                            drugStuffEvt.setDosisUnit(stuff.getPackUnit());
-                            drugStuffEvt.setPack(stuff.getPackUnit());
-                            drugStuffEvt.setStuff(stuff);
+                            Stuff stuff = stuffService.get(drugStuffId);
+                            if (null != stuff) {
+                                drugStuffEvt.setDrugStuffId(stuff.getId());
+                                drugStuffEvt.setName(stuff.getName());
+                                drugStuffEvt.setPrice(stuff.getPriceOutSell());
+                                drugStuffEvt.setDosisUnit(stuff.getPackUnit());
+                                drugStuffEvt.setPack(stuff.getPackUnit());
+                                drugStuffEvt.setStuff(stuff);
+                            }
                         } else {
                             drugStuffEvt.setDrugStuffId(drug.getId());
                             drugStuffEvt.setName(drug.getGoodsName());
