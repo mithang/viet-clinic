@@ -1,17 +1,13 @@
 package com.geeke.utils;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -671,180 +667,6 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		return contentType;
 	}
 	
-	/**
-	 * Gửi tới trình duyệtTệpTải xuống, Hỗ trợ tải tiếp khi đứt đoạn
-	 * @param file cầnTải xuống của Tệp
-	 * @param request Vui lòngyêu cầuĐối tượng
-	 * @param response phản hồiĐối tượng
-	 * @return Trả về thông tin lỗi, khôngThông tin lỗiTrả vềnull
-	 */
-	public static String downFile(File file, HttpServletRequest request, HttpServletResponse response){
-		 return downFile(file, request, response, null);
-	}
-	
-	/**
-	 * Gửi tới trình duyệtTệpTải xuống, Hỗ trợ tải tiếp khi đứt đoạn
-	 * @param file cầnTải xuống của Tệp
-	 * @param request Vui lòngyêu cầuĐối tượng
-	 * @param response phản hồiĐối tượng
-	 * @param fileName chỉchỉ địnhTải xuống của Tên tệp
-	 * @return Trả về thông tin lỗi, khôngThông tin lỗiTrả vềnull
-	 */
-	public static String downFile(File file, HttpServletRequest request, HttpServletResponse response, String fileName){
-		String error  = null;
-		if (file != null && file.exists()) {
-			if (file.isFile()) {
-				if (file.length() <= 0) {
-					error = "đó Tệp có một Cái trống Tệp.";
-				}
-				if (!file.canRead()) {
-					error = "đó Tệp Không có đọc Quyền.";
-				}
-			} else {
-				error = "đó Tệp có một Cái Tệp kẹp.";
-			}
-		} else {
-			error = "Tệp đã mất hoặc không tồn tại!";
-		}
-		if (error != null){
-			logger.debug("---------------" + file + " " + error);
-			return error;
-		}
-
-		long fileLength = file.length(); // Bản ghiTệpkích thước
-		long pastLength = 0; 	// Bản ghiĐãTải xuốngTệpkích thước
-		int rangeSwitch = 0; 	// 0: Từ tiêu đềBắt đầu của toàn vănTải xuống; 1: Từ mộtbyteBắt đầu của Tải xuống(bytes=27000-); 2: Từ mộtbyteBắt đầuĐếnmộtbyteKết thúc của Tải xuống(bytes=27000-39000)
-		long toLength = 0; 		// Ghi lại độ lệch byte cuối cùng của đoạn byte mà client cần tải xuống(so vớiNhư bytes=27000-39000, thìnàyCáiGiá trị có  là 39000)
-		long contentLength = 0; // Khách hàngđầuVui lòngyêu cầu của bytetổng lượng
-		String rangeBytes = ""; // Bản ghiKhách hàngđầutruyềnđến của hìnhNhư “bytes=27000-” hoặc người“bytes=27000-39000” của nội dung
-		RandomAccessFile raf = null; // âmtráchđọcDữ liệu
-		OutputStream os = null; 	// viếtraDữ liệu
-		OutputStream out = null; 	// đệmxung
-		byte b[] = new byte[1024]; 	// tạmlưucontainer
-
-		if (request.getHeader("Range") != null) { // Byte bắt đầu của khối tệp mà client yêu cầu tải xuống
-			response.setStatus(javax.servlet.http.HttpServletResponse.SC_PARTIAL_CONTENT);
-			logger.debug("request.getHeader(\"Range\") = " + request.getHeader("Range"));
-			rangeBytes = request.getHeader("Range").replaceAll("bytes=", "");
-			if (rangeBytes.indexOf('-') == rangeBytes.length() - 1) {// bytes=969998336-
-				rangeSwitch = 1;
-				rangeBytes = rangeBytes.substring(0, rangeBytes.indexOf('-'));
-				pastLength = Long.parseLong(rangeBytes.trim());
-				contentLength = fileLength - pastLength; // Khách hàngđầuVui lòngyêu cầu của  có  969998336  củasau của byte
-			} else { // bytes=1275856879-1275877358
-				rangeSwitch = 2;
-				String temp0 = rangeBytes.substring(0, rangeBytes.indexOf('-'));
-				String temp2 = rangeBytes.substring(rangeBytes.indexOf('-') + 1, rangeBytes.length());
-				pastLength = Long.parseLong(temp0.trim()); // bytes=1275856879-1275877358, Từ Dòng  1275856879 byteBắt đầuTải xuống
-				toLength = Long.parseLong(temp2); // bytes=1275856879-1275877358, ĐếnDòng  1275877358 byteKết thúc
-				contentLength = toLength - pastLength; // Khách hàngđầuVui lòngyêu cầu của  có  1275856879-1275877358 giữa của byte
-			}
-		} else { // Từ Bắt đầutiến hành dòngTải xuống
-			contentLength = fileLength; // Khách hàngđầucầnyêu cầutoàn vănTải xuống
-		}
-
-		// NếuđặtĐặtrồiContent-Length, thìKhách hàngđầusẽtự độngtiến hành dòngnhiềuluồngTải xuống. NếuKhông muốn hỗ trợ đa luồng, thìkhôngcầnĐặtnàyCáiTham số.  Định dạng của phản hồi là:
-		// Content-Length: [Tổng kích thước tệp] - [Byte bắt đầu của khối tệp mà client yêu cầu tải xuống]
-		// ServletActionContext.getResponse().setHeader("Content- Length", new Long(file.length() - p).toString());
-		response.reset(); // Thông báo cho client được phép tải xuống nối tiếp đa luồng với điểm ngắt,Định dạng của phản hồi là:Accept-Ranges: bytes
-		if (pastLength != 0) {
-			response.setHeader("Accept-Ranges", "bytes");// Nếu có Dòng một lầndưới,cònKhông cótải tiếp khi đứt đoạn,Trạng thái có Mặc định của  200,khôngcầnhiển thịkiểuĐặt;Định dạng của phản hồi là:HTTP/1.1 200 OK
-			// không có Từ nhấtBắt đầuTải xuống, Định dạng của phản hồi là: Content-Range: bytes [Tệpkhối của Bắt đầubyte]-[Tổng kích thước tệp - 1]/[Tổng kích thước tệp]
-			logger.debug("--------------- không có Từ Bắt đầu tiến hành dòng Tải xuống! dịch vụ thiết bị tức là Sẽ Bắt đầu tải tiếp khi đứt đoạn...");
-			switch (rangeSwitch) {
-				case 1: { // Đối với bytes=27000- Yêu cầu
-					String contentRange = new StringBuffer("bytes ").append(new Long(pastLength).toString()).append("-")
-							.append(new Long(fileLength - 1).toString()).append("/").append(new Long(fileLength).toString()).toString();
-					response.setHeader("Content-Range", contentRange);
-					break;
-				}
-				case 2: { // Đối với bytes=27000-39000 Yêu cầu
-					String contentRange = rangeBytes + "/" + new Long(fileLength).toString();
-					response.setHeader("Content-Range", contentRange);
-					break;
-				}
-				default: {
-					break;
-				}
-			}
-		} else {
-			//  có Từ Bắt đầuTải xuống
-			logger.debug("--------------- có Từ Bắt đầu tiến hành dòng Tải xuống!");
-		}
-
-		try {
-			response.addHeader("Content-Disposition", "attachment; filename=\"" + 
-					Encodes.urlEncode(StringUtils.isBlank(fileName) ? file.getName() : fileName) + "\"");
-			response.setContentType(getContentType(file.getName())); // set the MIME type.
-			response.addHeader("Content-Length", String.valueOf(contentLength));
-			os = response.getOutputStream();
-			out = new BufferedOutputStream(os);
-			raf = new RandomAccessFile(file, "r");
-			try {
-				switch (rangeSwitch) {
-					case 0: { // thông thườngTải xuống,  hoặc ngườiTừ tiêu đềBắt đầu của Tải xuống cùng1
-					}
-					case 1: { // Đối với bytes=27000- Yêu cầu
-						raf.seek(pastLength); // hìnhNhư  bytes=969998336-  của Khách hàngđầuVui lòngyêu cầu, Bỏ qua 969998336 byte
-						int n = 0;
-						while ((n = raf.read(b, 0, 1024)) != -1) {
-							out.write(b, 0, n);
-						}
-						break;
-					}
-					case 2: { // Đối với bytes=27000-39000 Yêu cầu
-						raf.seek(pastLength); // hìnhNhư  bytes=1275856879-1275877358  của Khách hàngđầuVui lòngyêu cầu, tìmĐếnDòng  1275856879 byte
-						int n = 0;
-						long readLength = 0; // Bản ghiĐãđọcbytesố
-						while (readLength <= contentLength - 1024) {// lớnMột phầnbytetạiỞ đâyđọc
-							n = raf.read(b, 0, 1024);
-							readLength += 1024;
-							out.write(b, 0, n);
-						}
-						if (readLength <= contentLength) { // còn lạidưới của không đủ 1024 bytetạiỞ đâyđọc
-							n = raf.read(b, 0, (int) (contentLength - readLength));
-							out.write(b, 0, n);
-						}
-						break;
-					}
-					default: {
-						break;
-					}
-				}
-				out.flush();
-				logger.debug("---------------Tải xuốnghoàn thành!");
-			} catch (IOException ie) {
-				/**
-				 * tạiviếtDữ liệu của  giờchờ,  đối vớitại ClientAbortException củaLớp của ngoại lệ, 
-				 *  có do là Khách hàngđầulấyhủyrồiTải xuống, Và khi phía server tiếp tục ghi dữ liệu cho trình duyệt,  ném ranàyCáingoại lệ, nàyCái có bình thường của . 
-				 * Đặc biệt đối với phần mềm client hút băng thông như Xunlei,  rõrõĐãcómộtCáiluồngtạiđọc bytes=1275856879-1275877358, 
-				 * NếungắnThời giantrongKhông cóđọcxong, Xunlei sẽ khởi động lạiDòng haiCái, Dòng baCái. . . Luồng để đọc cùng một thứ của byteđoạn,  trực tiếpĐếncómộtCáiluồngđọcxong, nhanhsấmsẽ KILL
-				 * rơikhácđúngtạiTải xuốngcùngmộtbyteđoạn của luồng,  mạnh dòng trong dừngbyteđọcra, gây radịch vụthiết bịném ClientAbortException. 
-				 * vì vậy, Chúng ta bỏ qua ngoại lệ này
-				 */
-				logger.debug("Nhắc nhở: khi truyền tới máy khách xuất hiện ngoại lệ IO, nhưng ngoại lệ này là cho phép, có thể máy khách đã hủy tải xuống, dẫn đến ngoại lệ này, không cần lo lắng!");
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					logger.error(e.getMessage(), e);
-				}
-			}
-			if (raf != null) {
-				try {
-					raf.close();
-				} catch (IOException e) {
-					logger.error(e.getMessage(), e);
-				}
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * sửađường dẫn, Sẽ  \\  hoặc  /  v.v. thay thế là  File.separator
 	 * @param path chờsửa của đường dẫn

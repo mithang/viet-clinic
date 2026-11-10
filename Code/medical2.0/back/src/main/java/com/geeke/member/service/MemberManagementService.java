@@ -151,6 +151,11 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             throw new ServiceException("Danh sách thẻ hội viên không được để trống");
         }
         for (MemberManagement entity : entitys) {
+            // DS176 C: phan tu null -> 400, khong de roi xuong entity.getCard() NPE 500
+            // (checkMemberManagementLengths / checkMemberHasSubject deu return som khi null).
+            if (entity == null) {
+                throw new ServiceException("Danh sách thẻ hội viên không được chứa phần tử trống");
+            }
             checkMemberManagementLengths(entity);
             // DS153 C: nhu save() ben tren -- bulk khong co @Valid.
             checkMemberHasSubject(entity);
@@ -168,6 +173,11 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             throw new ServiceException("Danh sách thẻ hội viên không được để trống");
         }
         for (MemberManagement entity : entitys) {
+            // DS176 C: phan tu null -> 400, khong de roi xuong entity.getCard() NPE 500
+            // (checkMemberManagementLengths / checkMemberHasSubject deu return som khi null).
+            if (entity == null) {
+                throw new ServiceException("Danh sách thẻ hội viên không được chứa phần tử trống");
+            }
             checkMemberManagementLengths(entity);
             // DS153 C: nhu bulkInsert ben tren.
             checkMemberHasSubject(entity);
