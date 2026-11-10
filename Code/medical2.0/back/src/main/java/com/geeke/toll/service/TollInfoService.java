@@ -1298,6 +1298,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     public WorkLoadStat getWorkLoadStat(List<Parameter> params,int offset,int limit, String orderby){
         // W2: ep tenant session nhu getWorkload.
+        // DS188: body {} khong co params -> getParams() tra null -> NPE 500
+        // o parameters.addAll(params) (:1312) khi co du lieu; chuan hoa ve
+        // rong de fail-closed 200 + ensureCompanyFilter ep tenant.
+        if (params == null) { params = new ArrayList<>(); }
         ensureCompanyFilter(params);
         List<Parameter> parameters = new ArrayList<>();
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
@@ -1709,6 +1713,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     public Page<WorkLoad> getdoctorDetailstatistics(List<Parameter> params,int offset,int limit, String orderby) {
         // W2: ep tenant session (doctorParams copy sau cung ke thua filter).
+        // DS188: nhu getWorkLoadStat — params null (body {}) NPE 500 o
+        // new ArrayList<>(params) (:1725) khi total > 0; chuan hoa ve rong.
+        if (params == null) { params = new ArrayList<>(); }
         ensureCompanyFilter(params);
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);
         List<WorkLoad> count = this.dao.countWorkload(pageRequest);
@@ -1739,6 +1746,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     public WorkLoadStat getdoctorDetailstatisticsStat(List<Parameter> params,int offset,int limit, String orderby){
         // W2: ep tenant session nhu getdoctorDetailstatistics.
+        // DS188: nhu getWorkLoadStat — params null (body {}) NPE 500 o
+        // parameters.addAll(params) (:1763) khi co du lieu; chuan hoa ve rong.
+        if (params == null) { params = new ArrayList<>(); }
         ensureCompanyFilter(params);
         List<Parameter> parameters = new ArrayList<>();
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby);

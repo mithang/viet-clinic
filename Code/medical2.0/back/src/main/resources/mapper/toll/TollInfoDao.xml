@@ -814,26 +814,29 @@
     </select>
 
     <select id="countDrugSales" resultType="com.geeke.toll.entity.DrugSales">
-        select d.goods_name from toll_info a
-        inner join recipel_info ri on ri.id=a.recipel_id
-        inner join recipel_detail rd on rd.recipel_info_id =ri.id
-        inner join drug d on d.id = rd.drug_stuff_id
+        <!-- DS188: dem dung quan the voi getDrugSales (recipel_detail da
+             tinh tien, khong doi hoi toll_info). Truoc day dem tu toll_info
+             (inner join + amountStatus_1/return_type=0) nen chi tiet da
+             tinh tien nhung chua thu (orphan, khong co toll_info) co trong
+             du lieu nhung khong co trong dem -> total=0, trang tra rong
+             khi loc theo ten (vd Vitamin A allFee NULL); tong chua loc
+             cung thieu. GROUP BY giong het getDrugSales de count.size()
+             bang dung so nhom du lieu tra ve. -->
+        select d.goods_name from recipel_detail a
+        inner join recipel_info ri on ri.id=a.recipel_info_id
+        inner join drug d on d.id = a.drug_stuff_id
         left join sys_dict_item type on type.value = d.type
         left join sys_dict_item dosis_unit on dosis_unit.value =d.dosis_unit
         left join sys_dict_item preparation_unit on preparation_unit.value =d.preparation_unit
         left join sys_dict_item  pack on pack.value =d.pack
-<!--        left join dispensing dis on dis.recipel_info_id = ri.id-->
         left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
         <where>
-            a.update_date > '2022-08-05 17:20:07'
-            and a.amount_status = 'amountStatus_1' and a.return_type=0 and ri.charge_status = 1
-            AND a.del_flag = #{DEL_FLAG_NORMAL}
-<!--            AND dis.del_flag = '0'-->
-
+            ri.charge_status = 1
+            AND a.del_flag = 0
             <include refid="Common.whereParams"/>
         </where>
         group by oc.id,oc.name,d.goods_name,type.name,d.dosis ,dosis_unit.name ,d.preparation ,preparation_unit.name ,pack.name
-        order by sum(rd.all_fee) desc
+        order by sum(a.all_fee) desc
     </select>
     <select id="getWorkLoadStat" resultType="com.geeke.toll.entity.WorkLoadStat">
         select oc.id jgid,oc.name jgmc,
