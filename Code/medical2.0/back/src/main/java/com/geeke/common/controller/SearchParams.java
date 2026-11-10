@@ -61,6 +61,12 @@ public class SearchParams implements Serializable {
 	public List<Parameter> getParams() {
 		if (null != params && params.size() > 0) {
 			for (int i = 0; i < params.size(); i++) {
+				// DS185: phan tu null trong params (JSON {"params":[null]})
+				// truoc day NPE 500 o getLogic() ben duoi — fail-closed
+				// 400; UI khong bao gio gui phan tu null.
+				if (params.get(i) == null) {
+					throw new ServiceException("Điều kiện truy vấn không được để trống");
+				}
 				// V2 (iteration 16): JSON khong gui logic/queryType thi Jackson de
 				// null (queryType khong co gia tri mac dinh nhu logic) -> NPE o
 				// dong duoi. Mac dinh ve gia tri hop le trong whitelist, van
@@ -105,6 +111,17 @@ public class SearchParams implements Serializable {
 	}
 
 	public List<Parameter> getNewParams() {
+		// DS185: nhu getParams() — cac caller (RecipelInfoReview
+		// forceReviewListScope/removeIf, HosDepartmentStorageController,
+		// HttpUtil.getHosData) deu deref phan tu khong guard: phan tu
+		// null truoc day NPE 500. Fail-closed 400 ngay tai day.
+		if (null != params) {
+			for (Parameter p : params) {
+				if (p == null) {
+					throw new ServiceException("Điều kiện truy vấn không được để trống");
+				}
+			}
+		}
 		return this.params;
 	}
 	public void setParams(List<Parameter> params) {
