@@ -1332,13 +1332,23 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             }
             for (int k = 0; k < recipelDetailEvtList.size(); k++) {
                 RecipelDetail recipelDetail = recipelDetailEvtList.get(k);
+                // DS183: detail khong co drugStuffId (object hoac id null/rong)
+                // truoc day deref getDrugStuffId().getDrugStuffId() -> NPE 500.
+                // Fail-closed 400: khong the tra cuu/tu tao thuoc khi khong biet
+                // thuoc nao; khong ghi dong nao (method @Transactional).
+                if (recipelDetail.getDrugStuffId() == null
+                        || !org.springframework.util.StringUtils.hasText(recipelDetail.getDrugStuffId().getDrugStuffId())) {
+                    throw new ServiceException("Chi tiết đơn thuốc thiếu thuốc/vật tư");
+                }
                 // Truy vấnThông tin thuốc
                 final Drug drug1 = drugService.get(recipelDetail.getDrugStuffId().getDrugStuffId());
                 // ThêmThông tin thuốc
                 if (null == drug1){
                     final Drug drug = new Drug();
                     final DictItem dictItem = new DictItem();
-                    dictItem.setValue(recipelDetail.getStuffType().equals("2") ? BizConstants.MEDICAL_TYPE_WESTERN : BizConstants.MEDICAL_TYPE_PATENT);
+                    // DS183: "2".equals null-safe; stuffType null -> nhanh PATENT
+                    // (quy uoc DS173), nhu getDrugStuffEvt dung "0"/"1"/"2".equals.
+                    dictItem.setValue("2".equals(recipelDetail.getStuffType()) ? BizConstants.MEDICAL_TYPE_WESTERN : BizConstants.MEDICAL_TYPE_PATENT);
                     drug.setId(recipelDetail.getDrugStuffId().getDrugStuffId());
                     drug.setGoodsName(recipelDetail.getDrugStuffId().getName());
                     drug.setPrice(recipelDetail.getDrugStuffId().getPrice());
