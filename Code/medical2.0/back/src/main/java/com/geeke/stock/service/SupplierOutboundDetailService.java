@@ -58,6 +58,13 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
      */
     @Transactional(readOnly = false)
     public void save(String outboundId, List<SupplierOutboundDetail> supplierOutboundDetails) {
+        // DS174 A: danh sach chi tiet null (JSON bo qua
+        // supplierOutboundOrderList) truoc day NPE 500 o vong add ben
+        // duoi (:100); phieu chua thu phi thi fail-closed 400, khong
+        // tao phieu rong.
+        if (supplierOutboundDetails == null) {
+            throw new ServiceException("Danh sách chi tiết xuất kho không được để trống");
+        }
         List<SupplierOutboundDetail> exist = supplierOutboundDetailDao.getByOutboundId(outboundId);
 
         SupplierOutbound outbound = supplierOutboundService.get(outboundId);
@@ -116,6 +123,13 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
                 throw new ServiceException("động Tồn kho Bản ghi Không tồn tại");
             }
 
+            // DS174 A: number null (cot nullable, khong @NotNull, khong
+            // validate o controller/service) truoc day NPE 500 o
+            // freezeDetailStocks:324 occupyDelta.compareTo. Chan 400
+            // truoc moi freeze, cung tx nen phieu rollback nhu cu.
+            if (d.getNumber() == null) {
+                throw new ServiceException("Số lượng xuất kho không được để trống");
+            }
             // DS33: freeze with the atomic guarded bump (occupy +N, surplus
             // untouched — surplus moves only at examine, DS32 invariant).
             // The old Java check (surplus >= N, then an unguarded bump)
@@ -336,6 +350,13 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     public void cancelSupplierOutboundDetail(String outboundId) {
         List<SupplierOutboundDetail> details = supplierOutboundDetailDao.getByOutboundId(outboundId);
         for (SupplierOutboundDetail detail : details) {
+            // DS174 A: number null o dong da luu (chi qua sua tay DB)
+            // truoc day NPE 500 o negate() ben duoi, giua chung khi
+            // claim huy da xong (rollback nho tx nhung loi 500 khong
+            // ro nghia). Fail-closed 400, phieu + dong bang giu nguyen.
+            if (detail.getNumber() == null) {
+                throw new ServiceException("Số lượng xuất kho của chi tiết đã lưu không hợp lệ");
+            }
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId());//detail.getMedicinalStorage();
             // DS32: atomic detail release (occupy -N). DS36: the same delta
             // is dual-written to freeze_stock (this line's freeze is released).
@@ -365,6 +386,16 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         SupplierOutboundDetail old = supplierOutboundDetailDao.get(detail.getId());
         if (old == null) throw new ServiceException("Xuất kho đơn Chi tiết Không tồn tại");
 
+        // DS174 A: number null o request (sua so luong) truoc day NPE
+        // 500 o subtract ben duoi; number null o dong da luu (chi co
+        // the qua sua tay DB, vi duong API tao da chan) cung NPE o
+        // cung cho. Ca hai fail-closed 400, dong + dong bang giu nguyen.
+        if (detail.getNumber() == null) {
+            throw new ServiceException("Số lượng xuất kho không được để trống");
+        }
+        if (old.getNumber() == null) {
+            throw new ServiceException("Số lượng xuất kho của chi tiết đã lưu không hợp lệ");
+        }
         MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(old.getMedicinalStorage().getId());
         BigDecimal addNumber = detail.getNumber().subtract(old.getNumber());//tăngđóng băng của Số lượng
         if (addNumber.compareTo(BigDecimal.ZERO) == 0) {

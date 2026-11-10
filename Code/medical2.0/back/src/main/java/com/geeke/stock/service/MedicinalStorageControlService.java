@@ -319,6 +319,14 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
      */
     @Transactional(readOnly = false)
     public int freezeDetailStocks(MedicinalStorageControl row, BigDecimal occupyDelta) {
+        // DS174 A (phong thu sau lop guard o SupplierOutboundDetailService):
+        // occupyDelta null truoc day NPE 500 o compareTo ben duoi. Caller
+        // duy nhat truyen d.getNumber() (da guard) / addNumber (da guard)
+        // nen khong toi duoc day qua API; neu caller moi truyen null thi
+        // fail-closed 400 thay vi 500.
+        if (occupyDelta == null) {
+            throw new ServiceException("Số lượng chiếm dụng tồn kho không được để trống");
+        }
         row.preUpdate();
         int affected;
         if (occupyDelta.compareTo(BigDecimal.ZERO) <= 0) {

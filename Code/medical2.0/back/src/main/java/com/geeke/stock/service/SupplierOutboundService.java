@@ -262,6 +262,14 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         //TheoChi tiếtvòng lặptrừđiTồn kho
         List<SupplierOutboundDetail> details = supplierOutboundDetailService.getByOutboundId(id);
         for (SupplierOutboundDetail detail : details) {
+            // DS174 A: number null o dong da luu (chi qua sua tay DB, vi
+            // duong API tao da chan) truoc day NPE 500 o negate() ben
+            // duoi, sau khi claimExamine da xong (rollback nho tx nhung
+            // loi 500 khong ro nghia). Fail-closed 400, phieu + ton
+            // kho giu nguyen.
+            if (detail.getNumber() == null) {
+                throw new ServiceException("Số lượng xuất kho của chi tiết đã lưu không hợp lệ");
+            }
             //Cập nhậtđộngTồn kho
             MedicinalStorageControl medicinalStorageControl = medicinalStorageControlService.get(detail.getMedicinalStorage().getId()); //detail.getMedicinalStorage();
             // DS32: atomic detail confirm (occupy -N, used +N, surplus -N).
