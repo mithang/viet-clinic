@@ -546,8 +546,11 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                 List<SupplierStock> list = this.dao.getDrugIndateWarning(pageRequest);
                 for (SupplierStock supplierStock : list) {
                     if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
+                        // DS176 D1: used/reimburse la NOT NULL theo schema nen khong probe duoc NULL live, nhung phep tru ben duoi NPE neu mot trong hai NULL (chi guard storageStock truoc day). Mac dinh ZERO cho chac.
+                        BigDecimal usedStock = supplierStock.getMedicinalStorageControl().getUsedStock() == null ? BigDecimal.ZERO : supplierStock.getMedicinalStorageControl().getUsedStock();
+                        BigDecimal reimburseStock = supplierStock.getMedicinalStorageControl().getReimburseStock() == null ? BigDecimal.ZERO : supplierStock.getMedicinalStorageControl().getReimburseStock();
                         String number =
-                                supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
+                                supplierStock.getMedicinalStorageControl().getStorageStock().subtract(usedStock.add(reimburseStock)).stripTrailingZeros().toPlainString();
                         supplierStock.setNumber(parseInventory(number));
                     } else {
                         supplierStock.setNumber(0);
@@ -575,8 +578,11 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                 List<SupplierStock> list = this.dao.getStuffIndateWarning(pageRequest);
                 for (SupplierStock supplierStock : list) {
                     if (!Objects.isNull(supplierStock.getMedicinalStorageControl()) && !Objects.isNull(supplierStock.getMedicinalStorageControl().getStorageStock())) {
+                        // DS176 D1: used/reimburse la NOT NULL theo schema nen khong probe duoc NULL live, nhung phep tru ben duoi NPE neu mot trong hai NULL (chi guard storageStock truoc day). Mac dinh ZERO cho chac.
+                        BigDecimal usedStock = supplierStock.getMedicinalStorageControl().getUsedStock() == null ? BigDecimal.ZERO : supplierStock.getMedicinalStorageControl().getUsedStock();
+                        BigDecimal reimburseStock = supplierStock.getMedicinalStorageControl().getReimburseStock() == null ? BigDecimal.ZERO : supplierStock.getMedicinalStorageControl().getReimburseStock();
                         String number =
-                                supplierStock.getMedicinalStorageControl().getStorageStock().subtract(supplierStock.getMedicinalStorageControl().getUsedStock().add(supplierStock.getMedicinalStorageControl().getReimburseStock())).stripTrailingZeros().toPlainString();
+                                supplierStock.getMedicinalStorageControl().getStorageStock().subtract(usedStock.add(reimburseStock)).stripTrailingZeros().toPlainString();
                         supplierStock.setNumber(parseInventory(number));
                     } else {
                         supplierStock.setNumber(0);
@@ -625,6 +631,16 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             }
         }
 
+    }
+
+    /**
+     * DS176 B2: đếm dòng nhập kho còn hiệu lực của một phiếu có initial
+     * NULL hoặc company_id NULL (đếm thô, không lọc tenant — xem
+     * SupplierStockDao.countCorruptLines). addStorageStock dùng để
+     * fail-closed 400 trước khi duyệt phiếu với dữ liệu lưu hỏng.
+     */
+    public int countCorruptLines(String storageId) {
+        return this.dao.countCorruptLines(storageId);
     }
 
     /**

@@ -481,6 +481,17 @@
           AND a.his_crkmx_id = #{hisCrkmxId}
           AND a.del_flag = '0'
     </select>
+    <!-- DS176 B2: dem dong nhap kho con hieu luc cua mot phieu co initial NULL
+         hoac company_id NULL (dem tho, khong loc tenant). initial la int
+         nguyen thuy o entity nen NULL doc thanh 0; dong company NULL thi
+         listAll tenant-scoped loc mat — ca hai deu khien duyet phieu "thanh
+         cong" voi ton kho sai/khong doi neu khong chan truoc khi ghi. -->
+    <select id="countCorruptLines" resultType="int">
+        SELECT COUNT(*) FROM supplier_stock a
+        WHERE a.supplier_storage_id = #{storageId}
+          AND a.del_flag = '0'
+          AND (a.initial IS NULL OR a.company_id IS NULL)
+    </select>
     <select id="getByStuffId" resultType="java.math.BigDecimal">
         SELECT sum(a.least_bid * a.number) from supplier_stock a WHERE a.stuff_id = #{stuffId} AND a.cancellation = '0'
     </select>

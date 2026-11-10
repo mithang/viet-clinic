@@ -357,6 +357,14 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
      * điềunguyênTồn kho(Giá trị dương thì tăng, Giá trị âm thì trừ)
      */
     private void adjustStock(List<MedicinalStorageControl> medicinalStorageControls, Integer profitAndLoss, InventoryVerificationDetail inventoryVerificationDetail) {
+        // DS176 D3: profitAndLoss NULL (inventory_verification_detail.profit_and_loss
+        // la int(11) NULL; accomplish loc `profit_and_loss <> 0` nen NULL khong toi
+        // day qua caller duy nhat hien tai) thi new BigDecimal(profitAndLoss) unbox
+        // NPE 500, va new BigDecimal(profitAndLoss + "") thanh "null" -> NFE.
+        // Fail-closed 400 de caller tuong lai khong NPE.
+        if (profitAndLoss == null) {
+            throw new ServiceException("Dòng chi tiết kiểm kê thiếu số lượng chênh lệch");
+        }
         if (CollectionUtils.isEmpty(medicinalStorageControls)) {
             return;
         }

@@ -3,8 +3,10 @@ package com.geeke.hosdata.util;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.service.ServiceException;
 import com.geeke.hosdata.config.HosConfigProperties;
 import com.geeke.hosdata.constant.ApiUrl;
+import com.geeke.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +37,10 @@ public class HttpUtil {
 
 
     public  JSONObject getHosData(SearchParams params, String apiUrl){
+        // DS176 B2: HIS chua cau hinh (hos-data-server-url rong, mac dinh trong application.yml) thi postForObject truoc day 500 IllegalArgumentException/NPE. Fail-closed 400.
+        if (StringUtils.isBlank(hosConfigProperties.getHosDataServerUrl())) {
+            throw new ServiceException("HIS chưa được cấu hình, không thể lấy dữ liệu bệnh viện");
+        }
         Map<String, Object> data = new HashMap<>();
         Map<String, Object>  searchParams = new HashMap<>();
         Map<String, Object>  data2 = new HashMap<>();
@@ -56,7 +62,14 @@ public class HttpUtil {
         // Tạo HttpEntity, vàĐặtVui lòngthân yêu cầu và Vui lòngtiêu đề yêu cầu
         HttpEntity<Map<String,Object>> request = new HttpEntity<>(data, headers);
         String response = restTemplate.postForObject(hosConfigProperties.getHosDataServerUrl()+apiUrl, request,String.class);
+        // DS176 B2: HIS khong tra ve (response null/rong) thi parseObject tra null roi controller NPE o getJSONObject("BusData") -> 500. Fail-closed 400.
+        if (StringUtils.isBlank(response)) {
+            throw new ServiceException("HIS không trả về dữ liệu bệnh viện");
+        }
         JSONObject jsonObject = JSONObject.parseObject(response);
+        if (jsonObject == null) {
+            throw new ServiceException("HIS trả về dữ liệu bệnh viện không hợp lệ");
+        }
         return jsonObject;
     }
 
@@ -90,6 +103,10 @@ public class HttpUtil {
 
 
     public  String getHosToken(){
+        // DS176 B2: HIS chua cau hinh (hos-token-url rong) thi postForObject truoc day 500 (URL null + path / RestTemplate). Fail-closed 400.
+        if (StringUtils.isBlank(hosConfigProperties.getHosTokenUrl())) {
+            throw new ServiceException("HIS chưa được cấu hình, không thể lấy token bệnh viện");
+        }
         Map<String, Object> data = new HashMap<>();
         data.put("AppId",hosConfigProperties.getAppId());
         data.put("Data", "API.Manage");
@@ -98,9 +115,20 @@ public class HttpUtil {
         // Tạo HttpEntity, vàĐặtVui lòngthân yêu cầu và Vui lòngtiêu đề yêu cầu
         HttpEntity<Map<String,Object>> request = new HttpEntity<>(data, headers);
         String response = restTemplate.postForObject(hosConfigProperties.getHosTokenUrl()+ApiUrl.HOS_GET_TOKEN, request,String.class);
+        // DS176 B2: HIS tra ve rong / sai dinh dang thi parseObject null roi getJSONObject("BusData") NPE -> 500. Fail-closed 400.
+        if (StringUtils.isBlank(response)) {
+            throw new ServiceException("HIS không trả về token bệnh viện");
+        }
         JSONObject jsonObject = JSONObject.parseObject(response);
+        if (jsonObject == null || jsonObject.getJSONObject("BusData") == null
+                || jsonObject.getJSONObject("BusData").getJSONObject("data") == null) {
+            throw new ServiceException("HIS trả về token bệnh viện không hợp lệ");
+        }
         JSONObject busData = jsonObject.getJSONObject("BusData").getJSONObject("data");
         String token = busData.getString("Token");
+        if (StringUtils.isBlank(token)) {
+            throw new ServiceException("HIS trả về token bệnh viện không hợp lệ");
+        }
         // Bộ nhớ đệmToken 20 phútphúthết hạn
         tokenCache = token;
         tokenExpireTime = LocalDateTime.now().plusMinutes(20);

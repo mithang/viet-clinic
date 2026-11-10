@@ -150,6 +150,20 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         {
             return;
         }
+        // DS176 B2: dong luu co initial NULL hoac company_id NULL (chi qua
+        // sua tay DB / du lieu cu) — initial la int nguyen thuy nen NULL doc
+        // thanh 0 (duyet 200, cong 0 thay vi so luong that), dong company
+        // NULL thi listAll tenant-scoped loc mat (duyet 200, khong tru/doi
+        // ton kho nao). Ca hai deu la duyet ao neu khong chan. Dem tho
+        // truoc moi ghi, fail-closed 400; claimForAudit o auditStorage cung
+        // transaction nen phieu giu PENDING.
+        // Dat TRUOC lenh return khi list rong: dong company NULL lam listAll
+        // tra ve rong nen guard dat sau return khong bao gio chay (H2 van
+        // duyet ao 200) — phai chan truoc khi kiem tra list.
+        if (this.supplierStockService.countCorruptLines(supplierStorage.getId()) > 0)
+        {
+            throw new ServiceException("Dòng nhập kho thiếu số lượng ban đầu hoặc đơn vị (dữ liệu lưu không hợp lệ)");
+        }
         List<SupplierStock> list = this.supplierStockService.listAll(
                 SearchParamsBuilder.create().eq("supplier_storage_id", supplierStorage.getId()).build(), "");
         if (CollectionUtils.isEmpty(list))
@@ -159,6 +173,11 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
         for (SupplierStock supplierStock:list)
         {
+            // DS176 B2: phong thu them trong vong lap (neu cach resolve cua listAll doi): dong thieu company thi ensureAggregateRow ben duoi NPE o getCompany().getId().
+            if (supplierStock.getCompany() == null || StringUtils.isBlank(supplierStock.getCompany().getId()))
+            {
+                throw new ServiceException("Dòng nhập kho thiếu đơn vị (dữ liệu lưu không hợp lệ)");
+            }
             MedicinalStorageControl medicinalStorageControl = new MedicinalStorageControl();
             medicinalStorageControl.setCompany(supplierStock.getCompany());
             medicinalStorageControl.setStorageId(supplierStock.getId());
@@ -575,6 +594,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         for (MedicinalStockRecord medicinalStockRecord:list)
         {
             BigDecimal operationStock = medicinalStockRecord.getOperationStock();    //chiếm dụngTồn khosố
+            // DS176 D2: operationStock NULL (chi qua sua tay DB / schema drift) thi .negate() ben duoi NPE 500 truoc khi guard DS175-B trong adjust* kip chay. Fail-closed 400.
+            if (operationStock == null) {
+                throw new ServiceException("Bản ghi tồn kho thiếu số lượng thao tác");
+            }
             //Cập nhậttrướcchiếm dụng của Chi tiết nhập kho
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
@@ -848,6 +871,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
             BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
+            // DS176 D2: operationStock NULL (chi qua sua tay DB / schema drift) thi .negate() ben duoi NPE 500 truoc khi guard DS175-B trong adjust* kip chay. Fail-closed 400.
+            if (operationStock == null) {
+                throw new ServiceException("Bản ghi tồn kho thiếu số lượng thao tác");
+            }
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
@@ -940,6 +967,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
             BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
+            // DS176 D2: operationStock NULL (chi qua sua tay DB / schema drift) thi .negate() ben duoi NPE 500 truoc khi guard DS175-B trong adjust* kip chay. Fail-closed 400.
+            if (operationStock == null) {
+                throw new ServiceException("Bản ghi tồn kho thiếu số lượng thao tác");
+            }
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
@@ -1003,6 +1034,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
             BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
+            // DS176 D2: operationStock NULL (chi qua sua tay DB / schema drift) thi .negate() ben duoi NPE 500 truoc khi guard DS175-B trong adjust* kip chay. Fail-closed 400.
+            if (operationStock == null) {
+                throw new ServiceException("Bản ghi tồn kho thiếu số lượng thao tác");
+            }
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
@@ -1080,6 +1115,10 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
         for (MedicinalStockRecord medicinalStockRecord:medicinalStockRecordList)
         {
             BigDecimal operationStock = medicinalStockRecord.getOperationStock();		// Số lượng tồn kho thao tác
+            // DS176 D2: operationStock NULL (chi qua sua tay DB / schema drift) thi .negate() ben duoi NPE 500 truoc khi guard DS175-B trong adjust* kip chay. Fail-closed 400.
+            if (operationStock == null) {
+                throw new ServiceException("Bản ghi tồn kho thiếu số lượng thao tác");
+            }
             List<MedicinalStorageControl> medicinalStorageControlList = super.listAll(
                     SearchParamsBuilder.create().eq("storage_id", medicinalStockRecord.getStorageId()).build(), "");
             if (CollectionUtils.isEmpty(medicinalStorageControlList))
