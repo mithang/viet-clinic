@@ -198,7 +198,10 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
 
     @Transactional(readOnly = false)
     public void allSave(InspectionCheck inspectionCheck) {
-
+        // DS176 A: allSave ghi thang qua DAO, vong qua
+        // checkInspectionCheckLengths — completeBy/sex lay tu ten bac si /
+        // gia tri dict (varchar(128)) co the vuot cot varchar(100).
+        checkInspectionCheckLengths(inspectionCheck);
         inspectionCheckDao.allSave(inspectionCheck);
     }
 

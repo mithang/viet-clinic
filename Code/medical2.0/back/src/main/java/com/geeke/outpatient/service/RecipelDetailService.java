@@ -215,6 +215,10 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             if (null != recipelInfo.getCompany()) {
                 recipelDetail.setCompany(recipelInfo.getCompany());
             }
+            // DS176 A: phuong thuc nay dung super.save nen vong qua
+            // checkRecipelDetailLengths (hien chua co caller — guard
+            // phong thu cho caller tuong lai).
+            checkRecipelDetailLengths(recipelDetail);
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }

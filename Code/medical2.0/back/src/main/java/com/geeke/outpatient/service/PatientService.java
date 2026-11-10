@@ -143,6 +143,9 @@ public class PatientService extends CrudService<PatientDao, Patient>{
                 || patient.getCompany().getId().trim().isEmpty()) {
             throw new ServiceException("Thiếu thông tin phòng khám (company), không xác định được tenant");
         }
+        // DS176 A: wxSave ghi thang qua dao.wxInsert/wxUpdate, vong qua
+        // checkPatientLengths cua save() — chuoi qua dai se 500 o DB.
+        checkPatientLengths(patient);
         verifyTenantOwnership(patient);
         //Lấy thông tin có người dùng đó không theo số CMND/CCCD của người dùng
         List<Patient> patientByCard = this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);

@@ -449,12 +449,17 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
 
     @Transactional(readOnly = false)
     public int updateAllIndate(String indate, String companyId) {
+        // DS176 A: indate varchar(255) — khong guard thi chuoi >255 qua
+        // thang DAO roi 500 MysqlDataTruncation tren UPDATE toan cong ty.
+        checkLength(indate, 255, "Thời hạn hiệu lực Độ dài phải nằm trong khoảng 0 đến 255");
         int i = this.dao.updateAllIndate(indate, companyId);
         return i;
     }
 
     @Transactional(readOnly = false)
     public int updateAllInventory(String inventoryFloor, String companyId) {
+        // DS176 A: nhu updateAllIndate (inventory_floor varchar(255)).
+        checkLength(inventoryFloor, 255, "Giới hạn dưới tồn kho Độ dài phải nằm trong khoảng 0 đến 255");
         int i = this.dao.updateAllInventory(inventoryFloor, companyId);
         return i;
     }
@@ -704,6 +709,11 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             if (repeat == 0) {
                 drug.setId(null);
                 drug.setSyncId(oldId);
+                // DS176 A: syncToClinic dung super.save nen vong qua
+                // checkDrugLengths cua save() — chuoi qua dai se 500 o
+                // mapper; chan 400 truoc khi ghi (khong doi sang this.save
+                // vi save() ghi de code + tinh lai ypgg).
+                checkDrugLengths(drug);
                 super.save(drug);
                 this.medicinalStockControlService.initStock(drug);
                 list.add(drug.getId());
