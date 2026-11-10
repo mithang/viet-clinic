@@ -64,6 +64,16 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
     //@Override
     @Transactional(readOnly = false)
     public SupplierOutbound save(OutboundEvt outboundEvt) {
+        // DS180: {"supplierOutbound":null} truoc day NPE 500 o
+        // supplierOutbound.setCreateDate(...) ben duoi: guard
+        // ObjectUtils.isEmpty o tren chi chay khi co header, con
+        // header null thi bo qua roi deref. Fail-closed 400 truoc
+        // moi ghi. (JSON dung key supplierOutboundDetailList con 500
+        // o Jackson truoc khi toi service — getter khong setter;
+        // UI dung supplierOutboundOrderList, khong doi o day.)
+        if (outboundEvt == null || outboundEvt.getSupplierOutbound() == null) {
+            throw new ServiceException("Phiếu xuất kho không được để trống");
+        }
         if(ObjectUtils.isEmpty(outboundEvt.getSupplierOutbound())==false && ObjectUtils.isEmpty(outboundEvt.getSupplierOutbound().getId())==false) {
             SupplierOutbound old = this.get(outboundEvt.getSupplierOutbound().getId());
             if (old == null)

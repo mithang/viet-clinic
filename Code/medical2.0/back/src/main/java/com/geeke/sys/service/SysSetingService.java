@@ -58,8 +58,36 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
         throw new ServiceException("Cấu hình hệ thống chỉ sửa từng mục qua trang Cài đặt, không hỗ trợ xóa trực tiếp!");
     }
 
+    // DS180: generic /save (CrudController.save) truoc day khong co
+    // override save don nen ghost id 200 silent no-op nhu saveWithFile
+    // (lop DS94/DS99); chi chap nhan update khi dong da ton tai.
+    // Khong caller noi bo nao goi save don (chi controller generic).
+    @Override
+    @Transactional(readOnly = false)
+    public SysSeting save(SysSeting entity) {
+        if (entity == null) {
+            throw new ServiceException("Cài đặt hệ thống không được để trống");
+        }
+        if (StringUtils.isNotBlank(entity.getId()) && super.get(entity.getId()) == null) {
+            throw new ServiceException("Cài đặt hệ thống không tồn tại: " + entity.getId());
+        }
+        return super.save(entity);
+    }
+
     @Transactional(readOnly = false)
     public SysSeting save(SysSeting entity, MultipartFile[] multipartFiles) {
+        // DS180: save voi id khong ton tai truoc day roi qua super.save
+        // -> doUpdate 0 dong roi van 200, roi khoi file ben duoi ghi
+        // sys_file key theo id ma (orphan, probe 6a); generic /save
+        // cung 200 im lang vi khong co override save don (xem them
+        // override save(SysSeting) ben duoi). Chi chap nhan update
+        // khi dong da ton tai, TRUOC moi ghi.
+        if (entity == null) {
+            throw new ServiceException("Cài đặt hệ thống không được để trống");
+        }
+        if (StringUtils.isNotBlank(entity.getId()) && super.get(entity.getId()) == null) {
+            throw new ServiceException("Cài đặt hệ thống không tồn tại: " + entity.getId());
+        }
         // DS87: the six *Index fields are transient (no such columns exist
         // in sys_seting; they index into the attachments array). A missing
         // index unboxed to NPE at getProjectLogoIndex() >= 0 -> 500 (inside
@@ -68,9 +96,6 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
         // file selected for that slot" -> default -1 (keep existing logo);
         // out-of-range is a malformed request -> 400, checked BEFORE any
         // write so the transaction has nothing to roll back.
-        if (entity == null) {
-            throw new ServiceException("Cài đặt hệ thống không được để trống");
-        }
         if (entity.getProjectLogoIndex() == null) {
             entity.setProjectLogoIndex(-1);
         }

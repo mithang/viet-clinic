@@ -346,6 +346,15 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         if (StringUtils.isBlank(medicalRecord.getFileId())) {
             medicalRecord.setFileId(IdGen.uuid());
         }
+        // DS180: upload/xoa file ben duoi chay TRUOC ghost check cua
+        // save() don (DS163 A5). Hom nay transaction rollback nen file
+        // chua mat that (probe 7b/7c: ghost + deleteIds/upload -> 400,
+        // file van con / khong orphan), nhung dam bao khong phu thuoc
+        // rollback: chan ghost ngay tai day, truoc moi side-effect.
+        if (StringUtils.isNotBlank(medicalRecord.getId())
+                && super.get(medicalRecord.getId()) == null) {
+            throw new ServiceException("Bệnh án không tồn tại: " + medicalRecord.getId());
+        }
         // J2 (iteration 57): v1 saveWithFile la diem xoa file thu 4 ngoai v2
         // (guardExamDeleteFileIds cua I1 chi gan trong allNewSave) — truoc day
         // sysFileService.delete(deleteIds) chay tran, nen benh an OWN hop le

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.CrudController;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Page;
+import com.geeke.common.service.ServiceException;
 import com.geeke.stock.entity.MedicalProject;
 import com.geeke.treatment.entity.CostItem;
 import com.geeke.treatment.entity.CostItemDTO;
@@ -85,6 +86,17 @@ public class CostItemController extends CrudController<CostItemService, CostItem
     public ResponseEntity<JSONObject> saveDto(@RequestBody CostItemDTO costItemDTO) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         logger.debug("Lưuhạng mục khám chữa bệnh: {}", costItemDTO);
+        // DS180: costItem / costItemPackage null truoc day NPE 500 o
+        // getCostItemPackage().size() / getCostItem().setIsPackage(...)
+        // (validateSaveDtoPackages tra im lang khi null). UI luon gui
+        // ca hai (costItemForm khoi tao costItemPackage=[]) nen thieu
+        // la request sai dinh dang -> 400 truoc moi ghi.
+        if (costItemDTO.getCostItem() == null) {
+            throw new ServiceException("Hạng mục không được để trống");
+        }
+        if (costItemDTO.getCostItemPackage() == null) {
+            throw new ServiceException("Danh sách hạng mục con không được để trống");
+        }
         // ITER64 item 2: tien kiem TOAN BO package TRUOC parent save — cac
         // method package la transaction rieng le, guard dat sau parent save
         // se de lai ghi rac; mot package item la -> 400, khong ghi/xoa gi.

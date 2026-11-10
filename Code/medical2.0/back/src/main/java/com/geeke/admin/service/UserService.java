@@ -239,6 +239,14 @@ public class UserService extends CrudService<UserDao, User>{
     public List<String> bulkInsert(List<User> entitys) {
         List<String> ids = Lists.newArrayList();
         for (User entity : entitys) {
+            // DS180: [null] truoc day NPE 500 o this.save(null) (save
+            // don deref user.getId()); 3 vong lap tu viet khong goi
+            // super.bulk* nen guard null-element cua base (DS146)
+            // khong bao gio chay. Fail-closed 400 theo dung message
+            // cua base.
+            if (entity == null) {
+                throw new ServiceException("Dòng thêm mới không được để trống");
+            }
             // save(User) da guard G2: create trung cung-tenant -> 400,
             // cross-tenant -> gan tenant/ext cho id cu, moi -> du
             // tenant/ext/role. Dong co id san di theo nhanh update
@@ -259,6 +267,11 @@ public class UserService extends CrudService<UserDao, User>{
         String loginTenant = SessionUtils.getLoginTenantId();
         boolean tenantCheck = StringUtils.isNotBlank(loginTenant) && !"null".equals(loginTenant);
         for (User entity : entitys) {
+            // DS180: xem ghi chu o bulkInsert ([null] NPE 500 o
+            // entity.getId() truoc day).
+            if (entity == null) {
+                throw new ServiceException("Dòng cập nhật không được để trống");
+            }
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Thiếu id người dùng để cập nhật hàng loạt. ");
             }
@@ -300,6 +313,11 @@ public class UserService extends CrudService<UserDao, User>{
         boolean tenantCheck = StringUtils.isNotBlank(loginTenant) && !"null".equals(loginTenant);
         int processed = 0;
         for (User entity : entitys) {
+            // DS180: xem ghi chu o bulkInsert ([null] NPE 500 o
+            // entity.getId() truoc day).
+            if (entity == null) {
+                throw new ServiceException("Dòng xóa không được để trống");
+            }
             if (StringUtils.isBlank(entity.getId())) {
                 continue;
             }

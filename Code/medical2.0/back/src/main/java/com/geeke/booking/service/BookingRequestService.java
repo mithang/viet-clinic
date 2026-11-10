@@ -119,11 +119,28 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
         entity.setCompany(company);
     }
 
+    /**
+     * DS180: mau FollowupReminderService.checkExists — update voi id
+     * khong ton tai truoc day roi qua super.save -> doUpdate 0 dong
+     * roi van 200 silent no-op (checkRowOwnership cho qua ghost vi
+     * dao.getCompanyIdById tra blank). Chi chap nhan update khi dong
+     * da ton tai.
+     */
+    private void checkExists(String id) {
+        if (StringUtils.isBlank(id)) {
+            return;
+        }
+        if (dao.get(id) == null) {
+            throw new ServiceException("Yêu cầu đặt lịch không tồn tại: " + id);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public BookingRequest save(BookingRequest entity) {
         if (StringUtils.isNotBlank(entity.getId())) {
             checkRowOwnership(entity.getId());
+            checkExists(entity.getId());
         } else {
             forceSessionCompany(entity);
         }

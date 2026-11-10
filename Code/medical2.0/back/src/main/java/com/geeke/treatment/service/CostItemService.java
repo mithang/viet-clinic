@@ -113,6 +113,14 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         {
             throw new ServiceException("Đã Tồn tại một Cái giống hệt của hạng mục tên, Vui lòng nhập lại!");
         }
+        // DS180: save voi id khong ton tai truoc day roi qua super.save
+        // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99;
+        // mau UserService.save DS163 A7 / MedicalRecordService.save
+        // DS163 A5). Chi chap nhan update khi dong da ton tai. Cung
+        // chan ghost id di qua /saveDto (goi save() nay).
+        if (StringUtils.isNotBlank(costItem.getId()) && super.get(costItem.getId()) == null) {
+            throw new ServiceException("Hạng mục không tồn tại: " + costItem.getId());
+        }
         CostItem costItemTemp = super.save(costItem);
         return costItemTemp;
     }
