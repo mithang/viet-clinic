@@ -68,8 +68,17 @@ public class HosDepartmentStorageController extends BaseController {
         List<Parameter> newParams = new ArrayList<>();
         params.forEach(item ->{
             // giới hạnchỉ địnhnàyKhoa
-            if(item.getColumnName().equals("kscode") &&item.getValue().equals("")){
-                item.setValue(SessionUtils.getUserJson().getString("companyId"));
+            // DS173 B: kscode null truoc day NPE 500 tai
+            // item.getValue().equals("") (Parameter.value nullable) --
+            // fail-closed 400 truoc khi goi HIS; "" giu hanh vi cu
+            // (mac dinh ve company session).
+            if ("kscode".equals(item.getColumnName())) {
+                if (item.getValue() == null) {
+                    throw new ServiceException("Tham số kscode không được để trống");
+                }
+                if ("".equals(item.getValue())) {
+                    item.setValue(SessionUtils.getUserJson().getString("companyId"));
+                }
             }
             newParams.add(new Parameter(item.getColumnName(),item.getQueryType(),item.getValue()));
         });
