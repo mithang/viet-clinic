@@ -66,6 +66,9 @@ public class HosDepartmentStorageController extends BaseController {
         }
         List<Parameter> params = searchParams.getNewParams();
         List<Parameter> newParams = new ArrayList<>();
+        // DS178: SearchParams gui {} (params null) truoc day NPE o
+        // params.forEach ben duoi — coi nhu khong co dieu kien loc.
+        if (params != null) {
         params.forEach(item ->{
             // giới hạnchỉ địnhnàyKhoa
             // DS173 B: kscode null truoc day NPE 500 tai
@@ -82,8 +85,14 @@ public class HosDepartmentStorageController extends BaseController {
             }
             newParams.add(new Parameter(item.getColumnName(),item.getQueryType(),item.getValue()));
         });
+        }
         JSONObject hosData = httpUtil.getHosData(searchParams, ApiUrl.HOS_GET_DRUGS_STORAGE_PAGE);
         JSONArray jsonArray = hosData.getJSONObject("BusData").getJSONObject("data").getJSONArray("rows");
+        // DS178: BusData.data khong co rows -> getJSONArray tra null,
+        // jsonArray.isEmpty() ben duoi NPE 500. Fail-closed 400.
+        if (jsonArray == null) {
+            throw new ServiceException("HIS trả về dữ liệu bệnh viện không hợp lệ (thiếu rows)");
+        }
         if(!jsonArray.isEmpty()){
             List<HisDrugsStorage> hisDrugsStorages = new ArrayList<>();
             List<HisDrugs> hisDrugs = new ArrayList<>();
@@ -109,14 +118,34 @@ public class HosDepartmentStorageController extends BaseController {
                 }
             }
             if(!hisDrugs.isEmpty()){
+                // DS178: HIS tra dong thuoc thieu ypCode (mapping
+                // HisDataCollect.fxml: ypCode -> code) thi code null,
+                // groupingBy(HisDrugs::getCode) nem NPE 500 ("element
+                // cannot be mapped to a null key") lam ca trang dong bo
+                // ton kho that bai. Dong khong co ma thi khong dong bo
+                // duoc: bo qua + ghi WARN (ke ten ypdm), cac dong hop le
+                // van dong bo binh thuong.
+                List<HisDrugs> syncableDrugs = hisDrugs.stream()
+                        .filter(d -> d.getCode() != null)
+                        .collect(Collectors.toList());
+                if (syncableDrugs.size() != hisDrugs.size()) {
+                    List<String> skipped = hisDrugs.stream()
+                            .filter(d -> d.getCode() == null)
+                            .map(d -> String.valueOf(d.getGoodsName()))
+                            .collect(Collectors.toList());
+                    logger.warn("Bỏ qua {} dòng thuốc HIS thiếu mã khi đồng bộ (tên thuốc: {})",
+                            hisDrugs.size() - syncableDrugs.size(), skipped);
+                }
+                if (!syncableDrugs.isEmpty()) {
                 //chènChưađồng bộ của Thông tin thuốc
-                hosCollectDataController.getStrings(hisDrugs.stream()
+                hosCollectDataController.getStrings(syncableDrugs.stream()
                         .collect(Collectors.collectingAndThen(
                                 Collectors.groupingBy(HisDrugs::getCode), // Theocode phútnhóm
                                 map -> map.values().stream()            // lấyramỗiCáicodetương ứng của Giá trị(tức làĐối tượngDanh sách)
                                         .map(list -> list.get(0))           // Lấy phần tử đầu tiên từ mỗi danh sách làm đại diện
                                         .collect(Collectors.toList())      // thutậpĐếnmộtCáimới của Danh sách
                         )));
+                }
 
             }
            hosData.getJSONObject("BusData").getJSONObject("data").put("rows", hisDrugsStorages);

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.data.Parameter;
+import com.geeke.common.service.ServiceException;
 import com.geeke.hosdata.constant.ApiUrl;
 import com.geeke.hosdata.entity.HisDrugs;
 import com.geeke.hosdata.entity.HisInstitutions;
@@ -102,6 +103,11 @@ public class HosCollectDataController extends BaseController {
         JSONObject hosData = httpUtil.getHosData(searchParams, ApiUrl.HOS_GET_MATERIAL_ITEM_PAGE);
         List<String> codeList = hisMaterialService.getcCodeList(SessionUtils.getUserJson().getString("companyId"));
         JSONArray jsonArray = hosData.getJSONObject("BusData").getJSONObject("data").getJSONArray("rows");
+        // DS178: BusData.data khong co rows -> getJSONArray tra null,
+        // jsonArray.size()/for ben duoi NPE 500. Fail-closed 400.
+        if (jsonArray == null) {
+            throw new ServiceException("HIS trả về dữ liệu bệnh viện không hợp lệ (thiếu rows)");
+        }
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             if(codeList.contains(jsonObject.getString("sfxmCode"))){
@@ -126,6 +132,10 @@ public class HosCollectDataController extends BaseController {
         }
         JSONObject hosData = httpUtil.getHosData(searchParams, ApiUrl.HOS_GET_CHARGE_ITEM_PAGE);
         JSONArray jsonArray = hosData.getJSONObject("BusData").getJSONObject("data").getJSONArray("rows");
+        // DS178: xem getHosMaterials — rows null -> NPE 500.
+        if (jsonArray == null) {
+            throw new ServiceException("HIS trả về dữ liệu bệnh viện không hợp lệ (thiếu rows)");
+        }
         List<String> codeList = hisInstitutionService.getcCodeList(SessionUtils.getUserJson().getString("companyId"));
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -185,6 +195,10 @@ public class HosCollectDataController extends BaseController {
 
         JSONObject hosData = httpUtil.getHosData(searchParams, ApiUrl.HOS_GET_MEDICINE_PAGE);
         JSONArray dataArray =  hosData.getJSONObject("BusData").getJSONObject("data").getJSONArray("rows");
+        // DS178: xem getHosMaterials — rows null -> NPE 500.
+        if (dataArray == null) {
+            throw new ServiceException("HIS trả về dữ liệu bệnh viện không hợp lệ (thiếu rows)");
+        }
         JSONObject fieldMapping = readFieldMappingFromXML();
         ExecutorService executor = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors());
         List<JSONObject> processedDataArray = new ArrayList<>();

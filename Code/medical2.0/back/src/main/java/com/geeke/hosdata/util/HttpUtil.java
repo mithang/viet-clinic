@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,13 @@ public class HttpUtil {
         Map<String, Object> data = new HashMap<>();
         Map<String, Object>  searchParams = new HashMap<>();
         Map<String, Object>  data2 = new HashMap<>();
-        for (Parameter param : params.getNewParams()){
+        // DS178: SearchParams gui {} (params null) truoc day NPE o vong
+        // for — coi nhu khong co dieu kien loc (giong "params": []).
+        List<Parameter> newParams = params.getNewParams();
+        if (newParams == null) {
+            newParams = Collections.emptyList();
+        }
+        for (Parameter param : newParams){
             searchParams.put(param.getColumnName(),param.getValue());
         }
         data2.put("offset",params.getOffset());
@@ -69,6 +76,15 @@ public class HttpUtil {
         JSONObject jsonObject = JSONObject.parseObject(response);
         if (jsonObject == null) {
             throw new ServiceException("HIS trả về dữ liệu bệnh viện không hợp lệ");
+        }
+        // DS178: getHosToken (B2) da guard BusData/data, nhung getHosData
+        // chi guard JSON top-level — HIS tra envelope loi hop le
+        // ({"code":500,...} hoac {"BusData":{}}) thi 4 call site deref
+        // getJSONObject("BusData").getJSONObject("data") -> NPE 500.
+        // Fail-closed 400 ngay tai day.
+        JSONObject busData = jsonObject.getJSONObject("BusData");
+        if (busData == null || busData.getJSONObject("data") == null) {
+            throw new ServiceException("HIS trả về dữ liệu bệnh viện không hợp lệ (thiếu BusData/data)");
         }
         return jsonObject;
     }
