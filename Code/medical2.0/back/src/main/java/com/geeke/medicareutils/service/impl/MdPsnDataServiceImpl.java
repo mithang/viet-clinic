@@ -2,6 +2,7 @@ package com.geeke.medicareutils.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.domain.respo.Output_1101;
 import com.geeke.medicareutils.service.MdPsnDataService;
 import com.geeke.medicareutils.util.YbWebApiUtil;
@@ -31,8 +32,22 @@ public class MdPsnDataServiceImpl  implements MdPsnDataService {
     public Boolean getAndSetPsnData(Registration registration) {
         //xây dựngVui lòngyêu cầuTham số
         JSONObject data = new JSONObject();
-        //LấyThông tin bệnh nhân
+        // DS181: luot kham MOI (chua co id) thi getPatientByregistrationId
+        // tra null vi SELECT theo registration.id -- truoc day NPE 500 o
+        // patientTemp.getCard()/getName() ben duoi. Fallback sang benh
+        // nhan tren entity; van khong co thi 400 thay vi 500.
         Patient patientTemp = patientDao.getPatientByregistrationId(registration.getId()) ;
+        if (patientTemp == null && registration.getPatientId() != null
+                && registration.getPatientId().getId() != null) {
+            patientTemp = patientDao.get(registration.getPatientId().getId());
+        }
+        if (patientTemp == null) {
+            throw new ServiceException("Không tìm thấy bệnh nhân của lượt khám");
+        }
+        if (registration.getCardType() == null
+                || registration.getCardType().getValue() == null) {
+            throw new ServiceException("Chưa chọn loại giấy tờ khám BHYT");
+        }
         //Loại giấy tờ khám bệnh chờchỉ định TODO đọcthẻLấy
         data.put("mdtrt_cert_type",registration.getCardType().getValue());
         //“01” thì điền chứng từ điện tử Token,  là “02” thì điền số CMND/CCCD,  là “03” thì điền số thẻ an sinh xã hội
@@ -52,7 +67,19 @@ public class MdPsnDataServiceImpl  implements MdPsnDataService {
         data.put("psn_name",patientTemp.getName());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data",data);
-        Output_1101 output1101 = JSONObject.parseObject(webApiUtil.getMedicareData("1101", jsonObject.toJSONString()), Output_1101.class);
+        // DS181: middleware tra ve khong phai JSON object / thieu
+        // baseinfo truoc day NPE/JSONException 500 o getBaseinfo().
+        // YbWebApiUtil da guard rong/khong-phai-JSON, day la guard them
+        // cho dang JSON khong dung (vd array) va thieu baseinfo.
+        Output_1101 output1101;
+        try {
+            output1101 = JSONObject.parseObject(webApiUtil.getMedicareData("1101", jsonObject.toJSONString()), Output_1101.class);
+        } catch (com.alibaba.fastjson.JSONException e) {
+            throw new ServiceException("Cổng BHYT trung gian trả về dữ liệu 1101 không hợp lệ");
+        }
+        if (output1101 == null || output1101.getBaseinfo() == null) {
+            throw new ServiceException("Cổng BHYT trung gian trả về dữ liệu 1101 không hợp lệ (thiếu baseinfo)");
+        }
         //xây dựngBHYTBệnh nhâncơ bảnThông tin
         PatientMdData patientMdData = new PatientMdData();
         //cơ bảnThông tin

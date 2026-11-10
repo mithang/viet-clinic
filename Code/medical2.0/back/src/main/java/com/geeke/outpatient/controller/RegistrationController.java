@@ -263,7 +263,19 @@ public class RegistrationController extends CrudController<RegistrationService, 
                 if (mdPsnDataService.getAndSetPsnData(entity)) {
                     //Đăng ký khám BHYT
                     String registrationInfo = mdRegistrationService.getRegistrationInfo_2201(entity);
-                    Output_2201 output_2201 = JSONObject.parseObject(registrationInfo, Output_2201.class);
+                    // DS181: middleware tra ve khong phai JSON object /
+                    // thieu "data" truoc day NPE 500 o getData().
+                    // YbWebApiUtil da guard rong/khong-phai-JSON, day la
+                    // guard them cho dang JSON khong dung.
+                    Output_2201 output_2201;
+                    try {
+                        output_2201 = JSONObject.parseObject(registrationInfo, Output_2201.class);
+                    } catch (com.alibaba.fastjson.JSONException e) {
+                        throw new ServiceException("Cổng BHYT trung gian trả về dữ liệu 2201 không hợp lệ");
+                    }
+                    if (output_2201 == null || output_2201.getData() == null) {
+                        throw new ServiceException("Cổng BHYT trung gian trả về dữ liệu 2201 không hợp lệ (thiếu data)");
+                    }
                     entity.setMdtrtId(output_2201.getData().getMdtrt_id());
                     entity.setIptOtpNo(output_2201.getData().getIpt_otp_no());
                 }

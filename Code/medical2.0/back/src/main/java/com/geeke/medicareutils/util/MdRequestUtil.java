@@ -16,9 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -59,7 +56,7 @@ public class MdRequestUtil {
         }
         // Đặt tiêu đề yêu cầu
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         String requestData = createRequestData(infoNo,jsonObject);
         HttpEntity<String> request = new HttpEntity<>(JSON.toJSONString(requestData) ,headers);
         //Ngàynhật kýThông tin
@@ -128,61 +125,80 @@ public class MdRequestUtil {
      * @param jsonObject
      * @return
      */
+    /**
+     * DS181: fail-closed 400 thay vi NPE 500 / JSONException 500 / silent
+     * tra ve output rong. Truoc day: postForObject truc tiep (url trong
+     * -> IllegalArgumentException, BHYT chet -> RestClientException 500);
+     * response rong -> parseObject(null).getJSONObject NPE 500; response
+     * khong phai JSON -> JSONException 500; thieu "output" -> NPE 500;
+     * thieu "encData" -> SMUtil.decrypt(null) Hex.decode NPE 500; encData
+     * sai hex / SM4 loi -> DecoderException / RuntimeException 500.
+     * GIO: dung chung postToMedicare + parseMedicareResponse (DS179),
+     * guard output/encData, wrap decrypt. Them nua: truoc day chuoi
+     * giai ma ("data") khong bao gio duoc parse thanh field nen cac
+     * caller Ld7802/Ld7101/Ld7806 doc rxFile/rxtracecode/list luon
+     * null (probe DS181: happy 200 nhung rxfile NULL) -- gio parse
+     * chuoi giai ma neu la JSON object va merge cac field vao output
+     * (khong ghi de field plaintext da co; khong phai JSON thi giu
+     * nguyen "data" dang chuoi cho Ld7804/Ld7805 parse tiep).
+     */
     public JSONObject dzcfUpload(String infoNo,JSONObject jsonObject) {
-        // Đặt tiêu đề yêu cầu
+        if (infoNo == null || infoNo.trim().isEmpty()) {
+            throw new ServiceException("Mã giao dịch BHYT không được để trống");
+        }
+        if (jsonObject == null) {
+            throw new ServiceException("Dữ liệu gửi BHYT không được để trống");
+        }
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         String requestData = createRequestData(infoNo,jsonObject);
         HttpEntity<String> request = new HttpEntity<>(JSON.toJSONString(requestData) ,headers);
-        //phátgửiBHYTVui lòngyêu cầu
-        String response = restTemplate.postForObject(medicareConfigProperties.getUrl(), request,String.class);
-        //Mã hóamậtvăn bảnTrả vềGiải mã
-        String encData=SMUtil.decrypt (JSONObject.parseObject(response).getJSONObject("output").getString("encData"),medicareConfigProperties.getAppId(),medicareConfigProperties.getAppSecret());
-        JSONObject.parseObject(response).getJSONObject("output").put("data",encData);
-        //BHYTThông tinNgàynhật kýlưu trữ
-        return JSONObject.parseObject(response).getJSONObject("output");
-    }
-
-
-
-
-    /**
-     * LấyBHYTTệpThông tin
-     * @param infoNo
-     * @return
-     */
-    public File getMedicareFile(String infoNo, JSONObject object,String fileName) {
-        // Đặt tiêu đề yêu cầu
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        String requestData = createRequestData(infoNo,object);
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestData, headers);
-        File file = new File(fileName);
-        ResponseEntity<byte[]> responseEntity = restTemplate.exchange(
-                medicareConfigProperties.getUrl(),
-                HttpMethod.POST,
-                requestEntity,
-                byte[].class
-        );
-
-        HttpStatus statusCode = responseEntity.getStatusCode();
-        if (statusCode != HttpStatus.OK) {
-            throw new RuntimeException("RestTemplate error status code: " + statusCode);
+        String response = postToMedicare(request);
+        JSONObject parsed = parseMedicareResponse(response);
+        JSONObject output = parsed.getJSONObject("output");
+        if (output == null) {
+            throw new ServiceException("BHYT trả về dữ liệu không hợp lệ (thiếu output)");
         }
-        String contentType = Objects.requireNonNull(responseEntity.getHeaders().getContentType()).toString();
-        if (contentType.contains("application/octet-stream")) {
-            byte[] content = responseEntity.getBody();
-            if (content != null) {
-
-                try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                    fileOutputStream.write(content);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        String encData = output.getString("encData");
+        if (encData == null || encData.trim().isEmpty()) {
+            throw new ServiceException("BHYT trả về dữ liệu đơn thuốc điện tử không hợp lệ (thiếu encData)");
+        }
+        String decData = decryptDzcfData(encData);
+        output.put("data", decData);
+        try {
+            JSONObject decJson = JSONObject.parseObject(decData);
+            if (decJson != null) {
+                for (String key : decJson.keySet()) {
+                    if (!output.containsKey(key)) {
+                        output.put(key, decJson.get(key));
+                    }
                 }
             }
+        } catch (JSONException e) {
+            // Chuoi giai ma khong phai JSON object (vd file nhi phan dang
+            // base64): giu nguyen "data" dang chuoi, caller tu xu ly.
         }
-        return file;
+        return output;
     }
+
+    /** DS181: giai ma encData, fail-closed 400 khi key chua cau hinh
+     * (appId < 16 ky tu / appSecret trong) hoac du lieu ma hoa loi. */
+    private String decryptDzcfData(String encData) {
+        String appId = medicareConfigProperties.getAppId();
+        String appSecret = medicareConfigProperties.getAppSecret();
+        if (appId == null || appId.length() < 16) {
+            throw new ServiceException("BHYT chưa cấu hình appId đơn thuốc điện tử (cần tối thiểu 16 ký tự)");
+        }
+        if (appSecret == null || appSecret.trim().isEmpty()) {
+            throw new ServiceException("BHYT chưa cấu hình appSecret đơn thuốc điện tử");
+        }
+        try {
+            return SMUtil.decrypt(encData, appId, appSecret);
+        } catch (Exception e) {
+            throw new ServiceException("BHYT trả về dữ liệu đơn thuốc điện tử mã hóa không hợp lệ");
+        }
+    }
+
 
 
 
@@ -277,8 +293,31 @@ public class MdRequestUtil {
             if (data == null) {
                 throw new ServiceException("Dữ liệu đơn thuốc điện tử gửi BHYT không được để trống (thiếu data)");
             }
-            String encData = SMUtil.encrypt(data.toJSONString(), medicareConfigProperties.getAppId(), medicareConfigProperties.getAppSecret());
-            String signData = SMUtil.sign(jsonObject, medicareConfigProperties.getAppSecret(), medicareConfigProperties.getPrivateKey());
+            // DS181: key SM2/SM4 chua cau hinh (appId < 16 ky tu /
+            // appSecret / privateKey trong) truoc day NPE /
+            // StringIndexOutOfBoundsException 500 o SMUtil.encrypt/sign
+            // (appId.substring(0,16), Base64.decode(null)). Fail-closed
+            // 400 voi message ro rang thay vi 500.
+            String appId = medicareConfigProperties.getAppId();
+            String appSecret = medicareConfigProperties.getAppSecret();
+            String privateKey = medicareConfigProperties.getPrivateKey();
+            if (appId == null || appId.length() < 16) {
+                throw new ServiceException("BHYT chưa cấu hình appId đơn thuốc điện tử (cần tối thiểu 16 ký tự)");
+            }
+            if (appSecret == null || appSecret.trim().isEmpty()) {
+                throw new ServiceException("BHYT chưa cấu hình appSecret đơn thuốc điện tử");
+            }
+            if (privateKey == null || privateKey.trim().isEmpty()) {
+                throw new ServiceException("BHYT chưa cấu hình khóa riêng SM2 ký đơn thuốc điện tử");
+            }
+            String encData;
+            String signData;
+            try {
+                encData = SMUtil.encrypt(data.toJSONString(), appId, appSecret);
+                signData = SMUtil.sign(jsonObject, appSecret, privateKey);
+            } catch (Exception e) {
+                throw new ServiceException("Không mã hóa/ký được dữ liệu đơn thuốc điện tử gửi BHYT (kiểm tra key SM2/SM4)");
+            }
             jsonObject.put("encData",encData);
             jsonObject.put("signData",signData);
             //Xóagốcbắt đầuVui lòngyêu cầuTham số
@@ -298,7 +337,7 @@ public class MdRequestUtil {
         // giu null nhu cu -- cuoc goi chinh tu kiem output (400 neu
         // thieu), nen khong 400 som o day.
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         String requestData = createRequestData(infoNo,jsonObject);
         HttpEntity<String> request = new HttpEntity<>(requestData ,headers);
         String response = postToMedicare(request);
