@@ -80,13 +80,55 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
      */
     @Override
     public JSONObject validateElectronicPrescriptionUpload_Ld7801(RecipelInfoReview recipelInfoReview) {
+        // DS182: guard null truoc chuoi deref — truoc day NPE 500 (:88 doctor,
+        // :103 patientMdData, :163 presDrug, :334 xtZd); du lieu BHYT thieu
+        // thi 400 thay vi 500 (mau DS89 cung file).
         JSONObject data = new JSONObject(true);
         RecipelInfo recipelInfo = recipelInfoReview.getRecipelInfo();
+        if (recipelInfo == null || recipelInfo.getId() == null) {
+            throw new ServiceException("Không tìm thấy đơn thuốc");
+        }
         Registration registration = recipelInfo.getRegistration();
+        if (registration == null || registration.getPatientId() == null
+                || registration.getPatientId().getId() == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
+        }
         MedicalRecord medicalRecord = recipelInfoReview.getMedicalRecord();
+        if (medicalRecord == null || medicalRecord.getDiseaseId() == null
+                || medicalRecord.getCreateDate() == null) {
+            throw new ServiceException("Không tìm thấy bệnh án của đơn thuốc");
+        }
+        if (registration.getDoctor() == null
+                || registration.getDoctor().getId() == null) {
+            throw new ServiceException("Không tìm thấy bác sĩ kê đơn của lượt khám");
+        }
+        if (registration.getClinicOffice() == null) {
+            throw new ServiceException("Không tìm thấy khoa/phòng kê đơn của lượt khám");
+        }
+        // DS182: chi guard DictItem null — value null KHONG phai loi: mapper
+        // tra DictItem co value=null khi recipel_type chua luu (UI cu gui id),
+        // equals(null) ben duoi van false an toan nhu cu; chi null object
+        // moi NPE o getValue(). Guard value==null o day da pha happy path.
+        if (recipelInfo.getRecipelType() == null) {
+            throw new ServiceException("Không tìm thấy loại đơn thuốc");
+        }
+        if (recipelInfo.getCreateDate() == null) {
+            throw new ServiceException("Không tìm thấy ngày kê đơn");
+        }
+        JSONObject company = SessionUtils.getUserJson() == null ? null
+                : SessionUtils.getUserJson().getJSONObject("company");
+        if (company == null) {
+            throw new ServiceException("Không tìm thấy công ty của phiên đăng nhập");
+        }
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         User doctor = userService.get(registration.getDoctor().getId());
+        if (doctor == null || doctor.getUserExt() == null) {
+            throw new ServiceException("Không tìm thấy bác sĩ kê đơn");
+        }
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        if (patientMdData == null) {
+            throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
+        }
         List<RecipelDetail> recipelDetail = recipelDetailService.getRecipelDetail(recipelInfo.getId());
         data.put("mdtrtCertType", registration.getCardType());  // Loại giấy tờ khám bệnh, Giá trịcó thể là  01, 02  hoặc  03
         // Số giấy tờ khám bệnh
@@ -156,7 +198,30 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         JSONArray rxdrugdetail = new JSONArray();
         recipelDetail.forEach(item -> {
             //LấyThuốc trong đơn thuốc điện tửThông tin
+            // DS182: thuoc khong co trong danh muc BHYT (pres_drug) thi 400
+            // thay vi NPE 500 o getMedlistcodg() ben duoi.
+            if (item.getDrugStuffId() == null
+                    || item.getDrugStuffId().getDrugStuffId() == null) {
+                throw new ServiceException("Không tìm thấy thuốc trong đơn thuốc");
+            }
              PresDrug presDrug = presDrugService.getById(item.getDrugStuffId().getDrugStuffId());
+             if (presDrug == null) {
+                 throw new ServiceException("Không tìm thấy thuốc trong danh mục BHYT");
+             }
+             if (item.getCreateDate() == null) {
+                 throw new ServiceException("Không tìm thấy ngày kê thuốc");
+             }
+             // DS182: chi guard DictItem null — value null KHONG NPE o put()
+             // ben duoi (chi null object moi NPE o getValue()/getName()).
+             if (item.getWesternMedicineUse() == null) {
+                 throw new ServiceException("Không tìm thấy đường dùng thuốc");
+             }
+             if (item.getFrequency() == null) {
+                 throw new ServiceException("Không tìm thấy tần suất dùng thuốc");
+             }
+             if (item.getDays() == null || item.getDays().getName() == null) {
+                 throw new ServiceException("Không tìm thấy số ngày dùng thuốc");
+             }
              item.setPresDrug(presDrug);
              JSONObject rxdrug = new JSONObject(true);
             // Mã danh mục y tế
@@ -215,7 +280,15 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
            LocalDateTime startTime = LocalDateTime.parse( item.getCreateDate().toInstant()
                    .atZone(ZoneId.systemDefault())
                    .toLocalDateTime().format(outputFormatter), outputFormatter);
-            LocalDateTime endTime = startTime.plusDays(Long.parseLong(item.getDays().getName()));
+            // DS182: days khong phai so (vd "3 ngày") thi NumberFormatException
+            // 500 — so ngay khong hop le thi 400 truoc khi tinh ngay ket thuc.
+            long daysNum;
+            try {
+                daysNum = Long.parseLong(item.getDays().getName());
+            } catch (Exception e) {
+                throw new ServiceException("Số ngày dùng thuốc không hợp lệ");
+            }
+            LocalDateTime endTime = startTime.plusDays(daysNum);
             rxdrug.put("medcEndtime", endTime.toString());  // Bắt buộc, yyyy-MM-dd HH:mm:ss Định dạng
             // Số ngày dùng thuốc
             rxdrug.put("medcDays", item.getDays().getName());  // Bắt buộc, Số ngày dùng thuốc
@@ -277,7 +350,9 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         mdtrtinfo.put("prscDrCertno", "");         // Số giấy tờ của bác sĩ kê đơn (Kiểu ký tự 50)
         // Bác sĩchức vụgọi làMã (Kiểu ký tự 20)
         mdtrtinfo.put("drProfttlCodg", doctor.getUserExt().getPost());
-        switch (doctor.getUserExt().getPost()){
+        // DS182: post null thi switch tren String NPE 500 — coi nhu khong co chuc vu.
+        String drPost = doctor.getUserExt().getPost() == null ? "" : doctor.getUserExt().getPost();
+        switch (drPost){
             case  "231":
                 mdtrtinfo.put("drProfttlName", "Bác sĩ trưởng khoa");
                 break;
@@ -304,6 +379,11 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         mdtrtinfo.put("diseName", "");             // Tên loại bệnh (Kiểu ký tự 500)
         mdtrtinfo.put("spDiseFlag", "");           // đặc biệtbệnhloạicờ (Kiểu ký tự 3)
         XtZd xtZd = xtZdService.getById(medicalRecord.getDiseaseId());
+        // DS182: benh an tro toi chan doan khong ton tai (diseaseId la) thi
+        // getIcd10()/getZdmc() NPE 500 ben duoi — 400 truoc khi dung.
+        if (xtZd == null) {
+            throw new ServiceException("Không tìm thấy chẩn đoán của bệnh án");
+        }
         if(BizConstants.RECIPEL_TYPE_WESTERN.equals(recipelInfo.getRecipelType().getValue())){
             //Thuốc tây
             diseinfo.put("diagType", "1");        // Loại chẩn đoán (Chẩn đoánLoại, Kiểu ký tự, Độ dài tối đa3)
@@ -315,6 +395,10 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         } else if (BizConstants.RECIPEL_TYPE_CHINESE.equals(recipelInfo.getRecipelType().getValue())) {
             //Thuốc đông y
             XtZyzh xtZyzh = xtZyzhService.getById(medicalRecord.getSyndromeId());
+            // DS182: syndromeId la thi getZhcode()/getZhmc() NPE 500.
+            if (xtZyzh == null) {
+                throw new ServiceException("Không tìm thấy hội chứng của bệnh án");
+            }
             diseinfo.put("diagType", "2");        // Loại chẩn đoán (Chẩn đoánLoại, Kiểu ký tự, Độ dài tối đa3)
             diseinfo.put("tcmDiseCode", xtZd.getIcd10());     // Mã tên bệnh Đông y (Kiểu ký tự, Độ dài tối đa9)
             diseinfo.put("tcmDiseName", xtZd.getZdmc());     // Tên bệnh Đông y (Kiểu ký tự, Độ dài tối đa100)
@@ -369,13 +453,43 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
     @Override
     @Transactional
     public JSONObject signElectronicPrescriptionWithInsurance_Ld7802(RecipelInfoReview recipelInfoReview, String ysId) {
+        // DS182: guard null truoc chuoi deref — truoc day NPE 500 (doctor/
+        // ysDoctor/patientMdData/D001 null, downloadBytes throw); du lieu
+        // BHYT thieu thi 400 thay vi 500 (mau DS89 cung file).
         RecipelInfo recipelInfo = recipelInfoReview.getRecipelInfo();
+        if (recipelInfo == null || recipelInfo.getId() == null) {
+            throw new ServiceException("Không tìm thấy đơn thuốc");
+        }
         Registration registration = recipelInfo.getRegistration();
+        if (registration == null || registration.getPatientId() == null
+                || registration.getPatientId().getId() == null
+                || registration.getDoctor() == null
+                || registration.getDoctor().getId() == null
+                || registration.getClinicOffice() == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
+        }
         MedicalRecord medicalRecord = recipelInfoReview.getMedicalRecord();
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        if (patientMdData == null) {
+            throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
+        }
         User doctor = userService.get(registration.getDoctor().getId());
+        if (doctor == null || doctor.getUserExt() == null) {
+            throw new ServiceException("Không tìm thấy bác sĩ kê đơn");
+        }
         User ysDoctor = userService.get(ysId);
+        if (ysDoctor == null || ysDoctor.getUserExt() == null) {
+            throw new ServiceException("Không tìm thấy dược sĩ thẩm định");
+        }
+        if (ysDoctor.getDepartment() == null) {
+            throw new ServiceException("Không tìm thấy khoa của dược sĩ thẩm định");
+        }
+        JSONObject company = SessionUtils.getUserJson() == null ? null
+                : SessionUtils.getUserJson().getJSONObject("company");
+        if (company == null) {
+            throw new ServiceException("Không tìm thấy công ty của phiên đăng nhập");
+        }
         String FixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
         String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
         //TheoĐơn thuốcidLấy đượcnốiĐơn thuốcPDFđường dẫn
@@ -384,12 +498,26 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         // khong qua cong frontend webPort (7020) + proxy dev /api nua.
         String url = "http://localhost:" + webServerApplicationContext.getWebServer().getPort() + PRESCRIPTION_URL_XML + recipelInfoReview.getRecipelInfo().getId();
         //Tệpbase64
-         byte[] bytes = HttpUtil.downloadBytes(url);
+        // DS182: hutool downloadBytes throw khi khong tai duoc PDF (ureport
+        // down / loi mang) — truoc day 500 tho; 400 co thong bao.
+        byte[] bytes;
+        try {
+            bytes = HttpUtil.downloadBytes(url);
+        } catch (Exception e) {
+            throw new ServiceException("Không tải được file đơn thuốc điện tử");
+        }
+        if (bytes == null || bytes.length == 0) {
+            throw new ServiceException("Không tải được file đơn thuốc điện tử");
+        }
         String pdfInfo = Base64.getEncoder().encodeToString(bytes);
         data.put("originalRxFile", pdfInfo);
         //Tải lên đơn thuốc điện tửTham số1-20JsonString của Base64chữký tựGiá trị
         JSONObject top20  = new JSONObject();
          DzcfD001Output one = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        // DS182: Ld7801 chua chay / D001 bi xoa thi one null — truoc day NPE 500.
+        if (one == null) {
+            throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
+        }
         top20.put("rxTraceCode",one.getRxtracecode() );               // Đơn thuốctruy xuấtmã, Kiểu ký tự
         top20.put("hiRxno", one.getHirxno());                    // BHYTĐơn thuốcmã số, Kiểu ký tự
         top20.put("mdtrtId", registration.getMdtrtId());                   // BHYTkhám bệnhID, Kiểu ký tự
@@ -405,7 +533,9 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         top20.put("hosp_dept_codg", registration.getClinicOffice().getCode());            // Bệnh việnKhoaMã
         top20.put("pharProfttlCodg", ysDoctor.getUserExt().getPost());
         // thẩm định đơnDược sĩchức vụgọi làMã
-        switch (ysDoctor.getUserExt().getPost()){
+        // DS182: post null thi switch tren String NPE 500 — coi nhu khong co chuc vu.
+        String ysPost = ysDoctor.getUserExt().getPost() == null ? "" : ysDoctor.getUserExt().getPost();
+        switch (ysPost){
             case  "1":
                 top20.put("drProfttlName", "hành nghề nghiệp vụ Dược sĩ");
                 break;
@@ -475,17 +605,49 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
      */
     @Override
     public JSONObject uploadElectronicPrescription_Ld7101(RecipelInfoReview recipelInfoReview,String ysId) {
+        // DS182: guard null truoc chuoi deref — truoc day NPE 500 (D001/D002
+        // null, doctor/ysDoctor/patientMdData null); du lieu BHYT thieu thi
+        // 400 thay vi 500 (mau DS89 cung file).
+        JSONObject company = SessionUtils.getUserJson() == null ? null
+                : SessionUtils.getUserJson().getJSONObject("company");
+        if (company == null) {
+            throw new ServiceException("Không tìm thấy công ty của phiên đăng nhập");
+        }
         String FixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
         String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
         RecipelInfo recipelInfo = recipelInfoReview.getRecipelInfo();
+        if (recipelInfo == null || recipelInfo.getId() == null) {
+            throw new ServiceException("Không tìm thấy đơn thuốc");
+        }
         Registration registration = recipelInfo.getRegistration();
+        if (registration == null || registration.getPatientId() == null
+                || registration.getPatientId().getId() == null
+                || registration.getDoctor() == null
+                || registration.getDoctor().getId() == null) {
+            throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
+        }
         DzcfD001Output output001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getMzh, recipelInfo.getRegistration().getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
         DzcfD002Output output002 = dzcfD002OutputService.getOne(new LambdaQueryWrapper<DzcfD002Output>().eq(DzcfD002Output::getMzh, recipelInfo.getRegistration().getId()).eq(DzcfD002Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        if (output001 == null || output002 == null) {
+            throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
+        }
         MedicalRecord medicalRecord = recipelInfoReview.getMedicalRecord();
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         User doctor = userService.get(registration.getDoctor().getId());
+        if (doctor == null || doctor.getUserExt() == null) {
+            throw new ServiceException("Không tìm thấy bác sĩ kê đơn");
+        }
         User ysDoctor = userService.get(ysId);
+        if (ysDoctor == null || ysDoctor.getUserExt() == null) {
+            throw new ServiceException("Không tìm thấy dược sĩ thẩm định");
+        }
+        if (ysDoctor.getDepartment() == null) {
+            throw new ServiceException("Không tìm thấy khoa của dược sĩ thẩm định");
+        }
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        if (patientMdData == null) {
+            throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
+        }
         JSONObject data = new JSONObject(true);
         data.put("rxTraceCode",output001.getRxtracecode());
         data.put("hiRxno",output001.getHirxno());
@@ -499,7 +661,9 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         data.put("prscDrName", doctor.getName());
         data.put("pharDeptName", ysDoctor.getDepartment().getCode() );              // thẩm định đơnDược sĩTên khoa
         data.put("pharDeptCode", ysDoctor.getUserExt().getOfficeCode());
-        switch (ysDoctor.getUserExt().getPost()){
+        // DS182: post null thi switch tren String NPE 500 — coi nhu khong co chuc vu.
+        String ysPost7101 = ysDoctor.getUserExt().getPost() == null ? "" : ysDoctor.getUserExt().getPost();
+        switch (ysPost7101){
             case  "1":
                 data.put("drProfttlName", "hành nghề nghiệp vụ Dược sĩ");
                 break;
