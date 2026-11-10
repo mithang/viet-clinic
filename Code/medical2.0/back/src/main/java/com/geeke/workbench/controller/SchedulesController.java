@@ -121,7 +121,10 @@ public class SchedulesController extends BaseController {
                     .body(ResultUtil.errorJson(ErrorEnum.E_502));
         }
 
-        if(pageRegistration.getStatus().equals("0")){
+        // DS173 C: status null truoc day NPE 500 tai
+        // getStatus().equals("0") (body {}); null-safe, null re nhanh
+        // listPages nhu status khac "0".
+        if ("0".equals(pageRegistration.getStatus())) {
             List<String> result=schedulesService.listPagesjyjc(pageRegistration);
             for(String item:result){
                 schedulesService.updateoverlookid(item);
