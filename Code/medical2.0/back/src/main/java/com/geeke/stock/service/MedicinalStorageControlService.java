@@ -1079,6 +1079,13 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
 
     @Transactional(readOnly = true)
     public BigDecimal getByDrugOrStuffIds(List<String> drugOrStuffIds) {
+        // DS187: danh sach rong -> 0, khong goi SQL (IN () loi cu phap);
+        // cung la truong hop loc khong khop dong nao o getAllDrugs /
+        // getgetStuffSalesStat: tong gia nhap phai ve 0, khong phai tong
+        // toan bo kho nhu truoc (loc IN trong mapper tung bi comment).
+        if (CollectionUtils.isEmpty(drugOrStuffIds)) {
+            return BigDecimal.ZERO;
+        }
         return this.dao.getByDrugOrStuffIds(drugOrStuffIds);
     }
 

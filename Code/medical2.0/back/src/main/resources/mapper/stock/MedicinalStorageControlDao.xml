@@ -498,11 +498,15 @@
         a.id>0
         AND a.del_flag=0
         AND a.storage_stock>0
-<!--        AND a.drug_stuff_id in (-->
-<!--            <foreach collection="list" item="item" separator=",">-->
-<!--                #{item.id}-->
-<!--            </foreach>-->
-<!--        )-->
+        <!-- DS187: khoi phuc loc IN theo danh sach id (tung bi comment
+             het -> sum toan bo MSC, sai tong khi loc rong + lan tenant):
+             list la List<String> nen #{item}, khong phai #{item.id}.
+             Danh sach rong duoc chan o service (IN () loi cu phap). -->
+        AND a.drug_stuff_id in (
+            <foreach collection="list" item="item" separator=",">
+                #{item}
+            </foreach>
+        )
     </select>
 
     <!-- DS32: atomically add deltas to all six detail stock columns. Same
