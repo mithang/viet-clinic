@@ -3,6 +3,8 @@ package com.geeke.medicareutils.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.db.entity.YbjkLogcontent;
 import com.geeke.medicareutils.config.MedicareConfigProperties;
 import com.geeke.medicareutils.domain.reqpo.RequestData;
@@ -11,6 +13,7 @@ import com.geeke.utils.SessionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
@@ -43,6 +46,17 @@ public class MdRequestUtil {
      * @return
      */
     public JSONObject getMedicareData(String infoNo,JSONObject jsonObject) {
+        // DS179: fail-closed 400 thay vi NPE 500 / JSONException 500 khi
+        // BHYT tra ve rong, khong phai JSON, hoac thieu "output" (probe
+        // tools/ds179-verify.py: empty/invalid/no-output). Log BHYT
+        // (ybjk_logcontent) van duoc ghi cho phan hoi doc duoc, roi moi
+        // 400 neu thieu output -- giao dich that bai nhung co audit.
+        if (infoNo == null || infoNo.trim().isEmpty()) {
+            throw new ServiceException("Mã giao dịch BHYT không được để trống");
+        }
+        if (jsonObject == null) {
+            throw new ServiceException("Dữ liệu gửi BHYT không được để trống");
+        }
         // Đặt tiêu đề yêu cầu
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -55,14 +69,56 @@ public class MdRequestUtil {
         ybjkLogcontent.setInhead(requestData);
         ybjkLogcontent.setBegindate(LocalDateTime.now());
         //phátgửiBHYTVui lòngyêu cầu
-        String response = restTemplate.postForObject(medicareConfigProperties.getUrl(), request,String.class);
+        String response = postToMedicare(request);
         ybjkLogcontent.setEnddate(LocalDateTime.now());
         ybjkLogcontent.setOuthead(response);
-        ybjkLogcontent.setOutcontent(JSONObject.parseObject(response).getString("output"));
-        ybjkLogcontent.setErrormsg(JSONObject.parseObject(response).getString("err_msg"));
+        JSONObject responseJson = parseMedicareResponse(response);
+        ybjkLogcontent.setOutcontent(responseJson.getString("output"));
+        ybjkLogcontent.setErrormsg(responseJson.getString("err_msg"));
         //BHYTThông tinNgàynhật kýlưu trữ
         ybjkLogcontentService.save(ybjkLogcontent);
-        return JSONObject.parseObject(response).getJSONObject("output");
+        JSONObject output = responseJson.getJSONObject("output");
+        if (output == null) {
+            throw new ServiceException("BHYT trả về dữ liệu không hợp lệ (thiếu output)");
+        }
+        return output;
+    }
+
+    /**
+     * DS179: POST toi BHYT voi guard fail-closed 400 -- url chua cau
+     * hinh, khong ket noi duoc, hoac phan hoi rong/khong phai JSON.
+     * Dung chung cho getMedicareData / getMedicareSignNo (ca hai deu
+     * POST cung url). Truoc day: url trong -> IllegalArgumentException
+     * (400 nho handler DS160 nhung msg ky thuat "URI is not absolute");
+     * phan hoi rong -> parseObject(null).getString NPE 500; phan hoi
+     * khong phai JSON -> JSONException 500; BHYT chet -> 500.
+     */
+    private String postToMedicare(HttpEntity<String> request) {
+        String url = medicareConfigProperties.getUrl();
+        if (url == null || url.trim().isEmpty()) {
+            throw new ServiceException("BHYT chưa cấu hình địa chỉ giao diện (spring.medicare.url)");
+        }
+        try {
+            return restTemplate.postForObject(url, request, String.class);
+        } catch (RestClientException e) {
+            throw new ServiceException("Không kết nối được tới BHYT (" + e.getMessage() + ")");
+        }
+    }
+
+    /** DS179: parse phan hoi BHYT, fail-closed 400 khi rong / khong phai JSON. */
+    private JSONObject parseMedicareResponse(String response) {
+        if (response == null || response.trim().isEmpty()) {
+            throw new ServiceException("BHYT trả về phản hồi rỗng");
+        }
+        try {
+            JSONObject parsed = JSONObject.parseObject(response);
+            if (parsed == null) {
+                throw new ServiceException("BHYT trả về phản hồi rỗng");
+            }
+            return parsed;
+        } catch (JSONException e) {
+            throw new ServiceException("BHYT trả về dữ liệu không phải JSON hợp lệ");
+        }
     }
 
 
@@ -137,10 +193,27 @@ public class MdRequestUtil {
      * @return
      */
     private String createRequestData(String infoNo,JSONObject jsonObject) {
+        // DS179: defence-in-depth (khong probe duoc bang testfull vi
+        // session luon co company): infoNo/jsonObject null, session
+        // khong co company (getUserJson() co the tra null) -> 400 thay
+        // vi NPE o getString("fixmedinsCode"); data null o nhanh
+        // INFO_LIST (don thuoc dien tu) -> 400 thay vi NPE o
+        // data.toJSONString(). Url trong duoc guard o postToMedicare.
+        if (infoNo == null || infoNo.trim().isEmpty()) {
+            throw new ServiceException("Mã giao dịch BHYT không được để trống");
+        }
+        if (jsonObject == null) {
+            throw new ServiceException("Dữ liệu gửi BHYT không được để trống");
+        }
         RequestData requestData = new RequestData();
         //Lấy mã và tên cơ sở y tế được chỉ định
-        String FixmedinsCode = SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode");
-        String FixmedinsName = SessionUtils.getUserJson().getJSONObject("company").getString("name");
+        JSONObject userJson = SessionUtils.getUserJson();
+        JSONObject company = userJson == null ? null : userJson.getJSONObject("company");
+        if (company == null) {
+            throw new ServiceException("Không xác định được phòng khám của phiên làm việc (thiếu company)");
+        }
+        String FixmedinsCode = company.getString("fixmedinsCode");
+        String FixmedinsName = company.getString("name");
         requestData.setInfno(infoNo);
         //thuậnsố thứ tự(4)
         String orderNum =  "1234";
@@ -177,7 +250,7 @@ public class MdRequestUtil {
         requestData.setFixmedins_name(FixmedinsName);
         //Giao diện check-in
         //Từ nàyđịa phươngBộ nhớ đệm trong LấykýĐếnsố thứ tự
-        if(infoNo.equals("9001")){
+        if("9001".equals(infoNo)){
             requestData.setSign_no("");
         }else{
             String signNo = getSignNoFromCache();
@@ -201,6 +274,9 @@ public class MdRequestUtil {
             json.put("timestamp",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
             //gốcbắt đầuVui lòngyêu cầuTham số
             JSONObject data = jsonObject.getJSONObject("data");
+            if (data == null) {
+                throw new ServiceException("Dữ liệu đơn thuốc điện tử gửi BHYT không được để trống (thiếu data)");
+            }
             String encData = SMUtil.encrypt(data.toJSONString(), medicareConfigProperties.getAppId(), medicareConfigProperties.getAppSecret());
             String signData = SMUtil.sign(jsonObject, medicareConfigProperties.getAppSecret(), medicareConfigProperties.getPrivateKey());
             jsonObject.put("encData",encData);
@@ -216,23 +292,28 @@ public class MdRequestUtil {
 
     //kýĐến hoặc kýtrả
     public JSONObject getMedicareSignNo(String infoNo,JSONObject jsonObject) {
-        // Đặt tiêu đề yêu cầu
+        // DS179: fail-closed 400 nhu getMedicareData (probe ds179:
+        // empty/invalid -> 500 truoc day, vi day la cuoc goi dau tien
+        // trong createRequestData). sign_no vang trong JSON hop le thi
+        // giu null nhu cu -- cuoc goi chinh tu kiem output (400 neu
+        // thieu), nen khong 400 som o day.
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String requestData = createRequestData(infoNo,jsonObject);
         HttpEntity<String> request = new HttpEntity<>(requestData ,headers);
-        String response = restTemplate.postForObject(medicareConfigProperties.getUrl(), request,String.class);
-        if(infoNo.equals("9001")){
+        String response = postToMedicare(request);
+        JSONObject parsed = parseMedicareResponse(response);
+        if("9001".equals(infoNo)){
             //Lưukhi ngày24điểmcủatrướckýĐếnmã
-            signNoCache = JSONObject.parseObject(response).getString("sign_no");
+            signNoCache = parsed.getString("sign_no");
             signNoExpireTime = LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1);
         }
-        if(infoNo.equals("9002")){
+        if("9002".equals(infoNo)){
             //XóakýĐếnmã
             signNoCache = null;
             signNoExpireTime = null;
         }
-        return JSONObject.parseObject(response);
+        return parsed;
     }
 
     /** Lấy số thứ tự check-in từ bộ nhớ đệm cục bộ, hết hạnTrả vềnull */
