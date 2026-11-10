@@ -72,6 +72,16 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         if (StringUtils.isBlank(clinic.getPhoneNumber())) {
             throw new com.geeke.common.service.ServiceException("Số điện thoại phòng khám không được để trống");
         }
+        // Provisioning option A, nhom 1 (2026-11-10): mat khau admin =
+        // 6 ky tu cuoi so dien thoai (createUserAndRole :187 va nhanh
+        // doi so :170 deu substring(len-6)). DS82 chi guard blank;
+        // @Length(min=1,max=21) cho phep phone 1-5 ky tu -> substring
+        // StringIndexOutOfBounds 500. Guard length<6 o day, truoc moi
+        // file/company write, bao ca create lan update (update doi so
+        // ngan cung qua nhanh :170). Khong doi hanh vi khi phone >= 6.
+        if (clinic.getPhoneNumber().length() < 6) {
+            throw new com.geeke.common.service.ServiceException("Số điện thoại phòng khám phải có ít nhất 6 ký tự");
+        }
         if (StringUtils.isBlank(clinic.getFileId())) {
             clinic.setFileId(IdGen.uuid());
         }
