@@ -971,13 +971,6 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
 
-    private BigDecimal getAmountReceived(RecipelInfo recipelInfo, TollInfo tollInfo){
-        if (tollInfo.getDiscount() == 0) {
-            return recipelInfo.getFee();
-        }
-        return recipelInfo.getFee().multiply(new BigDecimal(tollInfo.getDiscount()));
-    }
-
     private Registration addRetailRegistration(Company company,Patient patient) {
             Registration registration = new Registration();
             registration.setCompany(company);
