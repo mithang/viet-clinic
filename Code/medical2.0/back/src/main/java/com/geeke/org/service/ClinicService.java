@@ -120,6 +120,12 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
                 throw new ServiceException("Phòng khám chưa có tài khoản quản trị");
             }
         } else {
+            // Provisioning option A, nhom 2: chi tai khoan cap he thong
+            // moi duoc tao phong kham moi — fail fast truoc moi file/
+            // company write (nhanh update khong qua gate nay, A2 van
+            // 200 voi testfull). Gate duoc kiem lai trong
+            // saveClinicAndRole tai diem mien tru.
+            companyService.requireSystemLevelCreator();
             if (clinic.getVersion() == null || StringUtils.isBlank(clinic.getVersion().getId())
                     || StringUtils.isBlank(clinic.getVersion().getRoleId())) {
                 throw new ServiceException("Phiên bản phòng khám không được để trống");
@@ -161,7 +167,17 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
                 User oldAdmin = userDao.getByLoginName(clinic.getPhoneNumber());
                 if (null == oldAdmin) {
                     //Không có và khácPhòng khámliên kết
-                    this.createUserAndRole(clinic, role);
+                    // Mien tru tenant guard CHI cho admin-user moi cua
+                    // cong ty vua tao, CHI trong cua so nay (xem
+                    // CrudService): user mang company = phong kham vua
+                    // tao nen userService.save goc luon chan (DS172).
+                    // Gate cap he thong da chay o dau nhanh create.
+                    try {
+                        beginProvisioningFor(clinic.getId());
+                        this.createUserAndRole(clinic, role);
+                    } finally {
+                        endProvisioning();
+                    }
                 } else {
                     //ĐãcóPhòng khámliên kết
                     userDao.insertUserTenant(IdGen.uuid(), oldAdmin.getId(), clinic.getId(), oldAdmin.getLoginName());

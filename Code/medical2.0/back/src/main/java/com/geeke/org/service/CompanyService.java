@@ -3,8 +3,10 @@ package com.geeke.org.service;
 import com.geeke.admin.common.entity.DataPermission;
 import com.geeke.admin.common.entity.Permission;
 import com.geeke.admin.common.service.PermissionService;
+import com.geeke.admin.dao.UserDao;
 import com.geeke.admin.entity.Role;
 import com.geeke.admin.entity.Router;
+import com.geeke.admin.entity.User;
 import com.geeke.admin.service.RoleService;
 import com.geeke.clinic.service.ClinicVersionService;
 import com.geeke.common.data.Page;
@@ -48,6 +50,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     private PermissionService permissionService;
     @Autowired
     private ClinicVersionService clinicVersionService;
+    @Autowired
+    private UserDao userDao;
 
     @Transactional(readOnly = false)
     public Company saveTenant(Company company) {
@@ -409,9 +413,42 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         return save(company);
     }
 
+    /**
+     * Provisioning option A, nhom 2 (2026-11-10): chi tai khoan CAP HE
+     * THONG moi duoc tao phong kham moi. San quyen cua endpoint tao la
+     * hasAnySessionPermission (bat ky session nao co 1 resource cung
+     * qua) nen giu san do ma mo provisioning thi tai khoan phong kham
+     * cung tu tao them tenant duoc — phai chot creator o day, truoc
+     * moi ghi cua luong tao. Dinh nghia cap he thong = tai khoan co
+     * sys_user.company_id = '0' (super/system/cac tai khoan test cap
+     * he thong); tai khoan phong kham co company_id = phong kham cua
+     * minh. Doc lai dong luu trong DB theo id session user, KHONG tin
+     * tenantId session da chon: bat ky user nao cung login duoc voi
+     * companyId "0" (AuthController.changeClinics khong kiem tra tu
+     * cach thanh vien — da kiem chung live: testfull/"0" van login
+     * duoc, 0 router) nen gate theo tenantId "0" se bi vuot. Fail-closed:
+     * khong co session user / khong tim thay dong / company khac '0'
+     * deu -> 400, truoc moi ghi.
+     */
+    public void requireSystemLevelCreator() {
+        User sessionUser = SessionUtils.getUser();
+        if (sessionUser == null || StringUtils.isBlank(sessionUser.getId())) {
+            throw new ServiceException("Chỉ tài khoản cấp hệ thống mới được tạo phòng khám");
+        }
+        User stored = userDao.get(sessionUser.getId());
+        if (stored == null || !"0".equals(stored.getCompanyId())) {
+            throw new ServiceException("Chỉ tài khoản cấp hệ thống mới được tạo phòng khám");
+        }
+    }
+
     @Transactional(readOnly = false)
     public Role saveClinicAndRole(Company company)
     {
+        // Provisioning option A, nhom 2: chot creator truoc moi ghi;
+        // ClinicService.save cung goi gate nay som (fail fast truoc
+        // upload file) nhung diem mien tru ben duoi khong bao gio duoc
+        // toi neu khong qua gate o day.
+        requireSystemLevelCreator();
         if(StringUtils.isBlank(company.getFileId()))
         {
             company.setFileId(IdGen.uuid());
@@ -431,7 +468,18 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         String roleId = clinicVersionService.getRoleIdById(vid);
         role.setParentId(roleId);
         roleService.deleteRoleByCode(BizConstants.ROLE_ADMIN,company.getId());
-        Role save = roleService.save(role);
+        // Mien tru tenant guard CHI cho role vua tao cua cong ty vua
+        // tao, CHI trong cua so nay (xem CrudService): role mang
+        // company = phong kham vua tao nen verifyTenantOwnership goc
+        // luon chan (DS172). savePermisson ben duoi ghi thang DAO,
+        // khong qua guard, nen khong can nam trong cua so.
+        Role save;
+        try {
+            beginProvisioningFor(c.getId());
+            save = roleService.save(role);
+        } finally {
+            endProvisioning();
+        }
         //LưuQuyềnquan hệ
         savePermisson(company, save);
         return save;

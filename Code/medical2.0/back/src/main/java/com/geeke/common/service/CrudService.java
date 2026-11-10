@@ -448,6 +448,32 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	}
 
 	/**
+	 * Provisioning option A (2026-11-10): mien tru tenant guard CHI cho
+	 * cong ty ma session vua tao, CHI trong luong tao phong kham moi
+	 * (CompanyService.saveClinicAndRole + ClinicService.createUserAndRole).
+	 * Luong tao ghi role / permission / admin-user mang company = phong
+	 * kham vua tao, khong bao gio bang session tenant, nen
+	 * verifyTenantOwnership luon chan (DS172). Co che: ThreadLocal giu
+	 * id cong ty vua tao, chi trong cua so try/finally cua luong do;
+	 * moi thuc the khac (company khac, ke ca trong cung request) van
+	 * bi guard nhu cu. Chi dat co sau khi requireSystemLevelCreator()
+	 * qua (xem CompanyService) — khong co duong nao khac dat co nay.
+	 * Luon clear trong finally; neu co lech, co chi song het request
+	 * (thread tra ve pool thi request sau dat lai truoc khi dung).
+	 */
+	private static final ThreadLocal<String> PROVISIONING_COMPANY_ID = new ThreadLocal<>();
+
+	protected static void beginProvisioningFor(String companyId) {
+		if (StringUtils.isNotBlank(companyId)) {
+			PROVISIONING_COMPANY_ID.set(companyId);
+		}
+	}
+
+	protected static void endProvisioning() {
+		PROVISIONING_COMPANY_ID.remove();
+	}
+
+	/**
 	 * Kiểm trathực thểCó hay khôngthuộctạiHiện tạitenant
 	 * dùng để get/save/delete  v.v. thao tác của an toànKiểm tra
 	 * @param entity chờKiểm tra của thực thể
@@ -464,6 +490,13 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		}
 		String entityCompanyId = entity.getCompany().getId();
 		if (StringUtils.isBlank(entityCompanyId)) {
+			return;
+		}
+		// Provisioning option A: thuc the thuoc cong ty vua tao trong
+		// luong tao phong kham (role/admin-user moi) duoc mien guard,
+		// chi trong cua so begin/endProvisioningFor cua luong do.
+		String provisioningId = PROVISIONING_COMPANY_ID.get();
+		if (provisioningId != null && provisioningId.equals(entityCompanyId)) {
 			return;
 		}
 		// Phòng khámcấpDữ liệucách ly: nghiệp vụDữ liệuchỉthuộctạiĐăng nhậpPhòng khámbản thân(Với danh sách ensureCompanyFilter  của chính xác company_id Nhất quán). 
