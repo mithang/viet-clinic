@@ -276,6 +276,15 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                                   BigDecimal occupyDelta, BigDecimal usedDelta,
                                   BigDecimal reimburseDelta, BigDecimal returnTodoFeeDelta,
                                   BigDecimal freezeDelta) {
+        // DS175 B: delta null -> mapper `IFNULL(col,0) + #{delta}` ghi NULL
+        // am tham vao cot chi tiet ton kho. Caller hien tai deu guard
+        // (DS174: detail number null -> 400 truoc khi goi); day la guard
+        // tap trung khoa ca ho adjust* khoi moi caller tuong lai.
+        if (storageDelta == null || surplusDelta == null || occupyDelta == null
+                || usedDelta == null || reimburseDelta == null || returnTodoFeeDelta == null
+                || freezeDelta == null) {
+            throw new ServiceException("Số lượng thay đổi tồn kho không được để trống");
+        }
         row.preUpdate();
         int affected = this.dao.adjustStocks(row.getId(), storageDelta, surplusDelta, occupyDelta, usedDelta,
                 reimburseDelta, returnTodoFeeDelta, freezeDelta, row.getUpdateBy(), row.getUpdateDate());
@@ -295,6 +304,11 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
      */
     @Transactional(readOnly = false)
     public int occupyDetailStocks(MedicinalStorageControl row, BigDecimal occupyDelta) {
+        // DS175 B: occupyDelta null truoc day NPE 500 o negate() ben duoi;
+        // mapper occupyStocks cung ghi NULL am tham neu delta null.
+        if (occupyDelta == null) {
+            throw new ServiceException("Số lượng chiếm dụng tồn kho không được để trống");
+        }
         row.preUpdate();
         int affected = this.dao.occupyStocks(row.getId(), occupyDelta, occupyDelta.negate(),
                 occupyDelta, row.getUpdateBy(), row.getUpdateDate());
