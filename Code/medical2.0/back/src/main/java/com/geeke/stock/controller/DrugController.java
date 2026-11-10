@@ -50,7 +50,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
         if (result.getRows() != null) {
             //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
             result.getRows().forEach(x -> {
-                if (x.getIsUnpackSell().equals("1")) {
+                if ("1".equals(x.getIsUnpackSell())) {
                     x.setStockUnit(x.getPreparationUnit().getName());
                 } else {
                     x.setStockUnit(x.getPack().getName());
@@ -74,7 +74,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
         if (result.getRows() != null) {
             //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
             result.getRows().forEach(x -> {
-                if (x.getIsUnpackSell().equals("1")) {
+                if ("1".equals(x.getIsUnpackSell())) {
                     x.setStockUnit(x.getPreparationUnit().getName());
                 } else {
                     x.setStockUnit(x.getPack().getName());
@@ -97,7 +97,7 @@ public class DrugController extends CrudController<DrugService, Drug> {
         if (result.getRows() != null) {
             //Đặt đơn vị theo vòng lặp, Frontend cần kiểm soát để thuốc được bán lẻ hiển thị đơn vị bán lẻ, Trường hợp không cho phép bán lẻ thì hiển thị đơn vị đóng gói
             result.getRows().forEach(x -> {
-                if (x.getIsUnpackSell().equals("1")) {
+                if ("1".equals(x.getIsUnpackSell())) {
                     x.setStockUnit(x.getPreparationUnit().getName());
                 } else {
                     x.setStockUnit(x.getPack().getName());
