@@ -67,6 +67,20 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         if (supplierOutboundDetails == null) {
             throw new ServiceException("Danh sách chi tiết xuất kho không được để trống");
         }
+        // DS210: so luong am tren bat ky dong nao (moi hoac sua) truoc
+        // day lot thang vao freezeDetailStocks -> nhanh occupyDelta <= 0
+        // tru occupy_stock/freeze_stock am tham (DAO adjustStocks chi
+        // cong delta, khong co san), dong am duoc luu that (probe-proven:
+        // tao -5 -> occupy/freeze -5; sua 5 -> -3 -> occupy -3). Tien
+        // kiem TOAN BO list truoc khi dong nao bi freeze (mau bulk
+        // DS146): 0 giu nguyen (vo hai), null giu cho guard DS174
+        // tung dong, am -> ServiceException -> 400 fail-closed.
+        for (SupplierOutboundDetail n : supplierOutboundDetails) {
+            if (n.getNumber() != null
+                    && n.getNumber().compareTo(BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Số lượng xuất kho không được âm");
+            }
+        }
         List<SupplierOutboundDetail> exist = supplierOutboundDetailDao.getByOutboundId(outboundId);
 
         SupplierOutbound outbound = supplierOutboundService.get(outboundId);
@@ -417,6 +431,13 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         // cung cho. Ca hai fail-closed 400, dong + dong bang giu nguyen.
         if (detail.getNumber() == null) {
             throw new ServiceException("Số lượng xuất kho không được để trống");
+        }
+        // DS210: phong thu sau lop tien kiem o save() (chi tiet sua
+        // 5 -> -3 cho addNumber = -8, freeze am lam occupy am tham).
+        // Delta am khi GIAM so luong van hop le (8 -> 5), chi so
+        // luong dich am moi bi chan.
+        if (detail.getNumber().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Số lượng xuất kho không được âm");
         }
         if (old.getNumber() == null) {
             throw new ServiceException("Số lượng xuất kho của chi tiết đã lưu không hợp lệ");
