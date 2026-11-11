@@ -28,13 +28,13 @@ public interface MdMedicationOrderService {
     //Hủy đơn thuốc điện tử
     JSONObject cancelElectronicPrescription_Ld7104(RecipelInfoReview recipelInfoReview,String undoRea);
 
-    // [Ld7202]điện tửĐơn thuốcThông tinTruy vấn
-    JSONObject queryElectronicPrescriptionInfo_Ld7202();
-
-
-    // [Ld7102]điện tửĐơn thuốcxét duyệtKết quảphản hồi
-    JSONObject feedbackPrescriptionReviewResult_Ld7102();
-
+    // DS192: queryElectronicPrescriptionInfo_Ld7202() + impl stub
+    // (return null) DA XOA — dead code, 0 caller (RecipelInfoReviewController
+    // chi goi Ld7801/7802/7101/7804/7805/7104; khong frontend/tools/schedule/
+    // reflection nao goi). INFO_LIST "Ld7202" trong MdRequestUtil KHONG
+    // phai method nay (ma giao dich BHYT, dung live) nen giu.
+    // DS192: feedbackPrescriptionReviewResult_Ld7102() + impl stub
+    // (return null) DA XOA — cung bang chung 0 caller; INFO_LIST "Ld7102" giu.
 
     // DS191: queryPrescriptionDrugDirectory_Ld7806() DA XOA — dead code,
     // 0 caller (khong controller/schedule/reflection nao goi; chi co

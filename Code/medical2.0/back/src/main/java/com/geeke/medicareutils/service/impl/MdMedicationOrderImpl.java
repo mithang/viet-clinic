@@ -774,21 +774,10 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         return ld7104;
     }
 
-    /**
-     * @return
-     */
-    @Override
-    public JSONObject queryElectronicPrescriptionInfo_Ld7202() {
-        return null;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public JSONObject feedbackPrescriptionReviewResult_Ld7102() {
-        return null;
-    }
+    // DS192: queryElectronicPrescriptionInfo_Ld7202() + impl stub
+    // (return null) DA XOA — dead code, 0 caller (xem interface).
+    // DS192: feedbackPrescriptionReviewResult_Ld7102() + impl stub
+    // (return null) DA XOA — dead code, 0 caller (xem interface).
 
     /**
      * @return
