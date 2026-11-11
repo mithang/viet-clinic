@@ -172,10 +172,23 @@ public class AuthController {
     /**
      * Lấytất cảNgười dùngĐăng nhậpTrạng thái
      *
+     * DS206: san RBAC nhu moi endpoint du lieu khac — tai khoan 0-resource
+     * (vd login voi companyId la, hoac user chi co quyen toi thieu) truoc
+     * day doc duoc toan bo sys_user cua mot co so cung dinh (select *:
+     * phone/email/login_name/name + trang thai dang nhap) chi voi mot
+     * token hop le. Floor nay chi chan session khong co resource nao;
+     * session nhan vien binh thuong (co >= 1 resource) giu nguyen hanh vi,
+     * body tra ve van la cung mang JSON nhu cu.
+     *
      * @return
      */
     @GetMapping("/userLoginStatus")
-    public List<User> getUserLoginStatus() {
+    public ResponseEntity<?> getUserLoginStatus() {
+        List<String> permissions = SessionUtils.getUserPermission();
+        if (permissions == null || permissions.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ResultUtil.errorJson(ErrorEnum.E_502));
+        }
         //TODO: Truy vấnCầnKiểm traĐăng nhậpTrạng thái của Người dùngDanh sách
         List<User> userList = loginService.loginUser();
 
@@ -224,7 +237,7 @@ public class AuthController {
             }
         }
         //TODO: Trả vềGiá trịkhácngoàidùngĐối tượngđóng gói
-        return userList;
+        return ResponseEntity.ok(userList);
     }
     /**
      * Trả vềNgày giờ phútgiây
