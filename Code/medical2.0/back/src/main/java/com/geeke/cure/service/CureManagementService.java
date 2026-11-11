@@ -101,7 +101,42 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         // save() don. recipelInfoId (String -> bigint) la loi kieu,
         // khong phai loi do dai, ngoai pham vi.
         checkCureManagementLengths(entity);
+        // DS217: addNumber / executions am — cung ho "so am" DS209-DS216.
+        // addNumber = so lan thuc hien them trong lan nay (frontend gui
+        // addNumber = excuteNum, executions = cumulative + excuteNum);
+        // revocation() lam executions -= addNumber va infusion tinh
+        // executions con lai = tong addNumber - tong da thu hoi -
+        // addNumber, nen so am luu duoc se lam TANG so lan thuc hien thay
+        // vi giam. Ca hai cot deu signed (add_number int NULL,
+        // executions int NOT NULL), khong @Min/@Positive, mapper ghi
+        // thang #{addNumber} / #{executions}. Chan truoc moi ghi: 0 van
+        // cho phep (lan thuc hien 0 lan / chua thuc hien), chi am moi 400.
+        // NGOAI LE: thu hoi (delType='1') duoc mien khoi kiem tra
+        // executions — xem ghi chu trong checkCureManagementNonNegative.
+        checkCureManagementNonNegative(entity);
         return super.save(entity);
+    }
+
+    // DS217: xem ghi chu o save().
+    // Thu hoi (delType='1') duoc MIEN khoi kiem tra executions: frontend
+    // tinh executions -= addNumber khi thu hoi, va 35 dong seed live co
+    // executions=0 < addNumber (09-11/2023) nen thu hoi mot dong cu se ra
+    // am — viec huy ban ghi khong duoc phep bi chan boi du lieu cu (10
+    // dong seed da huy san co executions=-1, addNumber duong, chung minh
+    // duong nay da ton tai). executions cua dong da huy la vestigial
+    // (cac tong chi cong addNumber, khong cong executions), va khong co
+    // dong nao co add_number am nen addNumber van chan tuyet doi ke ca
+    // khi thu hoi.
+    private static void checkCureManagementNonNegative(CureManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getAddNumber() < 0) {
+            throw new ServiceException("Số lần thực hiện thêm không được âm");
+        }
+        if (entity.getExecutions() < 0 && !"1".equals(entity.getDelType())) {
+            throw new ServiceException("Số lần đã thực hiện không được âm");
+        }
     }
 
     // DS149 C: xem ghi chu o save().
