@@ -198,6 +198,36 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                     }
                 }
             }
+            // DS212: so luong kiem ke / ton kho hien tai am la vo nghia
+            // (so luong dem thuc te khong the am) va sinh profitAndLoss am
+            // gia, chay vao tong tien phieu (SUM profit_and_loss_price) roi
+            // vao ton kho that o accomplish/adjustStock. bulkUpdate ghi
+            // thang payload, entity khong co @Min/@Positive, UI that chi
+            // gui >= 0 (input :min="0", check = pack*preparation + le).
+            // Chan truoc khi khoa phieu / ghi, tren MOI nhom (payload la
+            // List<List<...>> theo trang) de khong sot nhom sau (mau P7).
+            // profitAndLoss / profitAndLossPrice am VAN CHO PHEP: thieu
+            // hang (dem < so sach) la nghiep vu hop le, UI hien do, va
+            // adjustStock cong so am vao kho. 0 van cho phep, null van
+            // cho phep (cot nullable, duong tao phieu set sau o saveDrug).
+            for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
+                if (CollectionUtils.isEmpty(group)) {
+                    continue;
+                }
+                for (InventoryVerificationDetail detail : group) {
+                    if (detail == null) {
+                        continue;
+                    }
+                    if (detail.getCheckInventory() != null
+                            && detail.getCheckInventory() < 0) {
+                        throw new com.geeke.common.service.ServiceException("Số lượng kiểm kê không được âm");
+                    }
+                    if (detail.getCurrentInventory() != null
+                            && detail.getCurrentInventory() < 0) {
+                        throw new com.geeke.common.service.ServiceException("Số lượng tồn kho hiện tại không được âm");
+                    }
+                }
+            }
             // L2 (iteration 34): chong crash ho get(0)/null o duong ghi:
             // - loc phan tu null truoc khi preUpdate/bulkUpdate (null trong
             //   nhom truoc day NPE, rollback ca save);
