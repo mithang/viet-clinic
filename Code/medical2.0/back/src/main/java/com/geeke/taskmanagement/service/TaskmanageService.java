@@ -87,6 +87,9 @@ public class TaskmanageService {
         if (tenantId != null && !tenantId.isEmpty() && !"null".equals(tenantId)) {
             rcvo.setCompanyId(tenantId);
         }
+        // DS201: escape LIKE wildcards in taskname (mirror DS200) —
+        // "%" must match literally; same bean feeds total + list.
+        rcvo.setTaskname(StringUtils.escapeLike(rcvo.getTaskname()));
         List<taskmanagement> listtotal=taskmangementDao.selecttasktotal(rcvo);
         int total=listtotal.size();
         List<taskmanagement> list=null;

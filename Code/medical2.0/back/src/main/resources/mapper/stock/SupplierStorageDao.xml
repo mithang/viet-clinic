@@ -386,7 +386,7 @@
                 a.company_id=#{companyId}
             </if>
             <if test="pinyinCode != null and pinyinCode != ''">
-                and (d.pinyin_code like concat('%',#{pinyinCode},'%') or s.pinyin_code like  concat('%',#{pinyinCode},'%'))
+                and (d.pinyin_code like concat('%',#{pinyinCode},'%') ESCAPE '\\' or s.pinyin_code like  concat('%',#{pinyinCode},'%') ESCAPE '\\')
             </if>
             <if test="status != null and status != ''">
                 and a.examine=#{status}

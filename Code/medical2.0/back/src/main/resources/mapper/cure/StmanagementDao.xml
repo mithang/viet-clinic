@@ -25,10 +25,10 @@
             and c.ststate=#{zxzt} 
         </if>
         <if test="hzxm!='' and hzxm!=null">
-            and (e.name like concat('%',#{hzxm},'%'))
+            and (e.name like concat('%',#{hzxm},'%') ESCAPE '\\')
         </if>
         <if test="kdys!='' and kdys!=null">
-            and (c.create_by like concat('%',#{kdys},'%'))
+            and (c.create_by like concat('%',#{kdys},'%') ESCAPE '\\')
         </if>
     </select>
 
@@ -55,10 +55,10 @@
             and c.ststate=#{zxzt}
         </if>
         <if test="hzxm!='' and hzxm!=null">
-            and (e.name like concat('%',#{hzxm},'%'))
+            and (e.name like concat('%',#{hzxm},'%') ESCAPE '\\')
         </if>
         <if test="kdys!='' and kdys!=null">
-            and (c.create_by like concat('%',#{kdys},'%'))
+            and (c.create_by like concat('%',#{kdys},'%') ESCAPE '\\')
         </if>
         order by c.ststate
         LIMIT #{limit} OFFSET #{offset}

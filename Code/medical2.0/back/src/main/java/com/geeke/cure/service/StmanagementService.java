@@ -25,6 +25,10 @@ public class StmanagementService {
         // Z1b: SQL loc a.company_id=#{companyId} truc tiep tu body — ghi
         // de bang session tenant; session rong/"null" giu hanh vi cu.
         forceSessionTenant(stparameter);
+        // DS201: escape LIKE wildcards in hzxm/kdys (mirror DS200) —
+        // "%" must match literally; same bean feeds total + list.
+        stparameter.setHzxm(StringUtils.escapeLike(stparameter.getHzxm()));
+        stparameter.setKdys(StringUtils.escapeLike(stparameter.getKdys()));
         List<Stmanagement> list=managementdao.stmanagementtotal(stparameter);
         int total=list.size();
         List<Stmanagement> list2=null;

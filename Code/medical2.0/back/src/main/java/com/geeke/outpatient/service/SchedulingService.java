@@ -273,6 +273,10 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
     }
     public List<SchedulingmxDTO> getlistmx(SchedulingDTO pageRequest)
     {
+        // DS201: escape LIKE wildcards in patientname (mirror DS200
+        // patientName) — "%" must match literally, not every patient.
+        pageRequest.setPatientname(
+                StringUtils.escapeLike(pageRequest.getPatientname()));
         return schedulingDao.listschedulingmx(pageRequest);
     }
 

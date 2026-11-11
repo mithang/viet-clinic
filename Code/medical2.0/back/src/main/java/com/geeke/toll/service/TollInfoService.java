@@ -1466,11 +1466,32 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     /**
+     * DS201: escape LIKE wildcards (%, _, \) in the drug/material report
+     * filters (mirror DS200 patientName) — "%" must match literally, not
+     * every drug/batch. Same Rc bean feeds the count + list statements,
+     * so escape once here, at the top of each leaf method; the
+     * getpharmaceuticalInventoryManagement / getmaterialmanagement /
+     * drugmaterialsstockmanagement / getconsumablemarketstatistics
+     * wrappers delegate to these leaves and are covered automatically.
+     */
+    private void escapeYpjxcLikeFilters(YpjxcRc ypjxcRc) {
+        ypjxcRc.setSpm(StringUtils.escapeLike(ypjxcRc.getSpm()));
+        ypjxcRc.setPh(StringUtils.escapeLike(ypjxcRc.getPh()));
+    }
+
+    private void escapeStuffSummaryLikeFilters(
+            StuffsalessummaryRc stuffsalessummaryRc) {
+        stuffsalessummaryRc.setClmc(
+                StringUtils.escapeLike(stuffsalessummaryRc.getClmc()));
+    }
+
+    /**
      * Thông tin nhập - xuất - tồn của thuốc
      * @param ypjxcRc
      * @return
      */
     public Page<Ypjxc> getypjxcmanagement(YpjxcRc ypjxcRc){
+        escapeYpjxcLikeFilters(ypjxcRc);
         // ITER66 item 5-followup: khong ghi de jgid = institution (xem
         // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
         normalizeYpjxcFacilityFilter(ypjxcRc);
@@ -1488,6 +1509,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getypjxcmanagementsums(YpjxcRc ypjxcRc){
+        escapeYpjxcLikeFilters(ypjxcRc);
         // ITER66 item 5-followup: khong ghi de jgid = institution (xem
         // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
         normalizeYpjxcFacilityFilter(ypjxcRc);
@@ -1505,6 +1527,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Stuffsalessummary> getStuffsalessummarylists(StuffsalessummaryRc stuffsalessummaryRc){
+        escapeStuffSummaryLikeFilters(stuffsalessummaryRc);
         // ITER66 item 5-followup: khong ghi de jgid = institution (xem
         // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
         normalizeYpjxcFacilityFilter(stuffsalessummaryRc);
@@ -1517,6 +1540,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     public Page<Stuffsalessummary> getStuffsalessummarysumss(StuffsalessummaryRc stuffsalessummaryRc){
+        escapeStuffSummaryLikeFilters(stuffsalessummaryRc);
         // ITER66 item 5-followup: khong ghi de jgid = institution (xem
         // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
         normalizeYpjxcFacilityFilter(stuffsalessummaryRc);
@@ -1534,6 +1558,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getcljxcmanagement(YpjxcRc ypjxcRc){
+        escapeYpjxcLikeFilters(ypjxcRc);
         verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
         // ITER65 item 2: count/list cua cljxc KHONG loc company khi jgid
         // null (nhanh tautology a.company_id = oc.id) — guard admission
@@ -1572,6 +1597,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getcljxcmanagementsums(YpjxcRc ypjxcRc){
+        escapeYpjxcLikeFilters(ypjxcRc);
         verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
         // ITER65 item 2: chot scope that su truy van nhu
         // getcljxcmanagement (count/list cua cljxc khong loc company khi
@@ -1603,6 +1629,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypclrkcx> getypclrkcxlist(YpjxcRc ypjxcRc){
+        escapeYpjxcLikeFilters(ypjxcRc);
         verifyYpjxcCompanyAndJgidScope(ypjxcRc.getCompanyId(), ypjxcRc.getJgid());
         int total = tollInfoDao.countYpclrkcx(ypjxcRc);
         List<Ypclrkcx> list2 = null;
@@ -1618,6 +1645,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypclrkcx> getypclrkcxsums(YpjxcRc ypjxcRc){
+        escapeYpjxcLikeFilters(ypjxcRc);
         verifyYpjxcCompanyAndJgidScope(ypjxcRc.getCompanyId(), ypjxcRc.getJgid());
         int total = tollInfoDao.countYpclrkcx(ypjxcRc);
         List<Ypclrkcx> list2 = null;

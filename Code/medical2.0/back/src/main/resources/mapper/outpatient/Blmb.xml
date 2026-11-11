@@ -72,10 +72,10 @@
         left join sys_user b on a.CREATED_ID=b.id and a.company_id =b.company_id and b.del_flag ='0'
         where a.company_id=#{companyId} and a.del_flag ='0'
         <if test="mbmc!='' and mbmc!=null">
-            and (a.mbmc like concat('%',#{mbmc},'%'))
+            and (a.mbmc like concat('%',#{mbmc},'%') ESCAPE '\\')
         </if>
         <if test="cjr!='' and cjr!=null">
-            and (a.CREATED_BY like concat('%',#{cjr},'%'))
+            and (a.CREATED_BY like concat('%',#{cjr},'%') ESCAPE '\\')
         </if>
         <if test="mblx!='' and mblx!=null">
             and a.mblx=#{mblx}
@@ -93,10 +93,10 @@
         left join sys_user b on a.CREATED_ID=b.id and a.company_id =b.company_id and b.del_flag ='0'
         where a.company_id=#{companyId} and a.del_flag ='0'
         <if test="mbmc!='' and mbmc!=null">
-            and (a.mbmc like concat('%',#{mbmc},'%'))
+            and (a.mbmc like concat('%',#{mbmc},'%') ESCAPE '\\')
         </if>
         <if test="cjr!='' and cjr!=null">
-            and (a.CREATED_BY like concat('%',#{cjr},'%'))
+            and (a.CREATED_BY like concat('%',#{cjr},'%') ESCAPE '\\')
         </if>
         <if test="mblx!='' and mblx!=null">
             and a.mblx=#{mblx}

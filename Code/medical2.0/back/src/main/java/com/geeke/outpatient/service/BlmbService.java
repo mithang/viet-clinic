@@ -82,6 +82,10 @@ public class BlmbService {
         // tenant la truoc day tra ve mau benh an cua tenant do. Ghi de
         // bang session tenant; session rong/"null" giu hanh vi cu.
         forceSessionTenant(blmcxrc);
+        // DS201: escape LIKE wildcards in mbmc/cjr (mirror DS200) —
+        // "%" must match literally; same bean feeds total + list.
+        blmcxrc.setMbmc(StringUtils.escapeLike(blmcxrc.getMbmc()));
+        blmcxrc.setCjr(StringUtils.escapeLike(blmcxrc.getCjr()));
         List<Blmb> listtotal=blmbdao.getblmblisttotal(blmcxrc);
         int total=listtotal.size();
         List<Blmb> list=null;

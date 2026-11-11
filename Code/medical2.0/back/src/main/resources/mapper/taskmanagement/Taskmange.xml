@@ -83,7 +83,7 @@
             and a.taskstatus=#{taskstatus}
         </if>
         <if test="taskname!='' and taskname!=null">
-            and (a.taskname like concat('%',#{taskname},'%'))
+            and (a.taskname like concat('%',#{taskname},'%') ESCAPE '\\')
         </if>
     </select>
 
@@ -107,7 +107,7 @@
             and a.taskstatus=#{taskstatus}
         </if>
         <if test="taskname!='' and taskname!=null">
-            and (a.taskname like concat('%',#{taskname},'%'))
+            and (a.taskname like concat('%',#{taskname},'%') ESCAPE '\\')
         </if>
         order by a.updated_time desc
         LIMIT #{limit} OFFSET #{offset}

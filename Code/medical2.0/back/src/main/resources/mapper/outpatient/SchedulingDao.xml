@@ -104,7 +104,7 @@
                 and a.status =#{status}
             </if>
             <if test="patientname!=null">
-                and p.name like concat('%',#{patientname},'%')
+                and p.name like concat('%',#{patientname},'%') ESCAPE '\\'
             </if>
             <if test="datestra!=null">
                 and a.subscribe_date >=#{datestra}

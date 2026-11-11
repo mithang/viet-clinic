@@ -291,6 +291,9 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     public Page<SupplierStorage> listByCode(String pinyinCode, String status, String startTime, String endTime, int limit, int offset) {
 
         String companyId = SessionUtils.getUserDto().getCompanyId();
+        // DS201: escape LIKE wildcards in pinyinCode (mirror DS200) —
+        // "%" must match literally, not every stocked drug/stuff.
+        pinyinCode = StringUtils.escapeLike(pinyinCode);
         List<SupplierStorage> supplierStorages = supplierStorageDao.listByCode(companyId, pinyinCode, status, startTime, endTime);
         int total = supplierStorages.size();
         List<SupplierStorage> list = ListUtil.page(offset, limit, supplierStorages);

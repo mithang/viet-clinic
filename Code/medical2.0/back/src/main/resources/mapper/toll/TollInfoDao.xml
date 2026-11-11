@@ -971,10 +971,10 @@
             and a.status=#{zt}
         </if>
         <if test="spm!='' and spm!=null">
-            and (a.goods_name like concat('%',#{spm},'%'))
+            and (a.goods_name like concat('%',#{spm},'%') ESCAPE '\\')
         </if>
         <if test="ph!='' and ph!=null">
-            and (b.batch_no like concat('%',#{ph},'%'))
+            and (b.batch_no like concat('%',#{ph},'%') ESCAPE '\\')
         </if>
         group by oc.id,oc.name, a.code,a.goods_name ,a.bar_code ,a.standard_code ,b.norms ,f.name ,a.`type` ,
         d.name ,b.retail_price ,b.bid ,b.batch_no ,b.end_date,c.all_bid,g.sl,i.pdsl,a.preparation,j.name,h.name
@@ -1116,10 +1116,10 @@
             and a.status=#{zt}
         </if>
         <if test="spm!='' and spm!=null">
-            and (a.goods_name like concat('%',#{spm},'%'))
+            and (a.goods_name like concat('%',#{spm},'%') ESCAPE '\\')
         </if>
         <if test="ph!='' and ph!=null">
-            and (b.batch_no like concat('%',#{ph},'%'))
+            and (b.batch_no like concat('%',#{ph},'%') ESCAPE '\\')
         </if>
         group by oc.id,oc.name, a.code,a.goods_name ,a.bar_code ,a.standard_code ,b.norms ,f.name ,a.`type` ,
         d.name ,b.retail_price ,b.bid ,b.batch_no ,b.end_date,c.all_bid,g.sl,i.pdsl
@@ -1158,7 +1158,7 @@
             and a.create_date  between #{kssj} and #{jssj}
         </if>
         <if test="clmc!='' and clmc!=null">
-            and (d.name like concat('%',#{clmc},'%'))
+            and (d.name like concat('%',#{clmc},'%') ESCAPE '\\')
         </if>
         <if test="lx!='' and lx!=null">
             and d.type=#{lx}
@@ -1194,7 +1194,7 @@
             and a.create_date  between #{kssj} and #{jssj}
         </if>
         <if test="clmc!='' and clmc!=null">
-            and (d.name like concat('%',#{clmc},'%'))
+            and (d.name like concat('%',#{clmc},'%') ESCAPE '\\')
         </if>
         <if test="lx!='' and lx!=null">
             and d.type=#{lx}
@@ -1255,10 +1255,10 @@
             and a.status=#{zt}
         </if>
         <if test="spm!='' and spm!=null">
-            and (a.name like concat('%',#{spm},'%'))
+            and (a.name like concat('%',#{spm},'%') ESCAPE '\\')
         </if>
         <if test="ph!='' and ph!=null">
-            and (b.batch_no like concat('%',#{ph},'%'))
+            and (b.batch_no like concat('%',#{ph},'%') ESCAPE '\\')
         </if>
         group by oc.id,oc.name, a.code,a.name ,a.bar_code ,b.norms ,f.name ,a.`type` ,
         d.name ,b.retail_price ,b.bid ,b.batch_no ,b.end_date,c.all_bid,g.sl,i.pdsl,a.pack_number,j.name,h.name
@@ -1325,10 +1325,10 @@
             and a.status=#{zt}
         </if>
         <if test="spm!='' and spm!=null">
-            and (a.name like concat('%',#{spm},'%'))
+            and (a.name like concat('%',#{spm},'%') ESCAPE '\\')
         </if>
         <if test="ph!='' and ph!=null">
-            and (b.batch_no like concat('%',#{ph},'%'))
+            and (b.batch_no like concat('%',#{ph},'%') ESCAPE '\\')
         </if>
         group by oc.id,oc.name, a.code,a.name ,a.bar_code ,b.norms ,f.name ,a.`type` ,
         d.name ,b.retail_price ,b.bid ,b.batch_no ,b.end_date,c.all_bid,g.sl,i.pdsl
@@ -1411,10 +1411,10 @@
             and zt=#{zt}
         </if>
         <if test="spm!='' and spm!=null">
-            and (spmc like concat('%',#{spm},'%'))
+            and (spmc like concat('%',#{spm},'%') ESCAPE '\\')
         </if>
         <if test="ph!='' and ph!=null">
-            and (ph like concat('%',#{ph},'%'))
+            and (ph like concat('%',#{ph},'%') ESCAPE '\\')
         </if>
         LIMIT #{limit} OFFSET #{offset}
     </select>
@@ -1488,10 +1488,10 @@
             and zt=#{zt}
         </if>
         <if test="spm!='' and spm!=null">
-            and (spmc like concat('%',#{spm},'%'))
+            and (spmc like concat('%',#{spm},'%') ESCAPE '\\')
         </if>
         <if test="ph!='' and ph!=null">
-            and (ph like concat('%',#{ph},'%'))
+            and (ph like concat('%',#{ph},'%') ESCAPE '\\')
         </if>
     </select>
 
@@ -1538,10 +1538,10 @@
                 and a.status=#{zt}
             </if>
             <if test="spm!='' and spm!=null">
-                and (a.goods_name like concat('%',#{spm},'%'))
+                and (a.goods_name like concat('%',#{spm},'%') ESCAPE '\\')
             </if>
             <if test="ph!='' and ph!=null">
-                and (b.batch_no like concat('%',#{ph},'%'))
+                and (b.batch_no like concat('%',#{ph},'%') ESCAPE '\\')
             </if>
             GROUP BY a.code,a.goods_name,b.norms,b.bid,b.batch_no
         ) t
@@ -1572,7 +1572,7 @@
                 and a.create_date between #{kssj} and #{jssj}
             </if>
             <if test="clmc!='' and clmc!=null">
-                and (d.name like concat('%',#{clmc},'%'))
+                and (d.name like concat('%',#{clmc},'%') ESCAPE '\\')
             </if>
             <if test="lx!='' and lx!=null">
                 and d.type=#{lx}
@@ -1605,10 +1605,10 @@
                 and a.status=#{zt}
             </if>
             <if test="spm!='' and spm!=null">
-                and (a.name like concat('%',#{spm},'%'))
+                and (a.name like concat('%',#{spm},'%') ESCAPE '\\')
             </if>
             <if test="ph!='' and ph!=null">
-                and (b.batch_no like concat('%',#{ph},'%'))
+                and (b.batch_no like concat('%',#{ph},'%') ESCAPE '\\')
             </if>
             GROUP BY a.code,a.name,b.norms,b.bid,b.batch_no
         ) t
