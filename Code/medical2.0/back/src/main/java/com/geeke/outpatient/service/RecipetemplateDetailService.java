@@ -2,6 +2,7 @@ package com.geeke.outpatient.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.org.entity.Company;
 import com.geeke.outpatient.dao.RecipeTemplateDetailDao;
 import com.geeke.outpatient.dao.RecipetemplateDao;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -59,6 +61,36 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     @Autowired
     private CostItemDao costItemDao;
 
+    // DS214: chi tiết mẫu đơn thuốc chạy vào số lượng/tiền: total,
+    // singleDosage, minTotal, unitPrice, allFee. Null-safe (null giữ
+    // nguyên — các cột đều nullable), 0 giữ nguyên; âm ->
+    // ServiceException (400). Cùng họ DS209 (RecipelDetail) nhưng
+    // là entity khác: allSave/updateDetail ở đây không hề kiểm tra
+    // số, nên mẫu với số âm vẫn lưu được và phá việc kê đơn khi áp
+    // dụng (RecipelDetail đã chặn ở DS209).
+    private static void checkDetailNonNegative(RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        if (detail.getTotal() != null && detail.getTotal() < 0) {
+            throw new ServiceException("Tổng số lượng không được âm");
+        }
+        if (detail.getSingleDosage() != null && detail.getSingleDosage() < 0) {
+            throw new ServiceException("Liều dùng mỗi lần không được âm");
+        }
+        if (detail.getMinTotal() != null && detail.getMinTotal() < 0) {
+            throw new ServiceException("Tổng lượng đơn vị nhỏ nhất không được âm");
+        }
+        if (detail.getUnitPrice() != null
+                && detail.getUnitPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Đơn giá không được âm");
+        }
+        if (detail.getAllFee() != null
+                && detail.getAllFee().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng tiền không được âm");
+        }
+    }
+
 
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
@@ -73,6 +105,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         }
         for (RecipeTemplateDetail recipeTemplateDetail:
         recipeTemplateDetails) {
+            checkDetailNonNegative(recipeTemplateDetail);
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -197,6 +230,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         if(!CollectionUtils.isEmpty(recipeTemplateDetails)&&i>0){
             for (RecipeTemplateDetail recipeTemplateDetail : recipeTemplateDetails) {
 
+                    checkDetailNonNegative(recipeTemplateDetail);
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
