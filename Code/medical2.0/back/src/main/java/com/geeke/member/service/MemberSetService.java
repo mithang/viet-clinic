@@ -62,6 +62,8 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
        // name 255, status/failure 1 co @Length nhung van can guard cho
        // duong bulk. Gioi han theo cot DB; null-safe.
        checkMemberSetLengths(memberSet);
+       // DS213: chan so am truoc moi ghi (xem checkMemberSetNonNegative).
+       checkMemberSetNonNegative(memberSet);
        if(StringUtils.isBlank(memberSet.getId())){
            // ITER64 item 1: this insert branch bypassed super.save, so the
            // generic insert guard does not cover it. Verify BEFORE
@@ -160,6 +162,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         for (MemberSet memberSet : entitys) {
             validateRequiredFields(memberSet);
             checkMemberSetLengths(memberSet);
+            checkMemberSetNonNegative(memberSet); // DS213
         }
         return super.bulkInsert(entitys);
     }
@@ -178,6 +181,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             }
             validateRequiredFields(memberSet);
             checkMemberSetLengths(memberSet);
+            checkMemberSetNonNegative(memberSet); // DS213
         }
         return super.bulkUpdate(entitys);
     }
@@ -189,6 +193,33 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS213: goi the hoi vien khong the co so tien / tong so the /
+    // so the con lai am. money (BigDecimal), amount/number (Integer)
+    // khong co @Min/@Positive va khong co guard o service: save /
+    // bulkInsert / bulkUpdate deu chap nhan so am va ghi thang vao DB
+    // (probe: money=-100, amount=-5, number=-5 qua save + bulkInsert +
+    // bulkUpdate deu 100 va persist; cac cot signed nen DB khong chan).
+    // Nhanh update co san check size > amount nen amount am vo tinh da
+    // 400 (message lech), nhung money/number am van lot. 0 van cho
+    // phep, null van cho phep (amount/number nullable; money @NotNull
+    // nen null da 400 truoc). Guard dat truoc default DS42 (number =
+    // amount khi number null) de amount am khong rot vao number.
+    private static void checkMemberSetNonNegative(MemberSet memberSet) {
+        if (memberSet == null) {
+            return;
+        }
+        if (memberSet.getMoney() != null
+                && memberSet.getMoney().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Số tiền thẻ hội viên không được âm");
+        }
+        if (memberSet.getAmount() != null && memberSet.getAmount() < 0) {
+            throw new ServiceException("Tổng số thẻ hội viên không được âm");
+        }
+        if (memberSet.getNumber() != null && memberSet.getNumber() < 0) {
+            throw new ServiceException("Số lượng thẻ còn lại không được âm");
+        }
     }
 
     // DS149 C: xem ghi chu o save().
