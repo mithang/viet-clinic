@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,11 +89,33 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         }
     }
 
+    // DS215: gia von / gia ban am truoc day ghi thang xuong DB (cot
+    // decimal signed, khong @Min/@Positive, khong guard) -- gia am chay
+    // vao RecipelDetail allFee / phieu thu lam tong tien giam (money
+    // leak), cung ho "so am" DS209-DS214. Chan fail-closed 400 o service
+    // (save() bao ca /save lan /saveDto; bulk* goi rieng o vong lap).
+    // 0 va null van cho phep (cot nullable, gia 0 hop le).
+    private static void checkCostItemNonNegative(CostItem costItem) {
+        if (costItem == null) {
+            return;
+        }
+        if (costItem.getCostPrice() != null
+                && costItem.getCostPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Giá vốn không được âm");
+        }
+        if (costItem.getSalePrice() != null
+                && costItem.getSalePrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Giá bán không được âm");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public CostItem save(CostItem costItem) {
         // DS146 A: chan do dai truoc moi xu ly (ca duong /saveDto khong @Valid).
         checkCostItemLengths(costItem);
+        // DS215: chan gia am (bao ca /save lan /saveDto).
+        checkCostItemNonNegative(costItem);
         // DS78: is_package is NOT NULL DEFAULT '0', but the insert
         // lists the column unconditionally, so a generic /save body
         // without isPackage 500s ("Column 'is_package' cannot be
@@ -195,6 +218,8 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
             checkCostItemRequired(costItem);
             // DS146 A: bulk cung chan do dai nhu save().
             checkCostItemLengths(costItem);
+            // DS215: bulk cung chan gia am nhu save().
+            checkCostItemNonNegative(costItem);
             if (StringUtils.isBlank(costItem.getIsPackage())) {
                 costItem.setIsPackage("0");
             }
@@ -227,6 +252,8 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
             checkCostItemRequired(costItem);
             // DS146 A: bulk cung chan do dai nhu save().
             checkCostItemLengths(costItem);
+            // DS215: bulk cung chan gia am nhu save().
+            checkCostItemNonNegative(costItem);
             if (StringUtils.isBlank(costItem.getItemCode())) {
                 throw new ServiceException("Mã hạng mục không được để trống");
             }
