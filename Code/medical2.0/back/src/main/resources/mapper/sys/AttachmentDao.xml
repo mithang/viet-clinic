@@ -127,9 +127,4 @@
     </delete>
     
     
-    <delete id="deleteByBizId">
-        DELETE FROM sys_attachment 
-        WHERE biz_id = #{bizId}
-    </delete>
-    
 </mapper>

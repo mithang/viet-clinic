@@ -17,8 +17,6 @@ import com.geeke.stock.entity.SupplierStock;
  */
 @Mapper
 public interface MedicinalStorageControlDao extends CrudDao<MedicinalStorageControl> {
-    List<MedicinalStorageControl> getSurplusStockByDrugStuffId(@Param("drugStuffId")String drugStuffId);
-
     List<MedicinalStorageControl> getSurplusStockByDrugStuffIdTo(@Param("drugStuffId") String drugStuffId,
                                                                  @Param("companyId") String companyId);
 

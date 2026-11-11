@@ -1,6 +1,5 @@
 package com.geeke.stock.dao;
 
-import com.geeke.common.data.PageRequest;
 import com.geeke.common.persistence.CrudDao;
 import com.geeke.stock.entity.InventoryVerificationDetail;
 import com.geeke.stock.entity.MedicinalStorageControl;
@@ -37,8 +36,6 @@ public interface SupplierOutboundDetailDao extends CrudDao<SupplierOutboundDetai
      * resolve (corrupt medicinal_storage_id) apart from a ghost id.
      */
     List<String> listIdsByOutboundId(String outboundId);
-
-    void deleteByOutboundId(String outboundId);
 
     /**
      * DS66: atomically claim a line-quantity transition: set the line's

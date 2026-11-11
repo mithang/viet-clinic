@@ -115,14 +115,6 @@
         WHERE supplier_outbound_id = #{outboundId}
     </select>
 
-    <delete id="deleteByOutboundId">
-        DELETE FROM supplier_outbound_detail a
-        <where>
-            1=1
-            AND a.supplier_outbound_id = #{outboundId}
-        </where>
-    </delete>
-
     <!-- DS67: atomically claim a line for deletion: delete the row only
          when it still holds the quantity the caller read. The delete
          step released the freeze by the stored number it read (plain
@@ -259,5 +251,44 @@
         FROM supplier_outbound_detail a
         <include refid="supplierOutboundDetailJoins"/>
         WHERE a.id = #{id}
+    </select>
+
+    <!-- DS194: count/listPage con thieu — CrudService.listPage goi
+         dao.count + dao.listPage; thieu statement MyBatis nem
+         BindingException "Invalid bound statement" lam POST
+         /stock/supplierOutboundDetail/list loi HTTP 500 moi lan goi
+         (probe pre V10). Chi them 2 select, tai dung
+         supplierOutboundDetailColumns/Joins nhu get. Luu y: bang nay
+         KHONG co cot del_flag (xoa vat ly, xem comment o bulkDelete)
+         nen where khong loc del_flag nhu mau DictItem. -->
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM supplier_outbound_detail a
+        <include refid="supplierOutboundDetailJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            <include refid="Common.whereParams"/>
+        </where>
+    </select>
+
+    <select id="listPage" resultType="com.geeke.stock.entity.SupplierOutboundDetail">
+        SELECT
+            <include refid="supplierOutboundDetailColumns"/>
+        FROM supplier_outbound_detail a
+        <include refid="supplierOutboundDetailJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            <include refid="Common.whereParams"/>
+        </where>
+        <choose>
+            <when test="order != null and order != ''">
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 </mapper>

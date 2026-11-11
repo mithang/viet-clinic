@@ -1,6 +1,5 @@
 package com.geeke.toll.dao;
 
-import com.geeke.common.data.PageRequest;
 import com.geeke.common.persistence.CrudDao;
 import com.geeke.outpatient.entity.Patient;
 import com.geeke.toll.entity.*;
@@ -23,9 +22,6 @@ public interface OutpatientLogDao extends CrudDao<OutpatientLog> {
 
     /** X1: company của bệnh nhân, để kiểm tra sở hữu trước khi tra hộ nghèo theo id trần. */
     String getPatientCompanyId(@Param("id") String id);
-    /** Truy vấn */
-    int logCount(PageRequest var1);
-
     List<OutpatientLog> getOutpatientLog(OutpatientLogRc outpatientLogRc);
 
     /** Truy vấntất cảtập hợp */

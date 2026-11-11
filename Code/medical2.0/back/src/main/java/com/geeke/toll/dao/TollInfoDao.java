@@ -7,9 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.geeke.common.persistence.CrudDao;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Quản lý thu phíDAOGiao diện
@@ -46,25 +44,9 @@ public interface TollInfoDao extends CrudDao<TollInfo> {
 
     int formDetailCount(PageRequest var1);
 
-    TollVo tollTota(PageRequest var1);
-
     TollVo tollTotalAllPayments(PageRequest var1);
 
-    TollVo tollTotalAmountReceivableAndAbleTotal(PageRequest var1);
-
-//    TollVo tollTotalAmountReturnAndAbleTotal(PageRequest var1);
-
     TollVo tollDetailAmountReceivedAble(PageRequest var1);
-
-    BigDecimal tollTotalCashTotal(PageRequest var1);
-
-    BigDecimal tollTotalAlipayTotal(PageRequest var1);
-
-    BigDecimal tollTotalWeChatTotal(PageRequest var1);
-
-    BigDecimal tollTotalBankCardPayTotal(PageRequest var1);
-
-    BigDecimal tollTotalYbTotalTotal(PageRequest pageRequest);
 
     TollInfo getTollInfoByRegistrationId(String registrationId);
 
@@ -101,22 +83,18 @@ public interface TollInfoDao extends CrudDao<TollInfo> {
     DrugSales getDrugSalesStat(PageRequest pageRequest);
 
 
-    List<Ypjxc> getypjxcmanagementcounts(YpjxcRc ypjxcRc);
     List<Ypjxc> getypjxcmanagement(YpjxcRc ypjxcRc);
     List<Ypjxc> getypjxcmanagementsums(YpjxcRc ypjxcRc);
     int countYpjxcManagement(YpjxcRc ypjxcRc);
 
-    List<Stuffsalessummary> getStuffsalessummarytotals(StuffsalessummaryRc stuffsalessummaryRc);
     List<Stuffsalessummary> getStuffsalessummarylist(StuffsalessummaryRc stuffsalessummaryRc);
     List<Stuffsalessummary> getStuffsalessummarysums(StuffsalessummaryRc stuffsalessummaryRc);
     int countStuffSalesSummary(StuffsalessummaryRc stuffsalessummaryRc);
 
-    List<Ypjxc> getcljxcmanagementcounts(YpjxcRc ypjxcRc);
     List<Ypjxc> getcljxcmanagement(YpjxcRc ypjxcRc);
     List<Ypjxc> getcljxcmanagementsums(YpjxcRc ypjxcRc);
     int countCljxcManagement(YpjxcRc ypjxcRc);
 
-    List<Ypclrkcx> getypclrkcxtotal(YpjxcRc ypjxcRc);
     List<Ypclrkcx> getypclrkcxlist(YpjxcRc ypjxcRc);
     List<Ypclrkcx> getypclrkcxsums(YpjxcRc ypjxcRc);
     int countYpclrkcx(YpjxcRc ypjxcRc);

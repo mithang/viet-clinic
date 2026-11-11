@@ -91,6 +91,47 @@
             </otherwise>
         </choose>
     </select>
+
+    <!-- DS194: count/listPage con thieu — CrudController generic list
+         (SysSetingController extends CrudController) goi dao.count +
+         dao.listPage qua CrudService.listPage; thieu statement MyBatis nem
+         BindingException "Invalid bound statement" lam POST
+         /sys/sysSeting/list loi HTTP 500 moi lan goi (probe pre V11).
+         Chi them 2 select, tai dung sysSetingColumns/Joins + mau where
+         cua listAll ben tren. Tien le ITER65: get cung tung thieu va da
+         duoc them vi ly do tuong tu. -->
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM sys_seting a
+        <include refid="sysSetingJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+    </select>
+
+    <select id="listPage" resultType="com.geeke.sys.entity.SysSeting">
+        SELECT
+            <include refid="sysSetingColumns"/>
+        FROM sys_seting a
+        <include refid="sysSetingJoins"/>
+        <where>
+            1=1
+            AND a.id > 0
+            AND a.del_flag = #{DEL_FLAG_NORMAL}
+            <include refid="Common.whereParams"/>
+        </where>
+        <choose>
+            <when test="order != null and order != ''">
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
       
     <insert id="insert">
         INSERT INTO sys_seting(

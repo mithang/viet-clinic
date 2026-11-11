@@ -145,15 +145,6 @@
         select a.company_id from patient a where a.id = #{id}
     </select>
 
-    <select id="logCount" resultType="int">
-        SELECT COUNT(*)
-        <include refid="OutpatientLogVo"/>
-        <where>
-            1=1
-            AND a.id > 0
-        </where>
-    </select>
-
     <select id="getOutpatientLog" resultType="com.geeke.toll.entity.OutpatientLog" resultMap="OutpatientLogRespVO">
         select a.id,p.name,p.guardian_name,p.gender,p.age,a.nation,a.occupation,p.address,a.reception_end_date,a.source,
         a.blood_pressure,m.patient_tell,a.temperature,m.epidemic_disease,m.china_diagnose,m.western_diagnose,m.diagnose,a.infect_type,m.handling_situation,

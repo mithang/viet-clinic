@@ -390,37 +390,6 @@
         </foreach>
     </update>
 
-    <select id="getSurplusStockByDrugStuffId" resultType="com.geeke.stock.entity.MedicinalStorageControl">
-        select
-         <include refid="medicinalStorageControlColumns"/>
-        from medicinal_storage_control a
-        inner join supplier_stock supplierStock on a.storage_id = supplierStock.id
-        inner join supplier_storage sge on supplierStock.supplier_storage_id = sge.id
-        left join org_company company on company.id = a.company_id
-        LEFT JOIN drug drug on drug.id = a.drug_stuff_id
-        LEFT JOIN stuff stuff on stuff.id = a.drug_stuff_id
-        LEFT JOIN sys_dict_item dosisUnit ON dosisUnit.value = drug.dosis_unit
-        LEFT JOIN sys_dict_item preparationUnit ON preparationUnit.value = drug.preparation_unit
-        LEFT JOIN sys_dict_item pack ON pack.value = drug.pack
-        LEFT JOIN sys_dict_item type ON type.value = drug.type
-        LEFT JOIN sys_dict_item westernMedicineUse ON westernMedicineUse.value = drug.western_medicine_use
-        LEFT JOIN sys_dict_item frequency ON frequency.value = drug.frequency
-        LEFT JOIN sys_dict_item days ON days.value = drug.days
-        LEFT JOIN sys_dict_item chineseMedicineUse ON chineseMedicineUse.value = drug.chinese_medicine_use
-        LEFT JOIN manufacture_factory factory ON factory.id = drug.factory
-        LEFT JOIN sys_dict_item stuffType ON stuffType.value = stuff.type
-        LEFT JOIN manufacture_factory stuffFactory ON stuffFactory.id = stuff.factory
-        LEFT JOIN sys_dict_item minUnit ON minUnit.value = stuff.min_unit
-        LEFT JOIN sys_dict_item packUnit ON packUnit.value = stuff.pack_unit
-        LEFT JOIN supplier supplierId ON supplierId.id = supplierStock.supplier_id
-        where a.drug_stuff_id = #{drugStuffId}
-        and sge.examine not in ('supplierStorageExamineStatus_2')
-        and a.surplus_stock > 0
-        and a.del_flag = 0
-        and supplierStock.end_date >= sysdate()
-        order by a.create_date asc
-    </select>
-
     <select id="getSurplusStockByDrugStuffIdTo" resultType="com.geeke.stock.entity.MedicinalStorageControl">
         select
         <include refid="medicinalStorageControlColumns"/>

@@ -539,23 +539,6 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
-    <select id="tollTotalAmountReceivableAndAbleTotal" resultType="com.geeke.toll.entity.TollVo">
-        SELECT IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then a.amount_receivable else 0 end),0) - IFNULL(SUM(case when a.amount_status = 'amountStatus_2' then a.amount_receivable else 0 end),0) AS amountReceivableTotal,
-        IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then a.amount_received else 0 end),0) - IFNULL(SUM(case when a.amount_status = 'amountStatus_2' then a.amount_received else 0 end),0) AS amountReceivedTotal
-        FROM toll_info a
-        <include refid="tollInfoJoins"/>
-        LEFT JOIN sys_user user ON user.id = medical.doctor_id
-        LEFT JOIN clinic_office department ON department.id = user.department_id
-        LEFT JOIN sys_dict_item gender ON gender.value = patient.gender
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        <where>
-            1=1
-            AND a.id > 0
-            AND a.del_flag = #{DEL_FLAG_NORMAL}
-            <include refid="Common.whereParams"/>
-        </where>
-    </select>
-
     <select id="tollDetailAmountReceivedAble" resultType="com.geeke.toll.entity.TollVo">
         SELECT IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then recipelDetail.all_fee else 0 end),0)
         + IFNULL(SUM(case when a.toll_type = 'tollType_4' then a.amount_receivable else 0 end),0)
@@ -584,74 +567,6 @@
             1=1
             AND a.id > 0
             AND a.del_flag = #{DEL_FLAG_NORMAL}
-            <include refid="Common.whereParams"/>
-        </where>
-    </select>
-
-    <select id="tollTotalCashTotal" resultType="java.math.BigDecimal">
-        SELECT IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then a.amount_received else 0 end),0) - IFNULL(SUM(case when a.amount_status = 'amountStatus_2' then a.amount_received else 0 end),0) AS cashTotal
-        FROM toll_info a
-        <include refid="tollInfoJoins"/>
-        LEFT JOIN sys_user user ON user.id = medical.doctor_id
-        LEFT JOIN clinic_office department ON department.id = user.department_id
-        LEFT JOIN sys_dict_item gender ON gender.value = patient.gender
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        <where>
-            1=1
-            AND a.id > 0
-            AND a.del_flag = #{DEL_FLAG_NORMAL}
-            and a.payment_type = 'payType_0'
-            <include refid="Common.whereParams"/>
-        </where>
-    </select>
-
-    <select id="tollTotalAlipayTotal" resultType="java.math.BigDecimal">
-        SELECT IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then a.amount_received else 0 end),0) - IFNULL(SUM(case when a.amount_status = 'amountStatus_2' then a.amount_received else 0 end),0) AS weChatTotal
-        FROM toll_info a
-        <include refid="tollInfoJoins"/>
-        LEFT JOIN sys_user user ON user.id = medical.doctor_id
-        LEFT JOIN clinic_office department ON department.id = user.department_id
-        LEFT JOIN sys_dict_item gender ON gender.value = patient.gender
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        <where>
-            1=1
-            AND a.id > 0
-            AND a.del_flag = #{DEL_FLAG_NORMAL}
-            and a.payment_type = 'payType_1'
-            <include refid="Common.whereParams"/>
-        </where>
-    </select>
-
-    <select id="tollTotalWeChatTotal" resultType="java.math.BigDecimal">
-        SELECT IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then a.amount_received else 0 end),0) - IFNULL(SUM(case when a.amount_status = 'amountStatus_2' then a.amount_received else 0 end),0) AS alipayTotal
-        FROM toll_info a
-        <include refid="tollInfoJoins"/>
-        LEFT JOIN sys_user user ON user.id = medical.doctor_id
-        LEFT JOIN clinic_office department ON department.id = user.department_id
-        LEFT JOIN sys_dict_item gender ON gender.value = patient.gender
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        <where>
-            1=1
-            AND a.id > 0
-            AND a.del_flag = #{DEL_FLAG_NORMAL}
-            and a.payment_type = 'payType_2'
-            <include refid="Common.whereParams"/>
-        </where>
-    </select>
-
-    <select id="tollTotalBankCardPayTotal" resultType="java.math.BigDecimal">
-        SELECT IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then a.amount_received else 0 end),0) - IFNULL(SUM(case when a.amount_status = 'amountStatus_2' then a.amount_received else 0 end),0) AS bankCardPayTotal
-        FROM toll_info a
-        <include refid="tollInfoJoins"/>
-        LEFT JOIN sys_user user ON user.id = medical.doctor_id
-        LEFT JOIN clinic_office department ON department.id = user.department_id
-        LEFT JOIN sys_dict_item gender ON gender.value = patient.gender
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        <where>
-            1=1
-            AND a.id > 0
-            AND a.del_flag = #{DEL_FLAG_NORMAL}
-            and a.payment_type = 'payType_3'
             <include refid="Common.whereParams"/>
         </where>
     </select>
@@ -928,77 +843,6 @@
 <!--            AND dis.del_flag = '0'-->
             <include refid="Common.whereParams"/>
         </where>
-    </select>
-
-    <select id="getypjxcmanagementcounts" resultType="com.geeke.toll.entity.Ypjxc">
-        select oc.id jgid,oc.name jgmc, a.code ypbm,a.goods_name ypmc,a.bar_code txm,a.standard_code gyzz,b.norms gg,f.name sccj,
-        d.name gys,b.retail_price lsj,b.bid cbj,b.batch_no ph,b.end_date yxq,a.`type` fl,a.preparation zj,j.name zxdw,h.name dw,
-        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date >#{kssj},msc.storage_stock,0))+sum(IF(e.sl>0,e.sl,0)),0) qcsl,
-        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date >#{kssj},msc.storage_stock,0))+sum(IF(e.sl>0,e.sl,0)))*b.bid,0)  qccb,
-        sum(IF(msc.create_date > #{kssj} and msc.create_date&lt; #{jssj},msc.storage_stock,0)) bqrk,
-        sum(IF(msc.create_date > #{kssj} and msc.create_date &lt; #{jssj},c.all_bid,0)) bqrkcb,
-        (if(g.sl>0,g.sl,0)) bqcksl,
-        sum(if(g.sl>0,g.sl,0)*b.bid) bqckcb,
-        (if(i.pdsl>0,i.pdsl,0)) bqpdsl,(if(i.pdsl*b.bid>0,i.pdsl*b.bid,0)) bqpdcb,
-        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)),0) qmsl,
-        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)))*b.bid,0) qmcb
-        from drug a
-        left join supplier_stock b on a.id=b.drug_id and a.company_id =b.company_id
-        left join medicinal_storage_control msc on msc.storage_id =b.id and msc.company_id =a.company_id and msc.del_flag ='0'
-        left join supplier_storage c on b.supplier_storage_id=c.id and a.company_id =c.company_id
-        left join supplier d on b.supplier_id =d.id and a.company_id =d.company_id
-        -- left join dispensing e on b.id=e.supplier_stock_id and a.company_id =e.company_id
-        left join (select company_id ,supplier_stock_id ,sum(number) sl from dispensing d2
-        where  create_date &gt; #{kssj}
-        group by company_id,supplier_stock_id) e on e.supplier_stock_id =b.id and e.company_id =a.company_id
-        left join manufacture_factory f on a.factory =f.id and a.company_id =f.company_id
-        left join (select company_id ,supplier_stock_id ,sum(number) sl from dispensing d2
-        where  create_date between  #{kssj} and #{jssj}
-        group by company_id,supplier_stock_id) g on g.supplier_stock_id =b.id and g.company_id =a.company_id
-        left join (select company_id ,supplier_stock_id ,sum(number) sl from dispensing d2
-        where  create_date &gt; #{jssj}
-        group by company_id,supplier_stock_id) h on h.supplier_stock_id =b.id and h.company_id =a.company_id
-        left join (select company_id ,supplier_stock_id ,sum(`number`) pdsl from inventory_verification_record
-        where create_date between #{kssj} and #{jssj}
-        group by company_id ,supplier_stock_id ) i on i.company_id =a.company_id and i.supplier_stock_id =b.id
-        left join sys_dict_item j on a.preparation_unit=j.value and j.del_flag ='0'
-        left join sys_dict_item h on a.pack=h.value and j.del_flag ='0'
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        where
-         msc.id is not null
-        <if test=" jgid==null and jgzt==1 ">
-            and  oc.parent_id in (select parent_id  from org_company oc2 where id=#{companyId})
-        </if>
-        <if test="jgid==null and jgzt==null">
-            and (a.company_id =#{companyId} or a.company_id =#{jgid})
-        </if>
-        <if test="jgid!=null and jgzt==1">
-            and a.company_id =#{jgid}
-        </if>
-        <if test="jgid!=null and jgzt==null">
-            and a.company_id =#{companyId}
-        </if>
-        <if test="lx!='' and lx!=null">
-            and a.type=#{lx}
-        </if>
-        <if test="zt!='' and zt!=null">
-            and a.status=#{zt}
-        </if>
-        <if test="spm!='' and spm!=null">
-            and (a.goods_name like concat('%',#{spm},'%'))
-        </if>
-        <if test="ph!='' and ph!=null">
-            and (b.batch_no like concat('%',#{ph},'%'))
-        </if>
-
-        group by oc.id,oc.name, a.code,a.goods_name ,a.bar_code ,a.standard_code ,b.norms ,f.name ,a.`type` ,
-        d.name ,b.retail_price ,b.bid ,b.batch_no ,b.end_date,c.all_bid,g.sl,i.pdsl,a.preparation,j.name,h.name
-        <if test="orderby=='code'">
-            order by a.code desc
-        </if>
-        <if test="orderby=='batch_no'">
-            order by b.batch_no desc
-        </if>
     </select>
 
     <!--<select id="getypjxcmanagement" resultType="com.geeke.toll.entity.Ypjxc">
@@ -1288,40 +1132,6 @@
         ) z
     </select>
 
-    <select id="getStuffsalessummarytotals" resultType="com.geeke.toll.entity.Stuffsalessummary">
-        select oc.id jgid,oc.name jgmc, d.code clbm,d.name clmc,CONCAT(d.pack_number,f.name,'/',e.name) gg,d.pack_number bzsl,e.name bzdw,f.name zxdw,d.type cllx,sum((if(c.total &gt; 0,c.total,0))) sl,
-        sum((if(c.all_fee &gt; 0,c.all_fee,0))) zj from toll_info a
-        left join recipel_info b on a.recipel_id =b.id and a.company_id =b.company_id and b.del_flag ='0'
-        left join recipel_detail c on b.id=c.recipel_info_id and a.company_id =c.company_id and c.del_flag ='0'
-        left join stuff d on c.drug_stuff_id =d.id and (a.company_id =d.company_id or d.company_id =#{jgid}) and d.del_flag ='0'
-        left join sys_dict_item e on d.pack_unit =e.value and e.del_flag ='0'
-        left join sys_dict_item f on d.min_unit  =f.value and f.del_flag ='0'
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        where  c.stuff_type='4'  and  a.del_flag ='0' and d.code is not null and a.return_type = '0'
-        <if test=" jgid==null and jgzt==1">
-            and  oc.parent_id in (select parent_id  from org_company oc2 where id=#{companyId})
-        </if>
-        <if test="jgid==null and jgzt==null">
-            and (a.company_id =#{companyId} or a.company_id =#{jgid})
-        </if>
-        <if test="jgid!=null and jgzt==1">
-            and a.company_id =#{jgid}
-        </if>
-        <if test="jgid!=null and jgzt==null">
-            and a.company_id =#{companyId}
-        </if>
-        <if test="kssj!=null and jssj!=null">
-            and a.create_date  between #{kssj} and #{jssj}
-        </if>
-        <if test="clmc!='' and clmc!=null">
-            and (d.name like concat('%',#{clmc},'%'))
-        </if>
-        <if test="lx!='' and lx!=null">
-            and d.type=#{lx}
-        </if>
-        group by oc.id,oc.name, d.code,d.name,d.specifications,d.pack_number ,e.name,f.name,d.type, d.pack_number
-    </select>
-
     <select id="getStuffsalessummarylist" resultType="com.geeke.toll.entity.Stuffsalessummary">
         select oc.id jgid,oc.name jgmc, d.code clbm,d.name clmc,CONCAT(d.pack_number,f.name,'/',e.name) gg,d.pack_number bzsl,e.name bzdw,f.name zxdw,d.type cllx,sum((if(c.total &gt; 0,c.total,0))) sl,
         sum((if(c.all_fee &gt; 0,c.all_fee,0))) zj from toll_info a
@@ -1391,73 +1201,6 @@
         </if>
         group by oc.id,oc.name, d.code,d.name,d.specifications,d.pack_number ,e.name,f.name,d.type, d.pack_number
         )z
-    </select>
-
-    <select id="getcljxcmanagementcounts" resultType="com.geeke.toll.entity.Ypjxc">
-        select oc.id jgid,oc.name jgmc, a.code ypbm,a.name ypmc,a.bar_code txm,b.norms gg,f.name sccj,
-        d.name gys,b.retail_price lsj,b.bid cbj,b.batch_no ph,b.end_date yxq,a.`type` fl,a.pack_number zj,j.name zxdw,h.name dw,
-        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date >#{kssj},msc.storage_stock,0))+sum(IF(e.sl>0,e.sl,0)),0) qcsl,
-        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date >#{kssj},msc.storage_stock,0))+sum(IF(e.sl>0,e.sl,0)))*b.bid,0)  qccb,
-        sum(IF(msc.create_date > #{kssj} and msc.create_date &lt; #{jssj},msc.storage_stock,0)) bqrk,
-        sum(IF(msc.create_date > #{kssj} and msc.create_date &lt; #{jssj},c.all_bid,0)) bqrkcb,
-        (if(g.sl>0,g.sl,0)) bqcksl,
-        sum(if(g.sl>0,g.sl,0)*b.bid) bqckcb,
-        (if(i.pdsl>0,i.pdsl,0)) bqpdsl,(if(i.pdsl*b.bid>0,i.pdsl*b.bid,0)) bqpdcb,
-        ifnull(sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)),0) qmsl,
-        ifnull((sum(msc.storage_stock-msc.used_stock-msc.reimburse_stock)-sum(IF(msc.create_date>#{jssj},msc.storage_stock-msc.used_stock-msc.reimburse_stock,0))+sum(IF(h.sl>0,h.sl,0)))*b.bid,0) qmcb
-        from stuff a
-        left join supplier_stock b on a.id=b.stuff_id and (a.company_id = b.company_id or #{jgid} = b.company_id)
-        left join medicinal_storage_control msc on msc.storage_id =b.id and (a.company_id = msc.company_id or #{jgid} = msc.company_id) and msc.del_flag ='0'
-        left join supplier_storage c on b.supplier_storage_id=c.id and (a.company_id = msc.company_id or #{jgid} = msc.company_id)
-        left join supplier d on b.supplier_id =d.id and (a.company_id = d.company_id or #{jgid} = d.company_id)
-        -- left join dispensing e on b.id=e.supplier_stock_id and a.company_id =e.company_id
-        left join (select company_id ,supplier_stock_id ,sum(number) sl from dispensing d2
-        where  create_date &gt; #{kssj}
-        group by company_id,supplier_stock_id) e on e.supplier_stock_id =b.id and (a.company_id = e.company_id or #{jgid} = e.company_id)
-        left join manufacture_factory f on a.factory =f.id and (a.company_id = f.company_id or #{jgid} = f.company_id)
-        left join (select company_id ,supplier_stock_id ,sum(number) sl from dispensing d2
-        where  create_date between  #{kssj} and #{jssj}
-        group by company_id,supplier_stock_id) g on g.supplier_stock_id =b.id and (a.company_id = g.company_id or #{jgid} = g.company_id)
-        left join (select company_id ,supplier_stock_id ,sum(number) sl from dispensing d2
-        where  create_date &gt; #{jssj}
-        group by company_id,supplier_stock_id) h on h.supplier_stock_id =b.id and (a.company_id = h.company_id or #{jgid} = h.company_id)
-        left join (select company_id ,supplier_stock_id ,sum(`number`) pdsl from inventory_verification_record
-        where create_date between #{kssj} and #{jssj}
-        group by company_id ,supplier_stock_id ) i on (a.company_id = i.company_id or #{jgid} = i.company_id) and i.supplier_stock_id =b.id
-        left join sys_dict_item j on a.min_unit=j.value and j.del_flag ='0'
-        left join sys_dict_item h on a.pack_unit=h.value and h.del_flag ='0'
-        left join org_company oc on (a.company_id = oc.id or #{jgid} = oc.id) and oc.del_flag ='0'
-        where
-        a.del_flag ='0' and b.del_flag ='0' and msc.id is not null
-        <if test=" jgid!=null and jgzt==1">
-            and a.company_id =#{jgid}
-        </if>
-        <if test=" jgid==null and jgzt==1">
-            and  (a.company_id = oc.id or #{jgid} = oc.id)
-        </if>
-        <if test="jgid==null and jgzt==null">
-            and  (a.company_id = oc.id or #{jgid} = oc.id)
-        </if>
-        <if test="lx!='' and lx!=null">
-            and a.type=#{lx}
-        </if>
-        <if test="zt!='' and zt!=null">
-            and a.status=#{zt}
-        </if>
-        <if test="spm!='' and spm!=null">
-            and (a.name like concat('%',#{spm},'%'))
-        </if>
-        <if test="ph!='' and ph!=null">
-            and (b.batch_no like concat('%',#{ph},'%'))
-        </if>
-        group by oc.id,oc.name, a.code,a.name ,a.bar_code ,b.norms ,f.name ,a.`type` ,
-        d.name ,b.retail_price ,b.bid ,b.batch_no ,b.end_date,c.all_bid,g.sl,a.pack_number,j.name,h.name,i.pdsl
-        <if test="orderby=='code'">
-            order by a.code desc
-        </if>
-        <if test="orderby=='batch_no'">
-            order by b.batch_no desc
-        </if>
     </select>
 
     <select id="getcljxcmanagement" resultType="com.geeke.toll.entity.Ypjxc">
@@ -1596,83 +1339,6 @@
             order by b.batch_no desc
         </if>
         ) z
-    </select>
-
-    <select id="getypclrkcxtotal" resultType="com.geeke.toll.entity.Ypclrkcx">
-        select ypcltype,jgid,jgmc, rkrq, rkdh, rkry, spbh, spmc, gg,sccj, gys,
-        sl, dw, lsj, cbj, cbhj,ph, yxq, bz, lx,zt,shzt,zj,zxdw from (
-        select
-        '1' ypcltype,oc.id jgid,oc.name jgmc,a.create_date rkrq,a.code rkdh,substring_index(substring_index(a.create_by,"(",1),')',-1) rkry,c.code spbh,c.goods_name spmc,b.norms gg,
-        e.name sccj,d.name gys,msc.storage_stock sl,f.name dw,b.retail_price lsj,b.bid cbj,b.all_bid cbhj,
-        b.batch_no ph,b.end_date yxq,b.remarks bz,c.`type` lx,c.status zt,a.examine shzt,c.preparation zj,j.name zxdw
-        from supplier_storage a
-        left join supplier_stock b on a.id=b.supplier_storage_id and a.company_id =b.company_id and b.del_flag ='0'
-        left join medicinal_storage_control msc on msc.storage_id =b.id and msc.company_id =a.company_id and msc.del_flag ='0'
-        left join drug c on b.drug_id =c.id and a.company_id =c.company_id and c.del_flag ='0'
-        left join supplier d on b.supplier_id =d.id and a.company_id =d.company_id and d.del_flag ='0'
-        left join manufacture_factory e on c.factory =e.id and a.company_id =e.company_id and e.del_flag ='0'
-        left join sys_dict_item f on c.pack=f.value and f.del_flag ='0'
-        left join sys_dict_item j on c.preparation_unit=j.value and j.del_flag ='0'
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        where  a.del_flag='0' and b.drug_id is not null  and a.examine != 'supplierStorageExamineStatus_2'
-        <if test=" jgid!=null and jgzt==1">
-            and a.company_id =#{jgid}
-        </if>
-        <if test=" jgid==null and jgzt==1">
-            and  oc.parent_id in (select parent_id  from org_company oc2 where id=#{companyId})
-        </if>
-        <if test="jgid==null and jgzt==null">
-            and a.company_id =#{companyId}
-        </if>
-        and msc.id is not null
-        group by oc.id,oc.name, a.create_date ,a.code ,a.create_by ,c.code ,c.goods_name ,b.norms ,
-        e.name ,d.name ,msc.storage_stock ,f.name  ,b.retail_price ,b.bid ,b.all_bid ,
-        b.batch_no,b.end_date ,b.remarks ,c.`type` ,c.status,a.examine,c.preparation,j.name
-        union all
-        select
-        '2' ypcltype,oc.id jgid,oc.name jgmc,a.create_date rkrq,a.code rkdh,substring_index(substring_index(a.create_by,"(",1),')',-1) rkry,c.code spbh,c.name spmc,b.norms gg,
-        e.name sccj,d.name gys,msc.storage_stock sl,f.name  dw,b.retail_price lsj,b.bid cbj,b.all_bid cbhj,
-        b.batch_no ph,b.end_date yxq,b.remarks bz,c.`type` lx,c.status zt,a.examine shzt,c.pack_number zj,j.name zxdw
-        from supplier_storage a
-        left join supplier_stock b on a.id=b.supplier_storage_id and a.company_id =b.company_id and b.del_flag ='0'
-        left join medicinal_storage_control msc on msc.storage_id =b.id and msc.company_id =a.company_id and msc.del_flag ='0'
-        left join stuff  c on b.stuff_id =c.id and a.company_id =c.company_id and c.del_flag ='0'
-        left join supplier d on b.supplier_id =d.id and a.company_id =d.company_id and d.del_flag ='0'
-        left join manufacture_factory e on c.factory =e.id and a.company_id =e.company_id and e.del_flag ='0'
-        left join sys_dict_item f on c.pack_unit=f.value and f.del_flag ='0'
-        left join sys_dict_item j on c.min_unit=j.value and j.del_flag ='0'
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        where  a.del_flag='0' and b.stuff_id is not null and a.examine != 'supplierStorageExamineStatus_2'
-        <if test=" jgid!=null and jgzt==1">
-            and a.company_id =#{jgid}
-        </if>
-        <if test=" jgid==null and jgzt==1">
-            and  oc.parent_id in (select parent_id  from org_company oc2 where id=#{companyId})
-        </if>
-        <if test="jgid==null and jgzt==null">
-            and a.company_id =#{companyId}
-        </if>
-        and msc.id is not null
-        group by oc.id,oc.name, a.create_date ,a.code ,a.create_by ,c.code ,c.name ,b.norms ,
-        e.name ,d.name ,msc.storage_stock ,f.name  ,b.retail_price ,b.bid ,b.all_bid ,
-        b.batch_no,b.end_date ,b.remarks ,c.`type` ,c.status,a.examine,c.pack_number,j.name
-        ) z
-        where ypcltype =#{ypcltype}
-        <if test="kssj!=null and jssj!=null">
-            and rkrq between #{kssj} and #{jssj}
-        </if>
-        <if test="lx!='' and lx!=null">
-            and lx=#{lx}
-        </if>
-        <if test="zt!='' and zt!=null">
-            and zt=#{zt}
-        </if>
-        <if test="spm!='' and spm!=null">
-            and (spmc like concat('%',#{spm},'%'))
-        </if>
-        <if test="ph!='' and ph!=null">
-            and (ph like concat('%',#{ph},'%'))
-        </if>
     </select>
 
     <select id="getypclrkcxlist" resultType="com.geeke.toll.entity.Ypclrkcx">
@@ -1833,23 +1499,6 @@
         select id jgid,name jgmc  from org_company oc
         where parent_id in (select parent_id  from org_company oc2 where id=#{companyId})
         and del_flag ='0' and status = '1'
-    </select>
-
-    <select id="tollTotalYbTotalTotal" resultType="java.math.BigDecimal">
-        SELECT IFNULL(SUM(case when a.amount_status = 'amountStatus_1' then a.amount_received else 0 end),0) - IFNULL(SUM(case when a.amount_status = 'amountStatus_2' then a.amount_received else 0 end),0) AS bankCardPayTotal
-        FROM toll_info a
-        <include refid="tollInfoJoins"/>
-        LEFT JOIN sys_user user ON user.id = medical.doctor_id
-        LEFT JOIN clinic_office department ON department.id = user.department_id
-        LEFT JOIN sys_dict_item gender ON gender.value = patient.gender
-        left join org_company oc on a.company_id =oc.id and oc.del_flag ='0'
-        <where>
-            1=1
-            AND a.id > 0
-            AND a.del_flag = #{DEL_FLAG_NORMAL}
-            and a.payment_type = 'payType_4'
-            <include refid="Common.whereParams"/>
-        </where>
     </select>
 
     <!-- ========== khôi phụcbịDòng 16vòngTối ưu hóasaixóa của  count Truy vấn ========== -->

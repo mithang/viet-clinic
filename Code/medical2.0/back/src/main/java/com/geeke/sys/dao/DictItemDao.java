@@ -15,13 +15,6 @@ import com.geeke.sys.entity.DictItem;
  */
 @Mapper
 public interface DictItemDao extends CrudDao<DictItem> {
-    /**
-     * Truy vấn ngành lớn, Phân loại cấp hai
-     * @param substring
-     * @return
-     */
-    DictItem getTrade(String substring);
-
     /** Theo từ điểnnameLấy từ điểnvalue */
     DictItem getValue(String name, String id);
 

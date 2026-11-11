@@ -200,14 +200,6 @@
         </foreach>
     </update>
 <!--Truy vấn ngành lớn, Phân loại cấp hai-->
-    <select id="getTrade" resultType="com.geeke.sys.entity.DictItem">
-        SELECT
-        <include refid="dictItemColumns"/>
-        FROM sys_dict_item a
-        <include refid="dictItemJoins"/>
-        WHERE a.value = #{substring}
-    </select>
-
     <!-- Theo từ điểnnameLấy từ điểnvalue -->
     <!-- DS151: selectOne cu khong LIMIT/khong loc del_flag/khong ORDER
          BY: seed co 3 dong "Viên" (del_flag='0') cung dict_type_id
