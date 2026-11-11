@@ -126,7 +126,7 @@
             AND ri.infuse_type=1
         </if>
         <if test="patientName!='' and patientName!=null">
-            AND (patientid.name like concat('%',#{patientName},'%') or patientid.health_card_no=#{patientCode})
+            AND (patientId.name like concat('%',#{patientName},'%') or patientId.health_card_no=#{patientCode})
         </if>
         <if test="overlook!='3'.toString() ">
             and a.overlook=#{overlook}
