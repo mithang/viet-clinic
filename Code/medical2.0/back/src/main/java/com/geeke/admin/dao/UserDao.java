@@ -60,6 +60,14 @@ public interface UserDao extends CrudDao<User> {
     @Select("select count(1) from user_tenant where user_id = #{userId} and del_flag != '1' ")
     int countActiveTenantsByUserId(@Param("userId") String userId);
 
+    // DS208: membership cua user trong mot tenant = dong sys_user_role
+    // (user_id, company_id = tenantId, del_flag = '0'). user_tenant KHONG
+    // phai authority chung (vd testfull 3020 khong co dong user_tenant
+    // nao nhung van dang nhap hop le bang role 4000 @ 3309); cac query
+    // quyen cung loc theo ur.company_id.
+    @Select("select count(1) from sys_user_role where user_id = #{userId} and company_id = #{companyId} and del_flag = '0'")
+    int countUserRoleInCompany(@Param("userId") String userId, @Param("companyId") String companyId);
+
     @Select("select user_id from user_tenant where tenant_id = #{tenantId}")
     List<String> getUserIdByClinicId(@Param("tenantId") String tenantId);
 

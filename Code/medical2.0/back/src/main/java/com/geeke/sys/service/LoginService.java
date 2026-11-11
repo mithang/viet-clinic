@@ -5,7 +5,9 @@ import com.geeke.admin.dao.UserDao;
 import com.geeke.admin.entity.User;
 import com.geeke.common.constants.ActionConstants;
 import com.geeke.common.service.CrudService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.utils.SessionUtils;
+import com.geeke.utils.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.DisabledAccountException;
@@ -58,6 +60,23 @@ public class LoginService extends CrudService<UserDao, User> {
         }
         //LưuHiện tạiNgười dùng của tất cảtenantThông tin
         User user = getUserFullClinics();
+        // DS208: tenantId do client gui -- chi cho dang nhap khi user co
+        // vai tro trong tenant do (sys_user_role.company_id = tenantId).
+        // Truoc day bat ky ai co tai khoan hop le cung dang nhap duoc vao
+        // BAT KY companyId nao (ke ca id khong ton tai) va nhan session
+        // mang danh tenant do (token hop le, loginedtocken tra code 100);
+        // user_tenant KHONG phai authority (testfull khong co dong nao).
+        // Tenant rong/null (dang nhap don phong kham, wxToken) giu hanh
+        // vi cu. Tu choi truoc khi setLoginTenantId de session khong
+        // mang tenant gia; logout subject de khong de lai subject da
+        // xac thuc; ServiceException -> 400 fail-closed (getToken catch
+        // -> E_10012, khong cap token).
+        if (StringUtils.isNotBlank(tenantId)
+                && userDao.countUserRoleInCompany(user.getId(), tenantId) == 0) {
+            logger.info("Người dùng {} Không có quyền truy cập phòng khám {}", username, tenantId);
+            currentUser.logout();
+            throw new ServiceException("Không có quyền truy cập phòng khám này");
+        }
         //Hiện tạiĐăng nhập của tenantThông tinLưuĐếnsession trong 
         SessionUtils.setLoginTenantId(tenantId);
         // LưuĐăng nhậpNgàynhật ký
