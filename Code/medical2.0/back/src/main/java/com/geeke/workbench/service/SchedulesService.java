@@ -68,6 +68,24 @@ public  class SchedulesService  {
 
     public List<String> listPages(PageRegistration pageRegistration){
         forceSessionTenant(pageRegistration);
+        // DS198: columnName tu body di thang vao ORDER BY ${columnName}
+        // o SchedulesDao.listPages — khong qua whitelist nhu
+        // RegistrationService.listPages/wxListPages/wxDispensingListPages
+        // (da check isValidColumnName tu truoc). Bat ky user nao dang
+        // nhap cung chen duoc bieu thuc SQL vao ORDER BY qua POST
+        // /workbench/Schedules/updateoverlookidlist (probe ds198 pre:
+        // cot khong ton tai -> 400 generic BadSqlGrammar; '(SELECT 1)'
+        // chap nhan -> 200; SLEEP(3) danh gia that -> 200 sau 3.01s).
+        // Blank giu nguyen (UI mac dinh "" va mapper bo ORDER BY khi
+        // rong); chi chan gia tri co noi dung ma khong hop le, fail-closed
+        // 400 (IllegalArgumentException -> GlobalExceptionHandler).
+        // listPagesjyjc khong dung columnName (khong co ORDER BY) nen
+        // khong can check o day.
+        String columnName = pageRegistration.getColumnName();
+        if (com.geeke.utils.StringUtils.isNotBlank(columnName)
+                && !pageRegistration.isValidColumnName()) {
+            throw new IllegalArgumentException("Invalid column name: " + columnName);
+        }
         List<String> list = schedulesDao.listPages(pageRegistration);
         int total=list.size();
         return  list;
