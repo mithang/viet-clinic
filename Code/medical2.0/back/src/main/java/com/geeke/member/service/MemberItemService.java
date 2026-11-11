@@ -69,6 +69,7 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
         // DAO insert on the NOT NULL cost_item_id column -> 500. Call the
         // check here so API + internal callers fail closed 400 alike.
         checkMemberItemRequired(entity);
+        checkMemberItemNonNegative(entity);
         if (entity != null && StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Chi tiết thẻ hội viên không tồn tại: "
@@ -90,6 +91,7 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
         }
         for (MemberItem entity : entitys) {
             checkMemberItemRequired(entity);
+            checkMemberItemNonNegative(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -115,6 +117,7 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
                         + entity.getId());
             }
             checkMemberItemRequired(entity);
+            checkMemberItemNonNegative(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -129,6 +132,22 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
             throw new ServiceException("Danh sách chi tiết thẻ hội viên không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS216: chan so am (number/useNumber) truoc moi ghi -- 0/null van
+    // cho phep (cot nullable, useNumber mac dinh 0); am -> 400
+    // fail-closed, mau DS209-DS215 (ho "so am"). Goi trong save() (bao
+    // ca cascade tu MemberSetService) + vong lap bulkInsert/bulkUpdate.
+    private static void checkMemberItemNonNegative(MemberItem entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getNumber() != null && entity.getNumber() < 0) {
+            throw new ServiceException("Số lượng tặng không được âm");
+        }
+        if (entity.getUseNumber() != null && entity.getUseNumber() < 0) {
+            throw new ServiceException("Số lượng đã sử dụng không được âm");
+        }
     }
 
     private void checkMemberItemRequired(MemberItem entity) {
