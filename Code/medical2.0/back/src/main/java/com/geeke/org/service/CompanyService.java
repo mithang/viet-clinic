@@ -549,28 +549,97 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         return scoped;
     }
 
+    /**
+     * DS205: strip e-prescription credentials (appSecret = WeChat/đơn
+     * thuốc điện tử secret, privateKey = khóa riêng cơ sở) from a Company
+     * row that is NOT the session tenant. CompanyDao.companyColumns
+     * selects both secrets on EVERY read, and DS21 scopes reads to the
+     * institution group "0.<root>." (own tenant + parent root + SIBLING
+     * clinics) — so any clinic session could read a sibling clinic's
+     * credentials via /org/company/{id}, list, listAll, tree,
+     * getCompanys, getSubordinateClinic, /org/clinic/*, /org/tenant/*
+     * (probe-proven live 2026-11-11 with a marker sibling: 9 endpoints).
+     * Rules, mirroring the DS21 visibility parity:
+     * - own row (id == session tenant): KEEP secrets — clinicForm edits
+     *   them for its own clinic and round-trips them on save; stripping
+     *   here would wipe the clinic's own credentials on the next save.
+     * - blank/"null" session (system admin, no tenant): KEEP — DS21
+     *   parity, admin still sees all.
+     * - any other visible row (parent root, sibling clinic): STRIP both
+     *   secrets (null). appId/publicKey are public identifiers and stay.
+     * Applied at the service read boundary so every controller path
+     * (Company/Tenant/Clinic) is covered at once. Write paths untouched
+     * (save still accepts secrets); no internal caller re-saves a
+     * fetched Company (ClinicService reads only fileId from oldClinic),
+     * so stripping a fetched row cannot wipe stored secrets.
+     */
+    private void stripForeignSecrets(Company row) {
+        if (row == null) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        if (tenantId.equals(row.getId())) {
+            return;
+        }
+        row.setAppSecret(null);
+        row.setPrivateKey(null);
+    }
+
+    private List<Company> stripForeignSecrets(List<Company> rows) {
+        if (rows != null) {
+            for (Company row : rows) {
+                stripForeignSecrets(row);
+                // DS205 follow-up: tree() nests children as the SAME
+                // objects (TreeService.bulid) but removes them from the
+                // top-level list, so a flat strip misses every nested
+                // node -- recurse into children.
+                if (row != null && row.getChildren() != null) {
+                    stripForeignSecrets(row.getChildren());
+                }
+            }
+        }
+        return rows;
+    }
+
+    private Page<Company> stripForeignSecrets(Page<Company> page) {
+        if (page != null) {
+            stripForeignSecrets(page.getRows());
+        }
+        return page;
+    }
+
+    @Override
+    public Company get(String id) {
+        Company row = super.get(id);
+        stripForeignSecrets(row);
+        return row;
+    }
+
     @Override
     public Page<Company> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
         String groupPrefix = sessionGroupPrefix();
         if (groupPrefix == null) {
-            return super.listPage(parameters, offset, limit, orderby);
+            return stripForeignSecrets(super.listPage(parameters, offset, limit, orderby));
         }
         if (groupPrefix.isEmpty()) {
             return new Page<Company>(0, new ArrayList<Company>());
         }
-        return super.listPage(scopedParams(parameters, groupPrefix), offset, limit, orderby);
+        return stripForeignSecrets(super.listPage(scopedParams(parameters, groupPrefix), offset, limit, orderby));
     }
 
     @Override
     public List<Company> listAll(List<Parameter> parameters, String orderby) {
         String groupPrefix = sessionGroupPrefix();
         if (groupPrefix == null) {
-            return super.listAll(parameters, orderby);
+            return stripForeignSecrets(super.listAll(parameters, orderby));
         }
         if (groupPrefix.isEmpty()) {
             return new ArrayList<Company>();
         }
-        return super.listAll(scopedParams(parameters, groupPrefix), orderby);
+        return stripForeignSecrets(super.listAll(scopedParams(parameters, groupPrefix), orderby));
     }
 
     public Page<Company> listTenantPage(List<Parameter> parameters, int offset, int limit, String orderby) {
@@ -580,10 +649,10 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         }
         PageRequest pageRequest = buildTenantPageRequest(
                 groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), offset, limit, orderby);
-        return paginate(
+        return stripForeignSecrets(paginate(
             () -> this.dao.countTenant(pageRequest),
             () -> this.dao.listTenantPage(pageRequest)
-        );
+        ));
     }
 
     public List<Company> listAllTenant(List<Parameter> parameters, String orderby) {
@@ -593,7 +662,7 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         }
         PageRequest pageRequest = buildTenantPageRequest(
                 groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), orderby);
-        return this.dao.listAllTenant(pageRequest);
+        return stripForeignSecrets(this.dao.listAllTenant(pageRequest));
     }
 
     public Page<Company> listClinicPage(List<Parameter> parameters, int offset, int limit, String orderby) {
@@ -603,10 +672,10 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         }
         PageRequest pageRequest = buildTenantPageRequest(
                 groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), offset, limit, orderby);
-        return paginate(
+        return stripForeignSecrets(paginate(
             () -> this.dao.countClinic(pageRequest),
             () -> this.dao.listClinicPage(pageRequest)
-        );
+        ));
     }
 
     public List<Company> listAllClinic(List<Parameter> parameters, String orderby) {
@@ -616,7 +685,7 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         }
         PageRequest pageRequest = buildTenantPageRequest(
                 groupPrefix == null ? parameters : scopedParams(parameters, groupPrefix), orderby);
-        return this.dao.listAllClinic(pageRequest);
+        return stripForeignSecrets(this.dao.listAllClinic(pageRequest));
     }
 
     /**TheoĐăng nhậptênTruy vấnPhòng khám*/
@@ -647,11 +716,11 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     public List<Company> tree(List<Parameter> parameters, String orderby) {
         String tenantId = SessionUtils.getLoginTenantId();
         if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
-            return super.tree(parameters, orderby);
+            return stripForeignSecrets(super.tree(parameters, orderby));
         }
         Company tenant = this.dao.get(tenantId);
         if (tenant == null) {
-            return super.tree(parameters, orderby);
+            return stripForeignSecrets(super.tree(parameters, orderby));
         }
         String ids = tenant.getIds();
         if (StringUtils.isBlank(ids)) {
@@ -675,7 +744,7 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
                 ? new ArrayList<Parameter>()
                 : new ArrayList<Parameter>(parameters);
         scoped.add(new Parameter("ids", "right_like", groupPrefix));
-        return super.tree(scoped, orderby);
+        return stripForeignSecrets(super.tree(scoped, orderby));
     }
 
     @Transactional(readOnly = true)
@@ -688,7 +757,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
             id = tenantId;
         }
-        return this.dao.getCompanys(id);
+        // DS205: rows tra ve la sibling cung parent -> strip secrets.
+        return stripForeignSecrets(this.dao.getCompanys(id));
     }
 
     /**
@@ -751,7 +821,7 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     }
 
     public List<Company> getSubordinateClinic(String companyId) {
-
-        return this.dao.getCompanys(companyId);
+        // DS205: rows tra ve la sibling cung parent -> strip secrets.
+        return stripForeignSecrets(this.dao.getCompanys(companyId));
     }
 }
