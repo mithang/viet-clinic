@@ -54,6 +54,9 @@ public class GenTableColumnEx extends GenTableColumn {
 	 */
 	@JsonIgnore
 	public String getSimpleJavaType(){
+		if (getJavaType() == null) {
+			return ""; // DS196: java_type NULL -> rỗng thay vì NPE
+		}
 		if (getJavaType() != null && "This".equals(getJavaType().getValue())){
 			return StringUtils.capitalize(this.getGenTable().getClassName());
 		}

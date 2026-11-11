@@ -85,16 +85,29 @@ public class ColumnViewService {
 		for (GenTableColumn cc : columns) {
 			GenTableColumnEx col = (GenTableColumnEx)cc;
 			col.setSort(col.getSort() * 1000);// nghiệp vụbảngĐặt giờ, thứ tựđặtlớn10lần; bảngthứ tự giờCầnđặtlớn10000lần. donàyCầnbổ sung1000lần. 
-			if ("Select".equals(col.getShowType().getValue())
-					|| "SelectTree".equals(col.getShowType().getValue()) 
-					|| "StringMultiSelect".equals(col.getShowType().getValue())) {
-				if ("Custom".equals(col.getJavaType().getValue())) {
-					GenScheme scheme = genSchemeDao.get(col.getCustomType().getId());
+			// DS196: show_type/java_type/custom_type đều nullable trong
+			// schema và scheme/column đích có thể đã bị xóa — mọi deref
+			// dưới đây phải null-safe; một cột hỏng không được làm cả
+			// bảng 500 (8/70 bảng seed đã 500 trước vòng này).
+			String showTypeVal = col.getShowType() == null ? null : col.getShowType().getValue();
+			String javaTypeVal = col.getJavaType() == null ? null : col.getJavaType().getValue();
+			boolean isSelect = "Select".equals(showTypeVal)
+					|| "SelectTree".equals(showTypeVal)
+					|| "StringMultiSelect".equals(showTypeVal);
+			// DS196: scheme null (custom_type NULL / scheme đã xóa /
+			// gen_table của scheme đã xóa) -> rẽ sang cột thường.
+			GenScheme scheme = null;
+			if (isSelect && "Custom".equals(javaTypeVal) && col.getCustomType() != null) {
+				scheme = genSchemeDao.get(col.getCustomType().getId());
+			}
+			if (isSelect) {
+				if ("Custom".equals(javaTypeVal) && scheme != null && scheme.getGenTable() != null) {
 					String tId = scheme.getGenTable().getId(); // tùy chỉnhLoại của bảngID
 					String[][] fieldAttrs = col.getJavaFieldAttrs();
 					for (int index = 0; index < fieldAttrs.length; index++) {
 						String[] attr = fieldAttrs[index];
 						GenTableColumnEx c = this.getCustomerColumn(tId, attr[1]);
+						if (c == null) { continue; } // DS196: attr đích đã bị xóa
 						c.setSort(col.getSort() + index); // Thứ tự hiển thị theo thứ tự hiển thị của trường bảng chính +
 															// 1, 2, 3
 						ColumnView column = this.mapForm(c);
@@ -122,11 +135,12 @@ public class ColumnViewService {
 						}
 						list.add(column);
 					}
-				} else if ("This".equals(col.getJavaType().getValue())) {
+				} else if ("This".equals(javaTypeVal)) {
 					String[][] fieldAttrs = col.getJavaFieldAttrs();
 					for (int index = 0; index < fieldAttrs.length; index++) {
 						String[] attr = fieldAttrs[index];
 						GenTableColumnEx c = this.getCustomerColumn(columns,	attr[0]);
+						if (c == null) { continue; } // DS196: attr đích đã bị xóa
 						ColumnView column = this.mapForm(c);
 						column.setProp(col.getSimpleJavaField() + "." + attr[0]);
 						// chỉ có mộtCáithuộc tínhGiá trị của  giờchờ, Trực tiếp dùng tên trường trên bảng chính làm tiêu đề cột; Nếu khôngđịnh dạng là Bảng chínhTên trường.conbảng của Tên trường
@@ -284,9 +298,12 @@ public class ColumnViewService {
 		ColumnView column = new ColumnView();
 		column.setProp(col.getJavaFieldId());
 		column.setLabel(col.getComments());
-		if ("Switch".equals(col.getShowType().getValue())
-				|| "Checkbox".equals(col.getShowType().getValue())
-				|| "Radio".equals(col.getShowType().getValue())) {
+		// DS196: show_type/java_type nullable -> "" thay vì NPE.
+		String showTypeVal = col.getShowType() == null ? "" : col.getShowType().getValue();
+		String javaTypeVal = col.getJavaType() == null ? "" : col.getJavaType().getValue();
+		if ("Switch".equals(showTypeVal)
+				|| "Checkbox".equals(showTypeVal)
+				|| "Radio".equals(showTypeVal)) {
 			column.setAlign("center");
 		} else if ("Date".equals(col.getSimpleJavaType())
 				|| "Long".equals(col.getSimpleJavaType())
@@ -301,8 +318,8 @@ public class ColumnViewService {
 		column.setMiniWidth(col.getWidth());
 		column.setDisplay("1".equals(col.getIsList()));
 		column.setSort(col.getSort());
-		column.setShowType(col.getShowType().getValue());
-		column.setJavaType(col.getJavaType().getValue());
+		column.setShowType(showTypeVal);
+		column.setJavaType(javaTypeVal);
 		return column;
 	}
 
