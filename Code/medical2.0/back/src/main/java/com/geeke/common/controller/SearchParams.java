@@ -59,7 +59,23 @@ public class SearchParams implements Serializable {
 	}
 
 	public List<Parameter> getParams() {
-		if (null != params && params.size() > 0) {
+		// DS189: body {} (khong co key "params") truoc day tra null ->
+		// CrudService.ensureCompanyFilter(null) return som, khong chen
+		// company_id cua session tenant, PageRequest doi null ve rong
+		// nen SQL chay KHONG tenant filter (tai hien live: getWorkload /
+		// getDrugSales / getDrugSalesStat / patient/list tra du lieu
+		// tenant khac). "params": [] thi loc dung vi list khong null.
+		// Chuan hoa null ve list rong ngay tai day (choke point duy
+		// nhat: moi body deu deserialize qua SearchParams) de moi caller
+		// deu duoc ep tenant filter nhu "params": []. Gan vao field de
+		// getNewParams() / lan goi sau thay cung list (ensureCompanyFilter
+		// mutate in-place, idempotent nho extractAndRemoveCompanyId).
+		// Khong doi hanh vi khi session khong co tenant (ensureCompanyFilter
+		// van bo qua) hay entity khong co field company.
+		if (params == null) {
+			params = new java.util.ArrayList<>();
+		}
+		if (params.size() > 0) {
 			for (int i = 0; i < params.size(); i++) {
 				// DS185: phan tu null trong params (JSON {"params":[null]})
 				// truoc day NPE 500 o getLogic() ben duoi — fail-closed
@@ -115,11 +131,16 @@ public class SearchParams implements Serializable {
 		// forceReviewListScope/removeIf, HosDepartmentStorageController,
 		// HttpUtil.getHosData) deu deref phan tu khong guard: phan tu
 		// null truoc day NPE 500. Fail-closed 400 ngay tai day.
-		if (null != params) {
-			for (Parameter p : params) {
-				if (p == null) {
-					throw new ServiceException("Điều kiện truy vấn không được để trống");
-				}
+		// DS189: nhu getParams() — null ve rong de moi caller deu thay
+		// cung list (RecipelInfoReviewController.forceSessionParent truoc
+		// day return som khi params null, bo qua ep parent scope;
+		// CheckUtils.isTenantQuery NPE tren body {}).
+		if (params == null) {
+			params = new java.util.ArrayList<>();
+		}
+		for (Parameter p : params) {
+			if (p == null) {
+				throw new ServiceException("Điều kiện truy vấn không được để trống");
 			}
 		}
 		return this.params;
