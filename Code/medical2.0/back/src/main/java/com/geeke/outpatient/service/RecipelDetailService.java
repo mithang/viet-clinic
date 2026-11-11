@@ -71,6 +71,18 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                     + entity.getId());
         }
         checkRecipelDetailRequired(entity);
+        // DS209: so luong / don gia / tong tien am truoc day ghi thang
+        // (probe pre 9/9: save total=-5/minTotal=-5/unitPrice=-10/
+        // allFee=-50 tra 100 va luu am that; bulkInsert cung lo). total
+        // va allFee chay thang vao phieu thu (TollInfoService.saveToll
+        // cong allFee vao actualPayment) va tru kho
+        // (MedicinalStorageControlService dung total); so am lam phieu
+        // thu am va kho tang khi phat thuoc. Khong co @Min/@Positive
+        // tren entity nen @Valid khong bat duoc; khong co CHECK o DB.
+        // Chan fail-closed 400 truoc moi ghi; null giu nguyen (cot
+        // nullable, UI tinh sau), 0 giu nguyen (vo hai, khong pha luong
+        // so luong 0 hien co).
+        checkNonNegative(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
         // (drippingSpeed 45, retailType 1, unitType 100); gia tri
@@ -113,6 +125,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
         for (RecipelDetail entity : entitys) {
             checkRecipelDetailRequired(entity);
+            checkNonNegative(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkInsert(entitys);
@@ -139,6 +152,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                         + entity.getId());
             }
             checkRecipelDetailRequired(entity);
+            checkNonNegative(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkUpdate(entitys);
@@ -154,6 +168,29 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             throw new ServiceException("Danh sách chi tiết đơn thuốc không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS209: xem ghi chu o save(). Chi 4 truong chay vao tien/kho:
+    // total, minTotal, unitPrice, allFee. Null-safe (null giu nguyen),
+    // 0 giu nguyen; am -> ServiceException (400).
+    private static void checkNonNegative(RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getTotal() != null && entity.getTotal() < 0) {
+            throw new ServiceException("Tổng số lượng không được âm");
+        }
+        if (entity.getMinTotal() != null && entity.getMinTotal() < 0) {
+            throw new ServiceException("Tổng lượng đơn vị nhỏ nhất không được âm");
+        }
+        if (entity.getUnitPrice() != null
+                && entity.getUnitPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Đơn giá không được âm");
+        }
+        if (entity.getAllFee() != null
+                && entity.getAllFee().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng tiền không được âm");
+        }
     }
 
     // DS149 C: xem ghi chu o save().
