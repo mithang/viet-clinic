@@ -330,6 +330,13 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
 
 
     public int addDurg(Drug drug) {
+        // DS193: duong chen thang qua dao.insert, khong qua save() nen
+        // truoc day khong co checkDrugLengths; ten thuoc tu xa > 128 ky
+        // tu roi xuong DB moi vo o cot goods_name varchar(128)
+        // (MysqlDataTruncation, chi ve 400 chung chung nho handler
+        // DS160). Guard tai day nhu save() :107 / syncToClinic :716 /
+        // bulk :247/:276; chi caller la MedicalRecordService:1404.
+        checkDrugLengths(drug);
         return dao.insert(drug);
     }
 
