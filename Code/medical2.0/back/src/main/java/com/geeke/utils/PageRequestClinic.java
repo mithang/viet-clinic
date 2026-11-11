@@ -31,6 +31,11 @@ public final class PageRequestClinic implements Serializable {
             throw new IllegalArgumentException("Offset must not be less than zero!");
         } else if (limit < 1) {
             throw new IllegalArgumentException("Limit must not be less than one!");
+        } else if (limit > com.geeke.common.data.PageRequest.MAX_PAGE_SIZE) {
+            // DS203: cung tran tren nhu PageRequest — truoc day khong tran,
+            // session nao cung vat toan bo bang user vao mot trang.
+            throw new IllegalArgumentException("Limit must not exceed "
+                    + com.geeke.common.data.PageRequest.MAX_PAGE_SIZE + "!");
         } else {
             this.offset = offset;
             this.limit = limit;

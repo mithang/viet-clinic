@@ -92,6 +92,12 @@ public  class SchedulesService  {
                 && !pageRegistration.isValidColumnName()) {
             throw new IllegalArgumentException("Invalid column name: " + columnName);
         }
+        // DS203: chan limit vuot tran 10000 (PageRequest.MAX_PAGE_SIZE) —
+        // PageRegistration khong qua PageRequest nen phai check rieng o day;
+        // limit=0 giu nguyen (UI workbench gui mac dinh, mapper LIMIT 0).
+        if (!pageRegistration.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
+        }
         // DS200: patientName đi thẳng vào LIKE concat('%', #{patientName}, '%')
         // ở SchedulesDao.listPages — "%" khớp mọi bệnh nhân trong tenant.
         // Escape %, _, \ trước khi đưa vào DAO (mirror

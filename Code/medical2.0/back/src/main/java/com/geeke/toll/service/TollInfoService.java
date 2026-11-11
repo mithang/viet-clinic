@@ -1824,10 +1824,25 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     //ThuốcThống kê tổng hợp bán hàngXuất
     private void exportDrugDetail(SearchParams searchParams, HttpServletResponse response) throws IOException {
-        Page<DrugSales> drugSalesPage = getDrugSales(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
+        // DS203: getDrugSales tran limit 10000 (PageRequest.MAX_PAGE_SIZE)
+        // nen khong the lay het 1000000 dong mot lan nhu truoc — lay theo
+        // trang 10000 dong roi gop lai.
+        List<DrugSales> allDrugSales = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            Page<DrugSales> drugSalesPage = getDrugSales(searchParams.getParams(), exportOffset, PageRequest.MAX_PAGE_SIZE, searchParams.getOrder());
+            if (CollectionUtils.isEmpty(drugSalesPage.getRows())) {
+                break;
+            }
+            allDrugSales.addAll(drugSalesPage.getRows());
+            if (drugSalesPage.getRows().size() < PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += PageRequest.MAX_PAGE_SIZE;
+        }
         List<Map<String, Object>> rows = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(drugSalesPage.getRows())) {
-            for (DrugSales ds : drugSalesPage.getRows()) {
+        if (!CollectionUtils.isEmpty(allDrugSales)) {
+            for (DrugSales ds : allDrugSales) {
                 Map<String, Object> row = new HashMap<>();
                 row.put("type", ds.getType());
                 row.put("name", ds.getName());
@@ -1863,10 +1878,24 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
 
     //Bác sĩThu nhậpthống kêXuất
     private void exportDoctorDetail(SearchParams searchParams, HttpServletResponse response) throws IOException {
-        Page<WorkLoad> workloadPage = getWorkload(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
+        // DS203: nhu exportDrugDetail — lay theo trang 10000 dong
+        // (PageRequest.MAX_PAGE_SIZE) roi gop lai, thay cho 1000000 dong.
+        List<WorkLoad> allWorkloads = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            Page<WorkLoad> workloadPage = getWorkload(searchParams.getParams(), exportOffset, PageRequest.MAX_PAGE_SIZE, searchParams.getOrder());
+            if (CollectionUtils.isEmpty(workloadPage.getRows())) {
+                break;
+            }
+            allWorkloads.addAll(workloadPage.getRows());
+            if (workloadPage.getRows().size() < PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += PageRequest.MAX_PAGE_SIZE;
+        }
         List<Map<String, Object>> rows = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(workloadPage.getRows())) {
-            for (WorkLoad wl : workloadPage.getRows()) {
+        if (!CollectionUtils.isEmpty(allWorkloads)) {
+            for (WorkLoad wl : allWorkloads) {
                 Map<String, Object> row = new HashMap<>();
                 row.put("name", wl.getName());
                 row.put("count", wl.getCount());

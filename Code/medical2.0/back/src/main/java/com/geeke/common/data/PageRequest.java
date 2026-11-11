@@ -18,6 +18,17 @@ public final class PageRequest implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * DS203: trang lon nhat cho phep tren mot lan goi list. UI hien tai gui
+	 * toi da limit=10000 (9 cho goi o trang kho); khong co luong hop le nao
+	 * can hon. Truoc day limit khong co tran tren: bat ky session nao cung
+	 * gui duoc limit=2147483647 va bat server vat toan bo bang vao mot
+	 * Page (probe ds203: dictItem limit=100000 tra 227/227 dong mot trang).
+	 * Vuot tran -> IllegalArgumentException -> 400 (cung co che nhu guard
+	 * limit<1 san co).
+	 */
+	public static final int MAX_PAGE_SIZE = 10000;
+
 	/** ORDER BY danh sách trắngregex(biên dịch trước) */
 	private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
 			"^[a-z_`][a-z0-9_`.]*(\\s+(asc|desc))?(,\\s*[a-z_`][a-z0-9_`.]*(\\s+(asc|desc))?)*$");
@@ -69,6 +80,9 @@ public final class PageRequest implements java.io.Serializable {
 		}
 		if (limit < 1) {
 			throw new IllegalArgumentException("Limit must not be less than one!");
+		}
+		if (limit > MAX_PAGE_SIZE) {
+			throw new IllegalArgumentException("Limit must not exceed " + MAX_PAGE_SIZE + "!");
 		}
 		this.offset = offset;
 		this.limit = limit;

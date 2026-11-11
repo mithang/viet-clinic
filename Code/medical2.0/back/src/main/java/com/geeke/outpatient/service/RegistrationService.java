@@ -437,6 +437,12 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (!pageRegistration.isValidColumnName()) {
             throw new IllegalArgumentException("Invalid column name: " + pageRegistration.getColumnName());
         }
+        // DS203: chan limit vuot tran 10000 (PageRequest.MAX_PAGE_SIZE) —
+        // PageRegistration khong qua PageRequest nen phai check rieng o day;
+        // limit=0 giu nguyen (UI workbench gui mac dinh, mapper LIMIT 0).
+        if (!pageRegistration.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
+        }
         // DS200: patientName đi thẳng vào LIKE concat('%', #{patientName}, '%')
         // ở RegistrationDao.countId/listPages — "%" khớp mọi bệnh nhân trong
         // tenant. Escape %, _, \ trước khi đưa vào DAO (mirror
@@ -549,6 +555,10 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (!pageRegistration.isValidColumnName()) {
             throw new IllegalArgumentException("Invalid column name: " + pageRegistration.getColumnName());
         }
+        // DS203: chan limit vuot tran 10000 (nhu listPages).
+        if (!pageRegistration.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
+        }
         List<String> strings = this.dao.wxCount(pageRegistration);
         int total=strings.size();
         List<Registration> list = null;
@@ -572,6 +582,10 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     public Page<ReceptionEvt> wxDispensingListPages(PageRegistration pageRegistration) {
         if (!pageRegistration.isValidColumnName()) {
             throw new IllegalArgumentException("Invalid column name: " + pageRegistration.getColumnName());
+        }
+        // DS203: chan limit vuot tran 10000 (nhu listPages).
+        if (!pageRegistration.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
         }
         List<String> strings = this.dao.wxDispensingCount(pageRegistration);
         int total=strings.size();

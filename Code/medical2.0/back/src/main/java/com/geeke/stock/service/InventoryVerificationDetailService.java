@@ -292,13 +292,27 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                 .eq("inventory_verification_id", inventoryVerification.getId())
                 .eq("company_id", inventoryVerification.getCompany().getId())
                 .build();
-        Page<InventoryVerificationDetail> inventoryVerificationDetailPage;
-        if ("0".equals(inventoryVerification.getType())) {
-            inventoryVerificationDetailPage = super.listPage(parameters, 0, 10000000, "");
-        } else {
-            inventoryVerificationDetailPage = super.listPage(parameters, 0, 10000000, "stuff");
+        // DS203: listPage tran limit 10000 (PageRequest.MAX_PAGE_SIZE) nen
+        // khong the lay het 10000000 dong mot lan nhu truoc — lay theo
+        // trang 10000 dong roi gop lai; file xuat van du tat ca cac dong.
+        List<InventoryVerificationDetail> rows = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            Page<InventoryVerificationDetail> inventoryVerificationDetailPage;
+            if ("0".equals(inventoryVerification.getType())) {
+                inventoryVerificationDetailPage = super.listPage(parameters, exportOffset, PageRequest.MAX_PAGE_SIZE, "");
+            } else {
+                inventoryVerificationDetailPage = super.listPage(parameters, exportOffset, PageRequest.MAX_PAGE_SIZE, "stuff");
+            }
+            if (CollectionUtils.isEmpty(inventoryVerificationDetailPage.getRows())) {
+                break;
+            }
+            rows.addAll(inventoryVerificationDetailPage.getRows());
+            if (inventoryVerificationDetailPage.getRows().size() < PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += PageRequest.MAX_PAGE_SIZE;
         }
-        List<InventoryVerificationDetail> rows = inventoryVerificationDetailPage.getRows();
         for (InventoryVerificationDetail detail : rows) {
             if (!StringUtils.isNullOrEmpty(detail.getDrug())) {
                 Drug drug = drugService.get(detail.getDrug().getId());

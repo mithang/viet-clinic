@@ -131,10 +131,25 @@ public class WarningService {
 
     //Xuất cảnh báo tồn kho vật tư
     private void exportStuffInventory(SearchParams searchParams, HttpServletResponse response) throws IOException {
-        Page<Stuff> stuffInventoryWarning = stuffService.getStuffInventoryWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
+        // DS203: getStuffInventoryWarning tran limit 10000
+        // (PageRequest.MAX_PAGE_SIZE) nen khong the lay het 1000000 dong
+        // mot lan nhu truoc — lay theo trang 10000 dong roi gop lai.
+        List<Stuff> warningRows = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            Page<Stuff> stuffInventoryWarning = stuffService.getStuffInventoryWarning(searchParams.getParams(), exportOffset, PageRequest.MAX_PAGE_SIZE, searchParams.getOrder());
+            if (CollectionUtils.isEmpty(stuffInventoryWarning.getRows())) {
+                break;
+            }
+            warningRows.addAll(stuffInventoryWarning.getRows());
+            if (stuffInventoryWarning.getRows().size() < PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += PageRequest.MAX_PAGE_SIZE;
+        }
         List<Map<String, Object>> rows = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(stuffInventoryWarning.getRows())) {
-            for (Stuff stuff : stuffInventoryWarning.getRows()) {
+        if (!CollectionUtils.isEmpty(warningRows)) {
+            for (Stuff stuff : warningRows) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("name", stuff.getName());
                 row.put("typeName", nameOrEmpty(stuff.getType()));
@@ -163,11 +178,25 @@ public class WarningService {
 
     //Xuất cảnh báo hết hạn vật tư
     private void exportStuffIndate(SearchParams searchParams, HttpServletResponse response) throws IOException {
-        Page<SupplierStock> stuffIndateWarning = supplierStockService.getStuffIndateWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
+        // DS203: nhu exportStuffInventory — lay theo trang 10000 dong
+        // (PageRequest.MAX_PAGE_SIZE) roi gop lai, thay cho 1000000 dong.
+        List<SupplierStock> warningRows = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            Page<SupplierStock> stuffIndateWarning = supplierStockService.getStuffIndateWarning(searchParams.getParams(), exportOffset, PageRequest.MAX_PAGE_SIZE, searchParams.getOrder());
+            if (CollectionUtils.isEmpty(stuffIndateWarning.getRows())) {
+                break;
+            }
+            warningRows.addAll(stuffIndateWarning.getRows());
+            if (stuffIndateWarning.getRows().size() < PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += PageRequest.MAX_PAGE_SIZE;
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         List<Map<String, Object>> rows = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(stuffIndateWarning.getRows())) {
-            for (SupplierStock supplierStock : stuffIndateWarning.getRows()) {
+        if (!CollectionUtils.isEmpty(warningRows)) {
+            for (SupplierStock supplierStock : warningRows) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("stuffName", supplierStock.getStuff().getName());
                 row.put("typeName", nameOrEmpty(supplierStock.getStuff().getType()));
@@ -203,10 +232,24 @@ public class WarningService {
 
     //Xuất cảnh báo tồn kho thuốc
     private void exportDrugInventory(SearchParams searchParams, HttpServletResponse response) throws IOException {
-        Page<Drug> drugInventoryWarning = drugService.getDrugInventoryWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
+        // DS203: nhu exportStuffInventory — lay theo trang 10000 dong
+        // (PageRequest.MAX_PAGE_SIZE) roi gop lai, thay cho 1000000 dong.
+        List<Drug> warningRows = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            Page<Drug> drugInventoryWarning = drugService.getDrugInventoryWarning(searchParams.getParams(), exportOffset, PageRequest.MAX_PAGE_SIZE, searchParams.getOrder());
+            if (CollectionUtils.isEmpty(drugInventoryWarning.getRows())) {
+                break;
+            }
+            warningRows.addAll(drugInventoryWarning.getRows());
+            if (drugInventoryWarning.getRows().size() < PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += PageRequest.MAX_PAGE_SIZE;
+        }
         List<Map<String, Object>> rows = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(drugInventoryWarning.getRows())) {
-            for (Drug drug : drugInventoryWarning.getRows()) {
+        if (!CollectionUtils.isEmpty(warningRows)) {
+            for (Drug drug : warningRows) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("goodsName", drug.getGoodsName());
                 row.put("typeName", nameOrEmpty(drug.getType()));
@@ -234,11 +277,25 @@ public class WarningService {
 
     //Xuất cảnh báo hết hạn thuốc
     private void exportDrugIndate(SearchParams searchParams, HttpServletResponse response) throws IOException {
-        Page<SupplierStock> drugIndateWarning = supplierStockService.getDrugIndateWarning(searchParams.getParams(), 0, 1000000, searchParams.getOrder());
+        // DS203: nhu exportStuffInventory — lay theo trang 10000 dong
+        // (PageRequest.MAX_PAGE_SIZE) roi gop lai, thay cho 1000000 dong.
+        List<SupplierStock> warningRows = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            Page<SupplierStock> drugIndateWarning = supplierStockService.getDrugIndateWarning(searchParams.getParams(), exportOffset, PageRequest.MAX_PAGE_SIZE, searchParams.getOrder());
+            if (CollectionUtils.isEmpty(drugIndateWarning.getRows())) {
+                break;
+            }
+            warningRows.addAll(drugIndateWarning.getRows());
+            if (drugIndateWarning.getRows().size() < PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += PageRequest.MAX_PAGE_SIZE;
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         List<Map<String, Object>> rows = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(drugIndateWarning.getRows())) {
-            for (SupplierStock supplierStock : drugIndateWarning.getRows()) {
+        if (!CollectionUtils.isEmpty(warningRows)) {
+            for (SupplierStock supplierStock : warningRows) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("drugName", supplierStock.getDrug().getGoodsName());
                 row.put("typeName", nameOrEmpty(supplierStock.getDrug().getType()));
