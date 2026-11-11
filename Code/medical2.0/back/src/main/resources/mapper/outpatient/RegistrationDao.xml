@@ -899,9 +899,9 @@
         <include refid="registrationJoins"/>
         <where>
                 a.company_id = #{companyId}
-                AND (patientId.name like '%#{value}%'
-                or patientId.phone like '%#{value}%'
-                or patientId.card like '%#{value}%')
+                AND (patientId.name like concat('%', #{value}, '%') ESCAPE '\\'
+                or patientId.phone like concat('%', #{value}, '%') ESCAPE '\\'
+                or patientId.card like concat('%', #{value}, '%') ESCAPE '\\')
         </where>
         ORDER BY case a.status when 'registrationStatus_2' then 0 else 1 end desc,a.update_date desc
         LIMIT #{limit} OFFSET #{offset}
@@ -912,10 +912,9 @@
         <include refid="registrationJoins"/>
         <where>
             a.company_id = #{companyId}
-            AND (patientId.name like '%#{value}%'
-            or patientId.phone like '%#{value}%'
-            or patientId.card like '%#{value}%')
-            <include refid="Common.whereParams"/>
+            AND (patientId.name like concat('%', #{value}, '%') ESCAPE '\\'
+            or patientId.phone like concat('%', #{value}, '%') ESCAPE '\\'
+            or patientId.card like concat('%', #{value}, '%') ESCAPE '\\')
         </where>
     </select>
     <select id="findById" resultType="com.geeke.outpatient.entity.Registration">

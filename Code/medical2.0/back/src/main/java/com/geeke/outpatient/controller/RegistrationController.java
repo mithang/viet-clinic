@@ -312,7 +312,18 @@ public class RegistrationController extends CrudController<RegistrationService, 
         List<Parameter> params = searchParams.getParams();
         Page<Registration> result;
         if (null != params && 0 != params.size()) {
-            result = registrationService.listConditionPage(searchParams.getParams().get(0).getColumnName(), searchParams.getOffset(), searchParams.getLimit());
+            // DS202: truoc day goi searchParams.getParams() lan 2 o day —
+            // lan 1 da boc columnName trong backtick, lan 2 thay backtick
+            // nen nem 400 "Dieu kien Ten truong Chua ky tu khong hop le"
+            // voi MOI chuoi tim khong rong: endpoint khong bao gio chay
+            // duoc. Dung list params da lay, go backtick ma getParams()
+            // them vao (dau vao chua backtick da bi getParams() chan, nen
+            // go sach khoi phuc dung chuoi goc).
+            String param = params.get(0).getColumnName();
+            if (param != null) {
+                param = param.replace("`", "");
+            }
+            result = registrationService.listConditionPage(param, searchParams.getOffset(), searchParams.getLimit());
         } else {
             result = registrationService.listPage(params, searchParams.getOffset(), searchParams.getLimit(), searchParams.getOrderby());
         }

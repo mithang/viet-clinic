@@ -411,9 +411,14 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     public Page<Registration> listConditionPage(String param, int offset, int limit) {
+        // DS202: param di thang vao LIKE o RegistrationDao.conditionList /
+        // countConditionList — "%" khop moi dong, "_" khop 1 ky tu bat ky.
+        // Escape %, _, \ truoc khi dua vao DAO (cung String dung cho ca
+        // count + list); SQL kem ESCAPE '\'. Mirror DS200/DS201.
+        final String escapedParam = StringUtils.escapeLike(param);
         return paginate(
-            () -> this.dao.countConditionList(param, SessionUtils.getLoginTenantId()),
-            () -> this.dao.conditionList(param, SessionUtils.getLoginTenantId(), limit, offset)
+            () -> this.dao.countConditionList(escapedParam, SessionUtils.getLoginTenantId()),
+            () -> this.dao.conditionList(escapedParam, SessionUtils.getLoginTenantId(), limit, offset)
         );
     }
     @Transactional(readOnly = false)
