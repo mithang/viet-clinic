@@ -87,6 +87,15 @@ public class TaskmanageService {
         if (tenantId != null && !tenantId.isEmpty() && !"null".equals(tenantId)) {
             rcvo.setCompanyId(tenantId);
         }
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o selecttasklist khong co guard nao.
+        if (!rcvo.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + rcvo.getLimit());
+        }
+        if (!rcvo.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + rcvo.getOffset());
+        }
         // DS201: escape LIKE wildcards in taskname (mirror DS200) —
         // "%" must match literally; same bean feeds total + list.
         rcvo.setTaskname(StringUtils.escapeLike(rcvo.getTaskname()));

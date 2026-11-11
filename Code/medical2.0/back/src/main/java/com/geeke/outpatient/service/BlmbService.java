@@ -82,6 +82,16 @@ public class BlmbService {
         // tenant la truoc day tra ve mau benh an cua tenant do. Ghi de
         // bang session tenant; session rong/"null" giu hanh vi cu.
         forceSessionTenant(blmcxrc);
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o getblmblist khong co guard nao (probe:
+        // limit=100000 tra het 3 dong live mot trang).
+        if (!blmcxrc.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + blmcxrc.getLimit());
+        }
+        if (!blmcxrc.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + blmcxrc.getOffset());
+        }
         // DS201: escape LIKE wildcards in mbmc/cjr (mirror DS200) —
         // "%" must match literally; same bean feeds total + list.
         blmcxrc.setMbmc(StringUtils.escapeLike(blmcxrc.getMbmc()));

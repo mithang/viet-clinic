@@ -35,9 +35,20 @@ public class PageRegistration {
      * nhung ORDER BY van danh gia). Chi chan limit > 10000 — cung tran nhu
      * PageRequest.MAX_PAGE_SIZE; truoc day khong tran, v2/list gui
      * limit=100000 la lay het dang ky ve mot trang.
+     * DS204: them chan duoi limit >= 0 — limit am truoc day lot toi MySQL
+     * (LIMIT -5) roi moi bi DB tu choi -> 400 message chung (DS94
+     * handler); chan o day fail-closed 400 voi message ro.
      */
     public boolean isValidLimit() {
-        return limit <= com.geeke.common.data.PageRequest.MAX_PAGE_SIZE;
+        return limit >= 0 && limit <= com.geeke.common.data.PageRequest.MAX_PAGE_SIZE;
+    }
+
+    /**
+     * DS204: offset am truoc day lot toi MySQL (OFFSET -1) roi moi bi DB
+     * tu choi nhu limit am — chan o day cung co che voi isValidLimit.
+     */
+    public boolean isValidOffset() {
+        return offset >= 0;
     }
 
     /**

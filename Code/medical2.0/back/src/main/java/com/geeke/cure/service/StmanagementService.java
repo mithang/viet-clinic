@@ -25,6 +25,15 @@ public class StmanagementService {
         // Z1b: SQL loc a.company_id=#{companyId} truc tiep tu body — ghi
         // de bang session tenant; session rong/"null" giu hanh vi cu.
         forceSessionTenant(stparameter);
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o stmanagementlist khong co guard nao.
+        if (!stparameter.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + stparameter.getLimit());
+        }
+        if (!stparameter.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + stparameter.getOffset());
+        }
         // DS201: escape LIKE wildcards in hzxm/kdys (mirror DS200) —
         // "%" must match literally; same bean feeds total + list.
         stparameter.setHzxm(StringUtils.escapeLike(stparameter.getHzxm()));

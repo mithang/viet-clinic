@@ -46,6 +46,16 @@ public class OutpatientLogService {
     }
 
     public Page<OutpatientLog> listLog(OutpatientLogRc outpatientLogRc){
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o getOutpatientLog/getOutpatientlist khong
+        // co guard nao.
+        if (!outpatientLogRc.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + outpatientLogRc.getLimit());
+        }
+        if (!outpatientLogRc.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + outpatientLogRc.getOffset());
+        }
         List<OutpatientLog> list=outpatientLogDao.getOutpatientLog(outpatientLogRc);
         int total=list.size();
         List<OutpatientLog> list2=null;
@@ -96,7 +106,23 @@ public class OutpatientLogService {
     }
 
     public void exportExcel(OutpatientLogRc outpatientLogRc, HttpServletResponse response) throws Exception {
-        List<OutpatientLog> list = outpatientLogDao.getOutpatientLog(outpatientLogRc);
+        // DS204: export lay theo trang 10000 dong roi gop (DS203 pattern)
+        // thay cho limit cua client — truoc day exportExcel dung
+        // getOutpatientLog voi limit client nen limit=1000000 lay het bang
+        // mot lan. Ghi de limit/offset cua body o day; listLog van giu
+        // guard rieng o tren.
+        List<OutpatientLog> list = new ArrayList<>();
+        int exportOffset = 0;
+        while (true) {
+            outpatientLogRc.setOffset(exportOffset);
+            outpatientLogRc.setLimit(com.geeke.common.data.PageRequest.MAX_PAGE_SIZE);
+            List<OutpatientLog> page = outpatientLogDao.getOutpatientLog(outpatientLogRc);
+            list.addAll(page);
+            if (page.size() < com.geeke.common.data.PageRequest.MAX_PAGE_SIZE) {
+                break;
+            }
+            exportOffset += com.geeke.common.data.PageRequest.MAX_PAGE_SIZE;
+        }
         // ITER66 item 2: EasyExcel kèm POI cũ không có
         // Cell.setCellValue(LocalDateTime); EasyExcel tự đổi ô java.util.Date
         // sang LocalDateTime rồi ném NoSuchMethodError giữa chừng khi ghi

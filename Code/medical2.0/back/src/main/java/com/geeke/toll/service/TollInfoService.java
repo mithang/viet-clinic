@@ -1491,6 +1491,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getypjxcmanagement(YpjxcRc ypjxcRc){
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o getypjxcmanagement khong co guard nao.
+        // Wrapper getpharmaceuticalInventoryManagement uy quyen xuong day
+        // nen duoc phu tu dong.
+        if (!ypjxcRc.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + ypjxcRc.getLimit());
+        }
+        if (!ypjxcRc.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + ypjxcRc.getOffset());
+        }
         escapeYpjxcLikeFilters(ypjxcRc);
         // ITER66 item 5-followup: khong ghi de jgid = institution (xem
         // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
@@ -1527,6 +1538,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Stuffsalessummary> getStuffsalessummarylists(StuffsalessummaryRc stuffsalessummaryRc){
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o getStuffsalessummarylist khong co guard
+        // nao. Wrapper getconsumablemarketstatistics uy quyen xuong day
+        // nen duoc phu tu dong.
+        if (!stuffsalessummaryRc.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + stuffsalessummaryRc.getLimit());
+        }
+        if (!stuffsalessummaryRc.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + stuffsalessummaryRc.getOffset());
+        }
         escapeStuffSummaryLikeFilters(stuffsalessummaryRc);
         // ITER66 item 5-followup: khong ghi de jgid = institution (xem
         // normalizeYpjxcFacilityFilter) — query luon loc theo companyId.
@@ -1558,6 +1580,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypjxc> getcljxcmanagement(YpjxcRc ypjxcRc){
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o getcljxcmanagement khong co guard nao.
+        // Wrapper getmaterialmanagement uy quyen xuong day nen duoc phu
+        // tu dong.
+        if (!ypjxcRc.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + ypjxcRc.getLimit());
+        }
+        if (!ypjxcRc.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + ypjxcRc.getOffset());
+        }
         escapeYpjxcLikeFilters(ypjxcRc);
         verifyYpjxcCompanyScope(ypjxcRc.getCompanyId());
         // ITER65 item 2: count/list cua cljxc KHONG loc company khi jgid
@@ -1629,6 +1662,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * @return
      */
     public Page<Ypclrkcx> getypclrkcxlist(YpjxcRc ypjxcRc){
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — truoc day limit client di thang
+        // vao LIMIT #{limit} o getypclrkcxlist khong co guard nao.
+        // Wrapper drugmaterialsstockmanagement uy quyen xuong day nen
+        // duoc phu tu dong.
+        if (!ypjxcRc.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + ypjxcRc.getLimit());
+        }
+        if (!ypjxcRc.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + ypjxcRc.getOffset());
+        }
         escapeYpjxcLikeFilters(ypjxcRc);
         verifyYpjxcCompanyAndJgidScope(ypjxcRc.getCompanyId(), ypjxcRc.getJgid());
         int total = tollInfoDao.countYpclrkcx(ypjxcRc);

@@ -57,6 +57,18 @@ public  class SchedulesService  {
 
         public Page<VisitProgress> visitProgressPage(Visitprogresspara visitprogresspara){
         forceSessionTenant(visitprogresspara);
+        // DS204: chan limit vuot tran 10000 / limit am / offset am
+        // (PageRequest.MAX_PAGE_SIZE) — Visitprogresspara khong qua
+        // PageRequest nen phai check rieng o day; truoc day limit client
+        // di thang vao LIMIT #{limit} o visitprogresspage (probe ds204:
+        // limit=100000 van 200; limit=-5 / offset=-1 chi bi DB tu choi
+        // -> 400 message chung). limit=0 giu hop le nhu PageRegistration.
+        if (!visitprogresspara.isValidLimit()) {
+            throw new IllegalArgumentException("Invalid limit: " + visitprogresspara.getLimit());
+        }
+        if (!visitprogresspara.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + visitprogresspara.getOffset());
+        }
         // DS200: values (tên/số điện thoại/thẻ) đi thẳng vào LIKE
         // concat(...) ở SchedulesDao.visitprogresspage/counts — "%" khớp
         // mọi bệnh nhân trong tenant. Escape %, _, \ trước khi đưa vào
@@ -97,6 +109,10 @@ public  class SchedulesService  {
         // limit=0 giu nguyen (UI workbench gui mac dinh, mapper LIMIT 0).
         if (!pageRegistration.isValidLimit()) {
             throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
+        }
+        // DS204: offset am cung lot toi MySQL nhu limit am — chan o day.
+        if (!pageRegistration.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + pageRegistration.getOffset());
         }
         // DS200: patientName đi thẳng vào LIKE concat('%', #{patientName}, '%')
         // ở SchedulesDao.listPages — "%" khớp mọi bệnh nhân trong tenant.

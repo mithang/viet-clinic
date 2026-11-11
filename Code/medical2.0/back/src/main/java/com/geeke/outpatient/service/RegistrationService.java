@@ -443,6 +443,10 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (!pageRegistration.isValidLimit()) {
             throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
         }
+        // DS204: offset am cung lot toi MySQL nhu limit am — chan o day.
+        if (!pageRegistration.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + pageRegistration.getOffset());
+        }
         // DS200: patientName đi thẳng vào LIKE concat('%', #{patientName}, '%')
         // ở RegistrationDao.countId/listPages — "%" khớp mọi bệnh nhân trong
         // tenant. Escape %, _, \ trước khi đưa vào DAO (mirror
@@ -559,6 +563,10 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (!pageRegistration.isValidLimit()) {
             throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
         }
+        // DS204: offset am cung lot toi MySQL nhu limit am — chan o day.
+        if (!pageRegistration.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + pageRegistration.getOffset());
+        }
         List<String> strings = this.dao.wxCount(pageRegistration);
         int total=strings.size();
         List<Registration> list = null;
@@ -586,6 +594,10 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // DS203: chan limit vuot tran 10000 (nhu listPages).
         if (!pageRegistration.isValidLimit()) {
             throw new IllegalArgumentException("Invalid limit: " + pageRegistration.getLimit());
+        }
+        // DS204: offset am cung lot toi MySQL nhu limit am — chan o day.
+        if (!pageRegistration.isValidOffset()) {
+            throw new IllegalArgumentException("Invalid offset: " + pageRegistration.getOffset());
         }
         List<String> strings = this.dao.wxDispensingCount(pageRegistration);
         int total=strings.size();
