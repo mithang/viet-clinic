@@ -52,8 +52,15 @@ public class QueryColumnViewService {
 		List<Parameter> Params = SearchParamsBuilder.create()
 				.eq("gen_table_id", tableId)
 				.notIn("name", Arrays.asList("del_flag"))
-				.ne("show_type", "'PassWordInput'")
-				.ne("show_type", "'MultiFileUpload'")
+				// DS197: như ColumnViewService.listColumn — `.ne` với giá
+				// trị có dấu nháy đơn không bao giờ khớp khi bind qua #{}
+				// (cột mật khẩu lọt vào điều kiện truy vấn), và SQL `<>`
+				// loại cả show_type NULL. Bao NULL: (IS NULL OR NOT IN ...).
+				.add(new Parameter(null, "(", null, "AND"))
+				.add(new Parameter("show_type", "is null", null, ""))
+				.or("show_type", "!=", "PassWordInput")
+				.ne("show_type", "MultiFileUpload")
+				.add(new Parameter(null, ")", null, ""))
 				.build();
 		
 		PageRequest pageRequest = new PageRequest(Params);

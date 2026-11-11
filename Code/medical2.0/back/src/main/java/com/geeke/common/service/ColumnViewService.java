@@ -75,8 +75,20 @@ public class ColumnViewService {
 		List<Parameter> Params = SearchParamsBuilder.create()
 				.eq("gen_table_id", tableId)
 				.notIn("name", Arrays.asList(strings))
-				.ne("show_type", "'PassWordInput'")
-				.ne("show_type", "'MultiFileUpload'")
+				// DS197: (1) `.ne("show_type", "'PassWordInput'")` mang giá
+				// trị có dấu nháy đơn, bind qua #{} nên so sánh != không
+				// bao giờ khớp — cột mật khẩu / file-upload lọt vào cấu
+				// hình cột (live: GET /common/column table 4004 trả
+				// loginPassword). Dùng giá trị không dấu nháy. (2) SQL
+				// `<>` loại cả NULL — cột chưa chọn display type
+				// (show_type NULL, lưu được vì không có @NotNull / rule
+				// bắt buộc) bị ẩn khỏi cấu hình thay vì hiện như cột
+				// thường. Bao NULL: (IS NULL OR NOT IN ...).
+				.add(new Parameter(null, "(", null, "AND"))
+				.add(new Parameter("show_type", "is null", null, ""))
+				.or("show_type", "!=", "PassWordInput")
+				.ne("show_type", "MultiFileUpload")
+				.add(new Parameter(null, ")", null, ""))
 				.build();
 
 		PageRequest pageRequest = new PageRequest(Params);
