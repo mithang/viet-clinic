@@ -67,8 +67,40 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         // examine .value -> varchar(64), type -> varchar(1), remarks ->
         // varchar(255). Gioi han theo cot DB; null-safe.
         checkSupplierStorageLengths(supplierStorage);
+        // DS211: chan so am truoc moi ghi (xem checkSupplierStorageNonNegative).
+        checkSupplierStorageNonNegative(supplierStorage);
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
+    }
+
+    // DS211: phieu nhap kho khong the nhap -N mat hang / -N tien.
+    // number/breed/allBid/allRetailPrice khong co @Min/@Positive va
+    // khong co guard o service: save/bulkInsert/bulkUpdate deu chap
+    // nhan so am va ghi thang vao DB (probe: number=-5, breed=-1,
+    // allRetailPrice=-200 qua save + bulkInsert + bulkUpdate deu 100
+    // va persist; allBid am thi cot `bigint unsigned` chan o DB nen
+    // van 400, nhung guard o day cho message ro rang thay vi loi DB).
+    // UI that chi gui so >= 0 (breed = do dai bang chi tiet, number /
+    // tong tien cong tu chi tiet). 0 van cho phep, null van cho phep
+    // (cac cot nullable, UI tinh mot so truong sau).
+    private static void checkSupplierStorageNonNegative(SupplierStorage entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getNumber() != null && entity.getNumber() < 0) {
+            throw new ServiceException("Số lượng nhập kho không được âm");
+        }
+        if (entity.getBreed() != null && entity.getBreed() < 0) {
+            throw new ServiceException("Số chủng loại nhập kho không được âm");
+        }
+        if (entity.getAllBid() != null
+                && entity.getAllBid().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng giá nhập không được âm");
+        }
+        if (entity.getAllRetailPrice() != null
+                && entity.getAllRetailPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng giá bán lẻ không được âm");
+        }
     }
 
     // DS149 B: xem ghi chu o save().
@@ -140,6 +172,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         for (SupplierStorage entity : entitys) {
             checkSupplierStorageRequired(entity);
             checkSupplierStorageLengths(entity);
+            checkSupplierStorageNonNegative(entity); // DS211
             forceSessionCompanyWhenBlank(entity);
         }
         return super.bulkInsert(entitys);
@@ -162,6 +195,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             verifyTenantOwnershipAgainstStoredRow(entity);
             checkSupplierStorageRequired(entity);
             checkSupplierStorageLengths(entity);
+            checkSupplierStorageNonNegative(entity); // DS211
         }
         return super.bulkUpdate(entitys);
     }
