@@ -22,8 +22,12 @@ public interface UserDao extends CrudDao<User> {
      */
     public int updateLoginPassword(@Param("id")String id, @Param("pass")String pass);
 
-    /** Lấy người dùng cần giám sát trạng thái đăng nhập */
-    List<User> loginUser();
+    /**
+     * Lấy người dùng cần giám sát trạng thái đăng nhập — DS207: chỉ
+     * lấy user của tenant đang đăng nhập (session tenant), không còn
+     * quét toàn bộ một cơ sở hard-code.
+     */
+    List<User> loginUser(@Param("tenantId") String tenantId);
 
     List<User> getListByLoginName(@Param("loginName") String loginName);
 

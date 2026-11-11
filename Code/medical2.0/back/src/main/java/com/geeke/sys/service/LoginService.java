@@ -75,10 +75,15 @@ public class LoginService extends CrudService<UserDao, User> {
 
     /**
      * Lấy người dùng cần giám sát trạng thái đăng nhập
+     * DS207: scope theo tenant của session (SessionUtils.getLoginTenantId).
+     * Trước đây UserDao.loginUser quét toàn bộ user của một cơ sở
+     * hard-code (parent_id='1639720158872479714'), session tenant A đọc
+     * được phone/email của user tenant B. Tenant null -> `= NULL` không
+     * khớp dòng nào (fail-closed, trả []).
      * @return
      */
     public List<User> loginUser() {
-        return userDao.loginUser();
+        return userDao.loginUser(SessionUtils.getLoginTenantId());
     }
 
     /**

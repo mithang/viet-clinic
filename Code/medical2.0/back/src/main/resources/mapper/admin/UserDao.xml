@@ -460,7 +460,7 @@
         select *, o.name AS "company.id"
         from sys_user a
                  left join org_company o on o.id = a.company_id
-        WHERE o.parent_id = '1639720158872479714'
+        WHERE a.company_id = #{tenantId}
     </select>
 
 
