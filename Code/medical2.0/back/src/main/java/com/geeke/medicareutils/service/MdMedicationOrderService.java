@@ -36,8 +36,9 @@ public interface MdMedicationOrderService {
     JSONObject feedbackPrescriptionReviewResult_Ld7102();
 
 
-    // [Ld7806]Thuốc trong đơn thuốc điện tửdanh mụcTruy vấn
-    Boolean queryPrescriptionDrugDirectory_Ld7806();
-
+    // DS191: queryPrescriptionDrugDirectory_Ld7806() DA XOA — dead code,
+    // 0 caller (khong controller/schedule/reflection nao goi; chi co
+    // trong interface + impl). INFO_LIST "Ld7806" trong MdRequestUtil
+    // KHONG phai method nay (danh sach ma API BHYT, dung live) nen giu.
 
 }

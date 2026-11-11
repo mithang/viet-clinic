@@ -86,6 +86,13 @@
     </select>
     <!--and if(company.is_institution=0, company.id = #{id}, (company.id = #{institution} or company.id = #{id}) )-->
 
+    <!-- DS191 SỬA: <select id="listPage"> KHÔI PHỤC — KHÔNG dead như
+         tưởng lúc đầu. MyBatis bind theo statement id, không theo chữ ký:
+         CrudDao.listPage(PageRequest) 1 đối số (thừa hưởng, dùng bởi
+         CrudService.listPage -> exportExcel) bind vào đúng statement này.
+         Chỉ overload Java 2 đối số listPage(pageRequest, type) + service
+         5 đối số mới là dead và vẫn giữ xóa. SQL giữ nguyên như cũ
+         (tenant filter nằm ở CrudService.ensureCompanyFilter, DS23). -->
     <select id="listPage" resultType="com.geeke.stock.entity.InventoryVerificationDetail">
         SELECT 
             <include refid="inventoryVerificationDetailColumns"/>

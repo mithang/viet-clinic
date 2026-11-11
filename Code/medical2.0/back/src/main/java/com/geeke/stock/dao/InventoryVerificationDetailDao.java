@@ -21,8 +21,13 @@ public interface InventoryVerificationDetailDao extends CrudDao<InventoryVerific
 
     void saveStuff(@Param("medicinalStorageControls") List<MedicinalStorageControl> medicinalStorageControls);
 
-    List<InventoryVerificationDetail> listPage(@Param("pageRequest") PageRequest pageRequest,@Param("type") String type);
-
+    // DS191: DAO listPage(pageRequest, type) DA XOA — dead, chi duoc goi
+    // boi overload listPage 5 doi so cua service (cung da xoa, 0 caller).
+    // Mapper <select id="listPage"> GIU LAI: MyBatis bind theo statement
+    // id nen no phuc vu CrudDao.listPage(PageRequest) 1 doi so (live,
+    // CrudService.listPage -> exportExcel); xoa no lam export 500
+    // (BindingException) khi count > 0. Chi giu listPages (DS23) + listPage
+    // generic nay.
     List<InventoryVerificationDetail> getByInfoId(String infoId);
 
     void deleteByInventoryVerificationId(String inventoryVerificationId);

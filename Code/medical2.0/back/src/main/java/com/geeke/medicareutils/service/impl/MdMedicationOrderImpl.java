@@ -882,26 +882,9 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         return result;
     }
 
-    /**
-     * @return Thuốc trong đơn thuốc điện tửThông tinTruy vấnsauLưu
-     */
-    @Override
-    public Boolean queryPrescriptionDrugDirectory_Ld7806() {
-        JSONObject data = new JSONObject();
-        data.put("fixmedinsCode", SessionUtils.getUserJson().getJSONObject("company").getString("fixmedinsCode"));
-        data.put("medListCodg","");
-        data.put("medListCodgs","");
-        data.put("begntime","");
-        data.put("endtime", "");
-        //Sau khi tra ra tất cả thì lưu vào cục bộDữ liệukho
-        data.put("pageSize", Long.MAX_VALUE);
-        data.put("pageNum", "1");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("data",data);
-        return presDrugService
-                .saveBatch(JSONArray.parseArray(mdRequestUtil.dzcfUpload("Ld7806",jsonObject).getString("list"), PresDrug.class));
-    }
-
-
+    // DS191: queryPrescriptionDrugDirectory_Ld7806() DA XOA — dead code,
+    // 0 caller (khong controller/schedule/reflection nao goi). Chi xoa
+    // method nay; presDrugService/mdRequestUtil/SessionUtils con dung
+    // o cac method Ld khac nen khong don import/field.
 
 }

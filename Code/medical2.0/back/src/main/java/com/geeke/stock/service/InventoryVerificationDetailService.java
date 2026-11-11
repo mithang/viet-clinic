@@ -86,18 +86,13 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
     @Autowired
     private MedicinalStockControlService medicinalStockControlService;
 
-    @Transactional
-    public Page<InventoryVerificationDetail> listPage(List<Parameter> parameters, int offset, int limit, String orderby,String type) {
-        PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
-        int total = this.dao.count(pageRequest);
-        List<InventoryVerificationDetail> list = null;
-        if (total > 0) {
-            list = this.dao.listPage(pageRequest,type);
-        }
-
-        return new Page<>((long)total, list);
-    }
-
+    // DS191: overload listPage 5 doi so (params, offset, limit, orderby,
+    // type) DA XOA — dead code, 0 caller (controller list/{type} goi
+    // listPages; exportExcel goi super.listPage 4 doi so cua CrudService).
+    // DAO listPage(pageRequest, type) 2 doi so cung da xoa theo. Mapper
+    // <select id="listPage"> GIU LAI (bind CrudDao.listPage 1 doi so,
+    // live qua exportExcel — xem comment trong XML). Chi giu listPages
+    // (DS23, tenant-scoped) + listPage generic cua CrudService.
     // DS23: listPages dung buildTenantPageRequest + dao.listPages (cau lenh
     // listPages co san, gioi han theo co so) thay cho PageRequest tran +
     // dao.listPage khong pham vi — truoc day bat ky session nao co quyen
