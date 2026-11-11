@@ -57,6 +57,12 @@ public  class SchedulesService  {
 
         public Page<VisitProgress> visitProgressPage(Visitprogresspara visitprogresspara){
         forceSessionTenant(visitprogresspara);
+        // DS200: values (tên/số điện thoại/thẻ) đi thẳng vào LIKE
+        // concat(...) ở SchedulesDao.visitprogresspage/counts — "%" khớp
+        // mọi bệnh nhân trong tenant. Escape %, _, \ trước khi đưa vào
+        // DAO (mirror DiagnosisService.toLikePattern); SQL kèm ESCAPE '\'.
+        visitprogresspara.setValues(
+                com.geeke.utils.StringUtils.escapeLike(visitprogresspara.getValues()));
         List<VisitProgress> list = schedulesDao.visitprogresspagecounts(visitprogresspara);
         int total=list.size();
             List<VisitProgress> list2 = null;
@@ -86,6 +92,12 @@ public  class SchedulesService  {
                 && !pageRegistration.isValidColumnName()) {
             throw new IllegalArgumentException("Invalid column name: " + columnName);
         }
+        // DS200: patientName đi thẳng vào LIKE concat('%', #{patientName}, '%')
+        // ở SchedulesDao.listPages — "%" khớp mọi bệnh nhân trong tenant.
+        // Escape %, _, \ trước khi đưa vào DAO (mirror
+        // DiagnosisService.toLikePattern); SQL kèm ESCAPE '\'.
+        pageRegistration.setPatientName(
+                com.geeke.utils.StringUtils.escapeLike(pageRegistration.getPatientName()));
         List<String> list = schedulesDao.listPages(pageRegistration);
         int total=list.size();
         return  list;

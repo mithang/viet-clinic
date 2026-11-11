@@ -16,6 +16,20 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     public static boolean isNullOrEmpty(Object obj) {
         return null == obj || "".equals(obj);
     }
+
+    /**
+     * DS200: escape ký tự đặc biệt của LIKE (%, _, \) để giá trị tìm kiếm
+     * không biến thành wildcard — gõ "%" phải tìm đúng tên chứa "%",
+     * không khớp mọi dòng. Mirror DiagnosisService.toLikePattern nhưng
+     * KHÔNG bọc % hai đầu (mapper tự concat '%', value, '%'). null giữ
+     * null, rỗng giữ rỗng. SQL phải kèm ESCAPE '\' (xem DiagnosisDao).
+     */
+    public static String escapeLike(String value) {
+        if (value == null) {
+            return null;
+        }
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+    }
     
     
 	/**

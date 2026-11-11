@@ -22,9 +22,9 @@
         where b.company_id=#{companyId}
 
         <if test="values!='' and values!=null">
-            and (a.name like concat('%',#{values},'%')
-            or a.phone like concat('%',#{values},'%')
-            or a.card like concat('%',#{values},'%'))
+            and (a.name like concat('%',#{values},'%') ESCAPE '\\'
+            or a.phone like concat('%',#{values},'%') ESCAPE '\\'
+            or a.card like concat('%',#{values},'%') ESCAPE '\\')
         </if>
         <if test="status!='' and status!=null">
             and b.status=#{status}
@@ -51,9 +51,9 @@
         where b.company_id=#{companyId}
 
         <if test="values!='' and values!=null">
-            and (a.name like concat('%',#{values},'%')
-            or a.phone like concat('%',#{values},'%')
-            or a.card like concat('%',#{values},'%'))
+            and (a.name like concat('%',#{values},'%') ESCAPE '\\'
+            or a.phone like concat('%',#{values},'%') ESCAPE '\\'
+            or a.card like concat('%',#{values},'%') ESCAPE '\\')
         </if>
         <if test="status!='' and status!=null">
             and b.status=#{status}
@@ -126,7 +126,7 @@
             AND ri.infuse_type=1
         </if>
         <if test="patientName!='' and patientName!=null">
-            AND (patientId.name like concat('%',#{patientName},'%') or patientId.health_card_no=#{patientCode})
+            AND (patientId.name like concat('%',#{patientName},'%') ESCAPE '\\' or patientId.health_card_no=#{patientCode})
         </if>
         <if test="overlook!='3'.toString() ">
             and a.overlook=#{overlook}

@@ -432,6 +432,11 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (!pageRegistration.isValidColumnName()) {
             throw new IllegalArgumentException("Invalid column name: " + pageRegistration.getColumnName());
         }
+        // DS200: patientName đi thẳng vào LIKE concat('%', #{patientName}, '%')
+        // ở RegistrationDao.countId/listPages — "%" khớp mọi bệnh nhân trong
+        // tenant. Escape %, _, \ trước khi đưa vào DAO (mirror
+        // DiagnosisService.toLikePattern); SQL kèm ESCAPE '\'.
+        pageRegistration.setPatientName(StringUtils.escapeLike(pageRegistration.getPatientName()));
         List<String> strings = this.dao.countId(pageRegistration);
         int total=strings.size();
         List<Registration> list = null;
