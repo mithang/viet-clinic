@@ -30,6 +30,14 @@ public interface InventoryVerificationDetailDao extends CrudDao<InventoryVerific
     // generic nay.
     List<InventoryVerificationDetail> getByInfoId(String infoId);
 
+    /** DS222: so dong chi tiet cua phieu chua co so lieu chenh lech
+     * (profit_and_loss IS NULL). getByInfoId loc `profit_and_loss <> 0`
+     * nen NULL bi loai lang (NULL <> 0 = NULL) va accomplish claim status
+     * 0->1 ma khong dieu chinh kho dong do; DS176 D3 guard NPE trong
+     * adjustStock khong toi duoc vi SQL filter. Dem truoc claim de
+     * fail-closed 400 thay vi dong phieu "hoan tat" khi con dong chua dem. */
+    int countUncountedByInfoId(String infoId);
+
     void deleteByInventoryVerificationId(String inventoryVerificationId);
 
     /** L1 (iteration 34): chi id + company + phieu cha, tranh mapping rong

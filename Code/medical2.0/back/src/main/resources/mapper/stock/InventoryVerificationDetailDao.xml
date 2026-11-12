@@ -167,6 +167,13 @@
     a.inventory_verification_id = #{infoId} and a.profit_and_loss &lt;&gt; 0
 </select>
 
+    <select id="countUncountedByInfoId" resultType="int">
+    SELECT COUNT(*)
+    FROM inventory_verification_detail a
+    WHERE
+    a.inventory_verification_id = #{infoId} and a.profit_and_loss IS NULL
+</select>
+
     <insert id="insert">
         INSERT INTO inventory_verification_detail(
             id,

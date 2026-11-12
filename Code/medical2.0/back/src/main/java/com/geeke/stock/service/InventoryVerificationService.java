@@ -293,6 +293,16 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         if (stored != null) {
             verifyTenantOwnership(stored);
         }
+        // DS222: getByInfoId loc `profit_and_loss <> 0` nen dong NULL bi
+        // loai lang (NULL <> 0 = NULL) va phieu claim 0->1 ma khong dieu
+        // chinh kho dong do; DS176 D3 guard NPE trong adjustStock khong
+        // toi duoc vi SQL filter. Chan TRUOC claim (status van '0',
+        // khong doi kho) thay vi de phieu "hoan tat" khi con dong chua
+        // dem; dong da dem profit=0 van skip hop le, phieu rong detail
+        // van nhu cu (count 0).
+        if (inventoryVerificationDetailService.countUncountedByInfoId(inventoryVerification.getId()) > 0) {
+            throw new ServiceException("Phiếu kiểm kê còn dòng chưa kiểm kê (chưa có số lượng chênh lệch)");
+        }
         // DS56: claim nguyen tu status '0'->'1' TRUOC moi dong tac kho (mau
         // DS55): UPDATE ... WHERE id AND status='0' nen dung 1 caller thang;
         // thua claim thi no-op -- chot lap (ke ca tuan tu) tra 200 nhu cu,

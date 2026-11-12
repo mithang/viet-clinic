@@ -596,6 +596,11 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         return list;
     }
 
+    /** DS222: xem ghi chu o InventoryVerificationDetailDao.countUncountedByInfoId. */
+    public int countUncountedByInfoId(String infoId) {
+        return this.dao.countUncountedByInfoId(infoId);
+    }
+
     @Transactional
     public void deleteByInventoryVerificationId(String inventoryVerificationId) {
         this.dao.deleteByInventoryVerificationId(inventoryVerificationId);
