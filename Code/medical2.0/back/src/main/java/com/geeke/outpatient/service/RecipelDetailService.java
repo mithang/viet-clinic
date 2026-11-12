@@ -173,6 +173,13 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
     // DS209: xem ghi chu o save(). Chi 4 truong chay vao tien/kho:
     // total, minTotal, unitPrice, allFee. Null-safe (null giu nguyen),
     // 0 giu nguyen; am -> ServiceException (400).
+    // DS218: them executions — tien do thuc hien tich luy. Duong viet
+    // la save/bulkInsert/bulkUpdate o day (insert/bulk mapper deu co cot
+    // executions) VA duong updateById qua CureManagementController.save
+    // (guard rieng o CureManagementService.save, co mien tru thu hoi).
+    // executions am lam sai schedule() (sum(executions)-sum(total)) va
+    // dem hoan thanh total==executions trong updateById. Null-safe,
+    // 0 giu nguyen; am -> ServiceException (400).
     private static void checkNonNegative(RecipelDetail entity) {
         if (entity == null) {
             return;
@@ -190,6 +197,10 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         if (entity.getAllFee() != null
                 && entity.getAllFee().compareTo(BigDecimal.ZERO) < 0) {
             throw new ServiceException("Tổng tiền không được âm");
+        }
+        if (entity.getExecutions() != null
+                && entity.getExecutions().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tiến độ thực hiện không được âm");
         }
     }
 

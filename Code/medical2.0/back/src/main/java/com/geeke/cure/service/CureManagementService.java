@@ -9,6 +9,7 @@ import com.geeke.outpatient.entity.RecipelInfo;
 import com.geeke.outpatient.service.RecipelDetailService;
 import com.geeke.outpatient.service.RecipelInfoService;
 import com.geeke.utils.StringUtils;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +67,22 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         }
         if (detail.getExecutions() == null) {
             throw new ServiceException("Tiến độ thực hiện không được để trống");
+        }
+        // DS218: detail.executions am — duong viet con lai cua ho "so am".
+        // Controller sau save() goi recipelDetailService.updateById(
+        // detail.executions, ...) ghi thang vao recipel_detail.executions
+        // (mapper set executions=#{executions}); DS209 chi chan
+        // save/bulkInsert/bulkUpdate cua RecipelDetail, khong chan
+        // updateById, va checkNonNegative cung khong gom executions.
+        // Chan o day (truoc moi ghi, ca create lan update, ca 2 nhanh
+        // stuffType) de khong de lai cure row ma khi bi chan sau do.
+        // Mien tru thu hoi (delType='1') nhu DS217: frontend revocation()
+        // copy executions da tru addNumber (co the am voi du lieu cu) vao
+        // recipelDetail.executions roi save (cureManagement index.vue:922,
+        // infusion:1329) — chan tuyet doi se vo thu hoi 35 dong seed cu.
+        if (detail.getExecutions().compareTo(BigDecimal.ZERO) < 0
+                && !"1".equals(entity.getDelType())) {
+            throw new ServiceException("Tiến độ thực hiện không được âm");
         }
         RecipelInfo info = detail.getRecipelInfo();
         if (info == null || StringUtils.isBlank(info.getId())) {
