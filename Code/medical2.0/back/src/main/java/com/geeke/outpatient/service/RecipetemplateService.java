@@ -482,7 +482,28 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
                     medicalRecord.getCompany().getId(), drugStuffId, r.getStuffType());
                 continue;
             }
-            String id = drugService.getId(r.getDrugStuffId().getName(),r.getCompany().getId());
+            // DS221: a detail row that passes the filter above can still
+            // NPE at the lookup below -- both 500 pre-fix:
+            // (1) detail.company == own company makes the filter return
+            // true without looking at drugStuffId, but a null drugStuffId
+            // NPEs at getName(); fail-closed 400 (a row with no drug is
+            // malformed, unlike an unknown drug name which the else
+            // branch below reports and skips).
+            // (2) detail.company == null passes the filter via the DAO
+            // drug-ownership check, but getCompany().getId() NPEs; the
+            // template's company IS the registration's company (:461),
+            // so fall back to it for the stock lookup (a present detail
+            // company is still honoured, preserving the foreign-company
+            // "not in stock" message path).
+            if (r.getDrugStuffId() == null
+                    || StringUtils.isBlank(r.getDrugStuffId().getName())) {
+                throw new ServiceException("Chi tiết mẫu thiếu thuốc");
+            }
+            Company detailCompany = r.getCompany() != null
+                    && StringUtils.isNotBlank(r.getCompany().getId())
+                    ? r.getCompany() : medicalRecord.getCompany();
+            String id = drugService.getId(r.getDrugStuffId().getName(),
+                    detailCompany.getId());
             if (id != null){
                 r.getDrugStuffId().setDrugStuffId(id);
                 validDetails.add(r);
