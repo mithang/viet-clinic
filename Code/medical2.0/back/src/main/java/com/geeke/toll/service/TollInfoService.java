@@ -984,9 +984,31 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * LưuXét nghiệm và kiểm traBản ghi(hợpvàXét nghiệm và Kiểm tra của chungTổng logic)
      */
     private void saveInspectionCheck(RecipelInfo recipelInfo, CostItem costItem, String type) {
+        // DS226: addInspectionCheck chay truoc guard registration NULL cua
+        // deduction (DS171 C) nen don dieu tri co registration NULL /
+        // registration thieu benh nhan van toi day va NPE 500 giua thu phi
+        // (probe P1 :988, P2 :1000, P3 :988). Fail-closed 400 truoc moi
+        // deref; giao dich rollback. Chi guard cac deref da probe chung
+        // minh NPE: gender NOT NULL o DB nen khong guard (khong fix mu),
+        // doctor mapper tra shell ten rong nen getDoctor().getName() khong
+        // NPE (probe P6 200 ca pre lan fixed).
+        if (recipelInfo.getRegistration() == null
+                || StringUtils.isBlank(recipelInfo.getRegistration().getId())) {
+            throw new ServiceException("Không tìm thấy lượt đăng ký khám");
+        }
         //Theođăng kýThông tinLấyThông tin bệnh nhân
         Registration registration = registrationService.get(recipelInfo.getRegistration().getId());
+        if (registration == null) {
+            throw new ServiceException("Không tìm thấy lượt đăng ký khám");
+        }
+        if (registration.getPatientId() == null
+                || StringUtils.isBlank(registration.getPatientId().getId())) {
+            throw new ServiceException("Lượt đăng ký khám thiếu bệnh nhân");
+        }
         Patient patient = patientService.get(registration.getPatientId().getId());
+        if (patient == null) {
+            throw new ServiceException("Không tìm thấy bệnh nhân của lượt đăng ký khám");
+        }
 
         InspectionCheck inspectionCheck = new InspectionCheck();
         inspectionCheck.setRecipelInfo(recipelInfo);
