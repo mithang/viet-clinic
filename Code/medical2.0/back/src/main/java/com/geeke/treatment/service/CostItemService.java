@@ -325,6 +325,18 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
 
     @Transactional
     public List<String> syncToClinic(List<CostItem> entitys) {
+        // DS232: nhu DrugService.syncToClinic — danh sach null / phan tu
+        // null truoc day NPE 500 o entitys.forEach (lambda :335); fail-closed
+        // 400 truoc moi doc, mau guard bulkInsert DS107. Danh sach rong
+        // van 200 [] (no-op, giu hanh vi cu).
+        if (entitys == null) {
+            throw new ServiceException("Danh sách hạng mục đồng bộ không được để trống");
+        }
+        for (CostItem costItem : entitys) {
+            if (costItem == null) {
+                throw new ServiceException("Hạng mục đồng bộ không được để trống");
+            }
+        }
         SessionUserDto userDto = SessionUtils.getUserDto();
         SessionUserDto.CompanyDTO companyDto = userDto.getCompany();
         Company company = BeanUtil.copyProperties(companyDto, Company.class);

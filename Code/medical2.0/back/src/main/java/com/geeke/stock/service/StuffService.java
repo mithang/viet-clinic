@@ -611,6 +611,18 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
 
     @Transactional(readOnly = false)
     public List<String> syncToClinic(List<Stuff> entitys) {
+        // DS232: nhu DrugService.syncToClinic — danh sach null / phan tu
+        // null truoc day NPE 500 o entitys.forEach (lambda :621); fail-closed
+        // 400 truoc moi doc, mau guard bulkInsert DS107. Danh sach rong
+        // van 200 [] (no-op, giu hanh vi cu).
+        if (entitys == null) {
+            throw new ServiceException("Danh sách vật tư đồng bộ không được để trống");
+        }
+        for (Stuff stuff : entitys) {
+            if (stuff == null) {
+                throw new ServiceException("Vật tư đồng bộ không được để trống");
+            }
+        }
         SessionUserDto userDto = SessionUtils.getUserDto();
         SessionUserDto.CompanyDTO companyDto = userDto.getCompany();
         Company company = BeanUtil.copyProperties(companyDto, Company.class);
