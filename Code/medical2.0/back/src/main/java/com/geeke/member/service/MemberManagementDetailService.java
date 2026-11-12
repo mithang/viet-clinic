@@ -35,6 +35,38 @@ public class MemberManagementDetailService extends CrudService<MemberManagementD
   @Autowired
   private MemberManagementService memberManagementService;
 
+    // DS219: chan so am (number/useNumber) truoc moi ghi -- 0/null van
+    // cho phep (cot nullable, useNumber mac dinh 0; NULL number = khong
+    // gioi han theo DS154 A4); am -> 400 fail-closed, mau DS209-DS218
+    // (ho "so am"). Duong ghi duy nhat: MemberManagementService.save
+    // (tao the) lap memberSet.memberItem tu payload, dat
+    // detail.number = item.getNumber() thang tu payload roi goi
+    // memberManagementDetailService.save() -- khong co controller rieng
+    // cho detail, khong caller bulkInsert/bulkUpdate nao. So am -5 da
+    // luu duoc live (probe pre P2/P7: row (-5, 0)) va lam hong the:
+    // getMember yeu cau total > used (total=-5 khong bao gio > 0) nen
+    // the khong bao gio dung duoc. Chan o day; ca lan tao the cung
+    // transaction nen 400 rollback luon the. updateUseNumber KHONG can
+    // sua: claim DS62/DS63 da chan useNumber am (probe pre P5: 400).
+    @Override
+    @Transactional(readOnly = false)
+    public MemberManagementDetail save(MemberManagementDetail entity) {
+        checkMemberManagementDetailNonNegative(entity);
+        return super.save(entity);
+    }
+
+    private static void checkMemberManagementDetailNonNegative(MemberManagementDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getNumber() != null && entity.getNumber() < 0) {
+            throw new com.geeke.common.service.ServiceException("Số lượng thẻ hội viên không được âm");
+        }
+        if (entity.getUseNumber() != null && entity.getUseNumber() < 0) {
+            throw new com.geeke.common.service.ServiceException("Số lần đã sử dụng không được âm");
+        }
+    }
+
     @Transactional(readOnly = false)
     public void updateUseNumber(MemberManagement memberManagement) {
 
