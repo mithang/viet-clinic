@@ -260,6 +260,35 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         if (storageEvt == null || storageEvt.getSupplierStockList() == null) {
             throw new ServiceException("Danh sách nhập kho không được để trống");
         }
+        // DS234: fail-closed 400 khi dong nhap kho co so luong / gia am.
+        // Truoc day saves() chi kiem tra null / ma khong ton tai (DS166),
+        // savesTo()/savesToAudit() chi chan number null (DS175), guard
+        // DS211 chi chan muc phieu (number/breed/allBid/allRetailPrice)
+        // nen batch hon hop (dong -5 + dong +10, tong phieu +5) lot qua
+        // va dong am luu that qua saveInternal, roi addStorageStock ghi
+        // dong ton kho am vao medicinal_storage_control (probe DS234
+        // P1/P4) ; bid / leastBid am khong bi chan o bat cu dau (P2/P3).
+        // Kiem tra HET cac dong TRUOC vong initStockTo ben duoi de batch
+        // bi tu choi khong de lai dong tong 0 nao; 0 van cho phep (quy
+        // uoc DS211). Duong vao nao cung qua saves() truoc moi ghi
+        // (inStorage, inStorageByCompany, auditHos) nen mot guard o day
+        // phu ca ba. number null van do savesTo/savesToAudit chan (DS175).
+        for (SupplierStock entity : storageEvt.getSupplierStockList()) {
+            if (entity == null) {
+                throw new ServiceException("Dòng nhập kho không được để trống");
+            }
+            if (entity.getNumber() != null && entity.getNumber() < 0) {
+                throw new ServiceException("Số lượng dòng nhập kho không được âm");
+            }
+            if (entity.getBid() != null
+                    && entity.getBid().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Giá nhập dòng nhập kho không được âm");
+            }
+            if (entity.getLeastBid() != null
+                    && entity.getLeastBid().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Giá nhập đơn vị nhỏ nhất không được âm");
+            }
+        }
         // Thêm mớiThuốc hoặc Vật tưTồn kho giờ, Nếu là khởi tạo tồn kho thì khởi tạo trước dữ liệu bản ghi kiểm soát tổng tồn kho
         for (SupplierStock entity : storageEvt.getSupplierStockList()) {
             if (entity == null) {
