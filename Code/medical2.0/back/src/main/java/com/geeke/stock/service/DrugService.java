@@ -105,6 +105,16 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // truong khong @Length nhu pinyinCode, va duong bulk* goi save
         // dau -- bulkInsert/bulkUpdate goi helper rieng duoi day).
         checkDrugLengths(drug);
+        // DS223: gia ban / gia ban le am truoc day ghi thang (probe pre
+        // 19/19: save/bulkInsert/bulkUpdate/save-update deu 100 va luu
+        // am that). Gia am chay vao ke don (MedicalRecordService
+        // getDrugStuffEvt lay drug.getPrice() lam don gia -> allFee ->
+        // tong phieu thu), lam giam tien phieu (money leak), cung ho
+        // DS215 (CostItem) / DS209-DS214. Khong co @Min/@Positive tren
+        // entity, cot decimal co dau + nullable nen DB chap nhan. Chan
+        // fail-closed 400 truoc moi ghi; null giu nguyen (cot nullable),
+        // 0 giu nguyen.
+        checkDrugNonNegative(drug);
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
         // buoc preparationUnit + pack (da @NotNull), nhung dosisUnit
@@ -207,6 +217,23 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDictLength(drug.getDays(), 255, "Số ngày Độ dài phải nằm trong khoảng 0 đến 255");
     }
 
+    // DS223: xem ghi chu o save(). Chi 2 truong gia chay vao tien ke
+    // don: price, retailPrice. Null-safe (null giu nguyen), 0 giu
+    // nguyen; am -> ServiceException (400).
+    private static void checkDrugNonNegative(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        if (drug.getPrice() != null
+                && drug.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Giá bán không được âm");
+        }
+        if (drug.getRetailPrice() != null
+                && drug.getRetailPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Giá bán lẻ không được âm");
+        }
+    }
+
     private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
         if (item != null) {
             checkLength(item.getValue(), max, message);
@@ -245,6 +272,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         for (Drug drug : entitys) {
             checkDrugRequired(drug);
             checkDrugLengths(drug);
+            checkDrugNonNegative(drug);
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
             if (this.repeat(drug) != 0) {
@@ -274,6 +302,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             verifyTenantOwnershipAgainstStoredRow(drug);
             checkDrugRequired(drug);
             checkDrugLengths(drug);
+            checkDrugNonNegative(drug);
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
             if (this.repeat(drug) != 0) {

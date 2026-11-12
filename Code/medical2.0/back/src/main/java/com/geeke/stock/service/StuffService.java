@@ -153,6 +153,14 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         // inventoryLimit/inventoryFloor/indate -> varchar(255), remarks
         // -> varchar(255). Gioi han theo cot DB; null-safe.
         checkStuffLengths(stuff);
+        // DS223: gia ban ra ngoai / gia ban le am truoc day ghi thang
+        // (probe pre 19/19: save/bulkInsert/bulkUpdate/save-update deu
+        // 100 va luu am that). Gia am chay vao ke don nhu gia thuoc
+        // (MedicalRecordService getDrugStuffEvt), lam giam tien phieu,
+        // cung ho DS215 (CostItem) / DS209-DS214. Khong co @Min/@Positive
+        // tren entity, cot decimal co dau + nullable nen DB chap nhan.
+        // Chan fail-closed 400 truoc moi ghi; null giu nguyen, 0 giu nguyen.
+        checkStuffNonNegative(stuff);
         Stuff stuffTemp = super.save(stuff);
 
         //LưuđộngTồn kho
@@ -202,6 +210,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 throw new ServiceException("Mã pinyin không được để trống");
             }
             checkStuffLengths(stuff);
+            checkStuffNonNegative(stuff);
         }
         return super.bulkInsert(entitys);
     }
@@ -225,6 +234,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 throw new ServiceException("Mã pinyin không được để trống");
             }
             checkStuffLengths(stuff);
+            checkStuffNonNegative(stuff);
         }
         return super.bulkUpdate(entitys);
     }
@@ -254,6 +264,23 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkDictLength(stuff.getNature(), 64, "Tính chất Độ dài phải nằm trong khoảng 0 đến 64");
         checkDictLength(stuff.getMinUnit(), 45, "Đơn vị nhỏ nhất Độ dài phải nằm trong khoảng 0 đến 45");
         checkDictLength(stuff.getPackUnit(), 45, "Đơn vị đóng gói Độ dài phải nằm trong khoảng 0 đến 45");
+    }
+
+    // DS223: xem ghi chu o save(). Chi 2 truong gia chay vao tien ke
+    // don: priceOutSell, retailPrice. Null-safe (null giu nguyen), 0 giu
+    // nguyen; am -> ServiceException (400).
+    private static void checkStuffNonNegative(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        if (stuff.getPriceOutSell() != null
+                && stuff.getPriceOutSell().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Giá bán ra ngoài không được âm");
+        }
+        if (stuff.getRetailPrice() != null
+                && stuff.getRetailPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Giá bán lẻ không được âm");
+        }
     }
 
     private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
