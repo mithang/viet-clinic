@@ -611,6 +611,25 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 || StringUtils.isBlank(tollInfo.getMedical().getId())) {
             throw new ServiceException("Ca bệnh của phiếu thu không được để trống");
         }
+        // DS228: chi chan medical null/id trong o tren chua du -- id MA
+        // van lot: medicalRecordService.get() tra null (CrudService.get
+        // khong nem khi dong khong ton tai), vong chinh ben duoi set
+        // medical null roi save() ghi phieu thu co medical_id NULL (cot
+        // nullable, save() khong kiem tra medical); id cua ban ghi DA
+        // XOA MEM cung lot vi MedicalRecordDao.get khong loc del_flag,
+        // phieu thu tro toi ban ghi da xoa. Ca hai deu la phieu mo coi
+        // khong truy vet duoc theo luot kham (getByMedicalId / bao cao
+        // ngay bo sot) trong khi don da lat is_pay 1 (probe
+        // tools/ds228-verify.py P1/P2). Chan 400 truoc moi claim/ghi,
+        // cung mau DS227 (registration ghost) va DS143 B (chi chap nhan
+        // dong chua xoa). Duong ban le tu tao medical record nen khong
+        // anh huong; duong hoan phi khong ghi medical tu payload nen
+        // khong can guard rieng o day.
+        MedicalRecord storedMedical = medicalRecordService.get(tollInfo.getMedical().getId());
+        if (storedMedical == null || !"0".equals(storedMedical.getDelFlag())) {
+            throw new ServiceException("Ca bệnh của phiếu thu không tồn tại: "
+                    + tollInfo.getMedical().getId());
+        }
         if (tollInfo.getAmountReceived() == null) {
             throw new ServiceException("Số tiền thực thu không được để trống");
         }
