@@ -48,6 +48,15 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     @Override
     @Transactional(readOnly = false)
     public SupplierStorage save(SupplierStorage supplierStorage) {
+        // DS230: ep company theo session khi trong truoc moi ghi (mau
+        // DS229 TollInfo.save). bulkInsert da goi
+        // forceSessionCompanyWhenBlank nhung save() khong: company
+        // {"id": ""} roi toi INSERT thi DB nem 500 (company_id BIGINT
+        // khong nhan ''), company {"id": null} thi ghi company_id NULL
+        // roi an khoi moi doc loc tenant (listByCode/listAll). Chi dien
+        // khi trong, verifyTenantOwnership o super.save van chan
+        // company la; dat truoc getCode vi getCode deref company id.
+        forceSessionCompanyWhenBlank(supplierStorage);
         // DS122 B: id khong ton tai truoc day roi qua super.save -> doUpdate
         // 0 dong roi van 200 silent no-op (lop DS94/DS99); chan truoc moi ghi.
         if (StringUtils.isNotBlank(supplierStorage.getId())
