@@ -209,6 +209,20 @@ public class HosDepartmentStorageController extends BaseController {
             if (hisItem.getSl() == null || hisItem.getPfj() == null) {
                 throw new ServiceException("Số lượng hoặc đơn giá của thuốc mã " + hisItem.getYpdm() + " bị trống");
             }
+            // DS233: sl/pfj am — DS25 chi chan null, DS211 chi chan o
+            // muc phieu (tong so luong / tong tien phieu). Lo am hon hop
+            // (mot dong am + mot dong duong, tong >= 0) luon qua DS211 va
+            // dong am ghi thang vao supplier_stock qua saveInternal (khong
+            // co guard nao o duoi); pfj am thi phieu khong dat allBid nen
+            // khong bi chan o dau ca (probe: dong -5 / pfj -10 deu 200 va
+            // persist, ton kho tong cung bi tru). Chan 400 truoc moi ghi,
+            // ke ten ma thuoc; 0 van cho phep (quy uoc DS211).
+            if (hisItem.getSl() < 0) {
+                throw new ServiceException("Số lượng của thuốc mã " + hisItem.getYpdm() + " không được âm");
+            }
+            if (hisItem.getPfj().compareTo(BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Đơn giá của thuốc mã " + hisItem.getYpdm() + " không được âm");
+            }
             if (factor > 1 && (drug.getPreparation() == null || !drug.getPreparation().contains("."))) {
                 throw new ServiceException("Quy cách của thuốc mã " + hisItem.getYpdm() + " không có dạng số thập phân nên không đổi được đơn vị chuẩn");
             }
@@ -237,7 +251,17 @@ public class HosDepartmentStorageController extends BaseController {
             //Kiểm tra số lượng theo bản viện là đơn vị nhỏ nhất hay đơn vị chuẩn
             if(factor > 1){
                 //tiêu chuẩnĐơn vị
-                supplierStock.setNumber(hisDrugsStorages.get(i).getSl() * packSize);
+                // DS233: sl * packSize la phep nhan int — sl lon tran am
+                // tham (probe: sl=100000000 x packSize 100 = 10^10 tran
+                // thanh 1410065408, ghi sai so luong ton kho). Dung
+                // multiplyExact de tran thanh 400 thay vi so lieu sai.
+                int lineNumber;
+                try {
+                    lineNumber = Math.multiplyExact(hisDrugsStorages.get(i).getSl(), packSize);
+                } catch (ArithmeticException e) {
+                    throw new ServiceException("Số lượng của thuốc mã " + hisItem.getYpdm() + " quá lớn sau khi đổi đơn vị");
+                }
+                supplierStock.setNumber(lineNumber);
                 supplierStock.setLeastBid(hisDrugsStorages.get(i).getPfj().divide(new BigDecimal(factor),2,BigDecimal.ROUND_HALF_UP));
             }else {
                 supplierStock.setNumber(hisDrugsStorages.get(i).getSl());
@@ -268,7 +292,14 @@ public class HosDepartmentStorageController extends BaseController {
             supplierStockList.add(supplierStock);
             //Số hóa đơn
             supplierStorage.setInvoiceNumber(hisDrugsStorages.get(i).getFPh());
-            totalNumber += supplierStock.getNumber();
+            // DS233: tong so luong cung co the tran int khi cong nhieu
+            // dong lon (tran am tham thanh tong am hoac tong sai, DS211
+            // chi bat duoc truong hop tran ve am).
+            try {
+                totalNumber = Math.addExact(totalNumber, supplierStock.getNumber());
+            } catch (ArithmeticException e) {
+                throw new ServiceException("Tổng số lượng nhập kho quá lớn");
+            }
         }
         // DS27: chi ghi phieu khi con dong moi — neu tat ca cac dong deu
         // da nhap truoc do thi khong tao phieu rong (savesTo se insert mot
