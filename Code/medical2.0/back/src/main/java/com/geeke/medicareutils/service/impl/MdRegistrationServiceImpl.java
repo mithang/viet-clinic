@@ -5,6 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.geeke.admin.entity.User;
+import com.geeke.admin.entity.UserExt;
+import com.geeke.admin.service.UserExtService;
+import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.domain.respo.MdFeeDetail;
 import com.geeke.medicareutils.service.MdRegistrationService;
 import com.geeke.medicareutils.util.YbWebApiUtil;
@@ -15,6 +18,7 @@ import com.geeke.outpatient.entity.Registration;
 import com.geeke.outpatient.service.MedicalRecordService;
 import com.geeke.outpatient.service.PatientMdDataService;
 import com.geeke.toll.service.TollInfoService;
+import com.geeke.utils.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -40,14 +44,18 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
 
     private final MedicalRecordService medicalRecordService;
 
+    private final UserExtService userExtService;
+
     public MdRegistrationServiceImpl(YbWebApiUtil mdRequestUtil,
                                      PatientMdDataService patientMdDataService,
                                      @Lazy TollInfoService tollInfoService,
-                                     @Lazy MedicalRecordService medicalRecordService) {
+                                     @Lazy MedicalRecordService medicalRecordService,
+                                     UserExtService userExtService) {
         this.mdRequestUtil = mdRequestUtil;
         this.patientMdDataService = patientMdDataService;
         this.tollInfoService = tollInfoService;
         this.medicalRecordService = medicalRecordService;
+        this.userExtService = userExtService;
     }
 
 
@@ -115,15 +123,45 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         JSONObject data = new JSONObject();
         //Chẩn đoánnhiều dòngDữ liệu
         JSONArray jsonArray = new JSONArray();
+        // DS225: deref xep chong -- truoc day bat ky thieu nao cung NPE
+        // 500 (patientMdData null, medType null -- mapper khong load,
+        // xem RegistrationDao.xml, record rong, doctor.getUserExt()
+        // luon null vi RegistrationDao khong join sys_user_ext).
+        // Fail-closed 400 truoc moi doc; ma hanh nghe load qua
+        // UserExtService khi entity chua co. Cac guard chay truoc
+        // goi web service 8101 nen middleware chet khong anh huong.
+        if (registration == null || registration.getPatientId() == null
+                || StringUtils.isBlank(registration.getPatientId().getId())) {
+            throw new ServiceException("Lượt khám chưa có bệnh nhân để tải lên BHYT");
+        }
         //Thông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        if (patientMdData == null || StringUtils.isBlank(patientMdData.getPsnNo())) {
+            throw new ServiceException("Bệnh nhân chưa có thông tin BHYT (mã số BHXH)");
+        }
         //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
+        if (clinicOffice == null || StringUtils.isBlank(clinicOffice.getId())) {
+            throw new ServiceException("Lượt khám chưa có khoa/phòng để tải lên BHYT");
+        }
         //Thông tin bác sĩ của bệnh nhân
         User doctor = registration.getDoctor();
+        if (doctor == null || StringUtils.isBlank(doctor.getId())) {
+            throw new ServiceException("Lượt khám chưa có bác sĩ để tải lên BHYT");
+        }
+        UserExt doctorExt = resolveDoctorUserExt(doctor);
+        if (doctorExt == null || StringUtils.isBlank(doctorExt.getPracPsnCode())) {
+            throw new ServiceException("Bác sĩ chưa có mã hành nghề BHYT (prac_psn_code)");
+        }
         //Thông tin bệnh án của nhân viên
         List<MedicalRecord> record = medicalRecordService.getByOrder(registration.getId());
+        if (record == null || record.isEmpty() || record.get(0) == null) {
+            throw new ServiceException("Lượt khám chưa có bệnh án để tải lên BHYT");
+        }
         MedicalRecord medicalRecord = record.get(0);
+        if (registration.getMedType() == null || StringUtils.isBlank(registration.getMedType().getValue())) {
+            throw new ServiceException("Lượt khám chưa có loại hình y tế (med_type) để tải lên BHYT");
+        }
         //khám bệnhTham số
         data.put("mdtrt_id", registration.getMdtrtId());
         data.put("psn_no", patientMdData.getPsnNo());
@@ -157,8 +195,8 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         }
         object.put("diag_srt_no", "1");
         object.put("diag_dept", clinicOffice.getName());
-        object.put("dise_dor_no", doctor.getUserExt().getPracPsnCode());
-        object.put("dise_dor_name", doctor.getUserExt().getName());
+        object.put("dise_dor_no", doctorExt.getPracPsnCode());
+        object.put("dise_dor_name", doctorExt.getName());
         object.put("diag_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(medicalRecord.getCreateDate()));
         //TODO Mặc địnhHiệu lực 1, 0không hợp lệ
         object.put("vali_flag", "1");
@@ -167,6 +205,22 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         jsonObject.put("mdtrtinfo", data);
         jsonObject.put("diseinfo", jsonArray);
         return mdRequestUtil.getMedicareData("2203", jsonObject.toJSONString());
+    }
+
+    /**
+     * DS225: UserExt cua bac si. RegistrationDao khong join
+     * sys_user_ext nen doctor.getUserExt() luon null -- load qua
+     * UserExtService (mau UserService:81, tenant-scoped); van khong
+     * co thi tra null de caller fail-closed 400 thay vi NPE 500.
+     */
+    private UserExt resolveDoctorUserExt(User doctor) {
+        if (doctor == null) {
+            return null;
+        }
+        if (doctor.getUserExt() != null) {
+            return doctor.getUserExt();
+        }
+        return userExtService.getExtByUserId(doctor.getId());
     }
 
     /**

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.geeke.admin.entity.User;
+import com.geeke.admin.entity.UserExt;
+import com.geeke.admin.service.UserExtService;
 import com.geeke.common.controller.SearchParams;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.data.Page;
@@ -135,6 +137,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     private final MdPsnDataService mdPsnDataService;
 
     private final TollAuditLogDao tollAuditLogDao;
+
+    private final UserExtService userExtService;
 
     /**
      * Sẽ  SearchParams Chuyển đổi thành PageRequest
@@ -699,10 +703,52 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * xây dựngBHYTThu phíDữ liệuvàTải lên
      */
     private Registration buildAndUploadMedicareData(TollInfo tollInfo, TollInfo tollSave, RecipelInfoEvt recipelInfoEvt, JSONArray array) {
+        // DS225: deref xep chong -- truoc day bat ky thieu nao cung NPE
+        // 500 giua thu phi (probe tools/ds225-verify.py, log
+        // backend-ds225.log: :702 medical/registration payload trong,
+        // :703 registration khong ton tai, :709 benh nhan chua co
+        // patient_md_data, :719 recipelDetailEvtList rong, :723 detail
+        // chua co days, :727 doctor.getUserExt() -- RegistrationDao
+        // khong join sys_user_ext nen userExt LUON null, ca voi bac si
+        // da co dong sys_user_ext). Fail-closed 400 truoc moi doc;
+        // ma hanh nghe load qua UserExtService khi entity chua co
+        // (bac si co dong sys_user_ext thi upload duoc, chi thieu that
+        // moi 400). Chua goi web service BHYT o day nen 8101 chet
+        // khong anh huong cac guard nay.
+        if (tollInfo.getMedical() == null || tollInfo.getMedical().getRegistration() == null
+                || StringUtils.isBlank(tollInfo.getMedical().getRegistration().getId())) {
+            throw new ServiceException("Lượt khám của phiếu thu chưa có thông tin đăng ký để tải lên BHYT");
+        }
         Registration registration = registrationService.get(tollInfo.getMedical().getRegistration().getId());
+        if (registration == null) {
+            throw new ServiceException("Lượt khám của phiếu thu không tồn tại để tải lên BHYT");
+        }
+        if (registration.getPatientId() == null || StringUtils.isBlank(registration.getPatientId().getId())) {
+            throw new ServiceException("Lượt khám chưa có bệnh nhân để tải lên BHYT");
+        }
         PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        if (patientMdData == null || StringUtils.isBlank(patientMdData.getPsnNo())) {
+            throw new ServiceException("Bệnh nhân chưa có thông tin BHYT (mã số BHXH)");
+        }
+        if (recipelInfoEvt.getRecipelDetailEvtList() == null || recipelInfoEvt.getRecipelDetailEvtList().isEmpty()) {
+            throw new ServiceException("Đơn thuốc chưa có chi tiết để tải lên BHYT");
+        }
+        RecipelDetail firstDetail = recipelInfoEvt.getRecipelDetailEvtList().get(0);
+        if (firstDetail == null || firstDetail.getDays() == null || StringUtils.isBlank(firstDetail.getDays().getValue())) {
+            throw new ServiceException("Chi tiết đơn thuốc chưa có số ngày dùng để tải lên BHYT");
+        }
         ClinicOffice clinicOffice = registration.getClinicOffice();
+        if (clinicOffice == null || StringUtils.isBlank(clinicOffice.getId())) {
+            throw new ServiceException("Lượt khám chưa có khoa/phòng để tải lên BHYT");
+        }
         User doctor = registration.getDoctor();
+        if (doctor == null || StringUtils.isBlank(doctor.getId())) {
+            throw new ServiceException("Lượt khám chưa có bác sĩ để tải lên BHYT");
+        }
+        String pracPsnCode = resolveDoctorPracCode(doctor);
+        if (StringUtils.isBlank(pracPsnCode)) {
+            throw new ServiceException("Bác sĩ chưa có mã hành nghề BHYT (prac_psn_code)");
+        }
         JSONObject data = new JSONObject();
         data.put("feedetl_sn", tollSave.getId());
         data.put("mdtrt_id", registration.getMdtrtId());
@@ -716,19 +762,19 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         data.put("med_list_codg", "");
         data.put("medins_list_codg", "");
         data.put("det_item_fee_sumamt", recipelInfoEvt.getRecipelInfo().getFee());
-        data.put("cnt", recipelInfoEvt.getRecipelDetailEvtList().get(0).getTotal());
-        data.put("pric", recipelInfoEvt.getRecipelDetailEvtList().get(0).getUnitPrice());
+        data.put("cnt", firstDetail.getTotal());
+        data.put("pric", firstDetail.getUnitPrice());
         data.put("sin_dos_dscr", "");
         data.put("used_frqu_dscr", "");
-        data.put("prd_days", recipelInfoEvt.getRecipelDetailEvtList().get(0).getDays().getValue());
+        data.put("prd_days", firstDetail.getDays().getValue());
         data.put("medc_way_dscr", "");
         data.put("bilg_dept_codg", clinicOffice.getCode());
         data.put("bilg_dept_name", clinicOffice.getName());
-        data.put("bilg_dr_codg", doctor.getUserExt().getPracPsnCode());
+        data.put("bilg_dr_codg", pracPsnCode);
         data.put("bilg_dr_name", doctor.getName());
         data.put("acord_dept_codg", clinicOffice.getCode());
         data.put("acord_dept_name", clinicOffice.getName());
-        data.put("orders_dr_code", doctor.getUserExt().getPracPsnCode());
+        data.put("orders_dr_code", pracPsnCode);
         data.put("orders_dr_name", doctor.getName());
         data.put("hosp_appr_flag", "1");
         data.put("tcmdrug_used_way", "");
@@ -740,6 +786,23 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         data.put("expContent", "");
         array.add(data);
         return registration;
+    }
+
+    /**
+     * DS225: ma hanh nghe BHYT cua bac si. RegistrationDao khong join
+     * sys_user_ext nen doctor.getUserExt() luon null -- load qua
+     * UserExtService (mau UserService:81, tenant-scoped); van khong
+     * co thi tra null de caller fail-closed 400 thay vi NPE 500.
+     */
+    private String resolveDoctorPracCode(User doctor) {
+        if (doctor == null) {
+            return null;
+        }
+        if (doctor.getUserExt() != null && StringUtils.isNotBlank(doctor.getUserExt().getPracPsnCode())) {
+            return doctor.getUserExt().getPracPsnCode();
+        }
+        UserExt userExt = userExtService.getExtByUserId(doctor.getId());
+        return userExt == null ? null : userExt.getPracPsnCode();
     }
 
     /**

@@ -70,7 +70,7 @@
         a.treatment_date AS "treatmentDate",
         a.morbidity_time AS "morbidityTime",
         a.mdtrt_id as "mdtrtId",
-        a.med_type as "medType",
+        a.med_type as "medType.value",
         a.setl_id as "setlId",
         a.card_type as "cardType",
         a.is_pre as "isPre",
