@@ -54,10 +54,37 @@ public class CostItemPackageService extends CrudService<CostItemPackageDao, Cost
      * Khong doi ngu nghia xoa: deleteById van xoa ca goi (thay the package),
      * guard chi chan goi la.
      */
+    // DS237: so luong hang muc con am truoc day ghi thang xuong DB qua
+    // POST /treatment/costItem/saveDto (cot quantity int signed, khong
+    // guard o bat ky dau; DS215 chi chan gia cua PARENT CostItem, khong
+    // chan quantity cua dong package). Frontend chan :min="0"
+    // (costItemForm.vue:296) va tinh tong goi = SUM(quantity *
+    // salePrice/costPrice) (:521-524, :576-578) nen quantity am luu
+    // that lam giam tong tien goi khi mo lai / tinh phi (money leak,
+    // cung ho "so am" DS209-DS215/DS223/DS236, be mat moi). Chan
+    // fail-closed 400 o service: 0 van cho phep (quy uoc DS219).
+    // Goi o validateSaveDtoPackages() TRUOC parent save (nguyen tac
+    // ITER64: mot dong la -> 400, khong ghi/xoa gi) VA o save()
+    // (phong thu sau cho moi caller khac).
+    private static void checkCostItemPackageQuantity(
+            List<CostItemPackage> packages) {
+        if (packages == null) {
+            return;
+        }
+        for (CostItemPackage pkg : packages) {
+            if (pkg != null && pkg.getQuantity() < 0) {
+                throw new ServiceException(
+                        "Số lượng hạng mục con không được âm");
+            }
+        }
+    }
+
     public void validateSaveDtoPackages(List<CostItemPackage> packages) {
         if (packages == null || packages.isEmpty()) {
             return;
         }
+        // DS237: chan quantity am truoc moi ghi (ke ca parent save).
+        checkCostItemPackageQuantity(packages);
         String tenantId = SessionUtils.getLoginTenantId();
         if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
             return;
@@ -109,6 +136,9 @@ public class CostItemPackageService extends CrudService<CostItemPackageDao, Cost
 
     @Transactional(readOnly = false)
     public void save(List<CostItemPackage> costItemPackages, String costId) {
+        // DS237: chan quantity am (phong thu sau; duong /saveDto da duoc
+        // validateSaveDtoPackages() chan truoc parent save).
+        checkCostItemPackageQuantity(costItemPackages);
         for (CostItemPackage costItemPackage : costItemPackages) {
             String id = costItemPackage.getId();
             costItemPackage.setCostItemId(id);
