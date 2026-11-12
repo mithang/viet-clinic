@@ -180,9 +180,25 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
     // executions am lam sai schedule() (sum(executions)-sum(total)) va
     // dem hoan thanh total==executions trong updateById. Null-safe,
     // 0 giu nguyen; am -> ServiceException (400).
+    // DS239: them singleDosage + actualPayment — 2 truong so con lai
+    // cua entity chua duoc chan. singleDosage (lieu dung moi lan) am
+    // vo nghia lam sang va chay vao phieu in (DataBean useText) +
+    // payload BHYT bat buoc sinDoscnt (MdMedicationOrderImpl:308);
+    // ban mau RecipetemplateDetailService (DS214) DA chan singleDosage
+    // trong khi don that o day thi chua. actualPayment (thuc thu) am
+    // qua save truc tiep lam sai doi soat thu phi; cac caller noi bo
+    // chi set 0.00 (MedicalRecordService) hoac gia tri khong am qua
+    // updateActualPayment DAO (TollInfoService) nen chan o day khong
+    // vo luong dang chay. Mapper ghi ca 2 cot tren insert/update/
+    // bulkInsert/bulkUpdate; updateById chi ghi executions +
+    // infuse_type nen khong cham 2 truong nay.
     private static void checkNonNegative(RecipelDetail entity) {
         if (entity == null) {
             return;
+        }
+        if (entity.getSingleDosage() != null
+                && entity.getSingleDosage().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Liều dùng mỗi lần không được âm");
         }
         if (entity.getTotal() != null && entity.getTotal() < 0) {
             throw new ServiceException("Tổng số lượng không được âm");
@@ -197,6 +213,10 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         if (entity.getAllFee() != null
                 && entity.getAllFee().compareTo(BigDecimal.ZERO) < 0) {
             throw new ServiceException("Tổng tiền không được âm");
+        }
+        if (entity.getActualPayment() != null
+                && entity.getActualPayment().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Thực thu không được âm");
         }
         if (entity.getExecutions() != null
                 && entity.getExecutions().compareTo(BigDecimal.ZERO) < 0) {
@@ -267,6 +287,10 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             // checkRecipelDetailLengths (hien chua co caller — guard
             // phong thu cho caller tuong lai).
             checkRecipelDetailLengths(recipelDetail);
+            // DS239: cung goi checkNonNegative truoc super.save — neu
+            // khong, duong nay bypass guard DS209/DS218/DS239 cua save()
+            // (hien chua co caller, phong thu cho caller tuong lai).
+            checkNonNegative(recipelDetail);
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
