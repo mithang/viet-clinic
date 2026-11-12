@@ -160,6 +160,35 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    /**
+     * DS238: phi dang ky / thuc thu am khong co nghia vat ly (so tien
+     * khong the am) nhung mapper ghi thang ca 2 cot o insert/update/
+     * bulkInsert/bulkUpdate CASE, entity BigDecimal khong @Min, service
+     * chi co guard do dai (DS146) + subject (DS146) + ghost (DS163) --
+     * save/bulkInsert/bulkUpdate deu chap nhan phi am 200 + persist
+     * (probe pre: fee -5, pract -7, ca hai -3/-4, bulk -9, lat 100->-7,
+     * 200->-3). Frontend khong :min, doSave() copy phi sang phieu thu
+     * (amountReceivable/amountReceived) nen phi am rot xuong phieu thu
+     * (ho DS209-DS215/DS223/DS236). Guard o day dung chung cho ca 3
+     * duong truoc moi ghi (truoc assignQueueNumber de khong dot so thu
+     * tu cua luot bi tu choi, nhu DS146 A). Chi chan < 0: 0/null giu
+     * nguyen (quy uoc DS219); chi xet gia tri gui len, khong xet dong
+     * da luu -- update chi doi trang thai (fee null) khong bi anh huong.
+     */
+    private static void checkRegistrationFeesNonNegative(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getRegistrationFee() != null
+                && entity.getRegistrationFee().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Phí đăng ký khám không được nhỏ hơn 0");
+        }
+        if (entity.getPracticleRegistrationFee() != null
+                && entity.getPracticleRegistrationFee().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Phí đăng ký khám thực tế thanh toán không được nhỏ hơn 0");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
@@ -167,6 +196,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationLengths(entity);
         // DS146 B: chan hang rac {} o tang save (bulkInsert mirror ben duoi).
         checkRegistrationHasSubject(entity);
+        // DS238: chan phi dang ky / thuc thu am truoc khi gan so thu tu.
+        checkRegistrationFeesNonNegative(entity);
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
@@ -210,6 +241,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationLengths(entity);
             // DS146 B: chan hang rac {} qua bulk nhu save().
             checkRegistrationHasSubject(entity);
+            // DS238: bulk cung chan phi am nhu save().
+            checkRegistrationFeesNonNegative(entity);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -236,6 +269,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             }
             // DS146 A: bulk cung chan do dai nhu save().
             checkRegistrationLengths(entity);
+            // DS238: bulkUpdate cung chan phi am nhu save().
+            checkRegistrationFeesNonNegative(entity);
         }
         return super.bulkUpdate(entitys);
     }
