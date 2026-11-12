@@ -3,6 +3,7 @@ package com.geeke.stock.service;
 import com.geeke.admin.entity.User;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
+import com.geeke.org.entity.Company;
 import com.geeke.stock.dao.SupplierOutboundDao;
 import com.geeke.stock.entity.*;
 import com.geeke.utils.SessionUtils;
@@ -74,6 +75,18 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         if (outboundEvt == null || outboundEvt.getSupplierOutbound() == null) {
             throw new ServiceException("Phiếu xuất kho không được để trống");
         }
+        // DS231: ep company theo session khi trong truoc moi ghi (mau
+        // DS229 TollInfo.save / DS230 SupplierStorage.save). saveEvt
+        // khong @Valid nen company thieu han van toi day: getCode deref
+        // company id NPE 500 (P0), {"id": ""} thi INSERT/UPDATE nem 500
+        // (company_id BIGINT khong nhan ''), {"id": null} thi ghi
+        // company_id NULL roi an khoi moi doc loc tenant (P2/P4); duong
+        // sua (id co san) thi update mapper ghi company_id = 0 khi
+        // company null, roi detail save get() nem 400 "Khong co quyen
+        // truy cap tenant khac" hieu lam va rollback mat sua (P5). Chi
+        // dien khi trong, verifyTenantOwnership o super.save van chan
+        // company la; dat truoc getCode vi getCode deref company id.
+        forceSessionCompanyWhenBlank(outboundEvt.getSupplierOutbound());
         if(ObjectUtils.isEmpty(outboundEvt.getSupplierOutbound())==false && ObjectUtils.isEmpty(outboundEvt.getSupplierOutbound().getId())==false) {
             SupplierOutbound old = this.get(outboundEvt.getSupplierOutbound().getId());
             if (old == null)
@@ -107,6 +120,23 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         supplierOutboundDetailService.save(supplierOutboundTemp.getId(), outboundEvt.getSupplierOutboundDetailList());
 
         return supplierOutboundTemp;
+    }
+
+    // DS231: chi dien company theo session khi trong (mau DS230
+    // SupplierStorageService). verifyTenantOwnership o super.save van
+    // chan company la; company dung tenant cua minh khong doi.
+    private void forceSessionCompanyWhenBlank(SupplierOutbound entity) {
+        if (entity.getCompany() != null
+                && StringUtils.isNotBlank(entity.getCompany().getId())) {
+            return;
+        }
+        String tenantId = SessionUtils.getLoginTenantId();
+        if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
+            return;
+        }
+        Company company = new Company();
+        company.setId(tenantId);
+        entity.setCompany(company);
     }
 
     /**
