@@ -169,6 +169,13 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         // paymentType/amountStatus/tollType viet thang vao varchar(64),
         // @Valid khong guard gia tri DictItem).
         checkTollInfoLengths(tollInfo);
+        // DS224: chan so tien am truoc moi ghi (amountReceivable /
+        // amountReceived khong @Min/@Positive, cot decimal co dau +
+        // nullable nen DB chap nhan; phieu hoan dung so duong goc +
+        // amountStatus REFUNDED + returnType=1 nen guard nay khong pha
+        // luong hoan; amountDiscounted KHONG guard vi tra thua
+        // (received > receivable) hop le cho discount am).
+        checkTollInfoNonNegative(tollInfo);
         // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
@@ -219,6 +226,26 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         }
     }
 
+    /**
+     * DS224: so tien phieu thu khong duoc am. Null-safe: null van qua
+     * (cot nullable; cho nao bat buoc da co guard null rieng, DS158).
+     * Chi amountReceivable / amountReceived; amountDiscounted co the am
+     * hop le khi tra thua (received > receivable).
+     */
+    private static void checkTollInfoNonNegative(TollInfo tollInfo) {
+        if (tollInfo == null) {
+            return;
+        }
+        if (tollInfo.getAmountReceivable() != null
+                && tollInfo.getAmountReceivable().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Số tiền phải thu không được âm");
+        }
+        if (tollInfo.getAmountReceived() != null
+                && tollInfo.getAmountReceived().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Số tiền thực thu không được âm");
+        }
+    }
+
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
@@ -262,6 +289,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         for (TollInfo tollInfo : entitys) {
             checkTollInfoRequired(tollInfo);
             checkTollInfoLengths(tollInfo);
+            checkTollInfoNonNegative(tollInfo);
             forceSessionCompanyWhenBlank(tollInfo);
         }
         return super.bulkInsert(entitys);
@@ -284,6 +312,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             verifyTenantOwnershipAgainstStoredRow(tollInfo);
             checkTollInfoRequired(tollInfo);
             checkTollInfoLengths(tollInfo);
+            checkTollInfoNonNegative(tollInfo);
         }
         return super.bulkUpdate(entitys);
     }
@@ -356,6 +385,11 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         if (tollInfo.getDiscount() == null) {
             throw new ServiceException("Chiết khấu không được để trống");
         }
+        // DS224: chan so tien am ngay o cua saveToll, truoc moi claim/ghi
+        // (luong thuong ghi lai qua save() ben trong nen cung duoc guard,
+        // nhung luc do claimPaid da lat don sang da thu; chan o day thi
+        // don giu nguyen is_pay=0, khong dong nao duoc ghi).
+        checkTollInfoNonNegative(tollInfo);
         List<RecipelInfoEvt> recipelInfoEvts = tollEvt.getRecipelInfos();
         TollInfo tollSave = null;
         Registration registration = null;
@@ -566,6 +600,12 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             }
             if (stored.getFee() == null) {
                 throw new ServiceException("Phí đơn thuốc không được để trống: "
+                        + stored.getId());
+            }
+            // DS224: phi am chay vao amountReceivable am o vong chinh
+            // (receivable = fee); chan truoc claim nhu cac guard DS158.
+            if (stored.getFee().compareTo(BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Phí đơn thuốc không được âm: "
                         + stored.getId());
             }
             if (stored.getName() == null || stored.getName().length() < 2) {
