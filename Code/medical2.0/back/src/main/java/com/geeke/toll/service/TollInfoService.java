@@ -187,6 +187,19 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             tollInfo.setTollNumber(sn);
         }
 
+        // DS229: save() don khong ep company theo session (chi
+        // bulkInsert/bulkUpdate goi forceSessionCompanyWhenBlank) nen
+        // phieu do saveToll ghi (processNormalCharge/processRetailCharge
+        // goi this.save truc tiep, khong qua controller) co company_id
+        // NULL; moi doc loc tenant sau do deu khong thay phieu: tong
+        // ket ngay bo sot tien da thu, processRefund khong tao duoc
+        // phieu hoan/audit (getByRecipeId qua listAll loc tenant),
+        // guard K2 cancel + guard trung lap getInRecipeIds cung mu.
+        // Ep company theo session khi trong, giong bulkInsert va
+        // nhanh insert cua controller save; company da co giu nguyen
+        // (verifyTenantOwnership o super.save van chan company la).
+        forceSessionCompanyWhenBlank(tollInfo);
+
         TollInfo tollInfoTemp = super.save(tollInfo);
         return tollInfoTemp;
     }
