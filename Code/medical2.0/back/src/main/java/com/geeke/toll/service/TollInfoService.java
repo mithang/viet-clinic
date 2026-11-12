@@ -488,8 +488,30 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             }
             //Đăng ký khámphương thức thanh toán, Trạng thái thu phí
             if (null == registration) {
-                registration = registrationService.get(tollInfo.getMedical().getRegistration().getId());
-
+                // DS227: fallback nay chay tren MOI lan thu thuong (BHYT
+                // tat nen processNormalCharge LUON tra null) va moi lan
+                // hoan phi; medical/registration lay THANG tu payload
+                // (tollInfo.getMedical() khong duoc ghi de boi
+                // processNormalCharge) nen ca 2 deref deu NPE 500 khi
+                // payload sai (probe tools/ds227-verify.py, log
+                // backend: ghost registration -> :495 getPayType();
+                // registration thieu -> :491 getId(); refund + medical
+                // thieu -> :491, duong refund khong co guard DS158).
+                // Fail-closed 400 truoc moi deref; giao dich rollback,
+                // don giu is_pay cu, khong phieu nao duoc ghi.
+                if (tollInfo.getMedical() == null
+                        || tollInfo.getMedical().getRegistration() == null
+                        || StringUtils.isBlank(tollInfo.getMedical()
+                                .getRegistration().getId())) {
+                    throw new ServiceException(
+                            "Lượt khám của phiếu thu chưa có thông tin đăng ký");
+                }
+                registration = registrationService.get(tollInfo.getMedical()
+                        .getRegistration().getId());
+                if (registration == null) {
+                    throw new ServiceException(
+                            "Không tìm thấy lượt đăng ký khám");
+                }
             }
             //phương thức thanh toánTổng dùng
             if (StringUtils.isNullOrEmpty(registration.getPayType())) {
