@@ -179,6 +179,13 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         // Chi kiem do dai, khong them chan null/blank: cac cot deu nullable
         // (tru patientTell da guard null o tren theo DS81).
         checkMedicalRecordLengths(medicalRecord);
+        // DS236: sinh hieu am ve vat ly khong the co (mach -5, SpO2 -98,
+        // nhiet do -36.5, can nang -50kg) truoc day luu that qua moi duong
+        // ghi (probe: bulkInsert P1-P8, bulkUpdate P9, saveWithFile
+        // P12b). Chan o funnel save() duy nhat moi duong single-save
+        // dung (saveWithFile/saveAdd/registerSave/allSave v1/v2 deu goi
+        // this.save()); null giu NULL, 0 van cho phep (quy uoc DS219).
+        checkMedicalRecordVitals(medicalRecord);
         // DS163 A5: save voi id khong ton tai truoc day roi qua super.save
         // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99; probe
         // A5 qua /registerSave; /save bi 405 do controller override save
@@ -238,6 +245,9 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             checkMedicalRecordRequired(medicalRecord, true);
             // DS146 A: bulk cung chan do dai nhu save() (DS141 B).
             checkMedicalRecordLengths(medicalRecord);
+            // DS236: bulk bo qua guard cua save() nen sinh hieu am cung
+            // chan tai day (probe P1-P8).
+            checkMedicalRecordVitals(medicalRecord);
         }
         return super.bulkInsert(entitys);
     }
@@ -262,6 +272,9 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             checkMedicalRecordRequired(medicalRecord, false);
             // DS146 A: bulk cung chan do dai nhu save() (DS141 B).
             checkMedicalRecordLengths(medicalRecord);
+            // DS236: bulk bo qua guard cua save() nen sinh hieu am cung
+            // chan tai day (probe P9).
+            checkMedicalRecordVitals(medicalRecord);
         }
         return super.bulkUpdate(entitys);
     }
@@ -303,6 +316,45 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         checkLength(medicalRecord.getSyndromeId(), 100, "chứng chờ id Độ dài phải nằm trong khoảng 0 đến 100");
         checkLength(medicalRecord.getChinaSyndrome(), 100, "Chứng hậu Đông y Độ dài phải nằm trong khoảng 0 đến 100");
         checkLength(medicalRecord.getDiagnosisCode(), 50, "Mã chẩn đoán Độ dài phải nằm trong khoảng 0 đến 50");
+    }
+
+    /**
+     * DS236: sinh hieu (H2, migration v10) khong co validation nao --
+     * entity khong @Min/@Positive, save() chi check patientTell + do
+     * dai (DS141 B). Gia tri am ve vat ly khong the co nhung luu that
+     * (probe P1-P9, P12b). Fail-closed 400: bat ky sinh hieu nao < 0
+     * thi tu choi ca ban ghi; null giu NULL, 0 van cho phep (quy uoc
+     * DS219: 0/null allowed). Dung chung cho save() va
+     * bulkInsert/bulkUpdate (bulk bo qua guard cua save()).
+     */
+    private static void checkMedicalRecordVitals(MedicalRecord medicalRecord) {
+        if (medicalRecord.getVitalPulse() != null && medicalRecord.getVitalPulse() < 0) {
+            throw new ServiceException("Mạch không được âm");
+        }
+        if (medicalRecord.getVitalBpSys() != null && medicalRecord.getVitalBpSys() < 0) {
+            throw new ServiceException("Huyết áp tâm thu không được âm");
+        }
+        if (medicalRecord.getVitalBpDia() != null && medicalRecord.getVitalBpDia() < 0) {
+            throw new ServiceException("Huyết áp tâm trương không được âm");
+        }
+        if (medicalRecord.getVitalTemperature() != null
+                && medicalRecord.getVitalTemperature().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Nhiệt độ không được âm");
+        }
+        if (medicalRecord.getVitalRespRate() != null && medicalRecord.getVitalRespRate() < 0) {
+            throw new ServiceException("Nhịp thở không được âm");
+        }
+        if (medicalRecord.getVitalSpo2() != null && medicalRecord.getVitalSpo2() < 0) {
+            throw new ServiceException("SpO2 không được âm");
+        }
+        if (medicalRecord.getVitalWeight() != null
+                && medicalRecord.getVitalWeight().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Cân nặng không được âm");
+        }
+        if (medicalRecord.getVitalHeight() != null
+                && medicalRecord.getVitalHeight().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Chiều cao không được âm");
+        }
     }
 
     private static void checkLength(String value, int max, String message) {
