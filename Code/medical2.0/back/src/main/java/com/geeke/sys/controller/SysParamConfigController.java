@@ -3,6 +3,7 @@ package com.geeke.sys.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.controller.CrudController;
+import com.geeke.common.service.ServiceException;
 import com.geeke.sys.entity.SysParamConfig;
 import com.geeke.sys.service.SysParamConfigService;
 import com.geeke.utils.ResultUtil;
@@ -32,6 +33,16 @@ public class SysParamConfigController extends CrudController<SysParamConfigServi
     public ResponseEntity<JSONObject> saveList(@RequestBody List<SysParamConfig> entitys) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC Y2f: tai khoan 0-resource bi 403.
         if (CollectionUtil.isNotEmpty(entitys)) {
+            // DS247: tien kiem phan tu null cho TOAN BO list truoc khi
+            // luu dong nao (mau N1): [null] truoc day NPE 500 o
+            // service.save (entity.getId(), probe P1), [valid, null]
+            // ghi xong dong hop le roi moi 500 (ghi mot phan, probe P2).
+            // Null o day fail-closed 400, khong ghi dong nao.
+            entitys.forEach(entity -> {
+                if (entity == null) {
+                    throw new ServiceException("Cấu hình tham số không được để trống");
+                }
+            });
             // N3e: tien kiem TOAN BO list truoc khi luu dong nao — fail-closed
             // ca list (mau N1): neu chi dua vao service.save tung dong thi
             // list hon hop [own, foreign] se ghi xong dong own roi moi nem

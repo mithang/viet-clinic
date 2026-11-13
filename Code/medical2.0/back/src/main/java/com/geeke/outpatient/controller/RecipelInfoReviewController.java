@@ -425,6 +425,16 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
     public ResponseEntity<JSONObject> saveList(@RequestBody List<RecipelInfoReview> entitys) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         if (CollectionUtil.isNotEmpty(entitys)) {
+            // DS247: tien kiem phan tu null cho TOAN BO list truoc khi
+            // luu dong nao (mau N1): [valid, null] truoc day ghi xong
+            // dong hop le roi moi nem o dong null (ghi mot phan, probe
+            // P5); [null] rieng le von da 400 nho guard service.save
+            // (DS127 B). Null o day fail-closed 400, khong ghi dong nao.
+            entitys.forEach(entity -> {
+                if (entity == null) {
+                    throw new ServiceException("Rà soát đơn thuốc không được để trống");
+                }
+            });
             // N1: tien kiem TOAN BO list truoc khi luu dong nao — fail-closed
             // ca list (mau bulkDelete): mot dong la thi khong dong nao duoc ghi.
             entitys.forEach(this::checkReviewWriteTenant);

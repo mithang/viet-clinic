@@ -84,6 +84,13 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
 
     @Override
     public SysParamConfig save(SysParamConfig entity) {
+        // DS247: defence-in-depth guard null (mau DS127 B o
+        // RecipelInfoReviewService.save): save/list [null] truoc day
+        // NPE 500 o entity.getId() ben duoi; pre-check o controller la
+        // guard chinh, guard nay bao ve caller truc tiep/noi bo.
+        if (ObjectUtil.isNull(entity)) {
+            throw new ServiceException("Cấu hình tham số không được để trống");
+        }
         checkParamWriteTenant(entity);
         // DS102: CrudService.save rẽ nhánh update khi id khác rỗng,
         // doUpdate không động đến dòng nào nếu id không tồn tại mà vẫn
