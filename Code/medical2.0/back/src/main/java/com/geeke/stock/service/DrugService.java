@@ -242,6 +242,17 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         if (drug.getInventory() < 0) {
             throw new ServiceException("Tồn kho không được âm");
         }
+        // DS243: lieu dung moi lan + tong so luong am truoc day ghi thang
+        // xuong DB qua save/bulkInsert/bulkUpdate (mapper ghi khong dieu
+        // kien); DS209/DS214/DS239 chan cac truong cung ten o bang khac,
+        // khong chan 2 truong nay cua Drug. Am -> 400, null giu nguyen
+        // (nullable), 0 giu nguyen (quy uoc DS219).
+        if (drug.getSingleDosage() != null && drug.getSingleDosage() < 0) {
+            throw new ServiceException("Liều dùng mỗi lần không được âm");
+        }
+        if (drug.getTotal() != null && drug.getTotal() < 0) {
+            throw new ServiceException("Tổng số lượng không được âm");
+        }
     }
 
     private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
