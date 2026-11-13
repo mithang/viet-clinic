@@ -112,6 +112,28 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         }
     }
 
+    // DS263: phong kham khong the co ngay het han truoc ngay bat dau su
+    // dung (chua bat dau da het han) — start_use_date/expire_date deu
+    // nullable datetime, khong CHECK o DB, khong @Valid, khong guard
+    // nao o service truoc day: save create/update, saveWithFile, duong
+    // provisioning (saveClinicAndRole/ClinicService.save qua save()),
+    // bulkInsert va bulkUpdate deu ghi thang cap ngay dao nguoc (probe:
+    // save P1, save-update P2, saveWithFile P3, bulkInsert P4,
+    // bulkUpdate P5). Chan fail-closed 400 truoc moi ghi, canh
+    // checkCompanyLengths (DS146) de phu ca 5 duong. expireDate ==
+    // startUseDate giu hop le (quy uoc bien DS219/DS254/DS260/DS261);
+    // mot trong hai null giu hop le (cot nullable, phong kham khong
+    // gioi han thoi gian).
+    private static void checkCompanyDateOrder(Company company) {
+        if (company == null) {
+            return;
+        }
+        if (company.getStartUseDate() != null && company.getExpireDate() != null
+                && company.getExpireDate().before(company.getStartUseDate())) {
+            throw new ServiceException("Ngày hết hạn sử dụng không được trước ngày bắt đầu sử dụng");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Company save(Company company) {
@@ -131,6 +153,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         checkCompanySaveOwnership(company);
         // DS146 A: chan do dai (ca duong saveWithFile khong @Valid).
         checkCompanyLengths(company);
+        // DS263: chan ngay het han truoc ngay bat dau su dung.
+        checkCompanyDateOrder(company);
         return super.save(company);
     }
 
@@ -189,6 +213,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             checkCompanySaveOwnership(company);
             // DS146 A: bulk cung chan do dai nhu save().
             checkCompanyLengths(company);
+            // DS263: bulk cung chan ngay dao nguoc nhu save().
+            checkCompanyDateOrder(company);
             // DS152 B: giai quyet parent tu DB (mau RouterService.
             // resolveParent) -- bulk* bypass TreeService.save nen
             // parent chi co id: ghost duoc luu tho parent_id + ids
@@ -220,6 +246,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             checkCompanySaveOwnership(company);
             // DS146 A: bulk cung chan do dai nhu save().
             checkCompanyLengths(company);
+            // DS263: bulk cung chan ngay dao nguoc nhu save().
+            checkCompanyDateOrder(company);
             // DS152 B: nhu bulkInsert -- ghost / self / descendant
             // parent -> 400 truoc khi ghi.
             resolveCompanyParent(company);
