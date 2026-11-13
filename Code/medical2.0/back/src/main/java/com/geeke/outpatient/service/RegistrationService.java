@@ -561,8 +561,19 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (params == null || params.size() < 2) {
             throw new ServiceException("Thiếu tham số truy vấn đăng ký (company_id, open_id)");
         }
-        String openId = (String) params.get(1).getValue();
-        String companyId = (String) params.get(0).getValue();
+        // DS250: value la Object do JSON deserialize — openId/companyId
+        // dang number/boolean/object/array ve day se nem ClassCastException
+        // 500 o cast (String) ben duoi (DS154 chi guard <2 params, khong
+        // guard kieu). Fail-closed 400 truoc moi cast; null giu nguyen
+        // hanh vi cu (cast null hop le).
+        Object openIdValue = params.get(1).getValue();
+        Object companyIdValue = params.get(0).getValue();
+        if ((openIdValue != null && !(openIdValue instanceof String))
+                || (companyIdValue != null && !(companyIdValue instanceof String))) {
+            throw new ServiceException("Tham số truy vấn đăng ký không hợp lệ (company_id, open_id phải là chuỗi)");
+        }
+        String openId = (String) openIdValue;
+        String companyId = (String) companyIdValue;
 
         // sử dụngDữ liệukho phúttrang, Tránhbộ nhớ phúttrang và N+1Truy vấn
         return paginate(

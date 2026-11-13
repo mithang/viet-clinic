@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import com.geeke.common.service.ServiceException;
+
 /**
  * Vui lòngyêu cầuDữ liệulọcĐiều kiện
  *
@@ -152,7 +154,15 @@ public final class Parameter {
 				.filter(item -> isCompanyIdColumn(item.getColumnName()))
 				.findFirst();
 		if (optional.isPresent()) {
-			String id = (String) optional.get().getValue();
+			// DS250: value la Object do JSON deserialize — number/boolean/
+			// object/array ve day se nem ClassCastException 500 o cast
+			// (String) ben duoi. Fail-closed 400 truoc moi cast; null giu
+			// nguyen (cast null hop le, tenant filter van duoc them sau).
+			Object value = optional.get().getValue();
+			if (value != null && !(value instanceof String)) {
+				throw new ServiceException("Mã phòng khám không hợp lệ");
+			}
+			String id = (String) value;
 			parameters.removeIf(item -> isCompanyIdColumn(item.getColumnName()));
 			return id;
 		}
