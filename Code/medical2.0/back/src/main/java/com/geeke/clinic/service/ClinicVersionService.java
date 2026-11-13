@@ -187,6 +187,16 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
         return clinicVersionDao.listAll(pageRequest);
     }
     public ClinicVersion save(ClinicVersion entity) {
+        // DS245: gia phien ban khong the am. price (BigDecimal) khong
+        // co @Min va khong co guard o service: save / bulkInsert /
+        // bulkUpdate deu chap nhan gia am va ghi thang vao DB (probe:
+        // bulkInsert -100 va bulkUpdate -0.01/-5 deu 100 va persist;
+        // cot signed nen DB khong chan). Gia am cua goi phien ban la
+        // vo nghia (cung ho "so am" DS209-DS244, nhu MemberSet.money
+        // DS213). 0 van cho phep, null van 400 nhu cu (validateBulkVersion
+        // / @NotNull). Guard dat TRUOC moi ghi, ke ca tao role o save()
+        // (phien he thong moi toi duoc save()).
+        checkClinicVersionNonNegative(entity);
         // DS120 B: code trung lap truoc day roi xuong doInsert -> 500 UNIQUE
         // (code co UNI index), sau khi roleService.save da tao role moi
         // (duoc rollback nho @Transactional cap class, nhung van la 500
@@ -289,6 +299,7 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
                 }
             }
             validateBulkVersion(entity);
+            checkClinicVersionNonNegative(entity); // DS245
             checkDuplicateCode(entity.getCode(), entity.getId());
         }
         return super.bulkUpdate(entitys);
@@ -302,6 +313,17 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
             throw new ServiceException("Danh sách phiên bản không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS245: xem ghi chu o save().
+    private static void checkClinicVersionNonNegative(ClinicVersion entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getPrice() != null
+                && entity.getPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Giá phiên bản không được âm");
+        }
     }
 
     private void validateBulkVersion(ClinicVersion entity) {
@@ -355,6 +377,7 @@ public class ClinicVersionService extends CrudService<ClinicVersionDao, ClinicVe
                 throw new ServiceException("Phiên bản không được để trống");
             }
             validateBulkVersion(entity);
+            checkClinicVersionNonNegative(entity); // DS245
             if (!seenCodes.add(entity.getCode())) {
                 throw new ServiceException("Mã phiên bản trùng trong danh sách: "
                         + entity.getCode());
