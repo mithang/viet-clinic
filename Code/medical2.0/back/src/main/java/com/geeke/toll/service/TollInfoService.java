@@ -248,6 +248,13 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
      * (cot nullable; cho nao bat buoc da co guard null rieng, DS158).
      * Chi amountReceivable / amountReceived; amountDiscounted co the am
      * hop le khi tra thua (received > receivable).
+     * DS254: discount la he so chiet khau, pham vi hop le [0, 1]
+     * (0 = mien phi, 1 = khong giam; frontend discountFactor() chi gui
+     * rate/10 trong [0,1], khong bao gio gui am hay >1). discount am
+     * lam actualPayment = allFee x discount am (saveToll :487 ghi thang
+     * qua recipelDetailDao.updateActualPayment, bypass guard DS239 o
+     * RecipelDetailService); discount > 1 thu vuot (actualPayment >
+     * allFee). Null van qua (saveToll bat null rieng, DS98).
      */
     private static void checkTollInfoNonNegative(TollInfo tollInfo) {
         if (tollInfo == null) {
@@ -260,6 +267,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         if (tollInfo.getAmountReceived() != null
                 && tollInfo.getAmountReceived().compareTo(BigDecimal.ZERO) < 0) {
             throw new ServiceException("Số tiền thực thu không được âm");
+        }
+        if (tollInfo.getDiscount() != null
+                && (tollInfo.getDiscount() < 0 || tollInfo.getDiscount() > 1)) {
+            throw new ServiceException("Chiết khấu phải nằm trong khoảng 0 đến 1");
         }
     }
 
