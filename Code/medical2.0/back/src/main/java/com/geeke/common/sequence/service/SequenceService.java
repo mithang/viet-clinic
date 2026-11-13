@@ -86,14 +86,31 @@ public class SequenceService {
 		Map<String, Object> model = Maps.newHashMap();
 		model.put("biz", bizObject);
 		model.put("seq", 0);
-		String prefix = FreeMarkers.renderString(templateString, model);
+		// DS257: ruleDef hong (dong cu / import tay, luu truoc khi
+		// CodeRuleService chan cu phap) truoc day nem RuntimeException
+		// o FreeMarkers.renderString -> 500 moi lan sinh ma. Fail-closed
+		// 400 ro nghia thay vi 500; chi boc render (loi DB o duoi giu
+		// nguyen de khong doi hanh vi loi he thong).
+		String prefix;
+		try {
+			prefix = FreeMarkers.renderString(templateString, model);
+		} catch (RuntimeException e) {
+			throw new com.geeke.common.service.ServiceException(
+					"Quy tắc mã " + ruleCode + " không hợp lệ, không thể sinh mã mới");
+		}
 		Sequence sequence = sequenceDao.getByPrefix(theCompanyId, ruleCode, prefix);
 		if(sequence == null) {
 			sequence = insertSeq(theCompanyId, ruleCode, prefix);
 		}
 		
 		model.put("seq", sequence.getVal());
-		String seqNo = FreeMarkers.renderString(templateString, model);
+		String seqNo;
+		try {
+			seqNo = FreeMarkers.renderString(templateString, model);
+		} catch (RuntimeException e) {
+			throw new com.geeke.common.service.ServiceException(
+					"Quy tắc mã " + ruleCode + " không hợp lệ, không thể sinh mã mới");
+		}
 		
 		sequenceDao.nextSeqById(sequence);
 		

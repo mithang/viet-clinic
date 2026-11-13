@@ -1,5 +1,6 @@
 package com.geeke.sys.service;
 
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,9 @@ import com.geeke.common.service.ServiceException;
 import com.geeke.sys.dao.CodeRuleDao;
 import com.geeke.sys.entity.CodeRule;
 import com.geeke.utils.StringUtils;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 
 import com.google.common.collect.Maps;
@@ -25,6 +29,26 @@ import com.google.common.collect.Maps;
 @Transactional(readOnly = true)
 public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
 
+    // DS257: ruleDef la mot FreeMarker template duoc render moi lan sinh
+    // ma (SequenceService.generate -> FreeMarkers.renderString); template
+    // sai cu phap truoc day luu 200 roi moi lan tao CostItem/Drug/Stuff/
+    // TollInfo/InventoryVerification moi deu 500 (ParseException o
+    // FreeMarkers.renderString, probe pre). Chan truoc moi ghi: chi PARSE
+    // (khong danh gia) de cac tham chieu ${biz...} hop le van qua, chi
+    // cu phap hong moi 400. Blank giu nguyen (do @NotNull/@Valid xu ly
+    // o duong save don, bulkUpdate cu khong chan blank).
+    private static void checkRuleDefSyntax(CodeRule codeRule) {
+        if (codeRule == null || StringUtils.isBlank(codeRule.getRuleDef())) {
+            return;
+        }
+        try {
+            Configuration cfg = new Configuration(Configuration.VERSION_2_3_28);
+            new Template("ruleDef", new StringReader(codeRule.getRuleDef()), cfg);
+        } catch (Exception e) {
+            throw new ServiceException("Quy tắc mã không hợp lệ: " + codeRule.getRuleDef());
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public CodeRule save(CodeRule codeRule) {
@@ -37,6 +61,7 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
             throw new ServiceException("Quy tắc mã không tồn tại: "
                     + codeRule.getId());
         }
+        checkRuleDefSyntax(codeRule);
         Map<String, String> colMaps = Maps.newHashMap();
         // code
         colMaps.clear();
@@ -99,6 +124,7 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
             if (StringUtils.isBlank(codeRule.getRuleDef())) {
                 throw new ServiceException("Quy tắc không được để trống");
             }
+            checkRuleDefSyntax(codeRule);
             if (!seenCodes.add(codeRule.getCode())
                     || exists(dao, codeRule, colMaps)) {
                 throw new ServiceException("Đã tồn tại giống hệt Mã");
@@ -119,6 +145,7 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
                 throw new ServiceException("Quy tắc mã không tồn tại: "
                         + codeRule.getId());
             }
+            checkRuleDefSyntax(codeRule);
         }
         return super.bulkUpdate(entitys);
     }
