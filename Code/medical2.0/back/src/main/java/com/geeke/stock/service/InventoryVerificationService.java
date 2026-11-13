@@ -121,6 +121,25 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         checkLength(entity.getType(), 1, "Loại kiểm kê Độ dài phải nằm trong khoảng 0 đến 1");
     }
 
+    // DS253: bulkInsert la duong duy nhat ghi allPrice do client gui
+    // (insert cung 0, update/bulkUpdate khong viet cot nay -- xem
+    // InventoryVerificationDao.xml); allPrice la tong lai/lo phieu, phai
+    // do server tu tinh tu chi tiet (DetailService.saveAll -> SUM ...
+    // FOR UPDATE -> updateAllPrice). Phieu moi tao qua bulkInsert chua
+    // co dong dem nao nen tong am la gia tri chua duoc kiem chung, chan
+    // fail-closed 400. KHONG guard o updateAllPrice: tong tinh tu DB
+    // hop le khi am (thieu hang, DS212) va luong UI that di qua do.
+    // null giu NULL, 0 giu nguyen (quy uoc DS219).
+    private static void checkInventoryVerificationAllPrice(InventoryVerification entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getAllPrice() != null
+                && entity.getAllPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng số tiền lãi/lỗ không được âm");
+        }
+    }
+
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
@@ -136,6 +155,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         for (InventoryVerification entity : entitys) {
             validateRequired(entity);
             checkInventoryVerificationLengths(entity);
+            checkInventoryVerificationAllPrice(entity);
         }
         return super.bulkInsert(entitys);
     }
