@@ -91,6 +91,16 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
 
         if (CollectionUtils.isNotEmpty(sysCollectList)) {
 
+            // DS248: phan tu null trong list truoc day qua vong pre-check
+            // tenant ben duoi (bo qua null) roi NPE 500 o preUpdate(),
+            // truoc moi ghi. Fail-closed 400 ca list truoc moi vong
+            // (mau N1/DS247); message tai dung save().
+            for (SysCollect item : sysCollectList) {
+                if (item == null) {
+                    throw new ServiceException("Dữ liệu yêu thích không được để trống");
+                }
+            }
+
             // N4-P3 (iteration 62): updateBatch mapper WHERE chi theo id,
             // khong loc user_id, nen nhan id dong cua user khac vao list la
             // ghi de duoc favorite cua user do (controller chi check path
