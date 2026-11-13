@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -68,6 +69,9 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         // roi 500 o DB do @Length lech cot; cardType/openId khong @Length;
         // gia tri DictItem gender/nexus viet thang vao varchar(64)).
         checkPatientLengths(patient);
+        // DS264: ngay sinh o tuong lai la khong the ve vat ly (cung ho
+        // DS262 vitals) -- chan fail-closed 400 o moi duong ghi.
+        checkPatientBirthday(patient);
         if (patient.getId() != null && !patient.getId().trim().isEmpty()
                 && this.dao.get(patient.getId()) == null) {
             throw new ServiceException("Bệnh nhân không tồn tại: " + patient.getId());
@@ -146,6 +150,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         // DS176 A: wxSave ghi thang qua dao.wxInsert/wxUpdate, vong qua
         // checkPatientLengths cua save() — chuoi qua dai se 500 o DB.
         checkPatientLengths(patient);
+        checkPatientBirthday(patient); // DS264
         verifyTenantOwnership(patient);
         //Lấy thông tin có người dùng đó không theo số CMND/CCCD của người dùng
         List<Patient> patientByCard = this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);
@@ -266,6 +271,26 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         checkDictLength(patient.getWithPatientNexus(), 64, "Quan hệ với bệnh nhân Độ dài phải nằm trong khoảng 0 đến 64");
     }
 
+    /**
+     * DS264: ngay sinh o tuong lai la khong the ve vat ly (cung ho gia
+     * tri khong the DS262 vitals: SpO2 > 100). So sanh theo ngay (khong
+     * theo gio) trong vung gio phong kham DB_ZONE (GMT+7, cung vung
+     * dung cho DTO birthday o :450): ngay sinh sau hom nay -> 400;
+     * sinh hom nay (tre so sinh), null va moi ngay qua khu deu giu
+     * hop le (khong gioi han duoi -- benh nhan rat gia van co the).
+     * Null-safe; goi o save() + bulkInsert + bulkUpdate + wxSave vi
+     * wxSave ghi thang qua dao, khong qua save().
+     */
+    private static void checkPatientBirthday(Patient patient) {
+        if (patient == null || patient.getBirthday() == null) {
+            return;
+        }
+        if (patient.getBirthday().toInstant().atZone(DB_ZONE).toLocalDate()
+                .isAfter(LocalDate.now(DB_ZONE))) {
+            throw new ServiceException("Ngày sinh không được ở tương lai");
+        }
+    }
+
     private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
         if (item != null) {
             checkLength(item.getValue(), max, message);
@@ -287,6 +312,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         for (Patient entity : entitys) {
             validateRequiredForBulk(entity);
             checkPatientLengths(entity);
+            checkPatientBirthday(entity); // DS264
         }
         return super.bulkInsert(entitys);
     }
@@ -308,6 +334,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
                 throw new ServiceException("Bệnh nhân không tồn tại: " + entity.getId());
             }
             checkPatientLengths(entity);
+            checkPatientBirthday(entity); // DS264
         }
         return super.bulkUpdate(entitys);
     }
