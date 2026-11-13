@@ -75,6 +75,9 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         if (outboundEvt == null || outboundEvt.getSupplierOutbound() == null) {
             throw new ServiceException("Phiếu xuất kho không được để trống");
         }
+        // DS244: chan so am truoc moi ghi (xem
+        // checkSupplierOutboundNonNegative; mau DS211 phieu nhap kho).
+        checkSupplierOutboundNonNegative(outboundEvt.getSupplierOutbound());
         // DS231: ep company theo session khi trong truoc moi ghi (mau
         // DS229 TollInfo.save / DS230 SupplierStorage.save). saveEvt
         // khong @Valid nen company thieu han van toi day: getCode deref
@@ -120,6 +123,52 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         supplierOutboundDetailService.save(supplierOutboundTemp.getId(), outboundEvt.getSupplierOutboundDetailList());
 
         return supplierOutboundTemp;
+    }
+
+    /**
+     * DS244: duong /save chung (CrudController) di thang vao
+     * CrudService.save, khong qua save(OutboundEvt) nen khong co guard
+     * so am — phieu xuat kho am luu that qua day (probe P9). Guard o day
+     * de ca hai duong ghi deu fail-closed 400; save(OutboundEvt) goi
+     * super.save truc tiep nen khong bi guard trung.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public SupplierOutbound save(SupplierOutbound supplierOutbound) {
+        checkSupplierOutboundNonNegative(supplierOutbound);
+        return super.save(supplierOutbound);
+    }
+
+    // DS244: phieu xuat kho khong the xuat -N mat hang / -N tien.
+    // number/breed/allBid/allRetailPrice khong co @Min/@Positive va
+    // khong co guard o service: saveEvt + /save chung deu chap nhan so
+    // am va ghi thang vao DB (probe: number=-5, breed=-1, allBid=-100,
+    // allRetailPrice=-200 qua ca hai duong deu 100 va persist; allBid o
+    // day la bigint CO DAU, khac DS211 — supplier_storage.all_bid la
+    // bigint unsigned nen DB da chan san). bulkInsert/bulkUpdate da
+    // fail-closed 400 tu DS50 nen khong can guard them. UI that chi gui
+    // so >= 0 (breed = do dai bang chi tiet, number / tong tien cong tu
+    // chi tiet). 0 van cho phep, null van cho phep (cac cot nullable, UI
+    // tinh mot so truong sau).
+    private static void checkSupplierOutboundNonNegative(
+            SupplierOutbound entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getNumber() != null && entity.getNumber() < 0) {
+            throw new ServiceException("Số lượng xuất kho không được âm");
+        }
+        if (entity.getBreed() != null && entity.getBreed() < 0) {
+            throw new ServiceException("Số chủng loại xuất kho không được âm");
+        }
+        if (entity.getAllBid() != null
+                && entity.getAllBid().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng giá nhập không được âm");
+        }
+        if (entity.getAllRetailPrice() != null
+                && entity.getAllRetailPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng giá bán lẻ không được âm");
+        }
     }
 
     // DS231: chi dien company theo session khi trong (mau DS230
