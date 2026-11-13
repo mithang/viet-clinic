@@ -92,9 +92,20 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     // UI that chi gui so >= 0 (breed = do dai bang chi tiet, number /
     // tong tien cong tu chi tiet). 0 van cho phep, null van cho phep
     // (cac cot nullable, UI tinh mot so truong sau).
+    // DS258: initial (ton kho ban dau, int) cung khong co guard --
+    // mapper ghi thang ca 4 duong (insert/update/bulkInsert/bulkUpdate),
+    // cot int co dau nen DB chap nhan initial=-5 (probe 8/8). Luong
+    // that luon dat initial = number >= 0 (SupplierStockService.savesTo
+    // :351/:644), khong luong hop le nao viet initial am; initial am
+    // con pha guard huy phieu o client (initial > initialNum moi chan
+    // huy khi ton kho da dung -- am luon lot). Chan < 0 o day, 0/absent
+    // van qua (int primitive mac dinh 0).
     private static void checkSupplierStorageNonNegative(SupplierStorage entity) {
         if (entity == null) {
             return;
+        }
+        if (entity.getInitial() < 0) {
+            throw new ServiceException("Số lượng tồn kho ban đầu không được âm");
         }
         if (entity.getNumber() != null && entity.getNumber() < 0) {
             throw new ServiceException("Số lượng nhập kho không được âm");
