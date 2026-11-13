@@ -189,6 +189,29 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    /**
+     * DS255: so thu tu cho kham khong co nghia vat ly khi <= 0 (counter
+     * cua phong kham bat dau tu 1, RegistrationDao.advanceQueueCounter
+     * INSERT ... VALUES(..., 1)); mapper ghi queue_number thang ca 4
+     * duong insert/update/bulkInsert/bulkUpdate CASE, entity Integer
+     * khong @Min, service chi guard do dai (DS146) + phi (DS238) --
+     * save/bulkInsert/bulkUpdate/wxSave deu chap nhan -5/0 200 +
+     * persist (probe pre 12/12). Frontend chi HIEN THI so thu tu,
+     * khong bao gio gui; so chi do server cap khi null
+     * (assignQueueNumber) hoac counter (updateStatus). Guard o day
+     * dung chung cho ca 4 duong truoc moi ghi (truoc assignQueueNumber
+     * de khong dot so thu tu cua luot bi tu choi, nhu DS146/DS238).
+     * Chi chan < 1: null giu nguyen (tu cap so), so duong giu nguyen.
+     */
+    private static void checkRegistrationQueueNumber(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getQueueNumber() != null && entity.getQueueNumber() < 1) {
+            throw new ServiceException("Số thứ tự chờ khám phải lớn hơn 0");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
@@ -198,6 +221,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationHasSubject(entity);
         // DS238: chan phi dang ky / thuc thu am truoc khi gan so thu tu.
         checkRegistrationFeesNonNegative(entity);
+        // DS255: chan so thu tu <= 0 truoc khi gan so thu tu.
+        checkRegistrationQueueNumber(entity);
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
@@ -243,6 +268,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationHasSubject(entity);
             // DS238: bulk cung chan phi am nhu save().
             checkRegistrationFeesNonNegative(entity);
+            // DS255: bulk cung chan so thu tu <= 0 nhu save().
+            checkRegistrationQueueNumber(entity);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -271,6 +298,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationLengths(entity);
             // DS238: bulkUpdate cung chan phi am nhu save().
             checkRegistrationFeesNonNegative(entity);
+            // DS255: bulkUpdate cung chan so thu tu <= 0 nhu save().
+            checkRegistrationQueueNumber(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -533,6 +562,10 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         if (StringUtils.isNotBlank(entity.getId())) {
             verifyTenantOwnershipAgainstStoredRow(entity);
         }
+        // DS255: chan so thu tu <= 0 truoc moi ghi (ca nhanh insert
+        // lan update; insert chi gan so khi null nen guard phai truoc
+        // assignQueueNumber de khong dot so cua luot bi tu choi).
+        checkRegistrationQueueNumber(entity);
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
