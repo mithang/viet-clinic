@@ -3,6 +3,7 @@ package com.geeke.stock.service;
 import cn.hutool.core.collection.ListUtil;
 import com.geeke.common.constants.BizConstants;
 import com.geeke.common.data.Page;
+import com.geeke.common.data.PageRequest;
 import com.geeke.common.service.ServiceException;
 import com.geeke.common.sequence.service.SequenceService;
 import com.geeke.common.service.CrudService;
@@ -343,7 +344,18 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
 
 
     public Page<SupplierStorage> listByCode(String pinyinCode, String status, String startTime, String endTime, int limit, int offset) {
-
+        // DS259: chan limit/offset khong tran — funnel list con sot sau
+        // DS203/DS204 (DAO khong LIMIT, phan trang trong bo nho bang
+        // hutool ListUtil.page(offset, limit, list): limit > 10000 lay
+        // het bang, limit/offset am duoc hutool chiu lang le tra toan bo
+        // dong). limit trong [0, 10000] (0 giu hop le nhu DS203/DS204),
+        // offset >= 0; sai -> IllegalArgumentException -> 400 (DS160).
+        if (limit < 0 || limit > PageRequest.MAX_PAGE_SIZE) {
+            throw new IllegalArgumentException("Invalid limit: " + limit);
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("Invalid offset: " + offset);
+        }
         String companyId = SessionUtils.getUserDto().getCompanyId();
         // DS201: escape LIKE wildcards in pinyinCode (mirror DS200) —
         // "%" must match literally, not every stocked drug/stuff.

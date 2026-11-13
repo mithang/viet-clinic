@@ -475,6 +475,20 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     public Page<Registration> listConditionPage(String param, int offset, int limit) {
+        // DS259: chan limit/offset khong tran — funnel list con sot sau
+        // DS203/DS204 (nhanh co params cua conditionList dua offset/limit
+        // tho vao RegistrationDao.conditionList LIMIT #{limit} OFFSET
+        // #{offset} truc tiep, khong qua PageRequest nhu nhanh else):
+        // limit > 10000 lay het bang mot trang, limit/offset am lot toi
+        // MySQL moi bi DB tu choi -> 400 message chung (DS94). limit
+        // trong [0, 10000] (0 giu hop le nhu DS203/DS204), offset >= 0;
+        // sai -> IllegalArgumentException -> 400 (DS160).
+        if (limit < 0 || limit > PageRequest.MAX_PAGE_SIZE) {
+            throw new IllegalArgumentException("Invalid limit: " + limit);
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("Invalid offset: " + offset);
+        }
         // DS202: param di thang vao LIKE o RegistrationDao.conditionList /
         // countConditionList — "%" khop moi dong, "_" khop 1 ky tu bat ky.
         // Escape %, _, \ truoc khi dua vao DAO (cung String dung cho ca

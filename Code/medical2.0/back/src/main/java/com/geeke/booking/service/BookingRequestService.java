@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.booking.dao.BookingRequestDao;
 import com.geeke.booking.entity.BookingRequest;
 import com.geeke.common.data.Page;
+import com.geeke.common.data.PageRequest;
 import com.geeke.common.persistence.BaseEntity;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
@@ -365,9 +366,29 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     }
 
     /**
+     * DS259: chan limit/offset khong tran tren 2 funnel list con sot sau
+     * DS203/DS204 (pendingPage/priorPage dua offset/limit tho vao Map
+     * roi LIMIT #{limit} OFFSET #{offset} truc tiep, khong qua
+     * PageRequest): limit > 10000 lay het bang mot trang, limit/offset
+     * am lot toi MySQL moi bi DB tu choi -> 400 message chung (DS94).
+     * limit trong [0, 10000] (0 giu hop le nhu DS203/DS204), offset >= 0;
+     * sai -> IllegalArgumentException -> 400 qua GlobalExceptionHandler
+     * (DS160). Dat o ca 2 phuong thuc list (pendingPage + priorPage).
+     */
+    private static void checkPageBounds(int offset, int limit) {
+        if (limit < 0 || limit > PageRequest.MAX_PAGE_SIZE) {
+            throw new IllegalArgumentException("Invalid limit: " + limit);
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("Invalid offset: " + offset);
+        }
+    }
+
+    /**
      * Hàng chờ pending của tenant đang đăng nhập, ngày muốn khám tăng dần.
      */
     public Page<BookingRequest> pendingPage(String companyId, int offset, int limit) {
+        checkPageBounds(offset, limit);
         Map<String, Object> params = new HashMap<>();
         params.put("companyId", companyId);
         params.put("offset", offset);
@@ -384,6 +405,7 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
      * xem khi xử lý trùng SĐT. Chỉ tra bảng booking_request.
      */
     public Page<BookingRequest> priorPage(String companyId, String phone, int offset, int limit) {
+        checkPageBounds(offset, limit);
         String normalized = normalizePhone(phone);
         if (normalized == null) {
             throw new IllegalArgumentException("Số điện thoại không hợp lệ.");

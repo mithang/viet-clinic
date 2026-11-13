@@ -247,10 +247,29 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     }
 
     /**
+     * DS259: chan limit/offset khong tran tren duePage — funnel list con
+     * sot sau DS203/DS204 (offset/limit tho vao Map roi LIMIT #{limit}
+     * OFFSET #{offset} truc tiep, khong qua PageRequest): limit > 10000
+     * lay het bang mot trang, limit/offset am lot toi MySQL moi bi DB
+     * tu choi -> 400 message chung (DS94). limit trong [0, 10000]
+     * (0 giu hop le nhu DS203/DS204), offset >= 0; sai ->
+     * IllegalArgumentException -> 400 qua GlobalExceptionHandler (DS160).
+     */
+    private static void checkPageBounds(int offset, int limit) {
+        if (limit < 0 || limit > com.geeke.common.data.PageRequest.MAX_PAGE_SIZE) {
+            throw new IllegalArgumentException("Invalid limit: " + limit);
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("Invalid offset: " + offset);
+        }
+    }
+
+    /**
      * Trang đến hạn/quá hạn, lọc theo tenant đang đăng nhập.
      * companyId null = mọi tenant (chỉ job hệ thống dùng).
      */
     public Page<FollowupReminder> duePage(String companyId, int offset, int limit) {
+        checkPageBounds(offset, limit);
         Map<String, Object> params = new HashMap<>();
         params.put("companyId", companyId);
         params.put("dueBefore", dueBefore());
