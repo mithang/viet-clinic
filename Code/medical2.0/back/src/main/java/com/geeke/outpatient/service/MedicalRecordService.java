@@ -186,6 +186,14 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         // dung (saveWithFile/saveAdd/registerSave/allSave v1/v2 deu goi
         // this.save()); null giu NULL, 0 van cho phep (quy uoc DS219).
         checkMedicalRecordVitals(medicalRecord);
+        // DS252: tong chi phi am (fee -100/-1) truoc day luu that qua
+        // moi duong ghi (probe pre 12/12: bulkInsert P1/P2, saveWithFile
+        // P4, bulkUpdate P5). Fee la truong payload luu thang (mapper
+        // ghi khong dieu kien ca 4 duong), khong co @Min/@Positive, cot
+        // decimal(10,0) co dau + nullable; cung ho DS240/DS241 (tong
+        // gia don thuoc / don thuoc mau am). Chan fail-closed 400 o
+        // funnel save() + ca 2 vong bulk; null giu NULL, 0 giu nguyen.
+        checkMedicalRecordFee(medicalRecord);
         // DS163 A5: save voi id khong ton tai truoc day roi qua super.save
         // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99; probe
         // A5 qua /registerSave; /save bi 405 do controller override save
@@ -248,6 +256,8 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             // DS236: bulk bo qua guard cua save() nen sinh hieu am cung
             // chan tai day (probe P1-P8).
             checkMedicalRecordVitals(medicalRecord);
+            // DS252: fee am cung chan tai day (bulkInsert P1/P2).
+            checkMedicalRecordFee(medicalRecord);
         }
         return super.bulkInsert(entitys);
     }
@@ -275,6 +285,8 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             // DS236: bulk bo qua guard cua save() nen sinh hieu am cung
             // chan tai day (probe P9).
             checkMedicalRecordVitals(medicalRecord);
+            // DS252: fee am cung chan tai day (bulkUpdate P5).
+            checkMedicalRecordFee(medicalRecord);
         }
         return super.bulkUpdate(entitys);
     }
@@ -354,6 +366,15 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         if (medicalRecord.getVitalHeight() != null
                 && medicalRecord.getVitalHeight().compareTo(java.math.BigDecimal.ZERO) < 0) {
             throw new ServiceException("Chiều cao không được âm");
+        }
+    }
+
+    // DS252: xem ghi chu o save(). Tong chi phi (fee, BigDecimal) am
+    // truoc day luu that qua moi duong ghi; null giu NULL, 0 giu nguyen.
+    private static void checkMedicalRecordFee(MedicalRecord medicalRecord) {
+        if (medicalRecord.getFee() != null
+                && medicalRecord.getFee().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng chi phí không được âm");
         }
     }
 
