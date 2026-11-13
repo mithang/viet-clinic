@@ -64,6 +64,9 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
        checkMemberSetLengths(memberSet);
        // DS213: chan so am truoc moi ghi (xem checkMemberSetNonNegative).
        checkMemberSetNonNegative(memberSet);
+       // DS260: chan ngay ket thuc truoc ngay bat dau (xem
+       // checkMemberSetDateOrder).
+       checkMemberSetDateOrder(memberSet);
        if(StringUtils.isBlank(memberSet.getId())){
            // ITER64 item 1: this insert branch bypassed super.save, so the
            // generic insert guard does not cover it. Verify BEFORE
@@ -163,6 +166,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             validateRequiredFields(memberSet);
             checkMemberSetLengths(memberSet);
             checkMemberSetNonNegative(memberSet); // DS213
+            checkMemberSetDateOrder(memberSet); // DS260
         }
         return super.bulkInsert(entitys);
     }
@@ -182,6 +186,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             validateRequiredFields(memberSet);
             checkMemberSetLengths(memberSet);
             checkMemberSetNonNegative(memberSet); // DS213
+            checkMemberSetDateOrder(memberSet); // DS260
         }
         return super.bulkUpdate(entitys);
     }
@@ -219,6 +224,26 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         }
         if (memberSet.getNumber() != null && memberSet.getNumber() < 0) {
             throw new ServiceException("Số lượng thẻ còn lại không được âm");
+        }
+    }
+
+    // DS260: the hoi vien khong the co ngay ket thuc truoc ngay bat
+    // dau (the chua bat dau da het han) — start_date/end_date deu
+    // nullable datetime, khong CHECK o DB, khong @Valid, khong guard
+    // nao o service truoc day: save create/update, bulkInsert va
+    // bulkUpdate deu ghi thang cap ngay dao nguoc (probe: save P1,
+    // bulkInsert P6, bulkUpdate P7, save-update P8). Chan fail-closed
+    // 400 truoc moi ghi, canh checkMemberSetNonNegative (DS213) de
+    // phu ca 4 duong. endDate == startDate giu hop le (the 1 ngay,
+    // quy uoc bien DS219/DS254); mot trong hai null giu hop le
+    // (cot nullable, the khong gioi han thoi gian).
+    private static void checkMemberSetDateOrder(MemberSet memberSet) {
+        if (memberSet == null) {
+            return;
+        }
+        if (memberSet.getStartDate() != null && memberSet.getEndDate() != null
+                && memberSet.getEndDate().before(memberSet.getStartDate())) {
+            throw new ServiceException("Ngày kết thúc không được trước ngày bắt đầu");
         }
     }
 
