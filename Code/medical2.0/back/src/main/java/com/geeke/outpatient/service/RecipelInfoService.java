@@ -1,5 +1,6 @@
 package com.geeke.outpatient.service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import cn.hutool.core.util.ObjectUtil;
@@ -93,10 +94,47 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS240: fee / amountReceivedTotal am truoc day ghi thang (probe
+    // pre 16/16: save fee=-5 / amount=-10 / ca hai -1/-5, bulkInsert
+    // fee=-2, bulkUpdate fee 50->-3, save-update amount 20->-4 deu
+    // 200 + persist; control 0/50/20 van 200). Entity khong @Min,
+    // khong CHECK o DB; service chi kiem tra seq/isFollowUp/smallType
+    // hien dien + ghost id (DS115). Mapper ghi ca 2 cot tren insert/
+    // update/bulkInsert/bulkUpdate (RecipelInfoDao.xml :151-152/:196,
+    // :242-243, :298-299/:345, CASE :421-426); update/bulkUpdate ghi
+    // khong dieu kien nen probe update phai gui full payload.
+    // Khong nhat quan: TollInfoService.saveToll DA chan phi don am o
+    // luc tinh phi (DS224 :665-668 "Phi don thuoc khong duoc am") —
+    // don phi am tao duoc qua save truc tiep roi khong bao gio thu
+    // duoc phi. Fee chay len phieu in (DataBean :169/:549) va thanh
+    // amountReceivable (= fee) luc thu; amountReceivedTotal chi co
+    // TollInfoService:704 ghi (tu amountReceived da guard DS224) nen
+    // la truong he thong, save truc tiep gia mao duoc se lam sai doi
+    // soat thu phi. Chan fail-closed 400 truoc moi ghi; null giu
+    // NULL (7 dong live fee NULL), 0 giu nguyen (quy uoc DS219).
+    // status/chargeStatus/dispensionStatus dung -1 hop le (huy/hoan/
+    // tra) nen KHONG guard. Caller noi bo chi save lai entity da load
+    // (gia tri da luu, live 0 dong am) hoac set amountReceivedTotal
+    // tu so tien da guard nen khong vo luong dang chay.
+    private static void checkNonNegative(RecipelInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getFee() != null
+                && entity.getFee().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Tổng giá đơn thuốc không được âm");
+        }
+        if (entity.getAmountReceivedTotal() != null
+                && entity.getAmountReceivedTotal().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Thực thu tổng cộng không được âm");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public RecipelInfo save(RecipelInfo entity) {
         validateRequired(entity);
+        checkNonNegative(entity);
         if (StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Đơn thuốc không tồn tại: "
@@ -114,6 +152,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         for (RecipelInfo entity : entitys) {
             validateRequired(entity);
             validateSmallType(entity);
+            checkNonNegative(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -127,6 +166,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         for (RecipelInfo entity : entitys) {
             validateRequired(entity);
             validateSmallType(entity);
+            checkNonNegative(entity);
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của đơn thuốc đã tồn tại");
             }
