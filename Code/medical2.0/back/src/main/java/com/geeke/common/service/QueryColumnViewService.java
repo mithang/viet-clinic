@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
+import com.geeke.common.service.ServiceException;
 import com.geeke.gen.dao.GenTableColumnDao;
 import com.geeke.gen.dao.GenTableDao;
 import com.geeke.gen.entity.GenScheme;
@@ -46,6 +47,16 @@ public class QueryColumnViewService {
 
 	@Transactional(readOnly = false)
 	public List<GenTableColumn> listColumn(String tableId, String schemeId) {
+		// DS251: schemeId ma (khong co trong gen_scheme) truoc day NPE 500
+		// o scheme.setGenTable(table) trong ca 2 nhanh 'ids' / 'This' ben
+		// duoi (nhanh 3 da guard null, ColumnViewService cung da null-safe
+		// tu DS196). Fail-closed 400 truoc moi doc, theo mau ghost-id
+		// DS105 A1; schemeId hop le giu nguyen hanh vi. Lay mot lan roi
+		// dung lai o ca 2 nhanh.
+		GenScheme requestedScheme = genSchemeDao.get(schemeId);
+		if (requestedScheme == null) {
+			throw new ServiceException("Phương án không tồn tại: " + schemeId);
+		}
 		List<DictItem> itemList = getItemList();
 		
 		// Loại trừ trường không hiển thị trong danh sách
@@ -76,14 +87,12 @@ public class QueryColumnViewService {
 				column.setQueryType(getDictItem(itemList, "5002", "right_like"));
 			
 				GenTable table = genTableDao.get(tableId);
-				GenScheme scheme = genSchemeDao.get(schemeId);
-				scheme.setGenTable(table);
-				column.setCustomType(scheme);				
+				requestedScheme.setGenTable(table);
+				column.setCustomType(requestedScheme);
 			} else if (column.getJavaType() != null && "This".equals(column.getJavaType().getValue())) {
 				GenTable table = genTableDao.get(tableId);
-				GenScheme scheme = genSchemeDao.get(schemeId);
-				scheme.setGenTable(table);
-				column.setCustomType(scheme);
+				requestedScheme.setGenTable(table);
+				column.setCustomType(requestedScheme);
 			} else if(column.getCustomType() != null && !StringUtils.isNullOrEmpty(column.getCustomType().getId())) {
 				GenScheme scheme = genSchemeDao.get(column.getCustomType().getId());
 				if(scheme != null) {
