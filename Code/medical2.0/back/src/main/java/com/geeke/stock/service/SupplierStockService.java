@@ -242,6 +242,37 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         return kept;
     }
 
+    /**
+     * DS261: fail-closed 400 khi dong nhap kho co han su dung truoc ngay
+     * san xuat (lo het han truoc khi san xuat). Truoc day khong guard nao
+     * kiem tra thu tu ngay: saves()/savesTo()/savesToAudit() ghi thang
+     * produce_date/end_date qua saveInternal, form nhap kho that thu ca
+     * 2 ngay tu nguoi dung (addstorage.vue, supplierStockForm.vue).
+     * Guard dat o 2 endpoint nhap kho nguoi dung (inStorage /
+     * inStorageByCompany), KHONG dat trong saves() vi auditHos
+     * (HosDepartmentStorageController) tu dat produceDate = new Date()
+     * khi scrq HIS null, endDate = yxq HIS — lo het han that (yxq qua
+     * khu) co endDate < produceDate hop le, guard o saves() se chan
+     * luong auditHos hop le. endDate == produceDate giu hop le (cung
+     * ngay, quy uoc bien DS260); mot trong hai null giu hop le (cot
+     * nullable). Kiem tra HET cac dong TRUOC moi ghi de batch bi tu
+     * choi khong de lai dong nao.
+     */
+    public void checkStockDateOrder(StorageEvt storageEvt) {
+        if (storageEvt == null || storageEvt.getSupplierStockList() == null) {
+            return;
+        }
+        for (SupplierStock entity : storageEvt.getSupplierStockList()) {
+            if (entity == null) {
+                continue;
+            }
+            if (entity.getProduceDate() != null && entity.getEndDate() != null
+                    && entity.getEndDate().before(entity.getProduceDate())) {
+                throw new ServiceException("Hạn sử dụng không được trước ngày sản xuất");
+            }
+        }
+    }
+
     @Transactional(readOnly = false)
     public void saves(StorageEvt storageEvt) {
         // DS166 A: fail-closed 400 truoc moi doc/ghi. Truoc day:
