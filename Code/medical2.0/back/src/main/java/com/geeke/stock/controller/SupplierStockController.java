@@ -157,6 +157,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
           }
          );
         supplierStockService.checkStockDateOrder(storageEvt); // DS261: han su dung truoc ngay san xuat -> 400 truoc moi ghi
+        supplierStockService.checkProduceDateNotFuture(storageEvt); // DS265: ngay san xuat o tuong lai -> 400 truoc moi ghi
         supplierStockService.saves(storageEvt);
         supplierStockService.savesTo(storageEvt);
         if("true".equals(medicareConfigProperties.getCheck())){
@@ -201,6 +202,7 @@ public class SupplierStockController extends CrudController<SupplierStockService
     public ResponseEntity<JSONObject> inStorageByCompany(@RequestBody StorageEvt storageEvt) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
         supplierStockService.checkStockDateOrder(storageEvt); // DS261: han su dung truoc ngay san xuat -> 400 truoc moi ghi
+        supplierStockService.checkProduceDateNotFuture(storageEvt); // DS265: ngay san xuat o tuong lai -> 400 truoc moi ghi
         supplierStockService.saves(storageEvt);
         supplierStockService.savesToAudit(storageEvt);
         return ResponseEntity.ok(ResultUtil.successJson());

@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -269,6 +271,39 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             if (entity.getProduceDate() != null && entity.getEndDate() != null
                     && entity.getEndDate().before(entity.getProduceDate())) {
                 throw new ServiceException("Hạn sử dụng không được trước ngày sản xuất");
+            }
+        }
+    }
+
+    /** Vung gio phong kham (GMT+7), nhu PatientService.DB_ZONE (DS264). */
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    /**
+     * DS265: fail-closed 400 khi dong nhap kho co ngay san xuat o tuong
+     * lai (thuoc chua san xuat da nhap kho). Truoc day khong guard nao
+     * kiem tra tuong lai: saves()/savesTo()/savesToAudit() ghi thang
+     * produce_date qua saveInternal, form nhap kho that thu ngay san
+     * xuat tu nguoi dung (addstorage.vue, supplierStockForm.vue).
+     * Guard dat o 2 endpoint nhap kho nguoi dung (inStorage /
+     * inStorageByCompany), cung vi tri goi checkStockDateOrder (DS261),
+     * KHONG dat trong saves() theo mau DS261. So sanh theo ngay trong
+     * vung GMT+7 (DB_ZONE, nhu DS264): produceDate hom nay giu hop le
+     * (san xuat trong ngay), qua khu / null giu hop le; chi sau hom nay
+     * -> 400. Kiem tra HET cac dong TRUOC moi ghi de batch bi tu choi
+     * khong de lai dong nao.
+     */
+    public void checkProduceDateNotFuture(StorageEvt storageEvt) {
+        if (storageEvt == null || storageEvt.getSupplierStockList() == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now(DB_ZONE);
+        for (SupplierStock entity : storageEvt.getSupplierStockList()) {
+            if (entity == null || entity.getProduceDate() == null) {
+                continue;
+            }
+            if (entity.getProduceDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                    .isAfter(today)) {
+                throw new ServiceException("Ngày sản xuất không được ở tương lai");
             }
         }
     }
