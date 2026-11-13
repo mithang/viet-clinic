@@ -10,6 +10,8 @@ import com.geeke.outpatient.service.RecipelDetailService;
 import com.geeke.outpatient.service.RecipelInfoService;
 import com.geeke.utils.StringUtils;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +63,9 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         if (entity.getExecuteDate() == null) {
             throw new ServiceException("Ngày thực hiện không được để trống");
         }
+        // DS269: ngay thuc hien khong duoc la ngay tuong lai (xem
+        // checkExecuteDateNotFuture o duoi).
+        checkExecuteDateNotFuture(entity);
         RecipelDetail detail = entity.getRecipelDetail();
         if (detail == null || StringUtils.isBlank(detail.getId())) {
             throw new ServiceException("Chi tiết đơn thuốc không được để trống");
@@ -132,6 +137,25 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         // executions — xem ghi chu trong checkCureManagementNonNegative.
         checkCureManagementNonNegative(entity);
         return super.save(entity);
+    }
+
+    // DS269: ngay thuc hien dieu tri khong duoc la ngay tuong lai —
+    // dieu tri chua xay ra khong the co ngay thuc hien sau hom nay.
+    // So sanh theo ngay trong vung gio phong kham GMT+7 (DB_ZONE, nhu
+    // DS264/DS265/DS266): hom nay va qua khu giu nguyen (ghi bu, ghi
+    // tre hop le), null da 400 o tren (required) nen cho qua o day.
+    // Thu hoi (delType='1') luu lai executeDate goc (qua khu) nen
+    // khong bi chan. Chi co 1 duong ghi save() (khong route bulk).
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static void checkExecuteDateNotFuture(CureManagement entity) {
+        if (entity == null || entity.getExecuteDate() == null) {
+            return;
+        }
+        if (entity.getExecuteDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                .isAfter(LocalDate.now(DB_ZONE))) {
+            throw new ServiceException("Ngày thực hiện không được là ngày tương lai.");
+        }
     }
 
     // DS217: xem ghi chu o save().
