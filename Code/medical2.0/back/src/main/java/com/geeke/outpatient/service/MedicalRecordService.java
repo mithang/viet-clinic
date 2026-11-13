@@ -349,6 +349,17 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         if (medicalRecord.getVitalBpDia() != null && medicalRecord.getVitalBpDia() < 0) {
             throw new ServiceException("Huyết áp tâm trương không được âm");
         }
+        // DS262: huyet ap tam thu thap hon tam truong ve vat ly khong the
+        // co (tam thu luon >= tam truong); ca hai deu nhap tay tren form
+        // kham that (medicalOutpatientRecord/index.vue:489-500). Truoc day
+        // luu that qua moi duong ghi (probe pre P1/P3/P4). Chi chan khi ca
+        // hai deu co gia tri; bang nhau giu hop le (quy uoc DS260/DS261),
+        // mot trong hai null giu hop le.
+        if (medicalRecord.getVitalBpSys() != null
+                && medicalRecord.getVitalBpDia() != null
+                && medicalRecord.getVitalBpSys() < medicalRecord.getVitalBpDia()) {
+            throw new ServiceException("Huyết áp tâm thu không được thấp hơn huyết áp tâm trương");
+        }
         if (medicalRecord.getVitalTemperature() != null
                 && medicalRecord.getVitalTemperature().compareTo(java.math.BigDecimal.ZERO) < 0) {
             throw new ServiceException("Nhiệt độ không được âm");
@@ -358,6 +369,12 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
         }
         if (medicalRecord.getVitalSpo2() != null && medicalRecord.getVitalSpo2() < 0) {
             throw new ServiceException("SpO2 không được âm");
+        }
+        // DS262: SpO2 la ti le phan tram bao hoa oxy, khong the vuot qua
+        // 100; gia tri 101+ truoc day luu that qua bulkInsert/bulkUpdate
+        // (probe pre P2/P5). 100 giu hop le, null giu hop le.
+        if (medicalRecord.getVitalSpo2() != null && medicalRecord.getVitalSpo2() > 100) {
+            throw new ServiceException("SpO2 không được vượt quá 100%");
         }
         if (medicalRecord.getVitalWeight() != null
                 && medicalRecord.getVitalWeight().compareTo(java.math.BigDecimal.ZERO) < 0) {
