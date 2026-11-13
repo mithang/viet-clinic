@@ -148,6 +148,10 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
         if (entity.getStatus() == null) {
             entity.setStatus("0");
         }
+        // DS266: ngay muon kham khong duoc la ngay qua khu — luat cua
+        // chinh submitIntake (G2) nhung 3 duong CRUD chung khong kiem
+        // tra; null de @Valid/DB xu ly (DS79), chi chan ngay qua khu.
+        checkWantedDateNotPast(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). Tat ca cac
         // truong chu deu KHONG co @Length: patientName/service ->
         // varchar(100), phone -> varchar(20), status -> varchar(1)
@@ -184,6 +188,7 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     public List<String> bulkInsert(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
             forceSessionCompany(entity);
+            checkWantedDateNotPast(entity);
             checkBookingRequestLengths(entity);
         }
         return super.bulkInsert(entitys);
@@ -194,6 +199,7 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     public List<String> bulkUpdate(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
             checkRowOwnership(entity.getId());
+            checkWantedDateNotPast(entity);
             checkBookingRequestLengths(entity);
         }
         return super.bulkUpdate(entitys);
@@ -206,6 +212,20 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
             checkRowOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS266: ngay muon kham phai la hom nay tro di (cung luat nhu
+    // submitIntake). Null-safe: null de @Valid (save) / NOT NULL cua DB
+    // xu ly, khong thuoc vong nay. Chi chan ngay qua khu; bound +90
+    // ngay cua intake la chinh sach chong spam form cong khai, KHONG
+    // mirror sang duong le tan.
+    private static void checkWantedDateNotPast(BookingRequest entity) {
+        if (entity == null || entity.getWantedDate() == null) {
+            return;
+        }
+        if (dateColumnDay(entity.getWantedDate()).isBefore(clinicToday())) {
+            throw new ServiceException("Ngày muốn khám không được là ngày quá khứ.");
+        }
     }
 
     // DS149 C: xem ghi chu o save().
@@ -440,6 +460,12 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
             throw new IllegalArgumentException("Yêu cầu không tồn tại, đã được xử lý trước đó, hoặc không thuộc phòng khám này.");
         }
         LocalDate wanted = dateColumnDay(request.getWantedDate());
+        // DS266: dong legacy tao truoc fix co the mang ngay qua khu;
+        // xac nhan no se tao lich hen qua khu nen chan truoc kiem tra
+        // lich truc (controller map IllegalArgumentException -> 400).
+        if (wanted.isBefore(clinicToday())) {
+            throw new IllegalArgumentException("Ngày muốn khám không được là ngày quá khứ.");
+        }
         int roster = dao.countRosterForDate(companyId, wanted.format(DATE_FMT));
         if (roster <= 0) {
             throw new IllegalArgumentException("Ngày " + wanted.format(DATE_FMT)
