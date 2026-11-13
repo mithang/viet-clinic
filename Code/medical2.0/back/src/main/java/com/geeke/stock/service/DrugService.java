@@ -220,6 +220,13 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     // DS223: xem ghi chu o save(). Chi 2 truong gia chay vao tien ke
     // don: price, retailPrice. Null-safe (null giu nguyen), 0 giu
     // nguyen; am -> ServiceException (400).
+    // DS242: mo rong them inventory (int nguyen thuy, khong null duoc)
+    // -- ton kho am ve vat ly khong the co nhung mapper insert/update/
+    // bulk* ghi thang #{inventory} khong dieu kien (DrugDao.xml
+    // :485-525/:563-571/:617-661/:826-838); DS69/DS132 chi chan bang
+    // tong ton kho (medicinal_stock_control), khong chan cot catalog
+    // nay; DS233/DS234 chi chan so luong dong nhap kho, khong chan
+    // inventory catalog. Am -> 400, 0 giu nguyen (quy uoc DS219).
     private static void checkDrugNonNegative(Drug drug) {
         if (drug == null) {
             return;
@@ -231,6 +238,9 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         if (drug.getRetailPrice() != null
                 && drug.getRetailPrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new ServiceException("Giá bán lẻ không được âm");
+        }
+        if (drug.getInventory() < 0) {
+            throw new ServiceException("Tồn kho không được âm");
         }
     }
 

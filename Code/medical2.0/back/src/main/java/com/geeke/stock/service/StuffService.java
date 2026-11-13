@@ -269,6 +269,14 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     // DS223: xem ghi chu o save(). Chi 2 truong gia chay vao tien ke
     // don: priceOutSell, retailPrice. Null-safe (null giu nguyen), 0 giu
     // nguyen; am -> ServiceException (400).
+    // DS242: mo rong them inventory (int nguyen thuy) + packNumber
+    // (Integer nullable) -- ca hai deu duoc mapper insert/update/bulk*
+    // ghi thang khong dieu kien (StuffDao.xml pack_number/inventory);
+    // rieng bulkUpdate khong co trim inventory nen chi packNumber toi
+    // duoc qua duong do, nhung guard dat o service nen phu ca 3 duong
+    // save/bulkInsert/bulkUpdate. Ton kho am / so luong dong goi am ve
+    // vat ly khong the co; am -> 400, 0 giu nguyen (quy uoc DS219),
+    // packNumber null giu nguyen.
     private static void checkStuffNonNegative(Stuff stuff) {
         if (stuff == null) {
             return;
@@ -280,6 +288,12 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         if (stuff.getRetailPrice() != null
                 && stuff.getRetailPrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new ServiceException("Giá bán lẻ không được âm");
+        }
+        if (stuff.getInventory() < 0) {
+            throw new ServiceException("Tồn kho không được âm");
+        }
+        if (stuff.getPackNumber() != null && stuff.getPackNumber() < 0) {
+            throw new ServiceException("Số lượng đóng gói không được âm");
         }
     }
 
