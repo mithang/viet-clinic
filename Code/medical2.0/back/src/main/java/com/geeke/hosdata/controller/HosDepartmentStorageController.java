@@ -171,6 +171,19 @@ public class HosDepartmentStorageController extends BaseController {
         List<String> alreadyImportedIds = new ArrayList<>();
         String companyId = SessionUtils.getUserJson().getString("companyId");
         int totalNumber = 0; // Khởi tạotổng số là 0
+        // DS249: danh sach null / phan tu null truoc day NPE 500 o
+        // hisDrugsStorages.size() (list null) / hisItem.getCrkmxId()
+        // (:194, log backend) va vong callback forEach o cuoi ham —
+        // fail-closed 400 truoc moi doc/ghi, mau guard DS232
+        // (syncToClinic). Danh sach rong van 200 no-op (giu hanh vi cu).
+        if (hisDrugsStorages == null) {
+            throw new ServiceException("Danh sách nhập kho không được để trống");
+        }
+        for (HisDrugsStorage hisItem : hisDrugsStorages) {
+            if (hisItem == null) {
+                throw new ServiceException("Dòng nhập kho không được để trống");
+            }
+        }
         for (int i = 0; i < hisDrugsStorages.size(); i++){
             // DS25: moi dong HIS duoc kiem chung TRUOC moi ghi — truoc day
             // dong khong dung duoc lam ca lo 500 ma khong noi ro dong nao
