@@ -1,6 +1,8 @@
 package com.geeke.outpatient.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 import cn.hutool.core.util.ObjectUtil;
@@ -130,11 +132,36 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS276: ngay tai kham tren don thuoc khong duoc la ngay qua khu —
+    // ngay tai kham la ngay hen kham lai trong tuong lai theo dinh
+    // nghia (truong followUpDate, RecipelInfo.java:49 "tai kham thoi
+    // gian"); don co ngay tai kham da qua khong bao gio duoc diem danh
+    // nen chi la du lieu chet. So sanh theo ngay trong vung gio phong
+    // kham GMT+7 (DB_ZONE, nhu DS264/DS265/DS266/DS269/DS270/DS271/
+    // DS272/DS273/DS274/DS275): hom nay va tuong lai giu nguyen, null
+    // giu nguyen (cot nullable, don khong hen tai kham). Khong co
+    // duong goi noi bo nao set followUpDate (grep chi thay
+    // getter/setter cua entity; khong Vue nao dung truong nay) nen
+    // guard khong doi ngu nghia luong hop le. Khac DS275
+    // Registration.followUpDate (luot kham, bang khac).
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static void checkFollowUpDateNotPast(RecipelInfo entity) {
+        if (entity == null || entity.getFollowUpDate() == null) {
+            return;
+        }
+        if (entity.getFollowUpDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                .isBefore(LocalDate.now(DB_ZONE))) {
+            throw new ServiceException("Ngày tái khám trên đơn thuốc không được là ngày quá khứ.");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public RecipelInfo save(RecipelInfo entity) {
         validateRequired(entity);
         checkNonNegative(entity);
+        checkFollowUpDateNotPast(entity);
         if (StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Đơn thuốc không tồn tại: "
@@ -153,6 +180,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             validateRequired(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
+            checkFollowUpDateNotPast(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -167,6 +195,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             validateRequired(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
+            checkFollowUpDateNotPast(entity);
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của đơn thuốc đã tồn tại");
             }
