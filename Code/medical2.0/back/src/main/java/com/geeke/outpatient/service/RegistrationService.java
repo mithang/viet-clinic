@@ -237,6 +237,26 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    // DS272: thoi gian hoan thanh kham/tri lieu khong duoc la ngay tuong
+    // lai — luot kham chua the hoan thanh vao ngay sau hom nay. So sanh
+    // theo ngay trong vung gio phong kham GMT+7 (DB_ZONE, nhu
+    // DS264/DS265/DS266/DS269/DS270/DS271): hom nay va qua khu giu nguyen
+    // (ghi bu, ghi tre hop le), null giu nguyen (cot nullable). Guard o
+    // save/bulkInsert/bulkUpdate/wxSave. Duong goi noi bo duy nhat set
+    // treatmentDate la RecipelDetailService:417,483 — set new Date()
+    // (hien tai) roi goi save() nen luon qua guard, khong doi ngu nghia
+    // luong hop le. Khac DS268 diagnoseDate tuong lai (BLOCKED, khong
+    // cham) va DS271 morbidityTime.
+    private static void checkRegistrationTreatmentDateNotFuture(Registration entity) {
+        if (entity == null || entity.getTreatmentDate() == null) {
+            return;
+        }
+        if (entity.getTreatmentDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                .isAfter(LocalDate.now(DB_ZONE))) {
+            throw new ServiceException("Thời gian hoàn thành khám/trị liệu không được là ngày tương lai.");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
@@ -250,6 +270,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationQueueNumber(entity);
         // DS271: chan thoi gian phat benh tuong lai truoc khi gan so thu tu.
         checkRegistrationMorbidityTimeNotFuture(entity);
+        // DS272: chan thoi gian hoan thanh kham/tri lieu tuong lai nhu DS271.
+        checkRegistrationTreatmentDateNotFuture(entity);
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
@@ -299,6 +321,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationQueueNumber(entity);
             // DS271: bulk cung chan thoi gian phat benh tuong lai nhu save().
             checkRegistrationMorbidityTimeNotFuture(entity);
+            // DS272: bulk cung chan thoi gian hoan thanh tuong lai nhu save().
+            checkRegistrationTreatmentDateNotFuture(entity);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -331,6 +355,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationQueueNumber(entity);
             // DS271: bulkUpdate cung chan thoi gian phat benh tuong lai nhu save().
             checkRegistrationMorbidityTimeNotFuture(entity);
+            // DS272: bulkUpdate cung chan thoi gian hoan thanh tuong lai nhu save().
+            checkRegistrationTreatmentDateNotFuture(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -613,6 +639,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationQueueNumber(entity);
         // DS271: wxSave cung chan thoi gian phat benh tuong lai nhu save().
         checkRegistrationMorbidityTimeNotFuture(entity);
+        // DS272: wxSave cung chan thoi gian hoan thanh tuong lai nhu save().
+        checkRegistrationTreatmentDateNotFuture(entity);
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
