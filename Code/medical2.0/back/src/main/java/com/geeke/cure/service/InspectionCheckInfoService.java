@@ -288,6 +288,15 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     // (tien le DS270): caller noi bo duy nhat TollInfoService:1112
     // de ca hai ngay null nen khong the vo luong thu phi. Khac DS270
     // completeDate cua phieu cha va DS268 diagnoseDate (BLOCKED).
+    // DS289: them kiem tra THU TU — ngay xet nghiem (checkoutDate)
+    // truoc ngay lay mau (samplingDate) la khong the ve vat ly (mau
+    // chua lay khong the xet nghiem), cung buoc voi DS283/DS288 (guard
+    // thu tu sau guard tuong lai tren cung cap truong). So sanh theo
+    // ngay GMT+7: checkoutDate truoc samplingDate -> 400; bang nhau
+    // (xet nghiem cung ngay lay mau la binh thuong) / mot null / ca
+    // hai null giu 200. So sanh chi tren payload la dung vi mapper
+    // ghi de CA HAI cot tu payload o ca insert lan update, nen
+    // payload tung phan khong bao gio de lai cap dao nguoc da luu.
     private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
 
     private static void checkInspectionCheckInfoDatesNotFuture(InspectionCheckInfo entity) {
@@ -303,6 +312,11 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                 && entity.getCheckoutDate().toInstant().atZone(DB_ZONE).toLocalDate()
                         .isAfter(LocalDate.now(DB_ZONE))) {
             throw new ServiceException("Thời gian xét nghiệm không được là ngày tương lai.");
+        }
+        if (entity.getSamplingDate() != null && entity.getCheckoutDate() != null
+                && entity.getCheckoutDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isBefore(entity.getSamplingDate().toInstant().atZone(DB_ZONE).toLocalDate())) {
+            throw new ServiceException("Thời gian xét nghiệm không được trước thời gian lấy mẫu.");
         }
     }
 
