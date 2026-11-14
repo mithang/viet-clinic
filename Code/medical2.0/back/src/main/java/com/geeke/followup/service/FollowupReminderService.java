@@ -128,6 +128,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         // null-safe. Guard dat sau mac dinh status "0" o tren.
         checkFollowupReminderLengths(entity);
         checkNextDateNotPast(entity);
+        checkLastNoticeDateNotFuture(entity);
         return super.save(entity);
     }
 
@@ -168,6 +169,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             validateRequired(entity);
             checkFollowupReminderLengths(entity);
             checkNextDateNotPast(entity);
+            checkLastNoticeDateNotFuture(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -204,8 +206,8 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     // tao moi mot lich hen da qua. So theo ngay phong kham GMT+7
     // (CLINIC_ZONE, nhu clinicToday/dueBefore); hom nay/tuong lai/
     // null giu nguyen (cot nullable, frontend bat buoc nhung API cho
-    // phep thieu). Khong cham lastNoticeDate: chi dao.markNoticed
-    // (SQL, ngay hien tai) moi ghi, khong qua save()/bulk*.
+    // phep thieu). lastNoticeDate: xem DS287 (guard tuong lai o
+    // checkLastNoticeDateNotFuture, goi o save()/bulkInsert()).
     private static void checkNextDateNotPast(FollowupReminder entity) {
         if (entity == null || entity.getNextDate() == null) {
             return;
@@ -213,6 +215,32 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         if (entity.getNextDate().toInstant().atZone(CLINIC_ZONE).toLocalDate()
                 .isBefore(clinicToday())) {
             throw new ServiceException("Ngày hẹn tái khám không được là ngày quá khứ.");
+        }
+    }
+
+    // DS287: ngay da tao thong bao gan nhat khong duoc o tuong lai.
+    // lastNoticeDate ghi lai lan job tao thong bao noi bo GAN NHAT --
+    // theo dinh nghia no la mot ngay da xay ra. DS277 da hoan truong
+    // nay voi ly do "chi dao.markNoticed moi ghi", nhung ly do do
+    // SAI o tang mapper: insert :160, update :193 va bulkInsert :217
+    // cua FollowupReminderDao.xml deu ghi last_notice_date =
+    // #{lastNoticeDate} VO DIEU KIEN tu payload, nen API save/
+    // bulkInsert trong duoc gia tri tuong lai. Hau qua that, khong
+    // chi du lieu xau: dao.markNoticed chi chay khi
+    // (last_notice_date IS NULL OR last_notice_date < today)
+    // (:148), nen mot gia tri tuong lai lam job im lang voi nhac
+    // lich do cho toi qua ngay do (2030) -- tat ca thong bao tai
+    // kham cua benh nhan bi ngat. So theo ngay phong kham GMT+7;
+    // hom nay (job vua tao thong bao) / qua khu / null giu 200.
+    // Chi goi o save()/bulkInsert() -- bulkUpdate KHONG co CASE
+    // last_notice_date nen khong ghi cot nay, khong can guard.
+    private static void checkLastNoticeDateNotFuture(FollowupReminder entity) {
+        if (entity == null || entity.getLastNoticeDate() == null) {
+            return;
+        }
+        if (entity.getLastNoticeDate().toInstant().atZone(CLINIC_ZONE).toLocalDate()
+                .isAfter(clinicToday())) {
+            throw new ServiceException("Ngày đã tạo thông báo gần nhất không được là ngày tương lai.");
         }
     }
 
