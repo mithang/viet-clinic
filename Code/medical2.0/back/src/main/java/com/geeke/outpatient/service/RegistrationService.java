@@ -327,6 +327,59 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    // DS280: 6 ngay su kien con lai khong duoc la ngay tuong lai —
+    // dispensingDate (thoi gian phat thuoc), chargeDate (thoi gian thu
+    // phi), signedDate (thoi gian ky), exitNumberDate (thoi gian huy
+    // so), retreatsDate (thoi gian hoan phi), returnDate (thoi gian
+    // tra lai) — su kien chua xay ra khong the co ngay sau hom nay.
+    // So sanh theo ngay trong vung gio phong kham GMT+7 (DB_ZONE, nhu
+    // DS264/DS265/DS266/DS269/DS270/DS271/DS272/DS273/DS274/DS275/
+    // DS279): hom nay va qua khu giu nguyen (ghi bu, ghi tre hop le),
+    // null giu nguyen (cot nullable). Guard o
+    // save/bulkInsert/bulkUpdate/wxSave. Duong goi noi bo deu set
+    // new Date() roi goi save() (TollInfoService:551 chargeDate, :553
+    // retreatsDate, :1167 chargeDate; SupplierStockService:172
+    // dispensingDate, :220 returnDate; controller refund set
+    // exitNumberDate new Date()) nen luon qua guard; signedDate khong
+    // co setter noi bo nao. Khong doi ngu nghia luong hop le. Khac
+    // DS279 payDate (truong khac, cung entity) va DS271/DS272.
+    private static void checkRegistrationEventDatesNotFuture(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now(DB_ZONE);
+        if (entity.getDispensingDate() != null
+                && entity.getDispensingDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian phát thuốc không được là ngày tương lai.");
+        }
+        if (entity.getChargeDate() != null
+                && entity.getChargeDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian thu phí không được là ngày tương lai.");
+        }
+        if (entity.getSignedDate() != null
+                && entity.getSignedDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian ký không được là ngày tương lai.");
+        }
+        if (entity.getExitNumberDate() != null
+                && entity.getExitNumberDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian hủy số không được là ngày tương lai.");
+        }
+        if (entity.getretreatsDate() != null
+                && entity.getretreatsDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian hoàn phí không được là ngày tương lai.");
+        }
+        if (entity.getReturnDate() != null
+                && entity.getReturnDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian trả lại không được là ngày tương lai.");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
@@ -348,6 +401,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationFollowUpDateNotPast(entity);
         // DS279: chan thoi gian thanh toan tuong lai nhu DS271/DS272.
         checkRegistrationPayDateNotFuture(entity);
+        // DS280: chan 6 ngay su kien con lai tuong lai nhu DS279.
+        checkRegistrationEventDatesNotFuture(entity);
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
@@ -405,6 +460,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationFollowUpDateNotPast(entity);
             // DS279: bulk cung chan thoi gian thanh toan tuong lai nhu save().
             checkRegistrationPayDateNotFuture(entity);
+            // DS280: bulk cung chan 6 ngay su kien con lai tuong lai nhu save().
+            checkRegistrationEventDatesNotFuture(entity);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -445,6 +502,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationFollowUpDateNotPast(entity);
             // DS279: bulkUpdate cung chan thoi gian thanh toan tuong lai nhu save().
             checkRegistrationPayDateNotFuture(entity);
+            // DS280: bulkUpdate cung chan 6 ngay su kien con lai tuong lai nhu save().
+            checkRegistrationEventDatesNotFuture(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -735,6 +794,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationFollowUpDateNotPast(entity);
         // DS279: wxSave cung chan thoi gian thanh toan tuong lai nhu save().
         checkRegistrationPayDateNotFuture(entity);
+        // DS280: wxSave cung chan 6 ngay su kien con lai tuong lai nhu save().
+        checkRegistrationEventDatesNotFuture(entity);
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
