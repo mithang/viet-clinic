@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +53,9 @@ public class HosDepartmentStorageController extends BaseController {
     private  final HosCollectDataController hosCollectDataController;
 
     private final SupplierStockService supplierStockService ;
+
+    /** Vung gio phong kham (GMT+7), nhu PatientService.DB_ZONE (DS264). */
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
 
 
     /**
@@ -235,6 +240,24 @@ public class HosDepartmentStorageController extends BaseController {
             }
             if (hisItem.getPfj().compareTo(BigDecimal.ZERO) < 0) {
                 throw new ServiceException("Đơn giá của thuốc mã " + hisItem.getYpdm() + " không được âm");
+            }
+            // DS291: scrq (ngay san xuat HIS) o tuong lai — DS265 chi
+            // guard 2 endpoint nhap kho thu cong (inStorage /
+            // inStorageByCompany), duong audit nay ghi thang
+            // produceDate = scrq ma khong nhin ngay (probe: scrq 2030
+            // -> 200 + produce_date 2030 persist). Mien tru DS261
+            // (khong guard thu tu ngay tren duong audit vi lo het han
+            // that co yxq qua khu + produceDate mac dinh hom nay) khong
+            // bao bien truong hop nay: scrq hop le tu HIS chi co the la
+            // qua khu hoac null -> hom nay, khong bao gio tuong lai
+            // (thuoc chua san xuat khong the da nhap kho). Chan 400
+            // truoc moi ghi, ke ten ma thuoc; scrq hom nay / qua khu /
+            // null giu hop le. Khong cham saves() / mien tru DS261, khong
+            // cham guard thu tu ngay yxq < scrq tren duong audit.
+            if (hisItem.getScrq() != null
+                    && hisItem.getScrq().toInstant().atZone(DB_ZONE).toLocalDate()
+                            .isAfter(LocalDate.now(DB_ZONE))) {
+                throw new ServiceException("Ngày sản xuất của thuốc mã " + hisItem.getYpdm() + " không được ở tương lai");
             }
             if (factor > 1 && (drug.getPreparation() == null || !drug.getPreparation().contains("."))) {
                 throw new ServiceException("Quy cách của thuốc mã " + hisItem.getYpdm() + " không có dạng số thập phân nên không đổi được đơn vị chuẩn");
