@@ -105,6 +105,15 @@ public class OutpatientLogService {
         // hoan toan guard DS282 (receptionEndDate) / DS271 (morbidityTime)
         // cua RegistrationService.save/bulkInsert/bulkUpdate/wxSave.
         checkOutpatientLogDatesNotFuture(outpatientLogRc);
+        // DS288: chan cap ngay dao nguoc — ngay phat benh sau ngay kham
+        // (cung luot kham) la khong the: benh nhan khong the duoc tiep
+        // nhan vi mot benh chua phat. So sanh theo ngay lich GMT+7 nhu
+        // DS286; bang nhau giu hop le (phat benh dung ngay kham la
+        // binh thuong), mot trong hai null giu hop le (cot nullable).
+        // Chi so cap trong payload la du: mapper ghi de CA HAI cot tu
+        // payload nen payload thieu mot ngay khong bao gio de lai cap
+        // dao nguoc da luu (khac DS283 phai gop voi stored).
+        checkOutpatientLogDateOrder(outpatientLogRc);
         return outpatientLogDao.updateLog(outpatientLogRc);
     }
 
@@ -129,6 +138,20 @@ public class OutpatientLogService {
         if (outpatientLogRc.getMorbidityDate() != null
                 && outpatientLogRc.getMorbidityDate().toInstant().atZone(DB_ZONE).toLocalDate().isAfter(today)) {
             throw new ServiceException("Ngày phát bệnh không được là ngày tương lai.");
+        }
+    }
+
+    // DS288: ngay phat benh khong duoc sau ngay kham benh (xem ghi chu
+    // o updateLog).
+    private static void checkOutpatientLogDateOrder(OutpatientLog outpatientLogRc) {
+        if (outpatientLogRc == null
+                || outpatientLogRc.getVisitDate() == null
+                || outpatientLogRc.getMorbidityDate() == null) {
+            return;
+        }
+        if (outpatientLogRc.getMorbidityDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                .isAfter(outpatientLogRc.getVisitDate().toInstant().atZone(DB_ZONE).toLocalDate())) {
+            throw new ServiceException("Ngày phát bệnh không được sau ngày khám bệnh.");
         }
     }
 
