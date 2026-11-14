@@ -1,5 +1,7 @@
 package com.geeke.cure.service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +84,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         // type/status 1); remarks -> varchar(255). Gioi han theo cot DB;
         // null-safe.
         checkInspectionCheckLengths(entity);
+        checkCompleteDateNotFuture(entity);
         return super.save(entity);
     }
 
@@ -99,6 +102,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         for (InspectionCheck entity : entitys) {
             checkInspectionCheckRequired(entity);
             checkInspectionCheckLengths(entity);
+            checkCompleteDateNotFuture(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -125,6 +129,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             }
             checkInspectionCheckRequired(entity);
             checkInspectionCheckLengths(entity);
+            checkCompleteDateNotFuture(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -155,6 +160,27 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         checkLength(entity.getDiagnose(), 100, "Chẩn đoán Độ dài phải nằm trong khoảng 0 đến 100");
         checkLength(entity.getCompleteBy(), 100, "lập đơn Bác sĩ Độ dài phải nằm trong khoảng 0 đến 100");
         checkLength(entity.getRemarks(), 255, "Ghi chú Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    // DS270: ngay lap phieu xet nghiem/kiem tra khong duoc la ngay tuong
+    // lai — phieu chua lap khong the co thoi gian lap sau hom nay. So
+    // sanh theo ngay trong vung gio phong kham GMT+7 (DB_ZONE, nhu
+    // DS264/DS265/DS266/DS269): hom nay va qua khu giu nguyen (ghi bu,
+    // ghi tre hop le), null giu nguyen (cot nullable, form cho phep
+    // rong, khong co trong required). Chi guard save()/bulkInsert/
+    // bulkUpdate — allSave() noi bo duy nhat tu TollInfoService lay
+    // completeDate tu registration.receptionEndDate, khong phai user
+    // input, nen khong guard de khong vo luong thu phi.
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static void checkCompleteDateNotFuture(InspectionCheck entity) {
+        if (entity == null || entity.getCompleteDate() == null) {
+            return;
+        }
+        if (entity.getCompleteDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                .isAfter(LocalDate.now(DB_ZONE))) {
+            throw new ServiceException("Thời gian lập phiếu không được là ngày tương lai.");
+        }
     }
 
     private static void checkLength(String value, int max, String message) {
