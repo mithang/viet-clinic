@@ -127,6 +127,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         // C15/C16), remarks -> varchar(255). Gioi han theo cot DB;
         // null-safe. Guard dat sau mac dinh status "0" o tren.
         checkFollowupReminderLengths(entity);
+        checkNextDateNotPast(entity);
         return super.save(entity);
     }
 
@@ -166,6 +167,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             }
             validateRequired(entity);
             checkFollowupReminderLengths(entity);
+            checkNextDateNotPast(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -180,6 +182,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             // truoc khi ghi gi -- dong valid khong bi doi (probe A8).
             checkExists(entity.getId());
             checkFollowupReminderLengths(entity);
+            checkNextDateNotPast(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -191,6 +194,26 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             checkRowOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS277: ngay hen tai kham tiep theo khong duoc la ngay qua khu.
+    // nextDate la ngay hen TUONG LAI theo dinh nghia (frontend
+    // FollowupReminderCard.vue:38 el-date-picker "Chon ngay hen");
+    // ngay da qua la du lieu chet -- job due/daysOverdue chi xu ly
+    // dong da ton tai tro nen qua han theo thoi gian, khong phai de
+    // tao moi mot lich hen da qua. So theo ngay phong kham GMT+7
+    // (CLINIC_ZONE, nhu clinicToday/dueBefore); hom nay/tuong lai/
+    // null giu nguyen (cot nullable, frontend bat buoc nhung API cho
+    // phep thieu). Khong cham lastNoticeDate: chi dao.markNoticed
+    // (SQL, ngay hien tai) moi ghi, khong qua save()/bulk*.
+    private static void checkNextDateNotPast(FollowupReminder entity) {
+        if (entity == null || entity.getNextDate() == null) {
+            return;
+        }
+        if (entity.getNextDate().toInstant().atZone(CLINIC_ZONE).toLocalDate()
+                .isBefore(clinicToday())) {
+            throw new ServiceException("Ngày hẹn tái khám không được là ngày quá khứ.");
+        }
     }
 
     // DS149 C: xem ghi chu o save().
