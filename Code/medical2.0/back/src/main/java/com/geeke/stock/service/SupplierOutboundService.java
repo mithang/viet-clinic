@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -78,6 +80,8 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         // DS244: chan so am truoc moi ghi (xem
         // checkSupplierOutboundNonNegative; mau DS211 phieu nhap kho).
         checkSupplierOutboundNonNegative(outboundEvt.getSupplierOutbound());
+        // DS285: chan ngay phe duyet / ngay huy trong tuong lai.
+        checkSupplierOutboundDatesNotFuture(outboundEvt.getSupplierOutbound());
         // DS231: ep company theo session khi trong truoc moi ghi (mau
         // DS229 TollInfo.save / DS230 SupplierStorage.save). saveEvt
         // khong @Valid nen company thieu han van toi day: getCode deref
@@ -136,7 +140,43 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
     @Transactional(readOnly = false)
     public SupplierOutbound save(SupplierOutbound supplierOutbound) {
         checkSupplierOutboundNonNegative(supplierOutbound);
+        // DS285: chan ngay phe duyet / ngay huy trong tuong lai.
+        checkSupplierOutboundDatesNotFuture(supplierOutbound);
         return super.save(supplierOutbound);
+    }
+
+    // DS285: thoi gian phe duyet / ngay huy khong duoc la ngay tuong lai
+    // — phieu khong the da duoc phe duyet hay da bi huy vao mot ngay sau
+    // hom nay. So sanh theo ngay trong vung gio phong kham GMT+7
+    // (DB_ZONE, mau DS284 SupplierStorage, DS264/DS265/DS269/DS270/
+    // DS271/DS272/DS279/DS280/DS282): hom nay va qua khu giu nguyen
+    // (ghi bu, ghi tre hop le), null giu nguyen (2 cot nullable).
+    // Guard o ca hai duong ghi tao moi: save(OutboundEvt) va
+    // save(SupplierOutbound) — generic <update> khong ghi ngay nao
+    // (chi ghi company/supplier/breed/number/tien/method/remarks/
+    // reason) nen duong sua khong the trong ngay tuong lai; guard o
+    // save van chan payload sua mang ngay tuong lai truoc khi ghi.
+    // cancel()/examine() ghi thang qua DAO voi new Date() (hien tai),
+    // khong qua save, nen khong bi anh huong. bulkInsert/bulkUpdate
+    // da fail-closed 400 tu DS50. Frontend addstorageTo.vue khong bao
+    // gio gui 2 truong nay. Khac DS284 (SupplierStorage, entity khac).
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static void checkSupplierOutboundDatesNotFuture(SupplierOutbound entity) {
+        if (entity == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now(DB_ZONE);
+        if (entity.getExamineDate() != null
+                && entity.getExamineDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian phê duyệt không được là ngày tương lai.");
+        }
+        if (entity.getCancelDate() != null
+                && entity.getCancelDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Ngày hủy không được là ngày tương lai.");
+        }
     }
 
     // DS244: phieu xuat kho khong the xuat -N mat hang / -N tien.
