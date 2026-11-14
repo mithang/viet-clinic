@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +99,37 @@ public class OutpatientLogService {
         if (outpatientLogDao.getRegistrationCompanyId(outpatientLogRc.getId()) == null) {
             throw new ServiceException("Đăng ký khám không tồn tại");
         }
+        // DS286: chan 2 ngay tuong lai truoc khi ghi — mapper updateLog
+        // ghi thang a.reception_end_date = visitDate va
+        // a.morbidity_time = morbidityDate len registration, bypass
+        // hoan toan guard DS282 (receptionEndDate) / DS271 (morbidityTime)
+        // cua RegistrationService.save/bulkInsert/bulkUpdate/wxSave.
+        checkOutpatientLogDatesNotFuture(outpatientLogRc);
         return outpatientLogDao.updateLog(outpatientLogRc);
+    }
+
+    // DS286: ngay kham benh / ngay phat benh khong duoc la ngay tuong lai
+    // — benh nhan khong the duoc tiep nhan vao ngay mai, benh chua phat
+    // khong the co thoi gian phat benh sau hom nay. So sanh theo ngay
+    // trong vung gio phong kham GMT+7 (DB_ZONE, nhu DS271/DS282): hom
+    // nay va qua khu giu nguyen (ghi bu, ghi tre hop le), null giu
+    // nguyen (cot nullable). Chi duong ghi duy nhat cua OutpatientLog
+    // la updateLog; getLogs/list/export khong ghi ngay nao.
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static void checkOutpatientLogDatesNotFuture(OutpatientLog outpatientLogRc) {
+        if (outpatientLogRc == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now(DB_ZONE);
+        if (outpatientLogRc.getVisitDate() != null
+                && outpatientLogRc.getVisitDate().toInstant().atZone(DB_ZONE).toLocalDate().isAfter(today)) {
+            throw new ServiceException("Ngày khám bệnh không được là ngày tương lai.");
+        }
+        if (outpatientLogRc.getMorbidityDate() != null
+                && outpatientLogRc.getMorbidityDate().toInstant().atZone(DB_ZONE).toLocalDate().isAfter(today)) {
+            throw new ServiceException("Ngày phát bệnh không được là ngày tương lai.");
+        }
     }
 
     public List<Patient> getPoverty(String patientId) {
