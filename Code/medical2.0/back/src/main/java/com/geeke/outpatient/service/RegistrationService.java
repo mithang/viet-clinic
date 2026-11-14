@@ -414,6 +414,40 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    // DS283: thu tu cap ngay tiep nhan — receptionEndDate khong duoc
+    // truoc receptionStartDate (luot kham khong the ket thuc truoc khi
+    // bat dau; ho DS260/DS261/DS263). So sanh truc tiep Date.before
+    // (khong theo ngay lich nhu DS282 — cung ngay nhung gio nguoc van
+    // la khong the). Ca 2 ngay co gia tri moi chan; mot trong hai null
+    // giu nguyen (cot nullable). Guard o save/bulkInsert/bulkUpdate/
+    // wxSave. Mapper update/bulkUpdate CASE chi ghi reception_end_date
+    // (RegistrationDao.xml :406, :815) nen o duong update phai gop voi
+    // dong stored: end moi (neu co) so voi start da luu; start trong
+    // payload update khong duoc ghi nen khong dung lam chuan. stored
+    // null (tao moi) thi chi so cap trong payload. Duong goi noi bo
+    // deu set new Date() cho ca 2 (MedicalRecordService:1053-1054,
+    // :1074-1075 — bang nhau, qua) hoac chi end=new Date() tren dong
+    // co start qua khu (MedicalRecordService:635, :991, :1373 — end >=
+    // start, qua); khong form frontend nao cho nguoi dung chon 2 ngay
+    // nay (DS282). Khong doi ngu nghia luong hop le. Khac DS282 (2
+    // ngay tuong lai, cung cap).
+    private static void checkRegistrationReceptionDateOrder(Registration entity, Registration stored) {
+        if (entity == null) {
+            return;
+        }
+        Date start = entity.getReceptionStartDate();
+        if (start == null && stored != null) {
+            start = stored.getReceptionStartDate();
+        }
+        Date end = entity.getReceptionEndDate();
+        if (end == null && stored != null) {
+            end = stored.getReceptionEndDate();
+        }
+        if (start != null && end != null && end.before(start)) {
+            throw new ServiceException("Thời gian kết thúc tiếp nhận không được trước thời gian bắt đầu tiếp nhận.");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
@@ -446,10 +480,16 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // -> doUpdate 0 dong roi van 200 silent no-op (lop DS94/DS99; probe
         // A4; ca audit UPDATED ma cho id ma). Chi chap nhan update khi
         // dong da ton tai; tao moi phai gui id rong.
-        if (StringUtils.isNotBlank(entity.getId())
-                && super.get(entity.getId()) == null) {
-            throw new ServiceException("Đăng ký khám không tồn tại: " + entity.getId());
+        Registration stored = null;
+        if (StringUtils.isNotBlank(entity.getId())) {
+            stored = super.get(entity.getId());
+            if (stored == null) {
+                throw new ServiceException("Đăng ký khám không tồn tại: " + entity.getId());
+            }
         }
+        // DS283: chan thu tu cap ngay tiep nhan (end < start), gop voi
+        // dong stored o duong update (mapper update chi ghi end).
+        checkRegistrationReceptionDateOrder(entity, stored);
         return super.save(entity);
     }
 
@@ -500,6 +540,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationEventDatesNotFuture(entity);
             // DS282: bulk cung chan 2 ngay tiep nhan tuong lai nhu save().
             checkRegistrationReceptionDatesNotFuture(entity);
+            // DS283: bulk cung chan thu tu cap ngay tiep nhan nhu save().
+            checkRegistrationReceptionDateOrder(entity, null);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -544,6 +586,9 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationEventDatesNotFuture(entity);
             // DS282: bulkUpdate cung chan 2 ngay tiep nhan tuong lai nhu save().
             checkRegistrationReceptionDatesNotFuture(entity);
+            // DS283: bulkUpdate cung chan thu tu cap ngay tiep nhan, gop
+            // voi dong stored (mapper CASE chi ghi end).
+            checkRegistrationReceptionDateOrder(entity, stored);
         }
         return super.bulkUpdate(entitys);
     }
@@ -838,6 +883,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationEventDatesNotFuture(entity);
         // DS282: wxSave cung chan 2 ngay tiep nhan tuong lai nhu save().
         checkRegistrationReceptionDatesNotFuture(entity);
+        // DS283: wxSave cung chan thu tu cap ngay tiep nhan nhu save().
+        checkRegistrationReceptionDateOrder(entity, null);
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
