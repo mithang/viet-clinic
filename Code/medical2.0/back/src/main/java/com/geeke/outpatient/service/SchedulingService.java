@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import java.util.*;
 
@@ -44,7 +46,35 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
         if (entity != null && entity.getSchedulingtime() == null) {
             throw new ServiceException("Ngày xếp lịch không được để trống");
         }
+        checkSchedulingtimeNotPast(entity);
         return super.save(entity);
+    }
+
+    // DS278: ngay truc khong duoc la ngay qua khu. schedulingtime la
+    // ngay truc TUONG LAI theo dinh nghia (frontend scheduling/index.vue
+    // hien tuan hien tai / tuan sau, rowdata() luu ngay duoc chon);
+    // ca truc cua ngay da qua la du lieu chet -- khong ai truc duoc
+    // ngay da qua, va G2 confirm booking cung chi tim lich truc cua
+    // ngay dat (tuong lai). Cot DATE nen ngay hieu theo DB_ZONE GMT+7
+    // (quy uoc H1/BookingRequestService.dateColumnDay); truoc hom nay
+    // (ngay phong kham) -> 400; hom nay/tuong lai giu nguyen; null da
+    // bi chan o tren (DS106). Chi co duong save() moi ghi -- controller
+    // khong mo bulk route, khong co caller noi bo nao goi save().
+    private static final ZoneId CLINIC_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static LocalDate clinicToday() {
+        return LocalDate.now(CLINIC_ZONE);
+    }
+
+    private static void checkSchedulingtimeNotPast(Scheduling entity) {
+        if (entity == null || entity.getSchedulingtime() == null) {
+            return;
+        }
+        if (entity.getSchedulingtime().toInstant().atZone(DB_ZONE).toLocalDate()
+                .isBefore(clinicToday())) {
+            throw new ServiceException("Ngày xếp lịch trực không được là ngày quá khứ.");
+        }
     }
 
     // DS136 B: single delete fail-closed 400. SchedulingService truoc
