@@ -292,6 +292,62 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         }
     }
 
+    // DS290: phong kham khong the co ngay het han truoc ngay bat dau su
+    // dung -- cung cap ngay nhu Company (DS263) nhung tren bang `clinic`
+    // rieng. DS263 chi guard CompanyService; duong bulk cua Clinic
+    // (ClinicController.bulkInsert/bulkUpdate nhan List<Clinic>) qua
+    // CrudService generic, khong qua CompanyService.save nen bypass hoan
+    // toan (probe pre-fix: bulkInsert + bulkUpdate deu 200 + persist cap
+    // ngay dao nguoc tren bang clinic song). Guard fail-closed 400 truoc
+    // moi ghi, canh checkCompanyDateOrder (DS263): expireDate ==
+    // startUseDate giu hop le, mot trong hai null giu hop le (cot
+    // nullable, phong kham khong gioi han thoi gian).
+    private static void checkClinicDateOrder(Clinic clinic) {
+        if (clinic == null) {
+            return;
+        }
+        if (clinic.getStartUseDate() != null && clinic.getExpireDate() != null
+                && clinic.getExpireDate().before(clinic.getStartUseDate())) {
+            throw new ServiceException("Ngày hết hạn sử dụng không được trước ngày bắt đầu sử dụng");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Clinic save(Clinic clinic) {
+        // DS290: duong save(Clinic) generic -- hien khong endpoint nao
+        // goi truc tiep (ClinicController.save nhan Company), nhung la
+        // choke point neu caller noi bo dung; guard cung cap ngay nhu bulk.
+        checkClinicDateOrder(clinic);
+        return super.save(clinic);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<Clinic> entitys) {
+        // DS290: guard tung dong truoc dao.bulkInsert; CrudService goc
+        // chi check null/rong + tenant, khong co guard ngay nao.
+        if (entitys != null) {
+            for (Clinic clinic : entitys) {
+                checkClinicDateOrder(clinic);
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<Clinic> entitys) {
+        // DS290: nhu bulkInsert; guard chay truoc dao.bulkUpdate nen
+        // throw rollback toan bo list (class-level @Transactional).
+        if (entitys != null) {
+            for (Clinic clinic : entitys) {
+                checkClinicDateOrder(clinic);
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
     @Override
     @Transactional(readOnly = false)
     public int bulkDelete(List<Clinic> entitys) {
