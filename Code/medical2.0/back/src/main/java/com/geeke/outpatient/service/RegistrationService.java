@@ -380,6 +380,40 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    // DS282: 2 ngay tiep nhan khong duoc la ngay tuong lai —
+    // receptionStartDate (thoi gian bat dau tiep nhan), receptionEndDate
+    // (thoi gian ket thuc tiep nhan) — benh nhan chua the duoc tiep nhan
+    // vao ngay sau hom nay. La 2 truong Date cuoi cung cua Registration
+    // chua duoc guard (11 truong kia: DS271/DS272/DS274/DS275/DS279/
+    // DS280). So sanh theo ngay trong vung gio phong kham GMT+7
+    // (DB_ZONE, nhu DS264/DS265/DS266/DS269/DS270/DS271/DS272/DS273/
+    // DS274/DS275/DS279/DS280): hom nay va qua khu giu nguyen (ghi bu,
+    // ghi tre hop le), null giu nguyen (cot nullable). Guard o
+    // save/bulkInsert/bulkUpdate/wxSave. Duong goi noi bo deu set
+    // new Date() roi goi save() (MedicalRecordService:635, :991,
+    // :1053-1054, :1074-1075, :1373) nen luon qua guard; khong co form
+    // frontend nao cho nguoi dung chon 2 ngay nay. Khong doi ngu nghia
+    // luong hop le. Khac DS280 (6 ngay su kien khac, cung entity) va
+    // DS270 (completeDate lay tu receptionEndDate — ngay tuong lai o
+    // day cung se lam lech completeDate xuoi dong). Thu tu cap
+    // end < start khong thuoc pham vi vong nay (DS283 candidate).
+    private static void checkRegistrationReceptionDatesNotFuture(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now(DB_ZONE);
+        if (entity.getReceptionStartDate() != null
+                && entity.getReceptionStartDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian bắt đầu tiếp nhận không được là ngày tương lai.");
+        }
+        if (entity.getReceptionEndDate() != null
+                && entity.getReceptionEndDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian kết thúc tiếp nhận không được là ngày tương lai.");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
@@ -403,6 +437,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationPayDateNotFuture(entity);
         // DS280: chan 6 ngay su kien con lai tuong lai nhu DS279.
         checkRegistrationEventDatesNotFuture(entity);
+        // DS282: chan 2 ngay tiep nhan tuong lai nhu DS280.
+        checkRegistrationReceptionDatesNotFuture(entity);
         if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
             assignQueueNumber(entity);
         }
@@ -462,6 +498,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationPayDateNotFuture(entity);
             // DS280: bulk cung chan 6 ngay su kien con lai tuong lai nhu save().
             checkRegistrationEventDatesNotFuture(entity);
+            // DS282: bulk cung chan 2 ngay tiep nhan tuong lai nhu save().
+            checkRegistrationReceptionDatesNotFuture(entity);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -504,6 +542,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationPayDateNotFuture(entity);
             // DS280: bulkUpdate cung chan 6 ngay su kien con lai tuong lai nhu save().
             checkRegistrationEventDatesNotFuture(entity);
+            // DS282: bulkUpdate cung chan 2 ngay tiep nhan tuong lai nhu save().
+            checkRegistrationReceptionDatesNotFuture(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -796,6 +836,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationPayDateNotFuture(entity);
         // DS280: wxSave cung chan 6 ngay su kien con lai tuong lai nhu save().
         checkRegistrationEventDatesNotFuture(entity);
+        // DS282: wxSave cung chan 2 ngay tiep nhan tuong lai nhu save().
+        checkRegistrationReceptionDatesNotFuture(entity);
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
