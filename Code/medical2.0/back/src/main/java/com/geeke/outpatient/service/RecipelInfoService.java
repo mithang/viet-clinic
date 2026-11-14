@@ -202,6 +202,44 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS292: 2 cap ngay theo thu tu quy trinh tren don thuoc khong
+    // duoc dao nguoc — hoan phi truoc khi thu tien / tra thuoc truoc
+    // khi phat thuoc la khong the. Service chi guard moi event-date
+    // khoi tuong lai (DS281) va followUpDate khoi qua khu (DS276),
+    // khong nhin thu tu giua 2 su kien cua mot cap. Setter noi bo
+    // deu new Date() theo thu tu quy trinh (TollInfoService:606/712
+    // payDate truoc :923 retreatDate; SupplierStockService:166
+    // dispensionDate truoc khi duong tra thuoc cham retreat fields)
+    // nen guard khong pha luong hop le. So sanh theo ngay trong vung
+    // gio phong kham GMT+7 (DB_ZONE, nhu DS281): ca hai ngay co mat
+    // va ngay sau truoc ngay truoc -> 400; bang nhau giu 200 (hoan/
+    // tra cung ngay la binh thuong); mot null / ca hai null giu 200
+    // (su kien chua xay ra). KHONG guard dispensionDate < payDate
+    // (phat thuoc khong yeu cau da thu tien), retreatChargeDate <
+    // payDate (tra thuoc khong kiem tra isPay), invalidDate vs
+    // payDate (don co the bi huy truoc khi thu tien).
+    private static void checkRecipelInfoDateOrder(RecipelInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getRetreatDate() != null && entity.getPayDate() != null
+                && entity.getRetreatDate().toInstant().atZone(DB_ZONE)
+                        .toLocalDate().isBefore(entity.getPayDate()
+                                .toInstant().atZone(DB_ZONE).toLocalDate())) {
+            throw new ServiceException(
+                    "Ngày hoàn phí không được trước ngày thanh toán.");
+        }
+        if (entity.getRetreatDispensionDate() != null
+                && entity.getDispensionDate() != null
+                && entity.getRetreatDispensionDate().toInstant()
+                        .atZone(DB_ZONE).toLocalDate().isBefore(entity
+                                .getDispensionDate().toInstant()
+                                .atZone(DB_ZONE).toLocalDate())) {
+            throw new ServiceException(
+                    "Ngày trả thuốc không được trước ngày phát thuốc.");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public RecipelInfo save(RecipelInfo entity) {
@@ -209,6 +247,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
+        checkRecipelInfoDateOrder(entity);
         if (StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Đơn thuốc không tồn tại: "
@@ -229,6 +268,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
             checkRecipelInfoEventDatesNotFuture(entity);
+            checkRecipelInfoDateOrder(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -245,6 +285,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
             checkRecipelInfoEventDatesNotFuture(entity);
+            checkRecipelInfoDateOrder(entity);
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của đơn thuốc đã tồn tại");
             }
