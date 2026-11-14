@@ -16,6 +16,8 @@ import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -79,8 +81,44 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         checkSupplierStorageLengths(supplierStorage);
         // DS211: chan so am truoc moi ghi (xem checkSupplierStorageNonNegative).
         checkSupplierStorageNonNegative(supplierStorage);
+        // DS284: chan ngay phe duyet / ngay huy trong tuong lai.
+        checkSupplierStorageDatesNotFuture(supplierStorage);
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
+    }
+
+    // DS284: thoi gian phe duyet / ngay huy khong duoc la ngay tuong lai
+    // — phieu khong the da duoc phe duyet hay da bi huy vao mot ngay sau
+    // hom nay. So sanh theo ngay trong vung gio phong kham GMT+7
+    // (DB_ZONE, nhu DS264/DS265/DS269/DS270/DS271/DS272/DS279/DS280/
+    // DS282): hom nay va qua khu giu nguyen (ghi bu, ghi tre hop le),
+    // null giu nguyen (2 cot nullable). Guard o save/bulkInsert/
+    // bulkUpdate. Duong goi noi bo duy nhat set examineDate la
+    // HosDepartmentStorageController:325 (savesTo -> save) — set
+    // new Date() (hien tai) nen luon qua guard; cancel() /
+    // claimForAudit() ghi thang qua DAO (voidExamine /
+    // claimAuditExamine) voi new Date(), khong qua save, nen khong
+    // bi anh huong. Frontend addstorage.vue cung chi gui examineDate
+    // = hom nay va cancelDate = null. Khac DS261 SupplierStock
+    // end<produce (cap ngay, entity khac) va DS35 SupplierOutbound
+    // (entity khac, vong sau).
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static void checkSupplierStorageDatesNotFuture(SupplierStorage entity) {
+        if (entity == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now(DB_ZONE);
+        if (entity.getExamineDate() != null
+                && entity.getExamineDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Thời gian phê duyệt không được là ngày tương lai.");
+        }
+        if (entity.getCancelDate() != null
+                && entity.getCancelDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException("Ngày hủy không được là ngày tương lai.");
+        }
     }
 
     // DS211: phieu nhap kho khong the nhap -N mat hang / -N tien.
@@ -194,6 +232,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageRequired(entity);
             checkSupplierStorageLengths(entity);
             checkSupplierStorageNonNegative(entity); // DS211
+            checkSupplierStorageDatesNotFuture(entity); // DS284
             forceSessionCompanyWhenBlank(entity);
         }
         return super.bulkInsert(entitys);
@@ -217,6 +256,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageRequired(entity);
             checkSupplierStorageLengths(entity);
             checkSupplierStorageNonNegative(entity); // DS211
+            checkSupplierStorageDatesNotFuture(entity); // DS284
         }
         return super.bulkUpdate(entitys);
     }
