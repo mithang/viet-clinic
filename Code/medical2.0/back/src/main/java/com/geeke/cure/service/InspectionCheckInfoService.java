@@ -1,6 +1,8 @@
 package com.geeke.cure.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -129,6 +131,9 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         // samplingNum/instrument/checkoutNum/checkoutOffice 100,
         // reportConclusion 255. Gioi han theo cot DB; null-safe.
         checkInspectionCheckInfoLengths(inspectionCheckInfo);
+        // DS273: chan ngay lay mau / ngay xet nghiem tuong lai TRUOC
+        // moi thao tac file/ghi (cung vi tri voi guard do dai DS149).
+        checkInspectionCheckInfoDatesNotFuture(inspectionCheckInfo);
         // R3 (iteration 41): guard cha InspectionCheck + deleteIds, cung
         // TRUOC moi thao tac file/ghi.
         // (a) Cha: controller doi cha sang status "1" SAU khi save() tra
@@ -224,6 +229,7 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
             throw new ServiceException("Chi tiết kiểm tra không tồn tại: " + inspectionCheckInfo.getId());
         }
         checkInspectionCheckInfoLengths(inspectionCheckInfo);
+        checkInspectionCheckInfoDatesNotFuture(inspectionCheckInfo);
         return super.save(inspectionCheckInfo);
     }
 
@@ -235,6 +241,7 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         }
         for (InspectionCheckInfo entity : entitys) {
             checkInspectionCheckInfoLengths(entity);
+            checkInspectionCheckInfoDatesNotFuture(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -247,6 +254,7 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         }
         for (InspectionCheckInfo entity : entitys) {
             checkInspectionCheckInfoLengths(entity);
+            checkInspectionCheckInfoDatesNotFuture(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -268,6 +276,34 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
         checkLength(entity.getOpinion(), 255, "ý kiến Độ dài phải nằm trong khoảng 0 đến 255");
         checkLength(entity.getDoctor(), 255, "Bác sĩ Độ dài phải nằm trong khoảng 0 đến 255");
         checkLength(entity.getCheckProject(), 255, "Kiểm tra hạng mục Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    // DS273: ngay lay mau / ngay xet nghiem khong duoc la ngay tuong
+    // lai — mau chua lay, xet nghiem chua lam khong the co thoi gian
+    // sau hom nay. So sanh theo ngay trong vung gio phong kham GMT+7
+    // (DB_ZONE, nhu DS264/DS265/DS266/DS269/DS270/DS271/DS272): hom
+    // nay va qua khu giu nguyen (ghi bu, ghi tre hop le), null giu
+    // nguyen (cot nullable, form cho phep rong). Guard o save() +
+    // saveWithFile + bulkInsert + bulkUpdate. allSave() KHONG guard
+    // (tien le DS270): caller noi bo duy nhat TollInfoService:1112
+    // de ca hai ngay null nen khong the vo luong thu phi. Khac DS270
+    // completeDate cua phieu cha va DS268 diagnoseDate (BLOCKED).
+    private static final ZoneId DB_ZONE = ZoneId.of("GMT+7");
+
+    private static void checkInspectionCheckInfoDatesNotFuture(InspectionCheckInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getSamplingDate() != null
+                && entity.getSamplingDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(LocalDate.now(DB_ZONE))) {
+            throw new ServiceException("Thời gian lấy mẫu không được là ngày tương lai.");
+        }
+        if (entity.getCheckoutDate() != null
+                && entity.getCheckoutDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(LocalDate.now(DB_ZONE))) {
+            throw new ServiceException("Thời gian xét nghiệm không được là ngày tương lai.");
+        }
     }
 
     private static void checkLength(String value, int max, String message) {
