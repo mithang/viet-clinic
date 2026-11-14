@@ -156,12 +156,59 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS281: 6 truong event-date tren don thuoc khong duoc la ngay
+    // tuong lai — su kien da xay ra (thanh toan / phat thuoc / hoan phi
+    // / tra thuoc / huy) khong the co ngay sau hom nay. Entity khong
+    // @Past, DB khong CHECK; service chi guard phi am (DS240), hien
+    // dien/ghost (DS115) va followUpDate qua khu (DS276), khong nhin
+    // 6 truong nay. Mapper ghi ca 6 cot tren insert / update /
+    // bulkInsert / bulkUpdate (RecipelInfoDao.xml :155-179 / :246-268
+    // / :302-326 / CASE :441-541). So sanh theo ngay trong vung gio
+    // phong kham GMT+7 (DB_ZONE, nhu DS276): sau hom nay -> 400; hom
+    // nay / qua khu / null giu nguyen (cot nullable, su kien chua
+    // xay ra). Setter noi bo deu new Date() (TollInfoService:606/712
+    // payDate, :923 retreatDate; SupplierStockService:166
+    // dispensionDate, :215 retreatChargeDate) nen guard khong pha
+    // luong hop le; invalidDate / retreatDispensionDate khong co
+    // setter noi bo nao. Khac DS276 followUpDate (ngay hen tuong lai,
+    // guard chieu nguoc), DS279/DS280 Registration event dates (bang
+    // khac), DS268 diagnoseDate tuong lai (BLOCKED, khong cham).
+    private static void checkRecipelInfoEventDatesNotFuture(
+            RecipelInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now(DB_ZONE);
+        checkEventDateNotFuture(entity.getPayDate(), today,
+                "Thời gian thanh toán trên đơn thuốc không được là ngày tương lai.");
+        checkEventDateNotFuture(entity.getDispensionDate(), today,
+                "Thời gian phát thuốc trên đơn thuốc không được là ngày tương lai.");
+        checkEventDateNotFuture(entity.getRetreatChargeDate(), today,
+                "Thời gian hoàn phí trên đơn thuốc không được là ngày tương lai.");
+        checkEventDateNotFuture(entity.getRetreatDispensionDate(), today,
+                "Thời gian trả thuốc trên đơn thuốc không được là ngày tương lai.");
+        checkEventDateNotFuture(entity.getInvalidDate(), today,
+                "Thời gian hủy đơn thuốc không được là ngày tương lai.");
+        checkEventDateNotFuture(entity.getRetreatDate(), today,
+                "Thời gian hoàn phí trên đơn thuốc không được là ngày tương lai.");
+    }
+
+    private static void checkEventDateNotFuture(Date date, LocalDate today,
+            String message) {
+        if (date != null
+                && date.toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isAfter(today)) {
+            throw new ServiceException(message);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public RecipelInfo save(RecipelInfo entity) {
         validateRequired(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
+        checkRecipelInfoEventDatesNotFuture(entity);
         if (StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Đơn thuốc không tồn tại: "
@@ -181,6 +228,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
+            checkRecipelInfoEventDatesNotFuture(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -196,6 +244,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
+            checkRecipelInfoEventDatesNotFuture(entity);
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của đơn thuốc đã tồn tại");
             }
