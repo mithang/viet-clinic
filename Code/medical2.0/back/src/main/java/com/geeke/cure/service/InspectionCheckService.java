@@ -87,6 +87,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         checkCompleteDateNotFuture(entity);
         checkStatusAndTypeValues(entity,
                 StringUtils.isBlank(entity.getId()));
+        checkStatusFlipNeedsInfo(entity);
         return super.save(entity);
     }
 
@@ -134,6 +135,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             checkInspectionCheckLengths(entity);
             checkCompleteDateNotFuture(entity);
             checkStatusAndTypeValues(entity, false);
+            checkStatusFlipNeedsInfo(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -222,6 +224,38 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         }
         if (!"0".equals(entity.getType()) && !"1".equals(entity.getType())) {
             throw new ServiceException("Loại phiếu kiểm tra không hợp lệ (0: Xét nghiệm; 1: Kiểm tra).");
+        }
+    }
+
+    // DS318: lat 0->1 chi hop le khi phieu da co dong ket qua that
+    // (InspectionCheckInfo). Truoc day save/bulkUpdate cho phep lat
+    // 0->1 khi chua co ket qua nao (DS317 P7/P9: 200 + ghi) -- phieu
+    // ket khong nhap duoc ket qua qua UI (fill() bao "Khong tim thay
+    // ket qua kiem tra" vi khong co dong info, trong khi nut "Nhap
+    // ket qua" chi hien o status '0'). Luong noi bo hop le duy nhat
+    // lat '1' qua save nay la saveWithFile (da luu info truoc, chi
+    // khi details non-empty) nen qua duoc guard; RecipelDetailService.
+    // updateById (2 nhanh) tu kiem tra info truoc khi lat de khong
+    // 400/rollback lan hoan thanh dieu tri. Chi chan dung chuyen
+    // 0->1: stored '1'->'1' (idempotent) va '0'->'0' giu 200; tao
+    // moi da bi DS317 bat status='0' nen khong toi day. Ghost id da
+    // 400 o tren nen stored==null chi la phong thu. Luu y:
+    // getByInspecId khong loc del_flag (mapper WHERE tran) nen dong
+    // info da xoa mem van tinh la "co ket qua" -- cung ngu nghia voi
+    // deleteByRecipelInfoId dung chung ham nay.
+    private void checkStatusFlipNeedsInfo(InspectionCheck entity) {
+        if (entity == null || !"1".equals(entity.getStatus())
+                || StringUtils.isBlank(entity.getId())) {
+            return;
+        }
+        InspectionCheck stored = dao.get(entity.getId());
+        if (stored == null || !"0".equals(stored.getStatus())) {
+            return;
+        }
+        if (inspectionCheckInfoService.getByInspecId(entity.getId())
+                == null) {
+            throw new ServiceException("Phiếu kiểm tra chưa có kết quả, "
+                    + "không thể chuyển sang trạng thái Đã điền.");
         }
     }
 

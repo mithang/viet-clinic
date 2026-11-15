@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.cure.entity.InspectionCheck;
+import com.geeke.cure.service.InspectionCheckInfoService;
 import com.geeke.cure.service.InspectionCheckService;
 import com.geeke.outpatient.dao.RecipelDetailDao;
 import com.geeke.outpatient.dao.RecipelInfoDao;
@@ -43,6 +44,9 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
 
     @Autowired
     private InspectionCheckService inspectionCheckService;
+
+    @Autowired
+    private InspectionCheckInfoService inspectionCheckInfoService;
 
     // DS108 C1/C10-C12: save/bulkInsert/bulkUpdate truoc day de lo:
     // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
@@ -532,8 +536,15 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                             List<InspectionCheck> inspectionChecks = inspectionCheckService.getByRecipelInfoId(recipelInfo.getId());
                             if (!CollectionUtils.isEmpty(inspectionChecks)) {
                                 for (InspectionCheck inspectionCheck : inspectionChecks) {
-                                    inspectionCheck.setStatus("1");
-                                    inspectionCheckService.save(inspectionCheck);
+                                    // DS318: chi lat sang '1' khi phieu da co dong ket qua that;
+                                    // phieu chua co ket qua giu '0' de van nhap duoc ket qua qua UI
+                                    // (lat mu se ket phieu: fill() bao "Khong tim thay ket qua").
+                                    // Khong nem 400 o day -- day la luong noi bo hoan thanh dieu
+                                    // tri (@Transactional), nem se rollback ca lan hoan thanh.
+                                    if (inspectionCheckInfoService.getByInspecId(inspectionCheck.getId()) != null) {
+                                        inspectionCheck.setStatus("1");
+                                        inspectionCheckService.save(inspectionCheck);
+                                    }
                                 }
                             }
                         }
@@ -598,8 +609,11 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                         List<InspectionCheck> inspectionChecks = inspectionCheckService.getByRecipelInfoId(recipelInfo.getId());
                         if (!CollectionUtils.isEmpty(inspectionChecks)) {
                             for (InspectionCheck inspectionCheck : inspectionChecks) {
-                                inspectionCheck.setStatus("1");
-                                inspectionCheckService.save(inspectionCheck);
+                                // DS318: nhu nhanh tren -- chi lat khi da co dong ket qua that.
+                                if (inspectionCheckInfoService.getByInspecId(inspectionCheck.getId()) != null) {
+                                    inspectionCheck.setStatus("1");
+                                    inspectionCheckService.save(inspectionCheck);
+                                }
                             }
                         }
                     }
