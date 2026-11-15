@@ -161,6 +161,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         // tren entity, cot decimal co dau + nullable nen DB chap nhan.
         // Chan fail-closed 400 truoc moi ghi; null giu nguyen, 0 giu nguyen.
         checkStuffNonNegative(stuff);
+        checkStuffStatusValues(stuff); // DS324
         checkStuffInventoryThresholdOrder(stuff); // DS303
         Stuff stuffTemp = super.save(stuff);
 
@@ -212,6 +213,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             }
             checkStuffLengths(stuff);
             checkStuffNonNegative(stuff);
+            checkStuffStatusValues(stuff); // DS324
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkInsert(entitys);
@@ -237,6 +239,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             }
             checkStuffLengths(stuff);
             checkStuffNonNegative(stuff);
+            checkStuffStatusValues(stuff); // DS324
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkUpdate(entitys);
@@ -297,6 +300,37 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         }
         if (stuff.getPackNumber() != null && stuff.getPackNumber() < 0) {
             throw new ServiceException("Số lượng đóng gói không được âm");
+        }
+    }
+
+    // DS324: co bat (status) chi co 2 gia tri co nghia trong toan bo
+    // codebase: '0' = Khong, '1' = Co (stuff/index.vue search options,
+    // stuffForm.vue switch mac dinh '1'; import Excel anh xa "是" -> '1',
+    // khac -> '0', StuffService:605-608). Guard hien co chi chan do dai
+    // <= 1 (@Length + checkStuffLengths) va trong (@NotNull o save) nen
+    // '9'/'2'/'x' deu lot qua duong tao (save-create, bulkInsert) va
+    // mapper ghi thang #{status} (StuffDao.xml insert/bulkInsert).
+    // Vat tu status '9' khong kich hoat ma cung khong tat: truy van ke
+    // don / y te loc status='1' (StuffDao.xml :202/:224) khong thay no,
+    // bo loc tat cung khong nhan ra no — trang thai ma (mau DS323 Drug).
+    // '0'/'1' giu 200 (tao + chuyen doi 2 chieu); null/blank cung 400 o
+    // day cho duong bulk (khong qua @Valid), cung hanh vi @Valid o save.
+    // Dat canh checkStuffNonNegative o save/bulkInsert/bulkUpdate.
+    // Luu y: probe pre phat hien mapper update/bulkUpdate KHONG co cot
+    // status (chi insert/bulkInsert co) nen doi trang thai qua save-update
+    // / bulkUpdate truoc day 200 nhung giu nguyen '1' — switch kich hoat
+    // tren form sua khong co tac dung; fix kem cot status vao ca 2
+    // mapper update de chuyen doi hop le '0'<->'1' that su luu duoc.
+    // An toan: moi duong ghi deu qua guard nay (save co @Valid @NotNull,
+    // bulk* co guard) nen status luon '0'/'1' khi xuong mapper; caller
+    // noi bo duy nhat goi save() la import Excel (da chuan hoa '0'/'1').
+    private static void checkStuffStatusValues(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        if (!"0".equals(stuff.getStatus()) && !"1".equals(stuff.getStatus())) {
+            throw new ServiceException(
+                    "Trạng thái vật tư chỉ nhận giá trị 0 (Không) hoặc 1 (Có)");
         }
     }
 
