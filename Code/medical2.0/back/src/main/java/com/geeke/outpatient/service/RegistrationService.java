@@ -711,6 +711,38 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
                 && !BizConstants.REG_STATUS_FEE_REFUNDED.equals(status)) {
             throw new ServiceException("Trạng thái đăng ký không hợp lệ khi đổi trạng thái: chỉ được Chờ khám / Hủy số / Hết hiệu lực");
         }
+        // DS315: /status chi nhan 3 chuyen doi quan sat duoc o UI:
+        // _3->_0 diem danh (registration/index.vue updateStatusId),
+        // _0->_2 huy so (cung cho), _1->_4 huy don kham
+        // (medicalRecord/index.vue invalidPrescription, chi khi chua
+        // thu phi chargeStatus "0"). Chuyen doi khac -- _1->_2 huy
+        // luot da kham ma khong qua hoan phi, _2->_0/_4->_0 hoi sinh
+        // luot da huy/het han, _0->_4 het han luot cho ma khong qua job
+        // 24h, _5->_0 diem danh khong qua phan kham, _3->_2 huy luot
+        // cho check-in, _1->_0 dua luot da kham ve cho kham -- deu
+        // -> 400 fail-closed, khong ghi. Chuyen doi khong doi trang
+        // thai (no-op) giu 200; dong ma / trang thai da luu NULL giu
+        // hanh vi cu (khong phan duoc chuyen doi). Job het han va
+        // hoan phi goi thang DAO nen khong anh huong.
+        Registration stored = dao.get(id);
+        if (stored != null && stored.getStatus() != null
+                && stored.getStatus().getValue() != null) {
+            String from = stored.getStatus().getValue();
+            boolean sameStatus = from.equals(status);
+            boolean checkin = BizConstants.REG_STATUS_PENDING_CHECKIN.equals(from)
+                    && BizConstants.REG_STATUS_PENDING.equals(status);
+            boolean cancel = BizConstants.REG_STATUS_PENDING.equals(from)
+                    && BizConstants.REG_STATUS_REFUNDED.equals(status);
+            boolean voidPrescription = BizConstants.REG_STATUS_VISITED.equals(from)
+                    && BizConstants.REG_STATUS_FEE_REFUNDED.equals(status);
+            if (voidPrescription && stored.getChargeStatus() != null
+                    && !"0".equals(stored.getChargeStatus())) {
+                throw new ServiceException("Trạng thái đăng ký không hợp lệ khi đổi trạng thái: chỉ được hủy đơn khám khi chưa thu phí");
+            }
+            if (!sameStatus && !checkin && !cancel && !voidPrescription) {
+                throw new ServiceException("Trạng thái đăng ký không hợp lệ khi đổi trạng thái: chỉ được điểm danh (Chờ check-in thành Chờ khám), hủy số (Chờ khám thành Hủy số) hoặc hủy đơn khám (Đã khám thành Hết hiệu lực)");
+            }
+        }
         // ITER37 O1: kiểm tra dòng DB đã lưu trước khi ghi, theo mẫu M1.
         // Trước đây updateStatus gọi thẳng dao.updateStatus (WHERE id,
         // không lọc company) nên token tenant 309 đổi được lượt khám của
