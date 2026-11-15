@@ -91,6 +91,35 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         }
     }
 
+    // DS301: tong luong don vi nho nhat (minTotal) khong duoc thap hon
+    // tong so luong ke don (total) cua chinh dong mau do. minTotal la
+    // tong luong theo don vi bao che / don vi nho nhat, frontend mau
+    // tinh minTotal = Math.ceil(tong luong bao che) va total ban theo
+    // goi = ceil(minTotal / preparation) <= minTotal, ban le total =
+    // minTotal (recipetemplateForm.vue :2853-2872) nen luong that luon
+    // thoa; mau xau ap dung sang don that se mang minTotal < total vao
+    // RecipelDetail (DS300) va lam kho chiem dung thieu. Ca 2 co gia
+    // tri va minTotal < total -> ServiceException 400 fail-closed;
+    // == hop le, > hop le, mot trong hai null giu hop le (cot
+    // nullable; mau cu co min_total NULL, quy uoc DS219). Goi canh
+    // checkDetailNonNegative (DS214) o ca 2 vong ghi that allSave /
+    // updateDetail; ca hai join transaction cua
+    // RecipetemplateService.allSave nen dong xau bi tu choi truoc moi
+    // ghi (updateDetail xoa truoc chen sau nhung rollback khoi phuc
+    // chi tiet cu). Khac DS300 (RecipelDetail, don that) va DS297 da
+    // loai tru (allFee vs total x unitPrice phu thuoc isUnpackSell).
+    private static void checkMinTotalNotLessThanTotal(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        if (detail.getTotal() != null && detail.getMinTotal() != null
+                && detail.getMinTotal() < detail.getTotal()) {
+            throw new ServiceException(
+                    "Tổng lượng đơn vị nhỏ nhất không được thấp hơn tổng số lượng");
+        }
+    }
+
 
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
@@ -106,6 +135,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         for (RecipeTemplateDetail recipeTemplateDetail:
         recipeTemplateDetails) {
             checkDetailNonNegative(recipeTemplateDetail);
+            checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -231,6 +261,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             for (RecipeTemplateDetail recipeTemplateDetail : recipeTemplateDetails) {
 
                     checkDetailNonNegative(recipeTemplateDetail);
+                    checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
