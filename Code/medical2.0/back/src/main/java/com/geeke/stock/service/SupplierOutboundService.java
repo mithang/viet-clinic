@@ -82,6 +82,8 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         checkSupplierOutboundNonNegative(outboundEvt.getSupplierOutbound());
         // DS285: chan ngay phe duyet / ngay huy trong tuong lai.
         checkSupplierOutboundDatesNotFuture(outboundEvt.getSupplierOutbound());
+        // DS294: chan thu tu cap ngay phe duyet / ngay huy.
+        checkSupplierOutboundDateOrder(outboundEvt.getSupplierOutbound());
         // DS231: ep company theo session khi trong truoc moi ghi (mau
         // DS229 TollInfo.save / DS230 SupplierStorage.save). saveEvt
         // khong @Valid nen company thieu han van toi day: getCode deref
@@ -142,6 +144,8 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         checkSupplierOutboundNonNegative(supplierOutbound);
         // DS285: chan ngay phe duyet / ngay huy trong tuong lai.
         checkSupplierOutboundDatesNotFuture(supplierOutbound);
+        // DS294: chan thu tu cap ngay phe duyet / ngay huy.
+        checkSupplierOutboundDateOrder(supplierOutbound);
         return super.save(supplierOutbound);
     }
 
@@ -176,6 +180,34 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
                 && entity.getCancelDate().toInstant().atZone(DB_ZONE).toLocalDate()
                         .isAfter(today)) {
             throw new ServiceException("Ngày hủy không được là ngày tương lai.");
+        }
+    }
+
+    // DS294: thu tu cap ngay phe duyet / ngay huy — cancelDate khong
+    // duoc truoc examineDate (phieu khong the bi huy truoc khi duoc
+    // phe duyet). May trang thai chung minh: cancel() chi nhan phieu
+    // status NOT IN (2,3) — phieu da phe duyet (2) khong duoc huy;
+    // examine() chi nhan phieu status NOT IN (2,3) — phieu da huy (3)
+    // khong duoc phe duyet (mapper cancel/claimExamine WHERE status
+    // NOT IN (2,3)); ca hai deu set new Date() va ghi thang qua DAO,
+    // khong qua save. Frontend addstorageTo.vue khong bao gio gui 2
+    // truong nay. So sanh theo ngay GMT+7 (DB_ZONE, nhu DS285): ca
+    // hai ngay co mat va ngay huy truoc ngay phe duyet -> 400; bang
+    // nhau giu 200 (quy uoc DS260); mot trong hai null giu 200 (cot
+    // nullable). Guard o ca hai duong ghi: save(OutboundEvt) va
+    // save(SupplierOutbound), ngay sau guard tuong lai DS285 (mau
+    // DS292 RecipelInfo, DS289 InspectionCheckInfo). bulkInsert/
+    // bulkUpdate da fail-closed 400 tu DS50. Khac DS285 (tuong lai,
+    // cung cap) va DS284 (Storage, entity khac).
+    private static void checkSupplierOutboundDateOrder(SupplierOutbound entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getCancelDate() != null && entity.getExamineDate() != null
+                && entity.getCancelDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isBefore(entity.getExamineDate().toInstant()
+                                .atZone(DB_ZONE).toLocalDate())) {
+            throw new ServiceException("Ngày hủy không được trước ngày phê duyệt.");
         }
     }
 

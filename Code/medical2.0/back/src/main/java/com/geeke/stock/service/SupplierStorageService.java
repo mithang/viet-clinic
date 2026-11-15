@@ -83,6 +83,8 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         checkSupplierStorageNonNegative(supplierStorage);
         // DS284: chan ngay phe duyet / ngay huy trong tuong lai.
         checkSupplierStorageDatesNotFuture(supplierStorage);
+        // DS294: chan thu tu cap ngay phe duyet / ngay huy.
+        checkSupplierStorageDateOrder(supplierStorage);
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
     }
@@ -118,6 +120,32 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
                 && entity.getCancelDate().toInstant().atZone(DB_ZONE).toLocalDate()
                         .isAfter(today)) {
             throw new ServiceException("Ngày hủy không được là ngày tương lai.");
+        }
+    }
+
+    // DS294: thu tu cap ngay phe duyet / ngay huy — cancelDate khong
+    // duoc truoc examineDate (phieu khong the bi huy truoc khi duoc
+    // phe duyet). May trang thai chung minh: claimForAudit() chi
+    // phe duyet khi examine=PENDING; cancel() voidExamine chi khi
+    // chua VOIDED va GHI DE examine_date bang thoi diem huy, nen
+    // examine_date luon >= thoi diem huy that; cancel_date khong co
+    // setter noi bo nao. Frontend addstorage.vue chi gui examineDate
+    // = hom nay va cancelDate = null. So sanh theo ngay GMT+7
+    // (DB_ZONE, nhu DS284): ca hai ngay co mat va ngay huy truoc
+    // ngay phe duyet -> 400; bang nhau giu 200 (quy uoc DS260);
+    // mot trong hai null giu 200 (cot nullable). Guard o
+    // save/bulkInsert/bulkUpdate, ngay sau guard tuong lai DS284
+    // (mau DS292 RecipelInfo, DS289 InspectionCheckInfo). Khac
+    // DS284 (tuong lai, cung cap) va DS285 (Outbound, entity khac).
+    private static void checkSupplierStorageDateOrder(SupplierStorage entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getCancelDate() != null && entity.getExamineDate() != null
+                && entity.getCancelDate().toInstant().atZone(DB_ZONE).toLocalDate()
+                        .isBefore(entity.getExamineDate().toInstant()
+                                .atZone(DB_ZONE).toLocalDate())) {
+            throw new ServiceException("Ngày hủy không được trước ngày phê duyệt.");
         }
     }
 
@@ -233,6 +261,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageLengths(entity);
             checkSupplierStorageNonNegative(entity); // DS211
             checkSupplierStorageDatesNotFuture(entity); // DS284
+            checkSupplierStorageDateOrder(entity); // DS294
             forceSessionCompanyWhenBlank(entity);
         }
         return super.bulkInsert(entitys);
@@ -257,6 +286,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageLengths(entity);
             checkSupplierStorageNonNegative(entity); // DS211
             checkSupplierStorageDatesNotFuture(entity); // DS284
+            checkSupplierStorageDateOrder(entity); // DS294
         }
         return super.bulkUpdate(entitys);
     }
