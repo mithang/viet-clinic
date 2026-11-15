@@ -80,6 +80,23 @@ public class TaskmanageService {
         }
     }
 
+    // DS308: release/delete/updateaudit bao thanh cong lang (200 + code
+    // 100, 0 dong doi) khi id thieu hoac khong ton tai -- Jackson chi
+    // bind key "id" (chu thuong), key "ID" (ten truong that, cung la
+    // key fastjson o duong multipart save/storage) bind thanh null;
+    // checkTaskOwnership chi guard DONG task nen id null/ghost deu lot,
+    // dao tra 0 dong ma van 200. Guard theo TON TAI (getById), khong
+    // theo so dong affected: JDBC URL khong co CLIENT_FOUND_ROWS nen
+    // update khong doi gia tri cung tra 0 dong (hop le, phai giu 200).
+    private void checkTaskExistsForWrite(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new ServiceException("Thiếu mã nhiệm vụ");
+        }
+        if (taskmangementDao.getById(id) == null) {
+            throw new ServiceException("Không tìm thấy nhiệm vụ");
+        }
+    }
+
     @Transactional
     public int inserttask(taskmanagement task)  {
         checkTaskDeadlineNotPast(task); // DS305
@@ -279,6 +296,7 @@ public class TaskmanageService {
     // read-only-connection 500; the foreign-row guard above runs first.
     @Transactional
     public int updateaudit(taskmanagement task){
+        checkTaskExistsForWrite(task.getID()); // DS308
         checkTaskOwnership(task.getID());
         task.setUpdatedBy(SessionUtils.getUser().getUpdateBy());
         task.setUpdatedTime(new Date());
@@ -484,6 +502,7 @@ public class TaskmanageService {
      */
     @Transactional
     public taskmanagement release(taskmanagement taskmanagement) {
+        checkTaskExistsForWrite(taskmanagement.getID()); // DS308
         checkTaskOwnership(taskmanagement.getID());
         int i =this.taskmangementDao.release(taskmanagement);
         if(i>0){
@@ -509,6 +528,7 @@ public class TaskmanageService {
 
     @Transactional
     public taskmanagement delete(taskmanagement taskmanagement) {
+        checkTaskExistsForWrite(taskmanagement.getID()); // DS308
         checkTaskOwnership(taskmanagement.getID());
         int i = taskmangementDao.delete(taskmanagement);
 
