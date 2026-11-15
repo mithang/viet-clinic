@@ -68,6 +68,14 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     // là entity khác: allSave/updateDetail ở đây không hề kiểm tra
     // số, nên mẫu với số âm vẫn lưu được và phá việc kê đơn khi áp
     // dụng (RecipelDetail đã chặn ở DS209).
+    // DS307: executions (tiến độ thực hiện, int primitive nên không
+    // null) âm trước đây cũng lọt qua helper này — DS214 chỉ liệt kê
+    // 5 trường trên, DS218 chỉ chặn executions âm ở RecipelDetail
+    // (đơn thật), không phải ở chi tiết mẫu. Mẫu có tiến độ âm là dữ
+    // liệu vô nghĩa (tiến độ bắt đầu từ 0); frontend không gửi trường
+    // này nên guard không phá luồng hợp lệ. 0 giữ nguyên (quy ước
+    // DS219), âm -> 400. Gọi ở cả 2 vòng ghi thật allSave /
+    // updateDetail qua chính helper này, cạnh DS214/DS301.
     private static void checkDetailNonNegative(RecipeTemplateDetail detail) {
         if (detail == null) {
             return;
@@ -88,6 +96,9 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         if (detail.getAllFee() != null
                 && detail.getAllFee().compareTo(BigDecimal.ZERO) < 0) {
             throw new ServiceException("Tổng tiền không được âm");
+        }
+        if (detail.getExecutions() < 0) {
+            throw new ServiceException("Tiến độ thực hiện không được âm");
         }
     }
 
