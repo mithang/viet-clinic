@@ -67,6 +67,9 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
        // DS260: chan ngay ket thuc truoc ngay bat dau (xem
        // checkMemberSetDateOrder).
        checkMemberSetDateOrder(memberSet);
+       // DS296: chan so the con lai vuot tong so the (xem
+       // checkMemberSetNumberNotExceedAmount).
+       checkMemberSetNumberNotExceedAmount(memberSet);
        if(StringUtils.isBlank(memberSet.getId())){
            // ITER64 item 1: this insert branch bypassed super.save, so the
            // generic insert guard does not cover it. Verify BEFORE
@@ -167,6 +170,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             checkMemberSetLengths(memberSet);
             checkMemberSetNonNegative(memberSet); // DS213
             checkMemberSetDateOrder(memberSet); // DS260
+            checkMemberSetNumberNotExceedAmount(memberSet); // DS296
         }
         return super.bulkInsert(entitys);
     }
@@ -187,6 +191,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             checkMemberSetLengths(memberSet);
             checkMemberSetNonNegative(memberSet); // DS213
             checkMemberSetDateOrder(memberSet); // DS260
+            checkMemberSetNumberNotExceedAmount(memberSet); // DS296
         }
         return super.bulkUpdate(entitys);
     }
@@ -224,6 +229,33 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         }
         if (memberSet.getNumber() != null && memberSet.getNumber() < 0) {
             throw new ServiceException("Số lượng thẻ còn lại không được âm");
+        }
+    }
+
+    // DS296: so the con lai (number) khong duoc vuot tong so the
+    // (amount) — amount la tong so the cua goi ("So the hoi vien" o
+    // memberSetForm.vue:19), number la so the con lai, mac dinh bang
+    // amount khi tao (DS42). Phat the tru number (updateNumber, floor
+    // 0, DS61), hoan the cong number (addNumber, 1:1 voi the da phat)
+    // nen number <= amount la bat bien cua moi luong hop le; number >
+    // amount cho phep phat vuot tong so the da mua. Nhanh update co
+    // san chi chan so the DA PHAT > amount (issued-count check), khong
+    // chan number > amount. Chan fail-closed 400 truoc moi ghi, canh
+    // checkMemberSetNonNegative (DS213) + checkMemberSetDateOrder
+    // (DS260) de phu ca 4 duong save/bulkInsert/bulkUpdate (save dung
+    // chung cho create + update). number == amount giu hop le (goi
+    // moi / vua tra het, quy uoc bien DS219/DS254); mot trong hai null
+    // giu hop le (cot nullable; number null duoc default = amount
+    // theo DS42). Guard chay TRUOC default DS42 nen amount am khong
+    // rot vao number (nhu DS213). Khong caller noi bo nao goi save/
+    // bulk* (chi controller); updateNumber/addNumber khong qua save().
+    private static void checkMemberSetNumberNotExceedAmount(MemberSet memberSet) {
+        if (memberSet == null) {
+            return;
+        }
+        if (memberSet.getNumber() != null && memberSet.getAmount() != null
+                && memberSet.getNumber() > memberSet.getAmount()) {
+            throw new ServiceException("Số lượng thẻ còn lại không được vượt quá tổng số thẻ");
         }
     }
 
