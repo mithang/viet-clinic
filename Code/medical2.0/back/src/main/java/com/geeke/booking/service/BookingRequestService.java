@@ -145,6 +145,9 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
         } else {
             forceSessionCompany(entity);
         }
+        // DS311: chan trang thai gia mao truoc mac dinh null -> "0"
+        // (update null can giu stored o trong guard).
+        checkBookingRequestStatus(entity, StringUtils.isBlank(entity.getId()));
         if (entity.getStatus() == null) {
             entity.setStatus("0");
         }
@@ -188,6 +191,7 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     public List<String> bulkInsert(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
             forceSessionCompany(entity);
+            checkBookingRequestStatus(entity, true);
             checkWantedDateNotPast(entity);
             checkBookingRequestLengths(entity);
         }
@@ -199,6 +203,7 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     public List<String> bulkUpdate(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
             checkRowOwnership(entity.getId());
+            checkBookingRequestStatus(entity, false);
             checkWantedDateNotPast(entity);
             checkBookingRequestLengths(entity);
         }
@@ -212,6 +217,59 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
             checkRowOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS311: trang thai yeu cau dat lich chi co mien {'0','1','2'}
+    // (0: Cho xu ly; 1: Da xac nhan; 2: Da tu choi -- comment cot DB).
+    // Chi co 2 chuyen doi hop le, deu khong qua save()/bulk*:
+    // confirm() '0'->'1' (claim nguyen tu + kiem tra lich truc + tao
+    // Registration) va reject() '0'->'2' (kem ly do); submitIntake()
+    // luon ep '0'; frontend (api/booking/request.js) khong co duong
+    // nao goi save/bulk*. Vay:
+    // - Tao moi: status phai null (ve '0' nhu mac dinh cu cua save;
+    //   bulkInsert khong co mac dinh nen ep o day, neu khong mapper
+    //   viet NULL vao cot NOT NULL -> 500) hoac '0'; '1' sinh ra da
+    //   xac nhan (khong kiem tra lich truc, khong Registration, nhung
+    //   UI van hien nut "In phieu hen" cho status '1'), '2' sinh ra
+    //   da tu choi (khong ly do), '9'/ngoai mien thi khong luong nao
+    //   xu ly duoc (pendingPage loc status='0', claimConfirm/reject
+    //   doi status='0') -> ServiceException 400.
+    // - Cap nhat: status khong duoc doi qua save/bulkUpdate; null giu
+    //   stored (tranh mapper viet NULL -> 500), khac stored -> 400.
+    //   Dong ghost (dao.get null) cho qua nhu hanh vi cu cua
+    //   bulkUpdate (khong mo rong pham vi sang ghost-check o day;
+    //   save() da co checkExists 400 truoc guard).
+    private void checkBookingRequestStatus(BookingRequest entity,
+            boolean create) {
+        if (entity == null) {
+            return;
+        }
+        if (create) {
+            if (entity.getStatus() == null) {
+                entity.setStatus("0");
+                return;
+            }
+            if (!"0".equals(entity.getStatus())) {
+                throw new ServiceException(
+                        "Yêu cầu đặt lịch mới phải ở trạng thái chờ xử lý.");
+            }
+            return;
+        }
+        if (StringUtils.isBlank(entity.getId())) {
+            return;
+        }
+        BookingRequest stored = dao.get(entity.getId());
+        if (stored == null) {
+            return;
+        }
+        if (entity.getStatus() == null) {
+            entity.setStatus(stored.getStatus());
+            return;
+        }
+        if (!entity.getStatus().equals(stored.getStatus())) {
+            throw new ServiceException(
+                    "Trạng thái yêu cầu đặt lịch chỉ thay đổi qua xác nhận hoặc từ chối.");
+        }
     }
 
     // DS266: ngay muon kham phai la hom nay tro di (cung luat nhu
