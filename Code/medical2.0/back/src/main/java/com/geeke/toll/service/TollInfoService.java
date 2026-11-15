@@ -180,6 +180,14 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         // luong hoan; amountDiscounted KHONG guard vi tra thua
         // (received > receivable) hop le cho discount am).
         checkTollInfoNonNegative(tollInfo);
+        // DS298: chan so tien uu dai vuot so tien phai thu. Uu dai la phan
+        // cua phai thu duoc mien giam (discounted = receivable - received
+        // o moi luong that: processNormalCharge :723, retailCharge
+        // :1268, charge form); voi received >= 0 (DS224) thi discounted
+        // <= receivable luon dung o luong that, ke ca mien toan bo
+        // (discounted == receivable) va tra thua (discounted am, DS224
+        // co y khong guard chieu am). Chi chan chieu tren.
+        checkTollInfoDiscountNotExceedReceivable(tollInfo);
         // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
@@ -274,6 +282,27 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         }
     }
 
+    /**
+     * DS298: so tien uu dai khong duoc vuot so tien phai thu. Null-safe:
+     * mot trong hai null giu hop le (cot nullable; mien toan bo
+     * discounted == receivable giu hop le, tra thua discounted am giu
+     * hop le theo DS224). Chi so sanh truc tiep payload vi mapper ghi
+     * thang ca 2 cot o insert/update/bulkInsert/bulkUpdate (mau
+     * DS296/DS297); luong noi bo duy nhat setAmountDiscounted la
+     * processNormalCharge (receivable - received) luon thoa khi
+     * received >= 0.
+     */
+    private static void checkTollInfoDiscountNotExceedReceivable(TollInfo tollInfo) {
+        if (tollInfo == null) {
+            return;
+        }
+        if (tollInfo.getAmountReceivable() != null
+                && tollInfo.getAmountDiscounted() != null
+                && tollInfo.getAmountDiscounted().compareTo(tollInfo.getAmountReceivable()) > 0) {
+            throw new ServiceException("Số tiền ưu đãi không được vượt quá số tiền phải thu");
+        }
+    }
+
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
@@ -318,6 +347,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             checkTollInfoRequired(tollInfo);
             checkTollInfoLengths(tollInfo);
             checkTollInfoNonNegative(tollInfo);
+            checkTollInfoDiscountNotExceedReceivable(tollInfo);
             forceSessionCompanyWhenBlank(tollInfo);
         }
         return super.bulkInsert(entitys);
@@ -341,6 +371,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             checkTollInfoRequired(tollInfo);
             checkTollInfoLengths(tollInfo);
             checkTollInfoNonNegative(tollInfo);
+            checkTollInfoDiscountNotExceedReceivable(tollInfo);
         }
         return super.bulkUpdate(entitys);
     }
