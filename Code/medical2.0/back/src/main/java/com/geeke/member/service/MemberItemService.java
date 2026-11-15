@@ -70,6 +70,7 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
         // check here so API + internal callers fail closed 400 alike.
         checkMemberItemRequired(entity);
         checkMemberItemNonNegative(entity);
+        checkMemberItemUseNotExceedNumber(entity);
         if (entity != null && StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Chi tiết thẻ hội viên không tồn tại: "
@@ -92,6 +93,7 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
         for (MemberItem entity : entitys) {
             checkMemberItemRequired(entity);
             checkMemberItemNonNegative(entity);
+            checkMemberItemUseNotExceedNumber(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -118,6 +120,7 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
             }
             checkMemberItemRequired(entity);
             checkMemberItemNonNegative(entity);
+            checkMemberItemUseNotExceedNumber(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -138,6 +141,33 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
     // cho phep (cot nullable, useNumber mac dinh 0); am -> 400
     // fail-closed, mau DS209-DS215 (ho "so am"). Goi trong save() (bao
     // ca cascade tu MemberSetService) + vong lap bulkInsert/bulkUpdate.
+    // DS297: chan so luong da su dung vuot so luong tang (useNumber >
+    // number) truoc moi ghi -- cung hinh dang DS296 (MemberSet.number
+    // > amount) va co tien le chan cung phep so sanh o bang em:
+    // MemberManagementDetail.updateUseNumber (DS62/DS63) chan
+    // useNumber > number bang atomic claim ("So lan su dung vuot qua
+    // so luong the"). MemberItemService truoc day chi chan am (DS216).
+    // Ca 2 cot deu duoc ghi o insert/update/bulkInsert/bulkUpdate
+    // (MemberItemDao.xml :111/:132-135/:159/CASE :211) nen guard so
+    // sanh truc tiep payload la du, khong can gop stored. Khong caller
+    // noi bo nao set MemberItem.useNumber (chi API save/bulk* + cascade
+    // tu MemberSetService truyen payload qua save()); luong dung the
+    // that cap nhat MemberManagementDetail.useNumber, khong cham day.
+    // Bound: ca 2 co gia tri va useNumber > number -> 400; bang nhau
+    // giu hop le (dung het), nho hon giu hop le; mot trong hai null
+    // giu hop le (cot nullable; NULL number = khong gioi han theo
+    // DS154 A4 nhu DS219). Goi trong save() (bao ca cascade tu
+    // MemberSetService) + vong lap bulkInsert/bulkUpdate.
+    private static void checkMemberItemUseNotExceedNumber(MemberItem entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getNumber() != null && entity.getUseNumber() != null
+                && entity.getUseNumber() > entity.getNumber()) {
+            throw new ServiceException("Số lượng đã sử dụng không được vượt quá số lượng tặng");
+        }
+    }
+
     private static void checkMemberItemNonNegative(MemberItem entity) {
         if (entity == null) {
             return;
