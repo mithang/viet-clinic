@@ -115,6 +115,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // fail-closed 400 truoc moi ghi; null giu nguyen (cot nullable),
         // 0 giu nguyen.
         checkDrugNonNegative(drug);
+        checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
         // buoc preparationUnit + pack (da @NotNull), nhung dosisUnit
@@ -255,6 +256,37 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
+    // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
+    // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
+    // nguong canh bao ton kho thap that (DrugDao.xml countInventory /
+    // getDrugInventoryWarning: ton kho con lai <= floor * preparation).
+    // Ca hai cot la varchar(255) nhap tu do nen chi guard khi ca hai
+    // parse duoc thanh so (mau parseDecimal DS96 o WarningService);
+    // trong / null / khong phai so giu hop le, khong pha luu cu.
+    // == giu hop le, < giu hop le; chi floor > limit moi 400.
+    private static void checkDrugInventoryThresholdOrder(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        BigDecimal floor = parseDecimal(drug.getInventoryFloor());
+        BigDecimal limit = parseDecimal(drug.getInventoryLimit());
+        if (floor != null && limit != null && floor.compareTo(limit) > 0) {
+            throw new ServiceException("Ngưỡng tồn kho tối thiểu không được vượt quá ngưỡng tồn kho tối đa");
+        }
+    }
+
+    private static BigDecimal parseDecimal(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return new BigDecimal(value.trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
         if (item != null) {
             checkLength(item.getValue(), max, message);
@@ -294,6 +326,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugRequired(drug);
             checkDrugLengths(drug);
             checkDrugNonNegative(drug);
+            checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
             if (this.repeat(drug) != 0) {
@@ -324,6 +357,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugRequired(drug);
             checkDrugLengths(drug);
             checkDrugNonNegative(drug);
+            checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
             if (this.repeat(drug) != 0) {
