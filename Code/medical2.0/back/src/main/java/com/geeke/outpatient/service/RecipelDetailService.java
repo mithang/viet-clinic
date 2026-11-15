@@ -91,6 +91,9 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // DS239 chi chan chieu am. == giu hop le (thu du), null giu
         // hop le (cot nullable, quy uoc DS219).
         checkActualPaymentNotExceedAllFee(entity);
+        // DS300: tong luong don vi nho nhat khong duoc thap hon tong
+        // so luong ke don (xem checkMinTotalNotLessThanTotal).
+        checkMinTotalNotLessThanTotal(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
         // (drippingSpeed 45, retailType 1, unitType 100); gia tri
@@ -135,6 +138,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailRequired(entity);
             checkNonNegative(entity);
             checkActualPaymentNotExceedAllFee(entity);
+            checkMinTotalNotLessThanTotal(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkInsert(entitys);
@@ -163,6 +167,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailRequired(entity);
             checkNonNegative(entity);
             checkActualPaymentNotExceedAllFee(entity);
+            checkMinTotalNotLessThanTotal(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkUpdate(entitys);
@@ -250,6 +255,36 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS300: tong luong don vi nho nhat (minTotal) khong duoc thap hon
+    // tong so luong ke don (total) cua chinh dong do. minTotal la tong
+    // luong theo don vi bao che / don vi nho nhat; total la tong so
+    // luong theo don vi ban. Ban theo goi thi minTotal = total x so
+    // vien/goi (> total); ban le thi minTotal = total. Luong that duy
+    // nhat: MedicalRecordService :612/:1258/:1328/:1508 default
+    // minTotal = total khi frontend khong gui (frontend khong he gui
+    // minTotal), nen luong that luon co minTotal >= total; khong caller
+    // noi bo nao set minTotal khac total. Live DB 56/56 dong active co
+    // minTotal == total, 0 dong vi pham. minTotal chay vao chiem dung
+    // kho (RecipelStastics.occupy = minTotal) nen minTotal < total lam
+    // kho bi chiem dung thieu. Ca 2 co gia tri va minTotal < total ->
+    // ServiceException 400 fail-closed; == hop le (mac dinh cua luong
+    // that), > hop le (ban theo goi), total null hop le (cot nullable;
+    // minTotal null da 400 o checkRecipelDetailRequired, quy uoc
+    // DS219). Khac DS297 da loai tru (allFee vs total x unitPrice phu
+    // thuoc isUnpackSell, co ngoai le) va DS111 (executions vs total,
+    // BigDecimal phan so, ngu nghia mo).
+    private static void checkMinTotalNotLessThanTotal(
+            RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getTotal() != null && entity.getMinTotal() != null
+                && entity.getMinTotal() < entity.getTotal()) {
+            throw new ServiceException(
+                    "Tổng lượng đơn vị nhỏ nhất không được thấp hơn tổng số lượng");
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -319,6 +354,8 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkNonNegative(recipelDetail);
             // DS299: cung chan actualPayment > allFee o duong nay.
             checkActualPaymentNotExceedAllFee(recipelDetail);
+            // DS300: cung chan minTotal < total o duong nay.
+            checkMinTotalNotLessThanTotal(recipelDetail);
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
