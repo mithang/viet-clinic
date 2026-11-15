@@ -70,10 +70,16 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                 // 200 silent no-op (lop DS94/DS99; probe A6). Mapper get()
                 // chi LEFT JOIN nen tra null dung khi dong that su khong
                 // ton tai (khac bai hoc N3d ve INNER JOIN).
-                if (this.dao.get(memberManagement.getId()) == null) {
+                MemberManagement stored = this.dao.get(memberManagement.getId());
+                if (stored == null) {
                     throw new ServiceException("Thẻ hội viên không tồn tại: "
                             + memberManagement.getId());
                 }
+                // DS314: chi duoc giu nguyen trang thai da luu (null = giu
+                // nguyen); doi trang thai qua save() la gia mao -- cac
+                // chuyen doi hop le di duong rieng (updaStatus/delete),
+                // khong qua save(). Xem helper ben duoi.
+                checkMemberManagementStatusForUpdate(memberManagement, stored);
                 // ITER36 N1: this override bypassed the generic save guards
                 // (M1/M2) by calling dao.update directly, so a foreign card id
                 // + own-tenant payload company overwrote + re-homed the card
@@ -91,6 +97,9 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // foreign tenant (probe-proven with an OWN set, so the trailing
             // memberSetService.get(setId) check cannot mask it). The update
             // branch above already has both checks (ITER36 N1).
+            // DS314: the moi chi duoc status null hoac '0' (Chua su dung);
+            // '1'/'2'/'4'/'9' la gia mao -- xem helper ben duoi.
+            checkMemberManagementStatusForCreate(memberManagement);
             verifyTenantOwnership(memberManagement);
             memberManagement.preInsert();
             String id = memberManagement.getId();
@@ -159,6 +168,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             checkMemberManagementLengths(entity);
             // DS153 C: nhu save() ben tren -- bulk khong co @Valid.
             checkMemberHasSubject(entity);
+            // DS314: tao moi chi duoc status null hoac '0'.
+            checkMemberManagementStatusForCreate(entity);
             if (StringUtils.isBlank(entity.getCard())) {
                 String card = new Date().getTime() + "";
                 entity.setCard(card.substring(card.length() - 8));
@@ -181,8 +192,13 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             checkMemberManagementLengths(entity);
             // DS153 C: nhu bulkInsert ben tren.
             checkMemberHasSubject(entity);
+            // DS314: cap nhat chi duoc giu nguyen trang thai da luu; dong
+            // ma (stored null) bo qua o day nhu thiet ke ITER35 -- mapper
+            // update 0 dong, khong persist gi. Lay stored mot lan, dung
+            // chung cho ca kiem tra trang thai va giu card ben duoi.
+            MemberManagement stored = this.dao.get(entity.getId());
+            checkMemberManagementStatusForUpdate(entity, stored);
             if (StringUtils.isBlank(entity.getCard())) {
-                MemberManagement stored = this.dao.get(entity.getId());
                 if (stored != null && StringUtils.isNotBlank(stored.getCard())) {
                     entity.setCard(stored.getCard());
                 } else {
@@ -211,6 +227,51 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         if (entity.getMemberSet() == null
                 || StringUtils.isBlank(entity.getMemberSet().getId())) {
             throw new ServiceException("Thẻ hội viên không được để trống");
+        }
+    }
+
+    // DS314: trang thai the hoi vien qua duong ghi generic
+    // (save/bulkInsert/bulkUpdate). Mien gia tri '0' Chua su dung /
+    // '1' Da su dung / '2' Da vo hieu hoa / '4' Het han
+    // (MemberManagementService.java:247-248 comment cu + frontend
+    // member/memberManagement/index.vue:143-146); luong hop le chi
+    // tao '0' (form hardcode status '0', memberManagementForm.vue:302)
+    // roi doi trang thai qua duong rieng, KHONG qua save():
+    // '0'->'1' qua MemberManagementDetailService.updateUseNumber:159
+    // -> updaStatus -> dao.updateStatus (tu luong thu phi,
+    // TollInfoService:769-771); '0'/'1'/'4'->'2' qua delete (mapper
+    // set status='2' + hoan tra so luong set o controller); '4' khong
+    // co producer nao trong code. Truoc day chi co guard do dai <= 1
+    // (DS149) nen client tao the sinh ra da '1'/'2'/'4'/'9', doi
+    // '0'->'2' vo hieu hoa ma khong hoan tra set (ro ri ton set),
+    // hoi sinh the da vo hieu '2'->'0' roi dung lai duoc ma khong tru
+    // set (probe pre P1-P3/P5-P9/P12). Guard o tang service vi audit
+    // caller day du: KHONG co caller noi bo nao cua save()/
+    // bulkInsert()/bulkUpdate() (chi CrudController routes + chinh
+    // service nay); cac luong noi bo deu bypass save() (dao.updateStatus
+    // / dao.delete qua service.delete). Fail-closed 400, khong ghi.
+    // Tao moi: null hoac '0'. Cap nhat: null (giu nguyen, khong ghi de
+    // NULL xuong cot NOT NULL) hoac bang dung trang thai da luu; dong
+    // da luu co status null (du lieu cu) thi cho qua de tranh chan
+    // luong hop le.
+    private static void checkMemberManagementStatusForCreate(MemberManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        String status = entity.getStatus();
+        if (status != null && !"0".equals(status)) {
+            throw new ServiceException("Trạng thái thẻ hội viên không hợp lệ khi tạo mới: chỉ được Chưa sử dụng");
+        }
+    }
+
+    private static void checkMemberManagementStatusForUpdate(MemberManagement entity, MemberManagement stored) {
+        if (entity == null || stored == null) {
+            return;
+        }
+        String status = entity.getStatus();
+        String storedStatus = stored.getStatus();
+        if (status != null && storedStatus != null && !status.equals(storedStatus)) {
+            throw new ServiceException("Trạng thái thẻ hội viên không hợp lệ khi cập nhật: chỉ được giữ nguyên trạng thái đã lưu, đổi trạng thái phải qua dùng thẻ / thanh toán / hủy thẻ");
         }
     }
 
