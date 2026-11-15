@@ -259,6 +259,23 @@ public class HosDepartmentStorageController extends BaseController {
                             .isAfter(LocalDate.now(DB_ZONE))) {
                 throw new ServiceException("Ngày sản xuất của thuốc mã " + hisItem.getYpdm() + " không được ở tương lai");
             }
+            // DS293: yxq (han su dung HIS) truoc scrq (ngay san xuat) —
+            // DS261 chi guard 2 endpoint nhap kho thu cong, duong audit
+            // nay ghi thang endDate = yxq / produceDate = scrq ma khong
+            // nhin thu tu ngay (probe: yxq 2025-01-01 < scrq 2026-01-01
+            // -> 200 + end_date < produce_date persist). Mien tru DS261
+            // (lo het han that co yxq qua khu + produceDate mac dinh hom
+            // nay) chi bao bien scrq == null; khi scrq co mat ma yxq <
+            // scrq thi thuoc het han truoc khi duoc san xuat — khong the
+            // xay ra. Chan 400 truoc moi ghi, ke ten ma thuoc; scrq null
+            // (mien tru DS261), yxq null, ngay bang nhau giu hop le
+            // (quy uoc DS260). Vong lap kiem chung chay TRUOC moi ghi
+            // (savesTo sau vong lap) nen batch hon hop bi tu choi ca lo.
+            if (hisItem.getScrq() != null && hisItem.getYxq() != null
+                    && hisItem.getYxq().toInstant().atZone(DB_ZONE).toLocalDate()
+                            .isBefore(hisItem.getScrq().toInstant().atZone(DB_ZONE).toLocalDate())) {
+                throw new ServiceException("Hạn sử dụng của thuốc mã " + hisItem.getYpdm() + " không được trước ngày sản xuất");
+            }
             if (factor > 1 && (drug.getPreparation() == null || !drug.getPreparation().contains("."))) {
                 throw new ServiceException("Quy cách của thuốc mã " + hisItem.getYpdm() + " không có dạng số thập phân nên không đổi được đơn vị chuẩn");
             }
