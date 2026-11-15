@@ -78,17 +78,81 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
                     entity.setCompany(new Company(tenantId));
                 }
             }
+            // DS320: tao moi chi chap nhan status null/'0'/'1'. '1' la
+            // luong gui yeu cau that (patientForm onSubmit goi
+            // statusEdit("1") qua save sau khi HIS apply OK); null ep
+            // ve '0' (Chua gui) de hang moi hien nut Gui/Xoa (list chi
+            // hien thao tac khi status === '0'). '2'..'5' (Dang kham /
+            // Da ket thuc / Da phat thuoc / Da tra lai) chi phia HIS
+            // moi duoc chuyen, khong bao gio sinh ra tu UI nay; gia
+            // tri rac cung khong co nhan hien thi -> 400.
+            checkStatusOnCreate(entity.getStatus());
+            if (entity.getStatus() == null) {
+                entity.setStatus("0");
+            }
             entity.preInsert();
             remoteDiagnosisTreatmentDao.diagnosisInsert(entity);
         } else {
-            if (remoteDiagnosisTreatmentDao.diagnosisById(entity.getId()) == null) {
+            RemoteDiagnosisTreatment stored =
+                    remoteDiagnosisTreatmentDao.diagnosisById(entity.getId());
+            if (stored == null) {
                 throw new ServiceException("Chẩn đoán từ xa không tồn tại: "
                         + entity.getId());
             }
+            // DS320: diagnosisUpdate chi ghi status (mapper :145) nen
+            // save-update thuc chat la mot endpoint doi-trang-thai.
+            // Chi cho phep: giu nguyen, 0/null -> '1' (Gui, sau HIS
+            // apply), '1' -> '0' (Thu hoi). Moi chuyen khac (sang
+            // '2'..'5', gia tri rac, hoac null lam NULL cot) -> 400.
+            checkStatusTransition(stored.getStatus(), entity.getStatus());
             entity.preUpdate();
             remoteDiagnosisTreatmentDao.diagnosisUpdate(entity);
         }
         return entity;
+    }
+
+    // DS320: trang thai tao moi cua mot yeu cau kham tu xa.
+    private void checkStatusOnCreate(String status) {
+        if (status != null && !"0".equals(status) && !"1".equals(status)) {
+            throw new ServiceException("Trạng thái chẩn đoán từ xa không hợp lệ khi tạo mới: "
+                    + status);
+        }
+    }
+
+    // DS320: chuyen trang thai hop le qua save / modifiedState. stored
+    // null = hang nhap (truoc day insert ghi null). Luong UI that chi
+    // co: giu nguyen, null/'0' -> '1' (Gui), '1' -> '0' (Thu hoi).
+    private void checkStatusTransition(String stored, String next) {
+        if (next == null) {
+            throw new ServiceException("Trạng thái chẩn đoán từ xa không được để trống");
+        }
+        if (next.equals(stored)) {
+            return;
+        }
+        if ("1".equals(next) && (stored == null || "0".equals(stored))) {
+            return;
+        }
+        if ("0".equals(next) && ("1".equals(stored) || stored == null)) {
+            return;
+        }
+        throw new ServiceException("Không được chuyển trạng thái chẩn đoán từ xa từ "
+                + (stored == null ? "chưa gửi" : stored) + " sang " + next);
+    }
+
+    // DS320: medicationStatus chi co luong thu phi dat '1' (tollInfo
+    // saveTollTollInfo + chargeEdit). '2' (Da phat thuoc) khong co
+    // caller nao trong codebase nay; gia tri rac / NULL hoa cot -> 400.
+    private String checkMedicationStatusTransition(String stored, String next) {
+        if (next == null) {
+            return stored;
+        }
+        if (next.equals(stored)) {
+            return next;
+        }
+        if ("1".equals(next) && (stored == null || "0".equals(stored))) {
+            return next;
+        }
+        throw new ServiceException("Trạng thái phát thuốc không hợp lệ: " + next);
     }
 
     /** Sửa trạng thái
@@ -107,6 +171,23 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
             throw new ServiceException("Chẩn đoán từ xa không tồn tại: "
                     + entity.getId());
         }
+        // DS320: modifiedState ghi status + medicationStatus verbatim
+        // (mapper :153-154) nen cung la duong gia mao trang thai: '4'
+        // (Da phat thuoc) / '5' / gia tri rac, hay medicationStatus
+        // '2' (Da phat thuoc) khi chua thu phi/phat thuoc. Luong UI
+        // that chi co: status giu nguyen (luu thong tin nguoi nhan),
+        // null/'0' -> '1' (Gui sau HIS apply), medicationStatus
+        // null/'0' -> '1' (sau thu phi). Payload null giu gia tri da
+        // luu thay vi NULL hoa cot.
+        RemoteDiagnosisTreatment stored =
+                remoteDiagnosisTreatmentDao.diagnosisById(entity.getId());
+        if (entity.getStatus() == null) {
+            entity.setStatus(stored.getStatus());
+        } else {
+            checkStatusTransition(stored.getStatus(), entity.getStatus());
+        }
+        entity.setMedicationStatus(checkMedicationStatusTransition(
+                stored.getMedicationStatus(), entity.getMedicationStatus()));
         return remoteDiagnosisTreatmentDao.modifiedState(entity);
     }
 
