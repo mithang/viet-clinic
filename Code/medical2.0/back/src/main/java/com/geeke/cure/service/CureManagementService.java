@@ -99,6 +99,20 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         if (recipelInfoService.get(info.getId()) == null) {
             throw new ServiceException("Đơn thuốc không tồn tại: " + info.getId());
         }
+        // DS316: tien do thuc hien (detail.executions, tich luy) khong
+        // duoc vuot tran cua dong detail DA LUU -- payload total/days
+        // la gia tri ke gian nen phai doi chieu voi dong luu trong DB
+        // (recipelDetailService.get o tren, xem checkExecutionsNot-
+        // ExceedStoredCap). Tran = days.name voi truyen dich
+        // (stuffType "2"), total voi cac loai con lai; == hop le,
+        // null hop le. Thu hoi (delType='1') duoc mien nhu DS217/
+        // DS218: no chi GIAM executions, va dong cu vuot tran phai
+        // van thu hoi duoc. Controller sau save() goi updateById ghi
+        // thang executions xuong recipel_detail (bo qua moi guard
+        // cua RecipelDetailService) nen chan o day la duong duy nhat.
+        RecipelDetail storedDetail = recipelDetailService.get(detail.getId());
+        checkExecutionsNotExceedStoredCap(detail.getExecutions(),
+                storedDetail, entity.getDelType());
         // DS150 B: recipelInfoId la String nhung cot cure.recipel_info_id
         // la bigint (nullable): "abc" hoac "" qua mapper deu 500 o DB
         // (error 1366, probe B1/B2 pre). Chan truoc moi ghi: chi cho
@@ -177,6 +191,39 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         }
         if (entity.getExecutions() < 0 && !"1".equals(entity.getDelType())) {
             throw new ServiceException("Số lần đã thực hiện không được âm");
+        }
+    }
+
+    // DS316: xem ghi chu o save(). Tran lay tu dong detail DA LUU
+    // (khong lay tu payload: total/days trong payload ke gian duoc).
+    // stuffType "2" (truyen dich) -> tran la days.name; con lai ->
+    // tran la total; tran/executions null -> cho qua (parity DS111).
+    // Thu hoi (delType='1') duoc mien: no chi giam executions.
+    private static void checkExecutionsNotExceedStoredCap(
+            BigDecimal executions, RecipelDetail stored, String delType) {
+        if (executions == null || stored == null
+                || "1".equals(delType)) {
+            return;
+        }
+        BigDecimal cap = null;
+        boolean infusionCap = false;
+        if ("2".equals(stored.getStuffType()) && stored.getDays() != null
+                && stored.getDays().getName() != null) {
+            try {
+                cap = new BigDecimal(stored.getDays().getName().trim());
+                infusionCap = true;
+            } catch (NumberFormatException e) {
+                cap = null;
+            }
+        }
+        if (cap == null && stored.getTotal() != null) {
+            cap = BigDecimal.valueOf(stored.getTotal());
+            infusionCap = false;
+        }
+        if (cap != null && executions.compareTo(cap) > 0) {
+            throw new ServiceException(infusionCap
+                    ? "Tiến độ thực hiện không được vượt quá số ngày truyền"
+                    : "Tiến độ thực hiện không được vượt quá tổng số lượng");
         }
     }
 

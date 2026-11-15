@@ -94,6 +94,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // DS300: tong luong don vi nho nhat khong duoc thap hon tong
         // so luong ke don (xem checkMinTotalNotLessThanTotal).
         checkMinTotalNotLessThanTotal(entity);
+        checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
         // (drippingSpeed 45, retailType 1, unitType 100); gia tri
@@ -139,6 +140,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkNonNegative(entity);
             checkActualPaymentNotExceedAllFee(entity);
             checkMinTotalNotLessThanTotal(entity);
+            checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkInsert(entitys);
@@ -168,6 +170,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkNonNegative(entity);
             checkActualPaymentNotExceedAllFee(entity);
             checkMinTotalNotLessThanTotal(entity);
+            checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkUpdate(entitys);
@@ -252,6 +255,49 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
                         > 0) {
             throw new ServiceException(
                     "Thực thu không được vượt quá tổng tiền");
+        }
+    }
+
+    // DS316: tien do thuc hien (executions) khong duoc vuot tran cua
+    // chinh dong do. Tran = so ngay (days.name) voi truyen dich
+    // (stuffType "2", tien do dem theo NGAY, updateById nhanh
+    // thuong dem hoan thanh theo days, infusion UI cap excuteNum
+    // o days-executions); tran = tong so luong ke don (total) voi
+    // cac loai con lai (cureManagement UI cap o total-executions,
+    // nhanh stuffType "3" dem hoan thanh theo total, schedule() =
+    // sum(executions)-sum(total) nen vuot tran lam don khong bao
+    // gio hoan thanh). Ca 2 co gia tri va executions > tran ->
+    // ServiceException 400 fail-closed; == hop le, mot trong hai
+    // null hop le (cot nullable, quy uoc DS111/DS219). days khong
+    // parse duoc so -> roi ve total (du lieu cu lech, khong 400
+    // mu). Luong that: UI luon gui executions <= tran (input-number
+    // :max o ca 2 man hinh), caller noi bo chi set 0 khi tao
+    // (MedicalRecordController:233); live DB 0 dong vuot tran.
+    private static void checkExecutionsNotExceedCap(
+            RecipelDetail entity) {
+        if (entity == null || entity.getExecutions() == null) {
+            return;
+        }
+        BigDecimal cap = null;
+        boolean infusionCap = false;
+        if ("2".equals(entity.getStuffType()) && entity.getDays() != null
+                && entity.getDays().getName() != null) {
+            try {
+                cap = new BigDecimal(entity.getDays().getName().trim());
+                infusionCap = true;
+            } catch (NumberFormatException e) {
+                cap = null;
+            }
+        }
+        if (cap == null && entity.getTotal() != null) {
+            cap = BigDecimal.valueOf(entity.getTotal());
+            infusionCap = false;
+        }
+        if (cap != null
+                && entity.getExecutions().compareTo(cap) > 0) {
+            throw new ServiceException(infusionCap
+                    ? "Tiến độ thực hiện không được vượt quá số ngày truyền"
+                    : "Tiến độ thực hiện không được vượt quá tổng số lượng");
         }
     }
 
