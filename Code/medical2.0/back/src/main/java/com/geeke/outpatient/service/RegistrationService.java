@@ -448,6 +448,41 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         }
     }
 
+    // DS295: thu tu cap ngay tiep nhan / hoan thanh kham — treatmentDate
+    // khong duoc truoc receptionStartDate (luot kham khong the hoan
+    // thanh tri lieu truoc khi benh nhan duoc tiep nhan; ho DS260/DS261/
+    // DS263/DS283). So sanh truc tiep Date.before (khong theo ngay lich
+    // nhu DS282 — cung ngay nhung gio nguoc van la khong the). Ca 2 ngay
+    // co gia tri moi chan; mot trong hai null giu nguyen (cot nullable).
+    // Guard o save/bulkInsert/bulkUpdate/wxSave, canh DS283. Mapper
+    // update/bulkUpdate CASE chi ghi treatment_date, khong ghi
+    // reception_start_date (RegistrationDao.xml :441, :745) nen o duong
+    // update phai gop voi dong stored: treatment moi (neu co) so voi
+    // start da luu; start trong payload update khong duoc ghi nen khong
+    // dung lam chuan. Duong goi noi bo duy nhat set treatmentDate la
+    // RecipelDetailService:417,483 — set new Date() (hien tai) roi goi
+    // save() tren dong co start qua khu (treatment >= start, qua);
+    // MedicalRecordService:1053-1054, :1074-1075 set ca 2 ngay tiep
+    // nhan = new Date() tren dong moi (treatmentDate null, qua); khong
+    // form frontend nao cho nguoi dung chon 2 ngay nay (DS282). Khac
+    // DS272 (treatmentDate tuong lai) va DS283 (cap ngay tiep nhan).
+    private static void checkRegistrationTreatmentDateOrder(Registration entity, Registration stored) {
+        if (entity == null) {
+            return;
+        }
+        Date start = entity.getReceptionStartDate();
+        if (start == null && stored != null) {
+            start = stored.getReceptionStartDate();
+        }
+        Date treatment = entity.getTreatmentDate();
+        if (treatment == null && stored != null) {
+            treatment = stored.getTreatmentDate();
+        }
+        if (start != null && treatment != null && treatment.before(start)) {
+            throw new ServiceException("Thời gian hoàn thành khám/trị liệu không được trước thời gian bắt đầu tiếp nhận.");
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Registration save(Registration entity) {
@@ -490,6 +525,9 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // DS283: chan thu tu cap ngay tiep nhan (end < start), gop voi
         // dong stored o duong update (mapper update chi ghi end).
         checkRegistrationReceptionDateOrder(entity, stored);
+        // DS295: chan thu tu treatmentDate < receptionStartDate, gop voi
+        // dong stored o duong update (mapper update chi ghi treatment).
+        checkRegistrationTreatmentDateOrder(entity, stored);
         return super.save(entity);
     }
 
@@ -542,6 +580,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationReceptionDatesNotFuture(entity);
             // DS283: bulk cung chan thu tu cap ngay tiep nhan nhu save().
             checkRegistrationReceptionDateOrder(entity, null);
+            // DS295: bulk cung chan thu tu treatment < receptionStart.
+            checkRegistrationTreatmentDateOrder(entity, null);
             if (StringUtils.isBlank(entity.getId()) && entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
             }
@@ -589,6 +629,9 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             // DS283: bulkUpdate cung chan thu tu cap ngay tiep nhan, gop
             // voi dong stored (mapper CASE chi ghi end).
             checkRegistrationReceptionDateOrder(entity, stored);
+            // DS295: bulkUpdate cung chan thu tu treatment < start, gop
+            // voi dong stored (mapper CASE chi ghi treatment).
+            checkRegistrationTreatmentDateOrder(entity, stored);
         }
         return super.bulkUpdate(entitys);
     }
@@ -885,6 +928,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationReceptionDatesNotFuture(entity);
         // DS283: wxSave cung chan thu tu cap ngay tiep nhan nhu save().
         checkRegistrationReceptionDateOrder(entity, null);
+        // DS295: wxSave cung chan thu tu treatment < receptionStart.
+        checkRegistrationTreatmentDateOrder(entity, null);
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
