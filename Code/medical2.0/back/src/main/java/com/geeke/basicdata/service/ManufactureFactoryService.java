@@ -73,6 +73,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
         // nhom A, service guard them cho duong bulk. remarks ->
         // varchar(255). Gioi han theo cot DB; null-safe.
         checkManufactureFactoryLengths(manufactureFactory);
+        checkManufactureFactoryStatusValues(manufactureFactory); // DS326
         ManufactureFactory manufactureFactoryTemp = super.save(manufactureFactory);
         return manufactureFactoryTemp;
     }
@@ -97,6 +98,25 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
+        }
+    }
+
+    // DS326: status gia mao ('9'/'2'/'x'...) qua save/bulkInsert/
+    // bulkUpdate — truoc day 200 + persist (chi co guard do dai max 1,
+    // DS149). Mien hop le duy nhat '0'/'1' (form switch active-value
+    // "1" / inactive-value "0"; index.vue search options '0' Khong /
+    // '1' Co). listAll/listAlls loc AND a.status="1" nen gia tri ma
+    // thanh hang ma tang hinh khoi dropdown nha san xuat (mau DS323/
+    // DS324). NULL van hop le: cot nullable, live DB co 3 dong NULL.
+    private static void checkManufactureFactoryStatusValues(
+            ManufactureFactory entity) {
+        if (entity == null || entity.getStatus() == null) {
+            return;
+        }
+        if (!"0".equals(entity.getStatus())
+                && !"1".equals(entity.getStatus())) {
+            throw new ServiceException(
+                    "Trạng thái kích hoạt chỉ nhận giá trị 0 (Không) hoặc 1 (Có)");
         }
     }
 
@@ -142,6 +162,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
                 throw new ServiceException("Loại nhà sản xuất không được để trống");
             }
             checkManufactureFactoryLengths(manufactureFactory);
+            checkManufactureFactoryStatusValues(manufactureFactory); // DS326
         }
         return super.bulkInsert(entitys);
     }
@@ -165,6 +186,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
                 throw new ServiceException("Loại nhà sản xuất không được để trống");
             }
             checkManufactureFactoryLengths(manufactureFactory);
+            checkManufactureFactoryStatusValues(manufactureFactory); // DS326
         }
         return super.bulkUpdate(entitys);
     }
