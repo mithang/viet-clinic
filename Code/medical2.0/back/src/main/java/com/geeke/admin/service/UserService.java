@@ -30,6 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -350,6 +353,53 @@ public class UserService extends CrudService<UserDao, User>{
      * ext nhu save(User) (live data co ''), 400 null-only cho sys_user
      * nhu @NotNull o plain save.
      */
+    /**
+     * DS304: ngay bat dau hanh nghe (UserExt.startWorkTime) sau ngay ket
+     * thuc hanh nghe (UserExt.endWorkTime) truoc day luu that qua moi
+     * duong ghi ext (probe pre: SWF create, plain save create, multipart
+     * update). Form quan tri nguoi dung nhap 2 ngay bang date-picker
+     * (userForm.vue) nhung khong co rang buoc cheo nao (picker-options
+     * starttime/endTime khong duoc dinh nghia, validator da comment-out)
+     * va khong service nao so sanh 2 ngay. Fail-closed 400: chi chan khi
+     * ca hai deu parse duoc thanh ngay va start > end; bang nhau giu hop
+     * le, mot trong hai null/rong/khong phai ngay giu hop le (quy uoc
+     * DS302/DS303: khong pha du lieu cu). Truong la String varchar(100)
+     * nen parse mem: tien to yyyy-MM-dd (ke ca chuoi ISO cua date-picker)
+     * va dd/MM/yyyy. Goi o ca 2 ham ghi ext that save(user, files,
+     * deleteIds) va update(user, files, deleteIds) — bao phu ca create
+     * (JSON + multipart, ke ca nhanh cross-tenant va bulkInsert qua
+     * this.save) lan update UI. bulkUpdate / save(User) update-by-id
+     * chi ghi sys_user, khong cham ext nen khong can guard.
+     */
+    private static void checkUserExtWorkTimeOrder(UserExt userExt) {
+        if (userExt == null) {
+            return;
+        }
+        LocalDate start = parseWorkDate(userExt.getStartWorkTime());
+        LocalDate end = parseWorkDate(userExt.getEndWorkTime());
+        if (start != null && end != null && start.isAfter(end)) {
+            throw new ServiceException("Ngày bắt đầu hành nghề không được sau ngày kết thúc hành nghề");
+        }
+    }
+
+    private static LocalDate parseWorkDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        String v = value.trim();
+        try {
+            if (v.length() >= 10 && v.charAt(4) == '-' && v.charAt(7) == '-') {
+                return LocalDate.parse(v.substring(0, 10), DateTimeFormatter.ISO_LOCAL_DATE);
+            }
+            if (v.length() == 10 && v.charAt(2) == '/' && v.charAt(5) == '/') {
+                return LocalDate.parse(v, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            }
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+        return null;
+    }
+
     private void normalizeUserForFileSave(User user) {
         if (user.getUserExt() == null) {
             user.setUserExt(new UserExt());
@@ -388,6 +438,8 @@ public class UserService extends CrudService<UserDao, User>{
                      String[] deleteIds) throws java.io.IOException {
         // DS83: guard null truoc moi ghi (xem normalizeUserForFileSave).
         normalizeUserForFileSave(user);
+        // DS304: ngay bat dau hanh nghe sau ngay ket thuc -> 400.
+        checkUserExtWorkTimeOrder(user.getUserExt());
         // Người dùngĐăng nhậptênduy nhấtKiểm tra
         User existUser = getUserByLoginName(user);
         String loginTenant = SessionUtils.getLoginTenantId();
@@ -566,6 +618,8 @@ public class UserService extends CrudService<UserDao, User>{
                        String[] deleteIds) throws java.io.IOException {
         // DS83: guard null truoc moi ghi (xem normalizeUserForFileSave).
         normalizeUserForFileSave(user);
+        // DS304: ngay bat dau hanh nghe sau ngay ket thuc -> 400.
+        checkUserExtWorkTimeOrder(user.getUserExt());
         // K7 (iteration 58): guard deleteIds truoc moi ghi (mau J2):
         // file avatar co object_id = id user dang sua; file la -> 400
         // truoc super.save. Id rong (khong phai duong UI) thi tap cho
