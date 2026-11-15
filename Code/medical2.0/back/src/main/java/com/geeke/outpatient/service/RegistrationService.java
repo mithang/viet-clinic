@@ -1,6 +1,7 @@
 package com.geeke.outpatient.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.geeke.common.constants.BizConstants;
 import com.geeke.common.data.Page;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
@@ -698,6 +699,18 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     @Transactional(readOnly = false)
     public int updateStatus(String id,String status,String departmentId,String doctorId)
     {
+        // DS313: /status chi nhan _0/_2/_4 -- gia tri UI quan sat duoc:
+        // _3->_0 va _0->_2 (diem danh / huy so, registration/index.vue),
+        // _1->_4 (huy don kham, medicalRecord/index.vue). _1 khong bao
+        // gio qua /status (do luong kham xong noi bo set qua service),
+        // _3/_5 qua save/registationupdate. Caller duy nhat la controller
+        // /status (RegistrationController:116); job het han va hoan phi
+        // goi thang DAO nen khong anh huong. 400 fail-closed, khong ghi.
+        if (!BizConstants.REG_STATUS_PENDING.equals(status)
+                && !BizConstants.REG_STATUS_REFUNDED.equals(status)
+                && !BizConstants.REG_STATUS_FEE_REFUNDED.equals(status)) {
+            throw new ServiceException("Trạng thái đăng ký không hợp lệ khi đổi trạng thái: chỉ được Chờ khám / Hủy số / Hết hiệu lực");
+        }
         // ITER37 O1: kiểm tra dòng DB đã lưu trước khi ghi, theo mẫu M1.
         // Trước đây updateStatus gọi thẳng dao.updateStatus (WHERE id,
         // không lọc company) nên token tenant 309 đổi được lượt khám của

@@ -229,6 +229,9 @@ public class RegistrationController extends CrudController<RegistrationService, 
     @Override
     @PostMapping(value = "save")
     public ResponseEntity<JSONObject> save(@RequestBody Registration entity) {
+        // DS313: chan trang thai gia mao ngay tai bien controller, truoc
+        // ca nhanh web lan nhanh WeChat (wxSave) ben duoi.
+        checkRegistrationStatusForWrite(entity);
         String id ="";
         if(Objects.equals(entity.getCreateBy(),"WeChat")){
             // C1 (iteration 50): san RBAC parity nhanh web — truoc day nhanh
@@ -286,6 +289,85 @@ public class RegistrationController extends CrudController<RegistrationService, 
         return ResponseEntity.ok(ResultUtil.successJson(id));
     }
 
+    /**
+     * DS313: guard trang thai dang ky o bien controller (save / bulk /
+     * registationupdate), KHONG dat o RegistrationService.save() /
+     * bulkInsert() / bulkUpdate() / wxSave().
+     *
+     * Ly do (audit TOAN BO caller cua service.save(), 2026-11-15):
+     * - Tao moi hop le chi dung null (BookingRequestService.confirm,
+     *   PatientController inquire/add) hoac _0/_3/_5 (UI registrationForm
+     *   / ysForm / beforehandForm / schedulingForm).
+     * - _1 chi do luong noi bo qua service.save() TRUC TIEP, khong qua
+     *   controller: MedicalRecordService _0->_1 khi kham xong,
+     *   TollInfoService.addRetailRegistration tao moi _1 (ban le).
+     *   Guard muc service (tao moi chi null/_0/_3/_5, hoac cap nhat giu
+     *   nguyen stored) se pha ca hai luong hop le nay.
+     * - _2 chi qua refundRegistrationPay / updateStatus, _4 chi qua job
+     *   het han + invalidPrescription qua /status; khong luong hop le
+     *   nao gui _1/_2/_4/garbage qua save/bulk/registationupdate.
+     * - Cap nhat qua save hop le chi doi trong {_0,_3,_5} (tiep nhan /
+     *   phan kham: registrationForm savePatient _0/_5, doSave _3);
+     *   RecipelDetailService / SupplierStockService save dong da load
+     *   voi status stored khong doi nen luon qua guard.
+     * Tap cho phep: null (giu stored / mac dinh) hoac _0/_3/_5; con lai
+     * 400 fail-closed, khong ghi. Duong /status co guard rieng o
+     * RegistrationService.updateStatus (chi _0/_2/_4).
+     */
+    private static void checkRegistrationStatusForWrite(Registration entity) {
+        if (entity == null || entity.getStatus() == null) {
+            return;
+        }
+        String value = entity.getStatus().getValue();
+        if (value == null) {
+            return;
+        }
+        if (!BizConstants.REG_STATUS_PENDING.equals(value)
+                && !BizConstants.REG_STATUS_PENDING_CHECKIN.equals(value)
+                && !BizConstants.REG_STATUS_PENDING_TRIAGE.equals(value)) {
+            throw new ServiceException("Trạng thái đăng ký không hợp lệ: khi tạo hoặc cập nhật qua giao diện chỉ được để trống hoặc Chờ khám / Chờ check-in / Chờ phân khám");
+        }
+    }
+
+    /**
+     * DS313: CrudController.bulkInsert goi thang service, bo qua moi
+     * guard cua save() (mau DS145) -- ghi de o day de chan trang thai
+     * gia mao truoc khi uy quyen cho service.
+     */
+    @Override
+    @PostMapping(value = "bulkInsert")
+    public ResponseEntity<JSONObject> bulkInsert(@RequestBody List<Registration> entitys) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        if (entitys != null) {
+            for (Registration entity : entitys) {
+                checkRegistrationStatusForWrite(entity);
+            }
+        }
+        List<String> ids = registrationService.bulkInsert(entitys);
+        return ResponseEntity.ok(ResultUtil.successJson(ids));
+    }
+
+    /**
+     * DS313: nhu bulkInsert -- CrudController.bulkUpdate goi thang
+     * service, ghi de o day de chan doi trang thai gia mao.
+     */
+    @Override
+    @PostMapping(value = "bulkUpdate")
+    public ResponseEntity<JSONObject> bulkUpdate(@RequestBody List<Registration> entitys) {
+        if (!hasAnySessionPermission()) {
+            return forbidden();
+        }
+        if (entitys != null) {
+            for (Registration entity : entitys) {
+                checkRegistrationStatusForWrite(entity);
+            }
+        }
+        List<String> ids = registrationService.bulkUpdate(entitys);
+        return ResponseEntity.ok(ResultUtil.successJson(ids));
+    }
+
     @PostMapping(value = "registationupdate")
     public ResponseEntity<JSONObject> registationupdate(@RequestBody RegistrationMedicalrecordlist entitys) {
         if (!hasAnySessionPermission()) { return forbidden(); } // San RBAC: tai khoan 0-resource bi 403 (xem CrudController).
@@ -296,6 +378,10 @@ public class RegistrationController extends CrudController<RegistrationService, 
                     .body(ResultUtil.errorJson(ErrorEnum.E_400));
         }
         entitys.getRegistration().setUpdateDate(new Date());
+        // DS313: registationupdate chi hop le khi stored la _5 va doi
+        // sang _0 (phan kham: beforehandForm gan bac si + status _0);
+        // mapper ghi moi status khac null nen chan _1/_2/_4/garbage o day.
+        checkRegistrationStatusForWrite(entitys.getRegistration());
         int row = registrationService.registrationupdate(entitys.getRegistration());
         if(entitys.getMedicalRecord()!=null) {
             if (entitys.getMedicalRecord().getPatientTell() != null && entitys.getMedicalRecord().getDoctor() != null) {
