@@ -115,6 +115,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // fail-closed 400 truoc moi ghi; null giu nguyen (cot nullable),
         // 0 giu nguyen.
         checkDrugNonNegative(drug);
+        checkDrugStatusValues(drug); // DS323
         checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
@@ -256,6 +257,27 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS323: co bat (status) chi co 2 gia tri co nghia trong toan bo
+    // codebase: '0' = Khong, '1' = Co (drug/index.vue search options,
+    // drugForm.vue switch mac dinh '1'). Guard hien co chi chan do dai
+    // <= 1 (@Length + checkDrugLengths) va trong (@NotNull /
+    // checkDrugRequired) nen '9'/'2'/'x' deu lot qua ca 3 duong ghi va
+    // mapper ghi thang #{status} (DrugDao.xml insert/update/bulkInsert/
+    // bulkUpdate). Thuoc status '9' khong kich hoat ma cung khong tat:
+    // truy van ke don loc status='1' (DrugDao.xml :299/:406) khong thay
+    // no, bo loc tat cung khong nhan ra no — trang thai ma. '0'/'1'
+    // giu 200 (tao + chuyen doi 2 chieu); null/blank cung 400 o day
+    // cho duong bulk (khong qua @Valid), cung hanh vi @Valid o save.
+    private static void checkDrugStatusValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        if (!"0".equals(drug.getStatus()) && !"1".equals(drug.getStatus())) {
+            throw new ServiceException(
+                    "Trạng thái thuốc chỉ nhận giá trị 0 (Không) hoặc 1 (Có)");
+        }
+    }
+
     // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
     // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
     // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
@@ -326,6 +348,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugRequired(drug);
             checkDrugLengths(drug);
             checkDrugNonNegative(drug);
+            checkDrugStatusValues(drug); // DS323
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
@@ -357,6 +380,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugRequired(drug);
             checkDrugLengths(drug);
             checkDrugNonNegative(drug);
+            checkDrugStatusValues(drug); // DS323
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
