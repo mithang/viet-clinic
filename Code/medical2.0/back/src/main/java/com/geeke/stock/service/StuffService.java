@@ -161,6 +161,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         // tren entity, cot decimal co dau + nullable nen DB chap nhan.
         // Chan fail-closed 400 truoc moi ghi; null giu nguyen, 0 giu nguyen.
         checkStuffNonNegative(stuff);
+        checkStuffInventoryThresholdOrder(stuff); // DS303
         Stuff stuffTemp = super.save(stuff);
 
         //LưuđộngTồn kho
@@ -211,6 +212,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             }
             checkStuffLengths(stuff);
             checkStuffNonNegative(stuff);
+            checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkInsert(entitys);
     }
@@ -235,6 +237,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             }
             checkStuffLengths(stuff);
             checkStuffNonNegative(stuff);
+            checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkUpdate(entitys);
     }
@@ -294,6 +297,40 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         }
         if (stuff.getPackNumber() != null && stuff.getPackNumber() < 0) {
             throw new ServiceException("Số lượng đóng gói không được âm");
+        }
+    }
+
+    // DS303: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
+    // toi da (inventoryLimit) — cau hinh mau thuan (form stuffForm.vue:
+    // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
+    // nguong canh bao ton kho thap that (StuffDao.xml getCountWarning /
+    // getStuffInventoryWarning: ton kho con lai <= inventory_floor).
+    // Ca hai cot la varchar(255) nhap tu do nen chi guard khi ca hai
+    // parse duoc thanh so (mau parseDecimal DS96 o WarningService /
+    // DS302 Drug); trong / null / khong phai so giu hop le, khong pha
+    // luu cu. == giu hop le, < giu hop le; chi floor > limit moi 400.
+    // Dat canh checkStuffNonNegative o save/bulkInsert/bulkUpdate.
+    // Luu y: bulkUpdate mapper khong co CASE cho 2 cot nay nen duong
+    // do khong doi duoc nguong, guard van dat de phong thu sau.
+    private static void checkStuffInventoryThresholdOrder(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        BigDecimal floor = parseDecimal(stuff.getInventoryFloor());
+        BigDecimal limit = parseDecimal(stuff.getInventoryLimit());
+        if (floor != null && limit != null && floor.compareTo(limit) > 0) {
+            throw new ServiceException("Ngưỡng tồn kho tối thiểu không được vượt quá ngưỡng tồn kho tối đa");
+        }
+    }
+
+    private static BigDecimal parseDecimal(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return new BigDecimal(value.trim());
+        } catch (Exception e) {
+            return null;
         }
     }
 
