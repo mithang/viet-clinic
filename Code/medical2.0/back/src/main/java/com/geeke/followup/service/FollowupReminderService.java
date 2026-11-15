@@ -89,6 +89,39 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         }
     }
 
+    /** DS319: status chi co 2 gia tri hop le '0' (cho xu ly) / '1' (da
+     * xac nhan); '1' chi duoc ghi boi endpoint acknowledge rieng
+     * (dao.acknowledge WHERE status='0'), khong bao gio qua save/
+     * bulk*. Tao moi chi duoc '0' (null -> '0'); gia tri khac -> 400.
+     * Gia tri rac 1 ky tu ('2', 'x') lot qua check do dai DS149
+     * nhung roi khoi listDue (chi lay '0') va acknowledge khong sua
+     * duoc -- ket vinh vien. */
+    private void checkStatusNotForgedOnCreate(FollowupReminder entity) {
+        if (entity.getStatus() != null && !"0".equals(entity.getStatus())) {
+            throw new ServiceException("Trạng thái nhắc lịch không hợp lệ khi tạo mới: chỉ được tạo ở trạng thái chờ xử lý");
+        }
+        entity.setStatus("0");
+    }
+
+    /** DS319: cap nhat qua save()/bulkUpdate() khong duoc doi status --
+     * chi acknowledge moi duoc 0->1. Payload phai bang status da luu
+     * (null coi nhu '0', theo mac dinh constructor); khac -> 400.
+     * checkExists da chay truoc o cac duong goi nen stored != null. */
+    private void checkStatusNotChanged(FollowupReminder entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            return;
+        }
+        FollowupReminder stored = dao.get(entity.getId());
+        if (stored == null) {
+            return;
+        }
+        String wanted = entity.getStatus() == null ? "0" : entity.getStatus();
+        if (!wanted.equals(stored.getStatus())) {
+            throw new ServiceException("Không được đổi trạng thái nhắc lịch qua lưu thường; dùng xác nhận nhắc lịch");
+        }
+        entity.setStatus(stored.getStatus());
+    }
+
     /** DS103: bulkInsert bo qua @Valid nen thieu truong NOT NULL se 500
      * o SQL thay vi 400 (probe A9/A10). Kiem tra truoc khi ghi: ca ba
      * truong @NotNull cua entity (patient_id/patient_name/followup_type
@@ -115,11 +148,13 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         if (StringUtils.isNotBlank(entity.getId())) {
             checkRowOwnership(entity.getId());
             checkExists(entity.getId());
+            // DS319: cap nhat khong duoc doi status qua save.
+            checkStatusNotChanged(entity);
         } else {
             forceSessionCompany(entity);
-        }
-        if (entity.getStatus() == null) {
-            entity.setStatus("0");
+            // DS319: tao moi chi duoc status '0' (mac dinh cu null->'0'
+            // nay di kem 400 khi payload gia mao '1'/rac).
+            checkStatusNotForgedOnCreate(entity);
         }
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). Tat ca cac
         // truong chu deu KHONG co @Length: patientName -> varchar(100),
@@ -160,12 +195,9 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     public List<String> bulkInsert(List<FollowupReminder> entitys) {
         for (FollowupReminder entity : entitys) {
             forceSessionCompany(entity);
-            // DS103: status NOT NULL DEFAULT '0' trong DB; save() don
-            // mac dinh "0" khi null, bulk phai lam tuong tu neu khong
-            // payload thieu status se 500 o SQL.
-            if (entity.getStatus() == null) {
-                entity.setStatus("0");
-            }
+            // DS319: tao moi chi duoc status '0' (thay mac dinh null->'0'
+            // cu cua DS103, nay di kem 400 khi payload gia mao '1'/rac).
+            checkStatusNotForgedOnCreate(entity);
             validateRequired(entity);
             checkFollowupReminderLengths(entity);
             checkNextDateNotPast(entity);
@@ -183,6 +215,8 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             // statement CASE duy nhat) nen [valid, khong ton tai] nem
             // truoc khi ghi gi -- dong valid khong bi doi (probe A8).
             checkExists(entity.getId());
+            // DS319: cap nhat khong duoc doi status qua bulkUpdate.
+            checkStatusNotChanged(entity);
             checkFollowupReminderLengths(entity);
             checkNextDateNotPast(entity);
         }
