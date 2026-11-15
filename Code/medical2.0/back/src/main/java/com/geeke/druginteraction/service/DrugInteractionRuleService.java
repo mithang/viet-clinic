@@ -78,6 +78,27 @@ public class DrugInteractionRuleService extends CrudService<DrugInteractionRuleD
         if (StringUtils.isBlank(message) || message.length() > 500) {
             throw new IllegalArgumentException("Nội dung cảnh báo không được để trống (tối đa 500 ký tự).");
         }
+        // DS309: mot cap thuoc chi co mot quy tac trong mot phong kham.
+        // checkInteractions chi khu trung theo ruleId nen hai dong trung
+        // cap (cung thu tu, dao thu tu, khac hoa/thuong/khoang trang,
+        // khac muc do) deu khop va UI ke don hien CUNG canh bao nhieu
+        // lan (v-for theo ruleId). Khong co unique key o DB (chi PK id
+        // + idx company) nen chan o day, truoc insert, theo dung mau
+        // G5 (IllegalArgumentException -> 400 o controller). So khop
+        // khong phan biet thu tu/hoa-thuong/khoang trang, cung chuan
+        // hoa nhu checkInteractions; chi xet dong del_flag='0' cua
+        // dung tenant (listRules). Cap khac (chi chung mot thuoc) giu
+        // hop le; dong da xoa mem khong chan tao lai.
+        String normA = normalize(drugA);
+        String normB = normalize(drugB);
+        for (DrugInteractionRule existing : listRules(companyId)) {
+            String existA = normalize(existing.getDrugAName());
+            String existB = normalize(existing.getDrugBName());
+            if ((normA.equals(existA) && normB.equals(existB))
+                    || (normA.equals(existB) && normB.equals(existA))) {
+                throw new IllegalArgumentException("Quy tắc tương tác cho cặp thuốc này đã tồn tại.");
+            }
+        }
         Company company = new Company();
         company.setId(companyId);
         input.setCompany(company);
