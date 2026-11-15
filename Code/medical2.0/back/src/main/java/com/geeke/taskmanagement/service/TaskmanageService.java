@@ -48,6 +48,24 @@ public class TaskmanageService {
      * tenant's task. Missing row keeps legacy behaviour (DAO returns 0);
      * empty session keeps legacy behaviour, same pattern as Z3a-Z3e.
      */
+    // DS305: han chot nhiem vu (taskdeadline, datetime) da qua khong duoc
+    // ghi qua bat ky duong ghi nao -- tao/phat hanh/ban nhap voi han da
+    // qua deu vo nghia (tien le DS275/DS276 followUpDate qua khu, DS266
+    // wantedDate qua khu). So theo instant (Date.before(now)), khong so
+    // theo ngay: deadline co ca gio (form datetime "yyyy-MM-dd HH:mm:ss").
+    // null giu hop le (cot nullable). Chi guard khi that su ghi dong:
+    // nhanh attach file (countId != "0") o save()/storage() khong ghi
+    // dong task nen khong guard; release() chi doi taskstatus nen khong
+    // can guard (deadline duoc ghi o storage/update truoc do).
+    private static void checkTaskDeadlineNotPast(taskmanagement task) {
+        if (task == null || task.getTaskdeadline() == null) {
+            return;
+        }
+        if (task.getTaskdeadline().before(new Date())) {
+            throw new ServiceException("Thời hạn nhiệm vụ không được ở trong quá khứ");
+        }
+    }
+
     private void checkTaskOwnership(String id) {
         if (id == null || id.isEmpty()) {
             return;
@@ -64,6 +82,7 @@ public class TaskmanageService {
 
     @Transactional
     public int inserttask(taskmanagement task)  {
+        checkTaskDeadlineNotPast(task); // DS305
         task.setID(IdGen.uuid());
         task.setCompanyId(SessionUtils.getUser().getCompany().getId());
         task.setCreatedBy(SessionUtils.getUserJson().getString("name"));
@@ -126,6 +145,7 @@ public class TaskmanageService {
             return release;
         }else {
             if(Objects.equals("0",counId)){
+                checkTaskDeadlineNotPast(task); // DS305
                 task.setID(IdGen.uuid());
                 // L3 (iteration 59): guard deleteIds truoc moi upload/xoa/ghi, mau K5/K7.
                 // checkTaskOwnership chi guard DONG task, khong guard file; file dinh kem
@@ -321,6 +341,11 @@ public class TaskmanageService {
         // DS88: same null-task guard as save() (controller also guards).
         if (task == null) {
             throw new ServiceException("Thiếu thông tin tác vụ");
+        }
+        // DS305: chi guard khi that su ghi dong (countId "0"); nhanh
+        // attach file (countId != "0") khong ghi dong task.
+        if ("0".equals(countId)) {
+            checkTaskDeadlineNotPast(task);
         }
 
 
