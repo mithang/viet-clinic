@@ -70,6 +70,9 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
        // DS296: chan so the con lai vuot tong so the (xem
        // checkMemberSetNumberNotExceedAmount).
        checkMemberSetNumberNotExceedAmount(memberSet);
+       // DS321: chan status/failure gia mao (xem
+       // checkMemberSetStatusValues).
+       checkMemberSetStatusValues(memberSet);
        if(StringUtils.isBlank(memberSet.getId())){
            // ITER64 item 1: this insert branch bypassed super.save, so the
            // generic insert guard does not cover it. Verify BEFORE
@@ -171,6 +174,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             checkMemberSetNonNegative(memberSet); // DS213
             checkMemberSetDateOrder(memberSet); // DS260
             checkMemberSetNumberNotExceedAmount(memberSet); // DS296
+            checkMemberSetStatusValues(memberSet); // DS321
         }
         return super.bulkInsert(entitys);
     }
@@ -192,6 +196,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             checkMemberSetNonNegative(memberSet); // DS213
             checkMemberSetDateOrder(memberSet); // DS260
             checkMemberSetNumberNotExceedAmount(memberSet); // DS296
+            checkMemberSetStatusValues(memberSet); // DS321
         }
         return super.bulkUpdate(entitys);
     }
@@ -203,6 +208,32 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS321: status chi co '0' (Kich hoat) / '1' (Vo hieu hoa), failure
+    // chi co '0' (Khong) / '1' (Co) — xem MemberSet.java:30-31 va
+    // memberSetForm.vue (switch '0'/'1', init '0'/'0'). Truoc day chi
+    // co guard do dai <=1 (DS149) + @Length/@NotNull: '9'/'2'/'x' deu
+    // qua, mapper ghi verbatim (probe: save create/update,
+    // bulkInsert, bulkUpdate deu 200 + persist gia tri gia mao; goi
+    // the roi vao trang thai mo ho — khong kich hoat ma cung khong vo
+    // hieu hoa, khong nut/bo loc nao nhan ra). @NotNull chi chay tren
+    // duong save (@Valid), duong bulk can guard nay de null cung 400
+    // ro nghia thay vi roi xuong DB. Chan fail-closed 400 truoc moi
+    // ghi, canh cac guard DS149/DS213/DS260/DS296. Luong hop le khong
+    // doi: '0'/'1' ca hai truong, tat '0'->'1', bat lai '1'->'0'.
+    private static void checkMemberSetStatusValues(MemberSet memberSet) {
+        if (memberSet == null) {
+            return;
+        }
+        if (!"0".equals(memberSet.getStatus())
+                && !"1".equals(memberSet.getStatus())) {
+            throw new ServiceException("Trạng thái thẻ hội viên chỉ được là 0 (Kích hoạt) hoặc 1 (Vô hiệu hóa)");
+        }
+        if (!"0".equals(memberSet.getFailure())
+                && !"1".equals(memberSet.getFailure())) {
+            throw new ServiceException("Hết hiệu lực của thẻ hội viên chỉ được là 0 (Không) hoặc 1 (Có)");
+        }
     }
 
     // DS213: goi the hoi vien khong the co so tien / tong so the /
