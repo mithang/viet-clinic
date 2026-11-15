@@ -85,6 +85,8 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         // null-safe.
         checkInspectionCheckLengths(entity);
         checkCompleteDateNotFuture(entity);
+        checkStatusAndTypeValues(entity,
+                StringUtils.isBlank(entity.getId()));
         return super.save(entity);
     }
 
@@ -103,6 +105,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             checkInspectionCheckRequired(entity);
             checkInspectionCheckLengths(entity);
             checkCompleteDateNotFuture(entity);
+            checkStatusAndTypeValues(entity, true);
         }
         return super.bulkInsert(entitys);
     }
@@ -130,6 +133,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             checkInspectionCheckRequired(entity);
             checkInspectionCheckLengths(entity);
             checkCompleteDateNotFuture(entity);
+            checkStatusAndTypeValues(entity, false);
         }
         return super.bulkUpdate(entitys);
     }
@@ -180,6 +184,44 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         if (entity.getCompleteDate().toInstant().atZone(DB_ZONE).toLocalDate()
                 .isAfter(LocalDate.now(DB_ZONE))) {
             throw new ServiceException("Thời gian lập phiếu không được là ngày tương lai.");
+        }
+    }
+
+    // DS317: status/type la enum 1 ky tu (status 0: Chua dien, 1: Da
+    // dien; type 0: Xet nghiem, 1: Kiem tra). Truoc day chi kiem tra do
+    // dai (<=1) + khong rong, nen bat ky ky tu don nao cung ghi duoc qua
+    // save/bulkInsert/bulkUpdate. Hai lo:
+    // (a) Sinh ra voi status='1' la gia mao "da dien" trong khi chua co
+    // ket qua nao: nguoi ghi '1' hop le duy nhat la
+    // InspectionCheckInfoController.saveWithFile, chi khi co dong ket
+    // qua that (form tao moi luon '0'; TollInfoService allSave cung
+    // '0'). UI danh sach khi do hien "Xem chi tiet" thay vi "Nhap ket
+    // qua", ma fill() lai bao loi "Khong tim thay ket qua kiem tra" vi
+    // khong co dong info — phieu ket khong nhap duoc ket qua qua UI.
+    // Nen duong TAO (save khong id, bulkInsert) bat status='0'.
+    // (b) Gia tri la ('2', 'X', ...) khien dong mat ca 2 nut tac vu o
+    // UI. Nen moi duong ghi chi chap nhan status/type trong {'0','1'}.
+    // Duong CAP NHAT (save co id, bulkUpdate) cho status '0'/'1' vi
+    // chinh cac luong noi bo hop le (saveWithFile, RecipelDetailService.
+    // updateById) cung doi '1' qua single save tu dong DB — phan biet
+    // lat 0->1 gia mao voi lat hop le can kiem tra su ton tai cua dong
+    // info, de lai DS318. Khong guard allSave() (luong noi bo
+    // TollInfoService, status '0' + type tu tham so hop le).
+    private static void checkStatusAndTypeValues(InspectionCheck entity,
+                                                 boolean isCreate) {
+        if (entity == null) {
+            return;
+        }
+        if (isCreate) {
+            if (!"0".equals(entity.getStatus())) {
+                throw new ServiceException("Phiếu kiểm tra mới phải có trạng thái 0 (Chưa điền).");
+            }
+        } else if (!"0".equals(entity.getStatus())
+                && !"1".equals(entity.getStatus())) {
+            throw new ServiceException("Trạng thái phiếu kiểm tra không hợp lệ (0: Chưa điền; 1: Đã điền).");
+        }
+        if (!"0".equals(entity.getType()) && !"1".equals(entity.getType())) {
+            throw new ServiceException("Loại phiếu kiểm tra không hợp lệ (0: Xét nghiệm; 1: Kiểm tra).");
         }
     }
 
