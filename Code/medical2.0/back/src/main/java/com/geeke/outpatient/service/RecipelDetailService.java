@@ -83,6 +83,14 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // nullable, UI tinh sau), 0 giu nguyen (vo hai, khong pha luong
         // so luong 0 hien co).
         checkNonNegative(entity);
+        // DS299: thuc thu khong duoc vuot tong tien cua chinh dong do.
+        // Luong that: saveToll dat actualPayment = allFee * discount,
+        // discount trong [0,1] (DS254) nen actualPayment <= allFee;
+        // MedicalRecordService chi set 0.00; K2/Q1 reset ve NULL.
+        // DS254 dong duong he so; day dong duong ghi truc tiep.
+        // DS239 chi chan chieu am. == giu hop le (thu du), null giu
+        // hop le (cot nullable, quy uoc DS219).
+        checkActualPaymentNotExceedAllFee(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
         // (drippingSpeed 45, retailType 1, unitType 100); gia tri
@@ -126,6 +134,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         for (RecipelDetail entity : entitys) {
             checkRecipelDetailRequired(entity);
             checkNonNegative(entity);
+            checkActualPaymentNotExceedAllFee(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkInsert(entitys);
@@ -153,6 +162,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             }
             checkRecipelDetailRequired(entity);
             checkNonNegative(entity);
+            checkActualPaymentNotExceedAllFee(entity);
             checkRecipelDetailLengths(entity);
         }
         return super.bulkUpdate(entitys);
@@ -224,6 +234,22 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS299: thuc thu khong duoc vuot tong tien cua chinh dong do.
+    // Ca 2 co gia tri va actualPayment > allFee -> ServiceException
+    // 400 fail-closed; == hop le, mot trong hai null hop le.
+    private static void checkActualPaymentNotExceedAllFee(
+            RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getAllFee() != null && entity.getActualPayment() != null
+                && entity.getActualPayment().compareTo(entity.getAllFee())
+                        > 0) {
+            throw new ServiceException(
+                    "Thực thu không được vượt quá tổng tiền");
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -291,6 +317,8 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             // khong, duong nay bypass guard DS209/DS218/DS239 cua save()
             // (hien chua co caller, phong thu cho caller tuong lai).
             checkNonNegative(recipelDetail);
+            // DS299: cung chan actualPayment > allFee o duong nay.
+            checkActualPaymentNotExceedAllFee(recipelDetail);
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
