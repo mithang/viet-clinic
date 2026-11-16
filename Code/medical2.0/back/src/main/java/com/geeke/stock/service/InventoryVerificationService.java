@@ -108,6 +108,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         // varchar(1) (probe B8/B9). bulkUpdate cua mapper chi viet code
         // nhung guard chung cho ca 3 duong. Gioi han theo cot DB.
         checkInventoryVerificationLengths(entity);
+        checkInventoryVerificationTypeValue(entity.getType());
         return super.save(entity);
     }
 
@@ -119,6 +120,18 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         checkLength(entity.getCode(), 255, "Số phiếu kiểm kê Độ dài phải nằm trong khoảng 1 đến 255");
         checkLength(entity.getStatus(), 1, "Trạng thái kiểm kê Độ dài phải nằm trong khoảng 0 đến 1");
         checkLength(entity.getType(), 1, "Loại kiểm kê Độ dài phải nằm trong khoảng 0 đến 1");
+    }
+
+    // DS350: type chi co nghia '0' (Thuoc) / '1' (Vat tu). Gia mao ngoai
+    // mien lam form khong render bang chi tiet nao (v-if '0'/'1' deu sai)
+    // va list gan nhan sai "Vat tu" cho phieu kiem thuoc; GET
+    // save/{type}/{variety} voi variety gia con sinh chi tiet sai loai.
+    // null/'' giu nguyen (cot type nullable).
+    private static void checkInventoryVerificationTypeValue(String type) {
+        if (type != null && !type.isEmpty()
+                && !"0".equals(type) && !"1".equals(type)) {
+            throw new ServiceException("Loại kiểm kê không hợp lệ");
+        }
     }
 
     // DS253: bulkInsert la duong duy nhat ghi allPrice do client gui
@@ -155,6 +168,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         for (InventoryVerification entity : entitys) {
             validateRequired(entity);
             checkInventoryVerificationLengths(entity);
+            checkInventoryVerificationTypeValue(entity.getType());
             checkInventoryVerificationAllPrice(entity);
         }
         return super.bulkInsert(entitys);
@@ -169,6 +183,7 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
         for (InventoryVerification entity : entitys) {
             validateRequired(entity);
             checkInventoryVerificationLengths(entity);
+            checkInventoryVerificationTypeValue(entity.getType());
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của phiếu kiểm kê đã tồn tại");
             }
@@ -262,6 +277,9 @@ public class InventoryVerificationService extends CrudService<InventoryVerificat
 
         inventoryVerification.setCompany(company);
         inventoryVerification.setStatus("0");
+        // DS350: variety la type se luu -- chan ngoai mien {'0','1'} truoc
+        // khi set (save() chung chi guard entity sau khi setType).
+        checkInventoryVerificationTypeValue(variety);
         inventoryVerification.setType(variety);
         inventoryVerification.setCreateDate(new Date());
         if (StringUtils.isBlank(inventoryVerification.getId())){
