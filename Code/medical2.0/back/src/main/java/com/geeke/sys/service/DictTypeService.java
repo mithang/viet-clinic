@@ -112,6 +112,11 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         @CacheEvict(value = "dict:itemsByCode", allEntries = true)
     })
     public DictType save(DictType dictType) {
+        // DS358: isSystem chi co 2 gia tri hop le -- '0' tu dien
+        // nghiep vu, '1' tu dien he thong (form switch
+        // active-value='1'/inactive-value='0', default '0'; list
+        // user khong phai superadmin chi loc is_system='0').
+        checkDictTypeIsSystemValues(dictType);
         // Hệ thốngcấptừ điển của  company_id Nên là  NULL
         if ("1".equals(dictType.getIsSystem())) {
             dictType.setCompany(null);
@@ -132,6 +137,29 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
             saveDictItemList(dictTypeTemp);
         }
         return dictTypeTemp;
+    }
+
+    // DS358: isSystem chi co 2 gia tri hop le -- '0' tu dien
+    // nghiep vu, '1' tu dien he thong. Truoc vong: save() chi
+    // special-case '1', bulkInsert chi check blank, bulkUpdate
+    // khong check, mapper ghi verbatim nen '9'/'x'/'2' luu duoc
+    // qua save/bulkInsert/bulkUpdate/importJson; dong gia bien
+    // mat khoi list moi user khong phai superadmin (loc
+    // is_system='0') va switch form hien TAT sai trang thai.
+    // null/'' van qua (save don @NotNull chan rieng; bulk giu
+    // hanh vi cu cho blank).
+    private void checkDictTypeIsSystemValues(DictType dictType) {
+        if (dictType == null) {
+            return;
+        }
+        String isSystem = dictType.getIsSystem();
+        if (StringUtils.isBlank(isSystem)) {
+            return;
+        }
+        if (!"0".equals(isSystem) && !"1".equals(isSystem)) {
+            throw new ServiceException(
+                    "Cấp hệ thống không hợp lệ: " + isSystem);
+        }
     }
 
     // DS104 A3-A8/A10-A12: bulkInsert/bulkUpdate/bulkDelete generic truoc
@@ -158,6 +186,8 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
             if (StringUtils.isBlank(dictType.getIsSystem())) {
                 throw new ServiceException("Cấp hệ thống không được để trống");
             }
+            // DS358: isSystem gia mao ngoai {'0','1'} -> 400.
+            checkDictTypeIsSystemValues(dictType);
         }
         return super.bulkInsert(entitys);
     }
@@ -174,6 +204,8 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
                 throw new ServiceException("Loại từ điển không tồn tại: "
                         + dictType.getId());
             }
+            // DS358: isSystem gia mao ngoai {'0','1'} -> 400.
+            checkDictTypeIsSystemValues(dictType);
         }
         return super.bulkUpdate(entitys);
     }
@@ -189,6 +221,11 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
 
     @Transactional(readOnly = false)
     public DictType importJson(DictType dictType) {
+        // DS358: chan isSystem gia mao TRUOC doInsert (importJson
+        // goi doInsert truc tiep, khong qua @Valid; guard trong
+        // save() o duoi van chan qua rollback, nhung chan som o
+        // day tranh ghi dong gia roi moi rollback).
+        checkDictTypeIsSystemValues(dictType);
         // Không cóBản ghi của tình hìnhdưới, trướcThêm, nhưngsaulạiQuaCập nhật
         if(get(dictType.getId()) == null ){
         	// Thêm
