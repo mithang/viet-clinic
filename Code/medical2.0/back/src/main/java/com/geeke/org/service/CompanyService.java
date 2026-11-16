@@ -134,6 +134,32 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         }
     }
 
+    // DS329: Company.status gia mao qua generic /save + saveWithFile +
+    // bulkInsert/bulkUpdate — mien dung duy nhat {0,1} (entity
+    // Company.java:84 "Trang thai 1Kich hoat 0dungdung"; frontend
+    // companyForm.vue:107-108 switch :active-value='1'
+    // :inactive-value='0', mac dinh status 1 (:294)); mapper
+    // CompanyDao.xml ghi #{status} verbatim ca 4 duong (insert
+    // :249/:283, update :315, bulkInsert :360/:389, bulkUpdate CASE
+    // :470/:472) va service truoc day khong guard status (0 hit).
+    // Hai that: AuthController /auth/getUserTenant (:76) ->
+    // selectClinicsByLoginName loc a.status=1 (CompanyDao.xml:529)
+    // nen phong kham bi doi status gia mao (9/2/-1...) bien mat khoi
+    // danh sach tenant luc dang nhap -> khoa ca clinic. Chan
+    // fail-closed 400 truoc moi ghi, canh checkCompanyDateOrder
+    // (DS263) de phu ca 5 duong (save create/update, saveWithFile qua
+    // save(), bulkInsert, bulkUpdate). null giu hop le (cot int NULL,
+    // tien le DS326/DS328); 0/1 giu hop le.
+    private static void checkCompanyStatus(Company company) {
+        if (company == null) {
+            return;
+        }
+        Integer status = company.getStatus();
+        if (status != null && status.intValue() != 0 && status.intValue() != 1) {
+            throw new ServiceException("Trạng thái công ty không hợp lệ: " + status);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Company save(Company company) {
@@ -155,6 +181,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         checkCompanyLengths(company);
         // DS263: chan ngay het han truoc ngay bat dau su dung.
         checkCompanyDateOrder(company);
+        // DS329: chan status gia mao ngoai {0,1} (null giu hop le).
+        checkCompanyStatus(company);
         return super.save(company);
     }
 
@@ -215,6 +243,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             checkCompanyLengths(company);
             // DS263: bulk cung chan ngay dao nguoc nhu save().
             checkCompanyDateOrder(company);
+            // DS329: bulk cung chan status gia mao nhu save().
+            checkCompanyStatus(company);
             // DS152 B: giai quyet parent tu DB (mau RouterService.
             // resolveParent) -- bulk* bypass TreeService.save nen
             // parent chi co id: ghost duoc luu tho parent_id + ids
@@ -248,6 +278,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             checkCompanyLengths(company);
             // DS263: bulk cung chan ngay dao nguoc nhu save().
             checkCompanyDateOrder(company);
+            // DS329: bulk cung chan status gia mao nhu save().
+            checkCompanyStatus(company);
             // DS152 B: nhu bulkInsert -- ghost / self / descendant
             // parent -> 400 truoc khi ghi.
             resolveCompanyParent(company);
