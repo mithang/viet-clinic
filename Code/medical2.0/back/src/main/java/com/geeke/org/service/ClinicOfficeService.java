@@ -81,8 +81,27 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
        if (StringUtils.isBlank(clinicOffice.getId()) && StringUtils.isBlank(clinicOffice.getSort())) {
            throw new ServiceException("Sắp xếp không được để trống");
        }
+        // DS345: isDefault chỉ có miền {0,1} (el-switch 1/0 ở
+        // clinicOfficeForm.vue); giá trị giả '9'/'2'/'x' qua @Valid
+        // (getter không annotation) rồi mapper ghi verbatim cả 4 đường,
+        // khoa giả không bao giờ được tự chọn làm khoa mặc định ở
+        // đăng ký (registrationForm.vue:1536, registration/index.vue:1441
+        // test === '1'). Fail-closed 400; null/rỗng vẫn qua vì cột
+        // is_default nullable (DEFAULT NULL).
+        checkIsDefault(clinicOffice);
         ClinicOffice save = super.save(clinicOffice);
         return clinicOffice;
+    }
+
+    private void checkIsDefault(ClinicOffice clinicOffice) {
+        if (clinicOffice == null) {
+            return;
+        }
+        String isDefault = clinicOffice.getIsDefault();
+        if (StringUtils.isNotBlank(isDefault)
+                && !"0".equals(isDefault) && !"1".equals(isDefault)) {
+            throw new ServiceException("Khoa mặc định không hợp lệ");
+        }
     }
 
     /**
@@ -122,6 +141,8 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
         }
         for (ClinicOffice clinicOffice : entitys) {
             validateRequired(clinicOffice);
+            // DS345: guard miền isDefault {0,1} (xem checkIsDefault).
+            checkIsDefault(clinicOffice);
             // DS101: bulkInsert ghi #{entity.sort} trực tiếp; sort NOT NULL
             // nên hàng thiếu sort 500 ở DB (probe T2/T3). Chỉ yêu cầu ở
             // bulkInsert: bulkUpdate không có CASE sort nên không yêu cầu.
@@ -140,6 +161,8 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
         }
         for (ClinicOffice clinicOffice : entitys) {
             validateRequired(clinicOffice);
+            // DS345: guard miền isDefault {0,1} (xem checkIsDefault).
+            checkIsDefault(clinicOffice);
             if (StringUtils.isBlank(clinicOffice.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của khoa đã tồn tại");
             }
