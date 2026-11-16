@@ -132,6 +132,58 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS363: status / chargeStatus / dispensionStatus gia mao ngoai
+    // mien qua save / bulkInsert / bulkUpdate (probe pre 23/23:
+    // status=9/2, chargeStatus=9/3, dispensionStatus=9/3 deu 200 +
+    // persist; control 1/-1/0/2 van 200). Mien (5 nguon doc lap):
+    // status {1,-1} (entity comment RecipelInfo.java:42, schema
+    // md_yzs.sql:11781, writer setStatus(1) o MedicalRecordService
+    // :1215/1297/1419 + setStatus(-1) o RecipelInfoService:411 /
+    // mapper invalid :643-644, reader chi re -1/1, live 39 dong
+    // toan status=1); chargeStatus {0,1,2,-1} va dispensionStatus
+    // {0,1,2,-1} (entity comment :43-:44 + schema :11782-:11783
+    // chi ghi 0/1/-1, NHUNG writer noi bo set gia tri 2:
+    // MedicalRecordService:1224-1226 set chargeStatus=2 /
+    // isPay="2" / dispensionStatus=2 cho moi don dien tu (isPre,
+    // "khong theo sau tiep tuc luong quy trinh") roi goi save();
+    // live 7 dong charge=2/disp=2 la du lieu that 2024-11..2025-03
+    // nen 2 PHAI duoc chap nhan -- guard mien {0,1,-1} se 400
+    // toan bo luong don dien tu). Cac writer khac deu trong mien:
+    // chargeStatus 0 (MedicalRecordService:1220/1302/1426), 1
+    // (:1217/1299/1421, TollInfoService:675/782), -1
+    // (TollInfoService:990); dispensionStatus 0 (:1432), 1
+    // (SupplierStockService:167), -1 (:214). Don gia status=9/2
+    // roi khoi ca hai nhanh -1/1 trong MedicalRecordService va
+    // khoi moi filter review (reviewResultPre.vue:369-374);
+    // charge/disp gia tang hinh khoi filter doi soat thu phi /
+    // phat thuoc. null giu nguyen (cot nullable). Khac DS347
+    // (isPay/isDispension String, BLOCKED), DS240 (chi guard phi
+    // am, ghi ro KHONG guard 3 truong nay).
+    private static void checkRecipelInfoStatusValues(RecipelInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        Integer status = entity.getStatus();
+        if (status != null && status.intValue() != 1
+                && status.intValue() != -1) {
+            throw new ServiceException("Trạng thái cơ bản đơn thuốc không hợp lệ: " + status);
+        }
+        Integer chargeStatus = entity.getChargeStatus();
+        if (chargeStatus != null && chargeStatus.intValue() != 0
+                && chargeStatus.intValue() != 1
+                && chargeStatus.intValue() != 2
+                && chargeStatus.intValue() != -1) {
+            throw new ServiceException("Trạng thái thu phí đơn thuốc không hợp lệ: " + chargeStatus);
+        }
+        Integer dispensionStatus = entity.getDispensionStatus();
+        if (dispensionStatus != null && dispensionStatus.intValue() != 0
+                && dispensionStatus.intValue() != 1
+                && dispensionStatus.intValue() != 2
+                && dispensionStatus.intValue() != -1) {
+            throw new ServiceException("Trạng thái phát thuốc đơn thuốc không hợp lệ: " + dispensionStatus);
+        }
+    }
+
     // DS276: ngay tai kham tren don thuoc khong duoc la ngay qua khu —
     // ngay tai kham la ngay hen kham lai trong tuong lai theo dinh
     // nghia (truong followUpDate, RecipelInfo.java:49 "tai kham thoi
@@ -244,6 +296,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
     @Transactional(readOnly = false)
     public RecipelInfo save(RecipelInfo entity) {
         validateRequired(entity);
+        // DS363: chan status/chargeStatus/dispensionStatus gia mao.
+        checkRecipelInfoStatusValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -264,6 +318,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
         for (RecipelInfo entity : entitys) {
             validateRequired(entity);
+            // DS363: chan status/chargeStatus/dispensionStatus gia mao.
+            checkRecipelInfoStatusValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -281,6 +337,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
         for (RecipelInfo entity : entitys) {
             validateRequired(entity);
+            // DS363: chan status/chargeStatus/dispensionStatus gia mao.
+            checkRecipelInfoStatusValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
