@@ -162,6 +162,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         // Chan fail-closed 400 truoc moi ghi; null giu nguyen, 0 giu nguyen.
         checkStuffNonNegative(stuff);
         checkStuffStatusValues(stuff); // DS324
+        checkStuffOutSellValues(stuff); // DS365
         checkStuffInventoryThresholdOrder(stuff); // DS303
         Stuff stuffTemp = super.save(stuff);
 
@@ -214,6 +215,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffLengths(stuff);
             checkStuffNonNegative(stuff);
             checkStuffStatusValues(stuff); // DS324
+            checkStuffOutSellValues(stuff); // DS365
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkInsert(entitys);
@@ -240,6 +242,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffLengths(stuff);
             checkStuffNonNegative(stuff);
             checkStuffStatusValues(stuff); // DS324
+            checkStuffOutSellValues(stuff); // DS365
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkUpdate(entitys);
@@ -331,6 +334,42 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         if (!"0".equals(stuff.getStatus()) && !"1".equals(stuff.getStatus())) {
             throw new ServiceException(
                     "Trạng thái vật tư chỉ nhận giá trị 0 (Không) hoặc 1 (Có)");
+        }
+    }
+
+    // DS365: co ban ra ngoai (isOutSell) chi co 2 gia tri co nghia trong
+    // toan bo codebase: '0' = Khong, '1' = Co (stuffForm.vue switch
+    // active-value="1" / inactive-value="0", mac dinh "0"; index.vue
+    // search options chi '0'/'1'; import Excel anh xa "是" -> '1',
+    // khac -> '0', StuffService). Guard hien co chi chan do dai <= 2
+    // (@Length + checkStuffLengths) nen '9'/'2'/'x' deu lot qua ca 3
+    // duong ghi (save-create, save-update, bulkInsert, bulkUpdate) va
+    // mapper ghi thang #{isOutSell} (StuffDao.xml insert/update/
+    // bulkInsert/bulkUpdate CASE) -- khac status truoc DS324, cot nay
+    // CO trong ca update/bulkUpdate nen gia tri gia luu duoc ca khi sua.
+    // Vat tu isOutSell '9' khong ban ra ngoai ma cung khong cam: form
+    // hien switch OFF nhu '0' nhung priceOutSell van mo (chi disabled
+    // khi === '0'), kiem ke ton kho (inventoryVerificationForm.vue:814)
+    // bo qua nhanh gia ban ra ngoai, loc tim kiem is_out_sell '=' khong
+    // thay no -- trang thai ma (mau DS364 Drug.isUnpackSell).
+    // '0'/'1' giu 200 (tao + chuyen doi 2 chieu); null/'' giu hop le
+    // (cot nullable, khong @NotNull; mau DS359/DS364).
+    // Dat canh checkStuffStatusValues o save/bulkInsert/bulkUpdate.
+    // An toan: caller noi bo duy nhat goi save() la import Excel (da
+    // chuan hoa '0'/'1'); syncToClinic dung super.save nen khong bi
+    // anh huong (mau DS323/DS364).
+    private static void checkStuffOutSellValues(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        String value = stuff.getIsOutSell();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!"0".equals(value) && !"1".equals(value)) {
+            throw new ServiceException(
+                    "Cho phép bán ra ngoài chỉ nhận giá trị 0 (Không) "
+                            + "hoặc 1 (Có)");
         }
     }
 
