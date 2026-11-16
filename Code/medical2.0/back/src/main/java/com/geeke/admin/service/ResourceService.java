@@ -41,6 +41,10 @@ public class ResourceService extends CrudService<ResourceDao, Resource>{
             throw new ServiceException("Tài nguyên không tồn tại: "
                     + entity.getId());
         }
+        // DS366: save khong goi checkResourceRequired nen guard
+        // canPermission truc tiep o day; null/'' da 400 qua @Valid
+        // (@NotNull + @Length min=1) o controller truoc khi vao service.
+        checkResourceCanPermissionValues(entity);
         return super.save(entity);
     }
 
@@ -126,6 +130,26 @@ public class ResourceService extends CrudService<ResourceDao, Resource>{
         return super.delete(entity);
     }
 
+    /**
+     * DS366: canPermission chi nhan '0'/'1' (switch
+     * resourceForm.vue:37-38, reader duy nhat resource/index.vue:244
+     * tao mac dinh '1'). null/'' da 400 upstream (@Valid o save don,
+     * blank-check o checkResourceRequired) nen ham nay chi chan gia
+     * tri khac blank ma ngoai mien -> 400 fail-closed. Khong guard
+     * caller noi bo: PermissionController chi doc
+     * listAllByVersion/listAll, khong ghi.
+     */
+    private void checkResourceCanPermissionValues(Resource entity) {
+        if (entity == null) {
+            return;
+        }
+        String can = entity.getCanPermission();
+        if (StringUtils.isNotBlank(can)
+                && !"0".equals(can) && !"1".equals(can)) {
+            throw new ServiceException("Có thể ủy quyền chỉ nhận 0 hoặc 1");
+        }
+    }
+
     private void checkResourceRequired(Resource entity) {
         if (entity == null) {
             throw new ServiceException("Tài nguyên không được để trống");
@@ -142,6 +166,11 @@ public class ResourceService extends CrudService<ResourceDao, Resource>{
         if (StringUtils.isBlank(entity.getCanPermission())) {
             throw new ServiceException("Có thể ủy quyền không được để trống");
         }
+        // DS366: gia tri gia mao ngoai {'0','1'} -> 400. Blank da chan
+        // o tren (bulk) / @Valid (save don); chi guard gia tri khac
+        // blank. Gia tri gia '9' hien switch OFF nhu '0' nhung khong
+        // khop filter '1' cua resource/index.vue:244 -> ghost resource.
+        checkResourceCanPermissionValues(entity);
         if (StringUtils.isBlank(entity.getIsDefault())) {
             throw new ServiceException("Mặc định quyền không được để trống");
         }
