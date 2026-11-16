@@ -163,6 +163,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkStuffNonNegative(stuff);
         checkStuffStatusValues(stuff); // DS324
         checkStuffOutSellValues(stuff); // DS365
+        checkStuffUnpackSellValues(stuff); // DS367
         checkStuffInventoryThresholdOrder(stuff); // DS303
         Stuff stuffTemp = super.save(stuff);
 
@@ -216,6 +217,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffNonNegative(stuff);
             checkStuffStatusValues(stuff); // DS324
             checkStuffOutSellValues(stuff); // DS365
+            checkStuffUnpackSellValues(stuff); // DS367
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkInsert(entitys);
@@ -243,6 +245,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffNonNegative(stuff);
             checkStuffStatusValues(stuff); // DS324
             checkStuffOutSellValues(stuff); // DS365
+            checkStuffUnpackSellValues(stuff); // DS367
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkUpdate(entitys);
@@ -369,6 +372,46 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         if (!"0".equals(value) && !"1".equals(value)) {
             throw new ServiceException(
                     "Cho phép bán ra ngoài chỉ nhận giá trị 0 (Không) "
+                            + "hoặc 1 (Có)");
+        }
+    }
+
+    // DS367: cho phep ban le tach hop (isUnpackSell) chi co 2 gia tri co
+    // nghia trong toan bo codebase: '0' = Khong, '1' = Co
+    // (stuffForm.vue:323-326 switch active-value="1" /
+    // inactive-value="0", mac dinh "0" (:532/:625); retailPrice chi
+    // disabled khi isUnpackSell === '0' (:346); import Excel anh xa
+    // "是" -> '1', khac -> '0', StuffService:671-676). Guard hien co
+    // chi chan do dai <= 2 (@Length(min=0,max=2) tren getter
+    // Stuff.java:243-244 + checkStuffLengths) nen '9'/'2'/'x' deu lot
+    // qua ca 3 duong ghi (save-create, save-update, bulkInsert,
+    // bulkUpdate) va mapper ghi thang #{isUnpackSell} (StuffDao.xml
+    // insert :318 / update :351 / bulkInsert :427 / bulkUpdate CASE
+    // :525) -- cot nay CO trong ca update/bulkUpdate nen gia tri gia
+    // luu duoc ca khi sua (mau DS365 isOutSell).
+    // Vat tu isUnpackSell '9' khong ban le ma cung khong cam: form
+    // hien switch OFF nhu '0' nhung retailPrice van mo (chi disabled
+    // khi === '0'), ke don (DrugStuffEvt.isUnpackSell) va mau phieu
+    // (recipetemplateForm gate === '1') khong nhan ra no, loc tim kiem
+    // is_unpack_sell '=' khong thay no -- trang thai ma (mau DS364
+    // Drug.isUnpackSell, DS365 Stuff.isOutSell).
+    // '0'/'1' giu 200 (tao + chuyen doi 2 chieu); null/'' giu hop le
+    // (cot nullable, khong @NotNull; mau DS359/DS364/DS365).
+    // Dat canh checkStuffOutSellValues o save/bulkInsert/bulkUpdate.
+    // An toan: caller noi bo duy nhat goi save() la import Excel (da
+    // chuan hoa '0'/'1'); syncToClinic dung super.save nen khong bi
+    // anh huong (mau DS323/DS364).
+    private static void checkStuffUnpackSellValues(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        String value = stuff.getIsUnpackSell();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!"0".equals(value) && !"1".equals(value)) {
+            throw new ServiceException(
+                    "Cho phép bán lẻ tách hộp chỉ nhận giá trị 0 (Không) "
                             + "hoặc 1 (Có)");
         }
     }
