@@ -66,7 +66,9 @@ public class articleController extends BaseController{
             entity.setAuditor(userObj.getString("name") + "(" + userObj.getString("loginName") + ")");
             entity.setAuditordate(new Date());
         }
-        int refdata = articleService.update(entity);
+        // DS330: /audit di qua audit() — chi '0'->'1'/'2'; /update khong
+        // doi duoc auditstatus nua.
+        int refdata = articleService.audit(entity);
         return ResponseEntity.ok(ResultUtil.successJson(refdata));
     }
     @PostMapping(value = "list")

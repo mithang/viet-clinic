@@ -117,8 +117,76 @@ public class ArticleService extends CrudService<ArticleDao, article>{
     @Transactional(readOnly = false)
     public int update(article article){
         checkArticleTenant(article.getId());
+        checkAuditStatusOnEdit(article);
         int updatecount=articleDao.update(article);
         return updatecount;
+    }
+
+    /**
+     * DS330: xet duyet bai viet — duong duyet hop le duy nhat.
+     * Chi bai dang cho xet duyet ('0') moi duoc duyet thanh '1' (Da qua)
+     * hoac '2' (Chua qua); gia tri ngoai {'1','2'} ('9'/'x'/null) -> 400;
+     * bai da duyet/tu choi ('1'/'2') hoac khong ton tai -> 400.
+     * Controller /audit van set auditor/auditordate tu session nhu cu,
+     * chi doi tu update() sang audit() de duong sua khong doi duoc
+     * auditstatus nua.
+     */
+    @Transactional(readOnly = false)
+    public int audit(article article){
+        checkArticleTenant(article.getId());
+        if (article == null || StringUtils.isBlank(article.getId())) {
+            throw new ServiceException("Bài viết không tồn tại");
+        }
+        article stored = articleDao.get(article.getId());
+        if (stored == null) {
+            throw new ServiceException("Bài viết không tồn tại");
+        }
+        String wanted = article.getAuditstatus();
+        if (!"1".equals(wanted) && !"2".equals(wanted)) {
+            throw new ServiceException("Trạng thái xét duyệt không hợp lệ");
+        }
+        String storedStatus = stored.getAuditstatus() == null
+                ? "0" : stored.getAuditstatus();
+        if (!"0".equals(storedStatus)) {
+            throw new ServiceException(
+                    "Chỉ xét duyệt bài viết đang chờ xét duyệt");
+        }
+        return articleDao.update(article);
+    }
+
+    /**
+     * DS330: duong sua (/update + save-update) khong duoc doi trang thai
+     * xet duyet, tru dat lai '0' khi sua bai '0'/'2' (UI articleForm
+     * updateForm: sua bai '0'/'2' dat lai '0'; bai '1' Da qua khong duoc
+     * sua). '1'/'2' chi qua /audit (xem audit()). Gia tri ngoai
+     * {'0','1','2'} ('9'/'x') -> 400. auditstatus null -> giu gia tri
+     * da luu (mapper update chi ghi khi non-null). Bai khong ton tai
+     * -> 400 (khop save-update DS121).
+     */
+    private void checkAuditStatusOnEdit(article entity) {
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Bài viết không tồn tại");
+        }
+        article stored = articleDao.get(entity.getId());
+        if (stored == null) {
+            throw new ServiceException("Bài viết không tồn tại");
+        }
+        String storedStatus = stored.getAuditstatus() == null
+                ? "0" : stored.getAuditstatus();
+        String wanted = entity.getAuditstatus();
+        if (wanted == null) {
+            entity.setAuditstatus(storedStatus);
+            return;
+        }
+        if (wanted.equals(storedStatus)) {
+            return;
+        }
+        if ("0".equals(wanted)
+                && ("0".equals(storedStatus) || "2".equals(storedStatus))) {
+            return;
+        }
+        throw new ServiceException(
+                "Không được đổi trạng thái xét duyệt của bài viết qua đường sửa");
     }
 
     /**
@@ -169,13 +237,22 @@ public class ArticleService extends CrudService<ArticleDao, article>{
                     && !tenantId.equals(entity.getCompanyid())) {
                 throw new ServiceException("Không có quyền truy cập tenant khác");
             }
+            // DS330: tao moi chi duoc auditstatus null/'0' (Cho xet
+            // duyet). '1'/'2' sinh ra da duyet/tu choi ma khong qua xet
+            // duyet, '9'/'x' ngoai mien {'0','1','2'} -> 400.
             if (StringUtils.isBlank(entity.getAuditstatus())) {
                 entity.setAuditstatus("0");
+            } else if (!"0".equals(entity.getAuditstatus())) {
+                throw new ServiceException(
+                        "Bài viết mới phải ở trạng thái chờ xét duyệt");
             }
         } else {
             if (articleDao.getArticleCompanyId(entity.getId()) == null) {
                 throw new ServiceException("Bài viết không tồn tại");
             }
+            // DS330: save-update khong duoc doi auditstatus (xem
+            // checkAuditStatusOnEdit; '1'/'2' chi qua /audit).
+            checkAuditStatusOnEdit(entity);
         }
         return super.save(entity);
     }
