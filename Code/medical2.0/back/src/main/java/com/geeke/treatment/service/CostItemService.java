@@ -109,6 +109,33 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         }
     }
 
+    // DS359: isDeduct la co co/khong ('0'/'1' -- el-switch
+    // active-value='1'/inactive-value='0', default '0' o
+    // costItemForm.vue ca hai view costItem/costItemNew; cot int
+    // DEFAULT 0, live 24/24 dong = 0). Truoc day khong guard mien:
+    // entity chi @Length(0,2) + DS146 chi check do dai <=2 nen
+    // '9'/'2'/'10' qua @Valid va mapper ghi verbatim (insert/update/
+    // bulkInsert/bulkUpdate), gia tri gia hien OFF tren switch trong
+    // khi khong phai '0' -- trang thai khong UI nao tao duoc (switch
+    // hien bi comment-out nen khong UI nao sua lai duoc). Chan
+    // fail-closed 400 o service (save() bao ca /save lan /saveDto;
+    // bulk* goi rieng o vong lap; syncToClinic goi thang super.save
+    // nen guard rieng trong vong lap). null/'' van qua nhu cu (cot
+    // nullable, khong @NotNull; probe P16/P17).
+    private static void checkCostItemIsDeductValues(CostItem costItem) {
+        if (costItem == null) {
+            return;
+        }
+        String isDeduct = costItem.getIsDeduct();
+        if (StringUtils.isBlank(isDeduct)) {
+            return;
+        }
+        if (!"0".equals(isDeduct) && !"1".equals(isDeduct)) {
+            throw new ServiceException(
+                    "Có thực hiện khấu trừ không hợp lệ: " + isDeduct);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public CostItem save(CostItem costItem) {
@@ -116,6 +143,8 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         checkCostItemLengths(costItem);
         // DS215: chan gia am (bao ca /save lan /saveDto).
         checkCostItemNonNegative(costItem);
+        // DS359: chan isDeduct ngoai mien {'0','1'}.
+        checkCostItemIsDeductValues(costItem);
         // DS78: is_package is NOT NULL DEFAULT '0', but the insert
         // lists the column unconditionally, so a generic /save body
         // without isPackage 500s ("Column 'is_package' cannot be
@@ -220,6 +249,8 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
             checkCostItemLengths(costItem);
             // DS215: bulk cung chan gia am nhu save().
             checkCostItemNonNegative(costItem);
+            // DS359: bulk cung chan isDeduct ngoai mien nhu save().
+            checkCostItemIsDeductValues(costItem);
             if (StringUtils.isBlank(costItem.getIsPackage())) {
                 costItem.setIsPackage("0");
             }
@@ -254,6 +285,8 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
             checkCostItemLengths(costItem);
             // DS215: bulk cung chan gia am nhu save().
             checkCostItemNonNegative(costItem);
+            // DS359: bulk cung chan isDeduct ngoai mien nhu save().
+            checkCostItemIsDeductValues(costItem);
             if (StringUtils.isBlank(costItem.getItemCode())) {
                 throw new ServiceException("Mã hạng mục không được để trống");
             }
@@ -347,6 +380,9 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
             String oldId = costItem.getId();
             String id = this.dao.GetIDByName(costItem.getItemName(), SessionUtils.getLoginTenantId());
             if (ObjUtil.isNotNull(id)) {
+                // DS359: sync cung chan isDeduct ngoai mien (duong nay
+                // goi thang super.save, bypass guard cua save()).
+                checkCostItemIsDeductValues(costItem);
                 costItem.setCompany(company);
                 costItem.setId(null);
                 costItem.setSyncId(oldId);
