@@ -104,6 +104,33 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         if (StringUtils.isBlank(entity.getCategory())) {
             throw new ServiceException("Loại mẫu không được để trống");
         }
+        checkRecipetemplateCategoryValues(entity);
+    }
+
+    // DS357: category chi co 3 gia tri hop le -- '0' Mau rieng tu,
+    // '1' Mau cong khai, '2' AI Mau (form chi cho '0'/'1';
+    // filter + bang Gọi mau o trang kham chi hien 3 nhan nay).
+    // Truoc vong: validateRequired chi check blank, mapper ghi
+    // category verbatim nen '9'/'x'/'3' (gia tri chi dung de loc)
+    // luu duoc qua save/bulkInsert/bulkUpdate; allSave/aiSave
+    // (saveTemplate/updateTemplate) ne ca validateRequired.
+    // Gia tri gia hien o TRONG o Danh muc mau trong bang Gọi mau
+    // va bien mat khoi moi tim kiem theo danh muc. null/'' van qua
+    // (save don @NotNull chan rieng; bulk/allSave giu hanh vi cu).
+    private void checkRecipetemplateCategoryValues(
+            Recipetemplate entity) {
+        if (entity == null) {
+            return;
+        }
+        String category = entity.getCategory();
+        if (StringUtils.isBlank(category)) {
+            return;
+        }
+        if (!"0".equals(category) && !"1".equals(category)
+                && !"2".equals(category)) {
+            throw new ServiceException(
+                    "Danh mục mẫu không hợp lệ: " + category);
+        }
     }
 
     @Override
@@ -214,6 +241,9 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         // (2) company trong payload phải là session tenant (khi session
         // hợp lệ) — nếu không mẫu own sẽ bị chuyển company sang lạ.
         blockForeignPayloadCompany(recipetemplate.getCompany());
+        // DS357: updateTemplate cung ne validateRequired (ghi thang qua
+        // dao.updateById) nen check rieng category o day, truoc moi ghi.
+        checkRecipetemplateCategoryValues(recipetemplate);
         RecipeTemplateInfo info = recipetemplate.getRecipeTemplateInfo();
         if (info != null && StringUtils.isNotBlank(info.getId())) {
             blockForeignPayloadCompany(info.getCompany());
@@ -300,6 +330,9 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         // Q2 (iteration 40): create ghi thẳng company từ payload (template
         // + info + chi tiết) — chặn company lạ trước khi sinh uuid/code.
         blockForeignPayloadCompany(recipetemplate.getCompany());
+        // DS357: allSave ne validateRequired (khong qua save() generic)
+        // nen check rieng category o day, truoc moi ghi.
+        checkRecipetemplateCategoryValues(recipetemplate);
         //LưumẫuchínhDữ liệu
         recipetemplate.preInsert();
         recipetemplate.setId(IdGen.uuid());
