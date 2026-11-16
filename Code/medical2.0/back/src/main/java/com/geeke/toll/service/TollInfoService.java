@@ -188,6 +188,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         // (discounted == receivable) va tra thua (discounted am, DS224
         // co y khong guard chieu am). Chi chan chieu tren.
         checkTollInfoDiscountNotExceedReceivable(tollInfo);
+        // DS349: chan amountStatus ngoai mien {_0,_1,_2} truoc moi ghi.
+        checkTollInfoAmountStatus(tollInfo);
         // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
@@ -303,6 +305,35 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         }
     }
 
+    /**
+     * DS349: trang thai phieu thu chi duoc {_0,_1,_2} (BizConstants
+     * AMOUNT_STATUS_UNPAID/PAID/REFUNDED). Dict live co them _3 (Hoan
+     * phi mot phan) va _4 (Da hoan phi) nhung khong co writer hop le
+     * nao: BizConstants chi dinh nghia _0/_1/_2, frontend chi dung
+     * _0/_1/_2 (0 hit _3/_4 trong back + client), backend chi copy
+     * gia tri hien co sang phieu hoan/audit log, khong co setAmountStatus
+     * _3/_4; bao cao ngay chi cong _1 tru _2 nen phieu _3/_4/_9/'x'
+     * vo hinh khoi tong ket, phieu _1 gia voi thuc thu 0 thoi phong
+     * tong da thu, huy/hoan chi nhan _0/_1 nen phieu gia khong huy/
+     * hoan duoc. Null/blank van qua (cot amount_status nullable;
+     * cho nao bat buoc da co guard null rieng: DS12/DS122).
+     */
+    private static void checkTollInfoAmountStatus(TollInfo tollInfo) {
+        if (tollInfo == null || tollInfo.getAmountStatus() == null) {
+            return;
+        }
+        String value = tollInfo.getAmountStatus().getValue();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!BizConstants.AMOUNT_STATUS_UNPAID.equals(value)
+                && !BizConstants.AMOUNT_STATUS_PAID.equals(value)
+                && !BizConstants.AMOUNT_STATUS_REFUNDED.equals(value)) {
+            throw new ServiceException("Trạng thái phiếu thu không hợp lệ: "
+                    + value);
+        }
+    }
+
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
@@ -348,6 +379,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             checkTollInfoLengths(tollInfo);
             checkTollInfoNonNegative(tollInfo);
             checkTollInfoDiscountNotExceedReceivable(tollInfo);
+            // DS349: chan amountStatus ngoai mien {_0,_1,_2}.
+            checkTollInfoAmountStatus(tollInfo);
             forceSessionCompanyWhenBlank(tollInfo);
         }
         return super.bulkInsert(entitys);
@@ -372,6 +405,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             checkTollInfoLengths(tollInfo);
             checkTollInfoNonNegative(tollInfo);
             checkTollInfoDiscountNotExceedReceivable(tollInfo);
+            // DS349: chan amountStatus ngoai mien {_0,_1,_2}.
+            checkTollInfoAmountStatus(tollInfo);
         }
         return super.bulkUpdate(entitys);
     }
@@ -431,6 +466,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         // moi deref/getAmountStatus().getValue(), fail-closed 400.
         TollInfo tollInfo = tollEvt == null ? null : tollEvt.getTollInfo();
         checkTollInfoRequired(tollInfo);
+        // DS349: chan amountStatus ngoai mien {_0,_1,_2} truoc moi deref/ghi.
+        checkTollInfoAmountStatus(tollInfo);
         Company company = SessionUtils.getUser().getCompany();
         String seltId="";//BHYTQuyết toánid thangphísaulưu vàoĐăng ký khámbảng
         //Đang tiến hành kiểm kê giờKhông thểtiến hành dòngThu phí/Hoàn phí
