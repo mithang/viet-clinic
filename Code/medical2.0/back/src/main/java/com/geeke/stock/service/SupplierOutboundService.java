@@ -141,6 +141,21 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
     @Override
     @Transactional(readOnly = false)
     public SupplierOutbound save(SupplierOutbound supplierOutbound) {
+        // DS328: chan status gia mao qua generic /save (CrudController).
+        // Mien dung duy nhat {1,2,3} (1-Cho xet duyet, 2-Da xet duyet,
+        // 3-Da huy); frontend chi dung saveEvt (luon ep status=1) nen
+        // duong generic nay la cua sau duy nhat: mapper <insert> ghi
+        // #{status} verbatim, tao duoc phieu "da xet duyet" ma voi 0
+        // chi tiet va 0 lan tru kho (vong qua examine() + claim +
+        // adjustDetailStocks), phieu "da huy" ma xoa truc tiep duoc qua
+        // gate DS40 ma khong qua cancel(), hoac status 9/0/-1 ket vinh
+        // vien (UI blank + khong nut; examine/cancel/saveEvt deu 400).
+        // Tao moi chi null/'1' (null giu hop le: cot int NULL, tien le
+        // DS169/DS326); sua chi null hoac bang dung status da luu
+        // (mapper <update> von khong ghi status, mau DS319); luong
+        // that saveEvt khong qua day (goi thang super.save) nen khong
+        // anh huong. bulkInsert/bulkUpdate da 400 tu DS50.
+        checkSupplierOutboundStatusNotForged(supplierOutbound);
         checkSupplierOutboundNonNegative(supplierOutbound);
         // DS285: chan ngay phe duyet / ngay huy trong tuong lai.
         checkSupplierOutboundDatesNotFuture(supplierOutbound);
@@ -208,6 +223,31 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
                         .isBefore(entity.getExamineDate().toInstant()
                                 .atZone(DB_ZONE).toLocalDate())) {
             throw new ServiceException("Ngày hủy không được trước ngày phê duyệt.");
+        }
+    }
+
+    // DS328: xem ghi chu o save(SupplierOutbound) ben tren.
+    private void checkSupplierOutboundStatusNotForged(
+            SupplierOutbound entity) {
+        if (entity == null || entity.getStatus() == null) {
+            return;
+        }
+        if (StringUtils.isBlank(entity.getId())) {
+            // Tao moi: chi duoc null (mac dinh) hoac 1 (cho xet duyet).
+            if (!Integer.valueOf(1).equals(entity.getStatus())) {
+                throw new ServiceException(
+                        "Phiếu xuất kho mới chỉ được tạo ở trạng thái chờ xét duyệt");
+            }
+            return;
+        }
+        // Sua: chi duoc giu nguyen status da luu (doi status chi qua
+        // examine()/cancel()); phieu ghost (khong tim thay) de super.save
+        // xu ly nhu cu, khong them guard moi o day.
+        SupplierOutbound stored = this.get(entity.getId());
+        if (stored != null && stored.getStatus() != null
+                && !entity.getStatus().equals(stored.getStatus())) {
+            throw new ServiceException(
+                    "Không được đổi trạng thái phiếu xuất kho khi sửa");
         }
     }
 
