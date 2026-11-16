@@ -137,6 +137,8 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         // save() don. recipelInfoId (String -> bigint) la loi kieu,
         // khong phai loi do dai, ngoai pham vi.
         checkCureManagementLengths(entity);
+        // DS356: xem checkCureManagementDelTypeValues o duoi.
+        checkCureManagementDelTypeValues(entity);
         // DS217: addNumber / executions am — cung ho "so am" DS209-DS216.
         // addNumber = so lan thuc hien them trong lan nay (frontend gui
         // addNumber = excuteNum, executions = cumulative + excuteNum);
@@ -224,6 +226,27 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
             throw new ServiceException(infusionCap
                     ? "Tiến độ thực hiện không được vượt quá số ngày truyền"
                     : "Tiến độ thực hiện không được vượt quá tổng số lượng");
+        }
+    }
+
+    // DS356: delType chi '0' (chua thu hoi) / '1' (da thu hoi, DS217) --
+    // frontend cureManagement/index.vue:642-644 + infusion/index.vue:
+    // 988-990 chi re nhanh '0' (Thu hoi / Da hoan thanh) / '1' (Da thu
+    // hoi); gia mao '9'/'x'/'2' khong khop nhanh nao nen dong mat han
+    // nut thao tac, va revocation() (infusion:1322) khong cong addNumber
+    // cua no vao tong da thu hoi. Chi guard save() don (khong route
+    // bulk, mapper khong co bulkInsert/bulkUpdate). null/'' van qua
+    // (blank giu hanh vi cu); '1' phai qua (luong thu hoi hop le set
+    // '1' qua save).
+    private static void checkCureManagementDelTypeValues(CureManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        String delType = entity.getDelType();
+        if (StringUtils.isNotBlank(delType)
+                && !"0".equals(delType) && !"1".equals(delType)) {
+            throw new ServiceException(
+                    "Loại xóa không hợp lệ: chỉ được '0' (chưa thu hồi) hoặc '1' (đã thu hồi)");
         }
     }
 
