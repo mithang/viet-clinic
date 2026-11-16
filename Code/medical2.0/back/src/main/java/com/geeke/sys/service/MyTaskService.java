@@ -32,6 +32,9 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
 
     @Transactional
     public void save(MyTask myTask, MultipartFile[] fileIdUploads, String[] deleteIds) throws IOException {
+        // DS348: chan auditType / executeschedule gia mao truoc moi ghi
+        // (dat truoc ca xu ly file ben duoi de 400 xay ra truoc moi ghi).
+        checkMyTaskAuditValues(myTask);
         // Q4 (iteration 40): save/update ghi de MyTaskService thay vi
         // CrudService.save nen truoc day ne hoan toan guard tenant
         // (chi con san hasAnySessionPermission o controller), trong khi
@@ -91,6 +94,43 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
 
     }
 
+    // DS348: auditType / executeschedule gia mao ngoai mien qua
+    // POST /myTask/myTask/save (multipart) + /myTask/myTask/update.
+    // Entity khong co @Length/@Valid, mapper MyTAskDao.xml update ghi
+    // thang audit_type=#{auditType}, executeschedule=#{executeschedule}
+    // khong <if>. Gia tri gia '9'/'x' truoc day 200 + persist: dong
+    // phan hoi mat nhan trang thai o myTask/index.vue (khong nhanh
+    // nao khop), mat ca nut Duyet/Xem o taskdetailsForm (Duyet chi
+    // khi '0', Xem chi khi '1'/'2') va mat ca nut Thuc hien ngay /
+    // Xem chi tiet (chi khi executeschedule '0'/'1') — dong kẹt
+    // vinh vien ngoai luong xet duyet. Mien: auditType chi 0 (Cho
+    // xet duyet) / 1 (Da qua) / 2 (Chua qua); executeschedule chi 0
+    // (Cho thuc hien) / 1 (Da thuc hien) — backend chi set '0' o
+    // savefeedbacktable, luong xet duyet hop le set '1'/'2' qua
+    // chinh endpoint update nay. null/'' van qua vi cot nullable
+    // (update ghi thang nen payload thieu truong van NULL nhu cu).
+    // Goi o ca save() + update(); khong co bulkInsert/bulkUpdate
+    // trong MyTAskDao.xml nen khong co duong bulk nao khac.
+    private static void checkMyTaskAuditValues(MyTask myTask) {
+        if (myTask == null) {
+            return;
+        }
+        String auditType = myTask.getAuditType();
+        if (auditType != null && !auditType.isEmpty()
+                && !"0".equals(auditType) && !"1".equals(auditType)
+                && !"2".equals(auditType)) {
+            throw new ServiceException(
+                    "Trạng thái xét duyệt không hợp lệ: chỉ nhận 0 (Chờ xét duyệt), 1 (Đã qua) hoặc 2 (Chưa qua)");
+        }
+        String executeschedule = myTask.getExecuteschedule();
+        if (executeschedule != null && !executeschedule.isEmpty()
+                && !"0".equals(executeschedule)
+                && !"1".equals(executeschedule)) {
+            throw new ServiceException(
+                    "Tiến độ thực hiện không hợp lệ: chỉ nhận 0 (Chờ thực hiện) hoặc 1 (Đã thực hiện)");
+        }
+    }
+
     // Q4 (iteration 40): kiem tra tenant cua dong da luu bang lookup
     // gon getCompanyIdById thay vi dao.get() — xem ghi chu o dao.
     // Dong khong ton tai / company rong / session rong/"null" giu
@@ -115,6 +155,8 @@ public class MyTaskService extends CrudService<MyTaskDao,MyTask> {
 
     @Transactional
     public MyTask update(MyTask myTask) {
+        // DS348: chan auditType / executeschedule gia mao truoc moi ghi.
+        checkMyTaskAuditValues(myTask);
         // Q4 (iteration 40): nhu save — chan dong la theo dong da luu
         // truoc khi dao.update; dong la -> ServiceException -> 400,
         // dong own + company payload la cung 400 (verifyTenantOwnership).
