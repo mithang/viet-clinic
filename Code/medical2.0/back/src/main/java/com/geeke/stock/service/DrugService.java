@@ -116,6 +116,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // 0 giu nguyen.
         checkDrugNonNegative(drug);
         checkDrugStatusValues(drug); // DS323
+        checkDrugUnpackSellValues(drug); // DS364
         checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
@@ -278,6 +279,37 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS364: cho phep ban le (isUnpackSell) chi co 2 gia tri co nghia
+    // trong toan bo codebase: '0' = Khong, '1' = Co (switch
+    // drugForm.vue / drugNew/drugForm.vue active-value='1' /
+    // inactive-value='0'; Excel import normalize "是"->"1" else "0").
+    // Guard hien co chi chan do dai <= 45 (@Length + checkDrugLengths)
+    // nen '9'/'2'/'x' deu lot qua ca 3 duong ghi va mapper ghi thang
+    // #{isUnpackSell} (DrugDao.xml insert/update/bulkInsert/bulkUpdate).
+    // Thuoc isUnpackSell '9' hien switch OFF nhu '0', list hien don vi
+    // dong goi thay vi don vi bao che (DrugController:53/77/100 chi
+    // "1".equals moi lay preparationUnit), tong ton kho
+    // sum(case is_unpack_sell when 1 ...) (DrugDao.xml :130/216/343/375)
+    // tinh sai nhanh, gate gia ban le (drugForm.vue === '1') tat ngam --
+    // trang thai ma khong UI nao tao duoc. '0'/'1' giu 200; null/'' van
+    // qua nhu cu (cot nullable, khong @NotNull; mau DS359).
+    // Khong guard addDurg (caller noi bo MedicalRecordService:1494
+    // copy gia tri tu xa) hay syncToClinic (super.save) -- cung pham
+    // vi nhu DS323.
+    private static void checkDrugUnpackSellValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        String isUnpackSell = drug.getIsUnpackSell();
+        if (StringUtils.isBlank(isUnpackSell)) {
+            return;
+        }
+        if (!"0".equals(isUnpackSell) && !"1".equals(isUnpackSell)) {
+            throw new ServiceException(
+                    "Cho phép bán lẻ chỉ nhận giá trị 0 (Không) hoặc 1 (Có)");
+        }
+    }
+
     // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
     // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
     // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
@@ -349,6 +381,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugLengths(drug);
             checkDrugNonNegative(drug);
             checkDrugStatusValues(drug); // DS323
+            checkDrugUnpackSellValues(drug); // DS364
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
@@ -381,6 +414,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugLengths(drug);
             checkDrugNonNegative(drug);
             checkDrugStatusValues(drug); // DS323
+            checkDrugUnpackSellValues(drug); // DS364
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
