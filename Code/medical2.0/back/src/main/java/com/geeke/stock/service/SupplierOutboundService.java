@@ -80,6 +80,8 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         // DS244: chan so am truoc moi ghi (xem
         // checkSupplierOutboundNonNegative; mau DS211 phieu nhap kho).
         checkSupplierOutboundNonNegative(outboundEvt.getSupplierOutbound());
+        // DS351: chan type/method gia mao (xem checkSupplierOutboundTypeMethodNotForged).
+        checkSupplierOutboundTypeMethodNotForged(outboundEvt.getSupplierOutbound());
         // DS285: chan ngay phe duyet / ngay huy trong tuong lai.
         checkSupplierOutboundDatesNotFuture(outboundEvt.getSupplierOutbound());
         // DS294: chan thu tu cap ngay phe duyet / ngay huy.
@@ -156,6 +158,8 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         // that saveEvt khong qua day (goi thang super.save) nen khong
         // anh huong. bulkInsert/bulkUpdate da 400 tu DS50.
         checkSupplierOutboundStatusNotForged(supplierOutbound);
+        // DS351: chan type/method gia mao (xem checkSupplierOutboundTypeMethodNotForged).
+        checkSupplierOutboundTypeMethodNotForged(supplierOutbound);
         checkSupplierOutboundNonNegative(supplierOutbound);
         // DS285: chan ngay phe duyet / ngay huy trong tuong lai.
         checkSupplierOutboundDatesNotFuture(supplierOutbound);
@@ -249,6 +253,56 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             throw new ServiceException(
                     "Không được đổi trạng thái phiếu xuất kho khi sửa");
         }
+    }
+
+    // DS351: chan type/method gia mao qua ca hai duong ghi (generic
+    // /save + saveEvt; save(OutboundEvt) goi thang super.save nen guard
+    // o save(SupplierOutbound) khong bao duoc no -- giong cac guard
+    // DS244/DS285/DS294 phai goi o ca hai cho).
+    // type chi '1' (Thuoc) / '2' (Vat tu) (entity SupplierOutbound.java:32;
+    // DrugStuffTypeSelect chi co 1/2; list index.vue:98-101 chi render
+    // '1'/'2', gia tri khac blank + khong loc duoc theo loai).
+    // method chi 4 gia tri dict outboundMethod (sys_dict_type code
+    // outboundMethod: outboundMethod_0 'Tra lai NCC', _1 'Thuoc bao hong',
+    // _2 'Dieu chuyen xuat kho', _3 'Khac'; DictItemSelect emit
+    // item.value, DictItemView hien theo value -- gia tri ngoai dict
+    // blank o list + form chi tiet). Component cu '1'..'4' da bi thay
+    // bang DictItemSelect (index.vue:42 comment out) nen khong con
+    // duong ghi '1'..'4' nao; ghi chu 1/2/3 o entity la tieng Han cu.
+    // Mapper <insert> ghi #{type}/#{method} verbatim; <update> ghi method
+    // (khong ghi type -- giong DS350) nen duong sua method cung la ho;
+    // bulkInsert/bulkUpdate da 400 tu DS50. null/'' giu hop le (2 cot
+    // nullable, tien le DS169/DS326/DS350). Sua: method duoc giu nguyen
+    // gia tri da luu (mau DS328 status) de khong khoa phieu cu mang gia
+    // tri legacy; type tren duong sua khong ghi nen guard chat nhu DS350.
+    private void checkSupplierOutboundTypeMethodNotForged(
+            SupplierOutbound entity) {
+        if (entity == null) {
+            return;
+        }
+        String type = entity.getType();
+        if (type != null && !type.isEmpty()
+                && !"1".equals(type) && !"2".equals(type)) {
+            throw new ServiceException(
+                    "Loại phiếu xuất kho chỉ được là Thuốc hoặc Vật tư");
+        }
+        String method = entity.getMethod();
+        if (method == null || method.isEmpty()) {
+            return;
+        }
+        if ("outboundMethod_0".equals(method)
+                || "outboundMethod_1".equals(method)
+                || "outboundMethod_2".equals(method)
+                || "outboundMethod_3".equals(method)) {
+            return;
+        }
+        if (entity.getId() != null && !entity.getId().isEmpty()) {
+            SupplierOutbound stored = this.get(entity.getId());
+            if (stored != null && method.equals(stored.getMethod())) {
+                return;
+            }
+        }
+        throw new ServiceException("Phương thức xuất kho không hợp lệ");
     }
 
     // DS244: phieu xuat kho khong the xuat -N mat hang / -N tien.
