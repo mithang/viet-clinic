@@ -39,6 +39,8 @@ public class RoleService extends CrudService<RoleDao, Role>{
                 && dao.get(role.getId()) == null) {
             throw new ServiceException("Vai trò không tồn tại: " + role.getId());
         }
+        // DS361: chan isLocked ngoai mien {0,1}.
+        checkRoleIsLockedValues(role);
         return super.save(role);
     }
 
@@ -60,6 +62,8 @@ public class RoleService extends CrudService<RoleDao, Role>{
             throw new ServiceException("Danh sách vai trò không được để trống");
         }
         for (Role role : entitys) {
+            // DS361: bulk cung chan isLocked ngoai mien nhu save().
+            checkRoleIsLockedValues(role);
             validateBulkRole(role);
         }
         return super.bulkInsert(entitys);
@@ -78,6 +82,8 @@ public class RoleService extends CrudService<RoleDao, Role>{
             if (dao.get(role.getId()) == null) {
                 throw new ServiceException("Vai trò không tồn tại: " + role.getId());
             }
+            // DS361: bulk cung chan isLocked ngoai mien nhu save().
+            checkRoleIsLockedValues(role);
             validateBulkRole(role);
         }
         return super.bulkUpdate(entitys);
@@ -90,6 +96,26 @@ public class RoleService extends CrudService<RoleDao, Role>{
             throw new ServiceException("Danh sách vai trò không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS361: chan isLocked ngoai mien {0,1} (form roleForm.vue chi co
+    // switch active-value='0'/inactive-value='1', DB live toan '0',
+    // khong guard nao truoc day; gia tri gia '9'/'2' ghi verbatim roi
+    // hien OFF nhu da khoa trong khi van gan duoc qua listAll khong
+    // loc is_locked). null van qua nhu cu (bulk default 0 o
+    // validateBulkRole; don giu hanh vi 400 hien tai, probe P11 parity).
+    private static void checkRoleIsLockedValues(Role role) {
+        if (role == null) {
+            return;
+        }
+        Integer isLocked = role.getIsLocked();
+        if (isLocked == null) {
+            return;
+        }
+        if (isLocked != 0 && isLocked != 1) {
+            throw new ServiceException(
+                    "Trạng thái khóa vai trò không hợp lệ: " + isLocked);
+        }
     }
 
     private void validateBulkRole(Role role) {
