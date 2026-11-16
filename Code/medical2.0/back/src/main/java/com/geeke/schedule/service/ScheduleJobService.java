@@ -30,6 +30,9 @@ public class ScheduleJobService extends CrudService<ScheduleJobDao, ScheduleJob>
         if (StringUtils.isEmpty(cron)|| ! CronUtils.isValid(cron)){
             throw new ServiceException("cron biểu thức Tham số ngoại lệ");
         }
+        // DS340: fail-closed 400 on forged status / isLock (goi truoc
+        // moi ghi, cung voi kiem tra cron ben tren).
+        checkScheduleJobStatusAndLock(entity);
         // DS120 C: save voi id khong ton tai truoc day roi qua
         // CrudService.save -> doUpdate 0 dong roi van 200 silent no-op
         // (verifyTenantOwnershipAgainstStoredRow bo qua khi stored==null,
@@ -123,6 +126,34 @@ public class ScheduleJobService extends CrudService<ScheduleJobDao, ScheduleJob>
         String cron = entity.getCron();
         if (StringUtils.isEmpty(cron) || !CronUtils.isValid(cron)) {
             throw new ServiceException("cron biểu thức Tham số ngoại lệ");
+        }
+        // DS340: bulkInsert/bulkUpdate go qua day (khong qua save())
+        // nen guard status/isLock dat o day de phu ca hai duong bulk.
+        checkScheduleJobStatusAndLock(entity);
+    }
+
+    // DS340: fail-closed 400 on forged status / isLock.
+    // status la trang thai runtime cua scheduler, chi 5 gia tri Quartz
+    // {执行中, 已暂停, 待执行, 已完成, 已停止} (scheduleJobForm.vue
+    // statusLabel map; o nhap DISABLED nen nguoi dung khong bao gio
+    // nhap; khong code backend nao goi setStatus). isLock chi {0,1}
+    // (switch form active 1 / inactive 0). Truoc day ca 4 duong ghi
+    // chi validate cron (DS120) nen status '9'/'0'/garbage va isLock
+    // '2'/'9' deu 200 + persist; isLock gia mao loai job khoi lookup
+    // ScheduleJobDao.getCron (is_lock=0), khong sua lai duoc qua UI.
+    // null/'' giu hop le: form init ca hai ve '' va cot nullable.
+    private void checkScheduleJobStatusAndLock(ScheduleJob entity) {
+        String status = entity.getStatus();
+        if (status != null && !status.isEmpty()
+                && !"执行中".equals(status) && !"已暂停".equals(status)
+                && !"待执行".equals(status) && !"已完成".equals(status)
+                && !"已停止".equals(status)) {
+            throw new ServiceException("Trạng thái nhiệm vụ không hợp lệ");
+        }
+        String isLock = entity.getIsLock();
+        if (isLock != null && !isLock.isEmpty()
+                && !"0".equals(isLock) && !"1".equals(isLock)) {
+            throw new ServiceException("Trạng thái vô hiệu hóa của nhiệm vụ không hợp lệ");
         }
     }
 }
