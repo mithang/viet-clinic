@@ -188,6 +188,34 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS398: infuseGroup chi co mien null-hoac->=1 (null: dong khong
+    // truyen dich; >=1: so thu tu nhom truyen dich; frontend chi set
+    // i+1 / index+1 o recipetemplateForm.vue:2156/:2252). Truoc day
+    // khong guard nao nhin infuseGroup nen infuseGroup=0/-5 deu 200 +
+    // persist qua allSave (tao) va updateDetail (sua, xoa truoc chen
+    // sau) — mo lai mau thi recipetemplateForm.vue:3188-3214 gom nhom
+    // bang infusionProject[infuseGroup-1].push(...) nen 0 -> index -1
+    // -> undefined.push TypeError, vo form mau; ap mau sang don that
+    // (medicalOutpatientRecord/index.vue:4614-4632) cung index -1 vo
+    // tab truyen dich, va chi tiet mau push nguyen object vao don that
+    // nen gia tri gia chay sang RecipelDetail.infuseGroup (DS397,
+    // don that — entity/bang/endpoint khac). Khac DS391 BLOCKED
+    // (RecipeTemplateDetail.infuseType — field khac cung entity) va
+    // DS375/DS376 (cung entity, field khac). null giu hop le (cot
+    // nullable, live 20/20 dong deu NULL). Goi canh DS375/DS376 o ca
+    // 2 vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailInfuseGroupValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null || detail.getInfuseGroup() == null) {
+            return;
+        }
+        if (detail.getInfuseGroup() < 1) {
+            throw new ServiceException(
+                    "Nhóm truyền dịch của chi tiết mẫu đơn thuốc không hợp lệ (để trống nếu không truyền dịch, hoặc số nhóm từ 1 trở lên).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -205,6 +233,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
             checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
             checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
+            checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -333,6 +362,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
                     checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
                     checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
+                    checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
