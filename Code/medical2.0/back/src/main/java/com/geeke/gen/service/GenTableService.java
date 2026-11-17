@@ -115,6 +115,8 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         if (genTable.getIsAssociation().length() > 1) {
             throw new ServiceException("có liên kết bảng Độ dài phải nằm trong khoảng 1 đến 1");
         }
+        // DS399: chan isAssociation gia mao ngoai mien {'0','1'}.
+        checkGenTableIsAssociationValues(genTable);
         if (genTable.getFilter() != null && genTable.getFilter().length() > 2000) {
             throw new ServiceException("lọc Điều kiện Độ dài phải nằm trong khoảng 0 đến 2000");
         }
@@ -395,6 +397,32 @@ public class GenTableService extends CrudService<GenTableDao, GenTable>{
         }
         if (StringUtils.isBlank(genTable.getIsAssociation())) {
             throw new ServiceException("Liên kết bảng không được để trống");
+        }
+        // DS399: chan isAssociation gia mao ngoai mien {'0','1'} (cung
+        // guard nhu save(); bulkInsert/bulkUpdate khong qua save()).
+        checkGenTableIsAssociationValues(genTable);
+    }
+
+    // DS399: isAssociation chi co 2 gia tri co nghia {'0','1'}
+    // (el-switch active '1' / inactive '0' o genTableForm.vue:68;
+    // init '0' :636). Truoc day chi guard blank + do dai <= 1 nen
+    // '9'/'x'/'2' 1 ky tu deu lot qua ca 4 duong ghi (save create/
+    // update, bulkInsert, bulkUpdate) va luu that; dong con gia mao bi
+    // GenTableEx.getHasUnAssChildTable() phan loai sai thanh bang lien
+    // ket (chi re "0"), form switch khong hien thi dung gia tri '9'.
+    // Chan fail-closed 400; blank giu nguyen 400 qua guard hien co.
+    private static void checkGenTableIsAssociationValues(
+            GenTable genTable) {
+        if (genTable == null) {
+            return;
+        }
+        String isAssociation = genTable.getIsAssociation();
+        if (StringUtils.isBlank(isAssociation)) {
+            return;
+        }
+        if (!"0".equals(isAssociation) && !"1".equals(isAssociation)) {
+            throw new ServiceException(
+                    "Liên kết bảng không hợp lệ: " + isAssociation);
         }
     }
 
