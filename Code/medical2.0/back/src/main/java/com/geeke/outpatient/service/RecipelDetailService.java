@@ -99,6 +99,12 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // so luong ke don (xem checkMinTotalNotLessThanTotal).
         checkMinTotalNotLessThanTotal(entity);
         checkRecipelDetailStuffTypeValues(entity);
+        // DS390: trang thai truyen dich cua dong don chi 0 (cho truyen)
+        // / 1 (da hoan thanh) -- frontend cure/infusion/index.vue:673-674
+        // chi re ===0 / ===1; gia tri gia 9/2/-1 truoc day ghi thang qua
+        // mapper (insert :216, update :248) roi khong hien nut trang thai
+        // nao tren trang truyen dich. int primitive nen omit -> 0 van qua.
+        checkRecipelDetailInfuseTypeValues(entity);
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -146,6 +152,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkActualPaymentNotExceedAllFee(entity);
             checkMinTotalNotLessThanTotal(entity);
             checkRecipelDetailStuffTypeValues(entity);
+            checkRecipelDetailInfuseTypeValues(entity); // DS390
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -177,6 +184,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkActualPaymentNotExceedAllFee(entity);
             checkMinTotalNotLessThanTotal(entity);
             checkRecipelDetailStuffTypeValues(entity);
+            checkRecipelDetailInfuseTypeValues(entity); // DS390
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -374,6 +382,21 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS390: trang thai truyen dich cua dong don chi 0 / 1 (xem ghi chu
+    // o save()). int primitive nen omit mac dinh 0, khong co null.
+    // Ngoai {0,1} -> ServiceException 400 fail-closed.
+    private static void checkRecipelDetailInfuseTypeValues(
+            RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        int infuseType = entity.getInfuseType();
+        if (infuseType != 0 && infuseType != 1) {
+            throw new ServiceException(
+                    "Trạng thái truyền dịch không hợp lệ: " + infuseType);
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -446,6 +469,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             // DS300: cung chan minTotal < total o duong nay.
             checkMinTotalNotLessThanTotal(recipelDetail);
             checkRecipelDetailStuffTypeValues(recipelDetail);
+            checkRecipelDetailInfuseTypeValues(recipelDetail); // DS390
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
