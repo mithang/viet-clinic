@@ -221,6 +221,36 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS369: mien phi dang ky kham chi co nghia khi '0'/'1' (switch
+     * "Mien phi dang ky kham" active-value='1' /
+     * inactive-value='0', mac dinh '1', o registrationForm.vue:484-492
+     * va schedulingForm.vue:252-260); entity @Length max=64 nen
+     * '9'/'2'/'x' lot @Valid, mapper ghi thang ca 4 duong
+     * insert/update/bulkInsert/bulkUpdate CASE -- save/
+     * bulkInsert/bulkUpdate deu chap nhan 200 + persist (probe pre
+     * 19/19). Frontend chi re nhanh '0' (bat buoc nhap phi dang ky)
+     * va '1' (khoa o phi + luu thang khong mo dialog thu phi) nen gia
+     * tri gia bo qua validation phi, dong thoi khong khoa o phi --
+     * co mien phi khong UI nao tao duoc. Guard o day dung chung cho
+     * ca 3 duong truoc moi ghi (truoc assignQueueNumber de khong dot
+     * so thu tu cua luot bi tu choi, nhu DS146/DS238/DS368). Chi chan
+     * khac null/'' ma ngoai {'0','1'}: null/'' giu nguyen (cot
+     * nullable, form cho phep rong).
+     */
+    private static void checkRegistrationFreeRegistrationFeeValues(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        String value = entity.getFreeRegistrationFee();
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        if (!"0".equals(value) && !"1".equals(value)) {
+            throw new ServiceException("Miễn phí đăng ký khám không hợp lệ");
+        }
+    }
+
+    /**
      * DS255: so thu tu cho kham khong co nghia vat ly khi <= 0 (counter
      * cua phong kham bat dau tu 1, RegistrationDao.advanceQueueCounter
      * INSERT ... VALUES(..., 1)); mapper ghi queue_number thang ca 4
@@ -525,6 +555,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationFeesNonNegative(entity);
         // DS368: chan co tung den vung dich gia mao ngoai {'0','1'}.
         checkRegistrationIsGoHighareaValues(entity);
+        // DS369: chan mien phi dang ky kham gia mao ngoai {'0','1'}.
+        checkRegistrationFreeRegistrationFeeValues(entity);
         // DS255: chan so thu tu <= 0 truoc khi gan so thu tu.
         checkRegistrationQueueNumber(entity);
         // DS271: chan thoi gian phat benh tuong lai truoc khi gan so thu tu.
@@ -597,6 +629,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationFeesNonNegative(entity);
             // DS368: bulk cung chan co tung den vung dich gia mao nhu save().
             checkRegistrationIsGoHighareaValues(entity);
+            // DS369: bulk cung chan mien phi dang ky kham gia mao nhu save().
+            checkRegistrationFreeRegistrationFeeValues(entity);
             // DS255: bulk cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulk cung chan thoi gian phat benh tuong lai nhu save().
@@ -647,6 +681,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationFeesNonNegative(entity);
             // DS368: bulkUpdate cung chan co tung den vung dich gia mao nhu save().
             checkRegistrationIsGoHighareaValues(entity);
+            // DS369: bulkUpdate cung chan mien phi dang ky kham gia mao nhu save().
+            checkRegistrationFreeRegistrationFeeValues(entity);
             // DS255: bulkUpdate cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulkUpdate cung chan thoi gian phat benh tuong lai nhu save().
