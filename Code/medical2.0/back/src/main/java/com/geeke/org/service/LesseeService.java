@@ -120,6 +120,27 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
     }
 
     /**
+     * DS384: chan isUse gia mao ngoai mien {'0','1'} (0 khong dung,
+     * 1 dang dung — lesseeForm.vue el-switch active '1' / inactive
+     * '0'). Getter @NotNull + @Length(min=1, max=1) de lot '9'/'2'/'x'
+     * qua @Valid; service truoc day chi check blank (DS106). Gia mao
+     * '9' hien TRONG o cot Switch cua list (index.vue chi render icon
+     * check khi === '1') va khong bao gio lot vao loc 'dang dung'
+     * (chi gui '1'/'0') — mau "hang ma tang hinh" DS345. Null/rong
+     * giu hanh vi cu (400 qua @Valid o save don / blank-check o bulk).
+     */
+    private static void checkLesseeIsUseValue(Lessee entity) {
+        if (entity == null) {
+            return;
+        }
+        String isUse = entity.getIsUse();
+        if (StringUtils.isNotBlank(isUse)
+                && !"0".equals(isUse) && !"1".equals(isUse)) {
+            throw new ServiceException("Trạng thái không hợp lệ: " + isUse);
+        }
+    }
+
+    /**
      * ITER63 item 2: save đã sửa mapping (companyName, xem Lessee.java)
      * nên giờ đi được tới đây thay vì 500/400 như trước — vì vậy PHẢI
      * kèm guard, không được để đường ghi mới mở mà không chặn (quy tắc
@@ -132,6 +153,8 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
     @Override
     @Transactional(readOnly = false)
     public Lessee save(Lessee entity) {
+        // DS384: chan isUse gia mao ngoai {'0','1'} truoc moi ghi.
+        checkLesseeIsUseValue(entity);
         if (entity != null && StringUtils.isBlank(entity.getId())) {
             checkLesseeNameTenant(entity.getCompanyName());
         } else if (entity != null) {
@@ -178,6 +201,8 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
             if (StringUtils.isBlank(entity.getIsUse())) {
                 throw new ServiceException("Trạng thái không được để trống");
             }
+            // DS384: chan isUse gia mao ngoai {'0','1'}.
+            checkLesseeIsUseValue(entity);
         }
         if (entitys != null) {
             for (Lessee entity : entitys) {
@@ -222,6 +247,8 @@ public class LesseeService extends CrudService<LesseeDao, Lessee>{
             if (StringUtils.isBlank(entity.getIsUse())) {
                 throw new ServiceException("Trạng thái không được để trống");
             }
+            // DS384: chan isUse gia mao ngoai {'0','1'}.
+            checkLesseeIsUseValue(entity);
         }
         if (entitys != null) {
             for (Lessee entity : entitys) {
