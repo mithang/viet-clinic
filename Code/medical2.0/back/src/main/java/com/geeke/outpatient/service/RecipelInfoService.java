@@ -184,6 +184,33 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS372: chan notShow gia mao ngoai mien {0,1} qua save /
+    // bulkInsert / bulkUpdate (probe pre 23/23: update 1->9, 0->2,
+    // bulkUpdate 0->9 / 1->-1 / 1->2 deu 200 + persist; control
+    // 0/1 van 200; create luon stored 1 vi insert/bulkInsert bo
+    // cot not_show). Mien (4 nguon doc lap): entity comment
+    // RecipelInfo.java:63 "Co hay khong hien thi 0 khong hien thi
+    // 1 Hien thi"; schema md_yzs.sql:11801 `not_show` int DEFAULT
+    // 1 COMMENT '(0: Khong hien thi; 1: Hien thi)'; frontend
+    // workbench/index.vue:690-696 hang cho tham tra don loc
+    // recipelInfo.not_show = 1; writer hop le duy nhat
+    // updateNotShowById :527-534 setNotShow(0). Don gia
+    // notShow=9/2/-1 bien mat khoi hang cho tham tra don (loc =1)
+    // ma khong UI nao ghi lai 1 (nut An chi ghi 0) -> ket vinh
+    // vien. null giu nguyen (cot nullable). Khac DS347
+    // (isPay/isDispension String, BLOCKED) va DS363
+    // (status/chargeStatus/dispensionStatus).
+    private static void checkNotShowValues(RecipelInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        Integer notShow = entity.getNotShow();
+        if (notShow != null && notShow.intValue() != 0
+                && notShow.intValue() != 1) {
+            throw new ServiceException("Trạng thái hiển thị đơn thuốc không hợp lệ: " + notShow);
+        }
+    }
+
     // DS276: ngay tai kham tren don thuoc khong duoc la ngay qua khu —
     // ngay tai kham la ngay hen kham lai trong tuong lai theo dinh
     // nghia (truong followUpDate, RecipelInfo.java:49 "tai kham thoi
@@ -298,6 +325,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         validateRequired(entity);
         // DS363: chan status/chargeStatus/dispensionStatus gia mao.
         checkRecipelInfoStatusValues(entity);
+        // DS372: chan notShow gia mao.
+        checkNotShowValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -320,6 +349,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             validateRequired(entity);
             // DS363: chan status/chargeStatus/dispensionStatus gia mao.
             checkRecipelInfoStatusValues(entity);
+            // DS372: chan notShow gia mao.
+            checkNotShowValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -339,6 +370,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             validateRequired(entity);
             // DS363: chan status/chargeStatus/dispensionStatus gia mao.
             checkRecipelInfoStatusValues(entity);
+            // DS372: chan notShow gia mao.
+            checkNotShowValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
