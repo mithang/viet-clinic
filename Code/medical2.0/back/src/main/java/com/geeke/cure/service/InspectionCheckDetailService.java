@@ -82,6 +82,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
         // (conclusion/describes 255, probe C18). Gioi han theo cot DB;
         // null-safe.
         checkInspectionCheckDetailLengths(entity);
+        checkInspectionCheckDetailSignValues(entity);
         return super.save(entity);
     }
 
@@ -99,6 +100,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
         for (InspectionCheckDetail entity : entitys) {
             checkInspectionCheckDetailRequired(entity);
             checkInspectionCheckDetailLengths(entity);
+            checkInspectionCheckDetailSignValues(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -125,6 +127,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
             }
             checkInspectionCheckDetailRequired(entity);
             checkInspectionCheckDetailLengths(entity);
+            checkInspectionCheckDetailSignValues(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -153,6 +156,27 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
+        }
+    }
+
+    // DS383: sign la co danh dau chi so cao/thap, chi co 3 gia tri hop le
+    // 0 (Binh thuong), 1 (Cao), 2 (Thap) -- signList o
+    // inspectionCheck/index.vue:546. Truoc day khong guard nao nen bat ky
+    // so nguyen nao cung ghi duoc qua save/bulkInsert/bulkUpdate/update;
+    // gia tri gia (9, 3, -1) hien trong o select ket qua vi khong option
+    // nao khop, bac si khong biet chi so cao hay thap. sign la int
+    // primitive nen omit -> 0 (Binh thuong), khong co truong hop null.
+    // Khong guard allSave() (luong noi bo TollInfoService, khong setSign
+    // nen mac dinh 0, trong mien). update() la duong UI that
+    // (saveWithFile) nen cung guard, khong chi save/bulk*.
+    private static void checkInspectionCheckDetailSignValues(
+            InspectionCheckDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        int sign = entity.getSign();
+        if (sign != 0 && sign != 1 && sign != 2) {
+            throw new ServiceException("Dấu cao/thấp chỉ được là 0 (Bình thường), 1 (Cao) hoặc 2 (Thấp).");
         }
     }
 
@@ -217,6 +241,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
 
     @Transactional(readOnly = false)
     public void update(InspectionCheckDetail inspectionCheckDetail) {
+        checkInspectionCheckDetailSignValues(inspectionCheckDetail);
         this.dao.update(inspectionCheckDetail);
     }
 
