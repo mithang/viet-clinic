@@ -190,6 +190,10 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         checkTollInfoDiscountNotExceedReceivable(tollInfo);
         // DS349: chan amountStatus ngoai mien {_0,_1,_2} truoc moi ghi.
         checkTollInfoAmountStatus(tollInfo);
+        // DS396: chan paymentType ngoai mien {payType_0..payType_6}
+        // + tollType ngoai mien {tollType_0..tollType_5} truoc moi ghi.
+        checkTollInfoPaymentTypeValues(tollInfo);
+        checkTollInfoTollTypeValues(tollInfo);
         // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
@@ -334,6 +338,72 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         }
     }
 
+    /**
+     * DS396: chan paymentType ngoai mien {payType_0..payType_6} truoc
+     * moi ghi. Mien lay theo hang BizConstants, KHONG chi 4 gia tri
+     * UI dang mo (payType_0/_3/_5/_6): payType_1/_2/_4 da an khoi
+     * dict nhung hang van giu cho du lieu lich su, va processRefund
+     * copy nguyen paymentType cua phieu goc qua BeanUtils roi goi
+     * this.save(refund) -- chan hep hon se lam hong hoan phi cua
+     * phieu lich su. Gia tri gia ('payType_9', 'CASH', ...) khong
+     * co nhan hien thi: DataBean PAY_TYPE_DISPLAY tra "", trang
+     * /charge chi co label cho _0/_3/_5/_6, cot paymentTypeName o
+     * danh sach phieu trong; gia tri gia con chay vao
+     * registration.pay_type (saveToll setPayType) va
+     * TollAuditLog.paymentType (processRefund). Null/blank van qua
+     * (cot payment_type nullable; nhanh REFUNDED cua controller chi
+     * mang amountStatus, cho bat buoc da co guard null rieng
+     * DS12/DS122).
+     */
+    private static void checkTollInfoPaymentTypeValues(TollInfo tollInfo) {
+        if (tollInfo == null || tollInfo.getPaymentType() == null) {
+            return;
+        }
+        String value = tollInfo.getPaymentType().getValue();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!BizConstants.PAY_TYPE_CASH.equals(value)
+                && !BizConstants.PAY_TYPE_ALIPAY.equals(value)
+                && !BizConstants.PAY_TYPE_WECHAT.equals(value)
+                && !BizConstants.PAY_TYPE_BANK_CARD.equals(value)
+                && !BizConstants.PAY_TYPE_MEDICAL.equals(value)
+                && !BizConstants.PAY_TYPE_BANK_TRANSFER.equals(value)
+                && !BizConstants.PAY_TYPE_EWALLET.equals(value)) {
+            throw new ServiceException("Loại thanh toán không hợp lệ: "
+                    + value);
+        }
+    }
+
+    /**
+     * DS396: chan tollType ngoai mien {tollType_0..tollType_5} truoc
+     * moi ghi. Mien lay theo hang BizConstants + dict tollType live
+     * (6 gia tri, deu del_flag=0). Gia tri gia roi het nhanh
+     * saveToll (REGISTRATION -> ban le, con lai -> thuong; INFUSION
+     * -> chargeStatus) nen lang le di nhanh thuong, va cot
+     * tollTypeName o danh sach phieu trong vi LEFT JOIN dict khong
+     * khop. Null/blank van qua nhu checkTollInfoAmountStatus (nhanh
+     * REFUNDED cua controller chi mang amountStatus).
+     */
+    private static void checkTollInfoTollTypeValues(TollInfo tollInfo) {
+        if (tollInfo == null || tollInfo.getTollType() == null) {
+            return;
+        }
+        String value = tollInfo.getTollType().getValue();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!BizConstants.TOLL_TYPE_WESTERN.equals(value)
+                && !BizConstants.TOLL_TYPE_CHINESE.equals(value)
+                && !BizConstants.TOLL_TYPE_INFUSION.equals(value)
+                && !BizConstants.TOLL_TYPE_TREATMENT.equals(value)
+                && !BizConstants.TOLL_TYPE_EXAMINATION.equals(value)
+                && !BizConstants.TOLL_TYPE_REGISTRATION.equals(value)) {
+            throw new ServiceException("Loại thu phí không hợp lệ: "
+                    + value);
+        }
+    }
+
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
@@ -381,6 +451,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             checkTollInfoDiscountNotExceedReceivable(tollInfo);
             // DS349: chan amountStatus ngoai mien {_0,_1,_2}.
             checkTollInfoAmountStatus(tollInfo);
+            // DS396: chan paymentType / tollType ngoai mien.
+            checkTollInfoPaymentTypeValues(tollInfo);
+            checkTollInfoTollTypeValues(tollInfo);
             forceSessionCompanyWhenBlank(tollInfo);
         }
         return super.bulkInsert(entitys);
@@ -407,6 +480,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             checkTollInfoDiscountNotExceedReceivable(tollInfo);
             // DS349: chan amountStatus ngoai mien {_0,_1,_2}.
             checkTollInfoAmountStatus(tollInfo);
+            // DS396: chan paymentType / tollType ngoai mien.
+            checkTollInfoPaymentTypeValues(tollInfo);
+            checkTollInfoTollTypeValues(tollInfo);
         }
         return super.bulkUpdate(entitys);
     }
@@ -468,6 +544,12 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         checkTollInfoRequired(tollInfo);
         // DS349: chan amountStatus ngoai mien {_0,_1,_2} truoc moi deref/ghi.
         checkTollInfoAmountStatus(tollInfo);
+        // DS396: chan paymentType / tollType ngoai mien truoc moi
+        // deref/ghi (saveToll goi this.save() ben trong nen guard o
+        // save() cung bao, nhung chan o day thi phi gia khong toi
+        // claimPaid / ghi dong nao).
+        checkTollInfoPaymentTypeValues(tollInfo);
+        checkTollInfoTollTypeValues(tollInfo);
         Company company = SessionUtils.getUser().getCompany();
         String seltId="";//BHYTQuyết toánid thangphísaulưu vàoĐăng ký khámbảng
         //Đang tiến hành kiểm kê giờKhông thểtiến hành dòngThu phí/Hoàn phí
