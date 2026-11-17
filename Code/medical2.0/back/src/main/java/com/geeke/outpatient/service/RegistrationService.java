@@ -251,6 +251,38 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS370: trang thai hien thi don thuoc chi co nghia khi '0'/'1'
+     * ('0' hien thi, '1' an khi moi don da huy -- workbench loc
+     * recipe_status='0' o 5 query model, charge loc !== 1; writer hop
+     * le duy nhat la '0' hardcode o insert/update va '1' o
+     * updateRecipeStatus); entity getter khong @Length/@NotNull,
+     * service khong guard, mapper ghi thang o bulkInsert :564 va
+     * bulkUpdate CASE :715-717 -- bulkInsert/bulkUpdate deu chap nhan
+     * 200 + persist gia tri gia (probe pre 21/21, P9-P11 + P16).
+     * Dang ky gia mao bien khoi moi queue workbench loc '0' nhung van
+     * hien o charge list (filter !== 1) -- hang ma khong UI nao tao
+     * duoc. Guard o day dung chung cho ca 3 duong truoc moi ghi
+     * (truoc assignQueueNumber de khong dot so thu tu cua luot bi tu
+     * choi, nhu DS146/DS238/DS368/DS369); save create/update mapper
+     * hardcode '0' nen guard o save chi la defense in depth, khong
+     * doi hanh vi luu hop le. Chi chan khac null/'' ma ngoai
+     * {'0','1'}: null/'' giu nguyen (cot nullable, bulkInsert cho
+     * phep rong).
+     */
+    private static void checkRegistrationRecipeStatusValues(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        String value = entity.getRecipeStatus();
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        if (!"0".equals(value) && !"1".equals(value)) {
+            throw new ServiceException("Trạng thái hiển thị đơn thuốc không hợp lệ");
+        }
+    }
+
+    /**
      * DS255: so thu tu cho kham khong co nghia vat ly khi <= 0 (counter
      * cua phong kham bat dau tu 1, RegistrationDao.advanceQueueCounter
      * INSERT ... VALUES(..., 1)); mapper ghi queue_number thang ca 4
@@ -557,6 +589,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationIsGoHighareaValues(entity);
         // DS369: chan mien phi dang ky kham gia mao ngoai {'0','1'}.
         checkRegistrationFreeRegistrationFeeValues(entity);
+        // DS370: chan trang thai hien thi don thuoc gia mao ngoai {'0','1'}.
+        checkRegistrationRecipeStatusValues(entity);
         // DS255: chan so thu tu <= 0 truoc khi gan so thu tu.
         checkRegistrationQueueNumber(entity);
         // DS271: chan thoi gian phat benh tuong lai truoc khi gan so thu tu.
@@ -631,6 +665,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationIsGoHighareaValues(entity);
             // DS369: bulk cung chan mien phi dang ky kham gia mao nhu save().
             checkRegistrationFreeRegistrationFeeValues(entity);
+            // DS370: bulk cung chan trang thai hien thi don thuoc gia mao nhu save().
+            checkRegistrationRecipeStatusValues(entity);
             // DS255: bulk cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulk cung chan thoi gian phat benh tuong lai nhu save().
@@ -683,6 +719,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationIsGoHighareaValues(entity);
             // DS369: bulkUpdate cung chan mien phi dang ky kham gia mao nhu save().
             checkRegistrationFreeRegistrationFeeValues(entity);
+            // DS370: bulkUpdate cung chan trang thai hien thi don thuoc gia mao nhu save().
+            checkRegistrationRecipeStatusValues(entity);
             // DS255: bulkUpdate cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulkUpdate cung chan thoi gian phat benh tuong lai nhu save().
