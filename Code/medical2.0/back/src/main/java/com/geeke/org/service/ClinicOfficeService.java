@@ -89,6 +89,16 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
         // test === '1'). Fail-closed 400; null/rỗng vẫn qua vì cột
         // is_default nullable (DEFAULT NULL).
         checkIsDefault(clinicOffice);
+        // DS371: isRegister chỉ có miền {0,1} (el-switch 1/0 ở
+        // clinicOfficeForm.vue:256-266 + myTaskForm.vue:120-130);
+        // giá trị giả '9'/'2'/'x' qua @Valid (getter không
+        // annotation) rồi mapper ghi verbatim cả 4 đường, khoa giả
+        // hiện trống ở cột 'Có phải khoa/phòng đăng ký không'
+        // (index.vue:96-99 chỉ tick khi === '1') nên không phân
+        // biệt được với '0' -- trạng thái không UI nào tạo được.
+        // Fail-closed 400; null/rỗng vẫn qua vì cột is_register
+        // nullable (DEFAULT NULL).
+        checkIsRegisterValues(clinicOffice);
         ClinicOffice save = super.save(clinicOffice);
         return clinicOffice;
     }
@@ -101,6 +111,17 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
         if (StringUtils.isNotBlank(isDefault)
                 && !"0".equals(isDefault) && !"1".equals(isDefault)) {
             throw new ServiceException("Khoa mặc định không hợp lệ");
+        }
+    }
+
+    private void checkIsRegisterValues(ClinicOffice clinicOffice) {
+        if (clinicOffice == null) {
+            return;
+        }
+        String isRegister = clinicOffice.getIsRegister();
+        if (StringUtils.isNotBlank(isRegister)
+                && !"0".equals(isRegister) && !"1".equals(isRegister)) {
+            throw new ServiceException("Khoa/phòng đăng ký không hợp lệ");
         }
     }
 
@@ -143,6 +164,9 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
             validateRequired(clinicOffice);
             // DS345: guard miền isDefault {0,1} (xem checkIsDefault).
             checkIsDefault(clinicOffice);
+            // DS371: guard miền isRegister {0,1} (xem
+            // checkIsRegisterValues).
+            checkIsRegisterValues(clinicOffice);
             // DS101: bulkInsert ghi #{entity.sort} trực tiếp; sort NOT NULL
             // nên hàng thiếu sort 500 ở DB (probe T2/T3). Chỉ yêu cầu ở
             // bulkInsert: bulkUpdate không có CASE sort nên không yêu cầu.
@@ -163,6 +187,9 @@ public class ClinicOfficeService extends CrudService<ClinicOfficeDao, ClinicOffi
             validateRequired(clinicOffice);
             // DS345: guard miền isDefault {0,1} (xem checkIsDefault).
             checkIsDefault(clinicOffice);
+            // DS371: guard miền isRegister {0,1} (xem
+            // checkIsRegisterValues).
+            checkIsRegisterValues(clinicOffice);
             if (StringUtils.isBlank(clinicOffice.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của khoa đã tồn tại");
             }
