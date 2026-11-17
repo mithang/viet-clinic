@@ -132,6 +132,29 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS375: isExtra chi co mien {0,1} (0: thuoc chinh, 1: phi phu them;
+    // frontend mac dinh 0 cho dong moi, khong co switch nao ghi gia tri
+    // khac). Truoc day khong guard nao nhin isExtra nen isExtra=9/2/-1
+    // deu 200 + persist qua allSave (tao) va updateDetail (sua, xoa
+    // truoc chen sau) — dong gia roi vao CA HAI danh sach o man hinh
+    // kham (filterRecipel giu isExtra !== 1, filterAdditional giu
+    // isExtra !== 0) va ne dedup + cap 5 thuoc truyen dich o form mau
+    // (chi dem isExtra===0). Khac RecipelDetail.isExtra (DS373, don
+    // that) — day la chi tiet MAU. null giu hop le (cot nullable, mau
+    // cu co NULL). Goi canh DS214/DS301 o ca 2 vong ghi that allSave /
+    // updateDetail.
+    private static void checkRecipeTemplateDetailIsExtraValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null || detail.getIsExtra() == null) {
+            return;
+        }
+        if (detail.getIsExtra() != 0 && detail.getIsExtra() != 1) {
+            throw new ServiceException(
+                    "Phí phụ thêm của chi tiết mẫu đơn thuốc không hợp lệ (0: Không; 1: Có).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -147,6 +170,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         recipeTemplateDetails) {
             checkDetailNonNegative(recipeTemplateDetail);
             checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
+            checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -273,6 +297,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
 
                     checkDetailNonNegative(recipeTemplateDetail);
                     checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
+                    checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
