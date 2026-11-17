@@ -105,6 +105,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // mapper (insert :216, update :248) roi khong hien nut trang thai
         // nao tren trang truyen dich. int primitive nen omit -> 0 van qua.
         checkRecipelDetailInfuseTypeValues(entity);
+        checkRecipelDetailIsUnpackSellValues(entity); // DS394
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -153,6 +154,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkMinTotalNotLessThanTotal(entity);
             checkRecipelDetailStuffTypeValues(entity);
             checkRecipelDetailInfuseTypeValues(entity); // DS390
+            checkRecipelDetailIsUnpackSellValues(entity); // DS394
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -185,6 +187,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkMinTotalNotLessThanTotal(entity);
             checkRecipelDetailStuffTypeValues(entity);
             checkRecipelDetailInfuseTypeValues(entity); // DS390
+            checkRecipelDetailIsUnpackSellValues(entity); // DS394
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -397,6 +400,34 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS394: ban le tach le (isUnpackSell) chi co mien {0,1} (0: ban
+    // theo dong goi, 1: ban le tach le; frontend el-select chi co 2
+    // option 0/1, medicalOutpatientRecord/index.vue :1072/:1764).
+    // Truoc day khong guard nao nhin isUnpackSell nen 9/2/-1 deu 200
+    // + persist qua save/bulkInsert/bulkUpdate (probe pre 20/20).
+    // Gia tri gia roi khoi moi nhanh doc: MedicinalStorageControl-
+    // Service:704 chi doi don vi khi == 1 nen dong gia chiem dung kho
+    // sai (total tinh nhu so goi); frontend === 1 hien don vi bao
+    // che / gia le (:1033/:1165) nen dong gia hien sai don vi/gia.
+    // Khac DS108: ghi chu do chi noi KHONG chan null (5 caller noi
+    // bo trong vao gia tri frontend gui + cot nullable) — guard nay
+    // null-safe, null giu hop le (bulk omit -> NULL nhu 4 dong live;
+    // single-save omit van 400 san qua @NotNull :221, khong doi).
+    // Khac Drug.isUnpackSell (DS364), Stuff.isUnpackSell (DS367),
+    // RecipeTemplateDetail.isUnpackSell (DS376) — day la chi tiet
+    // DON THAT. Ngoai {0,1} -> ServiceException 400 fail-closed.
+    private static void checkRecipelDetailIsUnpackSellValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getIsUnpackSell() == null) {
+            return;
+        }
+        if (entity.getIsUnpackSell() != 0
+                && entity.getIsUnpackSell() != 1) {
+            throw new ServiceException(
+                    "Bán lẻ tách lẻ không hợp lệ (0: Không; 1: Có).");
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -470,6 +501,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkMinTotalNotLessThanTotal(recipelDetail);
             checkRecipelDetailStuffTypeValues(recipelDetail);
             checkRecipelDetailInfuseTypeValues(recipelDetail); // DS390
+            checkRecipelDetailIsUnpackSellValues(recipelDetail); // DS394
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
