@@ -74,6 +74,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
         // varchar(255). Gioi han theo cot DB; null-safe.
         checkManufactureFactoryLengths(manufactureFactory);
         checkManufactureFactoryStatusValues(manufactureFactory); // DS326
+        checkManufactureFactoryTypeValues(manufactureFactory); // DS378
         ManufactureFactory manufactureFactoryTemp = super.save(manufactureFactory);
         return manufactureFactoryTemp;
     }
@@ -120,6 +121,28 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
         }
     }
 
+    // DS378: type gia mao ('9'/'0'/'x'...) qua save/bulkInsert/
+    // bulkUpdate — truoc day 200 + persist (chi co guard do dai max 1,
+    // DS149, + status DS326). Mien hop le duy nhat '1' (Hang thuoc) /
+    // '2' (Hang vat tu) (manufactureFactoryForm.vue:111-126 radio chi
+    // '1'/'2'; index.vue types chi '1'/'2'). Reader that: drugForm.vue
+    // loc type='1', stuffForm.vue loc type='2' qua listAll — hang gia
+    // '9' bien khoi CA HAI dropdown chon hang, khong duong nao chon
+    // lai duoc. NULL van qua guard nay: cot @NotNull nen save don da
+    // 400 san qua @Valid, bulk* da 400 san qua isBlank(type) o
+    // service; khong can chan them o day.
+    private static void checkManufactureFactoryTypeValues(
+            ManufactureFactory entity) {
+        if (entity == null || entity.getType() == null) {
+            return;
+        }
+        if (!"1".equals(entity.getType())
+                && !"2".equals(entity.getType())) {
+            throw new ServiceException(
+                    "Loại nhà sản xuất chỉ nhận giá trị 1 (Hãng thuốc) hoặc 2 (Hãng vật tư)");
+        }
+    }
+
     // DS125 A: single delete fail-closed 400 (mau DS123/DS124) -- truoc day
     // delete id ma / dong da xoa mem deu 200 silent (CrudService.delete chi
     // chan qua stored-row tenant check ma check do bo qua stored==null;
@@ -163,6 +186,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             }
             checkManufactureFactoryLengths(manufactureFactory);
             checkManufactureFactoryStatusValues(manufactureFactory); // DS326
+            checkManufactureFactoryTypeValues(manufactureFactory); // DS378
         }
         return super.bulkInsert(entitys);
     }
@@ -187,6 +211,7 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             }
             checkManufactureFactoryLengths(manufactureFactory);
             checkManufactureFactoryStatusValues(manufactureFactory); // DS326
+            checkManufactureFactoryTypeValues(manufactureFactory); // DS378
         }
         return super.bulkUpdate(entitys);
     }
