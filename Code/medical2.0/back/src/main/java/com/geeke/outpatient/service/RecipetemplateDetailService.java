@@ -155,6 +155,39 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS376: isUnpackSell chi co mien {0,1} (0: ban theo dong goi,
+    // 1: ban le tach le; frontend mac dinh 0 cho dong moi, select don
+    // vi chi co 2 option 0/1). Truoc day khong guard nao nhin
+    // isUnpackSell nen isUnpackSell=9/2/-1 deu 200 + persist qua
+    // allSave (tao) va updateDetail (sua, xoa truoc chen sau) — dong
+    // gia hien gia le o form mau (isUnpackSell === 0 ? gia goi : gia
+    // le, :1297/:1525) trong khi MedicalCalculate (:2685/:2856/:2919)
+    // tinh theo isUnpackSell === 1 ? ban le : dong goi (gia hien thi
+    // != allFee/unitPrice da luu); ap mau sang don that
+    // (medicalOutpatientRecord/index.vue :4634-4645 push nguyen chi
+    // tiet mau vao don that) roi MedicalCalculate, ma
+    // RecipelDetail.isUnpackSell co tinh khong guard (DS108: 5 caller
+    // noi bo cua RecipelDetailService.save trong vao gia tri frontend
+    // gui + cot nullable — ly do do KHONG ap cho chi tiet MAU: duong
+    // ghi duy nhat la allSave/updateDetail o day, khong caller noi
+    // bo, frontend luon gui 0/1). Khac Drug.isUnpackSell (DS364) va
+    // Stuff.isUnpackSell (DS367) — day la chi tiet MAU. null giu hop
+    // le nhu DS375 (null hien da 400 san qua rang buoc NOT NULL cua
+    // DB, khong dong nao persist). Goi canh DS214/DS301/DS375 o ca 2
+    // vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailIsUnpackSellValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null || detail.getIsUnpackSell() == null) {
+            return;
+        }
+        if (detail.getIsUnpackSell() != 0
+                && detail.getIsUnpackSell() != 1) {
+            throw new ServiceException(
+                    "Bán lẻ tách lẻ của chi tiết mẫu đơn thuốc không hợp lệ (0: Không; 1: Có).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -171,6 +204,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkDetailNonNegative(recipeTemplateDetail);
             checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
             checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
+            checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -298,6 +332,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkDetailNonNegative(recipeTemplateDetail);
                     checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
                     checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
+                    checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
