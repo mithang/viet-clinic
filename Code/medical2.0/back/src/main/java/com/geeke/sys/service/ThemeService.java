@@ -45,6 +45,7 @@ public class ThemeService extends CrudService<ThemeDao, Theme>{
         if (entity != null && StringUtils.isBlank(entity.getTheme())) {
             throw new ServiceException("Chủ đề không được để trống");
         }
+        checkThemeIsDefaultValues(entity);
         return super.save(entity);
     }
 
@@ -59,6 +60,7 @@ public class ThemeService extends CrudService<ThemeDao, Theme>{
         }
         for (Theme entity : entitys) {
             checkThemeRequired(entity);
+            checkThemeIsDefaultValues(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -84,6 +86,7 @@ public class ThemeService extends CrudService<ThemeDao, Theme>{
                         + entity.getId());
             }
             checkThemeRequired(entity);
+            checkThemeIsDefaultValues(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -123,6 +126,29 @@ public class ThemeService extends CrudService<ThemeDao, Theme>{
                     + entity.getId());
         }
         return super.delete(entity);
+    }
+
+    // DS377: isDefault chi co nghia '0'/'1' (themeForm.vue:28-29 switch
+    // active '1'/inactive '0', mac dinh 1). Entity chi co
+    // @Length(max=1) nen gia tri gia 1 ky tu ('9'/'2'/'x') qua @Valid
+    // o save don, va ca 3 duong bulk deu bi bean-validate theo
+    // @Length nen '-1' (2 ky tu) da 400 san — lo hong that la gia tri
+    // gia 1 ky tu qua ca 3 duong save/bulkInsert/bulkUpdate, mapper
+    // ghi verbatim. Doc that: AuthController.getPersonalTheme:353
+    // login chon theme dau tien co isDefault=='1', khong co thi
+    // fallback themes.get(0) — gia '9' len theme mac dinh duy nhat
+    // (id 532442783541223425) lam moi user chua dat PersonalTheme
+    // dang nhap nhan theme sai. Chan gia tri khac null/'' ma ngoai
+    // {'0','1'} -> 400 fail-closed; null van qua (cot nullable).
+    private static void checkThemeIsDefaultValues(Theme entity) {
+        if (entity == null) {
+            return;
+        }
+        String isDefault = entity.getIsDefault();
+        if (StringUtils.isNotBlank(isDefault)
+                && !"0".equals(isDefault) && !"1".equals(isDefault)) {
+            throw new ServiceException("Trạng thái mặc định của chủ đề không hợp lệ: " + isDefault);
+        }
     }
 
     private void checkThemeRequired(Theme entity) {
