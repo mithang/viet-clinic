@@ -84,6 +84,40 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
      * single delete ghost/rong sang 400 (xem delete() duoi); bulkDelete
      * ghost giu 200 idempotent (DS126 B).
      */
+    /**
+     * DS382: reviewStatus + reviewResult gia mao ngoai mien -> 400
+     * fail-closed (mau DS379). reviewStatus chi co nghia 0 (Chua xem
+     * xet), 1 (Da xem xet), 2 (Da huy); reviewResult chi 0 (Khong hop
+     * ly), 1 (Hop ly) + mac dinh 2 (chua danh gia -- entity khoi tao
+     * reviewResult = 2; DB live co 1 dong result=2 that). Truoc day
+     * service chi guard ton tai (DS127 B), mapper ghi verbatim ca 4
+     * duong nen gia tri gia 9/3 luu thang: review.vue:181 ternary gan
+     * nhan sai ("Khong hop ly" cho result gia khi status=1), gia tri
+     * gia rot khoi ca 2 bo loc reviewStatus/reviewResult_List, va
+     * SUM(review_result=1) lech ti le hop ly. null van qua (mau
+     * DS379): cot nullable, frontend chi gui khi co gia tri.
+     */
+    private static void checkRecipelInfoReviewStatusValues(
+            RecipelInfoReview entity) {
+        if (entity == null) {
+            return;
+        }
+        Integer reviewStatus = entity.getReviewStatus();
+        if (reviewStatus != null && reviewStatus != 0
+                && reviewStatus != 1 && reviewStatus != 2) {
+            throw new ServiceException(
+                    "Trạng thái rà soát đơn thuốc không hợp lệ: "
+                            + reviewStatus);
+        }
+        Integer reviewResult = entity.getReviewResult();
+        if (reviewResult != null && reviewResult != 0
+                && reviewResult != 1 && reviewResult != 2) {
+            throw new ServiceException(
+                    "Kết quả rà soát đơn thuốc không hợp lệ: "
+                            + reviewResult);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public RecipelInfoReview save(RecipelInfoReview entity) {
@@ -94,6 +128,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
                 && StrUtil.isBlank(getRecipelInfoIdByReviewId(entity.getId()))) {
             throw new ServiceException("Rà soát đơn thuốc không tồn tại: " + entity.getId());
         }
+        checkRecipelInfoReviewStatusValues(entity);
         return super.save(entity);
     }
 
@@ -111,6 +146,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
                     || StrUtil.isBlank(entity.getRecipelInfo().getId())) {
                 throw new ServiceException("Rà soát đơn thuốc phải gắn với một đơn thuốc");
             }
+            checkRecipelInfoReviewStatusValues(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -131,6 +167,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
             if (StrUtil.isBlank(getRecipelInfoIdByReviewId(entity.getId()))) {
                 throw new ServiceException("Rà soát đơn thuốc không tồn tại: " + entity.getId());
             }
+            checkRecipelInfoReviewStatusValues(entity);
         }
         return super.bulkUpdate(entitys);
     }
