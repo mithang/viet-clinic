@@ -72,6 +72,8 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         // DS264: ngay sinh o tuong lai la khong the ve vat ly (cung ho
         // DS262 vitals) -- chan fail-closed 400 o moi duong ghi.
         checkPatientBirthday(patient);
+        // DS403: chan gender gia mao ngoai mien {gender_0, gender_1}.
+        checkPatientGenderValues(patient);
         if (patient.getId() != null && !patient.getId().trim().isEmpty()
                 && this.dao.get(patient.getId()) == null) {
             throw new ServiceException("Bệnh nhân không tồn tại: " + patient.getId());
@@ -151,6 +153,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         // checkPatientLengths cua save() — chuoi qua dai se 500 o DB.
         checkPatientLengths(patient);
         checkPatientBirthday(patient); // DS264
+        checkPatientGenderValues(patient); // DS403
         verifyTenantOwnership(patient);
         //Lấy thông tin có người dùng đó không theo số CMND/CCCD của người dùng
         List<Patient> patientByCard = this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);
@@ -291,6 +294,42 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         }
     }
 
+    /**
+     * DS403: gioi tinh benh nhan chi co mien {'gender_0','gender_1'}
+     * (Nam / Nu — dict gender, legacyValues.js:22; dict co them
+     * gender_2 'ceshi' la du lieu test rac, khong co tham chieu nao
+     * trong code va khong benh nhan live nao dung). Mapper ghi
+     * #{gender.value} verbatim o ca 6 duong (insert/update/
+     * bulkInsert/bulkUpdate/wxInsert/wxUpdate) nen gia mao truoc day
+     * persist thang; moi reader deu rẽ gender_0 ? 'Nam' : 'Nữ'
+     * (infusion/cureManagement/tollInfo/inspectionCheck/
+     * memberManagement/outpatientLog) nen gia tri gia hien sai thanh
+     * 'Nữ' cho benh nhan nam, list benh nhan LEFT JOIN dict nen ten
+     * gioi tinh rong. Chan fail-closed 400 truoc moi ghi o ca 4
+     * duong service (save/bulkInsert/bulkUpdate/wxSave). null/blank
+     * cung 400 (cot NOT NULL, @NotNull tren single save, va cung
+     * thong diep voi validateRequiredForBulk o bulkInsert) — khong
+     * co truong hop null/blank hop le de giu qua. Khac DS402
+     * (RemoteDiagnosisTreatment.gender String 'Nam'/'Nữ').
+     * Luong OutpatientLog.updateLog ghi p.gender = #{sex} (String
+     * tran) bypass service nay — de vong sau (tien le DS286/DS288).
+     */
+    private static void checkPatientGenderValues(Patient patient) {
+        if (patient == null) {
+            return;
+        }
+        if (patient.getGender() == null
+                || patient.getGender().getValue() == null
+                || patient.getGender().getValue().trim().isEmpty()) {
+            throw new ServiceException("Giới tính không được để trống");
+        }
+        String gender = patient.getGender().getValue();
+        if (!"gender_0".equals(gender) && !"gender_1".equals(gender)) {
+            throw new ServiceException(
+                    "Giới tính không hợp lệ: " + gender);
+        }
+    }
+
     private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
         if (item != null) {
             checkLength(item.getValue(), max, message);
@@ -313,6 +352,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             validateRequiredForBulk(entity);
             checkPatientLengths(entity);
             checkPatientBirthday(entity); // DS264
+            checkPatientGenderValues(entity); // DS403
         }
         return super.bulkInsert(entitys);
     }
@@ -335,6 +375,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             }
             checkPatientLengths(entity);
             checkPatientBirthday(entity); // DS264
+            checkPatientGenderValues(entity); // DS403
         }
         return super.bulkUpdate(entitys);
     }
