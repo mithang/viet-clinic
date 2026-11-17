@@ -98,6 +98,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // DS300: tong luong don vi nho nhat khong duoc thap hon tong
         // so luong ke don (xem checkMinTotalNotLessThanTotal).
         checkMinTotalNotLessThanTotal(entity);
+        checkRecipelDetailStuffTypeValues(entity);
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -144,6 +145,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkNonNegative(entity);
             checkActualPaymentNotExceedAllFee(entity);
             checkMinTotalNotLessThanTotal(entity);
+            checkRecipelDetailStuffTypeValues(entity);
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -174,6 +176,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkNonNegative(entity);
             checkActualPaymentNotExceedAllFee(entity);
             checkMinTotalNotLessThanTotal(entity);
+            checkRecipelDetailStuffTypeValues(entity);
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -335,6 +338,42 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS379: loai vat lieu (stuffType) chi co 5 gia tri co nghia:
+    // '0' Thuoc tay, '1' Thuoc dong y, '2' Truyen dich, '3' Hang muc
+    // kham chua benh, '4' Vat tu (MedicalRecordService.java:1642,
+    // RecipetemplateDetailService.java:247). Truoc day service chi
+    // chan do dai (DS149 checkLength <= 100) nen gia tri gia ('9'/
+    // '5'/'x') qua save/bulkInsert/bulkUpdate roi luu thang (probe
+    // pre 18/18). Gia tri gia roi khoi moi nhanh doc: getDrugStuffEvt
+    // chi re nhanh '0'/'1'/'2' (thuoc), '3' (costItem), '4' (vat tu)
+    // nen chi tiet gia tra ve evt rong -- mat ten/gia o trang thu phi
+    // (charge/index.vue:948) va roi khoi ban in (DataBean '0'/'1'/
+    // '2'/'3'); '2' con quyet WESTERN/PATENT (:1472) va tran truyen
+    // dich (RecipelDetailService:287). Khac isUnpackSell cua cung
+    // entity: truong do CO TINH khong guard theo DS108 (5 caller noi
+    // bo trong vao gia tri frontend gui); stuffType khong co ghi chu
+    // nao nhu vay, va cac caller noi bo (MedicalRecordService
+    // saveRecipelInfoEvtTo) chi dat '0'..'4' tu tab don cua UI.
+    // Ngoai {'0'..'4'} -> ServiceException 400 fail-closed; null/''
+    // giu nguyen (cot nullable, DB live co 1 dong NULL, tien le
+    // DS373/DS375/DS376).
+    private static void checkRecipelDetailStuffTypeValues(
+            RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        String stuffType = entity.getStuffType();
+        if (StringUtils.isBlank(stuffType)) {
+            return;
+        }
+        if (!"0".equals(stuffType) && !"1".equals(stuffType)
+                && !"2".equals(stuffType) && !"3".equals(stuffType)
+                && !"4".equals(stuffType)) {
+            throw new ServiceException(
+                    "Loại vật liệu không hợp lệ: " + stuffType);
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -406,6 +445,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkActualPaymentNotExceedAllFee(recipelDetail);
             // DS300: cung chan minTotal < total o duong nay.
             checkMinTotalNotLessThanTotal(recipelDetail);
+            checkRecipelDetailStuffTypeValues(recipelDetail);
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
