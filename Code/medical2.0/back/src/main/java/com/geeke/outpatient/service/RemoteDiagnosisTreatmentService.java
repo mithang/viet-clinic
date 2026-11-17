@@ -87,6 +87,13 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
             // moi duoc chuyen, khong bao gio sinh ra tu UI nay; gia
             // tri rac cung khong co nhan hien thi -> 400.
             checkStatusOnCreate(entity.getStatus());
+            // DS402: gioi tinh tao moi chi chap nhan 'Nam' / 'Nữ'.
+            // 'gender_0' / '9' / 'x' deu gia mao -> 400; null/blank
+            // giu qua (cot nullable). Chi duong create cham gender
+            // (diagnosisInsert ghi #{gender} verbatim); update chi
+            // ghi status, modifiedState chi ghi status +
+            // medicationStatus nen khong can guard o do.
+            checkRemoteDiagnosisTreatmentGenderValues(entity.getGender());
             if (entity.getStatus() == null) {
                 entity.setStatus("0");
             }
@@ -109,6 +116,21 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
             remoteDiagnosisTreatmentDao.diagnosisUpdate(entity);
         }
         return entity;
+    }
+
+    // DS402: gioi tinh chi co 'Nam' / 'Nữ' (gia tri luu that: probe
+    // DS320 dung "Nam"; frontend patientForm.vue:387 so gender ===
+    // "Nam" de gui ma 1/2 sang HIS; dict GENDER chi anh xa ma
+    // gender_0/gender_1, khong phai gia tri luu). 'gender_0', '9',
+    // 'x' deu gia mao -> 400. null/blank giu qua (cot nullable).
+    private void checkRemoteDiagnosisTreatmentGenderValues(String gender) {
+        if (StringUtils.isBlank(gender)) {
+            return;
+        }
+        if (!"Nam".equals(gender) && !"Nữ".equals(gender)) {
+            throw new ServiceException("Giới tính chẩn đoán từ xa không hợp lệ: "
+                    + gender);
+        }
     }
 
     // DS320: trang thai tao moi cua mot yeu cau kham tu xa.
