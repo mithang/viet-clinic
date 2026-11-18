@@ -60,6 +60,9 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // (update cung ghi de patient_id/member_set_id qua mapper)
             // va lap lai o bulk* ben duoi truoc moi ghi; null-safe.
             checkMemberHasSubject(memberManagement);
+            // DS416: chan type gia mao (xem
+            // checkMemberManagementTypeValues).
+            checkMemberManagementTypeValues(memberManagement);
             // Sửa (id đã có) trước đây rơi vào cùng nhánh INSERT với Tạo nên
             // luôn lỗi trùng khóa chính — form Sửa qua UI không bao giờ lưu
             // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
@@ -170,6 +173,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             checkMemberHasSubject(entity);
             // DS314: tao moi chi duoc status null hoac '0'.
             checkMemberManagementStatusForCreate(entity);
+            // DS416: chan type gia mao.
+            checkMemberManagementTypeValues(entity);
             if (StringUtils.isBlank(entity.getCard())) {
                 String card = new Date().getTime() + "";
                 entity.setCard(card.substring(card.length() - 8));
@@ -198,6 +203,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // chung cho ca kiem tra trang thai va giu card ben duoi.
             MemberManagement stored = this.dao.get(entity.getId());
             checkMemberManagementStatusForUpdate(entity, stored);
+            // DS416: chan type gia mao.
+            checkMemberManagementTypeValues(entity);
             if (StringUtils.isBlank(entity.getCard())) {
                 if (stored != null && StringUtils.isNotBlank(stored.getCard())) {
                     entity.setCard(stored.getCard());
@@ -272,6 +279,36 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         String storedStatus = stored.getStatus();
         if (status != null && storedStatus != null && !status.equals(storedStatus)) {
             throw new ServiceException("Trạng thái thẻ hội viên không hợp lệ khi cập nhật: chỉ được giữ nguyên trạng thái đã lưu, đổi trạng thái phải qua dùng thẻ / thanh toán / hủy thẻ");
+        }
+    }
+
+
+    // DS416: type cua the chi co duy nhat 'memberType_0' ('The trai
+    // nghiem') — cung dict 'memberType' voi MemberSet.type (song song
+    // DS414); sys_dict_type 'memberType' chi co 1 item del_flag='0'
+    // do live. Truoc day chi co guard do dai <=100 (DS149 C) +
+    // @NotNull presence tren duong save (@Valid): '9'/'memberType_1'/
+    // 'x'/'' deu qua, mapper ghi #{type.value} verbatim (insert/
+    // update/bulkInsert/bulkUpdate) nen persist thang; list LEFT JOIN
+    // dict nen ten loai rong, tra cuu phat the theo type khong tim
+    // thay goi gia '9'. null/blank cung 400 (cot NOT NULL, tien le
+    // DS403); duong bulk khong co @Valid va khong co check presence
+    // type (kham DS150 A) nen null truoc day 500. Khong co caller
+    // noi bo nao set type (grep setType = 0 caller), chi
+    // CrudController routes qua service nay. Fail-closed 400.
+    private static void checkMemberManagementTypeValues(MemberManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getType() == null
+                || entity.getType().getValue() == null
+                || entity.getType().getValue().trim().isEmpty()) {
+            throw new ServiceException("Loại thẻ hội viên không được để trống");
+        }
+        String type = entity.getType().getValue();
+        if (!"memberType_0".equals(type)) {
+            throw new ServiceException(
+                    "Loại thẻ hội viên không hợp lệ: " + type);
         }
     }
 

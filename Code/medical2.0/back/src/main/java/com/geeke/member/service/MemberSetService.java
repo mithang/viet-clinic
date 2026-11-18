@@ -73,6 +73,8 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
        // DS321: chan status/failure gia mao (xem
        // checkMemberSetStatusValues).
        checkMemberSetStatusValues(memberSet);
+       // DS416: chan type gia mao (xem checkMemberSetTypeValues).
+       checkMemberSetTypeValues(memberSet);
        if(StringUtils.isBlank(memberSet.getId())){
            // ITER64 item 1: this insert branch bypassed super.save, so the
            // generic insert guard does not cover it. Verify BEFORE
@@ -175,6 +177,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             checkMemberSetDateOrder(memberSet); // DS260
             checkMemberSetNumberNotExceedAmount(memberSet); // DS296
             checkMemberSetStatusValues(memberSet); // DS321
+            checkMemberSetTypeValues(memberSet); // DS416
         }
         return super.bulkInsert(entitys);
     }
@@ -197,6 +200,7 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             checkMemberSetDateOrder(memberSet); // DS260
             checkMemberSetNumberNotExceedAmount(memberSet); // DS296
             checkMemberSetStatusValues(memberSet); // DS321
+            checkMemberSetTypeValues(memberSet); // DS416
         }
         return super.bulkUpdate(entitys);
     }
@@ -233,6 +237,38 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
         if (!"0".equals(memberSet.getFailure())
                 && !"1".equals(memberSet.getFailure())) {
             throw new ServiceException("Hết hiệu lực của thẻ hội viên chỉ được là 0 (Không) hoặc 1 (Có)");
+        }
+    }
+
+
+    // DS416: type cua goi the chi co duy nhat 'memberType_0' ('The trai
+    // nghiem') — sys_dict_type 'memberType' chi co 1 item del_flag='0'
+    // do live (id 1224037951067242497); khong co hang BizConstants.
+    // Truoc day chi co guard do dai <=100 (DS149 C) + @NotNull presence
+    // tren duong save (@Valid): '9'/'memberType_1'/'x'/'' deu qua,
+    // mapper ghi #{type.value} verbatim (insert/update/bulkInsert/
+    // bulkUpdate) nen persist thang; list LEFT JOIN dict nen ten loai
+    // rong, tra cuu phat the theo type (memberManagementForm.vue:226
+    // memberSet_search filter columnName 'type') khong tim thay goi
+    // gia '9' va the gia '9' khong tim thay goi nao. Mien 1 gia tri
+    // nen BAT KY gia tri nao khac cung pha bat bien moi goi/the deu
+    // la 'The trai nghiem'. null/blank cung 400 (cot NOT NULL, tien
+    // le DS403); duong bulk khong co @Valid nen guard nay bat ca null.
+    // Khong co caller noi bo nao set type (grep setType = 0 caller),
+    // chi CrudController routes qua service nay. Fail-closed 400.
+    private static void checkMemberSetTypeValues(MemberSet memberSet) {
+        if (memberSet == null) {
+            return;
+        }
+        if (memberSet.getType() == null
+                || memberSet.getType().getValue() == null
+                || memberSet.getType().getValue().trim().isEmpty()) {
+            throw new ServiceException("Loại thẻ hội viên không được để trống");
+        }
+        String type = memberSet.getType().getValue();
+        if (!"memberType_0".equals(type)) {
+            throw new ServiceException(
+                    "Loại thẻ hội viên không hợp lệ: " + type);
         }
     }
 
