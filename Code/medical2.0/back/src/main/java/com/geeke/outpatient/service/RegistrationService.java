@@ -283,6 +283,55 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS422: nguon dang ky kham chi co nghia khi la 1 trong 4 gia tri
+     * cua dict 'registrationSource' (do live, del_flag='0'):
+     * 'registrationSource_0' (Tai cho), 'registrationSource_2'
+     * (Tiep nhan kham nhanh), 'registrationSource_3' (Ban le Thu phi),
+     * 'registrationSourc_1' (Truc tuyen -- LOI CHINH TA goc, thieu 'e',
+     * gia tri that trong dict + frontend re nhanh cung o
+     * registrationForm.vue:1234 / schedulingForm.vue:727 ep status
+     * registrationStatus_3 'Cho check-in' cho luong dat lich truc
+     * tuyen G2). BizConstants chi dinh nghia dung 3 hang
+     * REG_SOURCE_NORMAL=_0 :127 + QUICK=_2 :129 + RETAIL=_3 :131,
+     * khong hang thu 4; ca 4 gia tri live deu co code tham chieu,
+     * khong gia tri thu 5 nao. Entity DictItem khong annotation
+     * mien, service chi guard do dai <=64 (DS146/DS147), mapper ghi
+     * #{source.value} verbatim ca 4 duong insert/update/bulkInsert/
+     * bulkUpdate CASE -- save/bulkInsert/bulkUpdate/wxSave deu chap
+     * nhan gia mao 200 + persist (probe pre 20/20). Gia tri gia
+     * doi luong kham: MedicalRecordService:1216 nhanh charge/pay
+     * cua don thuoc (RETAIL -> chargeStatus 1/isPay 1, else 0),
+     * :1298/:1420 nhanh tuong tu, :1535-1541 map loai tiep nhan
+     * QUICK->1 / RETAIL->2 / else 0; danh sach luot LEFT JOIN hien
+     * ten nguon rong. Guard o day dung chung cho ca 4 duong truoc
+     * moi ghi (truoc assignQueueNumber de khong dot so thu tu cua
+     * luot bi tu choi, nhu DS146/DS238/DS368/DS369/DS370). Chi chan
+     * khac null/'' ma ngoai 4 mien: null/'' giu nguyen (cot
+     * nullable, luot kham khong bat buoc co nguon -- tien le
+     * DS406/DS411). Duong goi noi bo an toan: MedicalRecordService
+     * chi set QUICK (:1051) / RETAIL (:1072), form mac dinh _0,
+     * backend khong bao gio set 'registrationSourc_1' (chi frontend
+     * dat khi luu tu form dat lich truc tuyen). Khac DS411
+     * (treatType), DS406 (infectType), DS313 (status), DS368/
+     * DS369/DS370 -- deu truong khac cung entity.
+     */
+    private static void checkRegistrationSourceValues(Registration entity) {
+        if (entity == null || entity.getSource() == null) {
+            return;
+        }
+        String value = entity.getSource().getValue();
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        if (!"registrationSource_0".equals(value)
+                && !"registrationSource_2".equals(value)
+                && !"registrationSource_3".equals(value)
+                && !"registrationSourc_1".equals(value)) {
+            throw new ServiceException("Nguồn đăng ký khám không hợp lệ");
+        }
+    }
+
+    /**
      * DS255: so thu tu cho kham khong co nghia vat ly khi <= 0 (counter
      * cua phong kham bat dau tu 1, RegistrationDao.advanceQueueCounter
      * INSERT ... VALUES(..., 1)); mapper ghi queue_number thang ca 4
@@ -591,6 +640,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationFreeRegistrationFeeValues(entity);
         // DS370: chan trang thai hien thi don thuoc gia mao ngoai {'0','1'}.
         checkRegistrationRecipeStatusValues(entity);
+        // DS422: chan nguon dang ky kham gia mao ngoai 4 mien dict.
+        checkRegistrationSourceValues(entity);
         // DS255: chan so thu tu <= 0 truoc khi gan so thu tu.
         checkRegistrationQueueNumber(entity);
         // DS271: chan thoi gian phat benh tuong lai truoc khi gan so thu tu.
@@ -667,6 +718,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationFreeRegistrationFeeValues(entity);
             // DS370: bulk cung chan trang thai hien thi don thuoc gia mao nhu save().
             checkRegistrationRecipeStatusValues(entity);
+            // DS422: bulk cung chan nguon dang ky kham gia mao nhu save().
+            checkRegistrationSourceValues(entity);
             // DS255: bulk cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulk cung chan thoi gian phat benh tuong lai nhu save().
@@ -721,6 +774,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationFreeRegistrationFeeValues(entity);
             // DS370: bulkUpdate cung chan trang thai hien thi don thuoc gia mao nhu save().
             checkRegistrationRecipeStatusValues(entity);
+            // DS422: bulkUpdate cung chan nguon dang ky kham gia mao nhu save().
+            checkRegistrationSourceValues(entity);
             // DS255: bulkUpdate cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulkUpdate cung chan thoi gian phat benh tuong lai nhu save().
@@ -1067,6 +1122,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // lan update; insert chi gan so khi null nen guard phai truoc
         // assignQueueNumber de khong dot so cua luot bi tu choi).
         checkRegistrationQueueNumber(entity);
+        // DS422: wxSave cung chan nguon dang ky kham gia mao nhu save().
+        checkRegistrationSourceValues(entity);
         // DS271: wxSave cung chan thoi gian phat benh tuong lai nhu save().
         checkRegistrationMorbidityTimeNotFuture(entity);
         // DS272: wxSave cung chan thoi gian hoan thanh tuong lai nhu save().
