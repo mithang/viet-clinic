@@ -108,6 +108,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailIsUnpackSellValues(entity); // DS394
         checkRecipelDetailFrequencyValues(entity); // DS419
         checkRecipelDetailIsExtraValues(entity); // DS425
+        checkRecipelDetailInfuseUseValues(entity); // DS433
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -159,6 +160,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailIsUnpackSellValues(entity); // DS394
             checkRecipelDetailFrequencyValues(entity); // DS419
             checkRecipelDetailIsExtraValues(entity); // DS425
+            checkRecipelDetailInfuseUseValues(entity); // DS433
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -194,6 +196,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailIsUnpackSellValues(entity); // DS394
             checkRecipelDetailFrequencyValues(entity); // DS419
             checkRecipelDetailIsExtraValues(entity); // DS425
+            checkRecipelDetailInfuseUseValues(entity); // DS433
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -499,6 +502,40 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS433: infuseUse chi co mien {infuseUse_0, infuseUse_1,
+    // infuseUse_2, infuseUse_3} (0: Tiem tinh mach, 1: Truyen tinh
+    // mach, 2: Tiem bap, 3: Khi dung; dict type 'infuseUse', dung 4
+    // item del_flag='0', frontend chi set tu dict kin nay qua
+    // infuseUseOption). Truoc day khong guard nao nhin infuseUse
+    // nen gia tri gia ('infuseUse_9'/'infuseUse_4'/'x') deu 200 +
+    // persist qua save/bulkInsert/bulkUpdate — dong gia hien ten
+    // duong truyen RONG tren phieu truyen dich (cure/infusion/
+    // index.vue :750/:811, theo tung nhom infuseGroup), tren form
+    // duyet don (reviewForm.vue :135) va man kham
+    // (medicalOutpatientRecord/index.vue :2706), dieu duong khong
+    // biet duong truyen nao. Khac DS390 (infuseType chi la trang
+    // thai 0/1 cua dong truyen). null/blank giu hop le (cot
+    // varchar(64) nullable, live 52/55 NULL). Goi o ca 4 duong ghi
+    // that save/bulkInsert/bulkUpdate/addRetailrecipelDetails,
+    // mau DS419/DS425.
+    private static void checkRecipelDetailInfuseUseValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getInfuseUse() == null) {
+            return;
+        }
+        String infuseUse = entity.getInfuseUse().getValue();
+        if (StringUtils.isBlank(infuseUse)) {
+            return;
+        }
+        if (!"infuseUse_0".equals(infuseUse)
+                && !"infuseUse_1".equals(infuseUse)
+                && !"infuseUse_2".equals(infuseUse)
+                && !"infuseUse_3".equals(infuseUse)) {
+            throw new ServiceException(
+                    "Cách dùng truyền dịch không hợp lệ: " + infuseUse);
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -575,6 +612,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailIsUnpackSellValues(recipelDetail); // DS394
             checkRecipelDetailFrequencyValues(recipelDetail); // DS419
             checkRecipelDetailIsExtraValues(recipelDetail); // DS425
+            checkRecipelDetailInfuseUseValues(recipelDetail); // DS433
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
