@@ -246,6 +246,45 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS438: chan recipelType gia mao ngoai mien {recipelType_0.._5}
+    // qua save / bulkInsert / bulkUpdate (probe pre 18/18: save
+    // create _9 / _6 / 'x', save update _0->_9, bulkInsert mixed,
+    // bulkUpdate mixed deu 200 + persist; reader GET by id hien
+    // value _9 name ''). Mien kin: dict 'recipelType' dung 6 item
+    // del_flag='0' (_0 Don thuoc Tay y, _1 Don thuoc Dong y, _2 Don
+    // truyen dich, _3 Hang muc kham chua benh, _4 Phu phi them,
+    // _5 Ban le don thuoc), cung BizConstants RECIPEL_TYPE_* :52-62
+    // va DS418 (Recipetemplate.type — mau don, entity khac). Writer
+    // frontend chi set tu dict kin (DICT_CODE.RECIPEL_TYPE) + noi bo
+    // TollInfoService :1346 set _5 hop le roi goi save() — guard
+    // cho _5 qua nen khong vo luong ban le. Live 39 dong: 29x _0,
+    // 4x _1, 3x _2, 3x _5, bad 0, null 0. Harm: gia tri gia roi khoi
+    // ca hai nhanh BHYT MdMedicationOrderImpl:151 (rxTypeCode +
+    // rxDrugCnt bat buoc vang), :233 (rxItemTypeCode/medcWayCodg
+    // vang), :387 (diagType vang); roi qua moi nhanh
+    // MedicalRecordService:776 (chi tiet don khong tra duoc ten/
+    // gia/don vi); bien mat khoi moi cohort loc theo loai don
+    // (RegistrationDao/SchedulesDao). null/blank giu nguyen vi
+    // validateRequired khong bat recipelType + cot varchar
+    // NULL-able (tien le DS419/DS422/DS425). Khac DS418 (mau don),
+    // DS420 (frequency), DS428 (isFollowUp), DS363 (status),
+    // DS372 (notShow) — cung entity, khac truong.
+    private static void checkRecipelInfoRecipelTypeValues(RecipelInfo entity) {
+        if (entity == null || entity.getRecipelType() == null
+                || StringUtils.isBlank(entity.getRecipelType().getValue())) {
+            return;
+        }
+        String value = entity.getRecipelType().getValue();
+        if (!"recipelType_0".equals(value)
+                && !"recipelType_1".equals(value)
+                && !"recipelType_2".equals(value)
+                && !"recipelType_3".equals(value)
+                && !"recipelType_4".equals(value)
+                && !"recipelType_5".equals(value)) {
+            throw new ServiceException("Loại đơn thuốc không hợp lệ: " + value);
+        }
+    }
+
     // DS428: chan isFollowUp gia mao ngoai mien {0,1} qua save /
     // bulkInsert / bulkUpdate (probe pre 18/18: save create 9 / 2 /
     // -1, save update 1->9, bulkInsert mixed, bulkUpdate mixed deu
@@ -392,6 +431,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkRecipelInfoFrequencyValues(entity);
         // DS428: chan isFollowUp gia mao.
         checkRecipelInfoIsFollowUpValues(entity);
+        // DS438: chan recipelType gia mao.
+        checkRecipelInfoRecipelTypeValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -420,6 +461,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoFrequencyValues(entity);
             // DS428: chan isFollowUp gia mao.
             checkRecipelInfoIsFollowUpValues(entity);
+            // DS438: chan recipelType gia mao.
+            checkRecipelInfoRecipelTypeValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -445,6 +488,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoFrequencyValues(entity);
             // DS428: chan isFollowUp gia mao.
             checkRecipelInfoIsFollowUpValues(entity);
+            // DS438: chan recipelType gia mao.
+            checkRecipelInfoRecipelTypeValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
