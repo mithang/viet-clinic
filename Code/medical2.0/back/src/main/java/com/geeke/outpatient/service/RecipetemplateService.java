@@ -105,6 +105,45 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
             throw new ServiceException("Loại mẫu không được để trống");
         }
         checkRecipetemplateCategoryValues(entity);
+        checkRecipetemplateTypeValues(entity);
+    }
+
+    // DS418: type chi co 6 gia tri hop le -- 'recipelType_0' Don
+    // thuoc Tay y, 'recipelType_1' Don thuoc Dong y, 'recipelType_2'
+    // Don truyen dich, 'recipelType_3' Hang muc kham chua benh,
+    // 'recipelType_4' Phi phu them, 'recipelType_5' Ban le Don
+    // thuoc (sys_dict_type 'recipelType', dung 6 item
+    // del_flag='0'; BizConstants RECIPEL_TYPE_* :50-62). Truoc
+    // vong: validateRequired chi check presence (DS116 A),
+    // saveTemplate()/updateTemplate() ne ca validateRequired,
+    // mapper ghi #{type.value} verbatim nen '9'/'x'/
+    // 'recipelType_6' luu duoc qua save()/bulkInsert()/
+    // bulkUpdate() + allSave/aiSave; mau gia bien mat khoi tim
+    // kiem "Goi" theo loai (searchTemplate loc type) va mo len
+    // sai tab + phi tinh 0 (form chi re nhanh _0.._3). Cot type
+    // NOT NULL nen null/blank cung 400 (tien le DS416/DS403).
+    // _5 la loai hop le (tab kham _5, MedicalCalculate nhanh _5,
+    // "Luu thanh mau" tu tab _5 set type=_5) nen mien guard la du
+    // 6 item dict, khong chi _0.._3 ma form select loc ra.
+    private void checkRecipetemplateTypeValues(
+            Recipetemplate entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getType() == null
+                || StringUtils.isBlank(entity.getType().getValue())) {
+            throw new ServiceException("Loại mẫu không hợp lệ");
+        }
+        String type = entity.getType().getValue();
+        if (!"recipelType_0".equals(type)
+                && !"recipelType_1".equals(type)
+                && !"recipelType_2".equals(type)
+                && !"recipelType_3".equals(type)
+                && !"recipelType_4".equals(type)
+                && !"recipelType_5".equals(type)) {
+            throw new ServiceException(
+                    "Loại mẫu không hợp lệ: " + type);
+        }
     }
 
     // DS357: category chi co 3 gia tri hop le -- '0' Mau rieng tu,
@@ -244,6 +283,8 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         // DS357: updateTemplate cung ne validateRequired (ghi thang qua
         // dao.updateById) nen check rieng category o day, truoc moi ghi.
         checkRecipetemplateCategoryValues(recipetemplate);
+        // DS418: cung check rieng type o day (ne validateRequired).
+        checkRecipetemplateTypeValues(recipetemplate);
         RecipeTemplateInfo info = recipetemplate.getRecipeTemplateInfo();
         if (info != null && StringUtils.isNotBlank(info.getId())) {
             blockForeignPayloadCompany(info.getCompany());
@@ -333,6 +374,8 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         // DS357: allSave ne validateRequired (khong qua save() generic)
         // nen check rieng category o day, truoc moi ghi.
         checkRecipetemplateCategoryValues(recipetemplate);
+        // DS418: cung check rieng type o day (ne validateRequired).
+        checkRecipetemplateTypeValues(recipetemplate);
         //LưumẫuchínhDữ liệu
         recipetemplate.preInsert();
         recipetemplate.setId(IdGen.uuid());
