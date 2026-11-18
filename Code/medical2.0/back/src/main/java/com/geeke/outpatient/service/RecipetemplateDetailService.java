@@ -11,6 +11,7 @@ import com.geeke.stock.dao.DrugDao;
 import com.geeke.stock.dao.StuffDao;
 import com.geeke.stock.entity.Drug;
 import com.geeke.stock.entity.Stuff;
+import com.geeke.sys.entity.DictItem;
 import com.geeke.sys.utils.SessionUtils;
 import com.geeke.treatment.dao.CostItemDao;
 import com.geeke.treatment.entity.CostItem;
@@ -216,6 +217,45 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS442: days chi co mien {recipelDetailDays_0..recipelDetailDays_6}
+    // (_0 '1' .. _6 '7'; dict 'recipelDetailDays' id
+    // 1014474470772900052, dung 7 item del_flag='0'; frontend chi set
+    // tu DayNumOption dict kin nay o dictCache.js:32). Truoc day khong
+    // guard nao nhin days nen '_9'/'_7'/'x' deu 200 + persist qua
+    // allSave (tao) va updateDetail (sua, xoa truoc chen sau) — man
+    // kham hien `{{ scope.row.days.name }}ngày`
+    // (medicalOutpatientRecord/index.vue:2324) thanh 'ngày' khong so;
+    // ap mau sang don that (:4614-4632 push nguyen chi tiet mau vao
+    // don that) nen gia tri gia chay sang RecipelDetail.days (don
+    // that — entity/bang/endpoint khac, DS373 giu lai); mo lai mau thi
+    // select so ngay trong. Khac DS434/DS435 (cung entity, field
+    // infuseUse/frequency — van BLOCKED chua guard) va DS375/DS376/
+    // DS398 (cung entity, field khac). null/blank giu hop le (cot
+    // varchar NULL-able, live 16/20 dong NULL). Goi canh DS375/DS376/
+    // DS398 o ca 2 vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailDaysValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        DictItem days = detail.getDays();
+        if (days == null || StringUtils.isBlank(days.getValue())) {
+            return;
+        }
+        String value = days.getValue();
+        if (!"recipelDetailDays_0".equals(value)
+                && !"recipelDetailDays_1".equals(value)
+                && !"recipelDetailDays_2".equals(value)
+                && !"recipelDetailDays_3".equals(value)
+                && !"recipelDetailDays_4".equals(value)
+                && !"recipelDetailDays_5".equals(value)
+                && !"recipelDetailDays_6".equals(value)) {
+            throw new ServiceException(
+                    "Số ngày của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận recipelDetailDays_0 đến recipelDetailDays_6).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -234,6 +274,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
             checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
             checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
+            checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -363,6 +404,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
                     checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
                     checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
+                    checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
