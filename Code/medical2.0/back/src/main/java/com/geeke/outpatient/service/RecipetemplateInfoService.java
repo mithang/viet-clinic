@@ -60,6 +60,38 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
         }
     }
 
+    // DS417: smallType gia mao ngoai mien {'recipelSmallType_1'..'_6'}
+    // qua allSave create/update (probe pre 13/13: '9' /
+    // 'recipelSmallType_7' / 'x' / 'recipelSmallType_0' deu 200 +
+    // persist; danh sach LEFT JOIN hien ten loai rong, form sua select
+    // trong, phan loai thu vien mau gay me/huong than bi pha).
+    // Entity khong annotation mien, cot small_type varchar(100)
+    // NULL-able (live 3/9 dong NULL) nen null/blank giu hop le
+    // (tien le DS364/DS359); chi gia tri ngoai mien moi 400.
+    // Khong co controller rieng cho recipetemplateInfo nen guard
+    // allSave + updateInfo bao het duong ghi that (allSave va aiSave
+    // deu qua saveTemplate/updateTemplate). Khong co caller noi bo
+    // nao set smallType (grep setSmallType = 0 caller). Fail-closed
+    // 400 truoc moi ghi.
+    private static void checkRecipeTemplateInfoSmallTypeValues(
+            RecipeTemplateInfo entity) {
+        if (entity == null || entity.getSmallType() == null
+                || entity.getSmallType().getValue() == null
+                || entity.getSmallType().getValue().trim().isEmpty()) {
+            return;
+        }
+        String smallType = entity.getSmallType().getValue();
+        if (!"recipelSmallType_1".equals(smallType)
+                && !"recipelSmallType_2".equals(smallType)
+                && !"recipelSmallType_3".equals(smallType)
+                && !"recipelSmallType_4".equals(smallType)
+                && !"recipelSmallType_5".equals(smallType)
+                && !"recipelSmallType_6".equals(smallType)) {
+            throw new com.geeke.common.service.ServiceException(
+                    "Loại đơn thuốc mẫu không hợp lệ: " + smallType);
+        }
+    }
+
     @Transactional(readOnly = false)
     public void allSave(RecipeTemplateInfo recipeTemplateInfo){
         // DS116 A: null info NPEd at preInsert() (called from
@@ -68,6 +100,7 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
             throw new com.geeke.common.service.ServiceException("Thông tin mẫu đơn thuốc không được để trống");
         }
         checkNonNegative(recipeTemplateInfo);
+        checkRecipeTemplateInfoSmallTypeValues(recipeTemplateInfo); // DS417
         recipeTemplateInfo.preInsert();
         recipeTemplateInfo.setId(IdGen.uuid());
         recipeTemplateInfoDao.allSave(recipeTemplateInfo);
@@ -97,6 +130,7 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
             throw new com.geeke.common.service.ServiceException("Thông tin mẫu đơn thuốc không được để trống");
         }
         checkNonNegative(recipeTemplateInfo);
+        checkRecipeTemplateInfoSmallTypeValues(recipeTemplateInfo); // DS417
         this.dao.updateInfo(recipeTemplateInfo);
     }
 }
