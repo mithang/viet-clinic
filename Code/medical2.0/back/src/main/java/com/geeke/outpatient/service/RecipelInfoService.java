@@ -285,6 +285,46 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS447: chan recipelUse gia mao ngoai mien
+    // {chineseMedicineRecipelUse_2.._6} qua save / bulkInsert /
+    // bulkUpdate (probe pre 18/18: save create _0 / _7 / 'x', save
+    // update _2->_0, bulkInsert mixed, bulkUpdate mixed deu 200 +
+    // persist; reader GET by id hien value gia; control _2/_3/_6
+    // van 200; omit/'' van 200 NULL; hoi quy DS438/DS420 con 400).
+    // Mien kin: dict 'chineseMedicineRecipelUse' dung 5 item
+    // del_flag='0' (_2 Pha nuoc uong, _3 Ham uong, _4 Pha uong,
+    // _5 Tiem huyet vi, _6 Sac nuoc uong); _0/_1/_7 da xoa
+    // (del_flag='1'). Writer frontend chi set tu dict kin
+    // (DICT_CODE.CHINESE_MEDICINE_RECIPEL_USE, recipelInfoForm.vue)
+    // + noi bo man kham copy recipelUse tu mau sang don that
+    // (medicalOutpatientRecord/index.vue:4595/:4807) — gia tri hop
+    // le deu qua guard. Live 39 dong: 35 NULL, 4x _2, bad 0.
+    // Harm: man tinh tien charge/index.vue:984 lay recipelUse.name
+    // lam useMethod -> don gia in cach dung rong; DataBean.java:389
+    // ghi su kien 'Cach dung: ' trong; danh sach don LEFT JOIN hien
+    // ten cach dung rong. null/blank giu nguyen vi cot varchar
+    // NULL-able (tien le DS438/DS442). Ghi nhan ngoai pham vi vong
+    // nay: reader LEFT JOIN sys_dict_item theo value, khong loc
+    // del_flag (RecipelInfoDao.xml :63) nen hang dict DA XOA (_0
+    // 'Sac uong') van hien ten khi doc — chi sua phia ghi o day.
+    // Khac DS438 (recipelType), DS420 (frequency), DS428
+    // (isFollowUp), DS363 (status), DS372 (notShow) — cung entity,
+    // khac truong.
+    private static void checkRecipelInfoRecipelUseValues(RecipelInfo entity) {
+        if (entity == null || entity.getRecipelUse() == null
+                || StringUtils.isBlank(entity.getRecipelUse().getValue())) {
+            return;
+        }
+        String value = entity.getRecipelUse().getValue();
+        if (!"chineseMedicineRecipelUse_2".equals(value)
+                && !"chineseMedicineRecipelUse_3".equals(value)
+                && !"chineseMedicineRecipelUse_4".equals(value)
+                && !"chineseMedicineRecipelUse_5".equals(value)
+                && !"chineseMedicineRecipelUse_6".equals(value)) {
+            throw new ServiceException("Cách dùng đơn thuốc không hợp lệ: " + value);
+        }
+    }
+
     // DS428: chan isFollowUp gia mao ngoai mien {0,1} qua save /
     // bulkInsert / bulkUpdate (probe pre 18/18: save create 9 / 2 /
     // -1, save update 1->9, bulkInsert mixed, bulkUpdate mixed deu
@@ -433,6 +473,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkRecipelInfoIsFollowUpValues(entity);
         // DS438: chan recipelType gia mao.
         checkRecipelInfoRecipelTypeValues(entity);
+        // DS447: chan recipelUse gia mao.
+        checkRecipelInfoRecipelUseValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -463,6 +505,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoIsFollowUpValues(entity);
             // DS438: chan recipelType gia mao.
             checkRecipelInfoRecipelTypeValues(entity);
+            // DS447: chan recipelUse gia mao.
+            checkRecipelInfoRecipelUseValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -490,6 +534,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoIsFollowUpValues(entity);
             // DS438: chan recipelType gia mao.
             checkRecipelInfoRecipelTypeValues(entity);
+            // DS447: chan recipelUse gia mao.
+            checkRecipelInfoRecipelUseValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
