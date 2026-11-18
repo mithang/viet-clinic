@@ -71,6 +71,7 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
             throw new ServiceException("Nhà cung cấp không tồn tại: "
                     + supplier.getId());
         }
+        checkSupplierStatusValues(supplier); // DS443
         Supplier supplierTemp = super.save(supplier);
         return supplierTemp;
     }
@@ -100,6 +101,7 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
             if (StringUtils.isBlank(supplier.getType())) {
                 throw new ServiceException("Loại nhà cung cấp không được để trống");
             }
+            checkSupplierStatusValues(supplier); // DS443
         }
         return super.bulkInsert(entitys);
     }
@@ -116,6 +118,7 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
                 throw new ServiceException("Nhà cung cấp không tồn tại: "
                         + supplier.getId());
             }
+            checkSupplierStatusValues(supplier); // DS443
         }
         return super.bulkUpdate(entitys);
     }
@@ -127,6 +130,22 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
             throw new ServiceException("Danh sách nhà cung cấp không được để trống");
         }
         return super.bulkDelete(entitys);
+    }
+
+    // DS443: status chi co 2 gia tri co nghia '0'/'1' (switch kich hoat
+    // o supplierForm.vue:52, mac dinh '1'; findList loc cung status='1'
+    // nen hang gia vo hinh voi moi dropdown). Form luon gui '0'/'1',
+    // khong writer noi bo nao tao Supplier null-status, live 6/6 deu
+    // '1' -> null/blank cung 400 (tien le DS324 Stuff.status).
+    private static void checkSupplierStatusValues(Supplier supplier) {
+        if (supplier == null) {
+            return;
+        }
+        String status = supplier.getStatus();
+        if (!"0".equals(status) && !"1".equals(status)) {
+            throw new ServiceException(
+                    "Trạng thái nhà cung cấp không hợp lệ: " + status);
+        }
     }
     
 
