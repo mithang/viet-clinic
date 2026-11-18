@@ -107,6 +107,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailInfuseTypeValues(entity);
         checkRecipelDetailIsUnpackSellValues(entity); // DS394
         checkRecipelDetailFrequencyValues(entity); // DS419
+        checkRecipelDetailIsExtraValues(entity); // DS425
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -157,6 +158,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailInfuseTypeValues(entity); // DS390
             checkRecipelDetailIsUnpackSellValues(entity); // DS394
             checkRecipelDetailFrequencyValues(entity); // DS419
+            checkRecipelDetailIsExtraValues(entity); // DS425
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -191,6 +193,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailInfuseTypeValues(entity); // DS390
             checkRecipelDetailIsUnpackSellValues(entity); // DS394
             checkRecipelDetailFrequencyValues(entity); // DS419
+            checkRecipelDetailIsExtraValues(entity); // DS425
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -472,6 +475,30 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS425: isExtra chi co mien {0,1} (0: thuoc chinh, 1: phi phu
+    // them; dong moi mac dinh 0, MedicalRecordService:1510). Truoc day
+    // khong guard nao nhin isExtra nen isExtra=9/2/-1 deu 200 +
+    // persist qua save/bulkInsert/bulkUpdate — dong gia roi vao CA HAI
+    // danh sach o man hinh kham (filterRecipel giu isExtra !== 1,
+    // filterAdditional giu isExtra !== 0, medicalOutpatientRecord
+    // /index.vue :4428/:4446) va bien mat khoi list loc is_extra=0
+    // (mapper :581), dong thoi cac nhanh hien thi `isExtra === 0`
+    // (ten thuoc/gia/so ngay) an dong gia. Khac DS375
+    // (RecipeTemplateDetail.isExtra, chi tiet MAU) — day la don
+    // that. null giu hop le (cot int nullable, 55 dong live deu 0).
+    // Goi o ca 4 vong ghi that save/bulkInsert/bulkUpdate/
+    // addRetailrecipelDetails, mau DS394/DS419.
+    private static void checkRecipelDetailIsExtraValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getIsExtra() == null) {
+            return;
+        }
+        if (entity.getIsExtra() != 0 && entity.getIsExtra() != 1) {
+            throw new ServiceException(
+                    "Phí phụ thêm không hợp lệ (0: Không; 1: Có).");
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -547,6 +574,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailInfuseTypeValues(recipelDetail); // DS390
             checkRecipelDetailIsUnpackSellValues(recipelDetail); // DS394
             checkRecipelDetailFrequencyValues(recipelDetail); // DS419
+            checkRecipelDetailIsExtraValues(recipelDetail); // DS425
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
