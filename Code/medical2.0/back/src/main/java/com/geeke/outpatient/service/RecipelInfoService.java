@@ -325,6 +325,46 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS448: chan takeFrequency gia mao ngoai mien
+    // {chineseMedicineRecipelTakeFrequency_0.5,_1,_1.5,_2,_3} qua
+    // save / bulkInsert / bulkUpdate (probe pre 18/18: save create
+    // _0 / _4 / x, save update _2->_0, bulkInsert mixed, bulkUpdate
+    // mixed deu 200 + persist; reader GET by id hien takeFrequency
+    // gia ten '' vi khong co dong dict nao). Mien kin: dict type
+    // 'chineseMedicineRecipelTakeFrequency' id
+    // 1014474470772899990, dung 5 item del_flag='0' (_0.5 'QID',
+    // _1 'QD', _1.5 'Q2D', _2 'BID', _3 'TID'), khong co item da
+    // xoa nao trong dict nay. Frontend chi set tu dict kin
+    // (DICT_CODE.CHINESE_MEDICINE_RECIPEL_TAKE_FREQUENCY,
+    // recipelInfoForm.vue:71-78; man kham
+    // medicalOutpatientRecord/index.vue:1316/:2547/:4587-4588/
+    // :4801). Live 39 dong: 35 NULL, 2x _2, 2x '', bad 0. Harm:
+    // DataBean.java:390-391 ghep frequency.name + ' ' +
+    // takeFrequency.name vao su kien thuc hien thuoc -> don gia in
+    // tan suat uong rong tren phieu don thuoc Dong y;
+    // charge/index.vue:921/:992 lay takeFrequency.name lam
+    // _takeFrequencyName -> phieu tinh tien in tan suat rong; danh
+    // sach don LEFT JOIN hien ten tan suat rong; mo lai form don
+    // thi select 'Tan suat uong' trong. null/blank giu nguyen vi
+    // cot varchar(64) NULL-able (tien le DS438/DS442/DS447). Khac
+    // DS447 (recipelUse), DS438 (recipelType), DS420 (frequency),
+    // DS428 (isFollowUp), DS363 (status), DS372 (notShow) — cung
+    // entity, khac truong.
+    private static void checkRecipelInfoTakeFrequencyValues(RecipelInfo entity) {
+        if (entity == null || entity.getTakeFrequency() == null
+                || StringUtils.isBlank(entity.getTakeFrequency().getValue())) {
+            return;
+        }
+        String value = entity.getTakeFrequency().getValue();
+        if (!"chineseMedicineRecipelTakeFrequency_0.5".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_1".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_1.5".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_2".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_3".equals(value)) {
+            throw new ServiceException("Tần suất uống đơn thuốc không hợp lệ: " + value);
+        }
+    }
+
     // DS428: chan isFollowUp gia mao ngoai mien {0,1} qua save /
     // bulkInsert / bulkUpdate (probe pre 18/18: save create 9 / 2 /
     // -1, save update 1->9, bulkInsert mixed, bulkUpdate mixed deu
@@ -475,6 +515,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkRecipelInfoRecipelTypeValues(entity);
         // DS447: chan recipelUse gia mao.
         checkRecipelInfoRecipelUseValues(entity);
+        // DS448: chan takeFrequency gia mao.
+        checkRecipelInfoTakeFrequencyValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -507,6 +549,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoRecipelTypeValues(entity);
             // DS447: chan recipelUse gia mao.
             checkRecipelInfoRecipelUseValues(entity);
+            // DS448: chan takeFrequency gia mao.
+            checkRecipelInfoTakeFrequencyValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -536,6 +580,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoRecipelTypeValues(entity);
             // DS447: chan recipelUse gia mao.
             checkRecipelInfoRecipelUseValues(entity);
+            // DS448: chan takeFrequency gia mao.
+            checkRecipelInfoTakeFrequencyValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
