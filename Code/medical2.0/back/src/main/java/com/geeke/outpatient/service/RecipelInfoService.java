@@ -211,6 +211,41 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS420: chan frequency gia mao ngoai mien dict kin
+    // 'chineseMedicineRecipelFrequency' (3 item del_flag='0' do live:
+    // _0 'Moi ngay mot thang', _1 'Moi ngay hai thang', _2 'Moi ngay
+    // ba thang') qua save / bulkInsert / bulkUpdate (probe pre 18/18:
+    // save create '9' / '..._9' / 'x', save update _1->'9',
+    // bulkInsert mixed, bulkUpdate mixed deu 200 + persist; reader
+    // GET by id hien frequency '9' name ''). Mien (3 nguon doc lap):
+    // (1) sys_dict_type 'chineseMedicineRecipelFrequency' chi co 3
+    // item tren; (2) frontend recipelInfoForm.vue:287 frequency_List
+    // tu DICT_CODE.CHINESE_MEDICINE_RECIPEL_FREQUENCY
+    // (dictCache.js:27); (3) trang kham ChineseTimeOption = cung dict
+    // (:6601) bind recipelInfo.frequency (:1304), mac dinh
+    // ChineseTimeOption[0] (:6269-6270). Live 39 dong: 35 NULL, 3x _0,
+    // 1x _1, bad 0. Harm: DataBean.java:390-391 in phieu don thuoc
+    // Dong y dung recipelInfo.getFrequency().getName() + takeFrequency
+    // -> gia tri gia in ten rong tren phieu; list LEFT JOIN hien
+    // frequency.name rong. null/blank giu nguyen (cot varchar(64)
+    // NULL-able, live 35/39 NULL; tien le DS379/DS390/DS394/DS419).
+    // Caller noi bo an toan: grep setFrequency tren RecipelInfo = 0
+    // caller ngoai setter; MedicalRecordService chi save lai entity da
+    // load (gia tri da luu, live bad 0). Khac DS419
+    // (RecipelDetail.frequency, entity/bang/dict khac).
+    private static void checkRecipelInfoFrequencyValues(RecipelInfo entity) {
+        if (entity == null || entity.getFrequency() == null
+                || StringUtils.isBlank(entity.getFrequency().getValue())) {
+            return;
+        }
+        String value = entity.getFrequency().getValue();
+        if (!"chineseMedicineRecipelFrequency_0".equals(value)
+                && !"chineseMedicineRecipelFrequency_1".equals(value)
+                && !"chineseMedicineRecipelFrequency_2".equals(value)) {
+            throw new ServiceException("Liều theo tần suất đơn thuốc không hợp lệ: " + value);
+        }
+    }
+
     // DS276: ngay tai kham tren don thuoc khong duoc la ngay qua khu —
     // ngay tai kham la ngay hen kham lai trong tuong lai theo dinh
     // nghia (truong followUpDate, RecipelInfo.java:49 "tai kham thoi
@@ -327,6 +362,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkRecipelInfoStatusValues(entity);
         // DS372: chan notShow gia mao.
         checkNotShowValues(entity);
+        // DS420: chan frequency gia mao.
+        checkRecipelInfoFrequencyValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -351,6 +388,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoStatusValues(entity);
             // DS372: chan notShow gia mao.
             checkNotShowValues(entity);
+            // DS420: chan frequency gia mao.
+            checkRecipelInfoFrequencyValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -372,6 +411,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoStatusValues(entity);
             // DS372: chan notShow gia mao.
             checkNotShowValues(entity);
+            // DS420: chan frequency gia mao.
+            checkRecipelInfoFrequencyValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
