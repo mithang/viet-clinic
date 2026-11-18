@@ -106,6 +106,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // nao tren trang truyen dich. int primitive nen omit -> 0 van qua.
         checkRecipelDetailInfuseTypeValues(entity);
         checkRecipelDetailIsUnpackSellValues(entity); // DS394
+        checkRecipelDetailFrequencyValues(entity); // DS419
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -155,6 +156,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailStuffTypeValues(entity);
             checkRecipelDetailInfuseTypeValues(entity); // DS390
             checkRecipelDetailIsUnpackSellValues(entity); // DS394
+            checkRecipelDetailFrequencyValues(entity); // DS419
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -188,6 +190,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailStuffTypeValues(entity);
             checkRecipelDetailInfuseTypeValues(entity); // DS390
             checkRecipelDetailIsUnpackSellValues(entity); // DS394
+            checkRecipelDetailFrequencyValues(entity); // DS419
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -428,6 +431,47 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS419: tan suat va lieu dung (frequency) chi co nghia trong hop
+    // cua 2 dict kin cung ghi cot nay: 'recipelDetailFrequency' (4 item
+    // _0.._3; recipelDetailForm.vue:294) + 'chineseMedicineRecipelTakeFrequency'
+    // (5 item _0.5/_1/_1.5/_2/_3; trang kham FrequencyOption,
+    // medicalOutpatientRecord/index.vue:6600). Truoc day service chi
+    // chan do dai (DS149 checkDictLength <= 64) nen gia tri gia ('9'/
+    // 'x'/'recipelDetailFrequency_9') qua save/bulkInsert/bulkUpdate
+    // roi luu thang (probe pre 18/18). Gia tri gia roi khoi moi nhanh
+    // doc: DataBean :226/:251 in don dung frequency.getName() -> ten
+    // rong, :330 setSkinTest(frequency.getRemarks()) -> rong;
+    // MdMedicationOrderImpl :312-314 gui BHYT usedFrquCodg =
+    // frequency.value + usedFrquName = frequency.name (bat buoc) -> ma
+    // gia ra ngoai BHYT; list LEFT JOIN hien frequency.name rong
+    // (:2309/:3208). Ngoai hop 9 gia tri -> ServiceException 400
+    // fail-closed; null/blank giu nguyen (cot nullable, live 12/55
+    // NULL, tien le DS379/DS390/DS394). Writer noi bo an toan:
+    // MedicalRecordService khong setFrequency, trang kham + form chi
+    // set tu 2 dict kin tren.
+    private static void checkRecipelDetailFrequencyValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getFrequency() == null) {
+            return;
+        }
+        String frequency = entity.getFrequency().getValue();
+        if (StringUtils.isBlank(frequency)) {
+            return;
+        }
+        if (!"recipelDetailFrequency_0".equals(frequency)
+                && !"recipelDetailFrequency_1".equals(frequency)
+                && !"recipelDetailFrequency_2".equals(frequency)
+                && !"recipelDetailFrequency_3".equals(frequency)
+                && !"chineseMedicineRecipelTakeFrequency_0.5".equals(frequency)
+                && !"chineseMedicineRecipelTakeFrequency_1".equals(frequency)
+                && !"chineseMedicineRecipelTakeFrequency_1.5".equals(frequency)
+                && !"chineseMedicineRecipelTakeFrequency_2".equals(frequency)
+                && !"chineseMedicineRecipelTakeFrequency_3".equals(frequency)) {
+            throw new ServiceException(
+                    "Tần suất và liều dùng không hợp lệ: " + frequency);
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -502,6 +546,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailStuffTypeValues(recipelDetail);
             checkRecipelDetailInfuseTypeValues(recipelDetail); // DS390
             checkRecipelDetailIsUnpackSellValues(recipelDetail); // DS394
+            checkRecipelDetailFrequencyValues(recipelDetail); // DS419
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
