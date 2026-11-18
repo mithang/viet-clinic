@@ -246,6 +246,32 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS428: chan isFollowUp gia mao ngoai mien {0,1} qua save /
+    // bulkInsert / bulkUpdate (probe pre 18/18: save create 9 / 2 /
+    // -1, save update 1->9, bulkInsert mixed, bulkUpdate mixed deu
+    // 200 + persist; reader GET by id hien isFollowUp 9). Mien kin:
+    // 0 don kham dau, 1 don tai kham; writer duy nhat frontend
+    // medicalOutpatientRecord/index.vue:6230-6236 + noi bo
+    // MedicalRecordService :1434-1436 chi set 0/1. Live 39 dong:
+    // tat ca is_follow_up=0, bad 0, null 0. Harm: gia tri gia roi
+    // khoi ca hai cohort (is_follow_up=1 tai kham VA =0 kham dau)
+    // nen vo hinh voi moi loc/bao cao dem is_follow_up=1 (luu y
+    // trung thuc: khong co nhanh ===1 tuong minh trong code hien
+    // tai — hai la sai phan loai cohort, cung ho ghost status
+    // DS390). null giu nguyen o day vi validateRequired :87 da 400
+    // khi null (cot int NOT NULL, probe P6/P6b 400 ca hai mode).
+    // Khac DS363 (status), DS372 (notShow), DS420 (frequency),
+    // DS115 (chi presence), DS389 (cureType+infuseType, giu lai).
+    private static void checkRecipelInfoIsFollowUpValues(RecipelInfo entity) {
+        if (entity == null || entity.getIsFollowUp() == null) {
+            return;
+        }
+        Integer isFollowUp = entity.getIsFollowUp();
+        if (isFollowUp.intValue() != 0 && isFollowUp.intValue() != 1) {
+            throw new ServiceException("Tái khám đơn thuốc không hợp lệ: " + isFollowUp);
+        }
+    }
+
     // DS276: ngay tai kham tren don thuoc khong duoc la ngay qua khu —
     // ngay tai kham la ngay hen kham lai trong tuong lai theo dinh
     // nghia (truong followUpDate, RecipelInfo.java:49 "tai kham thoi
@@ -364,6 +390,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkNotShowValues(entity);
         // DS420: chan frequency gia mao.
         checkRecipelInfoFrequencyValues(entity);
+        // DS428: chan isFollowUp gia mao.
+        checkRecipelInfoIsFollowUpValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -390,6 +418,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkNotShowValues(entity);
             // DS420: chan frequency gia mao.
             checkRecipelInfoFrequencyValues(entity);
+            // DS428: chan isFollowUp gia mao.
+            checkRecipelInfoIsFollowUpValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -413,6 +443,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkNotShowValues(entity);
             // DS420: chan frequency gia mao.
             checkRecipelInfoFrequencyValues(entity);
+            // DS428: chan isFollowUp gia mao.
+            checkRecipelInfoIsFollowUpValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
