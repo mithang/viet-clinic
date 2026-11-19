@@ -121,6 +121,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDrugPackValues(drug); // DS451
         checkDrugPreparationUnitValues(drug); // DS453
         checkDrugDaysValues(drug); // DS455
+        checkDrugWesternMedicineUseValues(drug); // DS458
         checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
@@ -470,6 +471,43 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS458: cach dung thuoc Tay (westernMedicineUse) gia mao ngoai
+    // mien 8 item dict 'westernMedicineUse' con hoat dong (_0 'Uong'
+    // .. _7 'Truyen tinh mach) — truoc day chi co guard do dai <= 255
+    // (checkDrugLengths) va mapper ghi thang #{westernMedicineUse.value}
+    // (DrugDao.xml insert :526 / update :564 / bulkInsert :662 /
+    // bulkUpdate CASE :793). Thuoc gia hien ten 'Cach dung thuoc Tay'
+    // rong o list (LEFT JOIN khong loc dict_type), select trong khi mo
+    // lai form thuoc; man kham copy drug.westernMedicineUse vao chi
+    // tiet don (medicalOutpatientRecord/index.vue:7488-7493) ->
+    // MdMedicationOrderImpl:272 medcWayCodg — ma duong dung thuoc bat
+    // buoc cua don BHYT thanh ma khong ton tai. '_0'..'_7' hop le giu
+    // 200; null/blank van qua nhu cu o day (westernMedicineUse khong
+    // @NotNull, khong trong checkDrugRequired). Khong guard addDurg
+    // hay syncToClinic (super.save) -- cung pham vi nhu DS323/DS364/
+    // DS440/DS451/DS453/DS455.
+    private static void checkDrugWesternMedicineUseValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        DictItem wmu = drug.getWesternMedicineUse();
+        if (wmu == null || StringUtils.isBlank(wmu.getValue())) {
+            return;
+        }
+        String value = wmu.getValue();
+        if (!"westernMedicineUse_0".equals(value)
+                && !"westernMedicineUse_1".equals(value)
+                && !"westernMedicineUse_2".equals(value)
+                && !"westernMedicineUse_3".equals(value)
+                && !"westernMedicineUse_4".equals(value)
+                && !"westernMedicineUse_5".equals(value)
+                && !"westernMedicineUse_6".equals(value)
+                && !"westernMedicineUse_7".equals(value)) {
+            throw new ServiceException(
+                    "Cách dùng thuốc Tây không hợp lệ: " + value);
+        }
+    }
+
     // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
     // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
     // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
@@ -546,6 +584,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugPackValues(drug); // DS451
             checkDrugPreparationUnitValues(drug); // DS453
             checkDrugDaysValues(drug); // DS455
+            checkDrugWesternMedicineUseValues(drug); // DS458
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
@@ -583,6 +622,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugPackValues(drug); // DS451
             checkDrugPreparationUnitValues(drug); // DS453
             checkDrugDaysValues(drug); // DS455
+            checkDrugWesternMedicineUseValues(drug); // DS458
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
