@@ -350,6 +350,50 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
     // DS447 (recipelUse), DS438 (recipelType), DS420 (frequency),
     // DS428 (isFollowUp), DS363 (status), DS372 (notShow) — cung
     // entity, khac truong.
+    // DS462: chan smallType gia mao ngoai mien
+    // {recipelSmallType_1..recipelSmallType_6} qua save /
+    // bulkInsert / bulkUpdate (probe pre 18/18: save create _0 /
+    // _7 / 'x', save update _1->_0, bulkInsert mixed, bulkUpdate
+    // mixed deu 200 + persist; reader GET by id hien smallType
+    // gia voi name ''). Mien kin: dict 'recipelSmallType' dung 6
+    // item del_flag='0' (_1 Don thuoc thuong, _2 Don thuoc nhi
+    // khoa, _3 Don thuoc gay me, _4 Don thuoc cap cuu, _5 Don
+    // thuoc huong than loai 1, _6 Don thuoc huong than loai 2);
+    // khong co item nao da xoa. Writer frontend chi set tu dict
+    // kin (medicalOutpatientRecord/index.vue:770/:1118/:1361
+    // select tu RecipelSmallTypeList). Writer noi bo an toan:
+    // grep setSmallType = 0 caller ngoai setter;
+    // MedicalRecordService.allSave (FinishVisit) goi
+    // recipelInfoService.save() voi smallType NULL theo thiet ke
+    // (ghi chu K3 :582) nen null/blank GIU NGUYEN o day (cot
+    // varchar NULL-able; presence o duong don le do @Valid
+    // @NotNull :245, o bulk do validateSmallType). Harm: in don
+    // thuoc DataBean.java:154 lay getSmallType().getName() lam
+    // loai don tren phieu in -> gia tri gia in loai don rong;
+    // cure/infusion/index.vue:570/:583,
+    // cureManagement/index.vue:501/:514,
+    // supplierStock/index.vue:504/:518,
+    // tollInfo/index.vue:622/:637 deu hien smallType.name rong.
+    // Khac DS417 (RecipeTemplateInfo.smallType, entity mau khac),
+    // DS438 (recipelType), DS447 (recipelUse), DS448
+    // (takeFrequency), DS420 (frequency), DS428 (isFollowUp),
+    // DS363 (status), DS372 (notShow) — cung entity, khac truong.
+    private static void checkRecipelInfoSmallTypeValues(RecipelInfo entity) {
+        if (entity == null || entity.getSmallType() == null
+                || StringUtils.isBlank(entity.getSmallType().getValue())) {
+            return;
+        }
+        String value = entity.getSmallType().getValue();
+        if (!"recipelSmallType_1".equals(value)
+                && !"recipelSmallType_2".equals(value)
+                && !"recipelSmallType_3".equals(value)
+                && !"recipelSmallType_4".equals(value)
+                && !"recipelSmallType_5".equals(value)
+                && !"recipelSmallType_6".equals(value)) {
+            throw new ServiceException("Phân loại đơn thuốc không hợp lệ: " + value);
+        }
+    }
+
     private static void checkRecipelInfoTakeFrequencyValues(RecipelInfo entity) {
         if (entity == null || entity.getTakeFrequency() == null
                 || StringUtils.isBlank(entity.getTakeFrequency().getValue())) {
@@ -517,6 +561,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkRecipelInfoRecipelUseValues(entity);
         // DS448: chan takeFrequency gia mao.
         checkRecipelInfoTakeFrequencyValues(entity);
+        // DS462: chan smallType gia mao.
+        checkRecipelInfoSmallTypeValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -551,6 +597,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoRecipelUseValues(entity);
             // DS448: chan takeFrequency gia mao.
             checkRecipelInfoTakeFrequencyValues(entity);
+            // DS462: chan smallType gia mao.
+            checkRecipelInfoSmallTypeValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -582,6 +630,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoRecipelUseValues(entity);
             // DS448: chan takeFrequency gia mao.
             checkRecipelInfoTakeFrequencyValues(entity);
+            // DS462: chan smallType gia mao.
+            checkRecipelInfoSmallTypeValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
