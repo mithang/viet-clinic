@@ -87,6 +87,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         checkCompleteDateNotFuture(entity);
         checkStatusAndTypeValues(entity,
                 StringUtils.isBlank(entity.getId()));
+        checkInspectionCheckSexValues(entity);
         checkStatusFlipNeedsInfo(entity);
         return super.save(entity);
     }
@@ -107,6 +108,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             checkInspectionCheckLengths(entity);
             checkCompleteDateNotFuture(entity);
             checkStatusAndTypeValues(entity, true);
+            checkInspectionCheckSexValues(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -135,6 +137,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             checkInspectionCheckLengths(entity);
             checkCompleteDateNotFuture(entity);
             checkStatusAndTypeValues(entity, false);
+            checkInspectionCheckSexValues(entity);
             checkStatusFlipNeedsInfo(entity);
         }
         return super.bulkUpdate(entitys);
@@ -224,6 +227,28 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         }
         if (!"0".equals(entity.getType()) && !"1".equals(entity.getType())) {
             throw new ServiceException("Loại phiếu kiểm tra không hợp lệ (0: Xét nghiệm; 1: Kiểm tra).");
+        }
+    }
+
+    // DS456: sex la ma dict 'gender' (gender_0: Nam, gender_1: Nu;
+    // gender_2 'ceshi' da xoa). Truoc day chi kiem tra do dai (<=100)
+    // nen bat ky chuoi nao cung ghi duoc qua save/bulkInsert/
+    // bulkUpdate. Hai lo: danh sach phieu index.vue:107-111 anh xa
+    // gender_1 -> 'Nu', con lai -> 'Nam' nen phieu gia sex 'x' hien
+    // 'Nam' sai gioi tinh; form nhap ket qua :813
+    // row.sex==="gender_0"?"Nam":"Nu" hien 'Nu' trong ten phieu ket
+    // qua. Chi chap nhan sex trong {gender_0, gender_1}; null/blank
+    // giu qua (sex khong bat buoc, cot NULL-able). Khong guard
+    // allSave() noi bo (TollInfoService copy ma gioi tinh benh nhan
+    // -- trong mien).
+    private static void checkInspectionCheckSexValues(
+            InspectionCheck entity) {
+        if (entity == null || StringUtils.isBlank(entity.getSex())) {
+            return;
+        }
+        if (!"gender_0".equals(entity.getSex())
+                && !"gender_1".equals(entity.getSex())) {
+            throw new ServiceException("Giới tính phiếu kiểm tra không hợp lệ (gender_0: Nam; gender_1: Nữ).");
         }
     }
 
