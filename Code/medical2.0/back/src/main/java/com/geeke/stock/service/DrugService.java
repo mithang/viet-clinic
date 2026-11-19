@@ -120,6 +120,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDrugChineseMedicineUseValues(drug); // DS440
         checkDrugPackValues(drug); // DS451
         checkDrugPreparationUnitValues(drug); // DS453
+        checkDrugDaysValues(drug); // DS455
         checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
@@ -433,6 +434,42 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS455: days gia mao ngoai mien 'recipelDetailDays'
+    // (7 item del_flag='0': _0 '1', _1 '2', _2 '3', _3 '4', _4 '5',
+    // _5 '6', _6 '7'; khong item da xoa trong dict nay) truoc day lot
+    // qua ca 3 duong ghi vi chi co guard do dai <= 255 (checkDrugLengths)
+    // va mapper ghi thang #{days.value} (DrugDao.xml insert :531 /
+    // update :569 / bulkInsert :667 / bulkUpdate CASE :816-818).
+    // Thuoc gia hien ten 'So ngay' rong o list (LEFT JOIN khong loc
+    // dict_type), select 'So ngay' trong khi mo lai form thuoc, va
+    // phep tinh tong luong theo huong dan o drugForm.vue:919-924/:946
+    // (multipliedBy(days.name)) mat tac dung (ten rong -> NaN, bo qua
+    // chan 'Gioi han tong luong nho hon tong luong tinh theo huong
+    // dan cong dung'). '_0'..'_6' hop le giu 200; null/blank van qua
+    // nhu cu o day (days khong @NotNull, khong trong checkDrugRequired).
+    // Khong guard addDurg hay syncToClinic (super.save) -- cung pham vi
+    // nhu DS323/DS364/DS440/DS451/DS453.
+    private static void checkDrugDaysValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        DictItem days = drug.getDays();
+        if (days == null || StringUtils.isBlank(days.getValue())) {
+            return;
+        }
+        String value = days.getValue();
+        if (!"recipelDetailDays_0".equals(value)
+                && !"recipelDetailDays_1".equals(value)
+                && !"recipelDetailDays_2".equals(value)
+                && !"recipelDetailDays_3".equals(value)
+                && !"recipelDetailDays_4".equals(value)
+                && !"recipelDetailDays_5".equals(value)
+                && !"recipelDetailDays_6".equals(value)) {
+            throw new ServiceException(
+                    "Số ngày không hợp lệ: " + value);
+        }
+    }
+
     // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
     // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
     // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
@@ -508,6 +545,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugChineseMedicineUseValues(drug); // DS440
             checkDrugPackValues(drug); // DS451
             checkDrugPreparationUnitValues(drug); // DS453
+            checkDrugDaysValues(drug); // DS455
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
@@ -544,6 +582,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugChineseMedicineUseValues(drug); // DS440
             checkDrugPackValues(drug); // DS451
             checkDrugPreparationUnitValues(drug); // DS453
+            checkDrugDaysValues(drug); // DS455
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
