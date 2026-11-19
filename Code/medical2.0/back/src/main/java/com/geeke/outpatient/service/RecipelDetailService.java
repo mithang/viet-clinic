@@ -116,6 +116,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailIsExtraValues(entity); // DS425
         checkRecipelDetailInfuseUseValues(entity); // DS433
         checkRecipelDetailDaysValues(entity); // DS464
+        checkRecipelDetailWesternMedicineUseValues(entity); // DS466
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -169,6 +170,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailIsExtraValues(entity); // DS425
             checkRecipelDetailInfuseUseValues(entity); // DS433
             checkRecipelDetailDaysValues(entity); // DS464
+            checkRecipelDetailWesternMedicineUseValues(entity); // DS466
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -206,6 +208,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailIsExtraValues(entity); // DS425
             checkRecipelDetailInfuseUseValues(entity); // DS433
             checkRecipelDetailDaysValues(entity); // DS464
+            checkRecipelDetailWesternMedicineUseValues(entity); // DS466
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -601,6 +604,47 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS466: cach dung thuoc Tay (westernMedicineUse.value) chi co nghia
+    // trong dict 'westernMedicineUse' — dung 8 item live (_0 'Uong',
+    // _1 'Tiem tinh mach', _2 'Truoc bua an', _3 'Sau bua an',
+    // _4 'Tiem duoi da', _5 'Ngam tan', _6 'Dap ngoai',
+    // _7 'Truyen tinh mach'), 0 item da xoa. Truoc day khong guard nao
+    // nhin truong nay nen 'westernMedicineUse_9'/'_8'/'x' deu 200 +
+    // persist qua save/bulkInsert/bulkUpdate (probe pre 18/18) — mapper
+    // ghi #{westernMedicineUse.value} verbatim (insert :193, update
+    // :229, bulkInsert :320, bulkUpdate CASE :382-384). Hai that:
+    // MdMedicationOrderImpl :272 put medcWayCodg =
+    // westernMedicineUse.value — ma duong dung thuoc BAT BUOC cua don
+    // BHYT dien tu thanh ma khong ton tai; reviewForm.vue:111 /
+    // reviewFormPre.vue:111 hien westernMedicineUse.name rong khi
+    // duyet don; man kham :981 hien ten rong. null/blank giu hop le
+    // (cot varchar(64) nullable). Goi o ca 4 duong ghi that
+    // save/bulkInsert/bulkUpdate/addRetailrecipelDetails, ngay sau
+    // checkRecipelDetailDaysValues (DS464), mau DS433 infuseUse.
+    private static void checkRecipelDetailWesternMedicineUseValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getWesternMedicineUse() == null) {
+            return;
+        }
+        String westernMedicineUse =
+                entity.getWesternMedicineUse().getValue();
+        if (StringUtils.isBlank(westernMedicineUse)) {
+            return;
+        }
+        if (!"westernMedicineUse_0".equals(westernMedicineUse)
+                && !"westernMedicineUse_1".equals(westernMedicineUse)
+                && !"westernMedicineUse_2".equals(westernMedicineUse)
+                && !"westernMedicineUse_3".equals(westernMedicineUse)
+                && !"westernMedicineUse_4".equals(westernMedicineUse)
+                && !"westernMedicineUse_5".equals(westernMedicineUse)
+                && !"westernMedicineUse_6".equals(westernMedicineUse)
+                && !"westernMedicineUse_7".equals(westernMedicineUse)) {
+            throw new ServiceException(
+                    "Cách dùng thuốc Tây không hợp lệ: "
+                            + westernMedicineUse);
+        }
+    }
+
     // DS464: doc chronicDays cua tenant phien, live moi lan ghi.
     // listAll tu ap tenant-filter (ensureCompanyFilter, N3e) nen chi
     // thay dong cua tenant phien; lay max cac dong parse duoc (phong
@@ -719,6 +763,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailIsExtraValues(recipelDetail); // DS425
             checkRecipelDetailInfuseUseValues(recipelDetail); // DS433
             checkRecipelDetailDaysValues(recipelDetail); // DS464
+            checkRecipelDetailWesternMedicineUseValues(recipelDetail); // DS466
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
