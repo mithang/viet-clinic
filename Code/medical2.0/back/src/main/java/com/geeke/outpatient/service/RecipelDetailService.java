@@ -117,6 +117,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailInfuseUseValues(entity); // DS433
         checkRecipelDetailDaysValues(entity); // DS464
         checkRecipelDetailWesternMedicineUseValues(entity); // DS466
+        checkRecipelDetailChineseMedicineUseValues(entity); // DS467
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -171,6 +172,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailInfuseUseValues(entity); // DS433
             checkRecipelDetailDaysValues(entity); // DS464
             checkRecipelDetailWesternMedicineUseValues(entity); // DS466
+        checkRecipelDetailChineseMedicineUseValues(entity); // DS467
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -209,6 +211,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailInfuseUseValues(entity); // DS433
             checkRecipelDetailDaysValues(entity); // DS464
             checkRecipelDetailWesternMedicineUseValues(entity); // DS466
+        checkRecipelDetailChineseMedicineUseValues(entity); // DS467
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -645,6 +648,41 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS467: cach dung thuoc Dong y (chineseMedicineUse.value) chi co
+    // nghia trong dict 'chineseMedicineUse' — dung 2 item live (_0
+    // 'Sac truoc nua gio', _1 'Sac truoc mot gio'), 0 item da xoa.
+    // Truoc day khong guard nao nhin truong nay nen
+    // 'chineseMedicineUse_2'/'_9'/'x' deu 200 + persist qua
+    // save/bulkInsert/bulkUpdate (probe pre 18/18) — mapper ghi
+    // #{chineseMedicineUse.value} verbatim (insert :196, update
+    // :232, bulkInsert :323, bulkUpdate CASE :397-399). Hai that:
+    // medicalOutpatientRecord/index.vue:2496/:3304 cot 'Cach dung'
+    // hien chineseMedicineUse.name rong khi duyet/xem don;
+    // charge/index.vue:968 in (detail.chineseMedicineUse && name)
+    // || "" -> cach dung thuoc Dong y rong tren phieu thu/in;
+    // recipelDetailForm.vue:94 man xem hien ten rong. null/blank
+    // giu hop le (cot varchar(64) nullable). Goi o ca 4 duong ghi
+    // that save/bulkInsert/bulkUpdate/addRetailrecipelDetails, ngay
+    // sau checkRecipelDetailWesternMedicineUseValues (DS466), mau
+    // DS466 westernMedicineUse + DS440 Drug.
+    private static void checkRecipelDetailChineseMedicineUseValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getChineseMedicineUse() == null) {
+            return;
+        }
+        String chineseMedicineUse =
+                entity.getChineseMedicineUse().getValue();
+        if (StringUtils.isBlank(chineseMedicineUse)) {
+            return;
+        }
+        if (!"chineseMedicineUse_0".equals(chineseMedicineUse)
+                && !"chineseMedicineUse_1".equals(chineseMedicineUse)) {
+            throw new ServiceException(
+                    "Cách dùng thuốc Đông y không hợp lệ: "
+                            + chineseMedicineUse);
+        }
+    }
+
     // DS464: doc chronicDays cua tenant phien, live moi lan ghi.
     // listAll tu ap tenant-filter (ensureCompanyFilter, N3e) nen chi
     // thay dong cua tenant phien; lay max cac dong parse duoc (phong
@@ -764,6 +802,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailInfuseUseValues(recipelDetail); // DS433
             checkRecipelDetailDaysValues(recipelDetail); // DS464
             checkRecipelDetailWesternMedicineUseValues(recipelDetail); // DS466
+            checkRecipelDetailChineseMedicineUseValues(recipelDetail); // DS467
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
