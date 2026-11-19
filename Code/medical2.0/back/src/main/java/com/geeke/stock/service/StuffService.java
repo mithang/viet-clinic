@@ -16,6 +16,7 @@ import com.geeke.org.service.CompanyService;
 import com.geeke.stock.dao.StuffDao;
 import com.geeke.stock.entity.MedicalProject;
 import com.geeke.stock.entity.Stuff;
+import com.geeke.sys.entity.DictItem;
 import com.geeke.sys.service.DictTypeService;
 import com.geeke.sys.utils.SessionUserDto;
 import com.geeke.utils.SessionUtils;
@@ -164,6 +165,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkStuffStatusValues(stuff); // DS324
         checkStuffOutSellValues(stuff); // DS365
         checkStuffUnpackSellValues(stuff); // DS367
+        checkStuffPackUnitValues(stuff); // DS461
         checkStuffInventoryThresholdOrder(stuff); // DS303
         Stuff stuffTemp = super.save(stuff);
 
@@ -218,6 +220,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffStatusValues(stuff); // DS324
             checkStuffOutSellValues(stuff); // DS365
             checkStuffUnpackSellValues(stuff); // DS367
+            checkStuffPackUnitValues(stuff); // DS461
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkInsert(entitys);
@@ -246,6 +249,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffStatusValues(stuff); // DS324
             checkStuffOutSellValues(stuff); // DS365
             checkStuffUnpackSellValues(stuff); // DS367
+            checkStuffPackUnitValues(stuff); // DS461
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkUpdate(entitys);
@@ -413,6 +417,53 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             throw new ServiceException(
                     "Cho phép bán lẻ tách hộp chỉ nhận giá trị 0 (Không) "
                             + "hoặc 1 (Có)");
+        }
+    }
+
+    // DS461: don vi dong goi (packUnit) chi co 10 gia tri co nghia trong
+    // dict 'medicalPackUnit' (del_flag='0'): _0 Goi, _1 Tui, _2 Hop,
+    // _5 Vi, _6 Lon, _7 Ong, _8 Cai, _9 Chai, _10 g, _11 Cuon
+    // (_3 'Thung' da xoa, _4 chua tung ton tai). Guard hien co chi chan
+    // do dai <= 45 (checkStuffLengths) nen 'x'/'_99'/'_4' deu lot qua ca
+    // 3 duong ghi (save-create, save-update, bulkInsert, bulkUpdate) va
+    // mapper ghi thang #{packUnit.value} (StuffDao.xml insert :315 /
+    // update :348 / bulkInsert :424 / bulkUpdate CASE :510). Vat tu
+    // packUnit gia hien ten rong: stuff/index.vue:148 chuoi ton kho in
+    // packUnit.name rong, cac trang ke/duyet don in stuff.packUnit.name
+    // rong (recipetemplateForm.vue:1286/1316, reviewForm.vue:160/299,
+    // medicalOutpatientRecord/index.vue:948/1949/1980/2412/2606/2758).
+    // Cot pack_unit varchar(45) NOT NULL + @NotNull o entity nen null /
+    // blank cung 400 o day (khac DS451 Drug.pack: cot NULL-able, null /
+    // blank qua); duong save da 400 qua @Valid, duong bulk truoc day
+    // 500 DB NOT NULL, gio 400 ro nghia. Live stuff 16 co 3 dong legacy
+    // ngoai mien ('Bo' x2 + 'FXS4508' x1, chua tung la dict item) — guard
+    // chi chan ghi MOI, khong dung hang legacy. Dat canh
+    // checkStuffUnpackSellValues o save/bulkInsert/bulkUpdate. An toan:
+    // khong caller noi bo nao setPackUnit ngoai setter; import Excel qua
+    // this.save() nen duoc guard phu; syncToClinic dung super.save nen
+    // khong bi anh huong (mau DS323/DS364).
+    private static void checkStuffPackUnitValues(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        DictItem packUnit = stuff.getPackUnit();
+        if (packUnit == null || StringUtils.isBlank(packUnit.getValue())) {
+            throw new ServiceException(
+                    "Đơn vị đóng gói không được để trống");
+        }
+        String value = packUnit.getValue();
+        if (!"medicalPackUnit_0".equals(value)
+                && !"medicalPackUnit_1".equals(value)
+                && !"medicalPackUnit_2".equals(value)
+                && !"medicalPackUnit_5".equals(value)
+                && !"medicalPackUnit_6".equals(value)
+                && !"medicalPackUnit_7".equals(value)
+                && !"medicalPackUnit_8".equals(value)
+                && !"medicalPackUnit_9".equals(value)
+                && !"medicalPackUnit_10".equals(value)
+                && !"medicalPackUnit_11".equals(value)) {
+            throw new ServiceException(
+                    "Đơn vị đóng gói không hợp lệ: " + value);
         }
     }
 
