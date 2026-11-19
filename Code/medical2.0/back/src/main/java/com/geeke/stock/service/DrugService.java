@@ -119,6 +119,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDrugUnpackSellValues(drug); // DS364
         checkDrugChineseMedicineUseValues(drug); // DS440
         checkDrugPackValues(drug); // DS451
+        checkDrugPreparationUnitValues(drug); // DS453
         checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
@@ -389,6 +390,49 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS453: preparationUnit gia mao ngoai mien 'medicalPreparationUnit'
+    // (13 item del_flag='0': _0 Vien, _1 Vien, _2 Tui, _3 g, _4 Cai,
+    // _5 Ong, _6 ml, _7 mm, _8 mg, _9 Chai, _10 Cuon, _11 ug, _12 Vien;
+    // khong item da xoa trong dict nay) truoc day lot qua ca 3 duong ghi
+    // vi chi co guard do dai <= 64 (checkDrugLengths) va mapper ghi thang
+    // #{preparationUnit.value} (DrugDao.xml insert :517 / update :556 /
+    // bulkInsert :653 / bulkUpdate CASE :755-757). Thuoc gia hien ten don
+    // vi bao che rong o list (LEFT JOIN khong loc dict_type) va chay vao
+    // chuoi quy cach / so luong don (DataBean.java:244-245 setNorms,
+    // setNum; :322/327 truyen dich), ton kho
+    // (CurrentInventoryService.java:401-402/439/474-475) va su kien thuoc
+    // khi ke don (MedicalRecordService:1478/1706 copy preparationUnit).
+    // '_0'..'_12' hop le giu 200; null/blank van qua nhu cu o day
+    // (guard bat buoc san co xu ly: @NotNull o save qua @Valid,
+    // checkDrugRequired o bulk*). Khong guard addDurg hay syncToClinic
+    // (super.save) -- cung pham vi nhu DS323/DS364/DS440/DS451.
+    private static void checkDrugPreparationUnitValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        DictItem preparationUnit = drug.getPreparationUnit();
+        if (preparationUnit == null || StringUtils.isBlank(preparationUnit.getValue())) {
+            return;
+        }
+        String value = preparationUnit.getValue();
+        if (!"medicalPreparationUnit_0".equals(value)
+                && !"medicalPreparationUnit_1".equals(value)
+                && !"medicalPreparationUnit_2".equals(value)
+                && !"medicalPreparationUnit_3".equals(value)
+                && !"medicalPreparationUnit_4".equals(value)
+                && !"medicalPreparationUnit_5".equals(value)
+                && !"medicalPreparationUnit_6".equals(value)
+                && !"medicalPreparationUnit_7".equals(value)
+                && !"medicalPreparationUnit_8".equals(value)
+                && !"medicalPreparationUnit_9".equals(value)
+                && !"medicalPreparationUnit_10".equals(value)
+                && !"medicalPreparationUnit_11".equals(value)
+                && !"medicalPreparationUnit_12".equals(value)) {
+            throw new ServiceException(
+                    "Đơn vị bào chế không hợp lệ: " + value);
+        }
+    }
+
     // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
     // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
     // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
@@ -463,6 +507,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugUnpackSellValues(drug); // DS364
             checkDrugChineseMedicineUseValues(drug); // DS440
             checkDrugPackValues(drug); // DS451
+            checkDrugPreparationUnitValues(drug); // DS453
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
@@ -498,6 +543,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugUnpackSellValues(drug); // DS364
             checkDrugChineseMedicineUseValues(drug); // DS440
             checkDrugPackValues(drug); // DS451
+            checkDrugPreparationUnitValues(drug); // DS453
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
