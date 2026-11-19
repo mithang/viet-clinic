@@ -291,6 +291,54 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS469: frequency chi co mien hop 9 gia tri cua 2 dict
+    // 'recipelDetailFrequency' (_0.._3) + 'chineseMedicineRecipelTakeFrequency'
+    // (_0.5/_1/_1.5/_2/_3), dung 9 item del_flag='0' — cung mien DS419
+    // da guard cho RecipelDetail.frequency (don that). Form mau chi
+    // hien 5 gia tri chineseMedicine (recipetemplateForm.vue:1886)
+    // nhung chi tiet mau duoc push nguyen vao don that khi ap mau
+    // (medicalOutpatientRecord/index.vue:4614-4632) noi DS419 chap
+    // nhan ca 9 gia tri, nen guard mau phai chap nhan ca 9 gia tri
+    // neu khong mau mang recipelDetailFrequency se khong bao gio
+    // ap duoc. Truoc day khong guard nao nhin frequency nen
+    // '_9'/'_4'/'x' deu 200 + persist qua allSave (tao) va
+    // updateDetail (sua, xoa truoc chen sau) — man duyet don hien
+    // `{{ scope.row.frequency.name }}` (reviewForm.vue:136) thanh
+    // ten rong; MedicalCalculate dung getFrequencyCount(
+    // row.frequency.value) (recipetemplateForm.vue:2495-2498) nen 'x'
+    // parse NaN -> count 1, sai tong; ap mau sang don that thi gia
+    // tri gia bi guard DS419 chan 400 o buoc luu nen mau bi doc/
+    // khong dung duoc; mo lai mau thi select tan suat trong. Khac
+    // DS419 (RecipelDetail.frequency — don that, entity/bang/endpoint
+    // khac) va DS375/DS376/DS398/DS442/DS460 (cung entity, field
+    // khac). null/blank giu hop le (cot varchar(64) NULL-able, live
+    // 12/20 dong NULL). Goi canh DS375/DS376/DS398/DS442/DS460 o ca
+    // 2 vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailFrequencyValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        DictItem frequency = detail.getFrequency();
+        if (frequency == null || StringUtils.isBlank(frequency.getValue())) {
+            return;
+        }
+        String value = frequency.getValue();
+        if (!"recipelDetailFrequency_0".equals(value)
+                && !"recipelDetailFrequency_1".equals(value)
+                && !"recipelDetailFrequency_2".equals(value)
+                && !"recipelDetailFrequency_3".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_0.5".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_1".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_1.5".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_2".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_3".equals(value)) {
+            throw new ServiceException(
+                    "Tần suất của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận recipelDetailFrequency_0 đến recipelDetailFrequency_3 hoặc chineseMedicineRecipelTakeFrequency_0.5, _1, _1.5, _2, _3).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -311,6 +359,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
             checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
             checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
+            checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -442,6 +491,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
                     checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
                     checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
+                    checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
