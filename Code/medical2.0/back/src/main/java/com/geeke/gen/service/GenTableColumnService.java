@@ -4,6 +4,7 @@ import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.gen.dao.GenTableColumnDao;
 import com.geeke.gen.entity.GenTableColumn;
+import com.geeke.sys.entity.DictItem;
 import com.geeke.utils.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,6 +160,15 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
                 && tooLong(genTableColumn.getQueryType().getValue(), 64)) {
             throw new ServiceException("Truy vấn cách Độ dài phải nằm trong khoảng 0 đến 64");
         }
+        // DS454: queryType gia mao ngoai mien 12 gia tri dict
+        // 'queryType' con hoat dong -- truoc day 200 + persist
+        // (chi check do dai o tren), gia tri gia hien ten rong o
+        // list/form va lam codegen re nhanh sai (GenTableEx re
+        // nhanh "between" de sinh date-range picker). Ca 2 duong
+        // ghi deu qua checkLengths() nay (save truc tiep +
+        // GenTableService.save cho cot con gui kem) nen guard
+        // o day bao ca hai.
+        checkGenTableColumnQueryTypeValues(genTableColumn);
         if (genTableColumn.getShowType() != null
                 && tooLong(genTableColumn.getShowType().getValue(), 64)) {
             throw new ServiceException("điều khiển Độ dài phải nằm trong khoảng 0 đến 64");
@@ -201,6 +211,43 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
         }
         if (genTableColumn.getIsQuery().length() > 1) {
             throw new ServiceException("Truy vấn Độ dài phải nằm trong khoảng 0 đến 1");
+        }
+    }
+
+    /**
+     * DS454: chan GenTableColumn.queryType gia mao ngoai mien 12
+     * gia tri dict 'queryType' con hoat dong -- dict luu dang
+     * escape HTML ('&gt;'/'&lt;') nen gia tri tho '>>'/'<' KHONG
+     * thuoc mien. queryType null hoac value blank -> qua (cot
+     * query_type NULL-able; null/blank hop le, tien le DS393
+     * cung service). Public static de GenTableService.save tai
+     * dung (no goi checkLengths cho cot con gui kem).
+     */
+    public static void checkGenTableColumnQueryTypeValues(
+            GenTableColumn genTableColumn) {
+        if (genTableColumn == null) {
+            return;
+        }
+        DictItem queryType = genTableColumn.getQueryType();
+        if (queryType == null
+                || StringUtils.isBlank(queryType.getValue())) {
+            return;
+        }
+        String value = queryType.getValue();
+        if (!"!=".equals(value)
+                && !"&gt;".equals(value)
+                && !"&gt;=".equals(value)
+                && !"&lt;".equals(value)
+                && !"&lt;=".equals(value)
+                && !"=".equals(value)
+                && !"between".equals(value)
+                && !"in".equals(value)
+                && !"left_like".equals(value)
+                && !"like".equals(value)
+                && !"not in".equals(value)
+                && !"right_like".equals(value)) {
+            throw new ServiceException(
+                    "Truy vấn cách không hợp lệ: " + value);
         }
     }
 
