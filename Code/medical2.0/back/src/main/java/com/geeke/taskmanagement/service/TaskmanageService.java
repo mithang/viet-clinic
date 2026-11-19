@@ -66,6 +66,30 @@ public class TaskmanageService {
         }
     }
 
+    // DS459: trang thai nhiem vu (taskstatus) chi hop le '0' (cho dang)
+    // hoac '1' (da dang) -- gia mao qua inserttask() ghi verbatim
+    // (Taskmange.xml insertask #{taskstatus}) roi hien sai tren danh
+    // sach (releaseatask/index.vue: '0' -> 'Cho dang', con lai ->
+    // 'Da dang') va mat het nut thao tac (chi '1' co Xem, chi '0'
+    // co Sua/Dang/Xoa). null/blank giu hop le (cot nullable).
+    // Chi guard inserttask(): cac duong khac khong ghi taskstatus do
+    // nguoi dung dua vao (save() ep '1', storage() ban nhap ep '0',
+    // storage() update khong co cot taskstatus, updateaudit() /
+    // release() ep '1').
+    private static void checkTaskManagementTaskstatusValues(taskmanagement task) {
+        if (task == null) {
+            return;
+        }
+        String status = task.getTaskstatus();
+        if (StringUtils.isBlank(status)) {
+            return;
+        }
+        if (!"0".equals(status) && !"1".equals(status)) {
+            throw new ServiceException(
+                    "Trạng thái nhiệm vụ không hợp lệ: " + status);
+        }
+    }
+
     private void checkTaskOwnership(String id) {
         if (id == null || id.isEmpty()) {
             return;
@@ -100,6 +124,7 @@ public class TaskmanageService {
     @Transactional
     public int inserttask(taskmanagement task)  {
         checkTaskDeadlineNotPast(task); // DS305
+        checkTaskManagementTaskstatusValues(task); // DS459
         task.setID(IdGen.uuid());
         task.setCompanyId(SessionUtils.getUser().getCompany().getId());
         task.setCreatedBy(SessionUtils.getUserJson().getString("name"));
