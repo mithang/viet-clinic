@@ -122,6 +122,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDrugPreparationUnitValues(drug); // DS453
         checkDrugDaysValues(drug); // DS455
         checkDrugWesternMedicineUseValues(drug); // DS458
+        checkDrugTypeValues(drug); // DS468
         checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
@@ -508,6 +509,41 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS468: loai thuoc (type) gia mao ngoai mien 3 item dict
+    // 'medicalType' con hoat dong (_0 Thuoc Tay, _1 Thuoc Dong y,
+    // _2 Vat tu y te) — truoc day chi co guard do dai <= 64
+    // (checkDrugLengths) va mapper ghi thang #{type.value}
+    // (DrugDao.xml insert / update / bulkInsert / bulkUpdate).
+    // Thuoc gia hien ten 'Loai thuoc' rong o list (LEFT JOIN khong
+    // loc dict_type), select trong khi mo lai form, va chay vao
+    // phan biet Tay/Dong y o ke don (drugForm.vue hien select
+    // 'Cach sac thuoc' khi type = medicalType_1; MedicalRecordService
+    // copy type khi them thuoc vao don). KHAC cac vong nullable
+    // (DS364/DS440/DS451/DS453/DS455/DS458): cot drug.type
+    // varchar(64) NOT NULL + @NotNull o getType() nen null/blank/''
+    // deu 400 o day — bang chung probe: P6 omit -> 400 san qua
+    // @Valid o save, P6b value '' -> 200 + luu '' (BUG, fix phai
+    // chan ''); duong bulk* khong qua @Valid nen guard nay cung la
+    // chan duy nhat cho null/'' o bulk. '_0'..'_2' hop le giu 200.
+    // Khong guard addDurg hay syncToClinic (super.save) -- cung pham
+    // vi nhu DS323/DS364/DS440/DS451/DS453/DS455/DS458.
+    private static void checkDrugTypeValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        DictItem type = drug.getType();
+        if (type == null || StringUtils.isBlank(type.getValue())) {
+            throw new ServiceException("Loại thuốc không được để trống");
+        }
+        String value = type.getValue();
+        if (!"medicalType_0".equals(value)
+                && !"medicalType_1".equals(value)
+                && !"medicalType_2".equals(value)) {
+            throw new ServiceException(
+                    "Loại thuốc không hợp lệ: " + value);
+        }
+    }
+
     // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
     // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
     // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
@@ -585,6 +621,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugPreparationUnitValues(drug); // DS453
             checkDrugDaysValues(drug); // DS455
             checkDrugWesternMedicineUseValues(drug); // DS458
+            checkDrugTypeValues(drug); // DS468
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
@@ -623,6 +660,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugPreparationUnitValues(drug); // DS453
             checkDrugDaysValues(drug); // DS455
             checkDrugWesternMedicineUseValues(drug); // DS458
+            checkDrugTypeValues(drug); // DS468
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
