@@ -256,6 +256,41 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS460: infuseUse chi co mien {infuseUse_0..infuseUse_3}
+    // (_0 'Tiêm tĩnh mạch', _1 'Truyền tĩnh mạch', _2 'Tiêm bắp',
+    // _3 'Khí dung'; dict 'infuseUse', dung 4 item del_flag='0';
+    // frontend chi set tu infuseUseOption dict kin nay o
+    // recipetemplateForm.vue:881-888). Truoc day khong guard nao nhin
+    // infuseUse nen '_9'/'_4'/'x' deu 200 + persist qua allSave (tao)
+    // va updateDetail (sua, xoa truoc chen sau) — man duyet don hien
+    // `{{ scope.row.infuseUse.name }}` (reviewForm.vue:135) thanh ten
+    // rong; ap mau sang don that thi gia tri gia bi guard DS433 chan
+    // 400 o buoc luu nen mau bi doc/khong dung duoc. Khac DS433
+    // (RecipelDetail.infuseUse — don that, entity/bang/endpoint
+    // khac) va DS375/DS376/DS398/DS442 (cung entity, field khac).
+    // null/blank giu hop le (cot varchar(64) NULL-able, live 20/20
+    // dong deu NULL). Goi canh DS375/DS376/DS398/DS442 o ca 2 vong
+    // ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailInfuseUseValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        DictItem infuseUse = detail.getInfuseUse();
+        if (infuseUse == null || StringUtils.isBlank(infuseUse.getValue())) {
+            return;
+        }
+        String value = infuseUse.getValue();
+        if (!"infuseUse_0".equals(value)
+                && !"infuseUse_1".equals(value)
+                && !"infuseUse_2".equals(value)
+                && !"infuseUse_3".equals(value)) {
+            throw new ServiceException(
+                    "Cách dùng truyền dịch của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận infuseUse_0 đến infuseUse_3).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -275,6 +310,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
             checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
             checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
+            checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -405,6 +441,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailIsUnpackSellValues(recipeTemplateDetail); // DS376
                     checkRecipeTemplateDetailInfuseGroupValues(recipeTemplateDetail); // DS398
                     checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
+                    checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
