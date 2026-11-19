@@ -339,6 +339,36 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS471: infuseType chi co mien hop {0,1} — 0 'Cho truyen'
+    // (dang cho), 1 'Da hoan thanh'. Entity RecipeTemplateDetail.java:36
+    // `private int infuseType` (primitive nen omit -> 0, hop le, van
+    // qua). Form mau khong bao gio ghi infuseType
+    // (recipetemplateForm.vue khong co infuseType) nen gia tri ngoai
+    // {0,1} chi den tu gia mao. Truoc day khong guard nao nhin
+    // infuseType nen 9/2/-1 deu 200 + persist qua allSave (tao) va
+    // updateDetail (sua, xoa truoc chen sau) — man truyen dich chi re
+    // ===0/===1 (cure/infusion/index.vue:673-674, :1458) nen dong gia
+    // khong hien nut trang thai nao; ap mau sang don that thi dong
+    // gia bi guard DS390 chan 400 o buoc luu nen mau bi doc/khong
+    // dung duoc; logic hoan thanh truyen (:1458) coi moi gia tri !=1
+    // la chua xong, sai tien do truyen. Khac DS390
+    // (RecipelDetail.infuseType — don that, entity/bang/endpoint
+    // khac) va DS375/DS376/DS398/DS442/DS460/DS469 (cung entity,
+    // field khac). Goi canh DS375/DS376/DS398/DS442/DS460/DS469 o
+    // ca 2 vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailInfuseTypeValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        int infuseType = detail.getInfuseType();
+        if (infuseType != 0 && infuseType != 1) {
+            throw new ServiceException(
+                    "Trạng thái truyền dịch của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận 0 — Chờ truyền, hoặc 1 — Đã hoàn thành).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -360,6 +390,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
             checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
             checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
+            checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -492,6 +523,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailDaysValues(recipeTemplateDetail); // DS442
                     checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
                     checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
+                    checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
