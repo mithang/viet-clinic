@@ -92,6 +92,39 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
         }
     }
 
+    // DS449: takeFrequency gia mao ngoai mien
+    // {'chineseMedicineRecipelTakeFrequency_0.5','_1','_1.5','_2','_3'}
+    // qua allSave create/update (probe pre 18/18: 'x' /
+    // '..._9' / '..._4' deu 200 + persist ca create lan update;
+    // reader GET hien takeFrequency.name rong; ap mau copy nguyen
+    // takeFrequency sang don that nen don gia in tan suat uong rong
+    // tren phieu don thuoc Dong y va phieu tinh tien).
+    // Entity khong annotation mien, cot take_frequency varchar
+    // NULL-able (live 6/9 dong NULL) nen null/blank giu hop le
+    // (tien le DS417/DS442/DS448); chi gia tri ngoai mien moi 400.
+    // Khong co controller rieng cho recipetemplateInfo nen guard
+    // allSave + updateInfo bao het duong ghi that (allSave va aiSave
+    // deu qua saveTemplate/updateTemplate). Khong co caller noi bo
+    // nao set takeFrequency (grep setTakeFrequency = 0 caller).
+    // Fail-closed 400 truoc moi ghi.
+    private static void checkRecipeTemplateInfoTakeFrequencyValues(
+            RecipeTemplateInfo entity) {
+        if (entity == null || entity.getTakeFrequency() == null
+                || entity.getTakeFrequency().getValue() == null
+                || entity.getTakeFrequency().getValue().trim().isEmpty()) {
+            return;
+        }
+        String takeFrequency = entity.getTakeFrequency().getValue();
+        if (!"chineseMedicineRecipelTakeFrequency_0.5".equals(takeFrequency)
+                && !"chineseMedicineRecipelTakeFrequency_1".equals(takeFrequency)
+                && !"chineseMedicineRecipelTakeFrequency_1.5".equals(takeFrequency)
+                && !"chineseMedicineRecipelTakeFrequency_2".equals(takeFrequency)
+                && !"chineseMedicineRecipelTakeFrequency_3".equals(takeFrequency)) {
+            throw new com.geeke.common.service.ServiceException(
+                    "Tần suất uống đơn thuốc mẫu không hợp lệ: " + takeFrequency);
+        }
+    }
+
     @Transactional(readOnly = false)
     public void allSave(RecipeTemplateInfo recipeTemplateInfo){
         // DS116 A: null info NPEd at preInsert() (called from
@@ -101,6 +134,7 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
         }
         checkNonNegative(recipeTemplateInfo);
         checkRecipeTemplateInfoSmallTypeValues(recipeTemplateInfo); // DS417
+        checkRecipeTemplateInfoTakeFrequencyValues(recipeTemplateInfo); // DS449
         recipeTemplateInfo.preInsert();
         recipeTemplateInfo.setId(IdGen.uuid());
         recipeTemplateInfoDao.allSave(recipeTemplateInfo);
@@ -131,6 +165,7 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
         }
         checkNonNegative(recipeTemplateInfo);
         checkRecipeTemplateInfoSmallTypeValues(recipeTemplateInfo); // DS417
+        checkRecipeTemplateInfoTakeFrequencyValues(recipeTemplateInfo); // DS449
         this.dao.updateInfo(recipeTemplateInfo);
     }
 }
