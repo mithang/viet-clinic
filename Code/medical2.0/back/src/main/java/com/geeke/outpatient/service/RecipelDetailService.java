@@ -1,6 +1,7 @@
 package com.geeke.outpatient.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.cure.entity.InspectionCheck;
@@ -9,6 +10,8 @@ import com.geeke.cure.service.InspectionCheckService;
 import com.geeke.outpatient.dao.RecipelDetailDao;
 import com.geeke.outpatient.dao.RecipelInfoDao;
 import com.geeke.outpatient.entity.*;
+import com.geeke.sys.entity.SysParamConfig;
+import com.geeke.sys.service.SysParamConfigService;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 
@@ -47,6 +50,9 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
 
     @Autowired
     private InspectionCheckInfoService inspectionCheckInfoService;
+
+    @Autowired
+    private SysParamConfigService sysParamConfigService;
 
     // DS108 C1/C10-C12: save/bulkInsert/bulkUpdate truoc day de lo:
     // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
@@ -109,6 +115,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailFrequencyValues(entity); // DS419
         checkRecipelDetailIsExtraValues(entity); // DS425
         checkRecipelDetailInfuseUseValues(entity); // DS433
+        checkRecipelDetailDaysValues(entity); // DS464
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -161,6 +168,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailFrequencyValues(entity); // DS419
             checkRecipelDetailIsExtraValues(entity); // DS425
             checkRecipelDetailInfuseUseValues(entity); // DS433
+            checkRecipelDetailDaysValues(entity); // DS464
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -197,6 +205,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailFrequencyValues(entity); // DS419
             checkRecipelDetailIsExtraValues(entity); // DS425
             checkRecipelDetailInfuseUseValues(entity); // DS433
+            checkRecipelDetailDaysValues(entity); // DS464
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -536,6 +545,102 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS464: so ngay (days.name) chi co nghia la so nguyen khong am <=
+    // chronicDays cau hinh cua tenant phien (live 60 ca 2 tenant; mac
+    // dinh frontend 90 khi chua cau hinh). Truoc day khong guard nao
+    // nhin days nen '999'/'61'/'-5'/'x' deu 200 + persist qua
+    // save/bulkInsert/bulkUpdate (probe pre 18/18) — mapper ghi
+    // #{days.name} verbatim (insert :195, update :231, bulkInsert :322,
+    // bulkUpdate CASE :392-394). Hai that: MdMedicationOrderImpl :287
+    // parseLong(days.name) -> '999' thanh don BHYT medcDays='999',
+    // end = start+999 ngay; '-5' -> end TRUOC start; DataBean :222 in
+    // '999 ngay'; calculateTotalByDays nhan lieu x tan suat x days ->
+    // tong luong ke phinh; DS316 + CureManagement dung days.name lam
+    // tran tien do truyen. Dict 'recipelDetailDays' chi la 7 item
+    // '1'..'7' de hien thi cu — mien THAT la so nguyen theo cau hinh,
+    // KHONG phai dict code (UI song da la el-input-number :min=0
+    // :max=chronicDisease?chronicDays:normalDays). Cap doc live moi lan
+    // ghi qua sysParamConfigService.listAll (tenant-filter san, N3e):
+    // lay max cac dong chronicDays parse duoc; thieu/hong/loi doc ->
+    // fallback 90 (mac dinh frontend). null/blank giu hop le (cot
+    // varchar(64) nullable, live 12/55 NULL). Chuoi khong toan chu so
+    // (dau +/-, thap phan, chu) hoac vuot int -> 400; 0 <= n <= cap
+    // qua, n > cap -> 400. Goi o ca 4 duong ghi that
+    // save/bulkInsert/bulkUpdate/addRetailrecipelDetails, ngay sau
+    // checkRecipelDetailInfuseUseValues (DS433). Han che ghi nhan:
+    // guard dung cap ngoai chronicDays (60), KHONG tach normalDays
+    // (7/10) theo co chronicDisease cua don cha — phan biet
+    // normal/chronic van chi UI enforce; don thuong gia 8-60 ngay van
+    // qua server. Dung thiet ke DS430; tach theo don cha la item rieng
+    // neu can.
+    private void checkRecipelDetailDaysValues(RecipelDetail entity) {
+        if (entity == null || entity.getDays() == null) {
+            return;
+        }
+        String days = entity.getDays().getName();
+        if (StringUtils.isBlank(days)) {
+            return;
+        }
+        String value = days.trim();
+        int n;
+        try {
+            if (!value.matches("[0-9]+")) {
+                throw new NumberFormatException(value);
+            }
+            n = Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new ServiceException(
+                    "Số ngày không hợp lệ (phải là số nguyên không âm): "
+                            + value);
+        }
+        int cap = getChronicDaysCap();
+        if (n > cap) {
+            throw new ServiceException(
+                    "Số ngày vượt quá số ngày tối đa cho phép (" + cap
+                            + " ngày)");
+        }
+    }
+
+    // DS464: doc chronicDays cua tenant phien, live moi lan ghi.
+    // listAll tu ap tenant-filter (ensureCompanyFilter, N3e) nen chi
+    // thay dong cua tenant phien; lay max cac dong parse duoc (phong
+    // cau hinh trung); dong hong/am bo qua; thieu dong, toan dong hong,
+    // hoac bat ky loi doc nao -> fallback 90 (mac dinh frontend
+    // medicalOutpatientRecord/index.vue:9705).
+    private int getChronicDaysCap() {
+        try {
+            List<Parameter> params = new ArrayList<>();
+            params.add(new Parameter("config_name", "=", "chronicDays"));
+            List<SysParamConfig> configs =
+                    sysParamConfigService.listAll(params, null);
+            int cap = 0;
+            boolean found = false;
+            for (SysParamConfig config : configs) {
+                if (config == null
+                        || StringUtils.isBlank(config.getConfigValue())) {
+                    continue;
+                }
+                try {
+                    int v = Integer.parseInt(
+                            config.getConfigValue().trim());
+                    if (v < 0) {
+                        continue;
+                    }
+                    if (v > cap) {
+                        cap = v;
+                    }
+                    found = true;
+                } catch (NumberFormatException e) {
+                    // Dong cau hinh hong -> bo qua, dung fallback neu
+                    // khong con dong nao parse duoc.
+                }
+            }
+            return found ? cap : 90;
+        } catch (Exception e) {
+            return 90;
+        }
+    }
+
     // DS149 C: xem ghi chu o save().
     private static void checkRecipelDetailLengths(RecipelDetail entity) {
         if (entity == null) {
@@ -613,6 +718,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailFrequencyValues(recipelDetail); // DS419
             checkRecipelDetailIsExtraValues(recipelDetail); // DS425
             checkRecipelDetailInfuseUseValues(recipelDetail); // DS433
+            checkRecipelDetailDaysValues(recipelDetail); // DS464
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
