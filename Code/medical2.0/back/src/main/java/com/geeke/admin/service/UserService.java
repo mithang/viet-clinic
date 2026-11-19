@@ -382,6 +382,43 @@ public class UserService extends CrudService<UserDao, User>{
         }
     }
 
+    /**
+     * DS457: loai nghe nghiep (UserExt.jobType) chi co mien 4 gia tri
+     * radio kin cua form quan tri nguoi dung {'Bac si','Duoc si',
+     * 'Dieu duong','Khac'} (userForm.vue:210-214). Truoc day gia tri
+     * gia ('x', 'Bac siX') luu thang qua moi duong ghi ext that vi
+     * khong service nao nhin jobType; mapper ghi #{jobType} verbatim
+     * (UserExtDao.xml insert :158, update :185). Hai that: bo loc
+     * bac si dung jobType de chon bac si (RegistrationController
+     * :77/:86 getUserByCompanyIdAndJob(tenant, 'Bac si'), UserDao.xml
+     * loc cung `e.job_type = #{jobType}`) nen bac si bi gia jobType
+     * bien mat khoi dropdown chon bac si o dang ky/kham; select
+     * 'Chuc danh BHYT' (post) chi render option khi jobType dung
+     * 'Bac si'/'Duoc si' nen form mo lai trong khi gia tri gia.
+     * Fail-closed 400: null/blank giu hop le (cot varchar(20)
+     * NULL-able, live data co NULL/'' va khong writer noi bo nao
+     * tao jobType); chi chan gia tri ngoai 4 muc. Goi o ca 2 ham
+     * ghi ext that save(user, files, deleteIds) va update(user,
+     * files, deleteIds) — bao phu ca create (JSON + multipart, ke
+     * ca nhanh cross-tenant va bulkInsert qua this.save) lan update
+     * UI. bulkUpdate / save(User) update-by-id chi ghi sys_user,
+     * khong cham ext nen khong can guard.
+     */
+    private static void checkUserExtJobTypeValues(UserExt userExt) {
+        if (userExt == null) {
+            return;
+        }
+        String jobType = userExt.getJobType();
+        if (StringUtils.isBlank(jobType)) {
+            return;
+        }
+        if (!"Bác sĩ".equals(jobType) && !"Dược sĩ".equals(jobType)
+                && !"Điều dưỡng".equals(jobType) && !"Khác".equals(jobType)) {
+            throw new ServiceException(
+                    "Loại nghề nghiệp không hợp lệ: " + jobType);
+        }
+    }
+
     private static LocalDate parseWorkDate(String value) {
         if (StringUtils.isBlank(value)) {
             return null;
@@ -440,6 +477,8 @@ public class UserService extends CrudService<UserDao, User>{
         normalizeUserForFileSave(user);
         // DS304: ngay bat dau hanh nghe sau ngay ket thuc -> 400.
         checkUserExtWorkTimeOrder(user.getUserExt());
+        // DS457: jobType ngoai 4 muc {'Bác sĩ','Dược sĩ','Điều dưỡng','Khác'} -> 400.
+        checkUserExtJobTypeValues(user.getUserExt());
         // Người dùngĐăng nhậptênduy nhấtKiểm tra
         User existUser = getUserByLoginName(user);
         String loginTenant = SessionUtils.getLoginTenantId();
@@ -620,6 +659,8 @@ public class UserService extends CrudService<UserDao, User>{
         normalizeUserForFileSave(user);
         // DS304: ngay bat dau hanh nghe sau ngay ket thuc -> 400.
         checkUserExtWorkTimeOrder(user.getUserExt());
+        // DS457: jobType ngoai 4 muc {'Bác sĩ','Dược sĩ','Điều dưỡng','Khác'} -> 400.
+        checkUserExtJobTypeValues(user.getUserExt());
         // K7 (iteration 58): guard deleteIds truoc moi ghi (mau J2):
         // file avatar co object_id = id user dang sua; file la -> 400
         // truoc super.save. Id rong (khong phai duong UI) thi tap cho
