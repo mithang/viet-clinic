@@ -99,6 +99,17 @@ public class OutpatientLogService {
         if (outpatientLogDao.getRegistrationCompanyId(outpatientLogRc.getId()) == null) {
             throw new ServiceException("Đăng ký khám không tồn tại");
         }
+        // DS465: chan initialVisit gia mao ngoai mien truoc khi ghi —
+        // mapper updateLog ghi thang a.source = #{initialVisit} len
+        // registration, bypass hoan toan guard DS422 cua
+        // RegistrationService.save/bulkInsert/bulkUpdate/wxSave.
+        // Mien = 4 gia tri dict registrationSource live (DS422:
+        // registrationSource_0/_2/_3 + 'registrationSourc_1' loi chinh
+        // ta thieu 'e') + 'registrationSource_1' (gia tri cung 'Tai
+        // kham' cua chinh UI so kham o endpoint nay — chan no se vo
+        // luong sua so that; mien RegistrationService giu nguyen 4
+        // gia tri). Null/blank giu hop le (cot varchar(64) NULL-able).
+        checkOutpatientLogInitialVisitValues(outpatientLogRc);
         // DS286: chan 2 ngay tuong lai truoc khi ghi — mapper updateLog
         // ghi thang a.reception_end_date = visitDate va
         // a.morbidity_time = morbidityDate len registration, bypass
@@ -115,6 +126,24 @@ public class OutpatientLogService {
         // dao nguoc da luu (khac DS283 phai gop voi stored).
         checkOutpatientLogDateOrder(outpatientLogRc);
         return outpatientLogDao.updateLog(outpatientLogRc);
+    }
+
+    // DS465: initialVisit ngoai mien -> 400 (xem ghi chu o updateLog).
+    private static void checkOutpatientLogInitialVisitValues(OutpatientLog outpatientLogRc) {
+        if (outpatientLogRc == null) {
+            return;
+        }
+        String initialVisit = outpatientLogRc.getInitialVisit();
+        if (StringUtils.isBlank(initialVisit)) {
+            return;
+        }
+        if (!"registrationSource_0".equals(initialVisit)
+                && !"registrationSource_2".equals(initialVisit)
+                && !"registrationSource_3".equals(initialVisit)
+                && !"registrationSourc_1".equals(initialVisit)
+                && !"registrationSource_1".equals(initialVisit)) {
+            throw new ServiceException("Nguồn đăng ký khám không hợp lệ.");
+        }
     }
 
     // DS286: ngay kham benh / ngay phat benh khong duoc la ngay tuong lai
