@@ -99,6 +99,15 @@ public class OutpatientLogService {
         if (outpatientLogDao.getRegistrationCompanyId(outpatientLogRc.getId()) == null) {
             throw new ServiceException("Đăng ký khám không tồn tại");
         }
+        // DS485: chan sex gia mao ngoai mien truoc khi ghi —
+        // mapper updateLog ghi thang p.gender = #{sex} len patient,
+        // bypass hoan toan guard DS403 cua
+        // PatientService.save/wxSave/bulkInsert/bulkUpdate.
+        // Mien = 2 gia tri dict gender live (gender_0 'Nam',
+        // gender_1 'Nu'); gender_2 'ceshi' la du lieu test rac
+        // (del_flag='1', 0 tham chieu live). Null/blank -> 400 vi
+        // cot patient.gender varchar(64) NOT NULL (tien le DS403).
+        checkOutpatientLogSexValues(outpatientLogRc);
         // DS465: chan initialVisit gia mao ngoai mien truoc khi ghi —
         // mapper updateLog ghi thang a.source = #{initialVisit} len
         // registration, bypass hoan toan guard DS422 cua
@@ -143,6 +152,22 @@ public class OutpatientLogService {
                 && !"registrationSourc_1".equals(initialVisit)
                 && !"registrationSource_1".equals(initialVisit)) {
             throw new ServiceException("Nguồn đăng ký khám không hợp lệ.");
+        }
+    }
+
+    // DS485: sex ngoai mien -> 400 (xem ghi chu o updateLog).
+    // Null/blank cung 400 vi cot patient.gender NOT NULL
+    // (tien le DS403 checkPatientGenderValues).
+    private static void checkOutpatientLogSexValues(OutpatientLog outpatientLogRc) {
+        if (outpatientLogRc == null) {
+            return;
+        }
+        String sex = outpatientLogRc.getSex();
+        if (StringUtils.isBlank(sex)) {
+            throw new ServiceException("Giới tính không được để trống");
+        }
+        if (!"gender_0".equals(sex) && !"gender_1".equals(sex)) {
+            throw new ServiceException("Giới tính không hợp lệ: " + sex);
         }
     }
 
