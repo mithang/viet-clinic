@@ -376,6 +376,55 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS494: phuong thuc thanh toan chi co nghia khi la 1 trong 7 gia tri
+     * dict 'payType' (payType_0 'Tien mat', payType_1 'Alipay',
+     * payType_2 'WeChat', payType_3 'The ngan hang', payType_4 'BHYT',
+     * payType_5 'Chuyen khoan ngan hang', payType_6 'Vi dien tu'):
+     * BizConstants dung dung 7 hang PAY_TYPE_CASH=_0 :104 +
+     * ALIPAY=_1 :106 + WECHAT=_2 :108 + BANK_CARD=_3 :110 +
+     * MEDICAL=_4 :114 + BANK_TRANSFER=_5 :116 + EWALLET=_6 :119,
+     * khong hang thu 8; dict live chi 4/7 item (payType_0, _3, _5,
+     * _6) nhung hang van giu _1/_2/_4 cho du lieu lich su (tien le
+     * DS396, cung mien voi TollInfo.paymentType). Entity DictItem
+     * khong annotation mien, service chi guard do dai <=64 (DS147),
+     * mapper ghi #{payType.value} verbatim ca 4 duong insert/update/
+     * bulkInsert/bulkUpdate CASE -- save/bulkInsert/bulkUpdate/
+     * wxSave deu chap nhan gia mao 200 + persist (probe pre 19/19).
+     * Gia tri gia khong co nhan hien thi: DataBean:650
+     * getPayTypeDisplayName tra "" (phieu thu in ra khong co phuong
+     * thuc thanh toan); list LEFT JOIN hien payType.name rong.
+     * Guard o day dung chung cho ca 4 duong truoc moi ghi (truoc
+     * assignQueueNumber de khong dot so thu tu cua luot bi tu
+     * choi, nhu DS422/DS490). Chi chan khac null/'' ma ngoai 7
+     * mien: null/'' giu nguyen (cot pay_type varchar(64) NULL-able
+     * DEFAULT NULL, luot kham khong bat buoc co phuong thuc thanh
+     * toan -- tien le DS422/DS490, cung service). Duong goi noi bo
+     * an toan: TollInfoService:692 set payType tu paymentType da
+     * guard DS396 -> luon trong mien; form mac dinh _0. Khac
+     * DS396 (TollInfo.paymentType, entity khac), DS422 (source),
+     * DS490 (treatType), DS406 (infectType) -- deu truong khac
+     * cung entity.
+     */
+    private static void checkRegistrationPayTypeValues(Registration entity) {
+        if (entity == null || entity.getPayType() == null) {
+            return;
+        }
+        String value = entity.getPayType().getValue();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!BizConstants.PAY_TYPE_CASH.equals(value)
+                && !BizConstants.PAY_TYPE_ALIPAY.equals(value)
+                && !BizConstants.PAY_TYPE_WECHAT.equals(value)
+                && !BizConstants.PAY_TYPE_BANK_CARD.equals(value)
+                && !BizConstants.PAY_TYPE_MEDICAL.equals(value)
+                && !BizConstants.PAY_TYPE_BANK_TRANSFER.equals(value)
+                && !BizConstants.PAY_TYPE_EWALLET.equals(value)) {
+            throw new ServiceException("Phương thức thanh toán không hợp lệ: " + value);
+        }
+    }
+
+    /**
      * DS255: so thu tu cho kham khong co nghia vat ly khi <= 0 (counter
      * cua phong kham bat dau tu 1, RegistrationDao.advanceQueueCounter
      * INSERT ... VALUES(..., 1)); mapper ghi queue_number thang ca 4
@@ -688,6 +737,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationSourceValues(entity);
         // DS490: chan loai dieu tri gia mao ngoai {'treatType_0','treatType_1'}.
         checkRegistrationTreatTypeValues(entity);
+        // DS494: chan phuong thuc thanh toan gia mao ngoai 7 mien dict 'payType'.
+        checkRegistrationPayTypeValues(entity);
         // DS255: chan so thu tu <= 0 truoc khi gan so thu tu.
         checkRegistrationQueueNumber(entity);
         // DS271: chan thoi gian phat benh tuong lai truoc khi gan so thu tu.
@@ -768,6 +819,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationSourceValues(entity);
             // DS490: bulk cung chan loai dieu tri gia mao nhu save().
             checkRegistrationTreatTypeValues(entity);
+            // DS494: bulk cung chan phuong thuc thanh toan gia mao nhu save().
+            checkRegistrationPayTypeValues(entity);
             // DS255: bulk cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulk cung chan thoi gian phat benh tuong lai nhu save().
@@ -826,6 +879,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationSourceValues(entity);
             // DS490: bulkUpdate cung chan loai dieu tri gia mao nhu save().
             checkRegistrationTreatTypeValues(entity);
+            // DS494: bulkUpdate cung chan phuong thuc thanh toan gia mao nhu save().
+            checkRegistrationPayTypeValues(entity);
             // DS255: bulkUpdate cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulkUpdate cung chan thoi gian phat benh tuong lai nhu save().
@@ -1176,6 +1231,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationSourceValues(entity);
         // DS490: wxSave cung chan loai dieu tri gia mao nhu save().
         checkRegistrationTreatTypeValues(entity);
+        // DS494: wxSave cung chan phuong thuc thanh toan gia mao nhu save().
+        checkRegistrationPayTypeValues(entity);
         // DS271: wxSave cung chan thoi gian phat benh tuong lai nhu save().
         checkRegistrationMorbidityTimeNotFuture(entity);
         // DS272: wxSave cung chan thoi gian hoan thanh tuong lai nhu save().
