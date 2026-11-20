@@ -119,6 +119,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailWesternMedicineUseValues(entity); // DS466
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
         checkRecipelDetailRetailTypeValues(entity); // DS473
+        checkRecipelDetailSkinTestValues(entity); // DS479
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -175,6 +176,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailWesternMedicineUseValues(entity); // DS466
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
         checkRecipelDetailRetailTypeValues(entity); // DS473
+        checkRecipelDetailSkinTestValues(entity); // DS479
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -215,6 +217,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailWesternMedicineUseValues(entity); // DS466
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
         checkRecipelDetailRetailTypeValues(entity); // DS473
+        checkRecipelDetailSkinTestValues(entity); // DS479
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -721,6 +724,39 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS479: test da (skinTest.value) chi co nghia trong dict
+    // 'skinTest' — dung 3 item live (_0 'Thu phan ung da',
+    // _1 'Dung tiep', _2 'Mien thu'), 0 item da xoa. Truoc day
+    // khong guard nao nhin truong nay nen 'skinTest_3'/'_99'/'x'
+    // deu 200 + persist qua save/bulkInsert/bulkUpdate (probe
+    // pre 18/18) — mapper ghi #{skinTest.value} verbatim
+    // (insert :199, update :235, bulkInsert, bulkUpdate CASE).
+    // Hai that: DataBean :321
+    // infuseEvt.setSkinTest(skinTest.getName()) -> ten rong tren
+    // phieu truyen dich; man kham :2718/:3445 + form duyet don
+    // hien skinTest.name rong; InfusionPrescription.vue:47-49
+    // hien rong. null/blank giu hop le (cot varchar(64)
+    // nullable, live 52/55 NULL). Goi o ca 4 duong ghi that
+    // save/bulkInsert/bulkUpdate/addRetailrecipelDetails, ngay
+    // sau checkRecipelDetailRetailTypeValues (DS473), mau
+    // DS466/DS467.
+    private static void checkRecipelDetailSkinTestValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getSkinTest() == null) {
+            return;
+        }
+        String skinTest = entity.getSkinTest().getValue();
+        if (StringUtils.isBlank(skinTest)) {
+            return;
+        }
+        if (!"skinTest_0".equals(skinTest)
+                && !"skinTest_1".equals(skinTest)
+                && !"skinTest_2".equals(skinTest)) {
+            throw new ServiceException(
+                    "Test da không hợp lệ: " + skinTest);
+        }
+    }
+
     // DS464: doc chronicDays cua tenant phien, live moi lan ghi.
     // listAll tu ap tenant-filter (ensureCompanyFilter, N3e) nen chi
     // thay dong cua tenant phien; lay max cac dong parse duoc (phong
@@ -842,6 +878,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailWesternMedicineUseValues(recipelDetail); // DS466
             checkRecipelDetailChineseMedicineUseValues(recipelDetail); // DS467
             checkRecipelDetailRetailTypeValues(recipelDetail); // DS473
+            checkRecipelDetailSkinTestValues(recipelDetail); // DS479
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
