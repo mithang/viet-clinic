@@ -212,6 +212,46 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
         if (genTableColumn.getIsQuery().length() > 1) {
             throw new ServiceException("Truy vấn Độ dài phải nằm trong khoảng 0 đến 1");
         }
+        // DS393: 6 co isPk/isNull/isInsert/isEdit/isList/isQuery gia mao
+        // ngoai mien {'0','1'} -- truoc day chi guard null/do dai <=1
+        // nen '9'/'x'/'' (1 ky tu) deu lot va persist (probe pre 18/18).
+        // Frontend chi set '1'/'0' (genTableForm.vue el-switch
+        // active-value='1' inactive-value='0' cho ca 6 co); reader re
+        // nhanh "1".equals(...) (ColumnViewService isList, GenTableEx
+        // isQuery/isEdit) nen co gia an cot khoi list view / sinh code
+        // sai. Dat o cuoi checkLengths() de ca 2 duong ghi deu duoc
+        // guard (save truc tiep + GenTableService.save cho cot con gui
+        // kem), tien le DS454 queryType.
+        checkGenTableColumnFlagValues(genTableColumn);
+    }
+
+    /**
+     * DS393: chan 6 co isPk/isNull/isInsert/isEdit/isList/isQuery gia
+     * mao ngoai mien {'0','1'}. Null da 400 o tren (checkLengths /
+     * checkRequired) nen o day chi con can chan gia tri khac '0'/'1'
+     * -- ke ca '' (dong residue co san id 2225582594600681480 co ca
+     * 6 co '' da khong luu lai duoc qua checkRequired ten rong, nen
+     * '' -> 400 khong pha vo dong nao dang luu duoc). Public static
+     * de GenTableService.save tai dung neu can (no da goi
+     * checkLengths cho cot con gui kem).
+     */
+    public static void checkGenTableColumnFlagValues(
+            GenTableColumn genTableColumn) {
+        if (genTableColumn == null) {
+            return;
+        }
+        checkFlag("chính khóa", genTableColumn.getIsPk());
+        checkFlag("có thể trống", genTableColumn.getIsNull());
+        checkFlag("có thể chèn", genTableColumn.getIsInsert());
+        checkFlag("Có thể biên", genTableColumn.getIsEdit());
+        checkFlag("Cột hiển thị", genTableColumn.getIsList());
+        checkFlag("Truy vấn", genTableColumn.getIsQuery());
+    }
+
+    private static void checkFlag(String label, String value) {
+        if (value != null && !"0".equals(value) && !"1".equals(value)) {
+            throw new ServiceException(label + " không hợp lệ: " + value);
+        }
     }
 
     /**
