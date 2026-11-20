@@ -167,6 +167,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkStuffUnpackSellValues(stuff); // DS367
         checkStuffPackUnitValues(stuff); // DS461
         checkStuffTypeValues(stuff); // DS475
+        checkStuffNatureValues(stuff); // DS491
         checkStuffInventoryThresholdOrder(stuff); // DS303
         Stuff stuffTemp = super.save(stuff);
 
@@ -223,6 +224,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffUnpackSellValues(stuff); // DS367
             checkStuffPackUnitValues(stuff); // DS461
             checkStuffTypeValues(stuff); // DS475
+            checkStuffNatureValues(stuff); // DS491
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkInsert(entitys);
@@ -253,6 +255,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffUnpackSellValues(stuff); // DS367
             checkStuffPackUnitValues(stuff); // DS461
             checkStuffTypeValues(stuff); // DS475
+            checkStuffNatureValues(stuff); // DS491
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkUpdate(entitys);
@@ -503,6 +506,33 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 && !"stuffType_1".equals(value)) {
             throw new ServiceException(
                     "Loại vật tư không hợp lệ: " + value);
+        }
+    }
+
+    // DS491: tinh chat vat tu (nature) gia mao ngoai mien 2 item dict
+    // 'medicalNature' con hoat dong (_0 'Trong nuoc', _1 'Nhap khau')
+    // -- truoc day chi co guard do dai <= 64 (checkStuffLengths) va
+    // mapper ghi thang #{nature.value} (StuffDao.xml insert :308 /
+    // update :341 / bulkInsert :417 / bulkUpdate CASE :473-475).
+    // Vat tu gia hien ten 'Tinh chat' rong o list (LEFT JOIN khong
+    // loc dict_type) + khi mo lai form. '_0'/'_1' hop le giu 200;
+    // null/blank van qua nhu cu o day (nature khong @NotNull, cot
+    // varchar(64) NULL-able, form init null; tien le DS422/DS475).
+    // Khong guard syncToClinic (super.save) -- cung pham vi nhu
+    // DS324/DS365/DS367/DS461/DS475.
+    private static void checkStuffNatureValues(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        DictItem nature = stuff.getNature();
+        if (nature == null || StringUtils.isBlank(nature.getValue())) {
+            return;
+        }
+        String value = nature.getValue();
+        if (!"medicalNature_0".equals(value)
+                && !"medicalNature_1".equals(value)) {
+            throw new ServiceException(
+                    "Tính chất vật tư không hợp lệ: " + value);
         }
     }
 

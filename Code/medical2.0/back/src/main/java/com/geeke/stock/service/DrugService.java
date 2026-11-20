@@ -123,6 +123,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDrugDaysValues(drug); // DS455
         checkDrugWesternMedicineUseValues(drug); // DS458
         checkDrugTypeValues(drug); // DS468
+        checkDrugNatureValues(drug); // DS491
         checkDrugInventoryThresholdOrder(drug); // DS302
         // DS79: ypgg truoc day deref thang getName() tren dosisUnit /
         // preparationUnit / pack nen null NPE 400 chung chung. Form bat
@@ -544,6 +545,34 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS491: tinh chat thuoc (nature) gia mao ngoai mien 2 item dict
+    // 'medicalNature' con hoat dong (_0 'Trong nuoc', _1 'Nhap khau')
+    // -- truoc day chi co guard do dai <= 64 (checkDrugLengths) va
+    // mapper ghi thang #{nature.value} (DrugDao.xml insert :504 /
+    // update :546 / bulkInsert :640 / bulkUpdate CASE :705-707).
+    // Thuoc gia hien ten 'Tinh chat' rong o list (LEFT JOIN khong
+    // loc dict_type) + khi mo lai form. '_0'/'_1' hop le giu 200;
+    // null/blank van qua nhu cu o day (nature khong @NotNull, khong
+    // trong checkDrugRequired, cot varchar(64) NULL-able, form init
+    // null; tien le DS422/DS475). Khong guard addDurg hay
+    // syncToClinic (super.save) -- cung pham vi nhu DS323/DS364/
+    // DS440/DS451/DS453/DS455/DS458/DS468.
+    private static void checkDrugNatureValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        DictItem nature = drug.getNature();
+        if (nature == null || StringUtils.isBlank(nature.getValue())) {
+            return;
+        }
+        String value = nature.getValue();
+        if (!"medicalNature_0".equals(value)
+                && !"medicalNature_1".equals(value)) {
+            throw new ServiceException(
+                    "Tính chất thuốc không hợp lệ: " + value);
+        }
+    }
+
     // DS302: nguong ton kho toi thieu (inventoryFloor) vuot nguong ton kho
     // toi da (inventoryLimit) — cau hinh mau thuan (form drugForm.vue:
     // "Nguong ton kho toi thieu" / "Nguong ton kho toi da"). Floor la
@@ -622,6 +651,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugDaysValues(drug); // DS455
             checkDrugWesternMedicineUseValues(drug); // DS458
             checkDrugTypeValues(drug); // DS468
+            checkDrugNatureValues(drug); // DS491
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() ep company theo session + kiem tra trung voi DB
             // (nhu save()); 1 dong trung thi ca list dung truoc moi ghi.
@@ -661,6 +691,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugDaysValues(drug); // DS455
             checkDrugWesternMedicineUseValues(drug); // DS458
             checkDrugTypeValues(drug); // DS468
+            checkDrugNatureValues(drug); // DS491
             checkDrugInventoryThresholdOrder(drug); // DS302
             // repeat() id-aware: dong trung voi chinh no tra 0; dong trung
             // voi thuoc khac -> 400.
