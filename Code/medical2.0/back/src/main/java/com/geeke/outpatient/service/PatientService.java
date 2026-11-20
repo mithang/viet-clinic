@@ -74,6 +74,8 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         checkPatientBirthday(patient);
         // DS403: chan gender gia mao ngoai mien {gender_0, gender_1}.
         checkPatientGenderValues(patient);
+        // DS489: chan withPatientNexus gia mao ngoai mien 9 gia tri.
+        checkPatientWithPatientNexusValues(patient);
         if (patient.getId() != null && !patient.getId().trim().isEmpty()
                 && this.dao.get(patient.getId()) == null) {
             throw new ServiceException("Bệnh nhân không tồn tại: " + patient.getId());
@@ -154,6 +156,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         checkPatientLengths(patient);
         checkPatientBirthday(patient); // DS264
         checkPatientGenderValues(patient); // DS403
+        checkPatientWithPatientNexusValues(patient); // DS489
         verifyTenantOwnership(patient);
         //Lấy thông tin có người dùng đó không theo số CMND/CCCD của người dùng
         List<Patient> patientByCard = this.dao.getPatientByCard(patient.getCard(), patient.getCompany().getId(),null);
@@ -330,6 +333,46 @@ public class PatientService extends CrudService<PatientDao, Patient>{
         }
     }
 
+    /**
+     * DS489: quan he voi benh nhan chi co mien
+     * {'withPatientNexus_0'..'withPatientNexus_8'} (dict
+     * withPatientNexus, 9 item live, patientForm.vue /
+     * registrationForm.vue load dung dict nay qua
+     * getDictItemsByCode). Mapper ghi #{withPatientNexus.value}
+     * verbatim o ca 4 duong (insert/update/bulkInsert/bulkUpdate)
+     * nen gia mao truoc day persist thang; moi reader deu LEFT
+     * JOIN sys_dict_item nen ten quan he rong. Chan fail-closed
+     * 400 truoc moi ghi o ca 4 duong service
+     * (save/bulkInsert/bulkUpdate/wxSave). null/blank GIU QUA
+     * (khac DS403): cot with_patient_nexus varchar(64) NULL-able,
+     * form init null, khong co rule required cho nexus -- tien le
+     * DS422. wxSave khong ghi duoc cot nay (wxInsert/wxUpdate
+     * khong co nexus) nhung van goi guard cho dong nhat
+     * fail-closed nhu DS403.
+     */
+    private static void checkPatientWithPatientNexusValues(
+            Patient patient) {
+        if (patient == null || patient.getWithPatientNexus() == null
+                || patient.getWithPatientNexus().getValue() == null
+                || patient.getWithPatientNexus().getValue().trim()
+                        .isEmpty()) {
+            return;
+        }
+        String nexus = patient.getWithPatientNexus().getValue();
+        if (!"withPatientNexus_0".equals(nexus)
+                && !"withPatientNexus_1".equals(nexus)
+                && !"withPatientNexus_2".equals(nexus)
+                && !"withPatientNexus_3".equals(nexus)
+                && !"withPatientNexus_4".equals(nexus)
+                && !"withPatientNexus_5".equals(nexus)
+                && !"withPatientNexus_6".equals(nexus)
+                && !"withPatientNexus_7".equals(nexus)
+                && !"withPatientNexus_8".equals(nexus)) {
+            throw new ServiceException(
+                    "Quan hệ với bệnh nhân không hợp lệ: " + nexus);
+        }
+    }
+
     private static void checkDictLength(com.geeke.sys.entity.DictItem item, int max, String message) {
         if (item != null) {
             checkLength(item.getValue(), max, message);
@@ -353,6 +396,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             checkPatientLengths(entity);
             checkPatientBirthday(entity); // DS264
             checkPatientGenderValues(entity); // DS403
+            checkPatientWithPatientNexusValues(entity); // DS489
         }
         return super.bulkInsert(entitys);
     }
@@ -376,6 +420,7 @@ public class PatientService extends CrudService<PatientDao, Patient>{
             checkPatientLengths(entity);
             checkPatientBirthday(entity); // DS264
             checkPatientGenderValues(entity); // DS403
+            checkPatientWithPatientNexusValues(entity); // DS489
         }
         return super.bulkUpdate(entitys);
     }
