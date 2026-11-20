@@ -118,6 +118,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailDaysValues(entity); // DS464
         checkRecipelDetailWesternMedicineUseValues(entity); // DS466
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
+        checkRecipelDetailRetailTypeValues(entity); // DS473
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -173,6 +174,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailDaysValues(entity); // DS464
             checkRecipelDetailWesternMedicineUseValues(entity); // DS466
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
+        checkRecipelDetailRetailTypeValues(entity); // DS473
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -212,6 +214,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailDaysValues(entity); // DS464
             checkRecipelDetailWesternMedicineUseValues(entity); // DS466
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
+        checkRecipelDetailRetailTypeValues(entity); // DS473
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -683,6 +686,41 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS473: loai ban le (retailType) chi co 5 gia tri co nghia,
+    // dinh nghia boi nhanh doc DUY NHAT o backend,
+    // MedicalRecordService.java:820-842 (nhanh don ban le,
+    // RECIPEL_TYPE_EXTERNAL): '0'/'1'/'2' -> tra cuu thuoc (Drug),
+    // '3' -> hang muc kham chua benh (CostItem), '4' -> thuoc hoac
+    // vat tu (Drug neu co, neu khong Stuff). Truoc day service chi
+    // chan do dai (DS149 checkLength <= 1) nen gia tri gia ('5'/
+    // '9'/'x') qua save/bulkInsert/bulkUpdate roi luu thang (probe
+    // pre 18/18). Gia tri gia roi khoi moi nhanh doc: drugStuffEvt
+    // giu rong (khong ten/gia) khi doc/in don ban le. UI writer chi
+    // dat '0'/'1' (medicalType_0/_1, GetRetailRecipelDetailEvtList
+    // o cureManagement/infusion/tollInfo index.vue); '2'/'3'/'4'
+    // tu cac dong truyen dich / hang muc / vat tu. Khac DS379
+    // stuffType (cung mien {'0'..'4'} nhung cot/reader khac) va
+    // RecipeTemplateDetail.retailType (entity template, chua probe).
+    // Ngoai {'0'..'4'} -> ServiceException 400 fail-closed;
+    // null/blank giu nguyen (cot varchar(1) NULL-able, live 55/55
+    // NULL, tien le DS379/DS467).
+    private static void checkRecipelDetailRetailTypeValues(
+            RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        String retailType = entity.getRetailType();
+        if (StringUtils.isBlank(retailType)) {
+            return;
+        }
+        if (!"0".equals(retailType) && !"1".equals(retailType)
+                && !"2".equals(retailType) && !"3".equals(retailType)
+                && !"4".equals(retailType)) {
+            throw new ServiceException(
+                    "Loại bán lẻ không hợp lệ: " + retailType);
+        }
+    }
+
     // DS464: doc chronicDays cua tenant phien, live moi lan ghi.
     // listAll tu ap tenant-filter (ensureCompanyFilter, N3e) nen chi
     // thay dong cua tenant phien; lay max cac dong parse duoc (phong
@@ -803,6 +841,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailDaysValues(recipelDetail); // DS464
             checkRecipelDetailWesternMedicineUseValues(recipelDetail); // DS466
             checkRecipelDetailChineseMedicineUseValues(recipelDetail); // DS467
+            checkRecipelDetailRetailTypeValues(recipelDetail); // DS473
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
