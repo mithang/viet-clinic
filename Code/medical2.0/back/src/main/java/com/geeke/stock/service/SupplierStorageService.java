@@ -85,8 +85,54 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         checkSupplierStorageDatesNotFuture(supplierStorage);
         // DS294: chan thu tu cap ngay phe duyet / ngay huy.
         checkSupplierStorageDateOrder(supplierStorage);
+        // DS492: chan trang thai xet duyet gia mao ngoai mien dict.
+        checkSupplierStorageExamineValues(supplierStorage);
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
+    }
+
+    // DS492: trang thai xet duyet gia mao ngoai mien dict kin
+    // supplierStorageExamineStatus (sys_dict_type id
+    // 1005787933775863928, dung 4 item del_flag='0'): _0 Da dat
+    // (BizConstants SUPPLIER_STORAGE_EXAMINE_PASS), _1 Khong dat
+    // (khong co hang BizConstants), _2 Da huy (VOIDED), _3 Cho xet
+    // duyet (PENDING). UI chi gui trong mien: supplierStorage /
+    // auditWarehousing addstorage.vue gui _0, distributionDrugs
+    // addstorage.vue gui _3, auditWarehousing inStorage() gui _0;
+    // HosDepartmentStorageController dat _0 noi bo. Khong co guard
+    // nao truoc day: mapper ghi #{examine.value} thang (insert,
+    // update, bulkInsert, bulkUpdate) nen save/bulk nhan bat cu
+    // chuoi nao (probe: '_9', 'x' deu 200 + persist). Reader harm:
+    // (1) guard xoa DS39 bi pha -- phieu gia mao _2 thi generic
+    // delete chap nhan ma khong qua cancel(), ton kho khong duoc
+    // zero (phantom inventory, cung dang voi probe DS39);
+    // SupplierStockService:507 co lo tuong tu; (2) export
+    // TollInfoService:2382 map shzt PASS->'Qua' con lai 'Da huy'
+    // nen _1/_3 gia mao bi gan nhan sai; (3) list LEFT JOIN
+    // sys_dict_item theo value nen gia tri gia mao hien ten rong.
+    // Null / blank cho qua (cot examine varchar NULL-able, tien le
+    // DS422/DS475/DS491). Guard o save/bulkInsert/bulkUpdate +
+    // claimForAudit (duong audit claim ghi thang passedValue cua
+    // client qua auditStorage, DS176 B moi chan blank).
+    private static void checkSupplierStorageExamineValues(SupplierStorage entity) {
+        if (entity == null) {
+            return;
+        }
+        checkSupplierStorageExamineValue(entity.getExamine() == null
+                ? null : entity.getExamine().getValue());
+    }
+
+    private static void checkSupplierStorageExamineValue(String value) {
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!BizConstants.SUPPLIER_STORAGE_EXAMINE_PASS.equals(value)
+                && !"supplierStorageExamineStatus_1".equals(value)
+                && !BizConstants.SUPPLIER_STORAGE_EXAMINE_VOIDED.equals(value)
+                && !BizConstants.SUPPLIER_STORAGE_EXAMINE_PENDING.equals(value)) {
+            throw new ServiceException(
+                    "Trạng thái xét duyệt không hợp lệ: " + value);
+        }
     }
 
     // DS284: thoi gian phe duyet / ngay huy khong duoc la ngay tuong lai
@@ -262,6 +308,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageNonNegative(entity); // DS211
             checkSupplierStorageDatesNotFuture(entity); // DS284
             checkSupplierStorageDateOrder(entity); // DS294
+            checkSupplierStorageExamineValues(entity); // DS492
             forceSessionCompanyWhenBlank(entity);
         }
         return super.bulkInsert(entitys);
@@ -287,6 +334,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageNonNegative(entity); // DS211
             checkSupplierStorageDatesNotFuture(entity); // DS284
             checkSupplierStorageDateOrder(entity); // DS294
+            checkSupplierStorageExamineValues(entity); // DS492
         }
         return super.bulkUpdate(entitys);
     }
@@ -358,6 +406,15 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
      */
     @Transactional(readOnly = false)
     public boolean claimForAudit(String id, String passedValue, Date examineDate) {
+        // DS492: passedValue la gia tri client gui qua auditStorage
+        // (chi DS176 B chan blank o auditStorage) -- gia mao ('x',
+        // '_9') se duoc UPDATE co dieu kien ghi thang + cong kho.
+        // Fail-closed 400 truoc claim; blank cung chan o day de
+        // diem ghi tu bao ve, khong chi dua vao caller.
+        if (StringUtils.isBlank(passedValue)) {
+            throw new ServiceException("Trạng thái xét duyệt không được để trống");
+        }
+        checkSupplierStorageExamineValue(passedValue);
         SupplierStorage stored = this.get(id);
         if (stored == null) {
             return false;
