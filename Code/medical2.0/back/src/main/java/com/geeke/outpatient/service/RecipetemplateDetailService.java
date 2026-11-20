@@ -411,6 +411,46 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS496: chineseMedicineUse chi co mien {chineseMedicineUse_0,
+    // chineseMedicineUse_1} (_0 'Sac truoc nua gio', _1 'Sac truoc mot
+    // gio'; dict 'chineseMedicineUse', dung 2 item del_flag='0';
+    // frontend chi set tu ChineseUseTimeOption dict kin nay o
+    // recipetemplateForm.vue:582). Truoc day khong guard nao nhin
+    // chineseMedicineUse nen '_2'/'_9'/'x' deu 200 + persist qua
+    // allSave (tao) va updateDetail (sua, xoa truoc chen sau) — mo
+    // lai mau thi select cach dung thuoc Dong y trong; ap mau sang
+    // don that (medicalOutpatientRecord/index.vue:4614-4632 push
+    // nguyen chi tiet mau vao don that) thi gia tri gia bi guard
+    // DS467 chan 400 o buoc luu nen mau bi doc/khong dung duoc; gia
+    // tri gia con che gia tri hop le cua chinh thuoc
+    // (recipetemplateForm.vue:2604-2605 chi copy
+    // drug.chineseMedicineUse khi detail chua co). Khac DS467
+    // (RecipelDetail.chineseMedicineUse — don that, entity/bang/
+    // endpoint khac) va DS440 (Drug.chineseMedicineUse — entity
+    // khac) va DS375/DS376/DS398/DS442/DS460/DS469/DS471/DS474
+    // (cung entity, field khac). null/blank giu hop le (cot varchar
+    // NULL-able, live 15/20 dong NULL). Goi canh DS375/DS376/DS398/
+    // DS442/DS460/DS469/DS471/DS474 o ca 2 vong ghi that allSave /
+    // updateDetail.
+    private static void checkRecipeTemplateDetailChineseMedicineUseValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        DictItem chineseMedicineUse = detail.getChineseMedicineUse();
+        if (chineseMedicineUse == null
+                || StringUtils.isBlank(chineseMedicineUse.getValue())) {
+            return;
+        }
+        String value = chineseMedicineUse.getValue();
+        if (!"chineseMedicineUse_0".equals(value)
+                && !"chineseMedicineUse_1".equals(value)) {
+            throw new ServiceException(
+                    "Cách dùng thuốc Đông y của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận chineseMedicineUse_0 hoặc chineseMedicineUse_1).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -434,6 +474,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
             checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
             checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
+            checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -568,6 +609,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
                     checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
                     checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
+                    checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
