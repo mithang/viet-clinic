@@ -160,6 +160,37 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
         }
     }
 
+    // DS501: frequency gia mao ngoai mien
+    // {'chineseMedicineRecipelFrequency_0','_1','_2'}
+    // qua allSave create/update (probe pre 18/18: '..._3' /
+    // 'x' / '9' deu 200 + persist ca create lan update;
+    // reader GET hien frequency.name rong; ap mau copy nguyen
+    // frequency sang don that nen don gia in tan suat rong).
+    // Entity khong annotation mien, cot frequency varchar
+    // NULL-able (live 6/9 dong NULL) nen null/blank giu hop le
+    // (tien le DS417/DS449/DS450); chi gia tri ngoai mien moi 400.
+    // Khong co controller rieng cho recipetemplateInfo nen guard
+    // allSave + updateInfo bao het duong ghi that (allSave va aiSave
+    // deu qua saveTemplate/updateTemplate). Khong co caller noi bo
+    // nao set frequency tren RecipeTemplateInfo (grep setFrequency
+    // chi RecipelDetail/RecipelInfo, entity khac). Fail-closed
+    // 400 truoc moi ghi.
+    private static void checkRecipeTemplateInfoFrequencyValues(
+            RecipeTemplateInfo entity) {
+        if (entity == null || entity.getFrequency() == null
+                || entity.getFrequency().getValue() == null
+                || entity.getFrequency().getValue().trim().isEmpty()) {
+            return;
+        }
+        String frequency = entity.getFrequency().getValue();
+        if (!"chineseMedicineRecipelFrequency_0".equals(frequency)
+                && !"chineseMedicineRecipelFrequency_1".equals(frequency)
+                && !"chineseMedicineRecipelFrequency_2".equals(frequency)) {
+            throw new com.geeke.common.service.ServiceException(
+                    "Tần suất đơn thuốc mẫu không hợp lệ: " + frequency);
+        }
+    }
+
     @Transactional(readOnly = false)
     public void allSave(RecipeTemplateInfo recipeTemplateInfo){
         // DS116 A: null info NPEd at preInsert() (called from
@@ -171,6 +202,7 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
         checkRecipeTemplateInfoSmallTypeValues(recipeTemplateInfo); // DS417
         checkRecipeTemplateInfoTakeFrequencyValues(recipeTemplateInfo); // DS449
         checkRecipeTemplateInfoRecipelUseValues(recipeTemplateInfo); // DS450
+        checkRecipeTemplateInfoFrequencyValues(recipeTemplateInfo); // DS501
         recipeTemplateInfo.preInsert();
         recipeTemplateInfo.setId(IdGen.uuid());
         recipeTemplateInfoDao.allSave(recipeTemplateInfo);
@@ -203,6 +235,7 @@ public class RecipetemplateInfoService extends CrudService<RecipeTemplateInfoDao
         checkRecipeTemplateInfoSmallTypeValues(recipeTemplateInfo); // DS417
         checkRecipeTemplateInfoTakeFrequencyValues(recipeTemplateInfo); // DS449
         checkRecipeTemplateInfoRecipelUseValues(recipeTemplateInfo); // DS450
+        checkRecipeTemplateInfoFrequencyValues(recipeTemplateInfo); // DS501
         this.dao.updateInfo(recipeTemplateInfo);
     }
 }
