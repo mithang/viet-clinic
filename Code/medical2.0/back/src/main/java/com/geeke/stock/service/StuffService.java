@@ -166,6 +166,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkStuffOutSellValues(stuff); // DS365
         checkStuffUnpackSellValues(stuff); // DS367
         checkStuffPackUnitValues(stuff); // DS461
+        checkStuffTypeValues(stuff); // DS475
         checkStuffInventoryThresholdOrder(stuff); // DS303
         Stuff stuffTemp = super.save(stuff);
 
@@ -221,6 +222,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffOutSellValues(stuff); // DS365
             checkStuffUnpackSellValues(stuff); // DS367
             checkStuffPackUnitValues(stuff); // DS461
+            checkStuffTypeValues(stuff); // DS475
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkInsert(entitys);
@@ -250,6 +252,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffOutSellValues(stuff); // DS365
             checkStuffUnpackSellValues(stuff); // DS367
             checkStuffPackUnitValues(stuff); // DS461
+            checkStuffTypeValues(stuff); // DS475
             checkStuffInventoryThresholdOrder(stuff); // DS303
         }
         return super.bulkUpdate(entitys);
@@ -464,6 +467,42 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 && !"medicalPackUnit_11".equals(value)) {
             throw new ServiceException(
                     "Đơn vị đóng gói không hợp lệ: " + value);
+        }
+    }
+
+    // DS475: loai vat tu (type) chi co 2 gia tri co nghia trong dict
+    // 'stuffType' (del_flag='0'): stuffType_0 'Vat tu y te',
+    // stuffType_1 'Vat tu phi y te'. UI writer duy nhat
+    // stuffForm.vue:73-96 nap type_List tu dict nay nen chi ghi 2
+    // gia tri do; gia tri gia mao 'x'/'stuffType_99'/'stuffType_2'
+    // truoc day ghi thang qua mapper (#{type.value} verbatim:
+    // StuffDao.xml insert :306 / update :339 / bulkInsert :415 /
+    // bulkUpdate CASE :463-465) roi hien ten rong o danh sach vat tu
+    // (list SELECT LEFT JOIN sys_dict_item type + IFNULL(type.name,''),
+    // StuffDao.xml :65/:69), phieu kiem ke
+    // (InventoryVerificationDetailService.java:382) va danh sach canh
+    // bao (WarningService.java:155/202) -- cung ho DS461. Cot
+    // stuff.type varchar(64) NULL-able, live 16 dong co 11 NULL nen
+    // null/blank giu hop le (khac DS461 packUnit NOT NULL + @NotNull).
+    // Chi chan ghi MOI, khong dung hang legacy. Dat canh
+    // checkStuffPackUnitValues o save/bulkInsert/bulkUpdate. An toan:
+    // khong caller noi bo nao setType tren Stuff (chi Drug.setType o
+    // MedicalRecordService, entity khac); import Excel qua this.save()
+    // nen duoc guard phu; syncToClinic dung super.save nen khong bi
+    // anh huong (mau DS323/DS364).
+    private static void checkStuffTypeValues(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        DictItem type = stuff.getType();
+        if (type == null || StringUtils.isBlank(type.getValue())) {
+            return;
+        }
+        String value = type.getValue();
+        if (!"stuffType_0".equals(value)
+                && !"stuffType_1".equals(value)) {
+            throw new ServiceException(
+                    "Loại vật tư không hợp lệ: " + value);
         }
     }
 
