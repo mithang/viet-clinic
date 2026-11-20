@@ -18,11 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Nhắc lịch tái khám Service (G1 research loop).
@@ -162,6 +165,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         // C15/C16), remarks -> varchar(255). Gioi han theo cot DB;
         // null-safe. Guard dat sau mac dinh status "0" o tren.
         checkFollowupReminderLengths(entity);
+        checkFollowupReminderFollowupTypeValues(entity); // DS480
         checkNextDateNotPast(entity);
         checkLastNoticeDateNotFuture(entity);
         return super.save(entity);
@@ -200,6 +204,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             checkStatusNotForgedOnCreate(entity);
             validateRequired(entity);
             checkFollowupReminderLengths(entity);
+            checkFollowupReminderFollowupTypeValues(entity); // DS480
             checkNextDateNotPast(entity);
             checkLastNoticeDateNotFuture(entity);
         }
@@ -218,6 +223,7 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             // DS319: cap nhat khong duoc doi status qua bulkUpdate.
             checkStatusNotChanged(entity);
             checkFollowupReminderLengths(entity);
+            checkFollowupReminderFollowupTypeValues(entity); // DS480
             checkNextDateNotPast(entity);
         }
         return super.bulkUpdate(entitys);
@@ -275,6 +281,29 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         if (entity.getLastNoticeDate().toInstant().atZone(CLINIC_ZONE).toLocalDate()
                 .isAfter(clinicToday())) {
             throw new ServiceException("Ngày đã tạo thông báo gần nhất không được là ngày tương lai.");
+        }
+    }
+
+    // DS480: loai tai kham chi co 5 gia tri UI co dinh (sole writer
+    // FollowupReminderCard.vue:69 typeOptions, khong dict). Gia tri
+    // gia mao (chuoi bat ky <=50 ky tu) lot qua @Valid/@Length va
+    // duoc hien thi verbatim tren card workbench + nhung vao
+    // NoticeSend.siteContent. Blank/null giu qua day -- cac duong
+    // 400 hien co (validateRequired/@Valid/NOT NULL) xu ly.
+    private static final Set<String> VALID_FOLLOWUP_TYPES =
+            new HashSet<>(Arrays.asList(
+                    "Tái khám định kỳ", "Tiêm chủng nhắc lại",
+                    "Xét nghiệm lại", "Khám chuyên khoa", "Khác"));
+
+    private static void checkFollowupReminderFollowupTypeValues(
+            FollowupReminder entity) {
+        if (entity == null
+                || StringUtils.isBlank(entity.getFollowupType())) {
+            return;
+        }
+        if (!VALID_FOLLOWUP_TYPES.contains(entity.getFollowupType())) {
+            throw new ServiceException(
+                    "Loại tái khám không hợp lệ: chỉ được chọn trong danh sách loại tái khám");
         }
     }
 
