@@ -451,6 +451,52 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS497: westernMedicineUse chi co mien {westernMedicineUse_0, ..,
+    // westernMedicineUse_7} (_0 'Uong', _1 'Tiem tinh mach', _2 'Truoc
+    // bua an', _3 'Sau bua an', _4 'Tiem duoi da', _5 'Ngam tan',
+    // _6 'Dap ngoai', _7 'Truyen tinh mach'; dict 'westernMedicineUse',
+    // dung 8 item del_flag='0'; frontend chi set tu WesternUseOption
+    // dict kin nay o recipetemplateForm.vue:246-258). Truoc day khong
+    // guard nao nhin westernMedicineUse nen '_8'/'_9'/'x' deu 200 +
+    // persist qua allSave (tao) va updateDetail (sua, xoa truoc chen
+    // sau) — mo lai mau thi select cach dung thuoc Tay trong; ap mau
+    // sang don that (medicalOutpatientRecord/index.vue:4614-4632 push
+    // nguyen chi tiet mau vao don that) thi gia tri gia bi guard
+    // DS466 chan 400 o buoc luu nen mau bi doc/khong dung duoc; gia
+    // tri gia con che gia tri hop le cua chinh thuoc
+    // (recipetemplateForm.vue:2586-2587 chi copy
+    // drug.westernMedicineUse khi detail chua co). Khac DS466
+    // (RecipelDetail.westernMedicineUse — don that, entity/bang/
+    // endpoint khac) va DS458 (Drug.westernMedicineUse — entity
+    // khac) va DS496 (cung entity, field chineseMedicineUse).
+    // null/blank giu hop le (cot varchar(64) NULL-able, live 12/20
+    // dong NULL). Goi canh DS375/DS376/DS398/DS442/DS460/DS469/
+    // DS471/DS474/DS496 o ca 2 vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailWesternMedicineUseValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        DictItem westernMedicineUse = detail.getWesternMedicineUse();
+        if (westernMedicineUse == null
+                || StringUtils.isBlank(westernMedicineUse.getValue())) {
+            return;
+        }
+        String value = westernMedicineUse.getValue();
+        if (!"westernMedicineUse_0".equals(value)
+                && !"westernMedicineUse_1".equals(value)
+                && !"westernMedicineUse_2".equals(value)
+                && !"westernMedicineUse_3".equals(value)
+                && !"westernMedicineUse_4".equals(value)
+                && !"westernMedicineUse_5".equals(value)
+                && !"westernMedicineUse_6".equals(value)
+                && !"westernMedicineUse_7".equals(value)) {
+            throw new ServiceException(
+                    "Cách dùng thuốc Tây của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận westernMedicineUse_0 đến westernMedicineUse_7).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -475,6 +521,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
             checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
             checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
+            checkRecipeTemplateDetailWesternMedicineUseValues(recipeTemplateDetail); // DS497
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -610,6 +657,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
                     checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
                     checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
+                    checkRecipeTemplateDetailWesternMedicineUseValues(recipeTemplateDetail); // DS497
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
