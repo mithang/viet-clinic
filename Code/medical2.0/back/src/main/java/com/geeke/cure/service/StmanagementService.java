@@ -58,6 +58,14 @@ public class StmanagementService {
         if (StringUtils.isBlank(stparameter.getDetailid())) {
             throw new ServiceException("Chi tiết đơn thuốc không được để trống");
         }
+        // DS498: stresult gia mao ngoai {'0','1'} — reader gate test da
+        // (cure/infusion/index.vue:1400) chi check stresult==null nen
+        // gia tri gia non-NULL nao cung qua gate, truyen dich chay tren
+        // benh nhan chua test da that, dong thoi ststate='1' danh dau
+        // "Da test da". null -> qua (cot NULL-able, reader coi NULL la
+        // chua co nen gate van chan); blank '' -> 400 ('' qua gate);
+        // ngoai {'0','1'} -> 400 fail-closed.
+        checkStmanagementStResultValues(stparameter.getStresult());
         stparameter.setZxsj(new Date());
         int rows = managementdao.updatestresult(stparameter);
         if (rows == 0) {
@@ -82,6 +90,21 @@ public class StmanagementService {
     public List<Stmanagement> selectdetailid(Stparameter stparameter){
         forceSessionTenant(stparameter);
         return managementdao.selectdetailid(stparameter);
+    }
+
+    // DS498: stresult chi nhan '0' (Am tinh) / '1' (Duong tinh) theo
+    // select kin cure/stmanagement/index.vue:101-104. null -> qua (cot
+    // NULL-able, reader coi NULL la chua co nen gate test da van chan);
+    // blank '' -> 400 ('' qua gate infusion vi gate chi check ==null);
+    // ngoai {'0','1'} -> 400 fail-closed.
+    private static void checkStmanagementStResultValues(String stresult) {
+        if (stresult == null) {
+            return;
+        }
+        if (StringUtils.isBlank(stresult)
+                || (!"0".equals(stresult) && !"1".equals(stresult))) {
+            throw new ServiceException("Kết quả thử phản ứng da không hợp lệ");
+        }
     }
 
     // Z1b: dung chung cho stmanagementlist/selectdetailid (xem ghi chu o
