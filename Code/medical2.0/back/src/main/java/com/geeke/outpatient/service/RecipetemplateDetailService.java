@@ -369,6 +369,48 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS474: stuffType chi co mien hop {'0','1','2','3','4'} — 0 'Thuoc
+    // tay', 1 'Thuoc dong y', 2 'Truyen dich', 3 'Hang muc kham chua
+    // benh', 4 'Vat tu' (service comment getDrugStuffEvt :433). Entity
+    // RecipeTemplateDetail.java:33 `private String stuffType` (plain
+    // String, cot varchar(100) NULL-able nen null/blank van qua, tien
+    // le DS469/DS471). Khong co dict nao quan field nay (dict
+    // 'stuffType' chi co stuffType_0/_1 — do la dict cua Stuff.type,
+    // field khac). Truoc day khong guard nao nhin stuffType nen
+    // '5'/'9'/'x' deu 200 + persist qua allSave (tao) va updateDetail
+    // (sua, xoa truoc chen sau) — reader getDrugStuffEvt :433-490 roi
+    // qua het cac nhanh -> tra DrugStuffEvt rong (name/price null) nen
+    // mo lai mau thay dong khong ten/khong gia; form chi hien thi ten
+    // cho '3'/'4' nen dong gia trong ten, sai tong tien; ap mau day
+    // detail nguyen van vao don that (MedicalRecordService.allSave ->
+    // recipelDetailService.save) — RecipelDetail.stuffType chua co
+    // guard, gia tri gia chay vao don that noi cac reader chi re 0-4;
+    // RecipelStastics dung bang stuffType tho (MedicalRecordService
+    // .java:620-624) -> o nhiem thong ke thuoc/vat tu. Khac DS473
+    // (RecipelDetail.retailType — don that, entity/bang/endpoint
+    // khac) va DS375/DS376/DS398/DS442/DS460/DS469/DS471 (cung entity,
+    // field khac). Goi canh DS375/DS376/DS398/DS442/DS460/DS469/DS471 o
+    // ca 2 vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailStuffTypeValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        String stuffType = detail.getStuffType();
+        if (StringUtils.isBlank(stuffType)) {
+            return;
+        }
+        if (!"0".equals(stuffType)
+                && !"1".equals(stuffType)
+                && !"2".equals(stuffType)
+                && !"3".equals(stuffType)
+                && !"4".equals(stuffType)) {
+            throw new ServiceException(
+                    "Loại vật liệu của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận 0 — Thuốc tây, 1 — Thuốc đông y, 2 — Truyền dịch, 3 — Hạng mục khám chữa bệnh, hoặc 4 — Vật tư).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -391,6 +433,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
             checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
             checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
+            checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -524,6 +567,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailInfuseUseValues(recipeTemplateDetail); // DS460
                     checkRecipeTemplateDetailFrequencyValues(recipeTemplateDetail); // DS469
                     checkRecipeTemplateDetailInfuseTypeValues(recipeTemplateDetail); // DS471
+                    checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
