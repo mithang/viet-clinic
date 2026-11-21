@@ -194,6 +194,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         // + tollType ngoai mien {tollType_0..tollType_5} truoc moi ghi.
         checkTollInfoPaymentTypeValues(tollInfo);
         checkTollInfoTollTypeValues(tollInfo);
+        // DS535: chan returnType ngoai mien {0, 1} truoc moi ghi.
+        checkTollInfoReturnTypeValues(tollInfo);
         // Khi thêm mới, Xử lý trường tự động đánh số
         tollInfo.setCreateDate(new Date());
         if (StringUtils.isBlank(tollInfo.getTollNumber())){
@@ -404,6 +406,28 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         }
     }
 
+    /**
+     * DS535: chan returnType ngoai mien {0, 1} truoc moi ghi. 0 =
+     * phieu thu thuong, 1 = phieu hoan phi; writer noi bo chi set
+     * 0/1 (controller :130/:132 nhanh hoan, service :1083/:1085
+     * processRefund; thu thuong de int-primitive mac dinh 0). Gia
+     * tri gia (9/2/3...) viet thang qua mapper vao varchar(1) roi
+     * bien mat khoi cac query loc return_type=0 (chua hoan) ma cung
+     * khong phai phieu hoan (!=1): diem mu doi soat thu/hoan.
+     * returnType la int primitive nen omit / '' deu ve 0 hop le,
+     * chi chan gia tri ngoai {0,1}.
+     */
+    private static void checkTollInfoReturnTypeValues(TollInfo tollInfo) {
+        if (tollInfo == null) {
+            return;
+        }
+        int returnType = tollInfo.getReturnType();
+        if (returnType != 0 && returnType != 1) {
+            throw new ServiceException("Loại phiếu thu không hợp lệ: "
+                    + returnType);
+        }
+    }
+
     private static void checkLength(String value, int max, String message) {
         if (value != null && value.length() > max) {
             throw new ServiceException(message);
@@ -454,6 +478,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             // DS396: chan paymentType / tollType ngoai mien.
             checkTollInfoPaymentTypeValues(tollInfo);
             checkTollInfoTollTypeValues(tollInfo);
+            // DS535: chan returnType ngoai mien {0, 1}.
+            checkTollInfoReturnTypeValues(tollInfo);
             forceSessionCompanyWhenBlank(tollInfo);
         }
         return super.bulkInsert(entitys);
@@ -483,6 +509,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             // DS396: chan paymentType / tollType ngoai mien.
             checkTollInfoPaymentTypeValues(tollInfo);
             checkTollInfoTollTypeValues(tollInfo);
+            // DS535: chan returnType ngoai mien {0, 1}.
+            checkTollInfoReturnTypeValues(tollInfo);
         }
         return super.bulkUpdate(entitys);
     }
