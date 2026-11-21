@@ -425,6 +425,46 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS524: phuong thuc thanh toan hoan phi chi co nghia khi la 1 trong
+     * 7 gia tri cua dict 'payType' (giong DS494 cho payType luc dang ky):
+     * BizConstants chi co 7 hang PAY_TYPE_CASH=_0 :104 + ALIPAY=_1 :106
+     * + WECHAT=_2 :108 + BANK_CARD=_3 :110 + MEDICAL=_4 :114 +
+     * BANK_TRANSFER=_5 :116 + EWALLET=_6 :119, khong hang thu 8; dict
+     * live chi 4/7 item nhung guard giu _1/_2/_4 cho du lieu lich su
+     * (tien le DS494/DS396). Ca hai duong hoan phi
+     * (refundRegistrationPay desktop + wxReturnPay WeChat) deu ghi
+     * #{refundRegistrationPayType.value} verbatim qua claimRefund
+     * (RegistrationDao.xml :891) nen gia mao lot thang xuong DB; claim
+     * chi kiem tra chuyen doi status. Guard o day chan truoc moi ghi,
+     * giong DS494/DS519/DS521. Chi chan khac null/'' ma ngoai 7 mien:
+     * null/'' giu nguyen (cot refund_registration_pay_type varchar(64)
+     * NULL-able, dialog hoan phi mac dinh "" o index.vue:776; luot kham
+     * khong bat buoc co phuong thuc hoan phi). Khac DS494 (payType luc
+     * dang ky, cung entity nhung cot khac + duong ghi khac).
+     */
+    private static void checkRefundRegistrationPayTypeValues(String value) {
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!BizConstants.PAY_TYPE_CASH.equals(value)
+                && !BizConstants.PAY_TYPE_ALIPAY.equals(value)
+                && !BizConstants.PAY_TYPE_WECHAT.equals(value)
+                && !BizConstants.PAY_TYPE_BANK_CARD.equals(value)
+                && !BizConstants.PAY_TYPE_MEDICAL.equals(value)
+                && !BizConstants.PAY_TYPE_BANK_TRANSFER.equals(value)
+                && !BizConstants.PAY_TYPE_EWALLET.equals(value)) {
+            throw new ServiceException("Phương thức thanh toán hoàn phí không hợp lệ: " + value);
+        }
+    }
+
+    private static void checkRefundRegistrationPayTypeValues(Registration entity) {
+        if (entity == null || entity.getRefundRegistrationPayType() == null) {
+            return;
+        }
+        checkRefundRegistrationPayTypeValues(entity.getRefundRegistrationPayType().getValue());
+    }
+
+    /**
      * DS519: loai giay to kham chi co nghia khi la gia tri duy nhat
      * con song cua dict 'cardType' ('02' 'Chung minh nhan dan'):
      * sys_dict_type 'cardType' (id 1024846610635146229) chi co 1
@@ -1198,6 +1238,9 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
                               String refundRegistrationPayType, String refundRegistrationRemarks,Date exitNumberDate
     )
     {
+        // DS524: chan phuong thuc thanh toan hoan phi gia mao ngoai 7 mien
+        // dict 'payType' truoc moi ghi (null/'' qua).
+        checkRefundRegistrationPayTypeValues(refundRegistrationPayType);
         // O4-37: kiem tra tenant dong DB da luu truoc khi dao ghi (nhu
         // updateStatus O1-37) — truoc day controller chi get() o nhanh
         // remarks = ma da hoan phi, nhanh else goi thang dao (WHERE id,
@@ -1422,6 +1465,9 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     @Transactional(readOnly = false)
     public int wxReturnPay(Registration registrations) {
+        // DS524: chan phuong thuc thanh toan hoan phi gia mao ngoai 7 mien
+        // dict 'payType' truoc moi ghi (null/'' qua).
+        checkRefundRegistrationPayTypeValues(registrations);
         // DS64: hoan phi bang atomic claim (mau DS52-DS63) thay cho dao
         // wxReturnPay vo dieu kien. Controller da kiem tra status truoc
         // (read-then-act) nen tuan tu thu 2 bi 400, nhung 8 song song co
