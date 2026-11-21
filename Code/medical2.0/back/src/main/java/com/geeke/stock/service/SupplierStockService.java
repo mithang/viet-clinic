@@ -334,6 +334,11 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         // va dong am luu that qua saveInternal, roi addStorageStock ghi
         // dong ton kho am vao medicinal_storage_control (probe DS234
         // P1/P4) ; bid / leastBid am khong bi chan o bat cu dau (P2/P3).
+        // DS530: mo rong vong nay them 3 gia theo dong -- retailPrice /
+        // allBid / allRetailPrice am cung luu verbatim qua saveInternal
+        // (probe DS530 P1-P7, ca inStorage va inStorageByCompany, ca
+        // batch hon hop); guard muc phieu DS211 khong kiem gia dong.
+        // 0 van cho phep (quy uoc DS211).
         // Kiem tra HET cac dong TRUOC vong initStockTo ben duoi de batch
         // bi tu choi khong de lai dong tong 0 nao; 0 van cho phep (quy
         // uoc DS211). Duong vao nao cung qua saves() truoc moi ghi
@@ -353,6 +358,18 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             if (entity.getLeastBid() != null
                     && entity.getLeastBid().compareTo(java.math.BigDecimal.ZERO) < 0) {
                 throw new ServiceException("Giá nhập đơn vị nhỏ nhất không được âm");
+            }
+            if (entity.getRetailPrice() != null
+                    && entity.getRetailPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Giá bán lẻ dòng nhập kho không được âm");
+            }
+            if (entity.getAllBid() != null
+                    && entity.getAllBid().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Tổng giá nhập dòng nhập kho không được âm");
+            }
+            if (entity.getAllRetailPrice() != null
+                    && entity.getAllRetailPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Tổng giá bán lẻ dòng nhập kho không được âm");
             }
         }
         // Thêm mớiThuốc hoặc Vật tưTồn kho giờ, Nếu là khởi tạo tồn kho thì khởi tạo trước dữ liệu bản ghi kiểm soát tổng tồn kho
