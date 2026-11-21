@@ -86,6 +86,13 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
      * ap dung o bulkInsert bat ke id do client tu chon hay khong
      * (cung mau DS540 o RecipelInfo). save() truyen isCreate =
      * id rong; bulkInsert() truyen isCreate = true.
+     * DS542: bulkUpdate cung phai guard voi isCreate = true --
+     * mapper bulkUpdate CASE ghi patient_id/doctor_id/subscribe_date
+     * verbatim (khong <if>), nen payload chi co id se ghi NULL de len
+     * subject cua dong da co (probe pre: strip ca 3 loai subject deu
+     * 200). Check theo entity (KHONG gop voi stored): dong sau update
+     * mang subject cua entity, stored bi ghi de. Khong Vue nao goi
+     * bulkUpdateRegistration nen khong pha luong frontend hop le.
      * wxSave la method rieng, khong qua day, khong doi.
      */
     private static void checkRegistrationHasSubject(Registration entity, boolean isCreate) {
@@ -1027,6 +1034,10 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             }
             // DS146 A: bulk cung chan do dai nhu save().
             checkRegistrationLengths(entity);
+            // DS146 B / DS542: bulkUpdate cung chan strip subject --
+            // mapper CASE ghi patient/doctor/subscribe verbatim nen
+            // dong sau update mang subject cua entity (khong gop stored).
+            checkRegistrationHasSubject(entity, true);
             // DS238: bulkUpdate cung chan phi am nhu save().
             checkRegistrationFeesNonNegative(entity);
             // DS368: bulkUpdate cung chan co tung den vung dich gia mao nhu save().
