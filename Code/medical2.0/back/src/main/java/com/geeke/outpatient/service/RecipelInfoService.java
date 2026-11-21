@@ -184,6 +184,64 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS539: chan don thuoc SINH RA da mang trang thai ket thuc (-1)
+    // qua duong TAO MOI -- save() id rong + bulkInsert() (retry
+    // ung vien DS310, BLOCKED 2026-11-15 o buoc ghi probe; DS363 chi
+    // guard MIEN {1,-1}/{0,1,2,-1} tren MOI duong nen -1 van lot o
+    // duong tao). -1 chi co nghia tren dong DA TON TAI, do luong
+    // hoan/tra/huy tren dong do set: invalid()
+    // RecipelInfoService:806 setStatus(-1) + super.save (dong load
+    // theo id), processRefund TollInfoService:1100
+    // setChargeStatus(-1) + recipelInfoService.save (dong load theo
+    // id), return SupplierStockService:214 setDispensionStatus(-1) +
+    // save (dong load theo id). Cac caller tao moi chi set 0/1/2 +
+    // status 1 hoac NULL: MedicalRecordService allSave :1217-1226 /
+    // :1299 / :1421-1432 (charge 0/1/2, dispension 0/2), TollInfoService
+    // retail :1380 (khong set -> NULL), RemoteDiagnosisTreatment
+    // addRecipel (khong set -> NULL); grep setStatus(-1) /
+    // setChargeStatus(-1) / setDispensionStatus(-1) = chi 3 luong
+    // update tren. Harm: MedicalRecordService allSave :1198-1206 bo
+    // qua dong sinh status=-1 nhu "da huy" va dong sinh
+    // chargeStatus=-1 nhu "da hoan phi" -- don sinh ra da hoan phi
+    // khong bao gio thu duoc qua luong kham thuong; processRefund
+    // :1153-1160 re nhanh goBackFee voi dispensionStatus=-1 sinh ra
+    // (tra kho chua tung phat); getHistoryRecipel loc a.status=1 nen
+    // don sinh status=-1 vo hinh trong lich su don; claimInvalid
+    // (mapper :644 WHERE status=1 AND charge_status=0) khong bao gio
+    // huy duoc dong sinh -1; RegistrationService updateStatus :1164
+    // chan huy dang ky khi don co chargeStatus != "0". Live 39 dong:
+    // status -1 = 0, charge -1 = 3, dispension -1 = 4 (toan dong hoan/
+    // tra that tren dong da ton tai). Guard CHI ap cho tao moi: id
+    // khac rong -> qua ngay (luong hoan/tra/huy tren dong ton tai
+    // van luu -1 duoc qua save-update / bulkUpdate); null giu nguyen
+    // (3 cot int NULL-able, khong default). Khac DS363 (mien tren moi
+    // duong), DS372/DS420/DS428/DS438/DS447/DS448/DS462/DS538 (truong
+    // khac, cung entity).
+    private static void checkRecipelInfoCreateStatusValues(RecipelInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        if (StringUtils.isNotBlank(entity.getId())) {
+            return;
+        }
+        Integer status = entity.getStatus();
+        if (status != null && status.intValue() != 1) {
+            throw new ServiceException("Đơn thuốc mới không được mang trạng thái đã hủy: " + status);
+        }
+        Integer chargeStatus = entity.getChargeStatus();
+        if (chargeStatus != null && chargeStatus.intValue() != 0
+                && chargeStatus.intValue() != 1
+                && chargeStatus.intValue() != 2) {
+            throw new ServiceException("Đơn thuốc mới không được mang trạng thái đã hoàn phí: " + chargeStatus);
+        }
+        Integer dispensionStatus = entity.getDispensionStatus();
+        if (dispensionStatus != null && dispensionStatus.intValue() != 0
+                && dispensionStatus.intValue() != 1
+                && dispensionStatus.intValue() != 2) {
+            throw new ServiceException("Đơn thuốc mới không được mang trạng thái đã trả thuốc: " + dispensionStatus);
+        }
+    }
+
     // DS372: chan notShow gia mao ngoai mien {0,1} qua save /
     // bulkInsert / bulkUpdate (probe pre 23/23: update 1->9, 0->2,
     // bulkUpdate 0->9 / 1->-1 / 1->2 deu 200 + persist; control
@@ -587,6 +645,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         validateRequired(entity);
         // DS363: chan status/chargeStatus/dispensionStatus gia mao.
         checkRecipelInfoStatusValues(entity);
+        // DS539: chan don SINH RA da mang trang thai ket thuc (-1).
+        checkRecipelInfoCreateStatusValues(entity);
         // DS372: chan notShow gia mao.
         checkNotShowValues(entity);
         // DS420: chan frequency gia mao.
@@ -625,6 +685,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             validateRequired(entity);
             // DS363: chan status/chargeStatus/dispensionStatus gia mao.
             checkRecipelInfoStatusValues(entity);
+            // DS539: chan don SINH RA da mang trang thai ket thuc (-1).
+            checkRecipelInfoCreateStatusValues(entity);
             // DS372: chan notShow gia mao.
             checkNotShowValues(entity);
             // DS420: chan frequency gia mao.
