@@ -72,6 +72,7 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
                     + supplier.getId());
         }
         checkSupplierStatusValues(supplier); // DS443
+        checkSupplierTypeValues(supplier); // DS546
         Supplier supplierTemp = super.save(supplier);
         return supplierTemp;
     }
@@ -102,6 +103,7 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
                 throw new ServiceException("Loại nhà cung cấp không được để trống");
             }
             checkSupplierStatusValues(supplier); // DS443
+            checkSupplierTypeValues(supplier); // DS546
         }
         return super.bulkInsert(entitys);
     }
@@ -119,6 +121,7 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
                         + supplier.getId());
             }
             checkSupplierStatusValues(supplier); // DS443
+            checkSupplierTypeValues(supplier); // DS546
         }
         return super.bulkUpdate(entitys);
     }
@@ -147,6 +150,26 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
                     "Trạng thái nhà cung cấp không hợp lệ: " + status);
         }
     }
-    
+
+    // DS546: type chi co 2 gia tri co nghia '1'/'2' (radio loai nha cung
+    // cap o supplierForm.vue:71-72, loc list chi co '1'/'2' o
+    // supplier/index.vue:189-197; hang gia vo hinh duoi ca 2 bo loc loai
+    // va khong radio nao duoc chon o form). Form luon gui '1'/'2',
+    // khong writer noi bo nao tao Supplier, live 6/6 deu '1'/'2', cot
+    // type varchar(1) NOT NULL -> null/blank cung 400 (tien le DS443
+    // cho status; save da 400 blank nho @NotNull/@Length tren getType,
+    // bulkInsert da 400 blank, lo blank con lai la bulkUpdate -- bulk*
+    // bypass @Valid nen guard o day la tuyen cuoi). Goi o
+    // save()/bulkInsert()/bulkUpdate() ngay sau guard status DS443.
+    private static void checkSupplierTypeValues(Supplier supplier) {
+        if (supplier == null) {
+            return;
+        }
+        String type = supplier.getType();
+        if (!"1".equals(type) && !"2".equals(type)) {
+            throw new ServiceException(
+                    "Loại nhà cung cấp không hợp lệ: " + type);
+        }
+    }
 
 }
