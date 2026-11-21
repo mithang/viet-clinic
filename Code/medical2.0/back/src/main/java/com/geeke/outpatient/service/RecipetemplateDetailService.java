@@ -497,6 +497,42 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS512: skinTest chi co mien {skinTest_0, skinTest_1,
+    // skinTest_2} (_0 'Thử phản ứng da', _1 'Dùng tiếp',
+    // _2 'Miễn thử'; dict 'skinTest', dung 3 item del_flag='0';
+    // frontend chi set tu SKIN_TEST dict kin nay o
+    // recipetemplateForm.vue:941-948, select khong bat buoc).
+    // Truoc day khong guard nao nhin skinTest nen '_3'/'_9'/'x'
+    // deu 200 + persist qua allSave (tao) va updateDetail (sua,
+    // xoa truoc chen sau) — mo lai mau thi select test da trong;
+    // ap mau sang don that (medicalOutpatientRecord/index.vue:2295
+    // copy row.skinTest) thi gia tri gia bi guard DS479 chan 400
+    // o buoc luu nen mau bi doc/khong dung duoc. Khac DS479
+    // (RecipelDetail.skinTest — don that, entity/bang/endpoint
+    // khac) va DS375/DS376/DS398/DS442/DS460/DS469/DS471/DS474/
+    // DS496/DS497 (cung entity, field khac). null/blank giu hop
+    // le (cot varchar(64) NULL-able). Goi canh DS496/DS497 o ca
+    // 2 vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailSkinTestValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        DictItem skinTest = detail.getSkinTest();
+        if (skinTest == null
+                || StringUtils.isBlank(skinTest.getValue())) {
+            return;
+        }
+        String value = skinTest.getValue();
+        if (!"skinTest_0".equals(value)
+                && !"skinTest_1".equals(value)
+                && !"skinTest_2".equals(value)) {
+            throw new ServiceException(
+                    "Test da của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận skinTest_0 đến skinTest_2).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -522,6 +558,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
             checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
             checkRecipeTemplateDetailWesternMedicineUseValues(recipeTemplateDetail); // DS497
+            checkRecipeTemplateDetailSkinTestValues(recipeTemplateDetail); // DS512
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -658,6 +695,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailStuffTypeValues(recipeTemplateDetail); // DS474
                     checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
                     checkRecipeTemplateDetailWesternMedicineUseValues(recipeTemplateDetail); // DS497
+                    checkRecipeTemplateDetailSkinTestValues(recipeTemplateDetail); // DS512
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
