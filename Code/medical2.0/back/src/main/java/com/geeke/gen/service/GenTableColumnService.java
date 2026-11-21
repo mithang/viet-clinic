@@ -173,6 +173,16 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
                 && tooLong(genTableColumn.getShowType().getValue(), 64)) {
             throw new ServiceException("điều khiển Độ dài phải nằm trong khoảng 0 đến 64");
         }
+        // DS515: showType gia mao ngoai mien 16 gia tri dict
+        // 'showType' con hoat dong -- truoc day 200 + persist
+        // (chi check do dai o tren), gia tri gia khong khop nhanh
+        // nao o conditonPanel.vue nen cot khong hien dieu khien
+        // truy van nao, va hien ten rong o genTableForm (LEFT JOIN
+        // dict_type_id='5003'). Ca 2 duong ghi deu qua
+        // checkLengths() nay (save truc tiep +
+        // GenTableService.save cho cot con gui kem) nen guard
+        // o day bao ca hai, tien le DS454 queryType.
+        checkGenTableColumnShowTypeValues(genTableColumn);
         if (genTableColumn.getCustomType() != null
                 && tooLong(genTableColumn.getCustomType().getId(), 64)) {
             throw new ServiceException("tùy chỉnh Loại Độ dài phải nằm trong khoảng 0 đến 64");
@@ -288,6 +298,46 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
                 && !"right_like".equals(value)) {
             throw new ServiceException(
                     "Truy vấn cách không hợp lệ: " + value);
+        }
+    }
+
+    /**
+     * DS515: chan GenTableColumn.showType gia mao ngoai mien 16
+     * gia tri dict 'showType' con hoat dong. showType null hoac
+     * value blank -> qua (cot show_type NULL-able; null/blank hop
+     * le, tien le DS454 cung service). Public static de
+     * GenTableService.save tai dung (no goi checkLengths cho cot
+     * con gui kem).
+     */
+    public static void checkGenTableColumnShowTypeValues(
+            GenTableColumn genTableColumn) {
+        if (genTableColumn == null) {
+            return;
+        }
+        DictItem showType = genTableColumn.getShowType();
+        if (showType == null
+                || StringUtils.isBlank(showType.getValue())) {
+            return;
+        }
+        String value = showType.getValue();
+        if (!"AutoSerial".equals(value)
+                && !"DatePicker".equals(value)
+                && !"DateTimePicker".equals(value)
+                && !"IncNumber".equals(value)
+                && !"InputNumber".equals(value)
+                && !"MultipleInput".equals(value)
+                && !"MultiFileUpload".equals(value)
+                && !"PassWordInput".equals(value)
+                && !"PropertyDef".equals(value)
+                && !"PropertyInput".equals(value)
+                && !"Select".equals(value)
+                && !"SelectTree".equals(value)
+                && !"SingleInput".equals(value)
+                && !"StringMultiSelect".equals(value)
+                && !"Switch".equals(value)
+                && !"TimePicker".equals(value)) {
+            throw new ServiceException(
+                    "điều khiển không hợp lệ: " + value);
         }
     }
 
