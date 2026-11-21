@@ -156,6 +156,20 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
                 && tooLong(genTableColumn.getJavaType().getValue(), 64)) {
             throw new ServiceException("JAVA Loại Độ dài phải nằm trong khoảng 1 đến 64");
         }
+        // DS516: javaType gia mao ngoai mien 9 gia tri dict
+        // 'javaType' con hoat dong -- truoc day 200 + persist
+        // (chi check do dai o tren), gia tri gia roi qua het
+        // cac nhanh codegen (GenTableColumnEx:36-40/154/164-171,
+        // GenTableEx:49/68-69/82/327/342/508) va gia tri gia co
+        // dau '.' duoc them thang lam import + ten kieu don
+        // gian gia vao code sinh ra, va hien ten rong o
+        // genTableForm (LEFT JOIN dict_type_id='5001'). Ca 2
+        // duong ghi deu qua checkLengths() nay (save truc tiep
+        // + GenTableService.save cho cot con gui kem) nen guard
+        // o day bao ca hai, tien le DS454 queryType / DS515
+        // showType. Null/blank qua o day vi checkRequired da
+        // chan (java_type NOT NULL, DS118/DS142).
+        checkGenTableColumnJavaTypeValues(genTableColumn);
         if (genTableColumn.getQueryType() != null
                 && tooLong(genTableColumn.getQueryType().getValue(), 64)) {
             throw new ServiceException("Truy vấn cách Độ dài phải nằm trong khoảng 0 đến 64");
@@ -338,6 +352,40 @@ public class GenTableColumnService extends CrudService<GenTableColumnDao, GenTab
                 && !"TimePicker".equals(value)) {
             throw new ServiceException(
                     "điều khiển không hợp lệ: " + value);
+        }
+    }
+
+    /**
+     * DS516: chan GenTableColumn.javaType gia mao ngoai mien 9
+     * gia tri dict 'javaType' con hoat dong (dict_type_id
+     * '5001', do live). javaType null hoac value blank -> qua
+     * o day (checkRequired chan o ca 2 duong ghi vi java_type
+     * NOT NULL, DS118/DS142). Public static de
+     * GenTableService.save tai dung (no goi checkLengths cho cot
+     * con gui kem).
+     */
+    public static void checkGenTableColumnJavaTypeValues(
+            GenTableColumn genTableColumn) {
+        if (genTableColumn == null) {
+            return;
+        }
+        DictItem javaType = genTableColumn.getJavaType();
+        if (javaType == null
+                || StringUtils.isBlank(javaType.getValue())) {
+            return;
+        }
+        String value = javaType.getValue();
+        if (!"Custom".equals(value)
+                && !"Double".equals(value)
+                && !"Float".equals(value)
+                && !"Integer".equals(value)
+                && !"java.util.Date".equals(value)
+                && !"Long".equals(value)
+                && !"String".equals(value)
+                && !"This".equals(value)
+                && !"java.math.BigDecimal".equals(value)) {
+            throw new ServiceException(
+                    "JAVA Loại không hợp lệ: " + value);
         }
     }
 
