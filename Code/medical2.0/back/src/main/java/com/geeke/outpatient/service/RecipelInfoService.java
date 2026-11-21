@@ -394,6 +394,44 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         }
     }
 
+    // DS538: chan isPay / isDispension gia mao ngoai mien {'0','1','2'}
+    // qua save / bulkInsert / bulkUpdate (probe pre 18/18: save create
+    // isPay='9'/'3', isDispension='9', save update 0->'9', bulkInsert
+    // mixed isPay='9', bulkUpdate mixed isDisp='x' deu 200 + persist;
+    // control (0,0)/(2,2) van 200; omit ca hai van 200 NULL/NULL).
+    // Mien kin (3 nguon doc lap): (1) schema is_pay varchar(1) NULL
+    // DEFAULT '0', is_dispension varchar(1) NULL DEFAULT NULL; (2)
+    // live 39 dong: is_pay 0x13/1x16/2x10 NULL 0, is_dispension
+    // 0x4/1x11/2x4 NULL 20, bad 0/0; (3) writer noi bo
+    // MedicalRecordService chi set "0"/"1"/"2" va "1" (isPay "2"
+    // don dien tu, isDispension "1"). Harm: reader TollInfoDao.xml
+    // :113/:512/:555 is_pay != '0' -> don gia '9' bi tinh DA THANH
+    // TOAN, claimPaid khong lat duoc no sang '1'; SupplierStockService
+    // claim phat thuoc WHERE is_dispension='0' -> don gia '9' ket vinh
+    // vien; RecipelDetailDao.xml:112 where ri.is_dispension='0' -> don
+    // gia bien khoi danh sach cho phat. null/blank giu nguyen (cot
+    // varchar NULL-able; tien le DS420/DS438/DS447). Khac DS363
+    // (status/chargeStatus/dispensionStatus, Integer), DS372 (notShow),
+    // DS428 (isFollowUp) — cung entity, khac truong. Dong ung vien
+    // DS537 (lan thu 3, cuoi).
+    private static void checkRecipelInfoPayDispensionValues(RecipelInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        String isPay = entity.getIsPay();
+        if (StringUtils.isNotBlank(isPay)
+                && !"0".equals(isPay) && !"1".equals(isPay)
+                && !"2".equals(isPay)) {
+            throw new ServiceException("Trạng thái thanh toán đơn thuốc không hợp lệ: " + isPay);
+        }
+        String isDispension = entity.getIsDispension();
+        if (StringUtils.isNotBlank(isDispension)
+                && !"0".equals(isDispension) && !"1".equals(isDispension)
+                && !"2".equals(isDispension)) {
+            throw new ServiceException("Trạng thái phát thuốc đơn thuốc không hợp lệ: " + isDispension);
+        }
+    }
+
     private static void checkRecipelInfoTakeFrequencyValues(RecipelInfo entity) {
         if (entity == null || entity.getTakeFrequency() == null
                 || StringUtils.isBlank(entity.getTakeFrequency().getValue())) {
@@ -563,6 +601,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         checkRecipelInfoTakeFrequencyValues(entity);
         // DS462: chan smallType gia mao.
         checkRecipelInfoSmallTypeValues(entity);
+        // DS538: chan isPay/isDispension gia mao.
+        checkRecipelInfoPayDispensionValues(entity);
         checkNonNegative(entity);
         checkFollowUpDateNotPast(entity);
         checkRecipelInfoEventDatesNotFuture(entity);
@@ -599,6 +639,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoTakeFrequencyValues(entity);
             // DS462: chan smallType gia mao.
             checkRecipelInfoSmallTypeValues(entity);
+            // DS538: chan isPay/isDispension gia mao.
+            checkRecipelInfoPayDispensionValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
@@ -632,6 +674,8 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkRecipelInfoTakeFrequencyValues(entity);
             // DS462: chan smallType gia mao.
             checkRecipelInfoSmallTypeValues(entity);
+            // DS538: chan isPay/isDispension gia mao.
+            checkRecipelInfoPayDispensionValues(entity);
             validateSmallType(entity);
             checkNonNegative(entity);
             checkFollowUpDateNotPast(entity);
