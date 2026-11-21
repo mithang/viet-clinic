@@ -533,6 +533,44 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
     }
 
 
+    // DS514: retailType chi co mien {'0','1','2','3','4'} ('0'/'1'
+    // thuoc Tay/ban le, '2' truyen dich, '3' hang muc, '4' vat tu;
+    // mien kin nay tien le DS473 cho RecipelDetail.retailType —
+    // don that, entity/bang/endpoint khac; UI live chi dat '0'/'1',
+    // '2'/'3'/'4' tu dong truyen dich/hang muc/vat tu). Truoc day
+    // khong guard nao nhin retailType nen '5'/'9'/'x' deu 200 +
+    // persist qua allSave (tao) va updateDetail (sua, xoa truoc chen
+    // sau) — ap mau sang don that
+    // (medicalOutpatientRecord/index.vue ~:4475 invoking2 gan
+    // nguyen chi tiet mau vao don that) thi gia tri gia bi guard
+    // DS473 chan 400 o buoc luu nen mau bi doc/khong dung duoc;
+    // dong thoi MedicalRecordService.java:820 re nhanh gia theo
+    // retailType '0'–'4', gia tri gia roi qua het cac nhanh. Khac
+    // DS473 (RecipelDetail.retailType — don that) va DS375/376/
+    // DS398/DS442/DS460/DS469/DS471/DS474/DS496/DS497/DS512 (cung
+    // entity, field khac). null/blank giu hop le (cot varchar(1)
+    // NULL-able, live 20/20 dong NULL). Goi canh DS512 o ca 2
+    // vong ghi that allSave / updateDetail.
+    private static void checkRecipeTemplateDetailRetailTypeValues(
+            RecipeTemplateDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        String retailType = detail.getRetailType();
+        if (StringUtils.isBlank(retailType)) {
+            return;
+        }
+        if (!"0".equals(retailType)
+                && !"1".equals(retailType)
+                && !"2".equals(retailType)
+                && !"3".equals(retailType)
+                && !"4".equals(retailType)) {
+            throw new ServiceException(
+                    "Loại bán lẻ của chi tiết mẫu đơn thuốc không hợp lệ (chỉ nhận 0 đến 4).");
+        }
+    }
+
+
     // Ghi: method này INSERT vào recipetemplate_detail nên phải là
     // read-write (lớp đang readOnly=true); khi được gọi từ
     // RecipetemplateService.allSave (đã read-write) nó join transaction đó.
@@ -559,6 +597,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
             checkRecipeTemplateDetailWesternMedicineUseValues(recipeTemplateDetail); // DS497
             checkRecipeTemplateDetailSkinTestValues(recipeTemplateDetail); // DS512
+            checkRecipeTemplateDetailRetailTypeValues(recipeTemplateDetail); // DS514
             recipeTemplateDetail.preInsert();
             recipeTemplateDetail.setId(IdGen.uuid());
             recipeTemplateDetailDao.allSave(recipeTemplateDetail);
@@ -696,6 +735,7 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
                     checkRecipeTemplateDetailChineseMedicineUseValues(recipeTemplateDetail); // DS496
                     checkRecipeTemplateDetailWesternMedicineUseValues(recipeTemplateDetail); // DS497
                     checkRecipeTemplateDetailSkinTestValues(recipeTemplateDetail); // DS512
+                    checkRecipeTemplateDetailRetailTypeValues(recipeTemplateDetail); // DS514
                     recipeTemplateDetail.preInsert();
                     recipeTemplateDetail.setId(IdGen.uuid());
                     recipeTemplateDetail.setRecipeTemplateInfo(recipeTemplateInfoId);
