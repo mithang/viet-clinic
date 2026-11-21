@@ -120,6 +120,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
         checkRecipelDetailRetailTypeValues(entity); // DS473
         checkRecipelDetailSkinTestValues(entity); // DS479
+        checkRecipelDetailInfuseGroupValues(entity); // DS536
         checkExecutionsNotExceedCap(entity);
         // DS149 C: chan do dai truoc moi ghi (mau DS148 A). bulk* bypass
         // @Valid nen truong co @Length van 500 o mapper khi qua bulk
@@ -177,6 +178,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
         checkRecipelDetailRetailTypeValues(entity); // DS473
         checkRecipelDetailSkinTestValues(entity); // DS479
+        checkRecipelDetailInfuseGroupValues(entity); // DS536
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -218,6 +220,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailChineseMedicineUseValues(entity); // DS467
         checkRecipelDetailRetailTypeValues(entity); // DS473
         checkRecipelDetailSkinTestValues(entity); // DS479
+        checkRecipelDetailInfuseGroupValues(entity); // DS536
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
         }
@@ -757,6 +760,23 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         }
     }
 
+    // DS536: nhom truyen dich cua chi tiet don thuoc chi duoc de
+    // trong (khong truyen dich) hoac so nhom tu 1 tro len -- frontend
+    // cure/infusion/index.vue:1968 index infusionProject[infuseGroup-1];
+    // gia tri 0/am khong thuoc nhom nao, tach khoi moi nhom that tren
+    // trang truyen dich. Goi o ca 4 duong ghi that
+    // save/bulkInsert/bulkUpdate/addRetailrecipelDetails, ngay sau
+    // checkRecipelDetailSkinTestValues (DS479), mau DS504/DS398.
+    private static void checkRecipelDetailInfuseGroupValues(
+            RecipelDetail entity) {
+        if (entity == null || entity.getInfuseGroup() == null) {
+            return;
+        }
+        if (entity.getInfuseGroup() < 1) {
+            throw new ServiceException(
+                    "Nhóm truyền dịch của chi tiết đơn thuốc không hợp lệ (để trống nếu không truyền dịch, hoặc số nhóm từ 1 trở lên).");
+        }
+    }
     // DS464: doc chronicDays cua tenant phien, live moi lan ghi.
     // listAll tu ap tenant-filter (ensureCompanyFilter, N3e) nen chi
     // thay dong cua tenant phien; lay max cac dong parse duoc (phong
@@ -879,6 +899,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
             checkRecipelDetailChineseMedicineUseValues(recipelDetail); // DS467
             checkRecipelDetailRetailTypeValues(recipelDetail); // DS473
             checkRecipelDetailSkinTestValues(recipelDetail); // DS479
+            checkRecipelDetailInfuseGroupValues(recipelDetail); // DS536
             DrugStuffEvt drugStuffId = recipelDetail.getDrugStuffId();
             super.save(recipelDetail);
         }
