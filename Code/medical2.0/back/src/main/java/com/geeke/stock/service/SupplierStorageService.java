@@ -87,6 +87,8 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         checkSupplierStorageDateOrder(supplierStorage);
         // DS492: chan trang thai xet duyet gia mao ngoai mien dict.
         checkSupplierStorageExamineValues(supplierStorage);
+        // DS525: chan loai phieu nhap kho gia mao ngoai {'1','2'}.
+        checkSupplierStorageTypeValues(supplierStorage);
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
     }
@@ -132,6 +134,31 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
                 && !BizConstants.SUPPLIER_STORAGE_EXAMINE_PENDING.equals(value)) {
             throw new ServiceException(
                     "Trạng thái xét duyệt không hợp lệ: " + value);
+        }
+    }
+
+    // DS525: loai phieu nhap kho gia mao ngoai mien kin {'1','2'}
+    // (1 = thuoc, 2 = vat tu -- supplierStorage / auditWarehousing /
+    // distributionDrugs index.vue chi gui editAndAddStorage(1)/(2);
+    // HosDepartmentStorageController dat "1" noi bo). Khong co guard
+    // nao truoc day: mapper ghi #{type} thang (insert, update,
+    // bulkInsert, bulkUpdate) nen save/bulk nhan bat cu chuoi nao
+    // do dai <= 1 (probe: '3', '0', 'x' deu 200 + persist).
+    // Reader harm: 3 trang list render type==='1' ? 'Thuoc' :
+    // 'Vat tu' (v-else) nen gia tri gia mao hien sai thanh 'Vat tu'.
+    // Null / blank cho qua (cot type varchar(1) NULL-able, tien le
+    // DS519/DS521). Guard o save/bulkInsert/bulkUpdate.
+    private static void checkSupplierStorageTypeValues(SupplierStorage entity) {
+        if (entity == null) {
+            return;
+        }
+        String value = entity.getType();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!"1".equals(value) && !"2".equals(value)) {
+            throw new ServiceException(
+                    "Loại phiếu nhập kho không hợp lệ: " + value);
         }
     }
 
@@ -309,6 +336,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageDatesNotFuture(entity); // DS284
             checkSupplierStorageDateOrder(entity); // DS294
             checkSupplierStorageExamineValues(entity); // DS492
+            checkSupplierStorageTypeValues(entity); // DS525
             forceSessionCompanyWhenBlank(entity);
         }
         return super.bulkInsert(entitys);
@@ -335,6 +363,7 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageDatesNotFuture(entity); // DS284
             checkSupplierStorageDateOrder(entity); // DS294
             checkSupplierStorageExamineValues(entity); // DS492
+            checkSupplierStorageTypeValues(entity); // DS525
         }
         return super.bulkUpdate(entitys);
     }
