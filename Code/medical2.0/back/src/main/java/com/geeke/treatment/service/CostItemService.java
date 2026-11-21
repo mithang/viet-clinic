@@ -136,6 +136,69 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         }
     }
 
+    // DS509: itemType chi duoc la 1 trong 5 gia tri cua dict
+    // 'treatmentItemType' (_0 Xet nghiem, _1 Kiem tra, _2 Vat ly tri
+    // lieu, _3 Dieu tri, _4 Khac) va unit chi duoc la 1 trong 16 gia
+    // tri cua dict 'treatmentItemUnit' (_0.._15). Truoc day khong guard
+    // mien: mapper ghi verbatim #{itemType.value} / #{unit.value} nen
+    // gia tri gia ('treatmentItemType_9', 'treatmentItemUnit_99', 'x')
+    // luu thang xuong DB qua ca 5 duong ghi (save, bulkInsert,
+    // bulkUpdate, saveDto -> save(), syncToClinic -> super.save);
+    // reader LEFT JOIN sys_dict_item tra ten rong cho gia tri gia, va
+    // listPageForMedical copy unit gia sang MedicalProject.dosisUnit/
+    // pack nen don vi gia lot vao chon hang muc khi ke don. Chan
+    // fail-closed 400 o service (save() bao ca /save lan /saveDto;
+    // bulk* goi rieng o vong lap; syncToClinic goi thang super.save
+    // nen guard rieng trong vong lap). null/blank van qua nhu cu (cot
+    // varchar(64) NULL-able, khong @NotNull, form khong bat buoc;
+    // 4 dong legacy unit free-text ton tai san chi chan ghi moi).
+    private static void checkCostItemItemTypeValues(CostItem costItem) {
+        if (costItem == null || costItem.getItemType() == null) {
+            return;
+        }
+        String value = costItem.getItemType().getValue();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!"treatmentItemType_0".equals(value)
+                && !"treatmentItemType_1".equals(value)
+                && !"treatmentItemType_2".equals(value)
+                && !"treatmentItemType_3".equals(value)
+                && !"treatmentItemType_4".equals(value)) {
+            throw new ServiceException(
+                    "Loại hạng mục không hợp lệ: " + value);
+        }
+    }
+
+    private static void checkCostItemUnitValues(CostItem costItem) {
+        if (costItem == null || costItem.getUnit() == null) {
+            return;
+        }
+        String value = costItem.getUnit().getValue();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!"treatmentItemUnit_0".equals(value)
+                && !"treatmentItemUnit_1".equals(value)
+                && !"treatmentItemUnit_2".equals(value)
+                && !"treatmentItemUnit_3".equals(value)
+                && !"treatmentItemUnit_4".equals(value)
+                && !"treatmentItemUnit_5".equals(value)
+                && !"treatmentItemUnit_6".equals(value)
+                && !"treatmentItemUnit_7".equals(value)
+                && !"treatmentItemUnit_8".equals(value)
+                && !"treatmentItemUnit_9".equals(value)
+                && !"treatmentItemUnit_10".equals(value)
+                && !"treatmentItemUnit_11".equals(value)
+                && !"treatmentItemUnit_12".equals(value)
+                && !"treatmentItemUnit_13".equals(value)
+                && !"treatmentItemUnit_14".equals(value)
+                && !"treatmentItemUnit_15".equals(value)) {
+            throw new ServiceException(
+                    "Đơn vị không hợp lệ: " + value);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public CostItem save(CostItem costItem) {
@@ -145,6 +208,9 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
         checkCostItemNonNegative(costItem);
         // DS359: chan isDeduct ngoai mien {'0','1'}.
         checkCostItemIsDeductValues(costItem);
+        // DS509: chan itemType/unit ngoai mien dict.
+        checkCostItemItemTypeValues(costItem);
+        checkCostItemUnitValues(costItem);
         // DS78: is_package is NOT NULL DEFAULT '0', but the insert
         // lists the column unconditionally, so a generic /save body
         // without isPackage 500s ("Column 'is_package' cannot be
@@ -251,6 +317,9 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
             checkCostItemNonNegative(costItem);
             // DS359: bulk cung chan isDeduct ngoai mien nhu save().
             checkCostItemIsDeductValues(costItem);
+            // DS509: bulk cung chan itemType/unit ngoai mien nhu save().
+            checkCostItemItemTypeValues(costItem);
+            checkCostItemUnitValues(costItem);
             if (StringUtils.isBlank(costItem.getIsPackage())) {
                 costItem.setIsPackage("0");
             }
@@ -287,6 +356,9 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
             checkCostItemNonNegative(costItem);
             // DS359: bulk cung chan isDeduct ngoai mien nhu save().
             checkCostItemIsDeductValues(costItem);
+            // DS509: bulk cung chan itemType/unit ngoai mien nhu save().
+            checkCostItemItemTypeValues(costItem);
+            checkCostItemUnitValues(costItem);
             if (StringUtils.isBlank(costItem.getItemCode())) {
                 throw new ServiceException("Mã hạng mục không được để trống");
             }
@@ -383,6 +455,9 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
                 // DS359: sync cung chan isDeduct ngoai mien (duong nay
                 // goi thang super.save, bypass guard cua save()).
                 checkCostItemIsDeductValues(costItem);
+                // DS509: sync cung chan itemType/unit ngoai mien.
+                checkCostItemItemTypeValues(costItem);
+                checkCostItemUnitValues(costItem);
                 costItem.setCompany(company);
                 costItem.setId(null);
                 costItem.setSyncId(oldId);
