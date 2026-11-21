@@ -166,6 +166,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkStuffOutSellValues(stuff); // DS365
         checkStuffUnpackSellValues(stuff); // DS367
         checkStuffPackUnitValues(stuff); // DS461
+        checkStuffMinUnitValues(stuff); // DS502
         checkStuffTypeValues(stuff); // DS475
         checkStuffNatureValues(stuff); // DS491
         checkStuffInventoryThresholdOrder(stuff); // DS303
@@ -223,6 +224,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffOutSellValues(stuff); // DS365
             checkStuffUnpackSellValues(stuff); // DS367
             checkStuffPackUnitValues(stuff); // DS461
+        checkStuffMinUnitValues(stuff); // DS502
             checkStuffTypeValues(stuff); // DS475
             checkStuffNatureValues(stuff); // DS491
             checkStuffInventoryThresholdOrder(stuff); // DS303
@@ -254,6 +256,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffOutSellValues(stuff); // DS365
             checkStuffUnpackSellValues(stuff); // DS367
             checkStuffPackUnitValues(stuff); // DS461
+        checkStuffMinUnitValues(stuff); // DS502
             checkStuffTypeValues(stuff); // DS475
             checkStuffNatureValues(stuff); // DS491
             checkStuffInventoryThresholdOrder(stuff); // DS303
@@ -470,6 +473,56 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 && !"medicalPackUnit_11".equals(value)) {
             throw new ServiceException(
                     "Đơn vị đóng gói không hợp lệ: " + value);
+        }
+    }
+
+    // DS502: don vi nho nhat vat tu (minUnit) chi co 13 gia tri co nghia
+    // trong dict 'medicalPreparationUnit' (del_flag='0'):
+    // _0 'Vien', _1 'Vien', _2 'Tui', _3 'g', _4 'Cai', _5 'Ong',
+    // _6 'ml', _7 'mm', _8 'mg', _9 'Chai', _10 'Cuon', _11 'ug',
+    // _12 'Vien'. UI writer duy nhat stuffForm.vue:662-664 nap
+    // minUnit_List tu DICT_CODE.MEDICAL_PREPARATION_UNIT nen chi ghi
+    // 13 gia tri do; gia tri gia mao 'x'/'medicalPreparationUnit_99'/
+    // 'medicalPreparationUnit_13' truoc day ghi thang qua mapper
+    // (#{minUnit.value} verbatim: StuffDao.xml insert :314 / update
+    // :347 / bulkInsert :423 / bulkUpdate CASE :503-505) roi hien ten
+    // rong o danh sach vat tu (list SELECT LEFT JOIN sys_dict_item
+    // minUnit + IFNULL(minUnit.name,''), StuffDao.xml :25-26/:68) va
+    // mat don vi trong chuoi ton kho (stuff/index.vue:148). Cot
+    // stuff.min_unit varchar(45) NOT NULL + @NotNull (Stuff.java:205)
+    // nen null/blank cung 400 (tien le DS461 packUnit, khac DS475
+    // type NULL-able). Chi chan ghi MOI, khong dung hang legacy (live
+    // 16 dong: 13 trong mien, 3 ngoai mien 'B?' x2 +
+    // 'medicalPackUnit_0' x1). Dat canh checkStuffPackUnitValues o
+    // save/bulkInsert/bulkUpdate. An toan: khong caller noi bo nao
+    // setMinUnit tren Stuff; import Excel qua this.save() nen duoc
+    // guard phu; syncToClinic dung super.save nen khong bi anh huong
+    // (mau DS323/DS364).
+    private static void checkStuffMinUnitValues(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        DictItem minUnit = stuff.getMinUnit();
+        if (minUnit == null || StringUtils.isBlank(minUnit.getValue())) {
+            throw new ServiceException(
+                    "Đơn vị nhỏ nhất không được để trống");
+        }
+        String value = minUnit.getValue();
+        if (!"medicalPreparationUnit_0".equals(value)
+                && !"medicalPreparationUnit_1".equals(value)
+                && !"medicalPreparationUnit_2".equals(value)
+                && !"medicalPreparationUnit_3".equals(value)
+                && !"medicalPreparationUnit_4".equals(value)
+                && !"medicalPreparationUnit_5".equals(value)
+                && !"medicalPreparationUnit_6".equals(value)
+                && !"medicalPreparationUnit_7".equals(value)
+                && !"medicalPreparationUnit_8".equals(value)
+                && !"medicalPreparationUnit_9".equals(value)
+                && !"medicalPreparationUnit_10".equals(value)
+                && !"medicalPreparationUnit_11".equals(value)
+                && !"medicalPreparationUnit_12".equals(value)) {
+            throw new ServiceException(
+                    "Đơn vị nhỏ nhất không hợp lệ: " + value);
         }
     }
 
