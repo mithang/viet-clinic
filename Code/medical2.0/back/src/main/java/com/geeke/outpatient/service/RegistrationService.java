@@ -110,6 +110,44 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS543: chan strip subject o duong save()-update -- mapper update
+     * ghi patient_id/doctor_id/subscribe_date verbatim (khong <if>),
+     * save() truoc day bo guard khi id khac rong (checkRegistration-
+     * HasSubject tra ve som) nen payload chi co {id, remarks} ghi NULL
+     * de len subject cua dong da co (probe pre P1/P2/P3/P6). Kiem tra
+     * theo tung truong so voi stored (KHAC DS542 check theo entity):
+     * doi subject sang gia tri KHAC khong-null van hop le (P5 doi
+     * patient, P6b doi doctor), chi strip ve null/rong moi 400.
+     * Moi caller update noi bo deu load full entity qua get() truoc
+     * (MedicalRecordService, RecipelDetailService, SupplierStock-
+     * Service, TollInfoService) nen khong pha luong hop le; Vue gui
+     * full bizFormModel; updateStatus khong qua save(). Dong stored
+     * von da khong co subject thi khong co gi de strip -- giu nguyen.
+     */
+    private static void checkRegistrationUpdateKeepsSubject(Registration entity, Registration stored) {
+        if (entity == null || stored == null) {
+            return;
+        }
+        boolean storedHasPatient = stored.getPatientId() != null
+                && StringUtils.isNotBlank(stored.getPatientId().getId());
+        boolean entityHasPatient = entity.getPatientId() != null
+                && StringUtils.isNotBlank(entity.getPatientId().getId());
+        if (storedHasPatient && !entityHasPatient) {
+            throw new ServiceException("Không được xóa bệnh nhân khỏi lượt đăng ký khám đã có");
+        }
+        boolean storedHasDoctor = stored.getDoctor() != null
+                && StringUtils.isNotBlank(stored.getDoctor().getId());
+        boolean entityHasDoctor = entity.getDoctor() != null
+                && StringUtils.isNotBlank(entity.getDoctor().getId());
+        if (storedHasDoctor && !entityHasDoctor) {
+            throw new ServiceException("Không được xóa bác sĩ khỏi lượt đăng ký khám đã có");
+        }
+        if (stored.getSubscribeDate() != null && entity.getSubscribeDate() == null) {
+            throw new ServiceException("Không được xóa ngày hẹn đặt lịch khỏi lượt đăng ký khám đã có");
+        }
+    }
+
+    /**
      * DS146 A: @Length tren entity (pulse/breathe/temperature 45,
      * isGoHigharea 64, highArea 128, freeRegistrationFee 64,
      * dispensingStatus/chargeStatus 1) + remarks/subscribeProject theo
@@ -934,6 +972,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // DS283: chan thu tu cap ngay tiep nhan (end < start), gop voi
         // dong stored o duong update (mapper update chi ghi end).
         checkRegistrationReceptionDateOrder(entity, stored);
+        // DS543: chan strip subject o duong update (so voi stored).
+        checkRegistrationUpdateKeepsSubject(entity, stored);
         // DS295: chan thu tu treatmentDate < receptionStartDate, gop voi
         // dong stored o duong update (mapper update chi ghi treatment).
         checkRegistrationTreatmentDateOrder(entity, stored);
