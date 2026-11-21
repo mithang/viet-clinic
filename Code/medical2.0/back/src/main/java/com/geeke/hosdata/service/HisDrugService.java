@@ -60,6 +60,9 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
         Map<String, String> dosMap = getTypeMap(BizConstants.DICT_TYPE_DOSAGE_UNIT);
         Map<String, String> preMap = getTypeMap(BizConstants.DICT_TYPE_PREPARATION_UNIT);
         Map<String, String> packMap = getTypeMap(BizConstants.DICT_TYPE_PACK_SPEC);
+        // DS518: chan loai thuoc gia mao TRUOC moi tac dung phu (xem
+        // checkHisDrugTypeValues ben duoi) -- mau DS114.
+        checkHisDrugTypeValues(entitys, typeMap);
         JSONObject userObj = SessionUtils.getUserJson();
         List<String> ids = Lists.newArrayList();
         // ITER31: truoc day vong lap `continue` khi thuoc da ton tai nhung
@@ -127,6 +130,38 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
             medicinalStockControlService.initStock(drug);
         });
         return ids;
+    }
+
+    // DS518: loai thuoc gia mao ngoai {'medicalType_0','medicalType_1',
+    // 'medicalType_2'} -- truoc day typeMap.getOrDefault de gia tri la
+    // di thang xuong drug.type qua dao.bulkInsert, bypass guard DS468
+    // (chi co trong DrugService.save/bulkInsert/bulkUpdate, khong guard
+    // duong dong bo HIS nay). Kiem tra gia tri DA MAP cho TOAN BO list
+    // truoc moi tac dung phu (resolve factory, dedup o vong lap chinh):
+    // ten HIS '01'/'23'/'0002000066' -> _0/_1/_2, gia tri dict tho
+    // 'medicalType_1' giu nguyen -> qua; null/blank da 400 o
+    // validateRequired truoc do nen o day chi chan ngoai mien -> 400,
+    // khong ghi gi, khong tao factory mo coi. Khong cham status
+    // (DS388 LOCK) hay dosisUnit/preparationUnit/pack (DS499/DS508
+    // LOCK / DS453/DS451).
+    private static void checkHisDrugTypeValues(List<HisDrugs> entitys,
+                                               Map<String, String> typeMap) {
+        if (entitys == null || typeMap == null) {
+            return;
+        }
+        for (HisDrugs entity : entitys) {
+            if (entity == null) {
+                continue;
+            }
+            String mapped = typeMap.getOrDefault(entity.getType(),
+                                                 entity.getType());
+            if (!BizConstants.MEDICAL_TYPE_WESTERN.equals(mapped)
+                    && !BizConstants.MEDICAL_TYPE_HERBAL.equals(mapped)
+                    && !BizConstants.MEDICAL_TYPE_PATENT.equals(mapped)) {
+                throw new ServiceException(
+                        "Loại thuốc không hợp lệ: " + mapped);
+            }
+        }
     }
 
     // DS114: cac cot NOT NULL cua bang drug ma bulkInsert ghi (id va
