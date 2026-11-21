@@ -42,6 +42,11 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
         //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> typeMap= getTypeMap(BizConstants.DICT_TYPE_INSTITUTION_TYPE);
         Map<String, String> unitMap = getTypeMap(BizConstants.DICT_TYPE_INSTITUTION_UNIT);
+        // DS517: chan dllx ngoai mien dict sau khi map (toan bo list,
+        // truoc moi tac dung phu cua vong lap chinh).
+        for (HisInstitutions entity : entitys) {
+            checkHisInstitutionDllxValues(mapDllx(entity.getDllx(), typeMap));
+        }
         List<String> ids = Lists.newArrayList();
         JSONObject userObj = SessionUtils.getUserJson();
         // ITER32 J2: truoc day khong co dedup API — gui lai cung danh muc
@@ -75,10 +80,8 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
                 }
             }
             entity.setCompanyId(userObj.getString("companyId"));
-            if("挂号项目".equals(entity.getDllx()) || "Hạng mục khám chữa bệnh".equals(entity.getDllx())){
-                           entity.setDllx("Khác");
-            }
-            entity.setDllx(typeMap.getOrDefault(entity.getDllx(), entity.getDllx()));
+            // DS517: map qua helper chung (da validate o pre-pass).
+            entity.setDllx(mapDllx(entity.getDllx(), typeMap));
             entity.setDw(unitMap.getOrDefault(entity.getDw(),unitMap.get(" lần")));
             entity.preInsert();
             ids.add(entity.getId());
@@ -111,6 +114,40 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
         }
         if (StringUtils.isBlank(entity.getPy())) {
             throw new ServiceException("Mã pinyin hạng mục đồng bộ không được để trống");
+        }
+    }
+
+    // DS517: dllx sau khi map qua typeMap chi duoc la 1 trong 5 gia
+    // tri cua dict 'treatmentItemType' (_0 Xet nghiem, _1 Kiem tra,
+    // _2 Vat ly tri lieu, _3 Dieu tri, _4 Khac). Truoc day
+    // getOrDefault tra ve chinh dllx khi khong co trong map nen gia
+    // tri gia ('treatmentItemType_9', 'x') luu thang xuong
+    // cost_item.item_type qua HisInstitutionDao.bulkInsert, bypass
+    // guard DS509 cua CostItemService (chi goi o CostItemService).
+    // Reader LEFT JOIN sys_dict_item tra ten rong cho gia tri gia;
+    // TollInfoService.addInspectionCheck chi tao InspectionCheck cho
+    // LAB (_0)/EXAM (_1). null/blank van qua nhu cu (cot varchar(64)
+    // NULL-able, khong @NotNull; tien le DS509). dw khong can guard:
+    // unitMap tra ve gia tri map hop le hoac null, khong bao gio tra
+    // ve dw goc (probe P10/P11).
+    private static String mapDllx(String dllx, Map<String, String> typeMap) {
+        if ("挂号项目".equals(dllx) || "Hạng mục khám chữa bệnh".equals(dllx)) {
+            dllx = "Khác";
+        }
+        return typeMap.getOrDefault(dllx, dllx);
+    }
+
+    private static void checkHisInstitutionDllxValues(String mappedDllx) {
+        if (StringUtils.isBlank(mappedDllx)) {
+            return;
+        }
+        if (!"treatmentItemType_0".equals(mappedDllx)
+                && !"treatmentItemType_1".equals(mappedDllx)
+                && !"treatmentItemType_2".equals(mappedDllx)
+                && !"treatmentItemType_3".equals(mappedDllx)
+                && !"treatmentItemType_4".equals(mappedDllx)) {
+            throw new ServiceException(
+                    "Loại hạng mục không hợp lệ: " + mappedDllx);
         }
     }
 
