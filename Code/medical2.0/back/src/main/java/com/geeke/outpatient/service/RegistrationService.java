@@ -476,6 +476,59 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     }
 
     /**
+     * DS521: loai hinh y te gia mao ngoai dict live {'11'}. Entity
+     * Registration.java:79 DictItem medType, khong annotation mien;
+     * cot registration.med_type varchar(10) NULL-able (live
+     * INFORMATION_SCHEMA). sys_dict_type 'medType' (id
+     * 2256779862649512118) chi co 1 item del_flag='0': '11'
+     * 'Phong kham ngoai tru thong thuong'; '12' 'Phong kham ngoai
+     * tru dang ky kham', '13' 'Cap cuu', '14' 'Phong kham ngoai tru
+     * benh man tinh dac biet' da bi xoa mem (del_flag='1').
+     * Frontend select da comment out (registrationForm.vue:554-578),
+     * form hardcode bizFormModel.medType.value='11' (:1161), mac
+     * dinh {value:null} (:813); medTypeList nap tu
+     * getDictItemsByCode(MED_TYPE) (:1562) -> chi tra del_flag='0'
+     * nen UI chi chon duoc '11'. Backend khong co writer nao set
+     * medType (grep setMedType = 0 hit) nen khong luong noi bo nao
+     * gui '12'/'13'/'14'. Service chi guard do dai <=10 (DS146/
+     * DS147), mapper ghi #{medType.value} verbatim ca 4 duong
+     * insert :389 / update :443 / bulkInsert :572 / bulkUpdate CASE
+     * :785-787 (registrationupdate :1057 KHONG ghi med_type) --
+     * save/bulkInsert/bulkUpdate/wxSave deu chap nhan gia mao 200
+     * + persist (probe pre 19/19). Gia tri gia khong co ten hien
+     * thi: list select tra raw med_type, khong co LEFT JOIN
+     * sys_dict_item cho medType (RegistrationDao.xml :73, joins
+     * :82-92) nen form doi ten client-side theo danh sach song ->
+     * gia mao khong khop option nao (trong); gia mao '12'/'13'/
+     * '14' di thang vao middleware BHYT o MdRegistrationServiceImpl
+     * :162-168 (chi chan null/blank theo DS225, gia tri gia non-
+     * blank di qua nguyen ven lam "med_type"). Guard o day dung
+     * chung cho ca 4 duong truoc moi ghi (truoc assignQueueNumber
+     * de khong dot so thu tu cua luot bi tu choi, nhu DS422/DS490/
+     * DS494/DS519). Chi chan khac null/'' ma ngoai {'11'}: null/''
+     * giu nguyen (cot varchar(10) NULL-able, luot kham khong bat
+     * buoc co loai hinh y te -- tien le DS422/DS490/DS494/DS519,
+     * cung service). LUU Y: '12'/'13'/'14' la item dict da xoa mem,
+     * khong duoc UI chon; neu admin bat lai mot trong ba
+     * (del_flag -> 0) thi guard nay phai mo rong them gia tri do.
+     * Khac DS147 (chi do dai), DS225 (medType null 400 o BHYT,
+     * khong phai mien), DS519 (cardType), DS494 (payType), DS490
+     * (treatType), DS422 (source) -- deu truong khac cung entity.
+     */
+    private static void checkRegistrationMedTypeValues(Registration entity) {
+        if (entity == null || entity.getMedType() == null) {
+            return;
+        }
+        String value = entity.getMedType().getValue();
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        if (!"11".equals(value)) {
+            throw new ServiceException("Loại hình y tế không hợp lệ: " + value);
+        }
+    }
+
+    /**
      * DS255: so thu tu cho kham khong co nghia vat ly khi <= 0 (counter
      * cua phong kham bat dau tu 1, RegistrationDao.advanceQueueCounter
      * INSERT ... VALUES(..., 1)); mapper ghi queue_number thang ca 4
@@ -792,6 +845,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationPayTypeValues(entity);
         // DS519: chan loai giay to kham gia mao ngoai {'02'}.
         checkRegistrationCardTypeValues(entity);
+        // DS521: chan loai hinh y te gia mao ngoai {'11'}.
+        checkRegistrationMedTypeValues(entity);
         // DS255: chan so thu tu <= 0 truoc khi gan so thu tu.
         checkRegistrationQueueNumber(entity);
         // DS271: chan thoi gian phat benh tuong lai truoc khi gan so thu tu.
@@ -876,6 +931,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationPayTypeValues(entity);
             // DS519: bulk cung chan loai giay to kham gia mao nhu save().
             checkRegistrationCardTypeValues(entity);
+            // DS521: bulk cung chan loai hinh y te gia mao nhu save().
+            checkRegistrationMedTypeValues(entity);
             // DS255: bulk cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulk cung chan thoi gian phat benh tuong lai nhu save().
@@ -938,6 +995,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             checkRegistrationPayTypeValues(entity);
             // DS519: bulkUpdate cung chan loai giay to kham gia mao nhu save().
             checkRegistrationCardTypeValues(entity);
+            // DS521: bulkUpdate cung chan loai hinh y te gia mao nhu save().
+            checkRegistrationMedTypeValues(entity);
             // DS255: bulkUpdate cung chan so thu tu <= 0 nhu save().
             checkRegistrationQueueNumber(entity);
             // DS271: bulkUpdate cung chan thoi gian phat benh tuong lai nhu save().
@@ -1292,6 +1351,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationPayTypeValues(entity);
         // DS519: wxSave cung chan loai giay to kham gia mao nhu save().
         checkRegistrationCardTypeValues(entity);
+        // DS521: wxSave cung chan loai hinh y te gia mao nhu save().
+        checkRegistrationMedTypeValues(entity);
         // DS271: wxSave cung chan thoi gian phat benh tuong lai nhu save().
         checkRegistrationMorbidityTimeNotFuture(entity);
         // DS272: wxSave cung chan thoi gian hoan thanh tuong lai nhu save().
