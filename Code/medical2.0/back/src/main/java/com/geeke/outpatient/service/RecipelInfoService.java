@@ -217,11 +217,20 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
     // (3 cot int NULL-able, khong default). Khac DS363 (mien tren moi
     // duong), DS372/DS420/DS428/DS438/DS447/DS448/DS462/DS538 (truong
     // khac, cung entity).
-    private static void checkRecipelInfoCreateStatusValues(RecipelInfo entity) {
+    // DS540: "id rong" KHONG phai dau hieu tao moi o bulkInsert --
+    // bulkInsert LUON INSERT: BaseEntity.preInsert chi sinh id khi
+    // rong, mapper bulkInsert ghi cot id verbatim, bulkInsert KHONG
+    // co ghost check nhu save()/bulkUpdate() nen client gui id tu
+    // chon + status -1 se qua mat guard DS539 goc (probe pre 18/18:
+    // bulkInsert [valid, bad -1 + id tu chon] 200 + persist; save
+    // ghost id + -1 van 400 nho ghost check). Vi vay guard nhan co
+    // isCreate rieng: save() truyen id rong, bulkInsert() LUON true.
+    private static void checkRecipelInfoCreateStatusValues(RecipelInfo entity,
+            boolean isCreate) {
         if (entity == null) {
             return;
         }
-        if (StringUtils.isNotBlank(entity.getId())) {
+        if (!isCreate) {
             return;
         }
         Integer status = entity.getStatus();
@@ -646,7 +655,9 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
         // DS363: chan status/chargeStatus/dispensionStatus gia mao.
         checkRecipelInfoStatusValues(entity);
         // DS539: chan don SINH RA da mang trang thai ket thuc (-1).
-        checkRecipelInfoCreateStatusValues(entity);
+        // DS540: save() la tao moi chi khi id rong.
+        checkRecipelInfoCreateStatusValues(entity,
+                StringUtils.isBlank(entity.getId()));
         // DS372: chan notShow gia mao.
         checkNotShowValues(entity);
         // DS420: chan frequency gia mao.
@@ -686,7 +697,9 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             // DS363: chan status/chargeStatus/dispensionStatus gia mao.
             checkRecipelInfoStatusValues(entity);
             // DS539: chan don SINH RA da mang trang thai ket thuc (-1).
-            checkRecipelInfoCreateStatusValues(entity);
+            // DS540: bulkInsert LUON la tao moi (INSERT) ke ca khi
+            // client gui id tu chon, nen guard ap cho moi dong.
+            checkRecipelInfoCreateStatusValues(entity, true);
             // DS372: chan notShow gia mao.
             checkNotShowValues(entity);
             // DS420: chan frequency gia mao.
