@@ -121,6 +121,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDrugPackValues(drug); // DS451
         checkDrugPreparationUnitValues(drug); // DS453
         checkDrugDaysValues(drug); // DS455
+        checkDrugFrequencyValues(drug); // DS533
         checkDrugWesternMedicineUseValues(drug); // DS458
         checkDrugTypeValues(drug); // DS468
         checkDrugNatureValues(drug); // DS491
@@ -473,6 +474,43 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         }
     }
 
+    // DS533: tan suat va lieu dung (frequency) gia mao ngoai mien 5
+    // item dict 'chineseMedicineRecipelTakeFrequency' con hoat dong
+    // (_0.5 QID, _1 QD, _1.5 Q2D, _2 BID, _3 TID) -- truoc day chi
+    // co guard do dai <= 255 (checkDrugLengths) va mapper ghi thang
+    // #{frequency.value} (DrugDao.xml insert / update / bulkInsert /
+    // bulkUpdate CASE). Thuoc gia hien ten 'Tan suat' rong o list
+    // (LEFT JOIN khong loc dict_type) + khi mo lai form; man kham
+    // copy drug.frequency vao phep tinh gioi han tong luong
+    // (medicalOutpatientRecord/index.vue:6897-6910 split("_")[1])
+    // -> gia tri gia cho undefined -> NaN -> chan bi bo qua lang.
+    // Gia tri luu la FULL dict value (form bind ca DictItem,
+    // drugForm.vue:661-677); hau to rut gon ('_1', '_2', ...) KHONG
+    // hop le. '_0.5'..'_3' hop le giu 200; null/blank van qua nhu
+    // cu o day (frequency khong @NotNull, khong trong
+    // checkDrugRequired, cot varchar(255) NULL-able; tien le
+    // DS422/DS455). Khong guard addDurg hay syncToClinic
+    // (super.save) -- cung pham vi nhu DS323/DS364/DS440/DS451/
+    // DS453/DS455/DS458/DS468/DS491.
+    private static void checkDrugFrequencyValues(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        DictItem frequency = drug.getFrequency();
+        if (frequency == null || StringUtils.isBlank(frequency.getValue())) {
+            return;
+        }
+        String value = frequency.getValue();
+        if (!"chineseMedicineRecipelTakeFrequency_0.5".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_1".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_1.5".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_2".equals(value)
+                && !"chineseMedicineRecipelTakeFrequency_3".equals(value)) {
+            throw new ServiceException(
+                    "Tần suất và liều dùng không hợp lệ: " + value);
+        }
+    }
+
     // DS458: cach dung thuoc Tay (westernMedicineUse) gia mao ngoai
     // mien 8 item dict 'westernMedicineUse' con hoat dong (_0 'Uong'
     // .. _7 'Truyen tinh mach) — truoc day chi co guard do dai <= 255
@@ -649,6 +687,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugPackValues(drug); // DS451
             checkDrugPreparationUnitValues(drug); // DS453
             checkDrugDaysValues(drug); // DS455
+            checkDrugFrequencyValues(drug); // DS533
             checkDrugWesternMedicineUseValues(drug); // DS458
             checkDrugTypeValues(drug); // DS468
             checkDrugNatureValues(drug); // DS491
@@ -689,6 +728,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             checkDrugPackValues(drug); // DS451
             checkDrugPreparationUnitValues(drug); // DS453
             checkDrugDaysValues(drug); // DS455
+            checkDrugFrequencyValues(drug); // DS533
             checkDrugWesternMedicineUseValues(drug); // DS458
             checkDrugTypeValues(drug); // DS468
             checkDrugNatureValues(drug); // DS491
