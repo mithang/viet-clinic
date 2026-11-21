@@ -139,6 +139,8 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
         checkCureManagementLengths(entity);
         // DS356: xem checkCureManagementDelTypeValues o duoi.
         checkCureManagementDelTypeValues(entity);
+        // DS504: xem checkCureManagementInfuseGroupValues o duoi.
+        checkCureManagementInfuseGroupValues(entity);
         // DS217: addNumber / executions am — cung ho "so am" DS209-DS216.
         // addNumber = so lan thuc hien them trong lan nay (frontend gui
         // addNumber = excuteNum, executions = cumulative + excuteNum);
@@ -247,6 +249,26 @@ public class CureManagementService extends CrudService<CureManagementDao, CureMa
                 && !"0".equals(delType) && !"1".equals(delType)) {
             throw new ServiceException(
                     "Loại xóa không hợp lệ: chỉ được '0' (chưa thu hồi) hoặc '1' (đã thu hồi)");
+        }
+    }
+
+    // DS504: infuseGroup la so nhom truyen (1-based) — frontend
+    // cureManagement/index.vue:1630 + infusion/index.vue:1968 dung
+    // infuseGroup-1 lam chi so mang infusionProject; 0/am khong co
+    // nhom nao tuong ung (chi so -1/-6) nen dong se roi khoi moi nhom
+    // hoac lam vo vong gom nhom. NULL = "chua gan nhom" (239 dong
+    // live) nen van qua; 1/2/3 qua. Chi guard save() don (khong route
+    // bulk, mapper khong co bulkInsert/bulkUpdate). Thu hoi
+    // (delType='1') khong can mien: no luu lai infuseGroup hop le cua
+    // dong goc qua cung save() nay.
+    private static void checkCureManagementInfuseGroupValues(CureManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        Integer infuseGroup = entity.getInfuseGroup();
+        if (infuseGroup != null && infuseGroup.intValue() < 1) {
+            throw new ServiceException(
+                    "Nhóm truyền không hợp lệ: chỉ được để trống hoặc số nguyên từ 1 trở lên");
         }
     }
 
