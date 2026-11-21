@@ -80,10 +80,16 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
      * patient (+ doctor). Chi ap cho TAO MOI: update (id khac rong) khong bi
      * anh huong -- cac luot setTreatmentDate/status-only (RecipelDetailService,
      * SupplierStockService, TollInfoService, MedicalRecordService) giu nguyen.
+     * DS541: bulkInsert LUON la tao moi (CrudService.bulkInsert chi
+     * goi preInsert -- chi sinh id khi rong -- roi mapper bulkInsert
+     * ghi id verbatim, KHONG co ghost check nhu save), nen guard phai
+     * ap dung o bulkInsert bat ke id do client tu chon hay khong
+     * (cung mau DS540 o RecipelInfo). save() truyen isCreate =
+     * id rong; bulkInsert() truyen isCreate = true.
      * wxSave la method rieng, khong qua day, khong doi.
      */
-    private static void checkRegistrationHasSubject(Registration entity) {
-        if (entity == null || StringUtils.isNotBlank(entity.getId())) {
+    private static void checkRegistrationHasSubject(Registration entity, boolean isCreate) {
+        if (entity == null || (!isCreate && StringUtils.isNotBlank(entity.getId()))) {
             return;
         }
         boolean hasPatient = entity.getPatientId() != null
@@ -868,7 +874,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // DS146 A: chan do dai truoc khi gan so thu tu.
         checkRegistrationLengths(entity);
         // DS146 B: chan hang rac {} o tang save (bulkInsert mirror ben duoi).
-        checkRegistrationHasSubject(entity);
+        // DS541: save truyen isCreate = id rong (update + ghost check sau).
+        checkRegistrationHasSubject(entity, StringUtils.isBlank(entity.getId()));
         // DS238: chan phi dang ky / thuc thu am truoc khi gan so thu tu.
         checkRegistrationFeesNonNegative(entity);
         // DS368: chan co tung den vung dich gia mao ngoai {'0','1'}.
@@ -954,7 +961,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             // DS146 A: bulk cung chan do dai nhu save().
             checkRegistrationLengths(entity);
             // DS146 B: chan hang rac {} qua bulk nhu save().
-            checkRegistrationHasSubject(entity);
+            // DS541: bulkInsert LUON tao moi nen isCreate = true bat ke id.
+            checkRegistrationHasSubject(entity, true);
             // DS238: bulk cung chan phi am nhu save().
             checkRegistrationFeesNonNegative(entity);
             // DS368: bulk cung chan co tung den vung dich gia mao nhu save().
