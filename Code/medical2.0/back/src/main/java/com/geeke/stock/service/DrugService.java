@@ -926,6 +926,14 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     public int updateAllInventory(String inventoryFloor, String companyId) {
         // DS176 A: nhu updateAllIndate (inventory_floor varchar(255)).
         checkLength(inventoryFloor, 255, "Giới hạn dưới tồn kho Độ dài phải nằm trong khoảng 0 đến 255");
+        // DS599: floor moi vuot limit cua bat ky thuoc nao trong cong ty
+        // -> 400 (guard DS302 chi o save/bulkInsert/bulkUpdate/
+        // syncToClinic). Floor khong parse duoc/blank/null cho qua
+        // nhu guard goc (parseDecimal tra null).
+        if (parseDecimal(inventoryFloor) != null
+                && this.dao.countLimitBelowFloor(inventoryFloor, companyId) > 0) {
+            throw new ServiceException("Ngưỡng tồn kho tối thiểu không được vượt quá ngưỡng tồn kho tối đa");
+        }
         int i = this.dao.updateAllInventory(inventoryFloor, companyId);
         return i;
     }

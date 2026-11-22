@@ -32,6 +32,8 @@ public interface DrugDao extends CrudDao<Drug> {
 
     int updateAllInventory(@Param("inventoryFloor") String inventoryFloor,@Param("companyId") String companyId);
 
+    int countLimitBelowFloor(@Param("inventoryFloor") String inventoryFloor,@Param("companyId") String companyId);
+
     int countInventory(PageRequest pageRequest);
 
     List<Drug> repeat(Drug drug);
