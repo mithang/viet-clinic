@@ -463,6 +463,14 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
                 // cua save() -- DS215).
                 checkCostItemNonNegative(costItem);
                 costItem.setCompany(company);
+                // DS592: sync cung chan pinyinCode rong (duong nay goi
+                // thang super.save, bypass guard checkCostItemRequired
+                // cua bulkInsert/bulkUpdate; ''/'   ' qua duoc Bean
+                // Validation @NotNull o controller). Goi SAU setCompany:
+                // company lay tu session nen check company luon qua,
+                // itemName da khop moi vao duoc nhanh copy, check thuc
+                // te la pinyinCode khong duoc rong.
+                checkCostItemRequired(costItem);
                 costItem.setId(null);
                 costItem.setSyncId(oldId);
                 String sn = sequenceService.generate(SessionUtils.getLoginTenantId(), "treatment_item_code", costItem);
