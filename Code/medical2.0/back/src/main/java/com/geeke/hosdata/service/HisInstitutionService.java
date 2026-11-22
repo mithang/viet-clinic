@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,12 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
         for (HisInstitutions entity : entitys) {
             checkHisInstitutionDllxValues(mapDllx(entity.getDllx(), typeMap));
         }
+        // DS589: chan dj am / khong phai so (toan bo list, truoc moi
+        // tac dung phu). dj ghi verbatim xuong cost_item.sale_price
+        // qua HisInstitutionDao.bulkInsert, bypass guard
+        // checkCostItemNonNegative (DS215/DS586, chi co o
+        // CostItemService). null/blank/0 cho qua nhu cu (cot NULL-able).
+        checkHisInstitutionDjNonNegative(entitys);
         List<String> ids = Lists.newArrayList();
         JSONObject userObj = SessionUtils.getUserJson();
         // ITER32 J2: truoc day khong co dedup API — gui lai cung danh muc
@@ -135,6 +142,26 @@ public class HisInstitutionService  extends CrudService<HisInstitutionDao, HisIn
             dllx = "Khác";
         }
         return typeMap.getOrDefault(dllx, dllx);
+    }
+
+    private static void checkHisInstitutionDjNonNegative(
+            List<HisInstitutions> entitys) {
+        for (HisInstitutions entity : entitys) {
+            if (entity == null || StringUtils.isBlank(entity.getDj())) {
+                continue;
+            }
+            BigDecimal dj;
+            try {
+                dj = new BigDecimal(entity.getDj().trim());
+            } catch (NumberFormatException e) {
+                throw new ServiceException(
+                        "Đơn giá hạng mục không hợp lệ: " + entity.getDj());
+            }
+            if (dj.compareTo(BigDecimal.ZERO) < 0) {
+                throw new ServiceException(
+                        "Đơn giá hạng mục không được âm");
+            }
+        }
     }
 
     private static void checkHisInstitutionDllxValues(String mappedDllx) {
