@@ -60,6 +60,11 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
         // checkStuffNonNegative (DS223/DS242/DS584) chi co trong
         // StuffService. Kiem tra TOAN BO list truoc moi tac dung phu.
         checkHisMaterialDjNonNegative(entitys);
+        // DS593: nhu dj — dwjls am hoac khong phai so luu thang vao
+        // stuff.pack_number qua bulkInsert, bypass guard
+        // checkStuffNonNegative (DS223/DS242/DS584) chi co trong
+        // StuffService. Kiem tra TOAN BO list truoc moi tac dung phu.
+        checkHisMaterialDwjlsNonNegative(entitys);
         //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> preMap = getTypeMap(BizConstants.DICT_TYPE_PREPARATION_UNIT);
         Map<String, String> packMap = getTypeMap(BizConstants.DICT_TYPE_PACK_SPEC);
@@ -150,6 +155,35 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
             }
             if (price.compareTo(java.math.BigDecimal.ZERO) < 0) {
                 throw new ServiceException("Giá vật tư đồng bộ không được âm");
+            }
+        }
+    }
+
+    // DS593: so luong dong goi vat tu dong bo (dwjls, String) am hoac
+    // khong phai so thi 400 fail-closed, mau DS590. null/blank/0 cho
+    // qua (validateRequired da 400 dwjls blank truoc do; cot
+    // pack_number nullable o muc dich).
+    private static void checkHisMaterialDwjlsNonNegative(
+            List<HisMaterials> entitys) {
+        if (entitys == null) {
+            return;
+        }
+        for (HisMaterials entity : entitys) {
+            if (entity == null || StringUtils.isBlank(entity.getDwjls())) {
+                continue;
+            }
+            java.math.BigDecimal packNumber;
+            try {
+                packNumber = new java.math.BigDecimal(
+                        entity.getDwjls().trim());
+            } catch (NumberFormatException e) {
+                throw new ServiceException(
+                        "Số lượng đóng gói vật tư đồng bộ không hợp lệ: "
+                        + entity.getDwjls());
+            }
+            if (packNumber.compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException(
+                        "Số lượng đóng gói vật tư đồng bộ không được âm");
             }
         }
     }
