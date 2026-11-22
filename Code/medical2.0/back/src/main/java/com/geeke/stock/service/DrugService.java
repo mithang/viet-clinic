@@ -1257,6 +1257,15 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 // checkDrugDaysValues, truoc super.save; null/blank
                 // qua (cot varchar(255) NULL-able, ngu nghia DS533).
                 checkDrugFrequencyValues(drug);
+                // DS576: syncToClinic cung vong qua
+                // checkDrugNatureValues (DS491) cua save() —
+                // nature 'medicalNature_2'/'_99'/'x' luu thang qua
+                // mapper (list LEFT JOIN dict hien ten 'Tinh chat'
+                // rong, ke don copy ma tinh chat khong ton tai).
+                // Chan 400 ngay sau checkDrugFrequencyValues,
+                // truoc super.save; null/blank qua (cot varchar(255)
+                // NULL-able, ngu nghia DS491).
+                checkDrugNatureValues(drug);
                 super.save(drug);
                 this.medicinalStockControlService.initStock(drug);
                 list.add(drug.getId());
