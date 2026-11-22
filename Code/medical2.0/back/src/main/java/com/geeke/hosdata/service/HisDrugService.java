@@ -63,6 +63,10 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
         // DS518: chan loai thuoc gia mao TRUOC moi tac dung phu (xem
         // checkHisDrugTypeValues ben duoi) -- mau DS114.
         checkHisDrugTypeValues(entitys, typeMap);
+        // DS588: chan gia am / gia khong parse duoc TRUOC moi tac dung
+        // phu -- mau DS518: bulkInsert ghi drug.price verbatim, bypass
+        // checkDrugNonNegative (chi co trong DrugService).
+        checkHisDrugPriceNonNegative(entitys);
         JSONObject userObj = SessionUtils.getUserJson();
         List<String> ids = Lists.newArrayList();
         // ITER31: truoc day vong lap `continue` khi thuoc da ton tai nhung
@@ -160,6 +164,33 @@ public class HisDrugService  extends CrudService<HisDrugDao, HisDrugs> {
                     && !BizConstants.MEDICAL_TYPE_PATENT.equals(mapped)) {
                 throw new ServiceException(
                         "Loại thuốc không hợp lệ: " + mapped);
+            }
+        }
+    }
+
+    // DS588: gia thuoc dong bo am hoac khong phai so -- truoc day
+    // HisDrugDao.xml bulkInsert ghi #{entity.price} verbatim vao
+    // drug.price (decimal(10,2) signed), bypass checkDrugNonNegative
+    // (DS209/DS243/DS577, chi co trong DrugService). Kiem tra TOAN BO
+    // list truoc moi tac dung phu (mau DS518): null/blank cho qua (cot
+    // nullable), 0 cho qua, am hoac khong parse duoc -> 400.
+    private static void checkHisDrugPriceNonNegative(List<HisDrugs> entitys) {
+        if (entitys == null) {
+            return;
+        }
+        for (HisDrugs entity : entitys) {
+            if (entity == null || StringUtils.isBlank(entity.getPrice())) {
+                continue;
+            }
+            java.math.BigDecimal price;
+            try {
+                price = new java.math.BigDecimal(entity.getPrice().trim());
+            } catch (NumberFormatException e) {
+                throw new ServiceException(
+                        "Giá thuốc đồng bộ không hợp lệ: " + entity.getPrice());
+            }
+            if (price.compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Giá thuốc đồng bộ không được âm");
             }
         }
     }
