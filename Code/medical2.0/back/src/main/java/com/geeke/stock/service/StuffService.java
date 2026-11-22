@@ -739,6 +739,14 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
 
     @Transactional(readOnly = false)
     public int updateAllInventory(String inventoryFloor, String companyId) {
+        // DS600: floor moi vuot limit cua bat ky vat tu nao trong
+        // cong ty -> 400 (guard DS303 chi o save/bulkInsert/
+        // bulkUpdate/syncToClinic). Floor khong parse duoc/blank/
+        // null cho qua nhu guard goc (parseDecimal tra null).
+        if (parseDecimal(inventoryFloor) != null
+                && this.dao.countLimitBelowFloor(inventoryFloor, companyId) > 0) {
+            throw new ServiceException("Ngưỡng tồn kho tối thiểu không được vượt quá ngưỡng tồn kho tối đa");
+        }
         return this.dao.updateAllInventory(inventoryFloor, companyId);
     }
 

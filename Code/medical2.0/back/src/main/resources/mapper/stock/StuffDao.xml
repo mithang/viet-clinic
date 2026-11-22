@@ -594,6 +594,14 @@
         where company_id = #{companyId}
     </update>
 
+    <select id="countLimitBelowFloor" resultType="int">
+        SELECT COUNT(*) FROM stuff
+        WHERE company_id = #{companyId}
+        AND del_flag = '0'
+        AND inventory_limit REGEXP '^-?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)$'
+        AND CAST(inventory_limit AS DECIMAL(30,10)) &lt; CAST(#{inventoryFloor} AS DECIMAL(30,10))
+    </select>
+
     <select id="inventory" resultType="com.geeke.stock.entity.Stuff">
         SELECT
         sum(stock.surplus_stock) AS 'stock.surplusStock'

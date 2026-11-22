@@ -21,6 +21,8 @@ public interface StuffDao extends CrudDao<Stuff> {
 
     int updateAllInventory(@Param("inventoryFloor") String inventoryFloor,@Param("companyId") String companyId);
 
+    int countLimitBelowFloor(@Param("inventoryFloor") String inventoryFloor,@Param("companyId") String companyId);
+
     int getCountWarning(PageRequest pageRequest);
 
     List<Stuff> getStuffInventoryWarning(PageRequest pageRequest);
