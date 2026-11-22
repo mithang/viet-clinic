@@ -1011,6 +1011,15 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 // truoc super.save; null/blank qua
                 // (tien le DS491, nature nullable).
                 checkStuffNatureValues(stuff); // DS582
+                // DS583: syncToClinic bo qua guard threshold order DS303
+                // cua save() -- inventoryFloor > inventoryLimit
+                // (nguong toi thieu vuot toi da) luu thang qua
+                // mapper (#{inventoryFloor}/#{inventoryLimit}
+                // verbatim). Chan 400 ngay sau
+                // checkStuffNatureValues, truoc super.save;
+                // null/blank/khong phai so qua, bang qua
+                // (tien le DS303, DS578 Drug).
+                checkStuffInventoryThresholdOrder(stuff); // DS583
                 super.save(stuff);
                 //LưuđộngTồn kho
                 this.medicinalStockControlService.initStock(stuff);
