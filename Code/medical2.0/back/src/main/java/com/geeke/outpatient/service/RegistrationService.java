@@ -93,7 +93,9 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
      * 200). Check theo entity (KHONG gop voi stored): dong sau update
      * mang subject cua entity, stored bi ghi de. Khong Vue nao goi
      * bulkUpdateRegistration nen khong pha luong frontend hop le.
-     * wxSave la method rieng, khong qua day, khong doi.
+     * DS547: wxSave nay cung goi guard nay (isCreate = id rong);
+     * duong wxSave-update dung checkRegistrationUpdateKeepsSubject
+     * (DS543) thay vi guard nay.
      */
     private static void checkRegistrationHasSubject(Registration entity, boolean isCreate) {
         if (entity == null || (!isCreate && StringUtils.isNotBlank(entity.getId()))) {
@@ -1473,6 +1475,18 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         checkRegistrationReceptionDateOrder(entity, null);
         // DS295: wxSave cung chan thu tu treatment < receptionStart.
         checkRegistrationTreatmentDateOrder(entity, null);
+        // DS547: wxSave cung chan nhu save() (truoc khi gan so / ghi,
+        // de luot bi tu choi khong dot so thu tu nhu DS146/DS238):
+        // tao luot khong subject (DS541), phi am (DS238), co vung dich
+        // gia mao (DS368), mien phi gia mao (DS369), trang thai hien
+        // thi don thuoc gia mao (DS370, defense in depth -- mapper
+        // hardcode '0' ca insert/update nen khong doi hanh vi luu).
+        checkRegistrationHasSubject(entity,
+                StringUtils.isBlank(entity.getId()));
+        checkRegistrationFeesNonNegative(entity);
+        checkRegistrationIsGoHighareaValues(entity);
+        checkRegistrationFreeRegistrationFeeValues(entity);
+        checkRegistrationRecipeStatusValues(entity);
         if (StringUtils.isBlank(entity.getId())) {
             if (entity.getQueueNumber() == null) {
                 assignQueueNumber(entity);
@@ -1484,6 +1498,14 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             created.setUpdateBy("WeChat");
             this.saveAction(created);
         } else {
+            // DS547: chan strip subject o duong wxSave-update (mau
+            // DS543): mapper update ghi patient/doctor/subscribe
+            // verbatim nen payload chi co {id, remarks} ghi NULL de
+            // len subject dong da co. Dong ma -> stored null -> guard
+            // tra ve som, giu hanh vi 200 no-op cu (khong them throw
+            // ton tai DS163 o day de giu pham vi hep).
+            Registration stored = super.get(entity.getId());
+            checkRegistrationUpdateKeepsSubject(entity, stored);
             entity.preUpdate();
             this.doUpdate(entity);
             this.saveAction(this.createAction("updated", entity));
