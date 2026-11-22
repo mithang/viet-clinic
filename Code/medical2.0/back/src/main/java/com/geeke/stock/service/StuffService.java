@@ -978,6 +978,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 stuff.setSyncId(oldId);
                 String sn = sequenceService.generate(company.getId(), "stuff_code", stuff);
                 stuff.setCode(sn);
+                checkStuffOutSellValues(stuff); // DS560
                 super.save(stuff);
                 //LưuđộngTồn kho
                 this.medicinalStockControlService.initStock(stuff);
