@@ -1192,6 +1192,12 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 // mapper; chan 400 truoc khi ghi (khong doi sang this.save
                 // vi save() ghi de code + tinh lai ypgg).
                 checkDrugLengths(drug);
+                // DS554: syncToClinic cung vong qua checkDrugStatusValues
+                // (DS323) cua save() — status '9'/'2'/'x'/'' luu thang
+                // qua mapper thanh hang ma (reader loc status='1').
+                // Chan 400 ngay sau checkDrugLengths, truoc super.save
+                // (mau DS509); nhanh skip trung code giu nguyen.
+                checkDrugStatusValues(drug);
                 super.save(drug);
                 this.medicinalStockControlService.initStock(drug);
                 list.add(drug.getId());
