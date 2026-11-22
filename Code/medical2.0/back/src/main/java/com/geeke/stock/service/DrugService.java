@@ -1275,6 +1275,15 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 // truoc super.save; null qua (nullable), 0 qua
                 // (quy uoc DS219).
                 checkDrugNonNegative(drug);
+                // DS578: syncToClinic cung vong qua
+                // checkDrugInventoryThresholdOrder (DS302) cua save() —
+                // inventoryFloor > inventoryLimit luu thang qua mapper
+                // (nguong canh bao ton kho dao nguoc, logic canh bao
+                // o DrugDao.xml :420/:439 dung inventory_floor sai).
+                // Chan 400 ngay sau checkDrugNonNegative, truoc
+                // super.save; null/khong parse duoc qua (ngu nghia
+                // DS302), bang nhau qua.
+                checkDrugInventoryThresholdOrder(drug);
                 super.save(drug);
                 this.medicinalStockControlService.initStock(drug);
                 list.add(drug.getId());
