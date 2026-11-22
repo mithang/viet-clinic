@@ -1192,6 +1192,17 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 // mapper; chan 400 truoc khi ghi (khong doi sang this.save
                 // vi save() ghi de code + tinh lai ypgg).
                 checkDrugLengths(drug);
+                // DS585: syncToClinic cung vong qua checkDrugRequired
+                // cua bulkInsert/bulkUpdate (chi goi o :681/:722, khong
+                // o save() -- save dua @Valid -- va khong o day) --
+                // goodsName rong, preparationUnit null/rong, pack
+                // null/rong luu thang qua mapper (probe pre: sync
+                // goodsName '' / omit unit / omit pack deu 200 va luu
+                // that; type null / goodsName null da 400 nho DB NOT
+                // NULL, status rong da 400 nho checkDrugStatusValues).
+                // Chan 400 ngay sau checkDrugLengths, truoc super.save;
+                // nhanh skip trung code giu nguyen.
+                checkDrugRequired(drug);
                 // DS554: syncToClinic cung vong qua checkDrugStatusValues
                 // (DS323) cua save() — status '9'/'2'/'x'/'' luu thang
                 // qua mapper thanh hang ma (reader loc status='1').
