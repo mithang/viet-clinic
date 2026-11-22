@@ -54,6 +54,12 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
         for (HisMaterials entity : entitys) {
             validateRequired(entity);
         }
+        // DS590: nhu HisDrugService (DS588) / HisInstitutionService
+        // (DS589) — dj am hoac khong phai so luu thang vao
+        // stuff.price_out_sell qua bulkInsert, bypass guard
+        // checkStuffNonNegative (DS223/DS242/DS584) chi co trong
+        // StuffService. Kiem tra TOAN BO list truoc moi tac dung phu.
+        checkHisMaterialDjNonNegative(entitys);
         //Quan hệ tương ứng giữa bản viện và phòng khám/
         Map<String, String> preMap = getTypeMap(BizConstants.DICT_TYPE_PREPARATION_UNIT);
         Map<String, String> packMap = getTypeMap(BizConstants.DICT_TYPE_PACK_SPEC);
@@ -120,6 +126,31 @@ public class HisMaterialService  extends CrudService<HisMaterialDao, HisMaterial
         }
         if (StringUtils.isBlank(entity.getDwjls())) {
             throw new ServiceException("Số lượng đóng gói vật tư đồng bộ không được để trống");
+        }
+    }
+
+    // DS590: gia vat tu dong bo (dj, String) am hoac khong phai so
+    // thi 400 fail-closed, mau DS588. null/blank/0 cho qua (cot
+    // price_out_sell nullable; dj thieu van 200 luu NULL nhu cu).
+    private static void checkHisMaterialDjNonNegative(
+            List<HisMaterials> entitys) {
+        if (entitys == null) {
+            return;
+        }
+        for (HisMaterials entity : entitys) {
+            if (entity == null || StringUtils.isBlank(entity.getDj())) {
+                continue;
+            }
+            java.math.BigDecimal price;
+            try {
+                price = new java.math.BigDecimal(entity.getDj().trim());
+            } catch (NumberFormatException e) {
+                throw new ServiceException(
+                        "Giá vật tư đồng bộ không hợp lệ: " + entity.getDj());
+            }
+            if (price.compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new ServiceException("Giá vật tư đồng bộ không được âm");
+            }
         }
     }
 
