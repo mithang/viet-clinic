@@ -987,6 +987,14 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 // truoc super.save; null/blank cung 400
                 // (NOT NULL + @NotNull, tien le DS461).
                 checkStuffPackUnitValues(stuff); // DS579
+                // DS580: syncToClinic bo qua guard minUnit DS502
+                // cua save() -- minUnit gia mao ngoai mien
+                // 13 gia tri dict 'medicalPreparationUnit' luu thang
+                // qua mapper (#{minUnit.value} verbatim).
+                // Chan 400 ngay sau checkStuffPackUnitValues,
+                // truoc super.save; null/blank cung 400
+                // (NOT NULL + @NotNull, tien le DS461/DS579).
+                checkStuffMinUnitValues(stuff); // DS580
                 super.save(stuff);
                 //LưuđộngTồn kho
                 this.medicinalStockControlService.initStock(stuff);
