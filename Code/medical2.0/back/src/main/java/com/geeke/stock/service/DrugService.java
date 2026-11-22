@@ -1231,6 +1231,14 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 // null/blank qua (cot varchar(255) NULL-able, ngu nghia
                 // DS451).
                 checkDrugPackValues(drug);
+                // DS573: syncToClinic cung vong qua
+                // checkDrugPreparationUnitValues (DS453) cua save() —
+                // preparationUnit 'medicalPreparationUnit_13'/'_99'/'x'
+                // luu thang qua mapper (don thuoc hien don vi che bien
+                // khong ton tai). Chan 400 ngay sau checkDrugPackValues,
+                // truoc super.save; null/blank qua (cot varchar(64)
+                // NULL-able, ngu nghia DS453).
+                checkDrugPreparationUnitValues(drug);
                 super.save(drug);
                 this.medicinalStockControlService.initStock(drug);
                 list.add(drug.getId());
