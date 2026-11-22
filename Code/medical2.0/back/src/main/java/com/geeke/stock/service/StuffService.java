@@ -979,6 +979,14 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 String sn = sequenceService.generate(company.getId(), "stuff_code", stuff);
                 stuff.setCode(sn);
                 checkStuffOutSellValues(stuff); // DS560
+                // DS579: syncToClinic bo qua guard packUnit DS461
+                // cua save() -- packUnit gia mao ngoai mien
+                // 10 gia tri dict 'medicalPackUnit' luu thang
+                // qua mapper (#{packUnit.value} verbatim).
+                // Chan 400 ngay sau checkStuffOutSellValues,
+                // truoc super.save; null/blank cung 400
+                // (NOT NULL + @NotNull, tien le DS461).
+                checkStuffPackUnitValues(stuff); // DS579
                 super.save(stuff);
                 //LưuđộngTồn kho
                 this.medicinalStockControlService.initStock(stuff);
