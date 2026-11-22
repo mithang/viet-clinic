@@ -458,6 +458,10 @@ public class CostItemService extends CrudService<CostItemDao, CostItem>{
                 // DS509: sync cung chan itemType/unit ngoai mien.
                 checkCostItemItemTypeValues(costItem);
                 checkCostItemUnitValues(costItem);
+                // DS586: sync cung chan costPrice/salePrice am (duong nay
+                // goi thang super.save, bypass guard checkCostItemNonNegative
+                // cua save() -- DS215).
+                checkCostItemNonNegative(costItem);
                 costItem.setCompany(company);
                 costItem.setId(null);
                 costItem.setSyncId(oldId);
