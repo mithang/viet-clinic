@@ -154,6 +154,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         // inventoryLimit/inventoryFloor/indate -> varchar(255), remarks
         // -> varchar(255). Gioi han theo cot DB; null-safe.
         checkStuffLengths(stuff);
+        checkIndateValue(stuff.getIndate()); // DS601
         // DS223: gia ban ra ngoai / gia ban le am truoc day ghi thang
         // (probe pre 19/19: save/bulkInsert/bulkUpdate/save-update deu
         // 100 va luu am that). Gia am chay vao ke don nhu gia thuoc
@@ -219,6 +220,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 throw new ServiceException("Mã pinyin không được để trống");
             }
             checkStuffLengths(stuff);
+            checkIndateValue(stuff.getIndate()); // DS601
             checkStuffNonNegative(stuff);
             checkStuffStatusValues(stuff); // DS324
             checkStuffOutSellValues(stuff); // DS365
@@ -251,6 +253,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 throw new ServiceException("Mã pinyin không được để trống");
             }
             checkStuffLengths(stuff);
+            checkIndateValue(stuff.getIndate()); // DS601
             checkStuffNonNegative(stuff);
             checkStuffStatusValues(stuff); // DS324
             checkStuffOutSellValues(stuff); // DS365
@@ -289,6 +292,19 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkDictLength(stuff.getNature(), 64, "Tính chất Độ dài phải nằm trong khoảng 0 đến 64");
         checkDictLength(stuff.getMinUnit(), 45, "Đơn vị nhỏ nhất Độ dài phải nằm trong khoảng 0 đến 45");
         checkDictLength(stuff.getPackUnit(), 45, "Đơn vị đóng gói Độ dài phải nằm trong khoảng 0 đến 45");
+    }
+
+    // DS601: nhu DrugService.checkIndateValue — indate la so ngay
+    // canh bao han su dung; 'abc'/'-5' luu thang lam hong canh bao
+    // (DATEDIFF(...) <= stuff.indate ep chuoi thanh so). null/blank
+    // cho qua (cot NULL).
+    private static void checkIndateValue(String indate) {
+        if (StringUtils.isBlank(indate)) {
+            return;
+        }
+        if (!indate.trim().matches("\\d+(\\.\\d*)?")) {
+            throw new ServiceException("Thời hạn hiệu lực phải là số ngày không âm");
+        }
     }
 
     // DS223: xem ghi chu o save(). Chi 2 truong gia chay vao tien ke
@@ -734,6 +750,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
 
     @Transactional(readOnly = false)
     public int updateAllIndate(String indate, String companyId) {
+        checkIndateValue(indate); // DS601
         return this.dao.updateAllIndate(indate, companyId);
     }
 
@@ -1038,6 +1055,7 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
                 // super.save; null qua, 0 qua (tien le DS223/
                 // DS242, DS577 Drug).
                 checkStuffNonNegative(stuff); // DS584
+                checkIndateValue(stuff.getIndate()); // DS601
                 super.save(stuff);
                 //LưuđộngTồn kho
                 this.medicinalStockControlService.initStock(stuff);

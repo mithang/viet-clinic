@@ -105,6 +105,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // truong khong @Length nhu pinyinCode, va duong bulk* goi save
         // dau -- bulkInsert/bulkUpdate goi helper rieng duoi day).
         checkDrugLengths(drug);
+        checkIndateValue(drug.getIndate()); // DS601
         // DS223: gia ban / gia ban le am truoc day ghi thang (probe pre
         // 19/19: save/bulkInsert/bulkUpdate/save-update deu 100 va luu
         // am that). Gia am chay vao ke don (MedicalRecordService
@@ -226,6 +227,22 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         checkDictLength(drug.getChineseMedicineUse(), 255, "Cách dùng thuốc Đông y Độ dài phải nằm trong khoảng 0 đến 255");
         checkDictLength(drug.getFrequency(), 255, "Tần suất và liều dùng Độ dài phải nằm trong khoảng 0 đến 255");
         checkDictLength(drug.getDays(), 255, "Số ngày Độ dài phải nằm trong khoảng 0 đến 255");
+    }
+
+    // DS601: indate la so ngay canh bao han su dung (UI chi cho nhap
+    // chu so + dau cham; gia tri live '1'/'90'; cau truy van canh bao
+    // DATEDIFF(end_date, ...) <= drug.indate ep chuoi thanh so nen
+    // 'abc' -> 0, '-5' -> -5 lam hong canh bao). Truoc day khong co
+    // guard so nao cho indate tren bat ky duong ghi nao (chi
+    // checkLength 255) nen 'abc'/'-5' luu thang qua save/bulk/
+    // syncToClinic/updateAllIndate. null/blank cho qua (cot NULL).
+    private static void checkIndateValue(String indate) {
+        if (StringUtils.isBlank(indate)) {
+            return;
+        }
+        if (!indate.trim().matches("\\d+(\\.\\d*)?")) {
+            throw new ServiceException("Thời hạn hiệu lực phải là số ngày không âm");
+        }
     }
 
     // DS223: xem ghi chu o save(). Chi 2 truong gia chay vao tien ke
@@ -680,6 +697,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         for (Drug drug : entitys) {
             checkDrugRequired(drug);
             checkDrugLengths(drug);
+            checkIndateValue(drug.getIndate()); // DS601
             checkDrugNonNegative(drug);
             checkDrugStatusValues(drug); // DS323
             checkDrugUnpackSellValues(drug); // DS364
@@ -721,6 +739,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             verifyTenantOwnershipAgainstStoredRow(drug);
             checkDrugRequired(drug);
             checkDrugLengths(drug);
+            checkIndateValue(drug.getIndate()); // DS601
             checkDrugNonNegative(drug);
             checkDrugStatusValues(drug); // DS323
             checkDrugUnpackSellValues(drug); // DS364
@@ -796,6 +815,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // DS160). Guard tai day nhu save() :107 / syncToClinic :716 /
         // bulk :247/:276; chi caller la MedicalRecordService:1404.
         checkDrugLengths(drug);
+        checkIndateValue(drug.getIndate()); // DS601
         return dao.insert(drug);
     }
 
@@ -918,6 +938,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // DS176 A: indate varchar(255) — khong guard thi chuoi >255 qua
         // thang DAO roi 500 MysqlDataTruncation tren UPDATE toan cong ty.
         checkLength(indate, 255, "Thời hạn hiệu lực Độ dài phải nằm trong khoảng 0 đến 255");
+        checkIndateValue(indate); // DS601
         int i = this.dao.updateAllIndate(indate, companyId);
         return i;
     }
@@ -1200,6 +1221,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
                 // mapper; chan 400 truoc khi ghi (khong doi sang this.save
                 // vi save() ghi de code + tinh lai ypgg).
                 checkDrugLengths(drug);
+                checkIndateValue(drug.getIndate()); // DS601
                 // DS585: syncToClinic cung vong qua checkDrugRequired
                 // cua bulkInsert/bulkUpdate (chi goi o :681/:722, khong
                 // o save() -- save dua @Valid -- va khong o day) --
