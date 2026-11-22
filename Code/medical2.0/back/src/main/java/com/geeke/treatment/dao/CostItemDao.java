@@ -19,7 +19,12 @@ public interface CostItemDao extends CrudDao<CostItem> {
     @Select("select count(1) from cost_item where item_name = #{name} and company_id = #{tenantId}")
     int countByName(@Param("name")String name,@Param("tenantId")String tenantId);
 
-    @Select("select id from cost_item where item_name = #{name} and company_id = #{tenantId}")
+    // DS587: GetIDByName tra String single-row -- ten da co ban copy (sync
+    // tu tao) thi MyBatis nem TooManyResultsException -> 500 o syncToClinic
+    // (lan sync thu 2 cung ten), save() va bulkInsert(). "limit 1" fail-
+    // closed: save() van 400 khi trung ten, sync van 200 + copy.
+    // (Tien le: UserDao.java:97 "order by u.id limit 1".)
+    @Select("select id from cost_item where item_name = #{name} and company_id = #{tenantId} limit 1")
     String GetIDByName(@Param("name")String name,@Param("tenantId")String tenantId);
 
     /** ITER64 item 2: single-column lookup, khong tin payload company va
