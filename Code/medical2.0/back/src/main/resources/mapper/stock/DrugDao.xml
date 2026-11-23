@@ -1068,6 +1068,14 @@
         select   *
         FROM drug a
         where a.goods_name=#{name} and a.price=#{retailPrice} and a.company_id=#{companyId}
+        limit 1
+        <!-- DS608: goods_name + price khong co unique constraint (save chi
+             chan trung (name,dosis,preparation,price) qua repeat()) nen
+             tenant co the co nhieu dong cung ten+gia (live: company 300
+             co 20 nhom trung, vd. ten + gia x5); khong limit thi MyBatis
+             selectOne nem TooManyResultsException -> 500 ca phieu nhap kho
+             o POST /stock/supplierStock/inStorage (tien le DS587/DS602/
+             DS603/DS606). -->
 
     </select>
 </mapper>
