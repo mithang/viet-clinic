@@ -1050,7 +1050,15 @@
         select   *
         FROM drug a
             where a.code=#{ypdm} and a.company_id=#{companyId}
-
+            limit 1
+        <!-- DS613: code khong co unique constraint (save/bulkInsert chi
+             chan trung (name,dosis,preparation,price) qua repeat(), khong
+             chan trung code; bulkInsert giu nguyen code client gui) nen
+             tenant co the co nhieu dong cung code (live: company 300 co
+             20 nhom code x5; probe tao 2 dong cung code DS613DUP qua
+             bulkInsert API); khong limit thi MyBatis selectOne nem
+             TooManyResultsException -> 500 ca batch HisDrugsToClinic
+             (dedup HisDrugService.bulkInsert) va auditHosDrugsStorage. -->
     </select>
     <select id="getByStandardCode" resultType="com.geeke.stock.entity.Drug">
         select   *
