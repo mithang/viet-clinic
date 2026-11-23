@@ -522,6 +522,13 @@
             AND a.card = #{card}
             AND a.company_id = #{company.id}
         </where>
+        limit 1
+        <!-- DS609: (name, card) khong co unique constraint (save chan trung
+             card o single save, nhung bulkInsert bypass guard do per DS127)
+             nen tenant co the co nhieu benh nhan live cung ten+CCCD; khong
+             limit thi MyBatis selectOne nem TooManyResultsException -> 500
+             o POST /outpatient/patient/inquire (tien le DS602/DS603/DS606/
+             DS608). -->
     </select>
 
 </mapper>
