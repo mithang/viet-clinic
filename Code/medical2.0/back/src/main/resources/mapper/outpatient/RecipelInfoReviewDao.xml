@@ -86,6 +86,11 @@
          left join recipel_info_review a on recipelInfo.id = a.recipel_info_id
         <include refid="recipellnfoReviewJoins"/>
         WHERE recipelInfo.id = #{id}
+        limit 1
+        <!-- DS611: selectOne khong limit 1 truoc day 500
+             TooManyResultsException khi mot don co 2 dong review
+             (save khong chan trung recipel_info_id); bang hard
+             delete nen khong co dong del_flag=1 de loc. -->
     </select>
 
     <select id="getCompanyParentId" parameterType="String" resultType="String">
