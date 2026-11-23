@@ -44,16 +44,15 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
         // Nhà sản xuấtĐã tồn tại
         colMaps.clear();
         colMaps.put("name", "name");
-        
-        // duplicate check handled below by findBy
-        //Kiểm traNhà sản xuấtCó tồn tại không
-       if(manufactureFactory.getId()==null){
-           String by = manufactureFactoryDao.findBy(manufactureFactory.getName(), manufactureFactory.getCompany().getId());
-           if(by!=null){
-               throw new ServiceException("Nhà sản xuất Đã tồn tại");
 
-           }
-       }
+        // DS624: kiem tra trung ten nha san xuat ca hai nhanh tao moi
+        // VA cap nhat (truoc day chi chay khi getId()==null). Duong
+        // update/bulkInsert/bulkUpdate bo qua guard nay trong khi mapper
+        // update/bulkUpdate deu ghi `name` -> tao duoc 2 dong cung ten
+        // trong mot tenant -> lan save ke tiep goi findBy (selectOne)
+        // nem TooManyResultsException -> 500. Dong cua chinh minh (cung
+        // id) duoc mien; ten cua dong da xoa mem van chan nhu cu.
+        checkManufactureFactoryNameDuplicate(manufactureFactory);
 
         // DS105 A1: save voi id khong ton tai truoc day roi qua
         // CrudService.save -> doUpdate 0 dong roi van 200 silent no-op
@@ -188,6 +187,11 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             checkManufactureFactoryStatusValues(manufactureFactory); // DS326
             checkManufactureFactoryTypeValues(manufactureFactory); // DS378
         }
+        // DS624: bulkInsert di thang dao.bulkInsert, bo qua guard trung
+        // ten cua save() -> 2 dong cung ten trong mot batch, lan save ke
+        // tiep 500 o findBy. Chan truoc moi ghi (ca trung voi dong da co
+        // lan trung nhau trong list).
+        checkManufactureFactoryNameDuplicates(entitys);
         return super.bulkInsert(entitys);
     }
 
@@ -213,6 +217,9 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             checkManufactureFactoryStatusValues(manufactureFactory); // DS326
             checkManufactureFactoryTypeValues(manufactureFactory); // DS378
         }
+        // DS624: nhu bulkInsert — mapper bulkUpdate ghi `name` (CASE)
+        // ma khong qua guard trung ten cua save().
+        checkManufactureFactoryNameDuplicates(entitys);
         return super.bulkUpdate(entitys);
     }
 
@@ -236,6 +243,65 @@ public List<ManufactureFactory> listAlls(List<Parameter> parameters, String orde
     return dao.listAlls(pageRequest);
 }
 
+
+    // DS624: guard trung ten nha san xuat trong cung tenant.
+    // findBy tra id cua dong co ten do (LIMIT 1 o mapper); id khac
+    // dong hien tai -> 400. Dong cua chinh minh duoc mien de update
+    // giu nguyen ten khong bao loi oan. Ten rong bo qua o day (da 400
+    // o vong kiem tra truoc trong save()/bulk*); company lay tu payload,
+    // fallback ve tenant session; khong xac dinh duoc company thi bo qua
+    // (giu hanh vi cu cho caller truc tiep khong mang company).
+    private void checkManufactureFactoryNameDuplicate(
+            ManufactureFactory manufactureFactory) {
+        if (manufactureFactory == null
+                || StringUtils.isBlank(manufactureFactory.getName())) {
+            return;
+        }
+        String companyId = resolveManufactureFactoryCompanyId(manufactureFactory);
+        if (StringUtils.isBlank(companyId)) {
+            return;
+        }
+        String foundId = manufactureFactoryDao.findBy(
+                manufactureFactory.getName(), companyId);
+        if (foundId != null && !foundId.equals(manufactureFactory.getId())) {
+            throw new ServiceException("Nhà sản xuất Đã tồn tại");
+        }
+    }
+
+    private void checkManufactureFactoryNameDuplicates(
+            List<ManufactureFactory> entitys) {
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (ManufactureFactory manufactureFactory : entitys) {
+            if (manufactureFactory == null
+                    || StringUtils.isBlank(manufactureFactory.getName())) {
+                continue;
+            }
+            String companyId =
+                    resolveManufactureFactoryCompanyId(manufactureFactory);
+            if (StringUtils.isBlank(companyId)) {
+                continue;
+            }
+            if (!seen.add(companyId + "\n" + manufactureFactory.getName())) {
+                throw new ServiceException("Nhà sản xuất Đã tồn tại");
+            }
+            checkManufactureFactoryNameDuplicate(manufactureFactory);
+        }
+    }
+
+    private String resolveManufactureFactoryCompanyId(
+            ManufactureFactory manufactureFactory) {
+        String companyId = null;
+        if (manufactureFactory != null && manufactureFactory.getCompany() != null) {
+            companyId = manufactureFactory.getCompany().getId();
+        }
+        if (StringUtils.isBlank(companyId)) {
+            companyId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        }
+        if ("null".equals(companyId)) {
+            return null;
+        }
+        return companyId;
+    }
 
     public String repeatBy(ManufactureFactory manufactureFactory){
       return  manufactureFactoryDao.findBy(manufactureFactory.getName(), manufactureFactory.getCompany().getId());

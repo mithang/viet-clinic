@@ -119,6 +119,12 @@
         a.name=#{name}
         AND
         a.company_id=#{company_id}
+        <!-- DS624: LIMIT 1 — findBy tra String (selectOne); trung ten
+             (tao duoc qua save-update/bulk* bypass guard trung ten)
+             nem TooManyResultsException -> 500 o lan save ke tiep.
+             Khong loc del_flag: giu hanh vi cu — ten cua dong da xoa
+             mem van chan tao moi bang 400 (chi khong 500 nua). -->
+        LIMIT 1
     </select>
 
     <insert id="insert">
