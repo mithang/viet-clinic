@@ -816,6 +816,12 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // bulk :247/:276; chi caller la MedicalRecordService:1404.
         checkDrugLengths(drug);
         checkIndateValue(drug.getIndate()); // DS601
+        // DS594: gia ban / gia ban le am truoc day luu thang qua
+        // addRecipel (MedicalRecordService:1494) vi addDurg chi co
+        // checkDrugLengths + checkIndateValue, khong co
+        // checkDrugNonNegative nhu save() :118. Chan fail-closed 400
+        // nhu save(), sau checkDrugLengths.
+        checkDrugNonNegative(drug);
         return dao.insert(drug);
     }
 
