@@ -670,6 +670,14 @@ public class UserService extends CrudService<UserDao, User>{
             sysFileService.verifyDeleteIdsObjectIds(Arrays.asList(deleteIds),
                     StringUtils.isNotBlank(user.getId()) ? Collections.singleton(user.getId()) : Collections.<String>emptySet());
         }
+        // DS619: chan doi ten sang loginName cua user khac (nhu save(User)):
+        // POST /admin/user/update goi super.save truc tiep, khong guard.
+        if (StringUtils.isNotBlank(user.getLoginName())) {
+            User existUser = getUserByLoginName(user);
+            if (existUser != null && !existUser.getId().equals(user.getId())) {
+                throw new ServiceException("Đã tồn tại một tên đăng nhập giống hệt. ");
+            }
+        }
         String id = super.save(user).getId();
         // H3: duong sua cua UI (POST /admin/user/update) cung chi doi
         // sys_user — dong bo tenant ngay sau save, truoc khi xu ly role/ext.
