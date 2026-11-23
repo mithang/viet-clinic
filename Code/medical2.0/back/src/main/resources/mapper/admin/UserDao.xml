@@ -132,6 +132,12 @@
              theo cùng mẫu P1/S1. ClinicService tạo clinic dùng SĐT cũ
              nay đi nhánh tạo admin mới thay vì gắn role cho tài khoản đã xóa. -->
         AND a.del_flag = 0
+        <!-- DS618: selectOne khong limit 1 truoc day 500 TooManyResults
+             khi 2 sys_user cung login_name (save/bulkInsert/bulkUpdate
+             co guard trung loginName, nhung POST /admin/user/update
+             qua UserService.update() khong guard nen doi ten trung
+             duoc); del_flag=0 da co san (nhu DS610 getByPhone). -->
+        LIMIT 1
     </select>
 
     <select id="getByPhone" resultType="com.geeke.admin.entity.User">
