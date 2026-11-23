@@ -212,6 +212,11 @@
                 and a.company_id=#{companyid}
             </if>
         </where>
+        <!-- DS602: selectOne (1 article) + id rong tra TOAN BO bai cua
+             tenant -> TooManyResults 500 khi tenant co >1 bai. limit 1
+             (tien le DS587 CostItemDao.GetIDByName); nhanh co id da duy
+             nhat theo PK. -->
+        limit 1
     </select>
     <select id="getArticleCompanyId" resultType="java.lang.String">
         SELECT company_id FROM article WHERE id = #{id}
