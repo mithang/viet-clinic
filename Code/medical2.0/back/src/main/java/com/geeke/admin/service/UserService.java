@@ -470,6 +470,24 @@ public class UserService extends CrudService<UserDao, User>{
         }
     }
 
+    // DS623: tai dung id dong ext ACTIVE hien co cua (user, tenant) khi
+    // payload ext khong co id — giong E1 (iteration 25) o update().
+    // Tra true neu da gan id (caller ghi bang save/update), false neu
+    // khong co dong nao (caller insert moi nhu cu). Chi dung cho duong
+    // saveWithFile; update() giu nguyen code E1 inline cua no.
+    private boolean reuseExistingUserExtId(UserExt userExt, String userId) {
+        if (userExt == null || StringUtils.isNotBlank(userExt.getId())) {
+            return false;
+        }
+        List<UserExt> existingExts = userExtDao.listActiveUserExtByUserId(
+                userId, SessionUtils.getLoginTenantId());
+        if (existingExts != null && !existingExts.isEmpty()) {
+            userExt.setId(existingExts.get(0).getId());
+            return true;
+        }
+        return false;
+    }
+
     @Transactional(readOnly = false)
     public User save(User user,MultipartFile[] fileIdUploads,
                      String[] deleteIds) throws java.io.IOException {
@@ -512,10 +530,20 @@ public class UserService extends CrudService<UserDao, User>{
                 // preInsert giữ id đã set, chỉ điền create_by/update_by/ngày.
                 userExt.setUserId(existUser.getId());
                 userExt.setCompanyId(SessionUtils.getLoginTenantId());
-                userExt.setId(IdGen.uuid());
-                userExt.preInsert();
-                //nàyngườiNếuTồn tại, không ởKhi thêm mớiSửaảnh
-                userExtService.insert(userExt);
+                // DS623: nhu E1 o update() — neu (user, tenant) da co dong
+                // ext active (mo coi, khong con dong user_tenant) thi tai
+                // dung id cua no thay vi insert dong moi; neu khong moi
+                // lan gan tenant lai them 1 dong active va
+                // getUserExtByUserId (selectOne) nem TooManyResults lam
+                // GET/delete user 500. Khong doi hanh vi khi chua co dong.
+                if (reuseExistingUserExtId(userExt, existUser.getId())) {
+                    userExtService.save(userExt);
+                } else {
+                    userExt.setId(IdGen.uuid());
+                    userExt.preInsert();
+                    //nàyngườiNếuTồn tại, không ởKhi thêm mớiSửaảnh
+                    userExtService.insert(userExt);
+                }
                 //lưu vàoHiện tạiNgười dùngtạiPhòng khám của Vai tròThông tin
                 saveUserRoleInfo(user);
             }
@@ -571,6 +599,13 @@ public class UserService extends CrudService<UserDao, User>{
             if (null != deleteIds && deleteIds.length > 0) {
                 sysFileService.delete(deleteIds);
             }
+            // DS623: nhu E1 o update() — payload mang id user da ton tai
+            // (khong phai ghost id, DS163 A7 cho qua) + ext khong id thi
+            // save() voi id rong insert dong ext moi trong khi dong active
+            // cu van con, roi getUserExtByUserId (selectOne) nem
+            // TooManyResults lam GET/delete user 500. Tai dung id dong
+            // active hien co de update tai cho thay vi insert.
+            reuseExistingUserExtId(userExt, id);
             userExtService.save(userExt);
         }
 //        colMaps.clear();

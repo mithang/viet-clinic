@@ -46,6 +46,12 @@
         WHERE a.user_id = #{userId}
         and a.company_id = #{companyId}
         and a.del_flag != 1
+        <!-- DS623: selectOne — dong trung (user, tenant) truoc E1 / duong
+             save() cu van nem TooManyResults lam GET/delete user 500;
+             lay dong moi cap nhat nhat thay vi 500 (cung thu tu nhu
+             listActiveUserExtByUserId). Guard tai dung id o UserService
+             ngan khong cho sinh them dong trung moi. -->
+        ORDER BY a.update_date DESC LIMIT 1
     </select>
 
     <select id="getAllUserExtByUserId" resultType="com.geeke.admin.entity.UserExt">
