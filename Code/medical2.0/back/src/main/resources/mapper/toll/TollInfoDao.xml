@@ -578,6 +578,7 @@
         <include refid="tollInfoJoins"/>
         WHERE
         registration_fee_id=#{registrationId}
+        ORDER BY a.create_date ASC, a.id ASC LIMIT 1 <!-- DS615: mot dang ky co the co nhieu phieu thu (thu 2 lan qua save, hoac thu -> huy mem H6 -> thu lai); khong limit thi MyBatis selectOne nem TooManyResultsException -> 500 o GET /toll/tollInfo/getTollInfoByRegistrationId/{id} va nhanh REFUNDED cua save. Lay phieu som nhat de nhanh hoan van gap phieu thu goc (tien le DS606/DS608/DS611/DS612/DS613/DS614). -->
     </select>
 
     <select id="getCreateBy" resultType="com.geeke.toll.entity.TollInfo">
