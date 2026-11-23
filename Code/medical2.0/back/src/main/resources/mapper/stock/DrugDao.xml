@@ -1056,6 +1056,12 @@
         select   *
         FROM drug a
             where a.standard_code=#{standardCode} and a.company_id=#{companyId}
+            limit 1
+        <!-- DS606: standard_code khong co unique constraint (save/bulk
+             chi chan trung code) nen tenant co the co nhieu dong cung
+             standard_code (live: 'H32123' x3); khong limit thi
+             MyBatis selectOne nem TooManyResultsException -> 500 ca
+             batch dong bo HisDrugsToClinic (tien le DS587/DS602). -->
 
     </select>
     <select id="getByNameAndPrice" resultType="com.geeke.stock.entity.Drug">
