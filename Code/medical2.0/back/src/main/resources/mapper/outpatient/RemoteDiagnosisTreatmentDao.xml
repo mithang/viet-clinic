@@ -67,6 +67,15 @@
         FROM remote_diagnosis a
         <include refid="patientJoins"/>
         WHERE a.registration_id = #{registrationId}
+        <!-- DS620: chi doc dong live moi nhat + limit 1. Truoc day khong
+             loc del_flag, khong limit: luu 2 lan cung registrationId qua
+             POST save (diagnosisSave khong guard trung) -> selectOne tra
+             2 dong -> 500 TooManyResultsException o GET registrationId/{id};
+             cap live + da xoa mem cung 500. Lay live moi nhat theo mau
+             K1 o MedicalRecordDao.getByRegistrationId / DS617. -->
+        and a.del_flag = '0'
+        ORDER BY a.create_date DESC, a.id DESC
+        LIMIT 1
     </select>
 
     <select id="diagnosisPage" resultType="com.geeke.outpatient.entity.RemoteDiagnosisTreatment">
