@@ -98,6 +98,7 @@
         FROM member_management_detail a
             <include refid="memberManagementDetailJoins"/>
         WHERE a.member_management_id = #{managementId} and a.member_item_id = #{memberItemId}
+        limit 1
     </select>
 
     <insert id="insert">
