@@ -104,6 +104,13 @@
         FROM inspection_check_info a
            <include refid="inspectionCheckInfoJoins"/>
         WHERE a.inspection_check_id = #{inspecId}
+        limit 1
+        <!-- DS612: inspection_check_id khong co unique constraint (save/
+             bulkInsert chi chan ghost-id/do dai/ngay, khong chan trung
+             inspection_check_id) nen mot phieu co the co nhieu dong ket
+             qua; khong limit thi MyBatis selectOne nem
+             TooManyResultsException -> 500 o GET
+             /cure/inspectionCheckInfo/info/{id}. -->
     </select>
     <insert id="insert">
         INSERT INTO inspection_check_info(
