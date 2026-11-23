@@ -822,6 +822,7 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // checkDrugNonNegative nhu save() :118. Chan fail-closed 400
         // nhu save(), sau checkDrugLengths.
         checkDrugNonNegative(drug);
+        checkDrugPackValues(drug); // DS607: pack gia mao ngoai mien medicalPackUnit qua addRecipel (mau DS451/DS604)
         return dao.insert(drug);
     }
 
