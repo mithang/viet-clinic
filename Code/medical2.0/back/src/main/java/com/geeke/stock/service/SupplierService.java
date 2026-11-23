@@ -54,14 +54,14 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
         /*if(exists(dao, supplier, colMaps)) {
             throw new ServiceException("Nhà cung cấp đã tồn tại");
         }*/
-        //Kiểm traNhà cung cấpCó tồn tại không
-       if(supplier.getId()==null){
-           String by = supplierDao.findBy(supplier.getName(), supplier.getCompany().getId());
-           if(by!=null){
-               throw new ServiceException("Nhà cung cấp đã tồn tại");
-
-           }
-       }
+        // DS622: kiem tra trung ten nha cung cap ca hai nhanh tao moi
+        // VA cap nhat (truoc day chi chay khi getId()==null). Duong
+        // update/bulkInsert/bulkUpdate bo qua guard nay trong khi mapper
+        // update/bulkUpdate deu ghi `name` -> tao duoc 2 dong cung ten
+        // trong mot tenant -> lan save ke tiep goi findBy (selectOne)
+        // nem TooManyResultsException -> 500. Dong cua chinh minh (cung
+        // id) duoc mien; ten cua dong da xoa mem van chan nhu cu.
+        checkSupplierNameDuplicate(supplier);
         // DS104 C1: save voi id khong ton tai truoc day roi qua
         // CrudService.save -> doUpdate 0 dong roi van 200 silent no-op
         // (verifyTenantOwnershipAgainstStoredRow bo qua khi stored==null,
@@ -105,6 +105,11 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
             checkSupplierStatusValues(supplier); // DS443
             checkSupplierTypeValues(supplier); // DS546
         }
+        // DS622: bulkInsert di thang dao.bulkInsert, bo qua guard trung
+        // ten cua save() -> 2 dong cung ten trong mot batch, lan save ke
+        // tiep 500 o findBy. Chan truoc moi ghi (ca trung voi dong da co
+        // lan trung nhau trong list).
+        checkSupplierNameDuplicates(entitys);
         return super.bulkInsert(entitys);
     }
 
@@ -123,7 +128,62 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
             checkSupplierStatusValues(supplier); // DS443
             checkSupplierTypeValues(supplier); // DS546
         }
+        // DS622: nhu bulkInsert — mapper bulkUpdate ghi `name` (CASE)
+        // ma khong qua guard trung ten cua save().
+        checkSupplierNameDuplicates(entitys);
         return super.bulkUpdate(entitys);
+    }
+
+    // DS622: guard trung ten nha cung cap trong cung tenant.
+    // findBy tra id cua dong co ten do (LIMIT 1 o mapper); id khac
+    // dong hien tai -> 400. Dong cua chinh minh duoc mien de update
+    // giu nguyen ten khong bao loi oan. Ten rong bo qua o day (da 400
+    // o vong kiem tra truoc trong save()/bulk*); company lay tu payload,
+    // fallback ve tenant session; khong xac dinh duoc company thi bo qua
+    // (giu hanh vi cu cho caller truc tiep khong mang company).
+    private void checkSupplierNameDuplicate(Supplier supplier) {
+        if (supplier == null || StringUtils.isBlank(supplier.getName())) {
+            return;
+        }
+        String companyId = resolveSupplierCompanyId(supplier);
+        if (StringUtils.isBlank(companyId)) {
+            return;
+        }
+        String foundId = supplierDao.findBy(supplier.getName(), companyId);
+        if (foundId != null && !foundId.equals(supplier.getId())) {
+            throw new ServiceException("Nhà cung cấp đã tồn tại");
+        }
+    }
+
+    private void checkSupplierNameDuplicates(List<Supplier> entitys) {
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (Supplier supplier : entitys) {
+            if (supplier == null || StringUtils.isBlank(supplier.getName())) {
+                continue;
+            }
+            String companyId = resolveSupplierCompanyId(supplier);
+            if (StringUtils.isBlank(companyId)) {
+                continue;
+            }
+            if (!seen.add(companyId + "\n" + supplier.getName())) {
+                throw new ServiceException("Nhà cung cấp đã tồn tại");
+            }
+            checkSupplierNameDuplicate(supplier);
+        }
+    }
+
+    private String resolveSupplierCompanyId(Supplier supplier) {
+        String companyId = null;
+        if (supplier != null && supplier.getCompany() != null) {
+            companyId = supplier.getCompany().getId();
+        }
+        if (StringUtils.isBlank(companyId)) {
+            companyId = com.geeke.utils.SessionUtils.getLoginTenantId();
+        }
+        if ("null".equals(companyId)) {
+            return null;
+        }
+        return companyId;
     }
 
     @Override
