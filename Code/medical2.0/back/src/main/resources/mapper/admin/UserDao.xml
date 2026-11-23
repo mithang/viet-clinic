@@ -499,6 +499,9 @@
         WHERE a.is_admin = 1 and
         u.tenant_id = #{companyId} AND a.is_wxuser = "0"
         and a.department_id is null
+        and a.del_flag = '0'
+        ORDER BY a.create_date DESC, a.id DESC
+        LIMIT 1
     </select>
     <select id="getCompanyIdAndOpenId" resultType="com.geeke.admin.entity.User">
         SELECT
