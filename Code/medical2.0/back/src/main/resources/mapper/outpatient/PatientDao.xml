@@ -66,6 +66,15 @@
         <include refid="patientJoins"/>
         WHERE a.phone = #{phoneNumber}
         and a.company_id = #{companyId}
+        <!-- DS603: chi doc benh nhan con song + limit 1. Truoc day khong
+             loc del_flag, khong limit: benh nhan da xoa mem cung SDT voi
+             benh nhan dang song -> selectOne tra 2 dong -> 500
+             TooManyResultsException o GET /instant/{phone}. Check trung
+             SDT o save (countPatientByPhone) chi dem del_flag=0 nen tao
+             moi sau khi xoa mem van qua. getPatientByCard cung file da
+             loc del_flag = 0; limit 1 theo tien le DS587/DS602. -->
+        and a.del_flag = 0
+        limit 1
     </select>
 
     <select id="countPatientByPhone" resultType="com.geeke.outpatient.entity.Patient">
