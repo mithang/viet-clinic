@@ -190,6 +190,13 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
+            // DS648: phan tu null nem 400 truoc khi forceSessionCompany
+            // deref entity.setCompany() -- truoc day NPE 500 qua
+            // RuntimeException handler (guard null o CrudService khong
+            // toi duoc vi vong pre-check nay chay truoc super).
+            if (entity == null) {
+                throw new ServiceException("Yêu cầu đặt lịch không được để trống");
+            }
             forceSessionCompany(entity);
             checkBookingRequestStatus(entity, true);
             checkWantedDateNotPast(entity);
@@ -202,6 +209,11 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
+            // DS648: nhu bulkInsert tren -- phan tu null nem 400 truoc
+            // khi checkRowOwnership deref entity.getId().
+            if (entity == null) {
+                throw new ServiceException("Yêu cầu đặt lịch không được để trống");
+            }
             checkRowOwnership(entity.getId());
             checkBookingRequestStatus(entity, false);
             checkWantedDateNotPast(entity);
@@ -214,6 +226,11 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
     @Transactional(readOnly = false)
     public int bulkDelete(List<BookingRequest> entitys) {
         for (BookingRequest entity : entitys) {
+            // DS648: nhu bulkInsert/bulkUpdate tren -- phan tu null nem
+            // 400 truoc khi checkRowOwnership deref entity.getId().
+            if (entity == null) {
+                throw new ServiceException("Yêu cầu đặt lịch không được để trống");
+            }
             checkRowOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
