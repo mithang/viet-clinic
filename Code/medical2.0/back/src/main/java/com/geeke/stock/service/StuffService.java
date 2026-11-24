@@ -213,6 +213,14 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             throw new ServiceException("Danh sách vật tư không được để trống");
         }
         for (Stuff stuff : entitys) {
+            // DS638: phan tu null trong list ([null] / [null,{}]) lam
+            // stuff.getName() NPE -> 500 qua RuntimeException handler;
+            // Drug/CostItem da guard ("Thong tin thuoc/hang muc khong
+            // duoc de trong"), Stuff thieu. Chan fail-closed 400 truoc
+            // moi kiem tra khac, batch hon hop dung truoc moi ghi.
+            if (stuff == null) {
+                throw new ServiceException("Thông tin vật tư không được để trống");
+            }
             if (StringUtils.isBlank(stuff.getName())) {
                 throw new ServiceException("Tên vật tư không được để trống");
             }
@@ -241,6 +249,11 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             throw new ServiceException("Danh sách vật tư không được để trống");
         }
         for (Stuff stuff : entitys) {
+            // DS638: nhu bulkInsert — phan tu null lam stuff.getId()
+            // NPE -> 500; chan fail-closed 400 truoc moi kiem tra.
+            if (stuff == null) {
+                throw new ServiceException("Thông tin vật tư không được để trống");
+            }
             if (StringUtils.isNotBlank(stuff.getId())
                     && stuffDao.get(stuff.getId()) == null) {
                 throw new ServiceException("Vật tư không tồn tại: "
