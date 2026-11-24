@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -131,6 +132,31 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<JSONObject> dataIntegrityViolationExceptionHandler(org.springframework.dao.DataIntegrityViolationException e) {
         logger.warn("Vi phạm ràng buộc dữ liệu (tham số không hợp lệ?): {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Dữ liệu không hợp lệ hoặc vi phạm ràng buộc", Constants.MSG_TYPE_WARNING);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    /**
+     * DS635: UncategorizedSQLException — String khong phai so ghi
+     * verbatim vao cot bigint (vd patientId/doctorId "abc" qua POST
+     * /outpatient/registration/save: Patient/User co ctor String-id
+     * nen Jackson tao entity id="abc", insert ghi thang vao cot
+     * patient_id/doctor_id bigint) -> MySQL 1366 "Incorrect integer
+     * value" ma Spring khong phan loai duoc nen dich thanh
+     * UncategorizedSQLException -> truoc day roi vao RuntimeException
+     * handler -> 500, trong khi day la loi dau vao cua client -> 400.
+     * Handler dat o mot cho nen bao phu moi FK id dang String ghi vao
+     * cot bigint o bat ky endpoint nao, khong phai sua tung service.
+     * Ran gioi: chuoi co tien to so ("12x") / vuot pham vi bigint
+     * da ve 400 truoc qua DS160 (DataIntegrityViolationException,
+     * MySQL 1264/1265); chi chuoi hoan toan khong phai so moi toi
+     * handler nay. Neu mot mapper cua server tu hong thi loi do cung
+     * ve 400 thay vi 500 — danh doi nhu DS94/DS160, log warn ben
+     * duoi van giu message SQL day du de phan biet.
+     */
+    @ExceptionHandler(UncategorizedSQLException.class)
+    public ResponseEntity<JSONObject> uncategorizedSQLExceptionHandler(UncategorizedSQLException e) {
+        logger.warn("Lỗi SQL không phân loại được (giá trị không hợp lệ?): {}", e.getMessage());
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Dữ liệu không hợp lệ hoặc vi phạm ràng buộc", Constants.MSG_TYPE_WARNING);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
