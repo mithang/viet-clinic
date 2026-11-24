@@ -504,6 +504,15 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
                 List<MemberItem> memberItems = memberItemService.getByMemberSetId(memberSet.getId());
                 for (MemberItem memberItem : memberItems) {
                     for (RecipelDetail recipelDetail : recipelDetailEvtList) {
+                            // DS664: phan tu null trong recipelDetailEvtList
+                            // truoc day NPE 500 o getDrugStuffId() ben duoi
+                            // (guard DS154 chi kiem tra LIST non-null, khong
+                            // kiem tra PHAN TU). Day la endpoint DOC (kiem tra
+                            // the bao phu) nen SKIP phan tu null -> 200, theo
+                            // mau DS154 A1 skip the ghost/set hong.
+                            if (recipelDetail == null) {
+                                continue;
+                            }
                             // DS154 A2/A4: (a) chi tiet don thieu drugStuffId/
                             // costItem -> deref NPE; (b) getByManagementIdAndMemberItemId
                             // tra null khi the khong co dong chi tiet cho item
