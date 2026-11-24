@@ -1369,6 +1369,25 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             //return;
            throw new ServiceException("Đơn thuốc Thông tin Không thể là trống.");
         }
+        // DS657: null element / null recipelInfo / null detail list / null
+        // detail element NPEd 500 in the loop below (:1395-:1399) — the
+        // detail loop runs BEFORE the isEmpty check, and the registration
+        // status save runs before the loop, so validate the whole list
+        // UPFRONT here, before any read/write beyond diagnosisById.
+        // Fail-closed 400 (pattern DS87 v2/allSave controller / DS652).
+        // Empty detail list is NOT rejected here: it still throws the
+        // existing "[name]Chi tiết không được để trống." below.
+        for (RecipelInfoEvt recipelInfoEvt : recipelInfoEvtList) {
+            if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null
+                    || recipelInfoEvt.getRecipelDetailEvtList() == null) {
+                throw new ServiceException("Đơn thuốc không được để trống");
+            }
+            for (RecipelDetail recipelDetail : recipelInfoEvt.getRecipelDetailEvtList()) {
+                if (recipelDetail == null) {
+                    throw new ServiceException("Chi tiết đơn thuốc không được để trống");
+                }
+            }
+        }
         String registrationId = entity.getRegistrationId();
         // Lấyđăng kýThông tin
         Registration registration = this.registrationService.get(registrationId);
