@@ -17,7 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.time.format.SignStyle;
+import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.List;
 
@@ -499,6 +506,85 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     }
 
 
+    /**
+     * DS630: startTime/endTime la String tho tu query param, mapper so
+     * sanh thang voi DATETIME (a.create_date / s.create_date). Chuoi
+     * khong phai ngay (vd "xxx", "2026-13-40") lam MySQL nem 1525
+     * Incorrect DATETIME value -> UncategorizedSQLException -> 500
+     * (probe PRE R1/R2/R5, log-proven), trong khi day la loi dau vao
+     * cua client -> 400. Fail-closed 400 truoc moi goi DAO; chi chap
+     * nhan cac dinh dang ma MySQL chap nhan (da kiem chung truc tiep
+     * bang SQL): yyyy-MM-dd (+ HH:mm[:ss]), yyyy/MM/dd (+ ...),
+     * yyyy.MM.dd (+ ...), ISO 'T', yyyyMMdd, thang/ngay 1 chu so.
+     * Trong/null giu nguyen (mapper bo qua nhu cu); frontend gui
+     * "YYYY-MM-DD HH:mm:ss" nen duong hop le khong doi mot byte.
+     * "yyyy-MM" (thieu ngay) MySQL cung tu choi 1525 nen khong co
+     * trong danh sach chap nhan. Luu y: commons-lang3 DateUtils.parseDate
+     * khong dung duoc o day — no rollover lenient ("2026-13-40" van
+     * parse thanh 2027-02-09) nen gia tri hong van lot xuong MySQL 1525;
+     * java.time STRICT moi chan dung thang/ngay khong hop le.
+     * Thang/ngay/gio dung width bien doi 1-2 (DateTimeFormatterBuilder)
+     * vi ofPattern "MM" o STRICT doi dung 2 chu so ("2026-1-5" ma
+     * MySQL chap nhan se bi loai oan); pham vi thang 1-12 / ngay hop
+     * le theo thang van do STRICT kiem tra.
+     */
+    private static DateTimeFormatter dateFmt(String sep) {
+        return new DateTimeFormatterBuilder()
+                .appendValue(ChronoField.YEAR, 4)
+                .appendLiteral(sep)
+                .appendValue(ChronoField.MONTH_OF_YEAR, 1, 2, SignStyle.NOT_NEGATIVE)
+                .appendLiteral(sep)
+                .appendValue(ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
+                .toFormatter().withResolverStyle(ResolverStyle.STRICT);
+    }
+
+    private static DateTimeFormatter dateTimeFmt(String sep) {
+        return new DateTimeFormatterBuilder()
+                .appendValue(ChronoField.YEAR, 4)
+                .appendLiteral(sep)
+                .appendValue(ChronoField.MONTH_OF_YEAR, 1, 2, SignStyle.NOT_NEGATIVE)
+                .appendLiteral(sep)
+                .appendValue(ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
+                .appendLiteral(' ')
+                .appendValue(ChronoField.HOUR_OF_DAY, 1, 2, SignStyle.NOT_NEGATIVE)
+                .appendLiteral(':')
+                .appendValue(ChronoField.MINUTE_OF_HOUR, 1, 2, SignStyle.NOT_NEGATIVE)
+                .optionalStart().appendLiteral(':')
+                .appendValue(ChronoField.SECOND_OF_MINUTE, 1, 2, SignStyle.NOT_NEGATIVE)
+                .optionalEnd()
+                .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+                .toFormatter().withResolverStyle(ResolverStyle.STRICT);
+    }
+
+    private static final DateTimeFormatter[] DATE_FORMATTERS = {
+            dateTimeFmt("-"), dateTimeFmt("/"), dateTimeFmt("."),
+            dateFmt("-"), dateFmt("/"), dateFmt("."),
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME.withResolverStyle(ResolverStyle.STRICT),
+            DateTimeFormatter.BASIC_ISO_DATE.withResolverStyle(ResolverStyle.STRICT)
+    };
+
+    private static void checkDateParam(String value, String label) {
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        String v = value.trim();
+        for (DateTimeFormatter f : DATE_FORMATTERS) {
+            try {
+                LocalDateTime.parse(v, f);
+                return;
+            } catch (DateTimeParseException ignored) {
+                // thu dang date-only ben duoi
+            }
+            try {
+                LocalDate.parse(v, f);
+                return;
+            } catch (DateTimeParseException ignored) {
+                // thu formatter tiep theo
+            }
+        }
+        throw new ServiceException("Ngày " + label + " không hợp lệ: " + value);
+    }
+
     public Page<SupplierStorage> listByCode(String pinyinCode, String status, String startTime, String endTime, int limit, int offset) {
         // DS259: chan limit/offset khong tran — funnel list con sot sau
         // DS203/DS204 (DAO khong LIMIT, phan trang trong bo nho bang
@@ -512,6 +598,11 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         if (offset < 0) {
             throw new IllegalArgumentException("Invalid offset: " + offset);
         }
+        // DS630: validate ngay truoc moi goi DAO (xem checkDateParam).
+        startTime = StringUtils.isBlank(startTime) ? startTime : startTime.trim();
+        endTime = StringUtils.isBlank(endTime) ? endTime : endTime.trim();
+        checkDateParam(startTime, "bắt đầu");
+        checkDateParam(endTime, "kết thúc");
         String companyId = SessionUtils.getUserDto().getCompanyId();
         // DS201: escape LIKE wildcards in pinyinCode (mirror DS200) —
         // "%" must match literally, not every stocked drug/stuff.
