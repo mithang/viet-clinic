@@ -198,6 +198,13 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<FollowupReminder> entitys) {
         for (FollowupReminder entity : entitys) {
+            // DS647: phan tu null nem 400 truoc khi forceSessionCompany
+            // deref entity.setCompany() -- truoc day NPE 500 qua
+            // RuntimeException handler (guard null o CrudService khong
+            // toi duoc vi vong pre-check nay chay truoc super).
+            if (entity == null) {
+                throw new ServiceException("Nhắc lịch tái khám không được để trống");
+            }
             forceSessionCompany(entity);
             // DS319: tao moi chi duoc status '0' (thay mac dinh null->'0'
             // cu cua DS103, nay di kem 400 khi payload gia mao '1'/rac).
@@ -215,6 +222,11 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<FollowupReminder> entitys) {
         for (FollowupReminder entity : entitys) {
+            // DS647: nhu bulkInsert tren -- phan tu null nem 400 truoc
+            // khi checkRowOwnership deref entity.getId().
+            if (entity == null) {
+                throw new ServiceException("Nhắc lịch tái khám không được để trống");
+            }
             checkRowOwnership(entity.getId());
             // DS103: vong pre-check chay truoc dao.bulkUpdate (mot
             // statement CASE duy nhat) nen [valid, khong ton tai] nem
@@ -233,6 +245,11 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
     @Transactional(readOnly = false)
     public int bulkDelete(List<FollowupReminder> entitys) {
         for (FollowupReminder entity : entitys) {
+            // DS647: nhu bulkInsert/bulkUpdate tren -- phan tu null nem
+            // 400 truoc khi checkRowOwnership deref entity.getId().
+            if (entity == null) {
+                throw new ServiceException("Nhắc lịch tái khám không được để trống");
+            }
             checkRowOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
