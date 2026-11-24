@@ -177,6 +177,12 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
             throw new ServiceException("Danh sách loại từ điển không được để trống");
         }
         for (DictType dictType : entitys) {
+            // DS645: phan tu null -> 400 fail-closed (truoc day:
+            // dictType.getName() deref null -> NPE 500).
+            if (dictType == null) {
+                throw new ServiceException(
+                        "Loại từ điển không được để trống");
+            }
             if (StringUtils.isBlank(dictType.getName())) {
                 throw new ServiceException("Tên loại từ điển không được để trống");
             }
@@ -199,6 +205,12 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
             throw new ServiceException("Danh sách loại từ điển không được để trống");
         }
         for (DictType dictType : entitys) {
+            // DS645: phan tu null -> 400 fail-closed (truoc day:
+            // super.bulkUpdate deref null -> NPE 500).
+            if (dictType == null) {
+                throw new ServiceException(
+                        "Loại từ điển không được để trống");
+            }
             if (StringUtils.isNotBlank(dictType.getId())
                     && dao.get(dictType.getId()) == null) {
                 throw new ServiceException("Loại từ điển không tồn tại: "
