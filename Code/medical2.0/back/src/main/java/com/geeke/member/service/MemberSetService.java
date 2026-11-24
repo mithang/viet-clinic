@@ -171,6 +171,13 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
         }
         for (MemberSet memberSet : entitys) {
+            // DS641: phan tu null -> 400 fail-closed, thay vi NPE 500
+            // o validateRequiredFields (memberSet.getName()) ben duoi.
+            // Mau DS640 (DepartmentService): guard ngay dau vong lap,
+            // truoc moi deref.
+            if (memberSet == null) {
+                throw new ServiceException("Cài đặt thẻ hội viên không được để trống");
+            }
             validateRequiredFields(memberSet);
             checkMemberSetLengths(memberSet);
             checkMemberSetNonNegative(memberSet); // DS213
@@ -189,6 +196,11 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
             throw new ServiceException("Danh sách cài đặt thẻ hội viên không được để trống");
         }
         for (MemberSet memberSet : entitys) {
+            // DS641: nhu bulkInsert tren -- phan tu null nem 400
+            // truoc khi memberSet.getId() deref.
+            if (memberSet == null) {
+                throw new ServiceException("Cài đặt thẻ hội viên không được để trống");
+            }
             if (StringUtils.isNotBlank(memberSet.getId())
                     && this.dao.get(memberSet.getId()) == null) {
                 throw new ServiceException("Cài đặt thẻ hội viên không tồn tại: "
