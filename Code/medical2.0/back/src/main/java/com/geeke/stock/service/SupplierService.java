@@ -93,6 +93,12 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
             throw new ServiceException("Danh sách nhà cung cấp không được để trống");
         }
         for (Supplier supplier : entitys) {
+            // DS646: phan tu null -> 400 fail-closed (truoc day:
+            // supplier.getName() deref null -> NPE 500).
+            if (supplier == null) {
+                throw new ServiceException(
+                        "Nhà cung cấp không được để trống");
+            }
             if (StringUtils.isBlank(supplier.getName())) {
                 throw new ServiceException("Tên nhà cung cấp không được để trống");
             }
@@ -120,6 +126,12 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
             throw new ServiceException("Danh sách nhà cung cấp không được để trống");
         }
         for (Supplier supplier : entitys) {
+            // DS646: phan tu null -> 400 fail-closed (truoc day:
+            // supplier.getId() deref null -> NPE 500).
+            if (supplier == null) {
+                throw new ServiceException(
+                        "Nhà cung cấp không được để trống");
+            }
             if (StringUtils.isNotBlank(supplier.getId())
                     && dao.get(supplier.getId()) == null) {
                 throw new ServiceException("Nhà cung cấp không tồn tại: "
