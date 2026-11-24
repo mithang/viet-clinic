@@ -1374,6 +1374,27 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 if (recipelDetail == null) {
                     throw new ServiceException("Chi tiết đơn thuốc không được để trống");
                 }
+                // DS665: drugStuffId thieu / ma thuoc-vat tu khong ton
+                // tai NPE 500 o vong tra cuu ben duoi (:1409/:1410
+                // stuff, :1417/:1418 drug) sau khi don da save
+                // (transaction rollback nhung client van nhan 500 cho
+                // payload sai). Validate upfront truoc moi save, cung
+                // mau DS658 o tren: thieu id -> 400, ma khong ton tai
+                // -> 400 kem ma (mau DS166 "Thuốc nhập kho không tồn
+                // tại"). Nhan "4" = vat tu nhu vong ben duoi, con lai
+                // la thuoc; tra cuu lai o vong ben duoi (khong cache).
+                String drugStuffId = recipelDetail.getDrugStuffId() == null
+                        ? null : recipelDetail.getDrugStuffId().getDrugStuffId();
+                if (StringUtils.isBlank(drugStuffId)) {
+                    throw new ServiceException("Chi tiết đơn thuốc thiếu thông tin thuốc hoặc vật tư");
+                }
+                if (Objects.equals("4", recipelDetail.getStuffType())) {
+                    if (stuffService.get(drugStuffId) == null) {
+                        throw new ServiceException("Vật tư trong chi tiết đơn thuốc không tồn tại: " + drugStuffId);
+                    }
+                } else if (drugService.get(drugStuffId) == null) {
+                    throw new ServiceException("Thuốc trong chi tiết đơn thuốc không tồn tại: " + drugStuffId);
+                }
             }
         }
         RecipelInfo save = null;
