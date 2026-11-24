@@ -13,18 +13,18 @@
                             )
                         </when>
                         <when test='"is null".equalsIgnoreCase(item.queryType) or "is not null".equalsIgnoreCase(item.queryType)'>
-                            ${item.logic} <if test='item.columnName.indexOf(".") == -1'>a.</if>${item.columnName} ${item.queryType}
+                            ${item.logic} <if test='item.columnName != null and item.columnName.indexOf(".") == -1'>a.</if>${item.columnName} ${item.queryType}
                         </when>
                         <when test='"between".equalsIgnoreCase(item.queryType) or "not between".equalsIgnoreCase(item.queryType)'>
                             <if test='item != null and item.value != null and item.value[0] != null and (item.value[0] != "" or item.value[0] == "0".toString()) and item.value[1] != null and (item.value[1] != "" or item.value[1] == "0".toString())'>
-                              ${item.logic} ( <if test='item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
+                              ${item.logic} ( <if test='item.columnName != null and item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
                                <if test='"not between".equalsIgnoreCase(item.queryType)'>NOT</if> BETWEEN
                                  #{item.value[0]} AND #{item.value[1]} )
                             </if>
                         </when>
                         <when test='"like".equalsIgnoreCase(item.queryType) or "not like".equalsIgnoreCase(item.queryType)'>
                             <if test='item != null and item.value != null and (item.value != "" or item.value == "0".toString())'>
-                                ${item.logic} <if test='item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
+                                ${item.logic} <if test='item.columnName != null and item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
                                    <if test='"not like".equalsIgnoreCase(item.queryType)'>NOT</if> LIKE
                                 <if test='dbName == "oracle"'>'%'||#{item.value}||'%'</if>
                                 <if test='dbName == "mssql"'>'%'+#{item.value}+'%'</if>
@@ -33,7 +33,7 @@
                         </when>
                         <when test='"left_like".equalsIgnoreCase(item.queryType) or "not left_like".equalsIgnoreCase(item.queryType)'>
                             <if test='item != null and item.value != null and (item.value != "" or item.value == "0".toString())'>
-                                ${item.logic} <if test='item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
+                                ${item.logic} <if test='item.columnName != null and item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
                                    <if test='"not left_like".equalsIgnoreCase(item.queryType)'>NOT</if> LIKE
                                 <if test='dbName == "oracle"'>'%'||#{item.value}</if>
                                 <if test='dbName == "mssql"'>'%'+#{item.value}</if>
@@ -42,7 +42,7 @@
                         </when>
                         <when test='"right_like".equalsIgnoreCase(item.queryType) or "not right_like".equalsIgnoreCase(item.queryType)'>
                             <if test='item != null and item.value != null and (item.value != "" or item.value == "0".toString())'>
-                                ${item.logic} <if test='item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
+                                ${item.logic} <if test='item.columnName != null and item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
                                    <if test='"not right_like".equalsIgnoreCase(item.queryType)'>NOT</if> LIKE
                                 <if test='dbName == "oracle"'>#{item.value}||'%'</if>
                                 <if test='dbName == "mssql"'>#{item.value}+'%'</if>
@@ -51,7 +51,7 @@
                         </when>
                         <when test='"in".equalsIgnoreCase(item.queryType) or "not in".equalsIgnoreCase(item.queryType)'>
                             <if test='item != null and item.value != null and item.value.size() > 0'>
-                                ${item.logic} <if test='item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
+                                ${item.logic} <if test='item.columnName != null and item.columnName.indexOf(".") == -1'>a.</if>${item.columnName}
                                 <if test='"not in".equalsIgnoreCase(item.queryType)'>NOT</if> IN
                                 <foreach collection="item.value" item="name" index="index" open="(" close=")" separator=",">
                                     #{name}
@@ -60,7 +60,7 @@
                         </when>
                         <otherwise>
                             <if test='item != null and item.value != null and (item.value != "" or item.value == "0".toString())'>
-                                ${item.logic} <if test='item.columnName.indexOf(".") == -1'>a.</if>${item.columnName} ${item.queryType} #{item.value}
+                                ${item.logic} <if test='item.columnName != null and item.columnName.indexOf(".") == -1'>a.</if>${item.columnName} ${item.queryType} #{item.value}
                             </if>                    
                         </otherwise>
                     </choose>
