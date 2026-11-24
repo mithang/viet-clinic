@@ -1355,6 +1355,27 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     }
 
     private RecipelInfo addRetailRecipelInfo(List<RecipelInfoEvt> recipelInfos,MedicalRecord medicalRecord) {
+        // DS658: recipelDetailEvtList null / chi tiet null NPE 500 o
+        // :1382/:1383 (vong for chi tiet, duong ban le tollType_5) sau
+        // khi benh nhan + dang ky + benh an + don da save (transaction
+        // rollback nhung client van nhan 500 cho payload sai). DS170 B
+        // o saveToll chi chan evt/recipelInfo null, khong chan list
+        // chi tiet null hay detail null. Validate upfront truoc moi
+        // save, cung mau DS657 saveRecipelInfoEvtTo; list RONG van
+        // qua (ban le khong chi tiet hop le, probe A).
+        for (RecipelInfoEvt recipelInfoEvt : recipelInfos) {
+            if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null) {
+                throw new ServiceException("Đơn thuốc của phiếu thu không được để trống");
+            }
+            if (recipelInfoEvt.getRecipelDetailEvtList() == null) {
+                throw new ServiceException("Chi tiết đơn thuốc không được để trống");
+            }
+            for (RecipelDetail recipelDetail : recipelInfoEvt.getRecipelDetailEvtList()) {
+                if (recipelDetail == null) {
+                    throw new ServiceException("Chi tiết đơn thuốc không được để trống");
+                }
+            }
+        }
         RecipelInfo save = null;
         DictItem dictItem = new DictItem();
         dictItem.setValue(BizConstants.RECIPEL_TYPE_EXTERNAL);
