@@ -1,5 +1,6 @@
 package com.geeke.diagnosis.controller;
 
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.geeke.admin.entity.User;
 import com.geeke.diagnosis.entity.DiagnosisCatalog;
@@ -94,8 +95,17 @@ public class DiagnosisController extends BaseController {
             Long diagnosisId = body == null ? null : body.getLong("diagnosisId");
             DiagnosisCatalog pinned = diagnosisService.pin(doctorId, diagnosisId);
             return ResponseEntity.ok(ResultUtil.successJson(pinned));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(ResultUtil.errorJson(ErrorEnum.E_50002, e.getMessage()));
+        } catch (IllegalArgumentException | JSONException e) {
+            // DS634: body.getLong("diagnosisId") nem fastjson JSONException
+            // ("can not cast to long") khi gia tri khong phai so — String
+            // khong so ("abc"/"12x"), object, array — vi TypeUtils.castToLong
+            // boc NumberFormatException thanh JSONException, khong phai
+            // IllegalArgumentException nen catch cu khong bat duoc, roi vao
+            // RuntimeException handler -> 500. Day la loi dau vao cua client
+            // nen fail-closed 400 nhu cac loi pin khac (thieu/khong ton tai).
+            // Duong hop le khong doi: id so that, key vang, null van qua
+            // service nhu cu (IAE -> 400 hoac pin 200).
+            return ResponseEntity.badRequest().body(ResultUtil.errorJson(ErrorEnum.E_50002, "Id chẩn đoán không hợp lệ."));
         }
     }
 
