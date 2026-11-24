@@ -26,6 +26,7 @@
         <include refid="uReportFileColumns"/>
         FROM ureport_file a
         WHERE a.name = #{name}
+        ORDER BY a.update_date DESC LIMIT 1
     </select>
 
     <select id="getListAll" resultType="com.geeke.outpatient.entity.UReportFile">
