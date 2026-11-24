@@ -714,6 +714,24 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
 
     @Transactional
     public void updateDetail(List<RecipeTemplateDetail> recipeTemplateDetails, Company company) {
+        // DS660: validate upfront TRUOC moi ghi — phan tu null / chi tiet
+        // thieu recipeTemplateInfo truoc day NPE 500 o get(0) (:717, [null])
+        // hoac o .getId() (:720, [{}] / chi tiet khong info), SAU khi
+        // updateTemplate da update header (transaction rollback nhung
+        // client van nhan 500 cho loi nhap lieu); mau DS657/DS658.
+        // List rong duoc xu ly o ban 3-tham-so (xoa het chi tiet cu) nen
+        // chi validate khi list khong rong; info id rong coi nhu thieu info.
+        if (!CollectionUtils.isEmpty(recipeTemplateDetails)) {
+            for (RecipeTemplateDetail recipeTemplateDetail : recipeTemplateDetails) {
+                if (recipeTemplateDetail == null) {
+                    throw new ServiceException("Chi tiết mẫu đơn thuốc không được để trống");
+                }
+                if (recipeTemplateDetail.getRecipeTemplateInfo() == null
+                        || StringUtils.isBlank(recipeTemplateDetail.getRecipeTemplateInfo().getId())) {
+                    throw new ServiceException("Chi tiết mẫu đơn thuốc thiếu thông tin đơn thuốc");
+                }
+            }
+        }
         RecipeTemplateInfo recipeTemplateInfoId=recipeTemplateDetails.get(0).getRecipeTemplateInfo();
 
         //Thao tác sửa chi tiết là xóa trước rồi mới thêm
