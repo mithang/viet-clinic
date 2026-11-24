@@ -131,6 +131,15 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     @Override
     @Transactional(readOnly = false)
     public List<String> bulkInsert(List<NoticeSend> entitys) {
+        // DS639: phan tu null -> 400 fail-closed, thay vi NPE 500 o
+        // forceSessionCompany (entity.setCompany) ben duoi. Mau DS638
+        // (StuffService): guard ngay dau, truoc moi deref; super van
+        // chan list rong/null o CrudService.
+        for (NoticeSend entity : entitys) {
+            if (entity == null) {
+                throw new ServiceException("Thông báo không được để trống");
+            }
+        }
         forceSessionCompany(entitys);
         for (NoticeSend entity : entitys) {
             checkNoticeSendLengths(entity);
@@ -142,6 +151,11 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     @Transactional(readOnly = false)
     public List<String> bulkUpdate(List<NoticeSend> entitys) {
         for (NoticeSend entity : entitys) {
+            // DS639: nhu bulkInsert tren -- phan tu null nem 400 truoc
+            // khi checkNoticeOwnership deref entity.getId().
+            if (entity == null) {
+                throw new ServiceException("Thông báo không được để trống");
+            }
             checkNoticeOwnership(entity.getId());
             // DS103: vong pre-check chay truoc dao.bulkUpdate (mot
             // statement CASE duy nhat) nen [valid, khong ton tai] nem
@@ -177,6 +191,11 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     @Transactional(readOnly = false)
     public int bulkDelete(List<NoticeSend> entitys) {
         for (NoticeSend entity : entitys) {
+            // DS639: nhu bulkInsert/bulkUpdate tren -- phan tu null nem
+            // 400 truoc khi checkNoticeOwnership deref entity.getId().
+            if (entity == null) {
+                throw new ServiceException("Thông báo không được để trống");
+            }
             checkNoticeOwnership(entity.getId());
         }
         return super.bulkDelete(entitys);
