@@ -115,6 +115,9 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
         colMaps.put("code", "code");
         java.util.Set<String> seenCodes = new java.util.HashSet<>();
         for (CodeRule codeRule : entitys) {
+            if (codeRule == null) {
+                throw new ServiceException("Quy tắc mã không được để trống");
+            }
             if (StringUtils.isBlank(codeRule.getName())) {
                 throw new ServiceException("Tên quy tắc mã không được để trống");
             }
@@ -140,6 +143,9 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
             throw new ServiceException("Danh sách quy tắc mã không được để trống");
         }
         for (CodeRule codeRule : entitys) {
+            if (codeRule == null) {
+                throw new ServiceException("Quy tắc mã không được để trống");
+            }
             if (StringUtils.isNotBlank(codeRule.getId())
                     && dao.get(codeRule.getId()) == null) {
                 throw new ServiceException("Quy tắc mã không tồn tại: "
