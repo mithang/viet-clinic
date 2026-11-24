@@ -145,6 +145,13 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 		List<String> ids = Lists.newArrayList();
 		if (entitys != null) {
 			for (Department department : entitys) {
+				// DS640: phan tu null -> 400 fail-closed, thay vi NPE 500
+				// o save() (department.getSort()) ben duoi. Mau DS639
+				// (NoticeSendService): guard ngay dau vong lap, truoc
+				// moi deref; super van chan list rong/null o tren.
+				if (department == null) {
+					throw new ServiceException("Phòng ban không được để trống");
+				}
 				ids.add(this.save(department).getId());
 			}
 		}
@@ -164,6 +171,11 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 		List<String> ids = Lists.newArrayList();
 		if (entitys != null) {
 			for (Department department : entitys) {
+				// DS640: nhu bulkInsert tren -- phan tu null nem 400
+				// truoc khi save() deref department.getSort().
+				if (department == null) {
+					throw new ServiceException("Phòng ban không được để trống");
+				}
 				ids.add(this.save(department).getId());
 			}
 		}
