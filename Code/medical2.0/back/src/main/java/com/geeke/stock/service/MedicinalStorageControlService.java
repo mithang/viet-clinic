@@ -725,6 +725,19 @@ public class MedicinalStorageControlService extends CrudService<MedicinalStorage
                 continue;
             }
 
+            // DS655: don khong co company (v2/allSave gui don co id nhung
+            // khong gui company; I2 o saveRecipelInfoEvt chi ep company
+            // theo luot kham cho don moi, don update giu payload de guard
+            // tenant cua CrudService.save van 400) truoc day NPE 500 o
+            // getCompany().getId() ben duoi, sau khi don + chi tiet da
+            // save (transaction rollback nhung client nhan 500 cho loi
+            // nhap lieu). Fail-closed 400 truoc moi deref; chi chay toi
+            // day khi co chi tiet total > 0 co thuoc/vat tu (chi tiet
+            // total 0 / khong thuoc da continue o tren).
+            if (recipelInfo.getCompany() == null
+                    || StringUtils.isBlank(recipelInfo.getCompany().getId())) {
+                throw new ServiceException("Đơn thuốc thiếu thông tin phòng khám");
+            }
             String companyId = recipelInfo.getCompany().getId();
             List<MedicinalStorageControl> medicinalStorageControlList = super.dao.getSurplusStockByDrugStuffIdTo(drugStuffId, companyId);
 
