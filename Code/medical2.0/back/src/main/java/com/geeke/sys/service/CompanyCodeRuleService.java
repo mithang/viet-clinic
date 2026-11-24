@@ -199,6 +199,11 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
             throw new ServiceException("Danh sách quy tắc mã cập nhật không được để trống");
         }
         for (CompanyCodeRule entity : entitys) {
+            // DS644: phan tu null truoc day NPE 500 o entity.getId()
+            // (checkRuleWriteTenant return ngay voi null); fail-closed 400.
+            if (entity == null) {
+                throw new ServiceException("Quy tắc mã công ty không được để trống");
+            }
             checkRuleWriteTenant(entity);
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của quy tắc mã đã tồn tại");
