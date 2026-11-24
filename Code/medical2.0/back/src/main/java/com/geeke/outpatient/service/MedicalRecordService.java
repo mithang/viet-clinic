@@ -691,6 +691,19 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
     public MedicalRecipelEvt allQuery(Registration registration, String chargeStatus) {
         MedicalRecipelEvt outEvt = new MedicalRecipelEvt();
         List<RecipelInfoEvt> recipelInfoEvtList = new ArrayList<>();
+        // DS636: registration thieu company/doctor NPE 500 o
+        // getCompany().getId() / getDoctor().getId() ben duoi (ca 2
+        // caller: MedicalRecordController.allQuery va
+        // TollInfoController.medicalRecipelEvt). Khong co company/
+        // doctor thi truy van khong co nghia -> 400 (ServiceException
+        // -> GlobalExceptionHandler tra 400, mau DS159). Registration
+        // id null thi khong NPE (eq bo qua) nen khong chan.
+        if (registration == null || registration.getCompany() == null
+                || StringUtils.isNullOrEmpty(registration.getCompany().getId())
+                || registration.getDoctor() == null
+                || StringUtils.isNullOrEmpty(registration.getDoctor().getId())) {
+            throw new ServiceException("Thông tin lượt khám không đầy đủ");
+        }
         //Truy vấnbệnh ánThông tin
         List<Parameter> parameters = SearchParamsBuilder.create()
                 .eq("company_id", registration.getCompany().getId())
