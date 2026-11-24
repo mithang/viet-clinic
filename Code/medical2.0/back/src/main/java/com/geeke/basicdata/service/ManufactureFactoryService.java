@@ -177,6 +177,12 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             throw new ServiceException("Danh sách nhà sản xuất không được để trống");
         }
         for (ManufactureFactory manufactureFactory : entitys) {
+            // DS642: null-element guard dau vong lap (mau DS640) — [null]
+            // truoc day NPE 500 o manufactureFactory.getName() ben duoi.
+            if (manufactureFactory == null) {
+                throw new ServiceException(
+                        "Thông tin nhà sản xuất không được để trống");
+            }
             if (StringUtils.isBlank(manufactureFactory.getName())) {
                 throw new ServiceException("Tên nhà sản xuất không được để trống");
             }
@@ -202,6 +208,12 @@ public class ManufactureFactoryService extends CrudService<ManufactureFactoryDao
             throw new ServiceException("Danh sách nhà sản xuất không được để trống");
         }
         for (ManufactureFactory manufactureFactory : entitys) {
+            // DS642: null-element guard dau vong lap (mau DS640) — [null]
+            // truoc day NPE 500 o manufactureFactory.getId() ben duoi.
+            if (manufactureFactory == null) {
+                throw new ServiceException(
+                        "Thông tin nhà sản xuất không được để trống");
+            }
             if (StringUtils.isNotBlank(manufactureFactory.getId())
                     && manufactureFactoryDao.get(manufactureFactory.getId()) == null) {
                 throw new ServiceException("Nhà sản xuất không tồn tại: "
