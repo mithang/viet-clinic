@@ -67,6 +67,15 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
         if (supplierOutboundDetails == null) {
             throw new ServiceException("Danh sách chi tiết xuất kho không được để trống");
         }
+        // DS662: phan tu null trong danh sach chi tiet truoc day NPE 500
+        // o vong kiem so am DS210 ben duoi (n.getNumber() tren n null).
+        // Fail-closed 400 truoc moi ghi; cung tx voi save(OutboundEvt)
+        // nen phieu rollback nhu cu.
+        for (SupplierOutboundDetail n : supplierOutboundDetails) {
+            if (n == null) {
+                throw new ServiceException("Chi tiết xuất kho không được để trống");
+            }
+        }
         // DS210: so luong am tren bat ky dong nao (moi hoac sua) truoc
         // day lot thang vao freezeDetailStocks -> nhanh occupyDelta <= 0
         // tru occupy_stock/freeze_stock am tham (DAO adjustStocks chi
