@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -255,6 +256,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<JSONObject> multipartExceptionHandler(MultipartException e) {
         logger.warn("Dữ liệu tải lên không hợp lệ: {}", e.getMessage());
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Dữ liệu tải lên không hợp lệ", Constants.MSG_TYPE_WARNING);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    /**
+     * DS637: multipart thieu part file bat buoc (vd POST
+     * /stock/drug/uploadExcel, /stock/stuff/uploadExcel khong co part
+     * "file") -> MissingServletRequestPartException. Day KHONG phai
+     * MultipartException (no ke thua ServletException) nen handler
+     * DS628 khong bat duoc; truoc day roi vao Exception handler -> 500,
+     * trong khi day la loi dau vao cua client -> 400. Dat canh handler
+     * DS628; chi ten part de de truy vet, khong lo noi dung file.
+     */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<JSONObject> missingRequestPartHandler(MissingServletRequestPartException e) {
+        logger.warn("Thiếu phần dữ liệu tải lên bắt buộc: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Thiếu phần dữ liệu tải lên bắt buộc: " + e.getRequestPartName(), Constants.MSG_TYPE_WARNING);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
