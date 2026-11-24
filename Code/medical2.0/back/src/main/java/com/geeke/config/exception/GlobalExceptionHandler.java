@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -196,6 +197,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<JSONObject> methodArgumentTypeMismatchHandler(MethodArgumentTypeMismatchException e) {
         logger.warn("Tham số yêu cầu không hợp lệ: {}", e.getMessage());
         JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Tham số yêu cầu không hợp lệ", Constants.MSG_TYPE_WARNING);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    /**
+     * DS627: gui tep vuot qua gioi han multipart (max-file-size 20MB,
+     * max-request-size 50MB o application.yml) -> MaxUploadSizeExceededException.
+     * Truoc day roi vao RuntimeException handler -> 500, trong khi day la
+     * loi dau vao cua client -> 400. Dat o mot cho nen bao phu moi endpoint
+     * upload (anh dai dien, logo phong kham, file dinh kem benh an...).
+     * Message day du chi giu trong log warn, khong lo gioi han cau hinh.
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<JSONObject> maxUploadSizeExceededHandler(MaxUploadSizeExceededException e) {
+        logger.warn("Tệp tải lên vượt quá giới hạn cho phép: {}", e.getMessage());
+        JSONObject result = buildErrorResponse(ErrorEnum.E_400.getErrorCode(), "Tệp tải lên vượt quá giới hạn cho phép (tối đa 20MB mỗi tệp, 50MB mỗi yêu cầu)", Constants.MSG_TYPE_WARNING);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
