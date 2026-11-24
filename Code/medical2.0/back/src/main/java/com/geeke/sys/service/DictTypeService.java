@@ -332,11 +332,25 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
         // K1: bulkUpdate theo id trần, không có dict_type_id, nên chỉ cho cập
         // nhật id thuộc đúng loại này; id lạ (của loại khác) -> 400, rollback
         // cả save, và kiểm tra trước mọi ghi để không xóa nhầm trước khi ném.
+        // DS652: Jackson dat null tuong minh (dictItemList: null)
+        // ghi de Lists.newArrayList() khoi tao o field, vong lap ben
+        // duoi NPE -> 500 (probe P5); null o day nghia la "khong co
+        // muc con", nhu khi bo qua truong: chuan hoa ve rong (mau
+        // GenTable.save DS99).
+        if (dictType.getDictItemList() == null) {
+            dictType.setDictItemList(Lists.newArrayList());
+        }
         java.util.Set<String> ownedIds = new java.util.HashSet<>();
         for(DictItem dictItemSaved: list_DictItem) {
             ownedIds.add(dictItemSaved.getId());
         }
         for (DictItem dictItem : dictType.getDictItemList()){
+            // DS652: entry null trong dictItemList -> 400 fail-closed
+            // (truoc day: dictItem.getId() NPE 500 qua importJson
+            // save, probe P1-P4; mau GenTable.save DS142 C).
+            if (dictItem == null) {
+                throw new ServiceException("Mục từ điển không được để trống");
+            }
             if (StringUtils.isBlank(dictItem.getId())) {
                 dictItem.setDictType(dictType);
                 dictItem.preInsert();
