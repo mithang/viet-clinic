@@ -94,8 +94,24 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
             for (SysFileContent sysFileContentSaved : list_SysFileContent) {
                 ownedIds.add(sysFileContentSaved.getId());
             }
+            // DS656: Jackson dat null tuong minh (sysFileContentList: null)
+            // ghi de Lists.newArrayList() khoi tao o field, vong lap xoa
+            // ben duoi NPE -> 500 (probe A/E, SysFileService.java:120);
+            // null o day nghia la "khong co noi dung", nhu khi bo qua
+            // truong: chuan hoa ve rong (mau GenTable.save DS99 /
+            // DictType.save DS652).
+            if (sysFile.getSysFileContentList() == null) {
+                sysFile.setSysFileContentList(Lists.newArrayList());
+            }
             if (sysFile.getSysFileContentList() != null) {
                 for (SysFileContent sysFileContent : sysFile.getSysFileContentList()) {
+                    // DS656: entry null trong sysFileContentList -> 400
+                    // fail-closed (truoc day: sysFileContent.getId() NPE
+                    // 500, probe B/F, SysFileService.java:99; mau
+                    // GenTable.save DS142 C / DictType.save DS652).
+                    if (sysFileContent == null) {
+                        throw new ServiceException("Nội dung tệp không được để trống");
+                    }
                     if (!StringUtils.isBlank(sysFileContent.getId())
                             && !ownedIds.contains(sysFileContent.getId())) {
                         throw new ServiceException("Nội dung tệp không thuộc tệp này");
