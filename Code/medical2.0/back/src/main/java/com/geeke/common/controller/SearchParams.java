@@ -98,6 +98,15 @@ public class SearchParams implements Serializable {
 				if (!Arrays.asList(QUERY_TYPE_LIST).contains(queryType.toLowerCase())) {
 					throw new ServiceException("Toán tử tính toán chứa ký tự không hợp lệ");
 				}
+				// DS631: 'in'/'not in' doi value la List, 'between'/
+				// 'not between' doi value la List dung 2 phan tu.
+				// JSON String/number/list thieu phan tu truoc day roi
+				// xuong Common.whereParams: OGNL item.value.size() /
+				// item.value[0]/[1] nem exception -> 500. Fail-closed
+				// 400 ngay tai day; UI va SearchParamsBuilder chi gui
+				// List dung dang. value null giu nguyen (XML bo qua
+				// dieu kien nhu truoc).
+				checkParamValueShape(params.get(i), queryType);
 
 				String columnName = params.get(i).getColumnName();
 				if (StringUtils.isNotBlank(columnName) && StringUtils.isNotBlank(columnName.trim())) {
@@ -142,8 +151,36 @@ public class SearchParams implements Serializable {
 			if (p == null) {
 				throw new ServiceException("Điều kiện truy vấn không được để trống");
 			}
+			// DS631: nhu getParams() — fail-closed 400 cho 'in'/
+			// 'between' value sai dang truoc khi xuong whereParams.
+			String qt = p.getQueryType();
+			if (qt != null) {
+				checkParamValueShape(p, qt.replaceAll(" +", " ").trim());
+			}
 		}
 		return this.params;
+	}
+
+	/**
+	 * DS631: kiem tra hinh dang value theo queryType. 'in'/'not in'
+	 * can List; 'between'/'not between' can List dung 2 phan tu.
+	 * value null cho qua (Common.whereParams bo qua dieu kien).
+	 */
+	private static void checkParamValueShape(Parameter p, String queryType) {
+		Object value = p.getValue();
+		if (value == null) {
+			return;
+		}
+		String qt = queryType.toLowerCase(Locale.ROOT);
+		if ("in".equals(qt) || "not in".equals(qt)) {
+			if (!(value instanceof List)) {
+				throw new ServiceException("Giá trị của toán tử IN phải là danh sách");
+			}
+		} else if ("between".equals(qt) || "not between".equals(qt)) {
+			if (!(value instanceof List) || ((List<?>) value).size() != 2) {
+				throw new ServiceException("Giá trị của toán tử BETWEEN phải là danh sách có 2 phần tử");
+			}
+		}
 	}
 	public void setParams(List<Parameter> params) {
 		this.params = params;
