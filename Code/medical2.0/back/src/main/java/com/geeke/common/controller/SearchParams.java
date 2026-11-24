@@ -165,6 +165,14 @@ public class SearchParams implements Serializable {
 	 * DS631: kiem tra hinh dang value theo queryType. 'in'/'not in'
 	 * can List; 'between'/'not between' can List dung 2 phan tu.
 	 * value null cho qua (Common.whereParams bo qua dieu kien).
+	 * DS632: mo rong — toan tu vo huong (=, <>, >, >=, <, <=, <=>,
+	 * like/left_like/right_like va dang phu dinh) dung #{item.value}
+	 * truc tiep trong Common.whereParams; JSON object (Map) hoac list
+	 * lam value thi MyBatis khong co type handler -> 500. Cung vay
+	 * voi phan tu trong list cua 'in'/'between' (#{name} /
+	 * #{item.value[0]}). Fail-closed 400 ngay tai day; chi chap
+	 * nhan gia tri vo huong (String/Number/Boolean/Date...).
+	 * '('/ ')'/'is null'/'is not null' khong dung value nen bo qua.
 	 */
 	private static void checkParamValueShape(Parameter p, String queryType) {
 		Object value = p.getValue();
@@ -176,11 +184,34 @@ public class SearchParams implements Serializable {
 			if (!(value instanceof List)) {
 				throw new ServiceException("Giá trị của toán tử IN phải là danh sách");
 			}
+			for (Object e : (List<?>) value) {
+				if (!isScalarValue(e)) {
+					throw new ServiceException("Phần tử của toán tử IN phải là giá trị đơn (chuỗi/số)");
+				}
+			}
 		} else if ("between".equals(qt) || "not between".equals(qt)) {
 			if (!(value instanceof List) || ((List<?>) value).size() != 2) {
 				throw new ServiceException("Giá trị của toán tử BETWEEN phải là danh sách có 2 phần tử");
 			}
+			for (Object e : (List<?>) value) {
+				if (!isScalarValue(e)) {
+					throw new ServiceException("Phần tử của toán tử BETWEEN phải là giá trị đơn (chuỗi/số)");
+				}
+			}
+		} else if ("(".equals(qt) || ")".equals(qt)
+				|| "is null".equals(qt) || "is not null".equals(qt)) {
+			// khong dung value — bo qua
+		} else {
+			// toan tu vo huong: chi chap nhan gia tri don
+			if (!isScalarValue(value)) {
+				throw new ServiceException("Giá trị của toán tử " + queryType.toUpperCase(Locale.ROOT) + " phải là giá trị đơn (chuỗi/số)");
+			}
 		}
+	}
+
+	/** DS632: vo huong = khong phai List/Map (JSON object/list). */
+	private static boolean isScalarValue(Object v) {
+		return v != null && !(v instanceof List) && !(v instanceof java.util.Map);
 	}
 	public void setParams(List<Parameter> params) {
 		this.params = params;
