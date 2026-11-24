@@ -620,6 +620,18 @@ public class UserService extends CrudService<UserDao, User>{
 
     private void saveUserRoleInfo(User user) {
         /* Xử lý bảng con     Vai trò người dùng */
+        // DS653: phan tu null trong userRoleList ([null] qua JSON) truoc day
+        // NPE 500 o hai vong lap duoi (userRole.getId() :633, getRole() :647);
+        // normalizeUserForFileSave chi guard ca list null, DS83 chi guard
+        // entry thieu role (dereference userRole truoc). Fail-closed 400
+        // truoc moi vong lap, cung message nhu guard DS83.
+        if (user.getUserRoleList() != null) {
+            for (UserRole userRole : user.getUserRoleList()) {
+                if (userRole == null) {
+                    throw new ServiceException("Vai trò người dùng không được để trống");
+                }
+            }
+        }
         PageRequest pageRequest = buildPageRequest(com.google.common.collect.ImmutableMap.of(
                 "user_id", user.getId(),
                 "company_id", SessionUtils.getLoginTenantId()
