@@ -2,6 +2,7 @@ package com.geeke.druginteraction.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.geeke.common.service.ServiceException;
 import com.geeke.druginteraction.entity.DrugInteractionRule;
 import com.geeke.druginteraction.service.DrugInteractionRuleService;
 import com.geeke.sys.controller.BaseController;
@@ -77,7 +78,19 @@ public class DrugInteractionController extends BaseController {
         }
         List<String> drugNames = new ArrayList<>();
         if (body != null) {
-            JSONArray names = body.getJSONArray("drugNames");
+            // DS633: getJSONArray tren gia tri khong phai mang nem
+            // JSONException (String khong phai JSON / String parse ra
+            // khong-phai-mang) hoac ClassCastException (number/boolean/
+            // object) -> 500 qua RuntimeException handler. UI chi gui
+            // JSON array (hoac bo qua key) nen dang sai fail-closed
+            // 400; String ma hoa array ("[\"a\"]") van 200 nhu cu vi
+            // fastjson tu parse thanh JSONArray.
+            JSONArray names;
+            try {
+                names = body.getJSONArray("drugNames");
+            } catch (com.alibaba.fastjson.JSONException | ClassCastException e) {
+                throw new ServiceException("Danh sách tên thuốc phải là mảng");
+            }
             if (names != null) {
                 for (int i = 0; i < names.size(); i++) {
                     Object name = names.get(i);
