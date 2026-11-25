@@ -160,6 +160,30 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
                         .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
             }
         }
+        // DS691: v1/allSave tung NPE 500 o saveAllRecordInfo khi
+        // recipelInfoEvtList chua phan tu null (:571 evt.getRecipelInfo()),
+        // evt co recipelInfo null (:573 recipelInfo.setRegistration) hoac
+        // recipelDetailEvtList chua phan tu null (:606 detail.getId()).
+        // v2/allSave (DS87) da chan cung hinh nay bang 400 o controller;
+        // chan som o day theo cung mau, truoc moi ghi (allSave @Transactional
+        // nen 500 cu rollback het, nhung van la 500). List null van duoc
+        // chap nhan nhu cu: service bo qua vong lap khi list null.
+        if (medicalRecipelEvt.getRecipelInfoEvtList() != null) {
+            for (RecipelInfoEvt recipelInfoEvt : medicalRecipelEvt.getRecipelInfoEvtList()) {
+                if (recipelInfoEvt == null || recipelInfoEvt.getRecipelInfo() == null) {
+                    return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                            .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+                }
+                if (recipelInfoEvt.getRecipelDetailEvtList() != null) {
+                    for (RecipelDetail recipelDetail : recipelInfoEvt.getRecipelDetailEvtList()) {
+                        if (recipelDetail == null) {
+                            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+                        }
+                    }
+                }
+            }
+        }
         Registration registration = medicalRecordService.allSave(medicalRecipelEvt, fileIdUploads, strDeleteIds);
         return ResponseEntity.ok(ResultUtil.successJson(registration));
     }
