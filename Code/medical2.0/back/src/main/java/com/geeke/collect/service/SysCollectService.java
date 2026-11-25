@@ -168,4 +168,29 @@ public class SysCollectService extends CrudService<SysCollectDao, SysCollect> {
     public int bulkDelete(List<SysCollect> entitys) {
         throw new ServiceException("Mục yêu thích không hỗ trợ xóa hàng loạt!");
     }
+
+    /**
+     * DS697: bulkInsert/bulkUpdate fail-closed 400, cung mau DS126 B
+     * (bulkDelete). SysCollectDao.xml KHONG co statement bulkInsert /
+     * bulkUpdate (chi co insert/update/updateBatch), nen base
+     * CrudService.bulk* luon chet 500 BindingException voi MOI list
+     * hop le cua chinh user (probe tools/ds697-sweep.py pre: S1/S2
+     * 500, khong ghi). Khong co UI bulk path cho favorites (UI them/
+     * xoa tung muc qua save/delete don, sap xep qua updateBatch), va
+     * khong co internal caller nao dung bulkInsert/bulkUpdate cua
+     * service nay, nen dong cua thay vi 500. Controller van 403
+     * truoc voi item cua user khac / [null] (DS18/DS126 B), service
+     * throw nay chi cham toi voi list cua chinh user.
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(List<SysCollect> entitys) {
+        throw new ServiceException("Mục yêu thích không hỗ trợ thêm hàng loạt!");
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(List<SysCollect> entitys) {
+        throw new ServiceException("Mục yêu thích không hỗ trợ cập nhật hàng loạt!");
+    }
 }
