@@ -86,11 +86,63 @@ import org.springframework.stereotype.Component;
  * Class.forName / provider). testConnection, chart storeData, import,
  * loadBuildinDatasources, loadReportProviders da tra 200-JSON/200 nen
  * khong chan. Password jdbc khong bat buoc (password rong la hop le).
+ *
+ * DS677: gia tri sai nhung DUNG DANG (ten bao cao / bean / buildin
+ * datasource / driver / clazz / res path khong ton tai) ma DS676 de lai:
+ * - Preview sub-method loadData/loadPrintPages/loadPagePaper va export
+ *   pdf/excel/excel97/word: _u ten file la (Newtouch:ds677bogus...,
+ *   khong prefix, sai prefix, thieu hau to .ureport.xml) -> jar
+ *   ReportRender.buildReportFile: khong provider nao nhan prefix, hoac
+ *   MySQLProvider.loadReport tra null -> ReportException "Report [...]
+ *   not support." 500. Filter kiem tra ton tai qua chinh cac
+ *   ReportProvider bean (MySQLProvider doc DB ureport_file, file provider
+ *   doc /WEB-INF/ureportfiles): khong provider nhan prefix, hoac
+ *   loadReport null/nem loi -> 400. Luu y TRANG preview /ureport/preview
+ *   KHONG chan (E2/E3: _u la van tra 200 vi trang chi render khung HTML,
+ *   du lieu load sau qua AJAX) — chi chan sub-method va export.
+ * - Designer loadReport: file la -> cung loi "not support." 500 -> 400
+ *   (deleteReportFile file la giu 200 vi MySQLProvider.deleteReport
+ *   bo qua khi khong thay — E17 control).
+ * - Datasource loadMethods: beanId la -> applicationContext.getBean
+ *   nem NoSuchBeanDefinitionException 500 -> containsBean -> 400;
+ *   buildClass: clazz la -> Class.forName nem ClassNotFoundException
+ *   500 -> guard Class.forName -> 400; buildDatabaseTables/buildFields/
+ *   previewData type=jdbc driver la -> Class.forName -> 400, type khac
+ *   jdbc (nhanh buildin) name la -> Utils.getBuildinConnection tra null
+ *   roi jar deref NPE 500 -> kiem tra ten trong
+ *   Utils.getBuildinDatasources() (chi co "trong đặt Dữ liệu nguồn
+ *   DEMO") -> 400. Username/password jdbc sai van 500 SQLException
+ *   (can ket noi that moi kiem tra duoc — ngoai pham vi filter).
+ * - Image /ureport/image: _key la -> ResourceCache.getObject tra null
+ *   roi new ByteArrayInputStream(null) NPE 500 -> kiem tra cache -> 400
+ *   (_key trong giu 200 vi jar return som).
+ * - Res /ureport/res: khong path -> substring vuot do dai nem
+ *   StringIndexOutOfBounds 500 -> 400; path la -> FileNotFoundException
+ *   500 -> kiem tra ClassPathResource ton tai -> 400. Rieng
+ *   /ureport/res/ (trailing slash, path rong) GIU NGUYEN (E18: jar tra
+ *   directory listing classpath — info disclosure, de vong sau quyet).
+ * Ten hop le nhung noi dung rac giu hanh vi cu (DS675: script rac 200).
  */
 @Component
-public class UReportParamFilter implements Filter {
+public class UReportParamFilter implements Filter,
+        org.springframework.context.ApplicationContextAware {
 
     private static final Logger logger = LoggerFactory.getLogger(UReportParamFilter.class);
+
+    // DS677: ApplicationContext de kiem tra bean ton tai (loadMethods)
+    // va lay cac ReportProvider bean (kiem tra _u/file ton tai). Filter
+    // la @Component nen Spring goi setApplicationContext khi tao bean;
+    // null-guard o moi cho dung de neu context chua san thi giu hanh
+    // vi cu thay vi nem NPE.
+    private static org.springframework.context.ApplicationContext applicationContext;
+
+    private static volatile java.util.Collection<com.bstek.ureport.provider.report.ReportProvider> reportProviders;
+
+    @Override
+    public void setApplicationContext(org.springframework.context.ApplicationContext applicationContext)
+            throws org.springframework.beans.BeansException {
+        UReportParamFilter.applicationContext = applicationContext;
+    }
 
     private static final String PREVIEW_PATH = "/ureport/preview";
 
@@ -127,6 +179,13 @@ public class UReportParamFilter implements Filter {
     private static final Set<String> CHART_METHODS = new HashSet<>(Arrays.asList(
             "storeData"));
 
+    // DS677: image _key va res path.
+    private static final String IMAGE_PATH = "/ureport/image";
+
+    private static final String RES_PATH = "/ureport/res";
+
+    private static final String RES_PREFIX = "/ureport/res/";
+
     private static final java.util.regex.Pattern DATASET_IDENT =
             java.util.regex.Pattern.compile("[A-Za-z][A-Za-z0-9_-]*");
 
@@ -149,6 +208,23 @@ public class UReportParamFilter implements Filter {
         if (needsReportFile && request.getParameter("_u") == null) {
             logger.warn("UReport thieu tham so _u: {} {}", request.getMethod(), path);
             sendBadRequest(response, "Thiếu tham số bắt buộc: _u");
+            return;
+        }
+        // DS677: export (khong phai trang preview) co _u nhung bao cao
+        // khong ton tai -> 400 (jar nem "not support." 500). Trang
+        // preview giu nguyen (E2/E3: _u la van 200).
+        if (EXPORT_PATHS.contains(path) && request.getParameter("_u") != null
+                && !reportExists(request.getParameter("_u"))) {
+            logger.warn("UReport bao cao khong ton tai: {} {} _u={}",
+                    request.getMethod(), path, request.getParameter("_u"));
+            sendBadRequest(response, "Báo cáo không tồn tại: _u");
+            return;
+        }
+        // DS677: image _key la / res khong path hoac path la.
+        String imageResError = validateImageRes(path, request);
+        if (imageResError != null) {
+            logger.warn("UReport {} {}: {}", request.getMethod(), path, imageResError);
+            sendBadRequest(response, imageResError);
             return;
         }
         // DS675: designer actions (method la doan path sau /ureport/designer/).
@@ -228,6 +304,13 @@ public class UReportParamFilter implements Filter {
                 if (isBlank(request.getParameter("file"))) {
                     return "Thiếu tham số bắt buộc: file";
                 }
+                // DS677: loadReport file la -> jar "not support." 500
+                // -> 400. deleteReportFile giu nguyen: file la van 200
+                // (provider bo qua khi khong thay — E17 control).
+                if ("loadReport".equals(method)
+                        && !reportExists(request.getParameter("file"))) {
+                    return "Báo cáo không tồn tại: file";
+                }
                 return null;
             }
             case "parseDatasetName": {
@@ -276,6 +359,11 @@ public class UReportParamFilter implements Filter {
             if (isBlank(request.getParameter("_u"))) {
                 return "Thiếu tham số bắt buộc: _u";
             }
+            // DS677: _u ten file la / sai prefix / thieu hau to -> jar
+            // "not support." 500 -> 400.
+            if (!reportExists(request.getParameter("_u"))) {
+                return "Báo cáo không tồn tại: _u";
+            }
             return null;
         }
         if (path.startsWith(DATASOURCE_PREFIX)) {
@@ -314,11 +402,21 @@ public class UReportParamFilter implements Filter {
                 if (isBlank(request.getParameter("beanId"))) {
                     return "Thiếu tham số bắt buộc: beanId";
                 }
+                // DS677: beanId la -> jar getBean nem
+                // NoSuchBeanDefinitionException 500 -> 400.
+                if (!beanExists(request.getParameter("beanId"))) {
+                    return "Bean không tồn tại: beanId";
+                }
                 return null;
             }
             case "buildClass": {
                 if (isBlank(request.getParameter("clazz"))) {
                     return "Thiếu tham số bắt buộc: clazz";
+                }
+                // DS677: clazz la -> Class.forName nem
+                // ClassNotFoundException 500 -> 400.
+                if (!classExists(request.getParameter("clazz"))) {
+                    return "Class không tồn tại: clazz";
                 }
                 return null;
             }
@@ -361,12 +459,166 @@ public class UReportParamFilter implements Filter {
             if (isBlank(request.getParameter("username"))) {
                 return "Thiếu tham số bắt buộc: username";
             }
+            // DS677: driver la -> Class.forName nem
+            // ClassNotFoundException 500 -> 400.
+            if (!classExists(request.getParameter("driver"))) {
+                return "Driver class không tồn tại: driver";
+            }
             return null;
         }
         if (isBlank(request.getParameter("name"))) {
             return "Thiếu tham số bắt buộc: name";
         }
+        // DS677: buildin name la -> Utils.getBuildinConnection tra
+        // null roi jar deref NPE 500 -> 400.
+        if (!buildinDatasourceExists(request.getParameter("name"))) {
+            return "Buildin datasource không tồn tại: name";
+        }
         return null;
+    }
+
+    // DS677: image _key la / res khong path hoac path la. Tra msg loi,
+    // null neu hop le hoac khong thuoc 2 duong nay.
+    private static String validateImageRes(String path, HttpServletRequest request) {
+        if (IMAGE_PATH.equals(path)) {
+            String key = request.getParameter("_key");
+            // _key trong: jar return som 200. _key la: ResourceCache
+            // tra null roi ByteArrayInputStream(null) NPE 500 -> 400.
+            if (!isBlank(key)
+                    && com.bstek.ureport.cache.ResourceCache.getObject(key) == null) {
+                return "Ảnh không tồn tại: _key";
+            }
+            return null;
+        }
+        if (RES_PATH.equals(path)) {
+            // Khong path: jar substring vuot do dai nem
+            // StringIndexOutOfBounds 500 -> 400.
+            return "Thiếu đường dẫn tài nguyên: res";
+        }
+        if (path.startsWith(RES_PREFIX)) {
+            String resource = path.substring(RES_PREFIX.length());
+            // Path rong ("/ureport/res/") GIU NGUYEN: jar tra directory
+            // listing classpath (E18, info disclosure — de vong sau).
+            if (resource.isEmpty()) {
+                return null;
+            }
+            // Path la: jar getResource("classpath:" + path) nem
+            // FileNotFoundException 500 -> 400.
+            try {
+                if (!new org.springframework.core.io.ClassPathResource(resource).exists()) {
+                    return "Tài nguyên không tồn tại: res";
+                }
+            } catch (Exception e) {
+                return "Tài nguyên không tồn tại: res";
+            }
+            return null;
+        }
+        return null;
+    }
+
+    // DS677: bean co trong ApplicationContext khong. Context chua san
+    // thi giu hanh vi cu (tra true).
+    private static boolean beanExists(String beanId) {
+        if (applicationContext == null) {
+            return true;
+        }
+        try {
+            return applicationContext.containsBean(beanId);
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    // DS677: class co load duoc khong (Class.forName nhu jar lam ngay
+    // sau do; class ton tai nhung khong phai driver hop le van giu
+    // hanh vi cu vi chi ket noi that moi kiem tra duoc).
+    private static boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        } catch (LinkageError e) {
+            // Class ton tai nhung khoi tao loi (ExceptionInInitializerError
+            // la con cua LinkageError): jar se nem tiep o buoc sau, giu
+            // hanh vi cu.
+            return true;
+        }
+    }
+
+    // DS677: ten co trong Utils.getBuildinDatasources() khong (chi co
+    // "trong đặt Dữ liệu nguồn DEMO"). Utils chua khoi tao thi giu
+    // hanh vi cu (tra true).
+    private static boolean buildinDatasourceExists(String name) {
+        try {
+            java.util.Collection<com.bstek.ureport.definition.datasource.BuildinDatasource> list =
+                    com.bstek.ureport.Utils.getBuildinDatasources();
+            if (list == null) {
+                return true;
+            }
+            for (com.bstek.ureport.definition.datasource.BuildinDatasource ds : list) {
+                if (name.equals(ds.name())) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    // DS677: cac ReportProvider bean (lay lazy qua ApplicationContext;
+    // chua san thi giu hanh vi cu).
+    private static java.util.Collection<com.bstek.ureport.provider.report.ReportProvider> getReportProviders() {
+        if (reportProviders != null) {
+            return reportProviders;
+        }
+        if (applicationContext == null) {
+            return null;
+        }
+        try {
+            reportProviders = applicationContext
+                    .getBeansOfType(com.bstek.ureport.provider.report.ReportProvider.class)
+                    .values();
+        } catch (Exception e) {
+            return null;
+        }
+        return reportProviders;
+    }
+
+    // DS677: _u/file co duoc provider nao nhan va load duoc khong.
+    // Mo phong dung ReportRender.buildReportFile cua jar: provider co
+    // prefix khop -> loadReport; stream null hoac nem loi -> khong
+    // ton tai. Khong provider nao nhan prefix -> khong ton tai.
+    // loadReport chi doc (DB/file), stream dong ngay sau khi kiem tra.
+    private static boolean reportExists(String file) {
+        java.util.Collection<com.bstek.ureport.provider.report.ReportProvider> providers =
+                getReportProviders();
+        if (providers == null) {
+            return true;
+        }
+        for (com.bstek.ureport.provider.report.ReportProvider provider : providers) {
+            if (provider.disabled()) {
+                continue;
+            }
+            String prefix = provider.getPrefix();
+            if (prefix != null && file.startsWith(prefix)) {
+                try {
+                    java.io.InputStream in = provider.loadReport(file);
+                    if (in == null) {
+                        return false;
+                    }
+                    try {
+                        in.close();
+                    } catch (java.io.IOException ignored) {
+                    }
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 
     // DS676: buildParameters cua jar parse parameters bang codehaus Jackson
