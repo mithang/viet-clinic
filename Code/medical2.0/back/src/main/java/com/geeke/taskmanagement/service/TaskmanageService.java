@@ -423,6 +423,15 @@ public class TaskmanageService {
             if("0".equals(countId)){
                 // Z3f: update branch rewrites the task row + its executors.
                 checkTaskOwnership(task.getID());
+                // DS682: DS681 chi guard DUONG TAO; duong update nay ghi
+                // verbatim qua mapper `update` (SET taskname/taskdescribe
+                // khong <if>) nen {} / thieu ten / thieu mo ta xoa trang
+                // dong da luu (ID-only -> NULL). Form sua addtaskForm.vue
+                // rules bat buoc ca hai truong va gui full form nen blank
+                // khong bao gio di qua UI; fail-closed 400 nhu DS681.
+                // Nhanh attach (countId != "0") khong ghi dong task nen
+                // khong guard, cung ly luan DS305/DS681.
+                checkTaskNameAndDescribeRequired(task);
                 // L3 (iteration 59): guard deleteIds bang {task id} truoc moi upload/xoa,
                 // mau K5/K7; checkTaskOwnership chi guard DONG task, khong guard file.
                 if (null != deleteIds && deleteIds.length > 0) {
