@@ -213,8 +213,10 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
             // totalParentId lay detail dau tien CO phieu trong toan bo payload va
             // bulkUpdate ghi inventory_verification_id theo tung detail, nen
             // payload [detail own mang phieu own, detail own mang phieu la] van
-            // lot: detail sau bi re-parent sang phieu la (200). Phieu khong ton
-            // tai (getRaw null) van cho qua nhu ngu nghia L1 cu.
+            // lot: detail sau bi re-parent sang phieu la (200). DS696:
+            // phieu khong ton tai (getRaw null) nay 400 fail-closed truoc
+            // moi ghi (mau DS690), vi bulkUpdate ghi
+            // inventory_verification_id theo tung detail.
             for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
                 if (CollectionUtils.isEmpty(group)) {
                     continue;
@@ -225,9 +227,12 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                         continue;
                     }
                     InventoryVerification parent = inventoryVerificationService.getRaw(detail.getInventoryVerification().getId());
-                    if (parent != null) {
-                        verifyTenantOwnership(parent);
+                    if (parent == null) {
+                        throw new com.geeke.common.service.ServiceException(
+                                "Phiếu kiểm kê không tồn tại: "
+                                + detail.getInventoryVerification().getId());
                     }
+                    verifyTenantOwnership(parent);
                 }
             }
             // O5-37 (iteration 37): moi detail can ghi BAT BUOC mang phieu cha
