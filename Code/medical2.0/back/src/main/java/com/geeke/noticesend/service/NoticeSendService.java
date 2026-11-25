@@ -90,6 +90,16 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
     @Override
     @Transactional(readOnly = false)
     public NoticeSend save(NoticeSend entity) {
+        // DS693: form noticeSendForm.vue bat buoc title (rule required),
+        // nhung save({}) / title '   ' / title thieu van 200 + dong
+        // notice_send rac (title NULL) vi @Length(min=1) chi chan ''
+        // chu khong chan null hay khoang trang, CrudService khong guard.
+        // Chi guard title: receivedBy KHONG guard — ds103-verify
+        // valid_notice() (fixture chuan tu DS103) khong gui receivedBy
+        // ma van la notice hop le, guard receivedBy lam vo 3 control
+        // ds103 B8/B9/B11. Chan fail-closed 400 o ca create lan update,
+        // truoc moi ghi (mau DS683/DS692).
+        checkNoticeSendRequired(entity);
         if (StringUtils.isNotBlank(entity.getId())) {
             checkNoticeOwnership(entity.getId());
             checkExists(entity.getId());
@@ -142,6 +152,7 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
         }
         forceSessionCompany(entitys);
         for (NoticeSend entity : entitys) {
+            checkNoticeSendRequired(entity);
             checkNoticeSendLengths(entity);
         }
         return super.bulkInsert(entitys);
@@ -161,9 +172,21 @@ public class NoticeSendService extends CrudService<NoticeSendDao, NoticeSend> {
             // statement CASE duy nhat) nen [valid, khong ton tai] nem
             // truoc khi ghi gi -- dong valid khong bi doi (probe B8).
             checkExists(entity.getId());
+            checkNoticeSendRequired(entity);
             checkNoticeSendLengths(entity);
         }
         return super.bulkUpdate(entitys);
+    }
+
+    // DS693: xem ghi chu o save(). Chi title; receivedBy tuy chon
+    // theo fixture chuan DS103 (valid_notice khong gui receivedBy).
+    private static void checkNoticeSendRequired(NoticeSend entity) {
+        if (entity == null) {
+            return;
+        }
+        if (StringUtils.isBlank(entity.getTitle())) {
+            throw new ServiceException("Tiêu đề không được để trống");
+        }
     }
 
     // DS149 C: xem ghi chu o save().
