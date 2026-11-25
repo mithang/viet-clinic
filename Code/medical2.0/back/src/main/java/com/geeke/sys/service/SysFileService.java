@@ -112,6 +112,12 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
                     if (sysFileContent == null) {
                         throw new ServiceException("Nội dung tệp không được để trống");
                     }
+                    // DS669 REWORK (2026-11-25): guard 400 fileByte-null
+                    // o luc save bi BO — xung dot truc tiep voi DS656-D
+                    // (save [{}] ky vong 200, tao content row). Thay vao
+                    // do guard cac duong DOC (getPhoto/getFiled/getFile/
+                    // filedownload/fileContent getById) tra 404 khi byte
+                    // null, khong bao gio NPE 500.
                     if (!StringUtils.isBlank(sysFileContent.getId())
                             && !ownedIds.contains(sysFileContent.getId())) {
                         throw new ServiceException("Nội dung tệp không thuộc tệp này");

@@ -114,6 +114,11 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         // M5 (iteration 60): content khong ton tai -> 404 thay vi NPE 500
         // o getFileByte() (caveat L1 #1). Khong doi guard owner.
         if (sysFileContent == null) { return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); }
+        // DS669 REWORK (2026-11-25): content ton tai nhung byte NULL
+        // (save [{}] hop le theo DS656-D, longblob byte NULL) truoc day
+        // NPE 500 o encodeToString(null); byte null = khong co noi dung
+        // de tra -> 404 nhu M5, khong bao gio 500.
+        if (sysFileContent.getFileByte() == null) { return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); }
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
         return ResponseEntity.ok(base64Str);
 
@@ -137,6 +142,9 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         // guard M5 o SysFileService nen tra null thay vi NPE). Khong doi
         // guard owner.
         if (sysFileContent == null || sysFile == null) { return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); }
+        // DS669 REWORK: nhu getPhoto — byte NULL -> 404 thay vi NPE 500
+        // o encodeToString(null).
+        if (sysFileContent.getFileByte() == null) { return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); }
         String base64Str = Base64.getEncoder().encodeToString(sysFileContent.getFileByte());
         sysFileContent.setBase64Str(base64Str);
         sysFileContent.setName(sysFile.getName());
@@ -188,6 +196,9 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         }
         SysFileContent sysFileContent = sysFileContentService.get(id);
         if (sysFileContent != null) {
+            // DS669 REWORK: byte NULL -> 404 thay vi NPE 500 o
+            // os.write(null) ben duoi (parity M5 content-missing).
+            if (sysFileContent.getFileByte() == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
             response.setHeader("Content-Type", sysFileContent.getFileType());
             Date updateDate = sysFileContent.getUpdateDate();
             String format = simpleDateFormat.format(updateDate);
@@ -244,6 +255,9 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
         // thay vi NPE 500 o getFileType() (caveat L1 #1; getFile cung
         // controller da null-check san nen khong doi). Khong doi guard owner.
         if (sysFileContent == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
+        // DS669 REWORK: byte NULL -> 404 thay vi NPE 500 o os.write(null)
+        // ben duoi (cung ho getFile/fileContent getById).
+        if (sysFileContent.getFileByte() == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
         response.setHeader("Content-Type", sysFileContent.getFileType());
         Date updateDate = sysFileContent.getUpdateDate();
         String format = simpleDateFormat.format(updateDate);

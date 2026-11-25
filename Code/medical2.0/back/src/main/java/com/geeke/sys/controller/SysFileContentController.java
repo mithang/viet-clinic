@@ -45,6 +45,11 @@ public class SysFileContentController extends BaseController {
         // M5 (iteration 60): content khong ton tai -> 404, khong ghi byte,
         // thay vi NPE 500 o getFileType() (caveat L1 #1). Khong doi guard owner.
         if (sysFileContent == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
+        // DS669 REWORK (2026-11-25): content ton tai nhung byte NULL
+        // (save [{}] hop le theo DS656-D) truoc day NPE 500 o
+        // os.write(null); byte null = khong co noi dung de tra -> 404
+        // nhu M5, khong bao gio 500.
+        if (sysFileContent.getFileByte() == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
         response.setHeader("Content-Type",sysFileContent.getFileType());
         try {
             OutputStream os = response.getOutputStream();
