@@ -754,29 +754,14 @@ public class UReportParamFilter implements Filter,
                 || !"CALL".equalsIgnoreCase(clean.substring(start, pos))) {
             return null;
         }
-        String[] part = new String[1];
-        int p = skipSqlBlanks(sql, pos);
-        p = readCallNamePart(sql, p, part);
-        if (p < 0) {
-            return "Tên procedure không hợp lệ: CALL";
+        String[] schema = new String[1];
+        String[] name = new String[1];
+        String nameError = parseCallName(sql, schema, name);
+        if (nameError != null) {
+            return nameError;
         }
-        String schema = null;
-        String name = part[0];
-        p = skipSqlBlanks(sql, p);
-        if (p < sql.length() && sql.charAt(p) == '.') {
-            schema = name;
-            p = readCallNamePart(sql, skipSqlBlanks(sql, p + 1), part);
-            if (p < 0) {
-                return "Tên procedure không hợp lệ: CALL";
-            }
-            name = part[0];
-            p = skipSqlBlanks(sql, p);
-            if (p < sql.length() && sql.charAt(p) == '.') {
-                return "Tên procedure không hợp lệ: CALL";
-            }
-        }
-        if (!procedureExists(request, schema, name)) {
-            return "Procedure không tồn tại: " + name;
+        if (!procedureExists(request, schema[0], name[0])) {
+            return "Procedure không tồn tại: " + name[0];
         }
         return null;
     }
@@ -856,6 +841,28 @@ public class UReportParamFilter implements Filter,
             if (conn == null) {
                 return true;
             }
+            return procedureExistsOnConnection(conn, schema, procName);
+        } catch (Exception e) {
+            return true;
+        } finally {
+            if (closeConnection && conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    // DS702: kiem tra procedure tren ket noi da mo san (chi doc
+    // metadata). Ket noi null hoac loi metadata -> true = giu
+    // hanh vi cu.
+    private static boolean procedureExistsOnConnection(
+            java.sql.Connection conn, String schema, String procName) {
+        if (conn == null) {
+            return true;
+        }
+        try {
             String catalog = schema != null ? schema : conn.getCatalog();
             String pattern = procName.replace("\\", "\\\\")
                     .replace("%", "\\%").replace("_", "\\_");
@@ -870,13 +877,6 @@ public class UReportParamFilter implements Filter,
             return false;
         } catch (Exception e) {
             return true;
-        } finally {
-            if (closeConnection && conn != null) {
-                try {
-                    conn.close();
-                } catch (Exception ignored) {
-                }
-            }
         }
     }
 
@@ -1105,6 +1105,359 @@ public class UReportParamFilter implements Filter,
                 continue;
             }
         }
+        // DS702: dataset SQL trong XML da luu: jar chay SQL luc
+        // tinh toan (SqlDatasetDefinition.buildDataset) -> SQL loi
+        // nem SQLException/NPE 500 (pdf/loadData). Chan o day
+        // (dung chung cho save qua validateDesigner va compute qua
+        // validateStoredReport) bang cung luat hinh dang nhu
+        // buildFields/previewData (DS679/DS680).
+        for (int i = 0; i < datasets.getLength(); i++) {
+            org.w3c.dom.Element ds = (org.w3c.dom.Element) datasets.item(i);
+            if (!"sql".equals(ds.getAttribute("type"))) {
+                continue;
+            }
+            String sql = sqlDatasetText(ds);
+            if (sql == null || sql.trim().isEmpty()) {
+                return "Câu SQL không được để trống: "
+                        + ds.getAttribute("name");
+            }
+            String sqlError = validateSqlShape(sql,
+                    sqlDatasetParameterNames(ds));
+            if (sqlError != null) {
+                return sqlError;
+            }
+            String callError = validateStoredCallProcedure(ds, sql);
+            if (callError != null) {
+                return callError;
+            }
+            String tableError = validateSqlTables(ds, sql);
+            if (tableError != null) {
+                return tableError;
+            }
+        }
+        return null;
+    }
+
+    // DS702: noi dung phan tu <sql> con cua dataset (jar parseSql
+    // doc dung phan tu nay; CDATA van la text). Null neu khong co.
+    private static String sqlDatasetText(org.w3c.dom.Element ds) {
+        org.w3c.dom.NodeList children = ds.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && "sql".equals(child.getNodeName())) {
+                return child.getTextContent();
+            }
+        }
+        return null;
+    }
+
+    // DS702: ten cac <parameter name="..."> con cua dataset (khai
+    // bao tham so :name dung trong SQL; jar buildParameters dung
+    // dung tap nay).
+    private static java.util.Set<String> sqlDatasetParameterNames(
+            org.w3c.dom.Element ds) {
+        java.util.Set<String> names = new java.util.HashSet<>();
+        org.w3c.dom.NodeList children = ds.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && "parameter".equals(child.getNodeName())) {
+                String name = ((org.w3c.dom.Element) child)
+                        .getAttribute("name");
+                if (name != null && !name.trim().isEmpty()) {
+                    names.add(name);
+                }
+            }
+        }
+        return names;
+    }
+
+    // DS702: CALL trong dataset SQL da luu -> kiem tra procedure
+    // ton tai bang metadata tren dung ket noi cua datasource cha
+    // (buildin: Utils.getBuildinConnection; jdbc: mo bang thuoc
+    // tinh driver/url/username/password cua chinh datasource do).
+    // Khong phai CALL -> null. Khong mo duoc ket noi / metadata
+    // loi -> null = giu hanh vi cu. Loai datasource khac -> null.
+    private static String validateStoredCallProcedure(
+            org.w3c.dom.Element ds, String sql) {
+        String clean = stripSqlStringsAndComments(sql);
+        int pos = skipSqlBlanks(clean, 0);
+        int start = pos;
+        while (pos < clean.length()
+                && Character.isLetter(clean.charAt(pos))) {
+            pos++;
+        }
+        if (start == pos
+                || !"CALL".equalsIgnoreCase(clean.substring(start, pos))) {
+            return null;
+        }
+        org.w3c.dom.Node parent = ds.getParentNode();
+        if (parent == null || !"datasource".equals(parent.getNodeName())) {
+            return null;
+        }
+        org.w3c.dom.Element src = (org.w3c.dom.Element) parent;
+        String type = src.getAttribute("type");
+        java.sql.Connection conn = null;
+        boolean closeConnection = false;
+        try {
+            if ("buildin".equals(type)) {
+                conn = com.bstek.ureport.Utils.getBuildinConnection(
+                        src.getAttribute("name"));
+                closeConnection = true;
+            } else if ("jdbc".equals(type)) {
+                conn = openJdbcConnection(src.getAttribute("driver"),
+                        src.getAttribute("url"),
+                        src.getAttribute("username"),
+                        src.getAttribute("password"));
+                closeConnection = true;
+            } else {
+                return null;
+            }
+            return validateCallProcedureOnConnection(conn, sql);
+        } finally {
+            if (closeConnection && conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    // DS702: giong validateCallProcedure nhung dung ket noi da mo
+    // san (dataset da luu). Ket noi null -> null = giu hanh vi cu.
+    private static String validateCallProcedureOnConnection(
+            java.sql.Connection conn, String sql) {
+        if (conn == null) {
+            return null;
+        }
+        String[] schema = new String[1];
+        String[] name = new String[1];
+        String nameError = parseCallName(sql, schema, name);
+        if (nameError != null) {
+            return nameError;
+        }
+        if (!procedureExistsOnConnection(conn, schema[0], name[0])) {
+            return "Procedure không tồn tại: " + name[0];
+        }
+        return null;
+    }
+
+    // DS702b: mo ket noi cua datasource cha (buildin: Utils.
+    // getBuildinConnection; jdbc: mo bang thuoc tinh driver/url/
+    // username/password cua chinh datasource do). Null neu khong
+    // mo duoc / loai datasource khac.
+    private static java.sql.Connection openDatasetConnection(
+            org.w3c.dom.Element ds) {
+        org.w3c.dom.Node parent = ds.getParentNode();
+        if (parent == null || !"datasource".equals(parent.getNodeName())) {
+            return null;
+        }
+        org.w3c.dom.Element src = (org.w3c.dom.Element) parent;
+        String type = src.getAttribute("type");
+        try {
+            if ("buildin".equals(type)) {
+                return com.bstek.ureport.Utils.getBuildinConnection(
+                        src.getAttribute("name"));
+            } else if ("jdbc".equals(type)) {
+                return openJdbcConnection(src.getAttribute("driver"),
+                        src.getAttribute("url"),
+                        src.getAttribute("username"),
+                        src.getAttribute("password"));
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    // DS702b: SELECT/WITH tro toi bang khong ton tai -> jar
+    // executeQuery nem SQLSyntaxErrorException 500 ("Table ... doesn't
+    // exist", S1). Kiem tra ton tai truoc bang DatabaseMetaData.
+    // getTables (CHI doc metadata, KHONG chay SQL) tren dung ket noi
+    // cua datasource cha. Ten bang lay tu FROM/JOIN tren SQL da strip
+    // string/comment; CTE (WITH x AS ...) va bang dan xuat (FROM ()
+    // ) duoc bo qua; tu khoa SQL khong phai ten bang cung bo qua
+    // (ten bang backtick bi strip thanh khoang trang nen phan tu ke
+    // tiep co the la tu khoa). Khong mo duoc ket noi / metadata loi
+    // -> null = giu hanh vi cu.
+    private static String validateSqlTables(
+            org.w3c.dom.Element ds, String sql) {
+        String clean = stripSqlStringsAndComments(sql);
+        int pos = skipSqlBlanks(clean, 0);
+        while (pos < clean.length() && clean.charAt(pos) == '(') {
+            pos = skipSqlBlanks(clean, pos + 1);
+        }
+        int start = pos;
+        while (pos < clean.length()
+                && Character.isLetter(clean.charAt(pos))) {
+            pos++;
+        }
+        if (start == pos) {
+            return null;
+        }
+        String first = clean.substring(start, pos);
+        if (!"SELECT".equalsIgnoreCase(first)
+                && !"WITH".equalsIgnoreCase(first)) {
+            return null;
+        }
+        java.util.Set<String> ctes = new java.util.HashSet<>();
+        if ("WITH".equalsIgnoreCase(first)) {
+            collectCteNames(clean, ctes);
+        }
+        java.util.Set<String> tables = new java.util.LinkedHashSet<>();
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?i)\\b(?:from|join)\\s+").matcher(clean);
+        while (m.find()) {
+            int p = skipSqlBlanks(clean, m.end());
+            if (p >= clean.length() || clean.charAt(p) == '(') {
+                continue;
+            }
+            String[] part = new String[1];
+            int q = readCallNamePart(clean, p, part);
+            if (q < 0 || isSqlKeyword(part[0])) {
+                continue;
+            }
+            String schema = null;
+            String table = part[0];
+            int r = skipSqlBlanks(clean, q);
+            if (r < clean.length() && clean.charAt(r) == '.') {
+                schema = table;
+                int s = skipSqlBlanks(clean, r + 1);
+                String[] part2 = new String[1];
+                int t = readCallNamePart(clean, s, part2);
+                if (t < 0 || isSqlKeyword(part2[0])) {
+                    continue;
+                }
+                table = part2[0];
+            }
+            if (ctes.contains(table.toLowerCase())) {
+                continue;
+            }
+            tables.add((schema == null ? "" : schema + ".") + table);
+        }
+        if (tables.isEmpty()) {
+            return null;
+        }
+        java.sql.Connection conn = openDatasetConnection(ds);
+        if (conn == null) {
+            return null;
+        }
+        try {
+            java.sql.DatabaseMetaData meta = conn.getMetaData();
+            for (String ref : tables) {
+                String schema = null;
+                String table = ref;
+                int dot = ref.indexOf('.');
+                if (dot >= 0) {
+                    schema = ref.substring(0, dot);
+                    table = ref.substring(dot + 1);
+                }
+                String catalog = schema != null ? schema
+                        : conn.getCatalog();
+                String pattern = table.replace("\\", "\\\\")
+                        .replace("%", "\\%").replace("_", "\\_");
+                java.sql.ResultSet rs = meta.getTables(catalog, null,
+                        pattern, new String[]{"TABLE", "VIEW"});
+                boolean found = false;
+                try {
+                    while (rs.next()) {
+                        if (table.equalsIgnoreCase(
+                                rs.getString("TABLE_NAME"))) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } finally {
+                    try {
+                        rs.close();
+                    } catch (Exception ignored) {
+                    }
+                }
+                if (!found) {
+                    return "Bảng không tồn tại: " + table;
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                conn.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    // DS702b: ten CTE trong "WITH x AS (...), y AS (...) SELECT ...":
+    // dinh dang ten + danh sach cot tuy chon + AS + '('. Chi trich
+    // dang nay; khong parse duoc thi bo qua (fail-open o buoc sau).
+    private static void collectCteNames(String clean,
+            java.util.Set<String> out) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?i)(?:^|,)\\s*([A-Za-z_][A-Za-z0-9_$]*)\\s*"
+                + "(?:\\([^)]*\\))?\\s+AS\\s*\\(").matcher(clean);
+        while (m.find()) {
+            out.add(m.group(1).toLowerCase());
+        }
+    }
+
+    // DS702b: tu khoa SQL — xuat hien sau FROM/JOIN khi ten bang that
+    // bi strip (backtick) hoac cau lenh khong co bang; khong phai ten
+    // bang nen bo qua khoi kiem tra ton tai.
+    private static boolean isSqlKeyword(String word) {
+        switch (word.toUpperCase()) {
+            case "WHERE": case "GROUP": case "ORDER": case "LIMIT":
+            case "JOIN": case "LEFT": case "RIGHT": case "INNER":
+            case "OUTER": case "FULL": case "CROSS": case "ON":
+            case "AND": case "OR": case "UNION": case "EXCEPT":
+            case "INTERSECT": case "SELECT": case "FROM":
+            case "HAVING": case "AS": case "DISTINCT": case "ALL":
+            case "VALUES": case "SET": case "INTO": case "BY":
+            case "ASC": case "DESC": case "CASE": case "WHEN":
+            case "THEN": case "ELSE": case "END": case "LIKE":
+            case "IN": case "IS": case "NULL": case "NOT":
+            case "EXISTS":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // DS702: trich ten procedure sau tu khoa CALL tren sql GOC
+    // (goi sau khi da chac la CALL; strip giu nguyen do dai nen
+    // vi tri khop). Tra null neu hop le, msg loi neu ten khong
+    // hop le; schema[0]/name[0] nhan ten (bo schema prefix).
+    private static String parseCallName(String sql, String[] schema,
+            String[] name) {
+        String clean = stripSqlStringsAndComments(sql);
+        int pos = skipSqlBlanks(clean, 0);
+        while (pos < clean.length()
+                && Character.isLetter(clean.charAt(pos))) {
+            pos++;
+        }
+        String[] part = new String[1];
+        int p = skipSqlBlanks(sql, pos);
+        p = readCallNamePart(sql, p, part);
+        if (p < 0) {
+            return "Tên procedure không hợp lệ: CALL";
+        }
+        schema[0] = null;
+        name[0] = part[0];
+        p = skipSqlBlanks(sql, p);
+        if (p < sql.length() && sql.charAt(p) == '.') {
+            schema[0] = name[0];
+            p = readCallNamePart(sql, skipSqlBlanks(sql, p + 1), part);
+            if (p < 0) {
+                return "Tên procedure không hợp lệ: CALL";
+            }
+            name[0] = part[0];
+            p = skipSqlBlanks(sql, p);
+            if (p < sql.length() && sql.charAt(p) == '.') {
+                return "Tên procedure không hợp lệ: CALL";
+            }
+        }
         return null;
     }
 
@@ -1186,6 +1539,13 @@ public class UReportParamFilter implements Filter,
     // DS679: kiem tra dang SQL cua buildFields/previewData ma KHONG
     // chay SQL (chi doc cu phap). Tra msg loi, null neu hop le.
     private static String validateSqlShape(String sql, String parameters) {
+        return validateSqlShape(sql, datasourceParameterNames(parameters));
+    }
+
+    // DS702: overload dung tap ten tham so da trich san (dataset SQL
+    // trong XML luu khai bao <parameter name="...">, khong phai JSON).
+    private static String validateSqlShape(String sql,
+            java.util.Set<String> names) {
         // parseSql cua jar thay ${...} ca trong string literal roi
         // danh gia expression -> NPE 500 (J2/J4/J6) nen cam han.
         if (sql.contains("${")) {
@@ -1211,9 +1571,9 @@ public class UReportParamFilter implements Filter,
         if (!isReadOnlySqlShape(trimmed)) {
             return "Câu SQL không hợp lệ: chỉ chấp nhận SELECT/WITH/CALL/SHOW/DESCRIBE/EXPLAIN";
         }
-        // :name phai co trong parameters (J7 thieu -> jar 500 "No value
-        // supplied for the SQL parameter"); := va :: khong phai param.
-        java.util.Set<String> names = datasourceParameterNames(parameters);
+        // :name phai co trong tap ten da khai bao (J7 thieu -> jar 500
+        // "No value supplied for the SQL parameter"); := va :: khong
+        // phai param.
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(":([A-Za-z][A-Za-z0-9_]*)")
                 .matcher(clean);
         while (m.find()) {
