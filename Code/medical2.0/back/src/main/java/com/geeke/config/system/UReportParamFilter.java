@@ -166,6 +166,33 @@ import org.springframework.stereotype.Component;
  *   — hoac whitelist dang SQL (SELECT/WITH/CALL/...) — de vo luong
  *   SQL hop le cua bao cao that; can khao sat SQL that trong
  *   ureport_file truoc khi chan.
+ *
+ * DS679: khao sat SQL that trong ureport_file (7 bao cao, tools/
+ * ds679-sql-survey.log): KHONG co dataset SQL nao — tat ca dataset
+ * deu type="bean" (spring bean dataBean, method buildReport/
+ * westMedicine/infuse/costItem/registration). Nen whitelist dang SQL
+ * khong vo bao cao that nao. Jar (javap DatasourceServletAction +
+ * ProcedureUtils): buildFields/previewData goi parseSql (thay the
+ * ${...} bang gia tri expression) roi isProcedure (trim+lowercase,
+ * startsWith "call") -> CallableStatement, neu khong thi
+ * NamedParameterJdbcTemplate.queryForList/execute -> PreparedStatement
+ * .executeQuery. Vi vay chi cau lenh tra result-set moi chay duoc:
+ * SELECT/WITH/CALL/SHOW/DESCRIBE/EXPLAIN; UPDATE/DELETE/INSERT/DDL/
+ * sql rac -> SQLException 500; multi-statement -> syntax error 500;
+ * ${...} -> NPE 500 (J2/J4/J6, ca khi tham so da khai bao); :name
+ * khong khai bao -> 500 "No value supplied..."; ';' trong string
+ * literal thi vo hai (I17 200). Filter chan bang kiem tra CU PHAP
+ * (khong chay SQL, khong tac dung phu): tu khoa dau (sau khi bo
+ * comment khoang trang dau, cho '(' truoc SELECT/WITH) phai thuoc
+ * {SELECT, WITH, CALL, SHOW, DESCRIBE, DESC, EXPLAIN} (WITH phai
+ * dan toi SELECT o cap ngoai); chi 1 cau lenh (khong ';' ngoai
+ * string/comment, tru 1 ';' cuoi); cam INTO OUTFILE/DUMPFILE
+ * (ghi file — khong probe live, chan theo thiet ke); cam "${"
+ * (jar NPE); moi :name phai co trong parameters. Luong dung giu
+ * 200: select/show/describe/explain/with/select co ';' trong
+ * string/comment dau, :name da khai bao. CALL toi procedure khong
+ * ton tai van 500 (I6) — can kiem tra ton tai qua DatabaseMetaData,
+ * de DS680.
  */
 @Component
 public class UReportParamFilter implements Filter,
@@ -476,7 +503,13 @@ public class UReportParamFilter implements Filter,
                 if (isBlank(request.getParameter("sql"))) {
                     return "Thiếu tham số bắt buộc: sql";
                 }
-                return validateDatasourceParameters(request.getParameter("parameters"));
+                String paramsError = validateDatasourceParameters(
+                        request.getParameter("parameters"));
+                if (paramsError != null) {
+                    return paramsError;
+                }
+                return validateSqlShape(request.getParameter("sql"),
+                        request.getParameter("parameters"));
             }
             default:
                 return null;
@@ -764,7 +797,267 @@ public class UReportParamFilter implements Filter,
         }
     }
 
-    // DS675: XML phai well-formed va co root <ureport>. Parse chi de
+    // DS679: ten tham so da khai bao trong parameters JSON (da duoc
+    // validateDatasourceParameters kiem tra hinh dang truoc). Dung de
+    // doi chieu :name trong sql; parameters trong/rong -> tap rong.
+    private static java.util.Set<String> datasourceParameterNames(String parameters) {
+        java.util.Set<String> names = new java.util.HashSet<>();
+        if (isBlank(parameters)) {
+            return names;
+        }
+        try {
+            org.codehaus.jackson.map.ObjectMapper mapper =
+                    new org.codehaus.jackson.map.ObjectMapper();
+            Object parsed = mapper.readValue(parameters, java.util.ArrayList.class);
+            if (!(parsed instanceof java.util.List)) {
+                return names;
+            }
+            for (Object element : (java.util.List<?>) parsed) {
+                if (element instanceof java.util.Map) {
+                    Object name = ((java.util.Map<?, ?>) element).get("name");
+                    if (name != null) {
+                        names.add(String.valueOf(name));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Da bi validateDatasourceParameters chan truoc.
+        }
+        return names;
+    }
+
+    // DS679: kiem tra dang SQL cua buildFields/previewData ma KHONG
+    // chay SQL (chi doc cu phap). Tra msg loi, null neu hop le.
+    private static String validateSqlShape(String sql, String parameters) {
+        // parseSql cua jar thay ${...} ca trong string literal roi
+        // danh gia expression -> NPE 500 (J2/J4/J6) nen cam han.
+        if (sql.contains("${")) {
+            return "Câu SQL không hợp lệ: biểu thức ${...} không được hỗ trợ";
+        }
+        String clean = stripSqlStringsAndComments(sql);
+        String trimmed = clean.trim();
+        // Chi 1 cau lenh: khong ';' ngoai string/comment, tru 1 ';'
+        // cuoi (I4/I11 multi-statement -> 500; I17 ';' trong string
+        // da bi strip nen van 200).
+        if (trimmed.endsWith(";")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1).trim();
+        }
+        if (trimmed.contains(";")) {
+            return "Câu SQL không hợp lệ: chỉ được một câu lệnh";
+        }
+        // Cam ghi file: SELECT ... INTO OUTFILE/DUMPFILE (jar se chay
+        // that va ghi file — khong probe live, chan theo thiet ke).
+        if (java.util.regex.Pattern.compile("(?i)\\binto\\s+(outfile|dumpfile)\\b")
+                .matcher(clean).find()) {
+            return "Câu SQL không hợp lệ: INTO OUTFILE/DUMPFILE không được phép";
+        }
+        if (!isReadOnlySqlShape(trimmed)) {
+            return "Câu SQL không hợp lệ: chỉ chấp nhận SELECT/WITH/CALL/SHOW/DESCRIBE/EXPLAIN";
+        }
+        // :name phai co trong parameters (J7 thieu -> jar 500 "No value
+        // supplied for the SQL parameter"); := va :: khong phai param.
+        java.util.Set<String> names = datasourceParameterNames(parameters);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(":([A-Za-z][A-Za-z0-9_]*)")
+                .matcher(clean);
+        while (m.find()) {
+            if (!names.contains(m.group(1))) {
+                return "Tham số SQL chưa khai báo: " + m.group(1);
+            }
+        }
+        return null;
+    }
+
+    // DS679: thay noi dung string literal ('...', "...", `...`) va
+    // comment (-- den het dong, # den het dong, /* */) bang khoang
+    // trang de kiem tra cu phap khong bi lua (vd ';' trong string).
+    // '' (2 nháy đơn) va backslash la escape trong string don.
+    private static String stripSqlStringsAndComments(String sql) {
+        StringBuilder out = new StringBuilder(sql.length());
+        int i = 0;
+        int n = sql.length();
+        while (i < n) {
+            char c = sql.charAt(i);
+            if (c == '\'' || c == '"' || c == '`') {
+                out.append(' ');
+                i++;
+                while (i < n) {
+                    char d = sql.charAt(i);
+                    out.append(' ');
+                    i++;
+                    if (d == '\\' && i < n) {
+                        out.append(' ');
+                        i++;
+                    } else if (d == c) {
+                        if (c == '\'' && i < n && sql.charAt(i) == '\'') {
+                            out.append(' ');
+                            i++;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            } else if (c == '-' && i + 1 < n && sql.charAt(i + 1) == '-') {
+                while (i < n && sql.charAt(i) != '\n') {
+                    out.append(' ');
+                    i++;
+                }
+            } else if (c == '#') {
+                while (i < n && sql.charAt(i) != '\n') {
+                    out.append(' ');
+                    i++;
+                }
+            } else if (c == '/' && i + 1 < n && sql.charAt(i + 1) == '*') {
+                out.append(' ');
+                out.append(' ');
+                i += 2;
+                while (i < n && !(sql.charAt(i) == '*' && i + 1 < n
+                        && sql.charAt(i + 1) == '/')) {
+                    out.append(sql.charAt(i) == '\n' ? '\n' : ' ');
+                    i++;
+                }
+                if (i < n) {
+                    out.append(' ');
+                    out.append(' ');
+                    i += 2;
+                }
+            } else {
+                out.append(c);
+                i++;
+            }
+        }
+        return out.toString();
+    }
+
+    // DS679: cau lenh chi doc (tra result-set qua executeQuery cua jar).
+    // Bo comment/khoang trang dau + '(' mo dau, tu khoa dau phai thuoc
+    // tap hop; WITH phai dan toi SELECT o cap ngoai (voi CTE co the
+    // co nhieu dinh nghia, cach nhau bang dau phay).
+    private static boolean isReadOnlySqlShape(String sql) {
+        int pos = skipSqlBlanks(sql, 0);
+        while (pos < sql.length() && sql.charAt(pos) == '(') {
+            pos = skipSqlBlanks(sql, pos + 1);
+        }
+        int start = pos;
+        while (pos < sql.length() && Character.isLetter(sql.charAt(pos))) {
+            pos++;
+        }
+        if (start == pos) {
+            return false;
+        }
+        String keyword = sql.substring(start, pos).toUpperCase();
+        if ("SELECT".equals(keyword) || "CALL".equals(keyword)
+                || "SHOW".equals(keyword) || "DESCRIBE".equals(keyword)
+                || "DESC".equals(keyword) || "EXPLAIN".equals(keyword)) {
+            return true;
+        }
+        if ("WITH".equals(keyword)) {
+            return withFollowedBySelect(sql, pos);
+        }
+        return false;
+    }
+
+    // DS679: bo khoang trang + comment dau (--, #, /* */) o vi tri pos.
+    private static int skipSqlBlanks(String sql, int pos) {
+        int n = sql.length();
+        while (pos < n) {
+            char c = sql.charAt(pos);
+            if (Character.isWhitespace(c)) {
+                pos++;
+            } else if (c == '-' && pos + 1 < n && sql.charAt(pos + 1) == '-') {
+                while (pos < n && sql.charAt(pos) != '\n') {
+                    pos++;
+                }
+            } else if (c == '#') {
+                while (pos < n && sql.charAt(pos) != '\n') {
+                    pos++;
+                }
+            } else if (c == '/' && pos + 1 < n && sql.charAt(pos + 1) == '*') {
+                int end = sql.indexOf("*/", pos + 2);
+                pos = end < 0 ? n : end + 2;
+            } else {
+                break;
+            }
+        }
+        return pos;
+    }
+
+    // DS679: sau WITH, duyet cac dinh nghia CTE "ten [(cot)] AS
+    // (truy van)" cach nhau bang ','; tu khoa sau CTE cuoi phai la
+    // SELECT (WITH...UPDATE/DELETE/INSERT la ghi -> 400).
+    private static boolean withFollowedBySelect(String sql, int pos) {
+        int n = sql.length();
+        while (true) {
+            pos = skipSqlBlanks(sql, pos);
+            int start = pos;
+            while (pos < n && (Character.isLetterOrDigit(sql.charAt(pos))
+                    || sql.charAt(pos) == '_' || sql.charAt(pos) == '$')) {
+                pos++;
+            }
+            if (start == pos) {
+                return false;
+            }
+            pos = skipSqlBlanks(sql, pos);
+            if (pos < n && sql.charAt(pos) == '(') {
+                pos = skipBalancedParens(sql, pos);
+                if (pos < 0) {
+                    return false;
+                }
+                pos = skipSqlBlanks(sql, pos);
+            }
+            if (!readSqlKeyword(sql, pos, "AS")) {
+                return false;
+            }
+            pos = skipSqlBlanks(sql, pos + 2);
+            if (pos >= n || sql.charAt(pos) != '(') {
+                return false;
+            }
+            pos = skipBalancedParens(sql, pos);
+            if (pos < 0) {
+                return false;
+            }
+            pos = skipSqlBlanks(sql, pos);
+            if (pos < n && sql.charAt(pos) == ',') {
+                pos++;
+                continue;
+            }
+            return readSqlKeyword(sql, pos, "SELECT");
+        }
+    }
+
+    // DS679: doc dung tu khoa kw tai pos (khong phan biet hoa/thuong,
+    // sau kw phai het chu cai). Tra true neu khop.
+    private static boolean readSqlKeyword(String sql, int pos, String kw) {
+        int n = sql.length();
+        if (pos + kw.length() > n) {
+            return false;
+        }
+        if (!sql.substring(pos, pos + kw.length()).equalsIgnoreCase(kw)) {
+            return false;
+        }
+        int after = pos + kw.length();
+        return after >= n || !Character.isLetter(sql.charAt(after));
+    }
+
+    // DS679: bo qua khoi ngoac tron can bang bat dau tai pos (ky tu
+    // '('); tra vi tri ngay sau ') ' dong, -1 neu khong can bang.
+    // Chuoi literal da duoc strip truoc nen chi dem '(' / ')'.
+    private static int skipBalancedParens(String sql, int pos) {
+        int depth = 0;
+        int n = sql.length();
+        while (pos < n) {
+            char c = sql.charAt(pos);
+            if (c == '(') {
+                depth++;
+            } else if (c == ')') {
+                depth--;
+                if (depth == 0) {
+                    return pos + 1;
+                }
+            }
+            pos++;
+        }
+        return -1;
+    }
     // kiem tra, khong load DTD/entity ngoai (chong XXE); ca 7 bao cao
     // that trong DB deu khong co DOCTYPE nen chan DOCTYPE luon.
     private static boolean isValidReportXml(String xml) {
