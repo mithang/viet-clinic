@@ -192,6 +192,16 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
                 || StringUtils.isBlank(entity.getCostItem().getId())) {
             throw new ServiceException("Hạng mục khám chữa bệnh không được để trống");
         }
+        // DS710: chan hang muc khac tenant (mau DS690/DS696): cascade tu
+        // MemberSetService + save/bulk* truoc day chi kiem tra costItem id
+        // non-blank, nen cost item cua phong kham khac van ghi duoc (200 +
+        // dong member_item tro toi cost_item_id ngoai tenant; GET set sau
+        // do 400 vi getByMemberSetId -> costItemService.get nem tenant).
+        // costItemService.get tu nem ServiceException 400 cho cost item
+        // ngoai tenant (CrudService.get -> verifyTenantOwnership, cho phep
+        // tenant phien + co so dung chung); id ma tra null -> giu hanh vi
+        // cu (400 FK o DAO, DS708).
+        costItemService.get(entity.getCostItem().getId());
     }
 
     @Transactional(readOnly = false)
