@@ -132,6 +132,20 @@ public class SupplierService extends CrudService<SupplierDao, Supplier>{
                 throw new ServiceException(
                         "Nhà cung cấp không được để trống");
             }
+            // DS686: bulkUpdate truoc day khong chan blank name/
+            // pinyinCode (chi bulkInsert chan, DS104) trong khi mapper
+            // bulkUpdate ghi name/pinyin_code verbatim qua CASE nen ""
+            // ve 200 + xoa trang dong da co, trong luc save don 400 nho
+            // @Valid (@NotNull/@Length min=1 tren name) va bulkInsert
+            // 400. Chan truoc moi ghi, cung message nhu bulkInsert.
+            // type "" da 400 nho checkSupplierTypeValues (DS546) nen
+            // khong can guard them o day.
+            if (StringUtils.isBlank(supplier.getName())) {
+                throw new ServiceException("Tên nhà cung cấp không được để trống");
+            }
+            if (StringUtils.isBlank(supplier.getPinyinCode())) {
+                throw new ServiceException("Mã pinyin không được để trống");
+            }
             if (StringUtils.isNotBlank(supplier.getId())
                     && dao.get(supplier.getId()) == null) {
                 throw new ServiceException("Nhà cung cấp không tồn tại: "

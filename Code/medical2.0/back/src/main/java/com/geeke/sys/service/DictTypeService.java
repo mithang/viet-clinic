@@ -211,6 +211,21 @@ public class DictTypeService extends CrudService<DictTypeDao, DictType>{
                 throw new ServiceException(
                         "Loại từ điển không được để trống");
             }
+            // DS686: bulkUpdate truoc day khong chan blank (chi
+            // bulkInsert chan, DS104) trong khi mapper bulkUpdate ghi
+            // name/code/is_system verbatim qua CASE nen ""/" " ve 200
+            // + xoa trang dong da co, trong luc save don 400 nho @Valid
+            // (@NotNull/@Length min=1) va bulkInsert 400. Chan truoc
+            // moi ghi, cung message nhu bulkInsert.
+            if (StringUtils.isBlank(dictType.getName())) {
+                throw new ServiceException("Tên loại từ điển không được để trống");
+            }
+            if (StringUtils.isBlank(dictType.getCode())) {
+                throw new ServiceException("Mã loại từ điển không được để trống");
+            }
+            if (StringUtils.isBlank(dictType.getIsSystem())) {
+                throw new ServiceException("Cấp hệ thống không được để trống");
+            }
             if (StringUtils.isNotBlank(dictType.getId())
                     && dao.get(dictType.getId()) == null) {
                 throw new ServiceException("Loại từ điển không tồn tại: "

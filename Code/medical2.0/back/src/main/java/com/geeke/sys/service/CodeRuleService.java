@@ -146,6 +146,22 @@ public class CodeRuleService extends CrudService<CodeRuleDao, CodeRule>{
             if (codeRule == null) {
                 throw new ServiceException("Quy tắc mã không được để trống");
             }
+            // DS686: bulkUpdate truoc day khong chan blank (chi
+            // bulkInsert chan, DS104; DS257 chi parse ruleDef, blank
+            // thi bo qua) trong khi mapper bulkUpdate ghi
+            // name/code/rule_def verbatim qua CASE nen "" ve 200 +
+            // xoa trang dong da co, trong luc save don 400 nho @Valid
+            // (@NotNull/@Length min=1) va bulkInsert 400. Chan truoc
+            // moi ghi, cung message nhu bulkInsert.
+            if (StringUtils.isBlank(codeRule.getName())) {
+                throw new ServiceException("Tên quy tắc mã không được để trống");
+            }
+            if (StringUtils.isBlank(codeRule.getCode())) {
+                throw new ServiceException("Mã không được để trống");
+            }
+            if (StringUtils.isBlank(codeRule.getRuleDef())) {
+                throw new ServiceException("Quy tắc không được để trống");
+            }
             if (StringUtils.isNotBlank(codeRule.getId())
                     && dao.get(codeRule.getId()) == null) {
                 throw new ServiceException("Quy tắc mã không tồn tại: "
