@@ -92,6 +92,19 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
             throw new ServiceException("Cấu hình tham số không được để trống");
         }
         checkParamWriteTenant(entity);
+        // DS683: save() don (+ save/list, goi save() tung dong) truoc day
+        // khong kiem tra truong bat buoc, khac bulkInsert/bulkUpdate
+        // (validateRequired, DS102): configName "" ghi thang "" va
+        // configValue bi luoc ghi thang NULL qua mapper `update` verbatim
+        // (probe P1-P5); gia tri live nay nuoi phi dang ky mac dinh
+        // (registrationForm.vue:1620) va trang paramConfig gui input text
+        // khong co rule required nen xoa trang di duoc ca tu UI that.
+        // Fail-closed 400; category giu khong guard (tat ca dong live
+        // deu NULL category theo thiet ke).
+        validateRequired(entity);
+        if (StringUtils.isBlank(entity.getConfigValue())) {
+            throw new ServiceException("Giá trị cấu hình không được để trống");
+        }
         // DS102: CrudService.save rẽ nhánh update khi id khác rỗng,
         // doUpdate không động đến dòng nào nếu id không tồn tại mà vẫn
         // trả 200 (probe B1; họ silent no-op DS94/DS99). Chỉ chấp nhận
