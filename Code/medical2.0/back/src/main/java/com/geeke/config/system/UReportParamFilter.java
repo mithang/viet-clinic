@@ -122,6 +122,50 @@ import org.springframework.stereotype.Component;
  *   /ureport/res/ (trailing slash, path rong) GIU NGUYEN (E18: jar tra
  *   directory listing classpath — info disclosure, de vong sau quyet).
  * Ten hop le nhung noi dung rac giu hanh vi cu (DS675: script rac 200).
+ *
+ * DS678: hai ho con lai cua cung thu vien jar, xac nhan live bang probe
+ * tools/ds678-pre.py + ds678-pre-h.py (F1-F15, G1-G5, H1-H6):
+ * - Res lo toan bo classpath (F1-F7, F10): ResourceLoaderServletAction
+ *   goi applicationContext.getResource("classpath:" + path).getInputStream()
+ *   ma khong kiem tra path. Path rong ("/ureport/res/") -> getResource
+ *   ("classpath:") mo file: URL thu muc -> JDK tra directory listing
+ *   goc classpath (application.yml, application-demo.yml,
+ *   application-dev.yml, com, HisDataCollect.fxml, logback.xml,
+ *   mail-config.properties, mapper, ...). Moi file classpath ton tai
+ *   deu tai duoc khong can dang nhap: /ureport/res/application.yml (chua
+ *   cau hinh datasource), logback.xml, mail-config.properties,
+ *   application-demo.yml, ca listing thu muc mapper/, com/,
+ *   ureport-asserts/css/ (F7 tra 200 rong). Chi co cac file duoi
+ *   ureport-asserts/ (css/js/fonts/icons/venderjs) la hop le — tat ca
+ *   link /ureport/res/ trong designer.html/html-preview.html/
+ *   searchform.html cua jar deu nam duoi do, va khong co code nao cua
+ *   app (back/client) goi /ureport/res/ — nen filter chi cho qua
+ *   "ureport-asserts/*" (khong phai thu muc, khong ".."), con lai -> 400.
+ *   Traversal "../application.yml" (F8) va "%2e%2e%2f" (F9) da 400 nho
+ *   exists() / Tomcat, nhung van chan tuong minh "..".
+ * - JDBC sai credential -> 500 (G1/G2/G3/G5, H1/H4/H5): UReportServlet
+ *   tu bat Exception roi set 500 + viet e.getMessage(), nen filter
+ *   khong the catch sau chain.doFilter; testConnection tu bat loi roi
+ *   tra JSON result:false 200 nen khong cham. buildDatabaseTables/
+ *   buildFields/previewData goi buildConnection: Class.forName(driver)
+ *   roi DriverManager.getConnection(url, username, password) — sai
+ *   user/pass/db -> SQLException "Access denied" 500; url khong co
+ *   driver phu hop / url rac -> SQLException "No suitable driver" 500.
+ *   Filter thu ket noi that truoc bang dung tham so client dua
+ *   (DriverManager.getDriver(url).connect(url, props), dong ngay,
+ *   connectTimeout=3000/socketTimeout=5000 qua Properties de khong
+ *   dung DriverManager.setLoginTimeout — static toan JVM; chi ap cho
+ *   type=jdbc cua 3 action nay, testConnection giu nguyen): ket noi
+ *   that bai (SQLException, ke ca connect() tra null) -> 400; loi
+ *   khac -> giu hanh vi cu. Luong dung chi them 1 ket noi thu (dong
+ *   ngay) truoc ket noi that cua jar.
+ * - RULED OUT vong nay (de DS679): buildin hop le + sql rac -> 500
+ *   SQLException o executeQuery (H2/H3; jdbc + credential dung + sql
+ *   rac chac chan cung vay, cung duong code). Chi kiem tra duoc bang
+ *   cach chay that cau SQL trong filter — co tac dung phu (procedure)
+ *   — hoac whitelist dang SQL (SELECT/WITH/CALL/...) — de vo luong
+ *   SQL hop le cua bao cao that; can khao sat SQL that trong
+ *   ureport_file truoc khi chan.
  */
 @Component
 public class UReportParamFilter implements Filter,
@@ -464,6 +508,17 @@ public class UReportParamFilter implements Filter,
             if (!classExists(request.getParameter("driver"))) {
                 return "Driver class không tồn tại: driver";
             }
+            // DS678: sai user/pass/db hoac url khong co driver phu hop
+            // -> jar DriverManager.getConnection nem SQLException 500
+            // (UReportServlet tu set 500, filter khong catch duoc sau
+            // chain). Thu ket noi that truoc bang dung tham so client
+            // dua, dong ngay; that bai -> 400.
+            if (!jdbcConnectionWorks(request.getParameter("driver"),
+                    request.getParameter("url"),
+                    request.getParameter("username"),
+                    request.getParameter("password"))) {
+                return "Không kết nối được tới datasource: jdbc";
+            }
             return null;
         }
         if (isBlank(request.getParameter("name"))) {
@@ -497,10 +552,19 @@ public class UReportParamFilter implements Filter,
         }
         if (path.startsWith(RES_PREFIX)) {
             String resource = path.substring(RES_PREFIX.length());
-            // Path rong ("/ureport/res/") GIU NGUYEN: jar tra directory
-            // listing classpath (E18, info disclosure — de vong sau).
-            if (resource.isEmpty()) {
-                return null;
+            // DS678: chi phuc vu tai nguyen tinh cua chinh UReport
+            // (ureport-asserts/ css/js/fonts/icons/venderjs — tat ca
+            // link /ureport/res/ trong cac trang HTML cua jar deu nam
+            // duoi thu muc nay). Moi classpath resource khac deu bi
+            // lo: path rong -> directory listing goc classpath (E18),
+            // file ton tai -> tai full noi dung (application.yml,
+            // logback.xml, mail-config.properties, ...), thu muc ->
+            // listing (mapper/, com/) hoac 200 rong (F7) -> 400.
+            // Duong dan thu muc (ket thuc '/') cung 400.
+            if (resource.isEmpty() || resource.endsWith("/")
+                    || !resource.startsWith("ureport-asserts/")
+                    || resource.contains("..")) {
+                return "Tài nguyên không tồn tại: res";
             }
             // Path la: jar getResource("classpath:" + path) nem
             // FileNotFoundException 500 -> 400.
@@ -524,6 +588,39 @@ public class UReportParamFilter implements Filter,
         }
         try {
             return applicationContext.containsBean(beanId);
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    // DS678: thu ket noi JDBC that bang dung tham so client dua, roi
+    // dong ngay (chi doc, khong ghi). Chi chan SQLException -> false
+    // (ket noi that bai: sai user/pass/db, khong co driver phu hop
+    // cho url, driver.connect tra null). Loi khac (vd driver class
+    // ton tai nhung khoi tao loi) -> true = giu hanh vi cu, de jar xu
+    // ly. Class.forName(driver) chay truoc de driver tu dang ky voi
+    // DriverManager nhu jar lam (validateDatasourceConnection da goi
+    // classExists truoc, day goi lai cho chac). connectTimeout /
+    // socketTimeout qua Properties (MySQL Connector/J hieu; driver
+    // khac bo qua) de lan thu khong treo lau; khong dung
+    // DriverManager.setLoginTimeout (static toan JVM).
+    private static boolean jdbcConnectionWorks(String driver, String url,
+            String username, String password) {
+        try {
+            Class.forName(driver);
+            java.util.Properties props = new java.util.Properties();
+            props.setProperty("user", username);
+            if (password != null) {
+                props.setProperty("password", password);
+            }
+            props.setProperty("connectTimeout", "3000");
+            props.setProperty("socketTimeout", "5000");
+            java.sql.Driver drv = java.sql.DriverManager.getDriver(url);
+            try (java.sql.Connection conn = drv.connect(url, props)) {
+                return conn != null;
+            }
+        } catch (java.sql.SQLException e) {
+            return false;
         } catch (Exception e) {
             return true;
         }
