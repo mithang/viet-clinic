@@ -54,6 +54,38 @@ import org.springframework.stereotype.Component;
  * Tat ca deu la loi dau vao cua client -> 400 fail-closed o filter,
  * theo mau DS670. Chi chan tham so THIEU/RONG hoac XML sai dang:
  * ten file sai nhung dung dang ten (loadReport file la) giu hanh vi cu.
+ *
+ * DS676: cac action con lai cua cung thu vien jar (UReportServlet
+ * dispatch bang reflection: retriveMethod lay doan path sau action url,
+ * invokeMethod goi method do; method khong ton tai -> NoSuchMethodException
+ * -> UReportServlet tu set 500; tham so thieu -> NPE / ReportDesignException
+ * / SQLException / JsonParseException / ClassCastException -> 500, vi
+ * servlet tho khong qua Spring MVC handler nen IAE cung 500, khong 400):
+ * - Preview sub-method /ureport/preview/loadData|loadPrintPages|loadPagePaper:
+ *   decode(_u) truoc isBlank -> _u thieu/rong -> ReportComputeException
+ *   "Report file can not be null." 500 (filter DS670 chi chan path
+ *   /ureport/preview chinh xac nen 3 duong con nay lot).
+ * - Datasource /ureport/datasource/*: buildClass clazz null -> NPE
+ *   (Class.forName(null)); loadMethods beanId null -> IAE "'name' must
+ *   not be null"; buildDatabaseTables/testConnection/buildFields/previewData
+ *   -> buildConnection: type null -> nhanh buildin, name null -> NPE;
+ *   type=jdbc + driver null -> NPE (Class.forName(null)), url null ->
+ *   SQLException "The url cannot be null", username null -> driver dung
+ *   user mac dinh 'root' khong password -> SQLException "Access denied";
+ *   buildFields/previewData: sql null -> NPE (parseSql); parameters JSON
+ *   hong -> JsonParseException, phan tu khong phai Map / thieu name/type /
+ *   type khong co trong DataType enum / defaultValue khong phai String ->
+ *   NPE / ClassCastException / "No enum constant ... DataType.*".
+ * - Method khong ton tai tren ca 4 action dispatch (preview/designer/
+ *   datasource/chart): /ureport/<action>/ds676bogus -> 500 NoSuchMethod.
+ * Tat ca -> 400 fail-closed o filter. Chi chan tham so THIEU/RONG hoac
+ * sai dang co the kiem tra khong tac dung phu (blank, JSON shape,
+ * DataType enum); ten sai nhung dung dang (beanId la, buildin name la,
+ * driver/clazz la, _u ten file la) GIU hanh vi cu, de DS677 (can kiem
+ * tra ton tai: containsBean / Utils.getBuildinDatasources /
+ * Class.forName / provider). testConnection, chart storeData, import,
+ * loadBuildinDatasources, loadReportProviders da tra 200-JSON/200 nen
+ * khong chan. Password jdbc khong bat buoc (password rong la hop le).
  */
 @Component
 public class UReportParamFilter implements Filter {
@@ -70,6 +102,30 @@ public class UReportParamFilter implements Filter {
 
     private static final Set<String> DESIGNER_FILE_METHODS = new HashSet<>(Arrays.asList(
             "loadReport", "deleteReportFile"));
+
+    // DS676: method hop le cua tung action dispatch (jar goi bang reflection;
+    // method la TOAN BO doan path sau action prefix, trim — retriveMethod
+    // khong cat o '/' thu hai, nen "loadData/extra" cung la method la).
+    private static final Set<String> DESIGNER_METHODS = new HashSet<>(Arrays.asList(
+            "savePreviewData", "saveReportFile", "loadReport", "deleteReportFile",
+            "loadReportProviders", "parseDatasetName", "scriptValidation",
+            "conditionScriptValidation"));
+
+    private static final String PREVIEW_PREFIX = "/ureport/preview/";
+
+    private static final Set<String> PREVIEW_METHODS = new HashSet<>(Arrays.asList(
+            "loadData", "loadPrintPages", "loadPagePaper"));
+
+    private static final String DATASOURCE_PREFIX = "/ureport/datasource/";
+
+    private static final Set<String> DATASOURCE_METHODS = new HashSet<>(Arrays.asList(
+            "loadBuildinDatasources", "loadMethods", "buildClass",
+            "buildDatabaseTables", "buildFields", "previewData", "testConnection"));
+
+    private static final String CHART_PREFIX = "/ureport/chart/";
+
+    private static final Set<String> CHART_METHODS = new HashSet<>(Arrays.asList(
+            "storeData"));
 
     private static final java.util.regex.Pattern DATASET_IDENT =
             java.util.regex.Pattern.compile("[A-Za-z][A-Za-z0-9_-]*");
@@ -102,6 +158,13 @@ public class UReportParamFilter implements Filter {
             sendBadRequest(response, designerError);
             return;
         }
+        // DS676: preview sub-method, datasource, chart (method la).
+        String actionError = validateOtherAction(path, request);
+        if (actionError != null) {
+            logger.warn("UReport {} {}: {}", request.getMethod(), path, actionError);
+            sendBadRequest(response, actionError);
+            return;
+        }
         chain.doFilter(req, res);
     }
 
@@ -123,17 +186,18 @@ public class UReportParamFilter implements Filter {
 
     // DS675: tra msg loi khi designer input thieu/sai dang, null neu hop le.
     // GET /ureport/designer (mo trang designer, khong co method) di qua.
+    // DS676: method la toan bo doan sau prefix (retriveMethod cua jar lay
+    // het, khong cat '/'), method khong co trong whitelist -> 400.
     private static String validateDesigner(String path, HttpServletRequest request) {
         if (!path.startsWith(DESIGNER_PREFIX)) {
             return null;
         }
-        String method = path.substring(DESIGNER_PREFIX.length());
-        int slash = method.indexOf('/');
-        if (slash >= 0) {
-            method = method.substring(0, slash);
-        }
-        if (method.isEmpty()) {
+        String method = extractMethod(path, DESIGNER_PREFIX);
+        if (method == null) {
             return null;
+        }
+        if (!DESIGNER_METHODS.contains(method)) {
+            return "Action không tồn tại: " + method;
         }
         switch (method) {
             case "savePreviewData": {
@@ -184,8 +248,170 @@ public class UReportParamFilter implements Filter {
                 }
                 return null;
             }
+            case "loadReportProviders":
+                return null;
             default:
                 return null;
+        }
+    }
+
+    // DS676: method la toan bo doan path sau action prefix, trim; null khi
+    // khong co method (mo trang action, giu hanh vi cu 200).
+    private static String extractMethod(String path, String prefix) {
+        String rest = path.substring(prefix.length()).trim();
+        return rest.isEmpty() ? null : rest;
+    }
+
+    // DS676: preview sub-method, datasource, chart. Tra msg loi, null neu
+    // hop le hoac khong thuoc 3 action nay.
+    private static String validateOtherAction(String path, HttpServletRequest request) {
+        if (path.startsWith(PREVIEW_PREFIX)) {
+            String method = extractMethod(path, PREVIEW_PREFIX);
+            if (method == null) {
+                return null;
+            }
+            if (!PREVIEW_METHODS.contains(method)) {
+                return "Action không tồn tại: " + method;
+            }
+            if (isBlank(request.getParameter("_u"))) {
+                return "Thiếu tham số bắt buộc: _u";
+            }
+            return null;
+        }
+        if (path.startsWith(DATASOURCE_PREFIX)) {
+            String method = extractMethod(path, DATASOURCE_PREFIX);
+            if (method == null) {
+                return null;
+            }
+            if (!DATASOURCE_METHODS.contains(method)) {
+                return "Action không tồn tại: " + method;
+            }
+            return validateDatasource(method, request);
+        }
+        if (path.startsWith(CHART_PREFIX)) {
+            String method = extractMethod(path, CHART_PREFIX);
+            if (method == null) {
+                return null;
+            }
+            if (!CHART_METHODS.contains(method)) {
+                return "Action không tồn tại: " + method;
+            }
+            // storeData da tra 200 voi moi input (chartData null -> return
+            // som, _width/_height chi doc khi co chartData) nen khong chan.
+            return null;
+        }
+        return null;
+    }
+
+    // DS676: datasource theo method. loadBuildinDatasources khong can tham
+    // so; testConnection tu bat Exception tra JSON 200 nen khong chan.
+    private static String validateDatasource(String method, HttpServletRequest request) {
+        switch (method) {
+            case "loadBuildinDatasources":
+            case "testConnection":
+                return null;
+            case "loadMethods": {
+                if (isBlank(request.getParameter("beanId"))) {
+                    return "Thiếu tham số bắt buộc: beanId";
+                }
+                return null;
+            }
+            case "buildClass": {
+                if (isBlank(request.getParameter("clazz"))) {
+                    return "Thiếu tham số bắt buộc: clazz";
+                }
+                return null;
+            }
+            case "buildDatabaseTables": {
+                return validateDatasourceConnection(request);
+            }
+            case "buildFields":
+            case "previewData": {
+                String connError = validateDatasourceConnection(request);
+                if (connError != null) {
+                    return connError;
+                }
+                if (isBlank(request.getParameter("sql"))) {
+                    return "Thiếu tham số bắt buộc: sql";
+                }
+                return validateDatasourceParameters(request.getParameter("parameters"));
+            }
+            default:
+                return null;
+        }
+    }
+
+    // DS676: buildConnection cua jar: type == "jdbc" thi doc driver/url/
+    // username/password (driver null -> NPE, url null -> SQLException,
+    // username null -> driver dung user mac dinh, sai password -> 500);
+    // type khac "jdbc" thi nhanh buildin, doc name (name null -> NPE).
+    // Password khong bat buoc (password rong la hop le).
+    private static String validateDatasourceConnection(HttpServletRequest request) {
+        String type = request.getParameter("type");
+        if (isBlank(type)) {
+            return "Thiếu tham số bắt buộc: type";
+        }
+        if ("jdbc".equals(type)) {
+            if (isBlank(request.getParameter("driver"))) {
+                return "Thiếu tham số bắt buộc: driver";
+            }
+            if (isBlank(request.getParameter("url"))) {
+                return "Thiếu tham số bắt buộc: url";
+            }
+            if (isBlank(request.getParameter("username"))) {
+                return "Thiếu tham số bắt buộc: username";
+            }
+            return null;
+        }
+        if (isBlank(request.getParameter("name"))) {
+            return "Thiếu tham số bắt buộc: name";
+        }
+        return null;
+    }
+
+    // DS676: buildParameters cua jar parse parameters bang codehaus Jackson
+    // thanh List<Map>, roi deref tung phan tu: name/type .toString() (thieu
+    // -> NPE), DataType.valueOf(type) (type la -> IAE, servlet tho -> 500),
+    // defaultValue cast (String) (khong phai chuoi -> ClassCastException),
+    // phan tu khong phai Map -> ClassCastException, "null" -> List null
+    // -> NPE. Filter kiem tra dung hinh dang do truoc khi jar doc.
+    private static String validateDatasourceParameters(String parameters) {
+        if (isBlank(parameters)) {
+            return null;
+        }
+        try {
+            org.codehaus.jackson.map.ObjectMapper mapper =
+                    new org.codehaus.jackson.map.ObjectMapper();
+            Object parsed = mapper.readValue(parameters, java.util.ArrayList.class);
+            if (!(parsed instanceof java.util.List)) {
+                return "Tham số parameters không hợp lệ";
+            }
+            for (Object element : (java.util.List<?>) parsed) {
+                if (!(element instanceof java.util.Map)) {
+                    return "Tham số parameters không hợp lệ";
+                }
+                java.util.Map<?, ?> item = (java.util.Map<?, ?>) element;
+                if (item.get("name") == null) {
+                    return "Tham số parameters không hợp lệ: thiếu name";
+                }
+                Object type = item.get("type");
+                if (type == null) {
+                    return "Tham số parameters không hợp lệ: thiếu type";
+                }
+                try {
+                    com.bstek.ureport.definition.datasource.DataType.valueOf(
+                            String.valueOf(type));
+                } catch (IllegalArgumentException e) {
+                    return "Tham số parameters không hợp lệ: type không tồn tại";
+                }
+                Object defaultValue = item.get("defaultValue");
+                if (defaultValue != null && !(defaultValue instanceof String)) {
+                    return "Tham số parameters không hợp lệ: defaultValue phải là chuỗi";
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            return "Tham số parameters không phải JSON hợp lệ";
         }
     }
 
