@@ -29,6 +29,19 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
 	@Override
 	@Transactional(readOnly = false)
 	public Department save(Department department) {
+        // DS685: fail-closed 400 khi ten khoa/phong rong. Generic /save da
+        // 400 nho @Valid (@NotNull + @Length(min=1) tren Department.getName,
+        // DS80) nhung bulkInsert/bulkUpdate khong co @Valid (CrudController
+        // :162/:174) va chay vong lap qua save() nay, nen name "" lot qua
+        // mapper verbatim: bulkInsert tao dong rac ten rong, bulkUpdate xoa
+        // trang dong da co (probe DS685 B1/B3). Guard o day phu ca 3 duong
+        // (save don + bulkInsert + bulkUpdate, cung nhu saveWithFile neu co
+        // sau nay); null van 400 o bulk nho handler rang buoc DB, nhung
+        // chan som o day cho thong bao ro + khong ghi gi. Dung message
+        // giong @NotNull tren entity. " " cung chan (isBlank).
+        if (department == null || StringUtils.isBlank(department.getName())) {
+            throw new ServiceException("Tên khoa/phòng không được để trống");
+        }
         // DS80: sort NOT NULL nhung form co the khong gui; mac dinh 0 theo
         // mau CompanyService (company.setSort(0)) thay vi 500 o cot sort.
         if (department.getSort() == null) {
