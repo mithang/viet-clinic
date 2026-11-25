@@ -163,6 +163,17 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     @Override
     @Transactional(readOnly = false)
     public Company save(Company company) {
+        // DS694: ten cong ty trong/rong khoang trang truoc day ghi duoc
+        // qua cac duong khong @Valid (POST /org/tenant/save -> saveTenant,
+        // saveWithFile parse tu String): ''/'   ' -> 200 + dong org_company
+        // rac (name ''), trong khi generic /org/company/save da 400 nho
+        // @NotNull + @Length(min=1) tren entity. null da 400 nho bean
+        // validation o CrudService (probe T1/T4). Guard fail-closed 400
+        // o day phu ca 3 duong; duong provision phong kham da guard ten
+        // trong o ClinicService truoc khi goi save() nen khong doi.
+        if (company != null && StringUtils.isBlank(company.getName())) {
+            throw new ServiceException("Tên công ty không được để trống");
+        }
         // DS156 A: fileId la String nhung cot file_id la bigint; fileId
         // tu che khong phai so nguyen truoc day 500 o mapper update
         // (Incorrect integer value) ngay ca khi khong co file dinh kem
@@ -207,7 +218,10 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         if (company == null) {
             throw new ServiceException("Công ty không được để trống");
         }
-        if (company.getName() == null) {
+        // DS694: bulk* chi check null (DS145) nen name ''/'   ' van ghi
+        // duoc dong rac / xoa trang dong da co; doi thanh isBlank cho
+        // name (cac truong khac giu null-only theo hop dong DS145).
+        if (StringUtils.isBlank(company.getName())) {
             throw new ServiceException("Tên công ty không được để trống");
         }
         if (company.getSort() == null) {
