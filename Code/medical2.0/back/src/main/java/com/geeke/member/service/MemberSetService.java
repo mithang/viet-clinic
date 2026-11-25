@@ -75,6 +75,21 @@ public class MemberSetService extends CrudService<MemberSetDao, MemberSet>{
        checkMemberSetStatusValues(memberSet);
        // DS416: chan type gia mao (xem checkMemberSetTypeValues).
        checkMemberSetTypeValues(memberSet);
+       // DS711: cascade memberItem [null] truoc day NPE 500 o vong for
+       // ben duoi (insert :102 memberItem.getName(), update :144
+       // memberItem.setId(null)); DS641 chi guard [null] o
+       // bulkInsert/bulkUpdate, khong cham save() cascade. Tien kiem
+       // TOAN BO list truoc moi ghi (mau N1/DS641) de khong ghi nua
+       // voi khi gap phan tu null; [{}] da 400 qua
+       // checkMemberItemRequired o memberItemService.save.
+       if (memberSet.getMemberItem() != null) {
+           for (MemberItem memberItem : memberSet.getMemberItem()) {
+               if (memberItem == null) {
+                   throw new ServiceException(
+                           "Chi tiết thẻ hội viên không được để trống");
+               }
+           }
+       }
        if(StringUtils.isBlank(memberSet.getId())){
            // ITER64 item 1: this insert branch bypassed super.save, so the
            // generic insert guard does not cover it. Verify BEFORE
