@@ -71,6 +71,17 @@ public class RemoteDiagnosisTreatmentService extends CrudService<PatientDao, Pat
             throw new ServiceException("Chẩn đoán từ xa không được để trống");
         }
         if (StringUtils.isBlank(entity.getId())) {
+            // DS692: tao moi khong co ten benh nhan -> 200 + dong
+            // remote_diagnosis rong (name NULL, DS659 da chung minh
+            // live {} tao dong rac; form that patientForm.vue de
+            // name: "" va rule required bi comment-out nen trong
+            // van gui duoc). Dong khong ten khong tim duoc theo
+            // name o list, khong xac dinh duoc benh nhan. Fail-closed
+            // 400; nhanh update khong guard (diagnosisUpdate chi
+            // ghi status, khong cham name).
+            if (StringUtils.isBlank(entity.getName())) {
+                throw new ServiceException("Tên bệnh nhân không được để trống");
+            }
             if (entity.getCompany() == null
                     || StringUtils.isBlank(entity.getCompany().getId())) {
                 String tenantId = SessionUtils.getLoginTenantId();
