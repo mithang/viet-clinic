@@ -302,6 +302,25 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
     // moi ghi, canh checkCompanyDateOrder (DS263): expireDate ==
     // startUseDate giu hop le, mot trong hai null giu hop le (cot
     // nullable, phong kham khong gioi han thoi gian).
+    // DS688: bulkInsert/bulkUpdate chi guard thu tu ngay (DS290); name /
+    // phoneNumber blank (""/" ") di qua CrudService generic + mapper
+    // bulkUpdate ghi verbatim qua CASE -> 200 + dong rac / xoa trang dong
+    // da luu (probe pre: B1-B4 + U1-U4 deu 200). Omit thi 400 san nho
+    // validation, nhung ""/" " thi khong. Guard fail-closed 400 truoc
+    // moi ghi, cung message o ca 3 duong (save(Clinic) la choke point
+    // noi bo, bulkInsert/bulkUpdate la duong API truc tiep).
+    private static void checkClinicBlankFields(Clinic clinic) {
+        if (clinic == null) {
+            return;
+        }
+        if (StringUtils.isBlank(clinic.getName())) {
+            throw new ServiceException("Tên phòng khám không được để trống");
+        }
+        if (StringUtils.isBlank(clinic.getPhoneNumber())) {
+            throw new ServiceException("Số điện thoại phòng khám không được để trống");
+        }
+    }
+
     private static void checkClinicDateOrder(Clinic clinic) {
         if (clinic == null) {
             return;
@@ -319,6 +338,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         // goi truc tiep (ClinicController.save nhan Company), nhung la
         // choke point neu caller noi bo dung; guard cung cap ngay nhu bulk.
         checkClinicDateOrder(clinic);
+        checkClinicBlankFields(clinic);
         return super.save(clinic);
     }
 
@@ -330,6 +350,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         if (entitys != null) {
             for (Clinic clinic : entitys) {
                 checkClinicDateOrder(clinic);
+                checkClinicBlankFields(clinic);
             }
         }
         return super.bulkInsert(entitys);
@@ -343,6 +364,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         if (entitys != null) {
             for (Clinic clinic : entitys) {
                 checkClinicDateOrder(clinic);
+                checkClinicBlankFields(clinic);
             }
         }
         return super.bulkUpdate(entitys);
