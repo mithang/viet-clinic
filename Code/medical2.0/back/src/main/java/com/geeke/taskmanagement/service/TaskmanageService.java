@@ -90,6 +90,30 @@ public class TaskmanageService {
         }
     }
 
+    // DS681: ten + mo ta nhiem vu la bat buoc o form tao
+    // (addtaskForm.vue rules: tasktype/taskname/taskdescribe/
+    // taskdeadline/taskregion deu required) nhung 3 duong tao --
+    // save() countId "0" (phat hanh, status "1"), storage()
+    // countId "0" (ban nhap, status "0"), inserttask() JSON --
+    // deu ghi verbatim qua mapper insertask nen {} / thieu ten /
+    // thieu mo ta tao dong rac khong ten, khong mo ta, khong
+    // nguoi thuc hien. Fail-closed 400, chi guard DUONG TAO:
+    // null/blank mot trong hai truong deu chan (cot nullable nen
+    // DB khong chan). Deadline-null giu hop le theo DS305,
+    // taskregion-null giu hop le theo DS88 (draft chua gan phong
+    // kham); tasktype khong guard o day (DS381 BLOCKED, giu rieng).
+    private static void checkTaskNameAndDescribeRequired(taskmanagement task) {
+        if (task == null) {
+            return;
+        }
+        if (StringUtils.isBlank(task.getTaskname())) {
+            throw new ServiceException("Tên nhiệm vụ không được để trống");
+        }
+        if (StringUtils.isBlank(task.getTaskdescribe())) {
+            throw new ServiceException("Mô tả nhiệm vụ không được để trống");
+        }
+    }
+
     private void checkTaskOwnership(String id) {
         if (id == null || id.isEmpty()) {
             return;
@@ -124,6 +148,7 @@ public class TaskmanageService {
     @Transactional
     public int inserttask(taskmanagement task)  {
         checkTaskDeadlineNotPast(task); // DS305
+        checkTaskNameAndDescribeRequired(task); // DS681
         checkTaskManagementTaskstatusValues(task); // DS459
         task.setID(IdGen.uuid());
         task.setCompanyId(SessionUtils.getUser().getCompany().getId());
@@ -188,6 +213,7 @@ public class TaskmanageService {
         }else {
             if(Objects.equals("0",counId)){
                 checkTaskDeadlineNotPast(task); // DS305
+                checkTaskNameAndDescribeRequired(task); // DS681
                 task.setID(IdGen.uuid());
                 // L3 (iteration 59): guard deleteIds truoc moi upload/xoa/ghi, mau K5/K7.
                 // checkTaskOwnership chi guard DONG task, khong guard file; file dinh kem
@@ -450,6 +476,7 @@ public class TaskmanageService {
 
        }else {
            if(Objects.equals("0",countId)){
+               checkTaskNameAndDescribeRequired(task); // DS681
                task.setID(IdGen.uuid());
                // L3 (iteration 59): guard deleteIds bang {task id vua sinh} truoc moi
                // upload/xoa/ghi, mau K5/K7; guard dat sau setID nhung truoc moi delete.
