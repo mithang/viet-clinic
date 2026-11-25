@@ -167,6 +167,24 @@ import org.springframework.stereotype.Component;
  *   SQL hop le cua bao cao that; can khao sat SQL that trong
  *   ureport_file truoc khi chan.
  *
+ * DS680: CALL toi procedure khong ton tai -> jar CallableStatement
+ * nem SQLException 500 'PROCEDURE ... does not exist' (I6/K7,
+ * buildin + jdbc, ke ca schema prefix/backtick/hoa-thuong/khong
+ * ngoac). Fix: sau validateSqlShape, neu tu khoa dau la CALL thi
+ * kiem tra ton tai qua DatabaseMetaData.getProcedures (CHI doc
+ * metadata, KHONG chay procedure) tren dung ket noi dich (buildin:
+ * Utils.getBuildinConnection(name) tra connection moi tu pool,
+ * dong ngay; jdbc: ket noi thu nhu DS678, dong ngay); ten proc lay
+ * sau CALL tren sql GOC (strip giu nguyen do dai nen vi tri khop),
+ * bo schema prefix, xu ly backtick tung phan. Ten procedure MySQL
+ * khong phan biet hoa/thuong (kiem chung live: CALL
+ * DS680_TEST_PROC() -> 200) nen doi chieu equalsIgnoreCase; ten
+ * truyen dang LIKE pattern nen escape \, % , _. Khong doc duoc
+ * ten / khong mo duoc ket noi / metadata loi -> giu hanh vi cu
+ * (khong chan) de khong vo luong dung; chi chan 400 khi metadata
+ * tra ve va khong co dong nao khop ten. Luong dung giu 200: CALL
+ * proc ton tai (buildin + jdbc, schema prefix, backtick, hoa/thuong).
+ *
  * DS679: khao sat SQL that trong ureport_file (7 bao cao, tools/
  * ds679-sql-survey.log): KHONG co dataset SQL nao — tat ca dataset
  * deu type="bean" (spring bean dataBean, method buildReport/
@@ -190,9 +208,9 @@ import org.springframework.stereotype.Component;
  * (ghi file — khong probe live, chan theo thiet ke); cam "${"
  * (jar NPE); moi :name phai co trong parameters. Luong dung giu
  * 200: select/show/describe/explain/with/select co ';' trong
- * string/comment dau, :name da khai bao. CALL toi procedure khong
- * ton tai van 500 (I6) — can kiem tra ton tai qua DatabaseMetaData,
- * de DS680.
+ * string/comment dau, :name da khai bao. DS680 them: CALL toi
+ * procedure khong ton tai (I6) -> 400 qua kiem tra DatabaseMetaData
+ * (xem them o tren); CALL proc ton tai giu 200.
  */
 @Component
 public class UReportParamFilter implements Filter,
@@ -508,8 +526,15 @@ public class UReportParamFilter implements Filter,
                 if (paramsError != null) {
                     return paramsError;
                 }
-                return validateSqlShape(request.getParameter("sql"),
+                String sqlError = validateSqlShape(request.getParameter("sql"),
                         request.getParameter("parameters"));
+                if (sqlError != null) {
+                    return sqlError;
+                }
+                // DS680: CALL toi procedure khong ton tai -> 400
+                // (kiem tra metadata, khong chay procedure).
+                return validateCallProcedure(request,
+                        request.getParameter("sql"));
             }
             default:
                 return null;
@@ -656,6 +681,174 @@ public class UReportParamFilter implements Filter,
             return false;
         } catch (Exception e) {
             return true;
+        }
+    }
+
+    // DS680: mo ket noi JDBC bang tham so client dua (nhu
+    // jdbcConnectionWorks cua DS678) de doc metadata; nguoi goi
+    // dong. Tra null neu mo that bai.
+    private static java.sql.Connection openJdbcConnection(String driver, String url,
+            String username, String password) {
+        try {
+            Class.forName(driver);
+            java.util.Properties props = new java.util.Properties();
+            props.setProperty("user", username);
+            if (password != null) {
+                props.setProperty("password", password);
+            }
+            props.setProperty("connectTimeout", "3000");
+            props.setProperty("socketTimeout", "5000");
+            java.sql.Driver drv = java.sql.DriverManager.getDriver(url);
+            return drv.connect(url, props);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // DS680: CALL toi procedure khong ton tai -> jar CallableStatement
+    // nem SQLException 500 'PROCEDURE ... does not exist' (I6/K7).
+    // Kiem tra ton tai truoc bang DatabaseMetaData.getProcedures
+    // (CHI doc metadata, KHONG chay procedure) tren dung ket noi
+    // dich. Ten proc lay sau tu khoa CALL tren sql GOC (strip giu
+    // nguyen do dai nen vi tri khop): bo schema prefix, xu ly
+    // backtick tung phan. Khong phai CALL -> null (khong chan).
+    // Khong doc duoc ten -> 400 (CALL khong ten thi jar cung 500);
+    // khong mo duoc ket noi / metadata loi -> null = giu hanh vi cu.
+    // Chi chan 400 khi metadata tra ve va khong co dong nao khop ten.
+    private static String validateCallProcedure(HttpServletRequest request, String sql) {
+        String clean = stripSqlStringsAndComments(sql);
+        int pos = skipSqlBlanks(clean, 0);
+        int start = pos;
+        while (pos < clean.length() && Character.isLetter(clean.charAt(pos))) {
+            pos++;
+        }
+        if (start == pos
+                || !"CALL".equalsIgnoreCase(clean.substring(start, pos))) {
+            return null;
+        }
+        String[] part = new String[1];
+        int p = skipSqlBlanks(sql, pos);
+        p = readCallNamePart(sql, p, part);
+        if (p < 0) {
+            return "Tên procedure không hợp lệ: CALL";
+        }
+        String schema = null;
+        String name = part[0];
+        p = skipSqlBlanks(sql, p);
+        if (p < sql.length() && sql.charAt(p) == '.') {
+            schema = name;
+            p = readCallNamePart(sql, skipSqlBlanks(sql, p + 1), part);
+            if (p < 0) {
+                return "Tên procedure không hợp lệ: CALL";
+            }
+            name = part[0];
+            p = skipSqlBlanks(sql, p);
+            if (p < sql.length() && sql.charAt(p) == '.') {
+                return "Tên procedure không hợp lệ: CALL";
+            }
+        }
+        if (!procedureExists(request, schema, name)) {
+            return "Procedure không tồn tại: " + name;
+        }
+        return null;
+    }
+
+    // DS680: doc 1 phan ten (schema hoac proc) tai pos: `ten` (``
+    // la backtick escape) hoac ten tran [A-Za-z0-9_$]+. Tra vi tri
+    // ngay sau phan ten, -1 neu khong co ten; ten vao out[0] (bo
+    // backtick). Ten rong (``) van chap nhan o day — metadata se
+    // khong tim thay -> 400 o buoc sau.
+    private static int readCallNamePart(String sql, int pos, String[] out) {
+        int n = sql.length();
+        if (pos >= n) {
+            return -1;
+        }
+        if (sql.charAt(pos) == '`') {
+            StringBuilder sb = new StringBuilder();
+            int i = pos + 1;
+            while (i < n) {
+                char c = sql.charAt(i);
+                if (c == '`') {
+                    if (i + 1 < n && sql.charAt(i + 1) == '`') {
+                        sb.append('`');
+                        i += 2;
+                    } else {
+                        out[0] = sb.toString();
+                        return i + 1;
+                    }
+                } else {
+                    sb.append(c);
+                    i++;
+                }
+            }
+            return -1;
+        }
+        int begin = pos;
+        while (pos < n) {
+            char c = sql.charAt(pos);
+            if (Character.isLetterOrDigit(c) || c == '_' || c == '$') {
+                pos++;
+            } else {
+                break;
+            }
+        }
+        if (begin == pos) {
+            return -1;
+        }
+        out[0] = sql.substring(begin, pos);
+        return pos;
+    }
+
+    // DS680: procedure co ton tai khong (chi doc metadata). catalog:
+    // schema trong CALL neu co, neu khong thi catalog cua ket noi.
+    // Ten truyen dang LIKE pattern nen escape \, % , _; doi chieu
+    // them bang equalsIgnoreCase tren PROCEDURE_NAME tra ve (ten
+    // procedure MySQL khong phan biet hoa/thuong). Ket noi buildin
+    // la connection moi tu pool (TestBuildinDatasource.getConnection
+    // = dataSource.getConnection()) nen dong ngay; ket noi jdbc mo
+    // thu cung dong ngay. Ket noi null hoac loi metadata -> true =
+    // giu hanh vi cu.
+    private static boolean procedureExists(HttpServletRequest request,
+            String schema, String procName) {
+        java.sql.Connection conn = null;
+        boolean closeConnection = false;
+        try {
+            String type = request.getParameter("type");
+            if ("jdbc".equals(type)) {
+                conn = openJdbcConnection(request.getParameter("driver"),
+                        request.getParameter("url"),
+                        request.getParameter("username"),
+                        request.getParameter("password"));
+                closeConnection = true;
+            } else {
+                conn = com.bstek.ureport.Utils.getBuildinConnection(
+                        request.getParameter("name"));
+                closeConnection = true;
+            }
+            if (conn == null) {
+                return true;
+            }
+            String catalog = schema != null ? schema : conn.getCatalog();
+            String pattern = procName.replace("\\", "\\\\")
+                    .replace("%", "\\%").replace("_", "\\_");
+            java.sql.DatabaseMetaData meta = conn.getMetaData();
+            try (java.sql.ResultSet rs = meta.getProcedures(catalog, null, pattern)) {
+                while (rs.next()) {
+                    if (procName.equalsIgnoreCase(rs.getString("PROCEDURE_NAME"))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            return true;
+        } finally {
+            if (closeConnection && conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 
