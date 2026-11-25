@@ -58,6 +58,24 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
         throw new ServiceException("Cấu hình hệ thống chỉ sửa từng mục qua trang Cài đặt, không hỗ trợ xóa trực tiếp!");
     }
 
+    // DS684: generic /save and saveWithFile (UI path, Sys/index.vue
+    // handleSysSave sends the full row with no required rule) accepted
+    // blank/missing sysName/sysAbbrname -> 200 + the singleton global
+    // config row blanked/NULLED (mapper `update` SETs both verbatim,
+    // no <if>; probe A1/A3/A5/A7). The login page falls back to
+    // 'Phòng khám đám mây' for an empty sysName and sets an empty web
+    // title from sysAbbrname, so the stored row must keep both names.
+    // Fail-closed 400, checked BEFORE any write in both save paths.
+    // loginLayout NOT guarded (DS401/DS484/DS505 LOCKED).
+    private void checkSysNameAndAbbrnameRequired(SysSeting entity) {
+        if (StringUtils.isBlank(entity.getSysName())) {
+            throw new ServiceException("Tên hệ thống không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getSysAbbrname())) {
+            throw new ServiceException("Tên viết tắt hệ thống không được để trống");
+        }
+    }
+
     // DS180: generic /save (CrudController.save) truoc day khong co
     // override save don nen ghost id 200 silent no-op nhu saveWithFile
     // (lop DS94/DS99); chi chap nhan update khi dong da ton tai.
@@ -68,6 +86,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
         if (entity == null) {
             throw new ServiceException("Cài đặt hệ thống không được để trống");
         }
+        checkSysNameAndAbbrnameRequired(entity);
         if (StringUtils.isNotBlank(entity.getId()) && super.get(entity.getId()) == null) {
             throw new ServiceException("Cài đặt hệ thống không tồn tại: " + entity.getId());
         }
@@ -85,6 +104,7 @@ public class SysSetingService extends CrudService<SysSetingDao, SysSeting> {
         if (entity == null) {
             throw new ServiceException("Cài đặt hệ thống không được để trống");
         }
+        checkSysNameAndAbbrnameRequired(entity);
         if (StringUtils.isNotBlank(entity.getId()) && super.get(entity.getId()) == null) {
             throw new ServiceException("Cài đặt hệ thống không tồn tại: " + entity.getId());
         }

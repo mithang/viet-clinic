@@ -131,7 +131,11 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
      * NOT NULL ở sys_param_config; mapper bulk ghi trực tiếp) nên hàng
      * thiếu trường 500 ở DB (probe B2/B3/B7; tiền lệ DS99/DS100). Ghi đè
      * ở đây để fail-closed 400 trước mọi ghi: danh sách null/rỗng, trường
-     * bắt buộc. category/config_value nullable nên không kiểm tra.
+     * bắt buộc. category nullable nên không kiểm tra.
+     * DS684: configValue nay CUNG bat buoc o day (parity voi save() cua
+     * DS683): bulkInsert/bulkUpdate voi configValue ""/thieu truoc day
+     * 200 + dong rac "" / NULL (probe B1/B2/B3) trong khi save() don da
+     * 400 tu DS683; gia tri live nuoi phi dang ky mac dinh.
      * bulkUpdate thêm kiểm tra id rỗng/không tồn tại (mapper CASE chạm 0
      * dòng mà vẫn 200 — probe B4, họ DS94/DS99). bulkDelete chỉ chặn danh
      * sách null/rỗng; id không tồn tại giữ 200 rows 0 IDEMPOTENT theo
@@ -147,6 +151,9 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
         }
         if (StringUtils.isBlank(entity.getCompanyId())) {
             throw new ServiceException("Công ty của cấu hình tham số không được để trống");
+        }
+        if (StringUtils.isBlank(entity.getConfigValue())) {
+            throw new ServiceException("Giá trị cấu hình không được để trống");
         }
     }
 
