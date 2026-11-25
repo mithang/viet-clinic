@@ -123,6 +123,16 @@ import org.springframework.stereotype.Component;
  *   directory listing classpath — info disclosure, de vong sau quyet).
  * Ten hop le nhung noi dung rac giu hanh vi cu (DS675: script rac 200).
  *
+ * DS701: XML hop le nhung dataset/bean/method ben trong ghost ->
+ * jar 500 khi tinh toan (pdf/loadData): dataset-value tro toi
+ * dataset chua dinh nghia -> DatasetUndefinitionException; dataset
+ * bean tro toi bean khong ton tai -> NoSuchBeanDefinitionException;
+ * method khong ton tai -> NoSuchMethodException; clazz khong ton
+ * tai -> ClassNotFoundException. Filter kiem tra truoc khi tinh
+ * toan (export + preview sub-method, doc XML da luu) va ngay khi
+ * luu (saveReportFile/savePreviewData) -> 400; XML khong parse
+ * duoc thi giu hanh vi cu.
+ *
  * DS678: hai ho con lai cua cung thu vien jar, xac nhan live bang probe
  * tools/ds678-pre.py + ds678-pre-h.py (F1-F15, G1-G5, H1-H6):
  * - Res lo toan bo classpath (F1-F7, F10): ResourceLoaderServletAction
@@ -309,6 +319,16 @@ public class UReportParamFilter implements Filter,
             sendBadRequest(response, "Báo cáo không tồn tại: _u");
             return;
         }
+        // DS701: bao cao ton tai nhung dataset/bean/method ben trong
+        // ghost -> jar 500 khi tinh toan (pdf/excel/word); chan 400.
+        if (EXPORT_PATHS.contains(path) && request.getParameter("_u") != null) {
+            String datasetError = validateStoredReport(request.getParameter("_u"));
+            if (datasetError != null) {
+                logger.warn("UReport {} {}: {}", request.getMethod(), path, datasetError);
+                sendBadRequest(response, datasetError);
+                return;
+            }
+        }
         // DS677: image _key la / res khong path hoac path la.
         String imageResError = validateImageRes(path, request);
         if (imageResError != null) {
@@ -373,7 +393,9 @@ public class UReportParamFilter implements Filter,
                 if (!isValidReportXml(content)) {
                     return "Nội dung báo cáo không phải XML ureport hợp lệ";
                 }
-                return null;
+                // DS701: dataset/bean/method ghost -> jar 500 khi tinh
+                // toan; chan ngay tu luc luu.
+                return validateReportDatasets(content);
             }
             case "saveReportFile": {
                 if (isBlank(request.getParameter("file"))) {
@@ -386,7 +408,9 @@ public class UReportParamFilter implements Filter,
                 if (!isValidReportXml(content)) {
                     return "Nội dung báo cáo không phải XML ureport hợp lệ";
                 }
-                return null;
+                // DS701: giong savePreviewData (dataset/bean/method
+                // ghost -> jar 500 khi tinh toan).
+                return validateReportDatasets(content);
             }
             case "loadReport":
             case "deleteReportFile": {
@@ -453,7 +477,11 @@ public class UReportParamFilter implements Filter,
             if (!reportExists(request.getParameter("_u"))) {
                 return "Báo cáo không tồn tại: _u";
             }
-            return null;
+            // DS701: dataset/bean/method ghost ben trong bao cao
+            // -> jar 500 khi tinh toan (loadData/loadPrintPages/
+            // loadPagePaper); chan 400. Trang preview goc khong
+            // tinh toan nen khong chan o day.
+            return validateStoredReport(request.getParameter("_u"));
         }
         if (path.startsWith(DATASOURCE_PREFIX)) {
             String method = extractMethod(path, DATASOURCE_PREFIX);
@@ -942,6 +970,142 @@ public class UReportParamFilter implements Filter,
             }
         }
         return false;
+    }
+
+    // DS701: doc noi dung XML bao cao da luu (giong reportExists
+    // nhung tra ve chuoi, null khi khong doc duoc -> giu hanh vi cu).
+    private static String loadReportXml(String file) {
+        java.util.Collection<com.bstek.ureport.provider.report.ReportProvider> providers =
+                getReportProviders();
+        if (providers == null) {
+            return null;
+        }
+        for (com.bstek.ureport.provider.report.ReportProvider provider : providers) {
+            if (provider.disabled()) {
+                continue;
+            }
+            String prefix = provider.getPrefix();
+            if (prefix != null && file.startsWith(prefix)) {
+                try {
+                    java.io.InputStream in = provider.loadReport(file);
+                    if (in == null) {
+                        return null;
+                    }
+                    try {
+                        java.io.ByteArrayOutputStream out =
+                                new java.io.ByteArrayOutputStream();
+                        byte[] buf = new byte[4096];
+                        int n;
+                        while ((n = in.read(buf)) != -1) {
+                            out.write(buf, 0, n);
+                        }
+                        return out.toString("UTF-8");
+                    } finally {
+                        try {
+                            in.close();
+                        } catch (java.io.IOException ignored) {
+                        }
+                    }
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+    // DS701: kiem tra bao cao da luu truoc khi tinh toan (export /
+    // preview sub-method): doc XML, neu khong doc duoc thi giu
+    // hanh vi cu (null). Tra msg loi, null neu hop le.
+    private static String validateStoredReport(String file) {
+        String xml = loadReportXml(file);
+        if (xml == null) {
+            return null;
+        }
+        return validateReportDatasets(xml);
+    }
+
+    // DS701: moi dataset-value phai tro toi dataset da dinh nghia;
+    // moi dataset bean phai co bean ton tai + method (String, String,
+    // Map) + clazz ton tai (jar nem DatasetUndefinitionException /
+    // NoSuchBeanDefinitionException / NoSuchMethodException /
+    // ClassNotFoundException -> 500 khi tinh toan). XML khong parse
+    // duoc -> null (giu hanh vi cu; save da chan XML hong o DS675).
+    private static String validateReportDatasets(String xml) {
+        org.w3c.dom.Document doc;
+        try {
+            javax.xml.parsers.DocumentBuilderFactory factory =
+                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setXIncludeAware(false);
+            factory.setExpandEntityReferences(false);
+            factory.setNamespaceAware(false);
+            javax.xml.parsers.DocumentBuilder builder = factory.newDocumentBuilder();
+            doc = builder.parse(new java.io.ByteArrayInputStream(
+                    xml.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            return null;
+        }
+        java.util.Set<String> defined = new java.util.HashSet<>();
+        org.w3c.dom.NodeList datasets = doc.getElementsByTagName("dataset");
+        for (int i = 0; i < datasets.getLength(); i++) {
+            org.w3c.dom.Element ds = (org.w3c.dom.Element) datasets.item(i);
+            String name = ds.getAttribute("name");
+            if (name != null && !name.trim().isEmpty()) {
+                defined.add(name);
+            }
+        }
+        org.w3c.dom.NodeList values = doc.getElementsByTagName("dataset-value");
+        for (int i = 0; i < values.getLength(); i++) {
+            org.w3c.dom.Element v = (org.w3c.dom.Element) values.item(i);
+            String name = v.getAttribute("dataset-name");
+            if (name == null || name.trim().isEmpty()
+                    || !defined.contains(name)) {
+                return "Dataset không tồn tại: " + name;
+            }
+        }
+        for (int i = 0; i < datasets.getLength(); i++) {
+            org.w3c.dom.Element ds = (org.w3c.dom.Element) datasets.item(i);
+            if (!"bean".equals(ds.getAttribute("type"))) {
+                continue;
+            }
+            String clazz = ds.getAttribute("clazz");
+            if (clazz != null && !clazz.trim().isEmpty()
+                    && !classExists(clazz)) {
+                return "Class không tồn tại: " + clazz;
+            }
+            org.w3c.dom.Node parent = ds.getParentNode();
+            if (parent == null || !"datasource".equals(parent.getNodeName())) {
+                continue;
+            }
+            org.w3c.dom.Element src = (org.w3c.dom.Element) parent;
+            String bean = src.getAttribute("bean");
+            if (bean == null || bean.trim().isEmpty()) {
+                continue;
+            }
+            if (!beanExists(bean)) {
+                return "Bean không tồn tại: " + bean;
+            }
+            String method = ds.getAttribute("method");
+            if (method == null || method.trim().isEmpty()) {
+                continue;
+            }
+            try {
+                Class<?> beanClass = applicationContext.getType(bean);
+                if (beanClass == null) {
+                    continue;
+                }
+                beanClass.getMethod(method, String.class, String.class,
+                        java.util.Map.class);
+            } catch (NoSuchMethodException e) {
+                return "Method không tồn tại: " + bean + "." + method;
+            } catch (Exception e) {
+                continue;
+            }
+        }
+        return null;
     }
 
     // DS676: buildParameters cua jar parse parameters bang codehaus Jackson
