@@ -195,6 +195,10 @@ public class SysSetingController extends CrudController<SysSetingService, SysSet
             }
         }
         SysFileContent sysFileContent = sysFileContentService.get(id);
+        // DS698: content khong ton tai -> 404 thay vi 200 body rong
+        // (method ket thuc lang le khi sysFileContent == null). Parity
+        // M5 o filedownload cung controller + getPhoto/getFiled (DS669).
+        if (sysFileContent == null) { response.setStatus(HttpServletResponse.SC_NOT_FOUND); return; }
         if (sysFileContent != null) {
             // DS669 REWORK: byte NULL -> 404 thay vi NPE 500 o
             // os.write(null) ben duoi (parity M5 content-missing).
