@@ -70,6 +70,66 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
         return super.delete(entity);
     }
 
+    // DS690: bulkInsert/bulkUpdate chi duoc CrudService generic bao ve
+    // tenant/null-id, khong kiem tra phieu cha: bulkInsert voi
+    // inventory_verification_id gia -> 200 + dong mo coi (khong FK,
+    // khong ton tai phieu); bulkUpdate doi phieu cua dong da luu sang
+    // id gia -> 200 + dong bi re-parent mo coi (probe pre A2/U1).
+    // Omit phieu/company da 400 san nho NOT NULL + handler. Guard
+    // fail-closed 400 truoc moi ghi: thieu company/phieu -> 400,
+    // phieu khong ton tai -> 400, phieu cua tenant khac -> 400
+    // (cung ngu nghia saveAll O2-37/O5-37). UI that khong bi anh
+    // huong: form kiem ke di saveAll, khong qua bulk.
+    private void checkInventoryVerificationDetailRefs(
+            InventoryVerificationDetail detail) {
+        if (detail == null) {
+            return;
+        }
+        if (detail.getCompany() == null
+                || StringUtils.isBlank(detail.getCompany().getId())) {
+            throw new com.geeke.common.service.ServiceException(
+                    "Dòng chi tiết thiếu phòng khám");
+        }
+        if (detail.getInventoryVerification() == null
+                || StringUtils.isBlank(
+                        detail.getInventoryVerification().getId())) {
+            throw new com.geeke.common.service.ServiceException(
+                    "Dòng chi tiết thiếu phiếu kiểm kê");
+        }
+        InventoryVerification parent = inventoryVerificationService.getRaw(
+                detail.getInventoryVerification().getId());
+        if (parent == null) {
+            throw new com.geeke.common.service.ServiceException(
+                    "Phiếu kiểm kê không tồn tại: "
+                    + detail.getInventoryVerification().getId());
+        }
+        verifyTenantOwnership(parent);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkInsert(
+            List<InventoryVerificationDetail> entitys) {
+        if (entitys != null) {
+            for (InventoryVerificationDetail d : entitys) {
+                checkInventoryVerificationDetailRefs(d);
+            }
+        }
+        return super.bulkInsert(entitys);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public List<String> bulkUpdate(
+            List<InventoryVerificationDetail> entitys) {
+        if (entitys != null) {
+            for (InventoryVerificationDetail d : entitys) {
+                checkInventoryVerificationDetailRefs(d);
+            }
+        }
+        return super.bulkUpdate(entitys);
+    }
+
 
     @Autowired
     private InventoryVerificationService inventoryVerificationService;
