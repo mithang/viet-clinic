@@ -32,7 +32,10 @@ import com.geeke.member.service.MemberManagementDetailService;
 import com.geeke.org.entity.ClinicOffice;
 import com.geeke.org.entity.Company;
 import com.geeke.org.service.CompanyService;
+import com.geeke.outpatient.dao.MedicalRecordDao;
+import com.geeke.outpatient.dao.PatientDao;
 import com.geeke.outpatient.dao.RecipelDetailDao;
+import com.geeke.outpatient.dao.RecipelInfoDao;
 import com.geeke.outpatient.entity.*;
 import com.geeke.outpatient.service.*;
 import com.geeke.stock.entity.Drug;
@@ -99,6 +102,12 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
     private final DrugService drugService;
 
     private final TollInfoDao tollInfoDao;
+
+    private final PatientDao patientDao;
+
+    private final RecipelInfoDao recipelInfoDao;
+
+    private final MedicalRecordDao medicalRecordDao;
 
     private final CostItemService costItemService;
 
@@ -215,6 +224,9 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         // nhanh insert cua controller save; company da co giu nguyen
         // (verifyTenantOwnership o super.save van chan company la).
         forceSessionCompanyWhenBlank(tollInfo);
+
+        // DS734: chan FK ma (benh nhan / don thuoc / ca benh) truoc moi ghi.
+        checkTollInfoRefsExist(tollInfo);
 
         TollInfo tollInfoTemp = super.save(tollInfo);
         return tollInfoTemp;
@@ -337,6 +349,47 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
                 && !BizConstants.AMOUNT_STATUS_REFUNDED.equals(value)) {
             throw new ServiceException("Trạng thái phiếu thu không hợp lệ: "
                     + value);
+        }
+    }
+
+    // DS734: fail-closed 400 khi benh nhan / don thuoc / ca benh khong
+    // ton tai. Truoc day save()/bulkInsert/bulkUpdate chi kiem tra do dai /
+    // so tien / mien dict roi ghi thang patient_id/recipel_id/medical_id
+    // vao DB: id ma (vd 999999999999999999) van 200 + dong mo coi (probe
+    // DS734 C1-C3). Khong co FK that tren cac cot nen DB khong chan.
+    // doctor / recipelDetail khong co cot trong bang toll_info (mapper
+    // luoc bo) nen khong guard 2 truong do, giong DS733 (medicalRecord
+    // cua RecipelInfoReview). Null/rong cho qua nhu cu (phieu chi co
+    // amountStatus o nhanh REFUNDED).
+    private void checkTollInfoRefsExist(TollInfo tollInfo) {
+        if (tollInfo == null) {
+            return;
+        }
+        if (tollInfo.getPatient() != null
+                && StringUtils.isNotBlank(tollInfo.getPatient().getId())) {
+            Patient patient = patientDao.get(tollInfo.getPatient().getId());
+            if (patient == null || !"0".equals(patient.getDelFlag())) {
+                throw new ServiceException("Bệnh nhân không tồn tại: "
+                        + tollInfo.getPatient().getId());
+            }
+        }
+        if (tollInfo.getRecipel() != null
+                && StringUtils.isNotBlank(tollInfo.getRecipel().getId())) {
+            RecipelInfo recipel =
+                    recipelInfoDao.get(tollInfo.getRecipel().getId());
+            if (recipel == null || !"0".equals(recipel.getDelFlag())) {
+                throw new ServiceException("Đơn thuốc không tồn tại: "
+                        + tollInfo.getRecipel().getId());
+            }
+        }
+        if (tollInfo.getMedical() != null
+                && StringUtils.isNotBlank(tollInfo.getMedical().getId())) {
+            MedicalRecord medical =
+                    medicalRecordDao.get(tollInfo.getMedical().getId());
+            if (medical == null || !"0".equals(medical.getDelFlag())) {
+                throw new ServiceException("Ca bệnh không tồn tại: "
+                        + tollInfo.getMedical().getId());
+            }
         }
     }
 
@@ -481,6 +534,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             // DS535: chan returnType ngoai mien {0, 1}.
             checkTollInfoReturnTypeValues(tollInfo);
             forceSessionCompanyWhenBlank(tollInfo);
+            // DS734: chan FK ma nhu save().
+            checkTollInfoRefsExist(tollInfo);
         }
         return super.bulkInsert(entitys);
     }
@@ -511,6 +566,8 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             checkTollInfoTollTypeValues(tollInfo);
             // DS535: chan returnType ngoai mien {0, 1}.
             checkTollInfoReturnTypeValues(tollInfo);
+            // DS734: chan FK ma nhu save().
+            checkTollInfoRefsExist(tollInfo);
         }
         return super.bulkUpdate(entitys);
     }

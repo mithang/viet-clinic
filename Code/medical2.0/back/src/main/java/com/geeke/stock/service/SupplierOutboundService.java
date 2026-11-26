@@ -4,6 +4,7 @@ import com.geeke.admin.entity.User;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.org.entity.Company;
+import com.geeke.stock.dao.SupplierDao;
 import com.geeke.stock.dao.SupplierOutboundDao;
 import com.geeke.stock.entity.*;
 import com.geeke.utils.SessionUtils;
@@ -43,6 +44,9 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
 
     @Autowired
     private SupplierOutboundDao supplierOutboundDao;
+
+    @Autowired
+    private SupplierDao supplierDao;
 
     @Autowired
     private SupplierOutboundDetailService supplierOutboundDetailService;
@@ -125,6 +129,8 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
             String oldOutbound = supplierOutboundDao.getCode(supplierOutbound.getCompany().getId());
             supplierOutbound.setCode(generateDatePrefixCode(oldOutbound));
         }
+        // DS734: chan FK ma (nha cung cap) truoc moi ghi, ca duong saveEvt.
+        checkSupplierOutboundRefsExist(supplierOutbound);
         SupplierOutbound supplierOutboundTemp = super.save(supplierOutbound);
 
         //LưuChi tiết
@@ -165,6 +171,8 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
         checkSupplierOutboundDatesNotFuture(supplierOutbound);
         // DS294: chan thu tu cap ngay phe duyet / ngay huy.
         checkSupplierOutboundDateOrder(supplierOutbound);
+        // DS734: chan FK ma (nha cung cap) truoc moi ghi.
+        checkSupplierOutboundRefsExist(supplierOutbound);
         return super.save(supplierOutbound);
     }
 
@@ -227,6 +235,26 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
                         .isBefore(entity.getExamineDate().toInstant()
                                 .atZone(DB_ZONE).toLocalDate())) {
             throw new ServiceException("Ngày hủy không được trước ngày phê duyệt.");
+        }
+    }
+
+    // DS734: fail-closed 400 khi nha cung cap khong ton tai. Truoc day
+    // save(OutboundEvt) / save(SupplierOutbound) chi kiem tra supplier
+    // non-null (@NotNull, DS169) roi ghi thang supplier_id vao DB: id ma
+    // (vd 999999999999999999) van 200 + dong mo coi (probe DS734 E1).
+    // Khong co FK that tren cot nen DB khong chan. Bulk da 400 san (DS50).
+    // Null/rong cho qua nhu cu (@Valid chan o duong don).
+    private void checkSupplierOutboundRefsExist(SupplierOutbound entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getSupplier() != null
+                && StringUtils.isNotBlank(entity.getSupplier().getId())) {
+            Supplier supplier = supplierDao.get(entity.getSupplier().getId());
+            if (supplier == null || !"0".equals(supplier.getDelFlag())) {
+                throw new ServiceException("Nhà cung cấp không tồn tại: "
+                        + entity.getSupplier().getId());
+            }
         }
     }
 

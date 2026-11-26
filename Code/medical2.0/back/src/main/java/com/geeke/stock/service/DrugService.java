@@ -144,6 +144,8 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
         // 45 + ten don vi dai) -- truoc day 500/400-lo-SQL o mapper
         // (probe A6: ypgg 212). Chan sach o day thay vi de DB nem.
         checkLength(ypgg, 100, "Quy cách thuốc Độ dài phải nằm trong khoảng 0 đến 100");
+        // DS734: chan FK ma (nha san xuat) truoc moi ghi.
+        checkDrugRefsExist(drug);
         Drug drugTemp = super.save(drug);
         this.medicinalStockControlService.initStock(drugTemp);
         return drugTemp;
@@ -162,6 +164,28 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
      * vi repeat() ghi de company theo session). Sau ghi, initStock tung
      * dong nhu save() de giu bat bien thuoc <-> medicinal_stock_control.
      */
+    // DS734: fail-closed 400 khi nha san xuat khong ton tai. Truoc day
+    // save()/bulkInsert/bulkUpdate chi kiem tra trung lap / do dai / mien
+    // dict roi ghi thang factory vao DB: id ma (vd 999999999999999999)
+    // van 200 + dong mo coi (probe DS734 G1). Khong co FK that tren cot
+    // nen DB khong chan. syncToClinic/addDurg dung super.save nen khong
+    // bi anh huong (factory o do lay tu lookup that). Null/rong cho qua
+    // nhu cu.
+    private void checkDrugRefsExist(Drug drug) {
+        if (drug == null) {
+            return;
+        }
+        if (drug.getFactory() != null
+                && StringUtils.isNotBlank(drug.getFactory().getId())) {
+            ManufactureFactory factory =
+                    manufactureFactoryDao.get(drug.getFactory().getId());
+            if (factory == null || !"0".equals(factory.getDelFlag())) {
+                throw new ServiceException("Nhà sản xuất không tồn tại: "
+                        + drug.getFactory().getId());
+            }
+        }
+    }
+
     private void checkDrugRequired(Drug drug) {
         if (drug == null) {
             throw new ServiceException("Thông tin thuốc không được để trống");
@@ -715,6 +739,8 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             if (this.repeat(drug) != 0) {
                 throw new ServiceException("Thông tin thuốc trùng lặp");
             }
+            // DS734: chan FK ma nhu save().
+            checkDrugRefsExist(drug);
         }
         List<String> ids = super.bulkInsert(entitys);
         for (Drug drug : entitys) {
@@ -757,6 +783,8 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
             if (this.repeat(drug) != 0) {
                 throw new ServiceException("Thông tin thuốc trùng lặp");
             }
+            // DS734: chan FK ma nhu save().
+            checkDrugRefsExist(drug);
         }
         List<String> ids = super.bulkUpdate(entitys);
         for (Drug drug : entitys) {

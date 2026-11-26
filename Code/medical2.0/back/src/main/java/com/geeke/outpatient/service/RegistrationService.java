@@ -8,7 +8,12 @@ import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.service.MdRegistrationService;
+import com.geeke.admin.dao.UserDao;
+import com.geeke.admin.entity.User;
+import com.geeke.org.dao.ClinicOfficeDao;
+import com.geeke.org.entity.ClinicOffice;
 import com.geeke.outpatient.dao.MedicalRecordDao;
+import com.geeke.outpatient.dao.PatientDao;
 import com.geeke.outpatient.dao.RecipelInfoDao;
 import com.geeke.outpatient.dao.RegistrationDao;
 import com.geeke.outpatient.entity.*;
@@ -40,6 +45,12 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
 
     private final MedicalRecordDao medicalRecordDao;
 
+    private final PatientDao patientDao;
+
+    private final UserDao userDao;
+
+    private final ClinicOfficeDao clinicOfficeDao;
+
     private final PatientService patientService;
 
     private final MedicalRecordService medicalRecordService;
@@ -48,10 +59,14 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
     private final MdRegistrationService mdRegistrationService;
 
     public RegistrationService(RegistrationDao registrationDao, MedicalRecordDao medicalRecordDao,
+            PatientDao patientDao, UserDao userDao, ClinicOfficeDao clinicOfficeDao,
             PatientService patientService, @Lazy MedicalRecordService medicalRecordService,
             MdRegistrationService mdRegistrationService) {
         this.registrationDao = registrationDao;
         this.medicalRecordDao = medicalRecordDao;
+        this.patientDao = patientDao;
+        this.userDao = userDao;
+        this.clinicOfficeDao = clinicOfficeDao;
         this.patientService = patientService;
         this.medicalRecordService = medicalRecordService;
         this.mdRegistrationService = mdRegistrationService;
@@ -108,6 +123,45 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         boolean hasSubscribeDate = entity.getSubscribeDate() != null;
         if (!hasPatient && !hasDoctor && !hasSubscribeDate) {
             throw new ServiceException("Lượt đăng ký khám phải có bệnh nhân, bác sĩ hoặc ngày hẹn đặt lịch");
+        }
+    }
+
+    // DS734: fail-closed 400 khi benh nhan / bac si / khoa khong ton tai.
+    // Truoc day save()/bulkInsert/bulkUpdate chi kiem tra subject non-blank
+    // (checkRegistrationHasSubject) roi ghi thang patient_id/doctor_id/
+    // department_id vao DB: id ma (vd 999999999999999999) van 200 + dong
+    // mo coi (probe DS734 A1-A3). Khong co FK that tren cac cot nen DB
+    // khong chan. Null/rong cho qua nhu cu (BookingRequestService.confirm
+    // tao luot khong patient khong doctor hop le, G2).
+    private void checkRegistrationRefsExist(Registration entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getPatientId() != null
+                && StringUtils.isNotBlank(entity.getPatientId().getId())) {
+            Patient patient = patientDao.get(entity.getPatientId().getId());
+            if (patient == null || !"0".equals(patient.getDelFlag())) {
+                throw new ServiceException("Bệnh nhân không tồn tại: "
+                        + entity.getPatientId().getId());
+            }
+        }
+        if (entity.getDoctor() != null
+                && StringUtils.isNotBlank(entity.getDoctor().getId())) {
+            User doctor = userDao.get(entity.getDoctor().getId());
+            if (doctor == null || !"0".equals(doctor.getDelFlag())) {
+                throw new ServiceException("Bác sĩ không tồn tại: "
+                        + entity.getDoctor().getId());
+            }
+        }
+        if (entity.getClinicOffice() != null
+                && StringUtils.isNotBlank(entity.getClinicOffice().getId())) {
+            ClinicOffice clinicOffice =
+                    clinicOfficeDao.get(entity.getClinicOffice().getId());
+            if (clinicOffice == null
+                    || !"0".equals(clinicOffice.getDelFlag())) {
+                throw new ServiceException("Khoa không tồn tại: "
+                        + entity.getClinicOffice().getId());
+            }
         }
     }
 
@@ -923,6 +977,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // DS146 B: chan hang rac {} o tang save (bulkInsert mirror ben duoi).
         // DS541: save truyen isCreate = id rong (update + ghost check sau).
         checkRegistrationHasSubject(entity, StringUtils.isBlank(entity.getId()));
+        // DS734: chan FK ma (benh nhan / bac si / khoa) truoc moi ghi.
+        checkRegistrationRefsExist(entity);
         // DS238: chan phi dang ky / thuc thu am truoc khi gan so thu tu.
         checkRegistrationFeesNonNegative(entity);
         // DS368: chan co tung den vung dich gia mao ngoai {'0','1'}.
@@ -1012,6 +1068,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             // DS146 B: chan hang rac {} qua bulk nhu save().
             // DS541: bulkInsert LUON tao moi nen isCreate = true bat ke id.
             checkRegistrationHasSubject(entity, true);
+            // DS734: chan FK ma nhu save().
+            checkRegistrationRefsExist(entity);
             // DS238: bulk cung chan phi am nhu save().
             checkRegistrationFeesNonNegative(entity);
             // DS368: bulk cung chan co tung den vung dich gia mao nhu save().
@@ -1080,6 +1138,8 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
             // mapper CASE ghi patient/doctor/subscribe verbatim nen
             // dong sau update mang subject cua entity (khong gop stored).
             checkRegistrationHasSubject(entity, true);
+            // DS734: chan FK ma nhu save().
+            checkRegistrationRefsExist(entity);
             // DS238: bulkUpdate cung chan phi am nhu save().
             checkRegistrationFeesNonNegative(entity);
             // DS368: bulkUpdate cung chan co tung den vung dich gia mao nhu save().

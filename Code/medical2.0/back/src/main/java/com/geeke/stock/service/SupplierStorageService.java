@@ -8,7 +8,9 @@ import com.geeke.common.service.ServiceException;
 import com.geeke.common.sequence.service.SequenceService;
 import com.geeke.common.service.CrudService;
 import com.geeke.org.entity.Company;
+import com.geeke.stock.dao.SupplierDao;
 import com.geeke.stock.dao.SupplierStorageDao;
+import com.geeke.stock.entity.Supplier;
 import com.geeke.stock.entity.SupplierStock;
 import com.geeke.stock.entity.SupplierStorage;
 import com.geeke.utils.SessionUtils;
@@ -51,6 +53,9 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
 
     @Autowired
     private SupplierStorageDao supplierStorageDao;
+
+    @Autowired
+    private SupplierDao supplierDao;
 
     @Autowired
     private MedicinalStorageControlService medicinalStorageControlService;
@@ -96,6 +101,8 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
         checkSupplierStorageExamineValues(supplierStorage);
         // DS525: chan loai phieu nhap kho gia mao ngoai {'1','2'}.
         checkSupplierStorageTypeValues(supplierStorage);
+        // DS734: chan FK ma (nha cung cap) truoc moi ghi.
+        checkSupplierStorageRefsExist(supplierStorage);
         SupplierStorage supplierStorageTemp = super.save(supplierStorage);
         return supplierStorageTemp;
     }
@@ -155,6 +162,25 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
     // 'Vat tu' (v-else) nen gia tri gia mao hien sai thanh 'Vat tu'.
     // Null / blank cho qua (cot type varchar(1) NULL-able, tien le
     // DS519/DS521). Guard o save/bulkInsert/bulkUpdate.
+    // DS734: fail-closed 400 khi nha cung cap khong ton tai. Truoc day
+    // save()/bulkInsert/bulkUpdate chi kiem tra do dai / so am / ngay /
+    // mien dict roi ghi thang supplier_id vao DB: id ma (vd
+    // 999999999999999999) van 200 + dong mo coi (probe DS734 F1). Khong
+    // co FK that tren cot nen DB khong chan. Null/rong cho qua nhu cu.
+    private void checkSupplierStorageRefsExist(SupplierStorage entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getSupplier() != null
+                && StringUtils.isNotBlank(entity.getSupplier().getId())) {
+            Supplier supplier = supplierDao.get(entity.getSupplier().getId());
+            if (supplier == null || !"0".equals(supplier.getDelFlag())) {
+                throw new ServiceException("Nhà cung cấp không tồn tại: "
+                        + entity.getSupplier().getId());
+            }
+        }
+    }
+
     private static void checkSupplierStorageTypeValues(SupplierStorage entity) {
         if (entity == null) {
             return;
@@ -345,6 +371,8 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageExamineValues(entity); // DS492
             checkSupplierStorageTypeValues(entity); // DS525
             forceSessionCompanyWhenBlank(entity);
+            // DS734: chan FK ma nhu save().
+            checkSupplierStorageRefsExist(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -371,6 +399,8 @@ public class SupplierStorageService extends CrudService<SupplierStorageDao, Supp
             checkSupplierStorageDateOrder(entity); // DS294
             checkSupplierStorageExamineValues(entity); // DS492
             checkSupplierStorageTypeValues(entity); // DS525
+            // DS734: chan FK ma nhu save().
+            checkSupplierStorageRefsExist(entity);
         }
         return super.bulkUpdate(entitys);
     }

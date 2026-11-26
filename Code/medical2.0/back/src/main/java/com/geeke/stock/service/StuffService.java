@@ -177,6 +177,8 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
         checkStuffTypeValues(stuff); // DS475
         checkStuffNatureValues(stuff); // DS491
         checkStuffInventoryThresholdOrder(stuff); // DS303
+        // DS734: chan FK ma (nha san xuat) truoc moi ghi.
+        checkStuffRefsExist(stuff);
         Stuff stuffTemp = super.save(stuff);
 
         //LưuđộngTồn kho
@@ -244,6 +246,8 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffTypeValues(stuff); // DS475
             checkStuffNatureValues(stuff); // DS491
             checkStuffInventoryThresholdOrder(stuff); // DS303
+            // DS734: chan FK ma nhu save().
+            checkStuffRefsExist(stuff);
         }
         return super.bulkInsert(entitys);
     }
@@ -282,8 +286,31 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
             checkStuffTypeValues(stuff); // DS475
             checkStuffNatureValues(stuff); // DS491
             checkStuffInventoryThresholdOrder(stuff); // DS303
+            // DS734: chan FK ma nhu save().
+            checkStuffRefsExist(stuff);
         }
         return super.bulkUpdate(entitys);
+    }
+
+    // DS734: fail-closed 400 khi nha san xuat khong ton tai. Truoc day
+    // save()/bulkInsert/bulkUpdate chi kiem tra do dai / mien dict roi ghi
+    // thang factory vao DB: id ma (vd 999999999999999999) van 200 + dong
+    // mo coi (probe DS734 G3). Khong co FK that tren cot nen DB khong
+    // chan. syncToClinic dung super.save nen khong bi anh huong.
+    // Null/rong cho qua nhu cu.
+    private void checkStuffRefsExist(Stuff stuff) {
+        if (stuff == null) {
+            return;
+        }
+        if (stuff.getFactory() != null
+                && StringUtils.isNotBlank(stuff.getFactory().getId())) {
+            ManufactureFactory factory =
+                    manufactureFactoryDao.get(stuff.getFactory().getId());
+            if (factory == null || !"0".equals(factory.getDelFlag())) {
+                throw new ServiceException("Nhà sản xuất không tồn tại: "
+                        + stuff.getFactory().getId());
+            }
+        }
     }
 
     // DS149 B: xem ghi chu o save().

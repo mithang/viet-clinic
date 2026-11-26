@@ -7,6 +7,8 @@ import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
+import com.geeke.admin.dao.UserDao;
+import com.geeke.admin.entity.User;
 import com.geeke.outpatient.dao.SchedulingDao;
 import com.geeke.outpatient.entity.Scheduling;
 import com.geeke.taskmanagement.dao.ArticleDao;
@@ -26,6 +28,9 @@ public class ArticleService extends CrudService<ArticleDao, article>{
 
     @Autowired
     private ArticleDao articleDao;
+
+    @Autowired
+    private UserDao userDao;
 
     public article listgetid(article article){
         article articelgetid=articleDao.listgetid(article);
@@ -51,6 +56,24 @@ public class ArticleService extends CrudService<ArticleDao, article>{
      * endpoints `update` and `audit` call this single method, so one
      * guard covers both paths.
      */
+    // DS734: fail-closed 400 khi nguoi dung (userid) khong ton tai.
+    // Truoc day save() chi kiem tra userid non-blank (DS121 A) roi ghi
+    // thang userid vao DB: id ma (vd 999999999999999999) van 200 + dong
+    // mo coi (probe DS734 H1). Khong co FK that tren cot nen DB khong
+    // chan. Null/rong cho qua nhu cu (duong update khong gui userid).
+    private void checkArticleRefsExist(article entity) {
+        if (entity == null) {
+            return;
+        }
+        if (StringUtils.isNotBlank(entity.getUserid())) {
+            User user = userDao.get(entity.getUserid());
+            if (user == null || !"0".equals(user.getDelFlag())) {
+                throw new ServiceException("Người dùng không tồn tại: "
+                        + entity.getUserid());
+            }
+        }
+    }
+
     private void checkArticleTenant(String articleId) {
         if (StringUtils.isBlank(articleId)) {
             return;
@@ -254,6 +277,8 @@ public class ArticleService extends CrudService<ArticleDao, article>{
             // checkAuditStatusOnEdit; '1'/'2' chi qua /audit).
             checkAuditStatusOnEdit(entity);
         }
+        // DS734: chan FK ma (nguoi dung) truoc moi ghi.
+        checkArticleRefsExist(entity);
         return super.save(entity);
     }
 

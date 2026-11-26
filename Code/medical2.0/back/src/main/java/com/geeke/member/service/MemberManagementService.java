@@ -13,7 +13,10 @@ import com.geeke.common.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.geeke.common.service.ServiceException;
 import com.geeke.member.dao.MemberManagementDao;
+import com.geeke.member.dao.MemberSetDao;
 import com.geeke.member.entity.MemberManagement;
+import com.geeke.outpatient.dao.PatientDao;
+import com.geeke.outpatient.entity.Patient;
 import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.util.CollectionUtils;
@@ -35,6 +38,12 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
 
         @Autowired
         private MemberItemService memberItemService;
+
+        @Autowired
+        private PatientDao patientDao;
+
+        @Autowired
+        private MemberSetDao memberSetDao;
 
         @Transactional(readOnly = false)
         public MemberManagement save(MemberManagement memberManagement){
@@ -63,6 +72,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             // DS416: chan type gia mao (xem
             // checkMemberManagementTypeValues).
             checkMemberManagementTypeValues(memberManagement);
+            // DS734: chan FK ma (benh nhan / the hoi vien) truoc moi ghi.
+            checkMemberManagementRefsExist(memberManagement);
             // Sửa (id đã có) trước đây rơi vào cùng nhánh INSERT với Tạo nên
             // luôn lỗi trùng khóa chính — form Sửa qua UI không bao giờ lưu
             // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
@@ -175,6 +186,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             checkMemberManagementStatusForCreate(entity);
             // DS416: chan type gia mao.
             checkMemberManagementTypeValues(entity);
+            // DS734: chan FK ma nhu save().
+            checkMemberManagementRefsExist(entity);
             if (StringUtils.isBlank(entity.getCard())) {
                 String card = new Date().getTime() + "";
                 entity.setCard(card.substring(card.length() - 8));
@@ -205,6 +218,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             checkMemberManagementStatusForUpdate(entity, stored);
             // DS416: chan type gia mao.
             checkMemberManagementTypeValues(entity);
+            // DS734: chan FK ma nhu save().
+            checkMemberManagementRefsExist(entity);
             if (StringUtils.isBlank(entity.getCard())) {
                 if (stored != null && StringUtils.isNotBlank(stored.getCard())) {
                     entity.setCard(stored.getCard());
@@ -234,6 +249,37 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
         if (entity.getMemberSet() == null
                 || StringUtils.isBlank(entity.getMemberSet().getId())) {
             throw new ServiceException("Thẻ hội viên không được để trống");
+        }
+    }
+
+    // DS734: fail-closed 400 khi benh nhan / the hoi vien khong ton tai.
+    // Truoc day save()/bulkInsert/bulkUpdate chi kiem tra patient/memberSet
+    // non-blank (checkMemberHasSubject) roi ghi thang patient_id/
+    // member_set_id vao DB: id ma (vd 999999999999999999) van 200 + dong
+    // mo coi (probe DS734 B1c: the mo coi patient ma + tru so luong the
+    // that). Khong co FK that tren cac cot nen DB khong chan. Ghost
+    // memberSet truoc day cung 400 nho updateNumber (rollback) nhung
+    // thong bao mo; guard tuong minh o day chan som + ro nghia hon.
+    private void checkMemberManagementRefsExist(MemberManagement entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getPatient() != null
+                && StringUtils.isNotBlank(entity.getPatient().getId())) {
+            Patient patient = patientDao.get(entity.getPatient().getId());
+            if (patient == null || !"0".equals(patient.getDelFlag())) {
+                throw new ServiceException("Bệnh nhân không tồn tại: "
+                        + entity.getPatient().getId());
+            }
+        }
+        if (entity.getMemberSet() != null
+                && StringUtils.isNotBlank(entity.getMemberSet().getId())) {
+            MemberSet memberSet =
+                    memberSetDao.get(entity.getMemberSet().getId());
+            if (memberSet == null || !"0".equals(memberSet.getDelFlag())) {
+                throw new ServiceException("Thẻ hội viên không tồn tại: "
+                        + entity.getMemberSet().getId());
+            }
         }
     }
 

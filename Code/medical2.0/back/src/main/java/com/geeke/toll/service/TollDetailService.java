@@ -8,9 +8,12 @@ import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.geeke.outpatient.dao.RecipelInfoDao;
+import com.geeke.outpatient.entity.RecipelInfo;
 import com.geeke.toll.dao.TollDetailDao;
 import com.geeke.toll.dao.TollInfoDao;
 import com.geeke.toll.entity.TollDetail;
+import com.geeke.toll.entity.TollInfo;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 
@@ -25,6 +28,9 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
 
     @Autowired
     private TollInfoDao tollInfoDao;
+
+    @Autowired
+    private RecipelInfoDao recipelInfoDao;
 
     /**
      * N3a: chặn ghi chi tiết thu phí gắn phiếu toll của tenant khác.
@@ -86,6 +92,36 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
             return;
         }
         checkTollCompany(storedTollId);
+    }
+
+    // DS734: fail-closed 400 khi phieu thu / don thuoc khong ton tai.
+    // Truoc day save()/bulkInsert/bulkUpdate chi kiem tra tenant cua phieu
+    // cha (checkTollTenant — ghost thi getTollInfoCompanyId tra null nen
+    // cho qua) roi ghi thang toll_id/recipel_id vao DB: id ma (vd
+    // 999999999999999999) van 200 + dong mo coi (probe DS734 D1b/D2b).
+    // Khong co FK that tren cac cot nen DB khong chan. Null/rong cho qua
+    // nhu cu.
+    private void checkTollDetailRefsExist(TollDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getTollId() != null
+                && StringUtils.isNotBlank(entity.getTollId().getId())) {
+            TollInfo tollInfo = tollInfoDao.get(entity.getTollId().getId());
+            if (tollInfo == null || !"0".equals(tollInfo.getDelFlag())) {
+                throw new ServiceException("Phiếu thu không tồn tại: "
+                        + entity.getTollId().getId());
+            }
+        }
+        if (entity.getRecipel() != null
+                && StringUtils.isNotBlank(entity.getRecipel().getId())) {
+            RecipelInfo recipel =
+                    recipelInfoDao.get(entity.getRecipel().getId());
+            if (recipel == null || !"0".equals(recipel.getDelFlag())) {
+                throw new ServiceException("Đơn thuốc không tồn tại: "
+                        + entity.getRecipel().getId());
+            }
+        }
     }
 
     /** So company của một phiếu toll với tenant phiên; lạ -> 400. */
@@ -166,6 +202,8 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
             checkStoredTollTenant(entity.getId());
             checkTollTenant(entity);
         }
+        // DS734: chan FK ma (phieu thu / don thuoc) truoc moi ghi.
+        checkTollDetailRefsExist(entity);
         return super.save(entity);
     }
 
@@ -184,6 +222,8 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
                 throw new ServiceException("Chi tiết thu phí không được để trống");
             }
             checkTollTenant(entity);
+            // DS734: chan FK ma nhu save().
+            checkTollDetailRefsExist(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -211,6 +251,8 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
             }
             checkStoredTollTenant(entity.getId());
             checkTollTenant(entity);
+            // DS734: chan FK ma nhu save().
+            checkTollDetailRefsExist(entity);
         }
         return super.bulkUpdate(entitys);
     }
