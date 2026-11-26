@@ -221,6 +221,22 @@ import org.springframework.stereotype.Component;
  * string/comment dau, :name da khai bao. DS680 them: CALL toi
  * procedure khong ton tai (I6) -> 400 qua kiem tra DatabaseMetaData
  * (xem them o tren); CALL proc ton tai giu 200.
+ *
+ * DS728: SQL dung dang nhung sai ngu nghia -> jar executeQuery nem SQLException 500
+ * (buildFields/previewData + compute bao cao da luu): cot khong ton tai (A1/A2),
+ * ham khong ton tai (A3/A8), GROUP/ORDER/WHERE cot ghost (A4/A6/A7), cot mo ho
+ * (A5), UNION nhanh ghost (B10), bang ghost qua datasource (B1/B2 — DS679 chi
+ * chan dang, DS702b chi kiem tra bang o bao cao da luu), SHOW COLUMNS/DESCRIBE
+ * bang ghost (B3/B4), EXPLAIN SELECT cot ghost (B5), :param da khai bao + cot
+ * ghost (B6), JDBC bad col (B8). Fix: kiem tra truoc bang cach chay thu KHONG
+ * thuc thi — SELECT/WITH -> EXPLAIN (chi lap ke hoach), SHOW/DESCRIBE/EXPLAIN
+ * -> chay thang (chi doc metadata); :name thay bang literal 1 truoc khi kiem
+ * tra; SQLException -> 400, khong mo duoc ket noi / loi khac -> giu hanh vi cu.
+ * Cung vong: saveReportFile/deleteReportFile voi file khong co prefix cua
+ * provider nao -> jar nem ReportDesignException "not found available report
+ * provider" 500 (E1/E2/E4/E5) -> filter chan 400 khi khong provider enabled
+ * nao nhan prefix (chi kiem tra prefix, khong kiem tra ton tai vi save tao
+ * file moi); file co prefix nhung ten la van giu hanh vi cu (E3 200).
  */
 @Component
 public class UReportParamFilter implements Filter,
@@ -401,6 +417,13 @@ public class UReportParamFilter implements Filter,
                 if (isBlank(request.getParameter("file"))) {
                     return "Thiếu tham số bắt buộc: file";
                 }
+                // DS728: file khong co prefix cua provider nao ->
+                // jar nem ReportDesignException "not found available
+                // report provider" 500 (E1/E2). Chi kiem tra prefix,
+                // khong kiem tra ton tai vi save tao file moi.
+                if (!hasReportProviderPrefix(request.getParameter("file"))) {
+                    return "Không có provider cho báo cáo: file";
+                }
                 String content = request.getParameter("content");
                 if (isBlank(content)) {
                     return "Thiếu tham số bắt buộc: content";
@@ -416,6 +439,15 @@ public class UReportParamFilter implements Filter,
             case "deleteReportFile": {
                 if (isBlank(request.getParameter("file"))) {
                     return "Thiếu tham số bắt buộc: file";
+                }
+                // DS728: deleteReportFile voi file khong co prefix
+                // cua provider nao -> jar cung nem "not found
+                // available report provider" 500 (E4/E5). loadReport
+                // da duoc reportExists chan o duoi (prefix + ton tai).
+                if ("deleteReportFile".equals(method)
+                        && !hasReportProviderPrefix(
+                                request.getParameter("file"))) {
+                    return "Không có provider cho báo cáo: file";
                 }
                 // DS677: loadReport file la -> jar "not support." 500
                 // -> 400. deleteReportFile giu nguyen: file la van 200
@@ -561,8 +593,16 @@ public class UReportParamFilter implements Filter,
                 }
                 // DS680: CALL toi procedure khong ton tai -> 400
                 // (kiem tra metadata, khong chay procedure).
-                return validateCallProcedure(request,
+                String callError = validateCallProcedure(request,
                         request.getParameter("sql"));
+                if (callError != null) {
+                    return callError;
+                }
+                // DS728: SQL dung dang nhung sai ngu nghia (cot/ham/
+                // bang khong ton tai, cot mo ho) -> jar executeQuery
+                // nem SQLException 500. Kiem tra truoc bang EXPLAIN
+                // / chay thu chi doc metadata (khong thuc thi).
+                return validateDatasourceSqlSemantics(request);
             }
             default:
                 return null;
@@ -880,6 +920,181 @@ public class UReportParamFilter implements Filter,
         }
     }
 
+    // DS728: mo ket noi cua datasource dang dung o buildFields/
+    // previewData (buildin: connection moi tu pool; jdbc: mo bang
+    // tham so client dua, nhu openJdbcConnection cua DS678). Null
+    // neu khong mo duoc -> nguoi goi giu hanh vi cu.
+    private static java.sql.Connection openDatasourceConnection(
+            HttpServletRequest request) {
+        try {
+            String type = request.getParameter("type");
+            if ("jdbc".equals(type)) {
+                return openJdbcConnection(request.getParameter("driver"),
+                        request.getParameter("url"),
+                        request.getParameter("username"),
+                        request.getParameter("password"));
+            }
+            return com.bstek.ureport.Utils.getBuildinConnection(
+                    request.getParameter("name"));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // DS728: kiem tra ngu nghia SQL o buildFields/previewData: mo
+    // ket noi dung cua datasource, chay validateSqlSemantics, dong
+    // ngay. Khong mo duoc ket noi -> null = giu hanh vi cu.
+    private static String validateDatasourceSqlSemantics(
+            HttpServletRequest request) {
+        java.sql.Connection conn = openDatasourceConnection(request);
+        if (conn == null) {
+            return null;
+        }
+        try {
+            return validateSqlSemantics(conn,
+                    request.getParameter("sql"),
+                    datasourceParameterNames(
+                            request.getParameter("parameters")));
+        } finally {
+            try {
+                conn.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    // DS728: nhu validateDatasourceSqlSemantics nhung cho dataset
+    // SQL trong XML da luu: ket noi cua datasource cha, ten tham
+    // so lay tu cac <parameter> con cua dataset.
+    private static String validateStoredSqlSemantics(
+            org.w3c.dom.Element ds, String sql) {
+        java.sql.Connection conn = openDatasetConnection(ds);
+        if (conn == null) {
+            return null;
+        }
+        try {
+            return validateSqlSemantics(conn, sql,
+                    sqlDatasetParameterNames(ds));
+        } finally {
+            try {
+                conn.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    // DS728: SQL dung dang (da qua validateSqlShape) nhung sai ngu
+    // nghia -> jar executeQuery nem SQLException 500: cot/ham/bang
+    // khong ton tai, cot mo ho (A1-A8/B1/B2/B5/B6/B8/B10, D1/D2).
+    // Kiem tra truoc bang cach chay thu KHONG thuc thi cau lenh:
+    // SELECT/WITH -> EXPLAIN (chi lap ke hoach, khong doc/ghi du
+    // lieu, khong chay stored function); SHOW/DESCRIBE/EXPLAIN ->
+    // chay thang (chi doc metadata: B3/B4 show/describe bang ghost
+    // -> 500). :name da khai bao duoc thay bang literal 1 truoc
+    // khi kiem tra (B6). CALL da duoc validateCallProcedure xu ly
+    // nen tra null. Loi khac SQLException -> null = giu hanh vi cu.
+    private static String validateSqlSemantics(
+            java.sql.Connection conn, String sql,
+            java.util.Set<String> paramNames) {
+        if (conn == null) {
+            return null;
+        }
+        String clean = stripSqlStringsAndComments(sql);
+        int pos = skipSqlBlanks(clean, 0);
+        while (pos < clean.length() && clean.charAt(pos) == '(') {
+            pos = skipSqlBlanks(clean, pos + 1);
+        }
+        int start = pos;
+        while (pos < clean.length()
+                && Character.isLetter(clean.charAt(pos))) {
+            pos++;
+        }
+        if (start == pos) {
+            return null;
+        }
+        String keyword = clean.substring(start, pos).toUpperCase();
+        String probe;
+        if ("SELECT".equals(keyword) || "WITH".equals(keyword)) {
+            probe = "EXPLAIN " + substituteSqlParams(sql, paramNames);
+        } else if ("SHOW".equals(keyword) || "DESCRIBE".equals(keyword)
+                || "DESC".equals(keyword) || "EXPLAIN".equals(keyword)) {
+            probe = substituteSqlParams(sql, paramNames);
+        } else {
+            return null;
+        }
+        java.sql.Statement st = null;
+        try {
+            st = conn.createStatement();
+            st.execute(probe);
+            return null;
+        } catch (java.sql.SQLException e) {
+            return "Câu SQL không hợp lệ: " + e.getMessage();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    // DS728: thay :name (da khai bao) bang literal 1 de EXPLAIN/
+    // chay thu SQL ma khong can gia tri that (1 hop le o hau het
+    // vi tri gia tri dung: WHERE, SELECT list, LIMIT). Chi thay
+    // ngoai string/comment (dung ban strip giu nguyen do dai de
+    // vi tri khop); := va :: khong phai param.
+    private static String substituteSqlParams(String sql,
+            java.util.Set<String> names) {
+        if (names == null || names.isEmpty()) {
+            return sql;
+        }
+        String clean = stripSqlStringsAndComments(sql);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                ":([A-Za-z][A-Za-z0-9_]*)").matcher(clean);
+        java.util.List<int[]> spans = new java.util.ArrayList<>();
+        while (m.find()) {
+            if (names.contains(m.group(1))) {
+                spans.add(new int[]{m.start(), m.end()});
+            }
+        }
+        if (spans.isEmpty()) {
+            return sql;
+        }
+        StringBuilder out = new StringBuilder();
+        int pos = 0;
+        for (int[] s : spans) {
+            out.append(sql, pos, s[0]);
+            out.append('1');
+            pos = s[1];
+        }
+        out.append(sql, pos, sql.length());
+        return out.toString();
+    }
+
+    // DS728: file co prefix cua provider nao dang bat khong (chi
+    // kiem tra prefix, khong kiem tra ton tai — save tao file moi).
+    // Khong lay duoc danh sach provider -> true = giu hanh vi cu.
+    private static boolean hasReportProviderPrefix(String file) {
+        java.util.Collection<com.bstek.ureport.provider.report.ReportProvider> providers =
+                getReportProviders();
+        if (providers == null) {
+            return true;
+        }
+        for (com.bstek.ureport.provider.report.ReportProvider provider : providers) {
+            if (provider.disabled()) {
+                continue;
+            }
+            String prefix = provider.getPrefix();
+            if (prefix != null && file.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // DS677: class co load duoc khong (Class.forName nhu jar lam ngay
     // sau do; class ton tai nhung khong phai driver hop le van giu
     // hanh vi cu vi chi ket noi that moi kiem tra duoc).
@@ -1133,6 +1348,13 @@ public class UReportParamFilter implements Filter,
             String tableError = validateSqlTables(ds, sql);
             if (tableError != null) {
                 return tableError;
+            }
+            // DS728: nhu validateDatasourceSqlSemantics nhung tren
+            // ket noi cua datasource cha cua dataset da luu: cot/
+            // ham khong ton tai, cot mo ho -> jar 500 luc compute.
+            String semError = validateStoredSqlSemantics(ds, sql);
+            if (semError != null) {
+                return semError;
             }
         }
         return null;
