@@ -180,6 +180,18 @@ public class MedicalRecordController extends CrudController<MedicalRecordService
                             return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
                                     .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
                         }
+                        // DS712: chi tiet thieu thuoc (drugStuffId null /
+                        // id trong) truoc day qua duoc RecipelDetailService
+                        // .save (chi yeu cau minTotal) roi NPE 500 o
+                        // saveAllRecordInfo:621 khi build RecipelStastics
+                        // (.getDrugStuffId().getDrugStuffId()); DS691 chi
+                        // chan detail null, khong chan thieu thuoc. Chan
+                        // som o day theo cung mau DS691, truoc moi ghi.
+                        if (recipelDetail.getDrugStuffId() == null
+                                || !StringUtils.hasText(recipelDetail.getDrugStuffId().getDrugStuffId())) {
+                            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                                    .body(ResultUtil.errorJson(com.geeke.utils.constants.ErrorEnum.E_400));
+                        }
                     }
                 }
             }
