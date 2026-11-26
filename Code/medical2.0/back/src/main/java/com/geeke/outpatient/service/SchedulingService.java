@@ -1,6 +1,8 @@
 package com.geeke.outpatient.service;
 
 
+import com.geeke.admin.dao.UserDao;
+import com.geeke.admin.entity.User;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.outpatient.dao.SchedulingDao;
@@ -23,6 +25,23 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
     @Autowired
     private SchedulingDao schedulingDao;
 
+    @Autowired
+    private UserDao userDao;
+
+    // DS731: fail-closed 400 khi nguoi dung xep lich khong ton tai. Truoc
+    // day save() chi kiem tra userid non-blank roi ghi thang vao
+    // scheduling_data: id ma (vd 999999999999999999) van 200 + tao dong
+    // ca truc mo coi (probe DS731 D4: row 3439908147129337143), lich do
+    // khong hien o danh sach truc (join sys_user) nhung lam sai dem ca
+    // truc. scheduling_data KHONG co FK that nen DB khong chan.
+    // userDao.get() khong loc del_flag nen dong da xoa mem cung 400.
+    private void checkUserExists(String userid) {
+        User user = userDao.get(userid);
+        if (user == null || !"0".equals(user.getDelFlag())) {
+            throw new ServiceException("Người dùng xếp lịch không tồn tại: " + userid);
+        }
+    }
+
     // DS106 B1/B2/B3/B5: SchedulingDao.xml truoc day KHONG CO get/update/
     // bulk statement nao, nen moi save/delete mang id deu 500
     // BindingException qua verifyTenantOwnershipAgainstStoredRow (dao.get)
@@ -42,6 +61,9 @@ public class SchedulingService extends CrudService<SchedulingDao, Scheduling>{
         }
         if (entity != null && StringUtils.isBlank(entity.getUserid())) {
             throw new ServiceException("Người dùng xếp lịch không được để trống");
+        }
+        if (entity != null) {
+            checkUserExists(entity.getUserid());
         }
         if (entity != null && entity.getSchedulingtime() == null) {
             throw new ServiceException("Ngày xếp lịch không được để trống");

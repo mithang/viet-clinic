@@ -14,7 +14,9 @@ import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.sys.dao.DictItemDao;
+import com.geeke.sys.dao.DictTypeDao;
 import com.geeke.sys.entity.DictItem;
+import com.geeke.sys.entity.DictType;
 import com.geeke.utils.StringUtils;
 import com.google.common.collect.Lists;
 
@@ -30,6 +32,9 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
 
     @Autowired
     private DictItemDao dictItemDao;
+
+    @Autowired
+    private DictTypeDao dictTypeDao;
 
     @Override
     @Cacheable(value = "dict:item", key = "#id")
@@ -75,7 +80,27 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
         if (StringUtils.isNotBlank(entity.getId()) && super.get(entity.getId()) == null) {
             throw new com.geeke.common.service.ServiceException("Mục từ điển không tồn tại: " + entity.getId());
         }
+        checkDictTypeExists(entity);
         return super.save(entity);
+    }
+
+    // DS731: fail-closed 400 khi loai tu dien khong ton tai. Truoc day
+    // save()/bulkInsert chi kiem tra dictType non-blank (validateRequired)
+    // roi ghi dict_type_id thang vao DB: id ma (vd 999999999999999999)
+    // van 200 + tao dong mo coi (probe DS731 D1b: row 3439908147129337145),
+    // muc do khong hien o bat ky loai nao, khong xoa duoc qua UI loai.
+    // sys_dict_item KHONG co FK that (chi 3 FK trong DB) nen DB khong chan.
+    // dictTypeDao.get() khong loc del_flag nen dong da xoa mem cung 400.
+    private void checkDictTypeExists(DictItem dictItem) {
+        if (dictItem == null || dictItem.getDictType() == null
+                || StringUtils.isBlank(dictItem.getDictType().getId())) {
+            throw new com.geeke.common.service.ServiceException("Bảng loại từ điển không được để trống");
+        }
+        DictType dictType = dictTypeDao.get(dictItem.getDictType().getId());
+        if (dictType == null || !"0".equals(dictType.getDelFlag())) {
+            throw new com.geeke.common.service.ServiceException("Bảng loại từ điển không tồn tại: "
+                    + dictItem.getDictType().getId());
+        }
     }
 
     /**
@@ -98,6 +123,8 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
         if (dictItem.getDictType() == null || StringUtils.isBlank(dictItem.getDictType().getId())) {
             throw new com.geeke.common.service.ServiceException("Bảng loại từ điển không được để trống");
         }
+        // DS731: bulkInsert cung ghi dict_type_id thang (xem save()).
+        checkDictTypeExists(dictItem);
         if (StringUtils.isBlank(dictItem.getName())) {
             throw new com.geeke.common.service.ServiceException("Tên mục từ điển không được để trống");
         }

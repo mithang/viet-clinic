@@ -5,7 +5,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.geeke.admin.dao.RouterDao;
 import com.geeke.admin.dao.UserDao;
+import com.geeke.admin.entity.Router;
 import com.geeke.admin.entity.User;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
@@ -31,6 +33,26 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private RouterDao routerDao;
+
+    // DS731: fail-closed 400 khi tuyen duong khong ton tai. Truoc day
+    // save()/bulkInsert/bulkUpdate chi kiem tra routerId non-null roi ghi
+    // thang vao user_grid: id ma (vd 999999999999999999) van 200 + tao
+    // dong mo coi (probe DS731 D3: row 3439908147129337141), layout do
+    // khong bao gio hien vi router khong ton tai. user_grid KHONG co FK
+    // that nen DB khong chan. routerDao.get() khong loc del_flag nen dong
+    // da xoa mem cung 400 (18 dong sys_router del_flag!='0' hien co).
+    private void checkRouterExists(Long routerId) {
+        if (routerId == null) {
+            throw new ServiceException("Định tuyến id Không được để trống");
+        }
+        Router router = routerDao.get(String.valueOf(routerId));
+        if (router == null || !"0".equals(router.getDelFlag())) {
+            throw new ServiceException("Tuyến đường không tồn tại: " + routerId);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public UserGrid save(UserGrid userGrid) {
@@ -51,6 +73,7 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
         if (userGrid.getRouterId() == null) {
             throw new ServiceException("Định tuyến id Không được để trống");
         }
+        checkRouterExists(userGrid.getRouterId());
         if (StringUtils.isNotBlank(userGrid.getId())
                 && dao.get(userGrid.getId()) == null) {
             throw new ServiceException("Bố cục tùy chỉnh không tồn tại");
@@ -151,6 +174,7 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
             if (entity.getRouterId() == null) {
                 throw new ServiceException("Định tuyến id Không được để trống");
             }
+            checkRouterExists(entity.getRouterId());
         }
         return super.bulkInsert(entitys);
     }
@@ -174,6 +198,7 @@ public class UserGridService extends CrudService<UserGridDao, UserGrid>{
             if (entity.getRouterId() == null) {
                 throw new ServiceException("Định tuyến id Không được để trống");
             }
+            checkRouterExists(entity.getRouterId());
         }
         return super.bulkUpdate(entitys);
     }
