@@ -933,6 +933,11 @@ public class UserService extends CrudService<UserDao, User>{
     public Page<User> listPageForNoAdmin(List<Parameter> parameters, int offset, int limit, String orderby) {
 
         String loginTenant = SessionUtils.getLoginTenantId();
+        // DS720: boc nhom OR cua body trong ngoac (AA1): mapper dat
+        // filter t.tenant_id co dinh TRUOC whereParams, neu khong
+        // disjunct OR dung sau thoat khoi tenant filter va tra ve user
+        // tenant khac (tai hien live: testdoctor tenant 4464).
+        Parameter.wrapBodyParamsForTenantFilter(parameters);
         PageRequestClinic pageRequest = new PageRequestClinic(offset, limit, parameters, orderby,loginTenant);
 
         return paginate(

@@ -96,6 +96,10 @@ public class RemoteDiagnosisTreatmentController extends BaseController {
             searchParams.setParams(params);
         }
         Parameter.extractAndRemoveCompanyId(params);
+        // DS720: boc nhom OR cua body trong ngoac truoc khi AND them
+        // company_id = tenant (AA1): neu khong, disjunct OR dung truoc
+        // thoat khoi tenant filter va tra ve dong tenant khac.
+        Parameter.wrapBodyParamsForTenantFilter(params);
         params.add(new Parameter("company_id", "=", tenantId));
     }
 

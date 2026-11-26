@@ -177,6 +177,10 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
         Parameter.extractAndRemoveCompanyId(params);
         params.removeIf(p -> "company.parent_id".equals(p.getColumnName())
                 || "`company.parent_id`".equals(p.getColumnName()));
+        // DS720: boc nhom OR cua body trong ngoac truoc khi AND them
+        // company.parent_id = scope (AA1): neu khong, disjunct OR dung
+        // truoc thoat khoi pham vi parent va tra ve review ngoai nhom.
+        Parameter.wrapBodyParamsForTenantFilter(params);
         params.add(new Parameter("company.parent_id", "=", scopeId));
     }
 
@@ -284,6 +288,9 @@ public class RecipelInfoReviewController extends CrudController<RecipelInfoRevie
         Parameter.extractAndRemoveCompanyId(params);
         params.removeIf(p -> "company.parent_id".equals(p.getColumnName())
                 || "`company.parent_id`".equals(p.getColumnName()));
+        // DS720: boc nhom OR cua body trong ngoac truoc khi AND them
+        // company.parent_id = scope (AA1), nhu forceSessionParent.
+        Parameter.wrapBodyParamsForTenantFilter(params);
         params.add(new Parameter("company.parent_id", "=", scopeId));
     }
 

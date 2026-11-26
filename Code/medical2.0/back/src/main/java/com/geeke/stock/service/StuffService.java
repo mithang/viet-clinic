@@ -89,6 +89,9 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     private PageRequest buildStuffTenantPageRequest(List<Parameter> params, int offset, int limit, String orderby) {
         // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
         Parameter.extractAndRemoveCompanyId(params);
+        // DS720: boc nhom OR cua body truoc khi mapper AND them predicate
+        // tenant co dinh dung TRUOC whereParams (StuffDao.count/listAll).
+        Parameter.wrapBodyParamsForTenantFilter(params);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
             id = null;
@@ -110,6 +113,9 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
     private PageRequest buildStuffTenantPageRequest(List<Parameter> params, String orderby) {
         // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
         Parameter.extractAndRemoveCompanyId(params);
+        // DS720: nhu ban co phan trang — boc nhom OR cua body truoc khi
+        // mapper AND them predicate tenant co dinh dung truoc whereParams.
+        Parameter.wrapBodyParamsForTenantFilter(params);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
             id = null;

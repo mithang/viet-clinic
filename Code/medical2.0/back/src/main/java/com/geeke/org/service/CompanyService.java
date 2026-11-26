@@ -619,6 +619,10 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         List<Parameter> scoped = parameters == null
                 ? new ArrayList<Parameter>()
                 : new ArrayList<Parameter>(parameters);
+        // DS720: boc nhom OR cua body trong ngoac truoc khi AND them
+        // ids right_like nhom (AA1): neu khong, disjunct OR dung truoc
+        // thoat khoi filter nhom va tra ve cong ty ngoai nhom.
+        Parameter.wrapBodyParamsForTenantFilter(scoped);
         scoped.add(new Parameter("ids", "right_like", groupPrefix));
         return scoped;
     }
@@ -817,6 +821,9 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         List<Parameter> scoped = parameters == null
                 ? new ArrayList<Parameter>()
                 : new ArrayList<Parameter>(parameters);
+        // DS720: boc nhom OR cua body trong ngoac truoc khi AND them
+        // ids right_like nhom (AA1), nhu scopedParams.
+        Parameter.wrapBodyParamsForTenantFilter(scoped);
         scoped.add(new Parameter("ids", "right_like", groupPrefix));
         return stripForeignSecrets(super.tree(scoped, orderby));
     }

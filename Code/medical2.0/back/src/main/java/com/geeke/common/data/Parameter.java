@@ -1,5 +1,6 @@
 package com.geeke.common.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -191,6 +192,93 @@ public final class Parameter {
 			return "company_id".equals(normalized.substring(dot + 1));
 		}
 		return false;
+	}
+
+	/**
+	 * DS720: boc toan bo tham so body trong cap ngoac truoc khi AND
+	 * them filter pham vi (tenant / parent / ids / t.tenant_id).
+	 * Cung logic AA1 cua CrudService.wrapBodyParamsForTenantFilter, tach
+	 * ra day de moi duong tu ep scope (RemoteDiagnosisTreatmentController,
+	 * RecipelInfoReviewController, CompanyService.scopedParams,
+	 * UserService.listPageForNoAdmin, CrudService.buildTenantPageRequest,
+	 * StuffService.buildStuffTenantPageRequest) deu dung chung mot cho:
+	 * truoc day SQL co dang "body... OR x AND scope = ..." — do AND ket
+	 * chat hon OR nen disjunct OR dung truoc thoat khoi filter pham vi
+	 * va tra ve dong tenant khac (tai hien live DS720: remote diagnosis,
+	 * review, company, user, stuff, dispensing report). Sau sua:
+	 * "(body...) AND scope" nen moi disjunct deu nam trong pham vi.
+	 * Chi boc khi co it nhat mot tham so thuc su render ra SQL dung
+	 * logic OR; cac truong hop con lai giu nguyen hanh vi cu. Tham so
+	 * khong render (gia tri rong — whereParams bo qua) chi bi loai khi
+	 * boc, vi "( )" rong se loi SQL; loai chung la trung hoa voi output
+	 * SQL. Logic cua tham so dau tien trong nhom duoc dat thanh "" vi
+	 * o dau nhom khong co dieu kien nao dung truoc no. Nhom nguoi dung
+	 * mat can bang ngoac van loi SQL fail-closed nhu truoc, khong ro ri.
+	 * Null-safe: parameters null thi khong lam gi.
+	 */
+	public static void wrapBodyParamsForTenantFilter(List<Parameter> parameters) {
+		if (parameters == null) {
+			return;
+		}
+		List<Parameter> rendering = new ArrayList<>();
+		boolean hasOr = false;
+		for (Parameter p : parameters) {
+			if (p == null || !isRenderingParam(p)) {
+				continue;
+			}
+			rendering.add(p);
+			String logic = p.getLogic();
+			if (logic != null && "or".equalsIgnoreCase(logic.trim())) {
+				hasOr = true;
+			}
+		}
+		if (rendering.isEmpty() || !hasOr) {
+			return;
+		}
+		rendering.get(0).setLogic("");
+		List<Parameter> wrapped = new ArrayList<>();
+		wrapped.add(new Parameter(null, "(", null, "AND"));
+		wrapped.addAll(rendering);
+		wrapped.add(new Parameter(null, ")", null, ""));
+		parameters.clear();
+		parameters.addAll(wrapped);
+	}
+
+	/**
+	 * DS720: tham so co render ra SQL trong Common.whereParams hay khong.
+	 * "(" / ")" / "is null" / "is not null" luon render; cac nhanh con
+	 * lai deu bo qua khi value null hoac chuoi rong; "in" bo qua khi
+	 * danh sach rong. Cac dang value khac giu nguyen (bao thu).
+	 * queryType null KHONG render (whereParams bo qua item co
+	 * queryType null) nen tra false: UserController chen new Parameter()
+	 * rong vao params[0] o duong listPageForNoAdmin, neu coi la
+	 * rendering thi nhom boc thanh "( OR ...)" loi SQL 400 cho ca
+	 * truy van OR hop le; loai no la trung hoa vi no khong render gi.
+	 */
+	private static boolean isRenderingParam(Parameter p) {
+		String queryType = p.getQueryType();
+		if (queryType == null) {
+			return false;
+		}
+		String q = queryType.trim();
+		if ("(".equals(q) || ")".equals(q)
+				|| "is null".equalsIgnoreCase(q) || "is not null".equalsIgnoreCase(q)) {
+			return true;
+		}
+		Object value = p.getValue();
+		if (value == null) {
+			return false;
+		}
+		if (value instanceof String) {
+			return !((String) value).isEmpty();
+		}
+		if (value instanceof List) {
+			if ("in".equalsIgnoreCase(q) || "not in".equalsIgnoreCase(q)) {
+				return !((List<?>) value).isEmpty();
+			}
+			return true;
+		}
+		return true;
 	}
 
 }
