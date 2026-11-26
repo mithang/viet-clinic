@@ -88,11 +88,10 @@ public class WarningService {
 
     @Transactional(readOnly = true)
     public Page<SupplierStock> getDrugIndateWarning(List<Parameter> parameters, int offset, int limit, String orderby) {
-        PageRequest pageRequest = new PageRequest(offset, limit, parameters, orderby);
+        // DS723: bo PageRequest thua (dead local) — ham chi delegate sang
+        // supplierStockService, khong dung pageRequest o day.
         Page<SupplierStock> indateWarning = supplierStockService.getDrugIndateWarning(parameters, offset, limit, orderby);
         return indateWarning;
-
-
     }
 
     @Transactional(readOnly = true)
