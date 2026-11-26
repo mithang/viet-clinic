@@ -15,6 +15,16 @@ import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.geeke.cure.dao.InspectionCheckDao;
 import com.geeke.cure.entity.InspectionCheck;
+import com.geeke.outpatient.dao.PatientDao;
+import com.geeke.outpatient.dao.RecipelDetailDao;
+import com.geeke.outpatient.dao.RecipelInfoDao;
+import com.geeke.outpatient.dao.RegistrationDao;
+import com.geeke.outpatient.entity.Patient;
+import com.geeke.outpatient.entity.RecipelDetail;
+import com.geeke.outpatient.entity.RecipelInfo;
+import com.geeke.outpatient.entity.Registration;
+import com.geeke.treatment.dao.CostItemDao;
+import com.geeke.treatment.entity.CostItem;
 import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +47,21 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
 
     @Autowired
     private InspectionCheckDetailService inspectionCheckDetailService;
+
+    @Autowired
+    private PatientDao patientDao;
+
+    @Autowired
+    private RegistrationDao registrationDao;
+
+    @Autowired
+    private CostItemDao costItemDao;
+
+    @Autowired
+    private RecipelInfoDao recipelInfoDao;
+
+    @Autowired
+    private RecipelDetailDao recipelDetailDao;
 
     // DS125 B: single delete truoc day de lo: ghost id / dong da xoa mem
     // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
@@ -89,6 +114,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
                 StringUtils.isBlank(entity.getId()));
         checkInspectionCheckSexValues(entity);
         checkStatusFlipNeedsInfo(entity);
+        checkInspectionCheckRefsExist(entity);
         return super.save(entity);
     }
 
@@ -109,6 +135,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             checkCompleteDateNotFuture(entity);
             checkStatusAndTypeValues(entity, true);
             checkInspectionCheckSexValues(entity);
+            checkInspectionCheckRefsExist(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -139,6 +166,7 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
             checkStatusAndTypeValues(entity, false);
             checkInspectionCheckSexValues(entity);
             checkStatusFlipNeedsInfo(entity);
+            checkInspectionCheckRefsExist(entity);
         }
         return super.bulkUpdate(entitys);
     }
@@ -320,6 +348,68 @@ public class InspectionCheckService extends CrudService<InspectionCheckDao, Insp
         }
         if (StringUtils.isBlank(entity.getStatus())) {
             throw new ServiceException("Trạng thái phiếu kiểm tra không được để trống");
+        }
+    }
+
+    // DS733: fail-closed 400 khi benh nhan / dang ky / hang muc / don
+    // thuoc / chi tiet don khong ton tai. Truoc day save()/bulkInsert/
+    // bulkUpdate chi kiem tra cac FK non-blank (checkInspectionCheckRequired)
+    // roi ghi thang patient_id/registration_id/cost_item_id vao DB: id ma
+    // (vd 999999999999999999) van 200 + dong mo coi (probe DS733 A1-A3,
+    // A7-A10). Khong co FK that tren cac cot nen DB khong chan.
+    // recipel_info_id / recipel_detail_id chi ghi o mapper <update>
+    // (insert khong co 2 cot nay) nen ghost 2 cot do chi mo coi qua duong
+    // update (save co id / bulkUpdate) — guard chung ca 5 cot cho ca 3
+    // duong de hanh vi nhat quan (mau DS732).
+    private void checkInspectionCheckRefsExist(InspectionCheck entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getPatient() != null
+                && StringUtils.isNotBlank(entity.getPatient().getId())) {
+            Patient patient = patientDao.get(entity.getPatient().getId());
+            if (patient == null || !"0".equals(patient.getDelFlag())) {
+                throw new ServiceException("Bệnh nhân không tồn tại: "
+                        + entity.getPatient().getId());
+            }
+        }
+        if (entity.getRegistration() != null
+                && StringUtils.isNotBlank(entity.getRegistration().getId())) {
+            Registration registration =
+                    registrationDao.get(entity.getRegistration().getId());
+            if (registration == null
+                    || !"0".equals(registration.getDelFlag())) {
+                throw new ServiceException("Thông tin đăng ký không tồn tại: "
+                        + entity.getRegistration().getId());
+            }
+        }
+        if (entity.getCostItem() != null
+                && StringUtils.isNotBlank(entity.getCostItem().getId())) {
+            CostItem costItem = costItemDao.get(entity.getCostItem().getId());
+            if (costItem == null || !"0".equals(costItem.getDelFlag())) {
+                throw new ServiceException("Hạng mục khám chữa bệnh không tồn tại: "
+                        + entity.getCostItem().getId());
+            }
+        }
+        if (entity.getRecipelInfo() != null
+                && StringUtils.isNotBlank(entity.getRecipelInfo().getId())) {
+            RecipelInfo recipelInfo =
+                    recipelInfoDao.get(entity.getRecipelInfo().getId());
+            if (recipelInfo == null
+                    || !"0".equals(recipelInfo.getDelFlag())) {
+                throw new ServiceException("Đơn thuốc không tồn tại: "
+                        + entity.getRecipelInfo().getId());
+            }
+        }
+        if (entity.getRecipelDetail() != null
+                && StringUtils.isNotBlank(entity.getRecipelDetail().getId())) {
+            RecipelDetail recipelDetail =
+                    recipelDetailDao.get(entity.getRecipelDetail().getId());
+            if (recipelDetail == null
+                    || !"0".equals(recipelDetail.getDelFlag())) {
+                throw new ServiceException("Chi tiết đơn thuốc không tồn tại: "
+                        + entity.getRecipelDetail().getId());
+            }
         }
     }
 

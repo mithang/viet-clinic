@@ -9,6 +9,7 @@ import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
+import com.geeke.outpatient.dao.RecipelInfoDao;
 import com.geeke.outpatient.dao.RecipelInfoReviewDao;
 import com.geeke.outpatient.entity.*;
 import com.geeke.outpatient.vo.PrescriptionStatisticsVO;
@@ -42,6 +43,8 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
                     "doctor.name"));
     @Resource
     private RecipelInfoReviewDao recipelInfoReviewDao;
+    @Resource
+    private RecipelInfoDao recipelInfoDao;
     @Resource
     private RecipelInfoService recipelInfoService;
     @Resource
@@ -129,7 +132,30 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
             throw new ServiceException("Rà soát đơn thuốc không tồn tại: " + entity.getId());
         }
         checkRecipelInfoReviewStatusValues(entity);
+        checkRecipelInfoReviewRefsExist(entity);
         return super.save(entity);
+    }
+
+    // DS733: fail-closed 400 khi don thuoc khong ton tai qua bulkInsert /
+    // bulkUpdate. Duong save() don da duoc controller guard
+    // (recipelInfoService.get, RecipelInfoReviewController:397) nhung bulk*
+    // di duong CrudController chung -> service chi kiem tra recipelInfo
+    // non-blank roi ghi thang recipel_info_id: id ma van 200 + dong mo coi
+    // (probe DS733 B1/B4). medicalRecord KHONG co cot trong bang
+    // recipel_info_review (show columns: chi co recipel_info_id) nen ghost
+    // medicalRecord bi mapper luoc bo, khong guard — khong de lai dong mo
+    // coi. Don da xoa mem (del_flag='1') cung 400 nhu id ma (mau DS732).
+    private void checkRecipelInfoReviewRefsExist(RecipelInfoReview entity) {
+        if (entity == null || entity.getRecipelInfo() == null
+                || StrUtil.isBlank(entity.getRecipelInfo().getId())) {
+            return;
+        }
+        RecipelInfo recipelInfo =
+                recipelInfoDao.get(entity.getRecipelInfo().getId());
+        if (recipelInfo == null || !"0".equals(recipelInfo.getDelFlag())) {
+            throw new ServiceException("Không tìm thấy đơn thuốc: "
+                    + entity.getRecipelInfo().getId());
+        }
     }
 
     @Override
@@ -147,6 +173,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
                 throw new ServiceException("Rà soát đơn thuốc phải gắn với một đơn thuốc");
             }
             checkRecipelInfoReviewStatusValues(entity);
+            checkRecipelInfoReviewRefsExist(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -168,6 +195,7 @@ public class RecipelInfoReviewService extends CrudService<RecipelInfoReviewDao, 
                 throw new ServiceException("Rà soát đơn thuốc không tồn tại: " + entity.getId());
             }
             checkRecipelInfoReviewStatusValues(entity);
+            checkRecipelInfoReviewRefsExist(entity);
         }
         return super.bulkUpdate(entitys);
     }
