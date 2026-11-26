@@ -7,9 +7,16 @@ import com.geeke.common.service.ServiceException;
 import com.geeke.cure.entity.InspectionCheck;
 import com.geeke.cure.service.InspectionCheckInfoService;
 import com.geeke.cure.service.InspectionCheckService;
+import com.geeke.outpatient.dao.PresDrugMapper;
 import com.geeke.outpatient.dao.RecipelDetailDao;
 import com.geeke.outpatient.dao.RecipelInfoDao;
 import com.geeke.outpatient.entity.*;
+import com.geeke.stock.dao.DrugDao;
+import com.geeke.stock.dao.StuffDao;
+import com.geeke.stock.entity.Drug;
+import com.geeke.stock.entity.Stuff;
+import com.geeke.treatment.dao.CostItemDao;
+import com.geeke.treatment.entity.CostItem;
 import com.geeke.sys.entity.SysParamConfig;
 import com.geeke.sys.service.SysParamConfigService;
 import com.geeke.utils.SessionUtils;
@@ -53,6 +60,18 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
 
     @Autowired
     private SysParamConfigService sysParamConfigService;
+
+    @Autowired
+    private DrugDao drugDao;
+
+    @Autowired
+    private StuffDao stuffDao;
+
+    @Autowired
+    private PresDrugMapper presDrugMapper;
+
+    @Autowired
+    private CostItemDao costItemDao;
 
     // DS108 C1/C10-C12: save/bulkInsert/bulkUpdate truoc day de lo:
     // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
@@ -131,7 +150,67 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         // truong KHONG co @Length: stuffType -> varchar(100), remarks
         // -> varchar(255). Gioi han theo cot DB; null-safe.
         checkRecipelDetailLengths(entity);
+        checkRecipelDetailRefsExist(entity);
         return super.save(entity);
+    }
+
+    // DS732: fail-closed 400 khi don thuoc / thuoc-vat tu khong ton tai.
+    // Truoc day save()/bulkInsert/bulkUpdate chi kiem tra minTotal
+    // (checkRecipelDetailRequired) roi ghi recipel_info_id/drug_stuff_id
+    // thang vao DB: id ma (vd 999999999999999999) van 200 + dong mo coi
+    // (probe DS732 B1c/B2c/B4b/B5b). Khong co FK that tren 2 cot nen DB
+    // khong chan. drugStuffId theo luong that cua he thong la id thuoc
+    // (drug) hoac vat tu (stuff) hoac thuoc ke don (pres_drug) -- xem
+    // MedicinalStorageControlService:672-673 (drug roi stuff) va
+    // DataBean:212 (presDrug truoc drug) -- HOAC hang muc kham chua benh
+    // (cost_item): RecipelDetailDao.xml:579 findByInfoId JOIN cost_item
+    // ON ci.id = a.drug_stuff_id (item_type treatmentItemType_2/3), cac
+    // luong cure/infusion + RegistrationDao/SchedulesDao deu JOIN nhu vay;
+    // chi can 1 trong 4 ton tai. DS732 sua (reg-final phat hien hoi quy):
+    // ban dau chi kiem drug/stuff/pres_drug nen detail dung cost_item hop
+    // le (vd DS316 fixture COST2/COST3) bi 400 sai, lam 45 leg reg-final
+    // FAIL; them cost_item del_flag='0' thi het.
+    // Chi kiem tra khi id khac rong: null giu hanh vi cu (DS159 C/DS712
+    // chan thieu thuoc o duong allSave, khong phai o day).
+    private void checkRecipelDetailRefsExist(RecipelDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getRecipelInfo() != null
+                && StringUtils.isNotBlank(entity.getRecipelInfo().getId())) {
+            RecipelInfo recipelInfo = recipelInfoDao.get(entity.getRecipelInfo().getId());
+            if (recipelInfo == null || !"0".equals(recipelInfo.getDelFlag())) {
+                throw new ServiceException("Đơn thuốc không tồn tại: "
+                        + entity.getRecipelInfo().getId());
+            }
+        }
+        if (entity.getDrugStuffId() != null
+                && StringUtils.isNotBlank(entity.getDrugStuffId().getDrugStuffId())) {
+            String drugStuffId = entity.getDrugStuffId().getDrugStuffId();
+            boolean exists = false;
+            Drug drug = drugDao.get(drugStuffId);
+            if (drug != null && "0".equals(drug.getDelFlag())) {
+                exists = true;
+            }
+            if (!exists) {
+                Stuff stuff = stuffDao.get(drugStuffId);
+                if (stuff != null && "0".equals(stuff.getDelFlag())) {
+                    exists = true;
+                }
+            }
+            if (!exists && presDrugMapper.selectById(drugStuffId) != null) {
+                exists = true;
+            }
+            if (!exists) {
+                CostItem costItem = costItemDao.get(drugStuffId);
+                if (costItem != null && "0".equals(costItem.getDelFlag())) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                throw new ServiceException("Thuốc/vật tư không tồn tại: " + drugStuffId);
+            }
+        }
     }
 
     /**
@@ -181,6 +260,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailInfuseGroupValues(entity); // DS536
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
+            checkRecipelDetailRefsExist(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -223,6 +303,7 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         checkRecipelDetailInfuseGroupValues(entity); // DS536
             checkExecutionsNotExceedCap(entity);
             checkRecipelDetailLengths(entity);
+            checkRecipelDetailRefsExist(entity);
         }
         return super.bulkUpdate(entitys);
     }

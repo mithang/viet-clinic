@@ -19,7 +19,10 @@ import com.geeke.cure.service.InspectionCheckInfoService;
 import com.geeke.cure.service.InspectionCheckService;
 import com.geeke.org.entity.Company;
 import com.geeke.org.service.CompanyService;
+import com.geeke.admin.dao.UserDao;
+import com.geeke.admin.entity.User;
 import com.geeke.outpatient.dao.MedicalRecordDao;
+import com.geeke.outpatient.dao.RegistrationDao;
 import com.geeke.outpatient.entity.*;
 import com.geeke.stock.dao.DrugDao;
 import com.geeke.stock.dao.StuffDao;
@@ -105,6 +108,12 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
 
     @Autowired
     private MedicalRecordDao medicalRecordDao;
+
+    @Autowired
+    private RegistrationDao registrationDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private SysFileService sysFileService;
@@ -202,7 +211,39 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
                 && super.get(medicalRecord.getId()) == null) {
             throw new ServiceException("Bệnh án không tồn tại: " + medicalRecord.getId());
         }
+        checkMedicalRecordRefsExist(medicalRecord);
         return super.save(medicalRecord);
+    }
+
+    // DS732: fail-closed 400 khi bac si / luot kham khong ton tai.
+    // Truoc day bulkInsert/bulkUpdate chi kiem tra doctor/registration
+    // non-blank (checkMedicalRecordRequired) roi ghi doctor_id/
+    // registration_id thang vao DB: id ma (vd 999999999999999999) van 200
+    // + dong mo coi (probe DS732 D1/D2/D4b/D5b). Duong save() don da 400
+    // nho registerSave/saveAdd verify luot kham + CrudService.save (probe
+    // D6b/D7b) nen guard nay o save() chi lam tuong minh hanh vi da co.
+    // Khong co FK that tren 2 cot nen DB khong chan. Chi kiem tra khi id
+    // khac rong: null giu hanh vi cu (save() khong yeu cau doctor).
+    private void checkMedicalRecordRefsExist(MedicalRecord medicalRecord) {
+        if (medicalRecord == null) {
+            return;
+        }
+        if (medicalRecord.getDoctor() != null
+                && StringUtils.isNotBlank(medicalRecord.getDoctor().getId())) {
+            User doctor = userDao.get(medicalRecord.getDoctor().getId());
+            if (doctor == null || !"0".equals(doctor.getDelFlag())) {
+                throw new ServiceException("Bác sĩ không tồn tại: "
+                        + medicalRecord.getDoctor().getId());
+            }
+        }
+        if (medicalRecord.getRegistration() != null
+                && StringUtils.isNotBlank(medicalRecord.getRegistration().getId())) {
+            Registration registration = registrationDao.get(medicalRecord.getRegistration().getId());
+            if (registration == null || !"0".equals(registration.getDelFlag())) {
+                throw new ServiceException("Đăng ký khám không tồn tại: "
+                        + medicalRecord.getRegistration().getId());
+            }
+        }
     }
 
     /**
@@ -258,6 +299,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             checkMedicalRecordVitals(medicalRecord);
             // DS252: fee am cung chan tai day (bulkInsert P1/P2).
             checkMedicalRecordFee(medicalRecord);
+            checkMedicalRecordRefsExist(medicalRecord);
         }
         return super.bulkInsert(entitys);
     }
@@ -287,6 +329,7 @@ public class MedicalRecordService extends CrudService<MedicalRecordDao, MedicalR
             checkMedicalRecordVitals(medicalRecord);
             // DS252: fee am cung chan tai day (bulkUpdate P5).
             checkMedicalRecordFee(medicalRecord);
+            checkMedicalRecordRefsExist(medicalRecord);
         }
         return super.bulkUpdate(entitys);
     }

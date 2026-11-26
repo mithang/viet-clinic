@@ -14,7 +14,10 @@ import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.geeke.cure.dao.InspectionCheckDetailDao;
+import com.geeke.cure.dao.InspectionCheckInfoDao;
 import com.geeke.cure.entity.InspectionCheckDetail;
+import com.geeke.cure.entity.InspectionCheckInfo;
+import com.geeke.treatment.dao.CostItemDao;
 import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 
@@ -30,6 +33,12 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
 
     @Autowired
     private CostItemService costItemService;
+
+    @Autowired
+    private InspectionCheckInfoDao inspectionCheckInfoDao;
+
+    @Autowired
+    private CostItemDao costItemDao;
 
     @Autowired
     private CostItemPackageService costItemPackageService;
@@ -83,7 +92,40 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
         // null-safe.
         checkInspectionCheckDetailLengths(entity);
         checkInspectionCheckDetailSignValues(entity);
+        checkInspectionCheckDetailRefsExist(entity);
         return super.save(entity);
+    }
+
+    // DS732: fail-closed 400 khi phieu kiem tra / hang muc khong ton tai.
+    // Truoc day save()/bulkInsert/bulkUpdate chi kiem tra
+    // inspectionCheckInfo/costItem non-blank (checkRequired) roi ghi
+    // inspection_check_info_id/cost_item_id thang vao DB: id ma (vd
+    // 999999999999999999) van 200 + dong mo coi (probe DS732 A1/A2/A4/A5/A6,
+    // 5 dong), chi tiet khong hien o bat ky phieu/hang muc nao. Khong co FK
+    // that tren 2 cot nen DB khong chan. inspection_check_info KHONG co cot
+    // del_flag (hard delete) nen dao.get null CHINH LA khong ton tai;
+    // cost_item co del_flag nen dong da xoa mem cung 400 (mau DS731).
+    private void checkInspectionCheckDetailRefsExist(InspectionCheckDetail entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getInspectionCheckInfo() != null
+                && StringUtils.isNotBlank(entity.getInspectionCheckInfo().getId())) {
+            InspectionCheckInfo info = inspectionCheckInfoDao
+                    .get(entity.getInspectionCheckInfo().getId());
+            if (info == null) {
+                throw new ServiceException("Chi tiết bảng kiểm tra không tồn tại: "
+                        + entity.getInspectionCheckInfo().getId());
+            }
+        }
+        if (entity.getCostItem() != null
+                && StringUtils.isNotBlank(entity.getCostItem().getId())) {
+            CostItem costItem = costItemDao.get(entity.getCostItem().getId());
+            if (costItem == null || !"0".equals(costItem.getDelFlag())) {
+                throw new ServiceException("Hạng mục khám chữa bệnh không tồn tại: "
+                        + entity.getCostItem().getId());
+            }
+        }
     }
 
     // DS108 B3-B6/B10-B11: bulkInsert truoc day de lo: null/rong roi xuong
@@ -101,6 +143,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
             checkInspectionCheckDetailRequired(entity);
             checkInspectionCheckDetailLengths(entity);
             checkInspectionCheckDetailSignValues(entity);
+            checkInspectionCheckDetailRefsExist(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -128,6 +171,7 @@ public class InspectionCheckDetailService extends CrudService<InspectionCheckDet
             checkInspectionCheckDetailRequired(entity);
             checkInspectionCheckDetailLengths(entity);
             checkInspectionCheckDetailSignValues(entity);
+            checkInspectionCheckDetailRefsExist(entity);
         }
         return super.bulkUpdate(entitys);
     }

@@ -21,6 +21,8 @@ import com.geeke.common.service.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import com.geeke.outpatient.dao.RecipelInfoDao;
+import com.geeke.outpatient.dao.RegistrationDao;
+import com.geeke.outpatient.entity.Registration;
 
 import com.google.common.collect.Maps;
 
@@ -38,6 +40,9 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
     private RegistrationService registrationService;
     @Autowired
     private RecipelInfoDao recipelInfoDao;
+
+    @Autowired
+    private RegistrationDao registrationDao;
 
     @Lazy
     @Autowired
@@ -683,7 +688,26 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             throw new ServiceException("Đơn thuốc không tồn tại: "
                     + entity.getId());
         }
+        checkRecipelInfoRegistrationExists(entity);
         return super.save(entity);
+    }
+
+    // DS732: fail-closed 400 khi luot kham khong ton tai. Truoc day save()/
+    // bulkInsert/bulkUpdate chi kiem tra seq/isFollowUp (validateRequired)
+    // roi ghi registration_id thang vao DB: id ma (vd 999999999999999999)
+    // van 200 + dong mo coi (probe DS732 C1b/C3b), don thuoc khong gan
+    // vao luot kham nao. Khong co FK that tren cot nen DB khong chan.
+    // Chi kiem tra khi id khac rong: null giu hanh vi cu.
+    private void checkRecipelInfoRegistrationExists(RecipelInfo entity) {
+        if (entity == null || entity.getRegistration() == null
+                || StringUtils.isBlank(entity.getRegistration().getId())) {
+            return;
+        }
+        Registration registration = registrationDao.get(entity.getRegistration().getId());
+        if (registration == null || !"0".equals(registration.getDelFlag())) {
+            throw new ServiceException("Đăng ký khám không tồn tại: "
+                    + entity.getRegistration().getId());
+        }
     }
 
     @Override
@@ -721,6 +745,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkFollowUpDateNotPast(entity);
             checkRecipelInfoEventDatesNotFuture(entity);
             checkRecipelInfoDateOrder(entity);
+            checkRecipelInfoRegistrationExists(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -756,6 +781,7 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
             checkFollowUpDateNotPast(entity);
             checkRecipelInfoEventDatesNotFuture(entity);
             checkRecipelInfoDateOrder(entity);
+            checkRecipelInfoRegistrationExists(entity);
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của đơn thuốc đã tồn tại");
             }
