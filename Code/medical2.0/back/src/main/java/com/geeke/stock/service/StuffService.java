@@ -974,6 +974,12 @@ public class StuffService extends CrudService<StuffDao, Stuff> {
 
     public Page<Stuff> listByCompany(List<Parameter> params, int offset, int limit, String orderby) {
         Parameter.extractAndRemoveCompanyId(params);
+        // DS721: nhu DrugService.listByCompany — boc nhom OR cua body
+        // trong ngoac truoc khi mapper AND them dieu kien tenant
+        // (if company.is_institution dung TRUOC whereParams o
+        // StuffDao.listPages); probe live: or(id own, id foreign) tra
+        // ca dong vat tu tenant khac. Mau DS720.
+        Parameter.wrapBodyParamsForTenantFilter(params);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
             id = null;

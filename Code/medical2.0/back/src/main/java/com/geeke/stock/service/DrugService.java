@@ -977,6 +977,12 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
     public List<Drug> inventory(List<Parameter> parameters, String orderby) {
         // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
         Parameter.extractAndRemoveCompanyId(parameters);
+        // DS721: boc nhom OR cua body trong ngoac truoc khi mapper AND
+        // them dieu kien tenant co dinh (company.parent_id = #{institution}
+        // dung TRUOC whereParams): neu khong, disjunct OR dung sau thoat
+        // khoi filter va cong ca ton kho thuoc tenant khac vao tong
+        // (probe live: or-sum 10005 vs own 10000). Mau DS720.
+        Parameter.wrapBodyParamsForTenantFilter(parameters);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
             id = null;
@@ -1160,6 +1166,12 @@ public class DrugService extends CrudService<DrugDao, Drug>  {
 
 
     public Page<Drug> listByCompany(List<Parameter> params, int offset, int limit, String orderby) {
+        // DS721: boc nhom OR cua body trong ngoac truoc khi mapper AND
+        // them dieu kien tenant (if company.is_institution dung TRUOC
+        // whereParams o DrugDao.listPages): neu khong, disjunct OR dung
+        // sau thoat khoi filter va tra dong thuoc tenant khac (probe live:
+        // or(id own, id foreign) tra ca 2 dong). Mau DS720.
+        Parameter.wrapBodyParamsForTenantFilter(params);
         PageRequest pageRequest = new PageRequest(offset, limit, params, orderby,SessionUtils.getLoginTenantId());
         return paginate(
             () -> dao.count(pageRequest),

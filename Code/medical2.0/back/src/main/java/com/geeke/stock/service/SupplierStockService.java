@@ -645,6 +645,13 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
             orderby) {
         // Loại bỏ ở frontend company_id(Ngăn vượt quyền), Thống nhất lấy tenant đăng nhập trong phiên làm ranh giới cách ly
         Parameter.extractAndRemoveCompanyId(parameters);
+        // DS721: boc nhom OR cua body trong ngoac truoc khi mapper AND
+        // them dieu kien tenant co dinh (if company.is_institution dung
+        // TRUOC whereParams o SupplierStockDao.getDrugIndateWarning):
+        // neu khong, disjunct OR dung sau thoat khoi filter va tra dong
+        // canh bao han cua tenant khac (probe live: or(id own, id
+        // foreign) tra dong foreign). Mau DS720.
+        Parameter.wrapBodyParamsForTenantFilter(parameters);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
             id = null;
@@ -677,6 +684,11 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
                                                      String orderby) {
         // Z2b: cùng mẫu getDrugIndateWarning — strip company_id body, ép tenant session
         Parameter.extractAndRemoveCompanyId(parameters);
+        // DS721: nhu getDrugIndateWarning — boc nhom OR cua body trong
+        // ngoac truoc khi mapper AND them dieu kien tenant co dinh dung
+        // TRUOC whereParams (SupplierStockDao.getStuffIndateWarning);
+        // probe live: or(id own, id foreign) tra dong foreign. Mau DS720.
+        Parameter.wrapBodyParamsForTenantFilter(parameters);
         String id = SessionUtils.getLoginTenantId();
         if ("null".equals(id)) {
             id = null;

@@ -441,8 +441,15 @@ public class MedicinalStockControlService extends CrudService<MedicinalStockCont
      * @return
      */
     public List<MedicinalStockControl> listAllByCompany(List<Parameter> parameters, String orderby) {
-
-        PageRequest pageRequest = new PageRequest(parameters, orderby, SessionUtils.getLoginTenantId());
+        // DS721: truoc day new PageRequest(parameters, orderby, tenantId)
+        // khong truyen institution -> mapper listAlls <if institution>
+        // bo qua hoan toan dieu kien tenant, bat ky session nao co quyen
+        // cung doc duoc toan bo dong ton kho cua moi tenant (probe live:
+        // goi tran tra ca dong foreign, and-only foreign id cung tra).
+        // Dung buildTenantPageRequest nhu listPreAll cung service: boc
+        // nhom OR body + truyen ca id/institution de mapper loc
+        // (company = institution OR id).
+        PageRequest pageRequest = buildTenantPageRequest(parameters, orderby);
 
         return dao.listAlls(pageRequest);
     }

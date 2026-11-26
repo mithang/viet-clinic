@@ -119,6 +119,12 @@ public class TollDetailService extends CrudService<TollDetailDao, TollDetail>{
         List<Parameter> params = parameters == null
                 ? new java.util.ArrayList<Parameter>() : parameters;
         Parameter.extractAndRemoveCompanyId(params);
+        // DS721: boc nhom OR cua body trong ngoac TRUOC KHI AND them
+        // nhom scope (tollId.company_id = tenant OR tollId.id IS NULL):
+        // neu khong, disjunct dung truoc thoat khoi nhom scope (probe
+        // live: [and toll_id=foreign, or id=foreign-detail] tra dong
+        // thuoc tenant khac). Mau DS720.
+        Parameter.wrapBodyParamsForTenantFilter(params);
         String tenantId = SessionUtils.getLoginTenantId();
         if (StringUtils.isBlank(tenantId) || "null".equals(tenantId)) {
             return params;
