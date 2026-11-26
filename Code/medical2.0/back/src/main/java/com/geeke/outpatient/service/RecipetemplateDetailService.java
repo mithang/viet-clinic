@@ -584,6 +584,26 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
         }
         for (RecipeTemplateDetail recipeTemplateDetail:
         recipeTemplateDetails) {
+            // DS713: a detail without a drug/stuff/cost item survived
+            // saveTemplate's tenant filter (isDetailBelongsToCompany
+            // returns true on detail.company alone, never checking the
+            // drug) and inserted with NULL drug_stuff_id (column
+            // nullable) -> 200; the next GET then NPEd 500 in
+            // getDrugStuffEvt:644 (.getDrugStuffId().getDrugStuffId()
+            // with stuffType 0-4), same malformed class as DS712
+            // (v1 recipel detail without drug). A drug-less detail is
+            // never valid domain state (every stuffType 0-4 needs a
+            // drugStuffId), so fail-closed 400 here, before any write
+            // (same @Transactional as saveTemplate, rolls back header
+            // + info too). Null rows are filtered in saveTemplate but
+            // guarded here too, DS660 pattern.
+            if (recipeTemplateDetail == null) {
+                throw new ServiceException("Chi tiết mẫu đơn thuốc không được để trống");
+            }
+            if (recipeTemplateDetail.getDrugStuffId() == null
+                    || StringUtils.isBlank(recipeTemplateDetail.getDrugStuffId().getDrugStuffId())) {
+                throw new ServiceException("Chi tiết mẫu đơn thuốc thiếu thuốc/vật tư");
+            }
             checkDetailNonNegative(recipeTemplateDetail);
             checkMinTotalNotLessThanTotal(recipeTemplateDetail); // DS301
             checkRecipeTemplateDetailIsExtraValues(recipeTemplateDetail); // DS375
@@ -725,6 +745,15 @@ public class RecipetemplateDetailService extends CrudService<RecipeTemplateDetai
             for (RecipeTemplateDetail recipeTemplateDetail : recipeTemplateDetails) {
                 if (recipeTemplateDetail == null) {
                     throw new ServiceException("Chi tiết mẫu đơn thuốc không được để trống");
+                }
+                // DS713: same hole as allSave (create) -- a drug-less
+                // detail updated through here inserted with NULL
+                // drug_stuff_id -> 200, then the next GET NPEd 500 in
+                // getDrugStuffEvt:644; fail-closed 400 upfront, before
+                // the delete below (same rule as allSave).
+                if (recipeTemplateDetail.getDrugStuffId() == null
+                        || StringUtils.isBlank(recipeTemplateDetail.getDrugStuffId().getDrugStuffId())) {
+                    throw new ServiceException("Chi tiết mẫu đơn thuốc thiếu thuốc/vật tư");
                 }
                 if (recipeTemplateDetail.getRecipeTemplateInfo() == null
                         || StringUtils.isBlank(recipeTemplateDetail.getRecipeTemplateInfo().getId())) {
