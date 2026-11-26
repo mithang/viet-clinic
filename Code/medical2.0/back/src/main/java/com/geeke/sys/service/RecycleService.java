@@ -97,11 +97,15 @@ public class RecycleService extends ActionService {
 	// generic (anh huong toan bo service) — loc tuong minh o day:
 	// admin giu action:list bypass (nhu ActionService), con lai them
 	// company_id = session tenant (dong NULL bi loc mat, fail-closed).
-	// Luu y: khong goi wrapBodyParamsForTenantFilter (private trong
-	// CrudService) — caller cua recycle list chi gui filter don
-	// (drawer: 1 eq object_id; trang admin: cac truong AND), khong co
-	// nhom OR kieu iter20; neu sau nay co caller gui OR thi phai wrap
-	// truoc khi them company_id.
+	// DS722: boc nhom OR cua body truoc khi them company_id — truoc day
+	// khong boc, caller gui [and id=own, or id=fx1, or id=fx2] thi SQL
+	// render "id=own OR id=fx1 OR id=fx2 AND company_id=tenant" (AND
+	// ket chat hon OR) nen disjunct GIUA thoat filter va tra dong tenant
+	// khac (probe live A3/B1); param OR dau tien con thoat ca tien to
+	// co dinh "del_flag='0'" nen tra gan nhu toan bo bang (A4 total
+	// 2993). Mau DS720 — Parameter.wrapBodyParamsForTenantFilter (helper
+	// shared, khong phai private cua CrudService nua) chi boc khi co OR
+	// that su render, filter don AND giu nguyen hanh vi.
 	@Override
 	public Page<Action> listPage(List<Parameter> parameters, int offset, int limit, String orderby) {
 		if (hasActionList()) {
@@ -120,6 +124,10 @@ public class RecycleService extends ActionService {
 			return dao.listAll(pageRequest);
 		}
 		Parameter.extractAndRemoveCompanyId(parameters);
+		// DS722: boc nhom OR cua body truoc khi append company_id (xem
+		// ghi chu DS2 o tren) — neu khong, disjunct OR giua/dau thoat
+		// khoi filter tenant va tra dong tenant khac (probe live).
+		Parameter.wrapBodyParamsForTenantFilter(parameters);
 		String tenantId = SessionUtils.getLoginTenantId();
 		if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
 			parameters.add(new Parameter("company_id", "=", tenantId));
@@ -130,6 +138,8 @@ public class RecycleService extends ActionService {
 
 	private Page<Action> listScoped(List<Parameter> parameters, int offset, int limit, String orderby) {
 		Parameter.extractAndRemoveCompanyId(parameters);
+		// DS722: nhu listAll o tren.
+		Parameter.wrapBodyParamsForTenantFilter(parameters);
 		String tenantId = SessionUtils.getLoginTenantId();
 		if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)) {
 			parameters.add(new Parameter("company_id", "=", tenantId));
