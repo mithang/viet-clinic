@@ -5,12 +5,15 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.geeke.admin.dao.RouterDao;
+import com.geeke.admin.entity.Router;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.sys.dao.QueryConditionDao;
 import com.geeke.sys.entity.QueryCondition;
 import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Điều kiện truy vấnService
@@ -20,6 +23,28 @@ import com.google.common.collect.Maps;
  
 @Service("queryConditionService")
 public class QueryConditionService extends CrudService<QueryConditionDao, QueryCondition>{
+
+    @Autowired
+    private RouterDao routerDao;
+
+    // DS737: fail-closed 400 khi tuyen duong khong ton tai (mau DS731
+    // UserGrid ghost router). Truoc day save()/bulk* chi kiem tra
+    // routerId non-null roi ghi thang vao sys_condition: id ma
+    // (vd 999999999) van 200 + dong mo coi (probe DS737 C1), dieu kien
+    // do khong bao gio dung vi router khong ton tai. sys_condition
+    // KHONG co FK that tren router_id nen DB khong chan.
+    // routerDao.get() khong loc del_flag nen dong da xoa mem cung 400.
+    // Chi chan routerId; userId da duoc controller chan chi cho user
+    // cua session (DS47/DS48) tren ca save/bulkInsert/bulkUpdate.
+    private void checkRouterExists(Long routerId) {
+        if (routerId == null) {
+            throw new ServiceException("Định tuyến id Không được để trống");
+        }
+        Router router = routerDao.get(String.valueOf(routerId));
+        if (router == null || !"0".equals(router.getDelFlag())) {
+            throw new ServiceException("Tuyến đường không tồn tại: " + routerId);
+        }
+    }
 
     /**
      * DS112: CrudService.save re nhanh update khi id khac rong, doUpdate
@@ -57,6 +82,8 @@ public class QueryConditionService extends CrudService<QueryConditionDao, QueryC
     @Override
     public QueryCondition save(QueryCondition entity) {
         validateRequired(entity);
+        // DS737: chan router ma (xem helper ben tren).
+        checkRouterExists(entity.getRouterId());
         if (StringUtils.isNotBlank(entity.getId())
                 && dao.get(entity.getId()) == null) {
             throw new ServiceException("Điều kiện truy vấn không tồn tại: "
@@ -72,6 +99,8 @@ public class QueryConditionService extends CrudService<QueryConditionDao, QueryC
         }
         for (QueryCondition entity : entitys) {
             validateRequired(entity);
+            // DS737: chan router ma (xem helper ben tren).
+            checkRouterExists(entity.getRouterId());
         }
         return super.bulkInsert(entitys);
     }
@@ -83,6 +112,8 @@ public class QueryConditionService extends CrudService<QueryConditionDao, QueryC
         }
         for (QueryCondition entity : entitys) {
             validateRequired(entity);
+            // DS737: chan router ma (xem helper ben tren).
+            checkRouterExists(entity.getRouterId());
             if (StringUtils.isBlank(entity.getId())) {
                 throw new ServiceException("Cập nhật hàng loạt yêu cầu id của điều kiện truy vấn đã tồn tại");
             }

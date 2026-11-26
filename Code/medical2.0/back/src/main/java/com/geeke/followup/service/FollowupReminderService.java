@@ -9,6 +9,8 @@ import com.geeke.followup.entity.FollowupReminder;
 import com.geeke.noticesend.entity.NoticeSend;
 import com.geeke.noticesend.service.NoticeSendService;
 import com.geeke.org.entity.Company;
+import com.geeke.outpatient.dao.PatientDao;
+import com.geeke.outpatient.entity.Patient;
 import com.geeke.sys.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,39 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
 
     @Autowired
     private NoticeSendService noticeSendService;
+
+    @Autowired
+    private PatientDao patientDao;
+
+    // DS737: fail-closed 400 khi benh nhan khong ton tai / khac tenant
+    // (mau DS710 MemberSet cascade cross-tenant + DS731-736 ghost-FK).
+    // Truoc day save()/bulk* chi kiem tra patientId non-null roi ghi
+    // thang vao followup_reminder: id ma van 200 + dong mo coi
+    // (probe DS737 I1b), lich hen do khong bao gio hien vi benh nhan
+    // khong ton tai. Bang KHONG co FK that tren patient_id nen DB
+    // khong chan. patientDao.get() khong loc del_flag nen dong da xoa
+    // mem cung 400. patientId null giu cho validateRequired/@Valid xu
+    // ly nhu cu.
+    private void checkPatientExists(FollowupReminder entity) {
+        if (entity == null || entity.getPatientId() == null) {
+            return;
+        }
+        Patient patient =
+                patientDao.get(String.valueOf(entity.getPatientId()));
+        if (patient == null || !"0".equals(patient.getDelFlag())) {
+            throw new ServiceException("Bệnh nhân không tồn tại: "
+                    + entity.getPatientId());
+        }
+        if (patient.getCompany() != null
+                && StringUtils.isNotBlank(patient.getCompany().getId())) {
+            String tenantId =
+                    com.geeke.utils.SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)
+                    && !tenantId.equals(patient.getCompany().getId())) {
+                throw new ServiceException("Bệnh nhân không thuộc phòng khám hiện tại");
+            }
+        }
+    }
 
     /**
      * AA4: chan ghi xuyen tenant qua bay getter getCompany(), mau Z3k.
@@ -168,6 +203,8 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
         checkFollowupReminderFollowupTypeValues(entity); // DS480
         checkNextDateNotPast(entity);
         checkLastNoticeDateNotFuture(entity);
+        // DS737: chan patient ma / khac tenant (xem helper ben tren).
+        checkPatientExists(entity);
         return super.save(entity);
     }
 
@@ -214,6 +251,8 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             checkFollowupReminderFollowupTypeValues(entity); // DS480
             checkNextDateNotPast(entity);
             checkLastNoticeDateNotFuture(entity);
+            // DS737: chan patient ma / khac tenant (xem helper ben tren).
+            checkPatientExists(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -237,6 +276,8 @@ public class FollowupReminderService extends CrudService<FollowupReminderDao, Fo
             checkFollowupReminderLengths(entity);
             checkFollowupReminderFollowupTypeValues(entity); // DS480
             checkNextDateNotPast(entity);
+            // DS737: chan patient ma / khac tenant (xem helper ben tren).
+            checkPatientExists(entity);
         }
         return super.bulkUpdate(entitys);
     }

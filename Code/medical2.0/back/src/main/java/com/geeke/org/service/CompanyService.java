@@ -8,6 +8,8 @@ import com.geeke.admin.entity.Role;
 import com.geeke.admin.entity.Router;
 import com.geeke.admin.entity.User;
 import com.geeke.admin.service.RoleService;
+import com.geeke.clinic.dao.ClinicVersionDao;
+import com.geeke.clinic.entity.ClinicVersion;
 import com.geeke.clinic.service.ClinicVersionService;
 import com.geeke.common.data.Page;
 import com.geeke.common.data.PageRequest;
@@ -50,6 +52,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
     private PermissionService permissionService;
     @Autowired
     private ClinicVersionService clinicVersionService;
+    @Autowired
+    private ClinicVersionDao clinicVersionDao;
     @Autowired
     private UserDao userDao;
 
@@ -188,6 +192,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             }
         }
         checkCompanySaveOwnership(company);
+        // DS737: chan version ma (xem helper ben tren).
+        checkVersionExists(company);
         // DS146 A: chan do dai (ca duong saveWithFile khong @Valid).
         checkCompanyLengths(company);
         // DS263: chan ngay het han truoc ngay bat dau su dung.
@@ -265,6 +271,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             // goc (probe B1), ids khong tinh theo parent that
             // (probe B4).
             resolveCompanyParent(company);
+            // DS737: chan version ma (xem helper checkVersionExists).
+            checkVersionExists(company);
         }
         return super.bulkInsert(entitys);
     }
@@ -297,6 +305,8 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             // DS152 B: nhu bulkInsert -- ghost / self / descendant
             // parent -> 400 truoc khi ghi.
             resolveCompanyParent(company);
+            // DS737: chan version ma (xem helper checkVersionExists).
+            checkVersionExists(company);
         }
         return super.bulkUpdate(entitys);
     }
@@ -363,6 +373,28 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
             }
         }
         company.setParent(parent);
+    }
+
+    // DS737: chan version ma o save()/bulkInsert/bulkUpdate (mau
+    // DS731-736 ghost-FK). Truoc day save()/bulk* chi kiem tra parent
+    // (TreeService.save / resolveCompanyParent) ma khong kiem tra
+    // version: id ma (vd 999999999999999999) van 200 + dong org_company
+    // mo coi tro version_id khong ton tai (probe DS737 A2b).
+    // org_company KHONG co FK that tren version_id nen DB khong chan.
+    // version null/rong giu hop le (dong live co version NULL);
+    // clinicVersionDao.get() khong loc del_flag nen dong da xoa mem
+    // cung 400 (kiem tra delFlag '0' nhu mau DS731).
+    private void checkVersionExists(Company company) {
+        if (company == null || company.getVersion() == null
+                || StringUtils.isBlank(company.getVersion().getId())) {
+            return;
+        }
+        ClinicVersion version =
+                clinicVersionDao.get(company.getVersion().getId());
+        if (version == null || !"0".equals(version.getDelFlag())) {
+            throw new ServiceException("Phiên bản phòng khám không tồn tại: "
+                    + company.getVersion().getId());
+        }
     }
 
     private void checkCompanySaveOwnership(Company company) {

@@ -1,10 +1,13 @@
 package com.geeke.admin.service;
 
 import com.geeke.admin.dao.ResourceDao;
+import com.geeke.admin.dao.RouterDao;
 import com.geeke.admin.entity.Resource;
+import com.geeke.admin.entity.Router;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,28 @@ import java.util.List;
 @Service("resourceService")
 @Transactional(readOnly = true)
 public class ResourceService extends CrudService<ResourceDao, Resource>{
+
+    @Autowired
+    private RouterDao routerDao;
+
+    // DS737: fail-closed 400 khi tuyen duong khong ton tai (mau DS731
+    // UserGrid ghost router). Truoc day save() khong goi
+    // checkResourceRequired, bulk* chi kiem tra router non-blank:
+    // router ma van 200 + dong sys_resource mo coi (probe DS737 B1),
+    // resource do khong bao gio hien vi router khong ton tai.
+    // sys_resource KHONG co FK that tren router_id nen DB khong chan.
+    // routerDao.get() khong loc del_flag nen dong da xoa mem cung 400.
+    private void checkRouterExists(Resource entity) {
+        if (entity == null || entity.getRouter() == null
+                || StringUtils.isBlank(entity.getRouter().getId())) {
+            throw new ServiceException("Tuyến đường không được để trống");
+        }
+        Router router = routerDao.get(entity.getRouter().getId());
+        if (router == null || !"0".equals(router.getDelFlag())) {
+            throw new ServiceException("Tuyến đường không tồn tại: "
+                    + entity.getRouter().getId());
+        }
+    }
 
     // DS107 C1/C10-C12: save/bulkInsert/bulkUpdate truoc day de lo:
     // save voi id khong ton tai roi qua CrudService.save -> doUpdate 0
@@ -45,6 +70,8 @@ public class ResourceService extends CrudService<ResourceDao, Resource>{
         // canPermission truc tiep o day; null/'' da 400 qua @Valid
         // (@NotNull + @Length min=1) o controller truoc khi vao service.
         checkResourceCanPermissionValues(entity);
+        // DS737: chan router ma (xem helper ben tren).
+        checkRouterExists(entity);
         return super.save(entity);
     }
 
@@ -178,6 +205,9 @@ public class ResourceService extends CrudService<ResourceDao, Resource>{
                 || StringUtils.isBlank(entity.getRouter().getId())) {
             throw new ServiceException("Tuyến đường không được để trống");
         }
+        // DS737: chan router ma (xem helper checkRouterExists);
+        // checkResourceRequired duoc bulkInsert/bulkUpdate goi.
+        checkRouterExists(entity);
     }
 
     public List<Resource> listAllByVersion(String roleId){

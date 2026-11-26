@@ -9,6 +9,7 @@ import com.geeke.common.persistence.BaseEntity;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.org.entity.Company;
+import com.geeke.outpatient.dao.RegistrationDao;
 import com.geeke.outpatient.entity.Registration;
 import com.geeke.outpatient.service.RegistrationService;
 import com.geeke.utils.SessionUtils;
@@ -83,6 +84,38 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
 
     @Autowired
     private RegistrationService registrationService;
+
+    @Autowired
+    private RegistrationDao registrationDao;
+
+    // DS737: fail-closed 400 khi dang ky kham khong ton tai / khac
+    // tenant (mau DS710 MemberSet cascade cross-tenant + DS731-736
+    // ghost-FK). Truoc day save()/bulk* chi kiem tra ngay/trang thai/
+    // do dai roi ghi thang vao booking_request: registrationId ma van
+    // 200 + dong mo coi (probe DS737 J1), yeu cau do khong bao gio
+    // lien ket duoc don dang ky. Bang KHONG co FK that tren
+    // registration_id nen DB khong chan. registrationDao.get() khong
+    // loc del_flag nen dong da xoa mem cung 400. registrationId null
+    // giu hop le (tao moi chua co dang ky; confirm() tao sau).
+    private void checkRegistrationExists(BookingRequest entity) {
+        if (entity == null || entity.getRegistrationId() == null) {
+            return;
+        }
+        Registration registration = registrationDao.get(
+                String.valueOf(entity.getRegistrationId()));
+        if (registration == null || !"0".equals(registration.getDelFlag())) {
+            throw new ServiceException("Đăng ký khám không tồn tại: "
+                    + entity.getRegistrationId());
+        }
+        if (registration.getCompany() != null
+                && StringUtils.isNotBlank(registration.getCompany().getId())) {
+            String tenantId = SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)
+                    && !tenantId.equals(registration.getCompany().getId())) {
+                throw new ServiceException("Đăng ký khám không thuộc phòng khám hiện tại");
+            }
+        }
+    }
 
     /**
      * AA4: chan ghi xuyen tenant qua bay getter getCompany(). CrudService
@@ -162,6 +195,8 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
         // Gioi han theo cot DB; null-safe. Guard dat sau mac dinh
         // status "0" o tren.
         checkBookingRequestLengths(entity);
+        // DS737: chan registration ma / khac tenant (xem helper ben tren).
+        checkRegistrationExists(entity);
         return super.save(entity);
     }
 
@@ -201,6 +236,8 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
             checkBookingRequestStatus(entity, true);
             checkWantedDateNotPast(entity);
             checkBookingRequestLengths(entity);
+            // DS737: chan registration ma / khac tenant (xem helper ben tren).
+            checkRegistrationExists(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -218,6 +255,8 @@ public class BookingRequestService extends CrudService<BookingRequestDao, Bookin
             checkBookingRequestStatus(entity, false);
             checkWantedDateNotPast(entity);
             checkBookingRequestLengths(entity);
+            // DS737: chan registration ma / khac tenant (xem helper ben tren).
+            checkRegistrationExists(entity);
         }
         return super.bulkUpdate(entitys);
     }

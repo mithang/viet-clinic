@@ -13,8 +13,12 @@ import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.medicareutils.config.MedicareConfigProperties;
+import com.geeke.org.dao.ClinicOfficeDao;
+import com.geeke.org.dao.DepartmentDao;
 import com.geeke.org.entity.Clinic;
+import com.geeke.org.entity.ClinicOffice;
 import com.geeke.org.entity.Company;
+import com.geeke.org.entity.Department;
 import com.geeke.org.service.CompanyService;
 import com.geeke.sys.entity.Action;
 import com.geeke.sys.entity.ActionRecycle;
@@ -63,7 +67,61 @@ public class UserService extends CrudService<UserDao, User>{
 
     private final UserExtDao userExtDao;
 
+    private final DepartmentDao departmentDao;
+
+    private final ClinicOfficeDao clinicOfficeDao;
+
     private final MedicareConfigProperties medicareConfigProperties;
+
+    // DS737: fail-closed 400 khi phong ban khong ton tai / khac tenant
+    // (mau DS731-736 ghost-FK). Truoc day save()/saveWithFile/bulkUpdate
+    // chi kiem tra loginName trung roi ghi thang vao sys_user:
+    // department ma van 200 + dong mo coi (probe DS737 F1), nguoi dung
+    // do khong hien dung phong ban o danh sach (join org_department).
+    // Bang KHONG co FK that tren department_id nen DB khong chan.
+    // departmentDao.get() khong loc del_flag nen dong da xoa mem cung
+    // 400. department null/rong/'0' giu hop le (dong live co NULL
+    // hoac '0'). Phong ban khac tenant cung 400 (mau DS710).
+    // DS737 close-out (HOI QUY sua ngay): department_id cua User KHONG
+    // chi tro org_department. UserController.saveWithFile/update GHI DE
+    // department tu clinic_office (lookup theo userExt.office roi
+    // setDepartment(id clinic_office)) nen moi user tao qua form
+    // multipart deu mang id clinic_office; org_department hien co 0
+    // dong trong DB chuan. Guard ban dau chi chap nhan org_department
+    // nen 400 moi saveWithFile hop le (vd office "Nội khoa" ->
+    // clinic_office 2298416718726168644; reg-final run1: ds304 7/14,
+    // ds457 8/15, ds623 15/16, ds627 7/11). Sua: chap nhan id ton tai
+    // o BAT KY bang nao trong hai bang (del_flag='0', cung tenant);
+    // ma o ca hai bang (hoac khac tenant) van 400 nhu cu.
+    private void checkDepartmentExists(User user) {
+        if (user == null || user.getDepartment() == null
+                || StringUtils.isBlank(user.getDepartment().getId())
+                || "0".equals(user.getDepartment().getId())) {
+            return;
+        }
+        String deptId = user.getDepartment().getId();
+        Department department = departmentDao.get(deptId);
+        if (department != null && "0".equals(department.getDelFlag())) {
+            checkSameTenant(department.getCompany(), deptId);
+            return;
+        }
+        ClinicOffice office = clinicOfficeDao.get(deptId);
+        if (office != null && "0".equals(office.getDelFlag())) {
+            checkSameTenant(office.getCompany(), deptId);
+            return;
+        }
+        throw new ServiceException("Phòng ban không tồn tại: " + deptId);
+    }
+
+    private void checkSameTenant(Company company, String deptId) {
+        if (company != null && StringUtils.isNotBlank(company.getId())) {
+            String tenantId = SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)
+                    && !tenantId.equals(company.getId())) {
+                throw new ServiceException("Phòng ban không thuộc phòng khám hiện tại");
+            }
+        }
+    }
 
     @Override
     public User get(String id) {
@@ -168,6 +226,10 @@ public class UserService extends CrudService<UserDao, User>{
     @Override
     @Transactional(readOnly = false)
     public User save(User user) {
+        // DS737: chan department ma / khac tenant (xem helper ben tren);
+        // phu ca nhanh tao moi (uy quyen saveWithFile ben duoi) va nhanh
+        // cap nhat theo id.
+        checkDepartmentExists(user);
         if (StringUtils.isBlank(user.getId())) {
             // Create: dung duong guard nhu saveWithFile, khong file.
             if (user.getUserExt() == null) {
@@ -284,6 +346,9 @@ public class UserService extends CrudService<UserDao, User>{
                     throw new ServiceException("Không có quyền truy cập tenant khácDữ liệu");
                 }
             }
+            // DS737: chan department ma / khac tenant (xem helper ben tren).
+            // bulkUpdate di thang super.bulkUpdate, khong qua save(User).
+            checkDepartmentExists(entity);
             if (StringUtils.isNotBlank(entity.getLoginName())) {
                 User probe = new User();
                 probe.setLoginName(entity.getLoginName());
@@ -493,6 +558,10 @@ public class UserService extends CrudService<UserDao, User>{
                      String[] deleteIds) throws java.io.IOException {
         // DS83: guard null truoc moi ghi (xem normalizeUserForFileSave).
         normalizeUserForFileSave(user);
+        // DS737: chan department ma / khac tenant (xem helper ben tren).
+        // Duong multipart nay duoc UserController.saveWithFile goi truc
+        // tiep, khong qua save(User) nen guard rieng o day.
+        checkDepartmentExists(user);
         // DS304: ngay bat dau hanh nghe sau ngay ket thuc -> 400.
         checkUserExtWorkTimeOrder(user.getUserExt());
         // DS457: jobType ngoai 4 muc {'Bác sĩ','Dược sĩ','Điều dưỡng','Khác'} -> 400.
@@ -704,6 +773,9 @@ public class UserService extends CrudService<UserDao, User>{
                        String[] deleteIds) throws java.io.IOException {
         // DS83: guard null truoc moi ghi (xem normalizeUserForFileSave).
         normalizeUserForFileSave(user);
+        // DS737: chan department ma / khac tenant (xem helper ben tren).
+        // Duong update multipart ghi department truc tiep, khong qua save(User).
+        checkDepartmentExists(user);
         // DS304: ngay bat dau hanh nghe sau ngay ket thuc -> 400.
         checkUserExtWorkTimeOrder(user.getUserExt());
         // DS457: jobType ngoai 4 muc {'Bác sĩ','Dược sĩ','Điều dưỡng','Khác'} -> 400.

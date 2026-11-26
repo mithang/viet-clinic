@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.geeke.admin.dao.UserDao;
+import com.geeke.admin.entity.User;
 import com.geeke.common.service.TreeService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.org.dao.DepartmentDao;
@@ -15,6 +17,7 @@ import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Quản lý phòng banService
@@ -25,6 +28,40 @@ import com.google.common.collect.Maps;
 @Service("departmentService")
 @Transactional(readOnly = true)
 public class DepartmentService extends TreeService<DepartmentDao, Department> {
+
+    @Autowired
+    private UserDao userDao;
+
+    // DS737: fail-closed 400 khi truong khoa / quan ly khong ton tai
+    // (mau DS731 Scheduling ghost userid). Truoc day save() (ma bulk*
+    // goi vong lap qua save()) chi kiem tra ten/sort/tenant roi ghi
+    // thang vao org_department: director/manager ma van 200 + dong
+    // mo coi (probe DS737 E1b). Bang KHONG co FK that tren director /
+    // manager nen DB khong chan. userDao.get() khong loc del_flag nen
+    // dong da xoa mem cung 400. director/manager null/rong giu hop le
+    // (cot nullable). Chi kiem tra ton tai nhu mau DS731, khong kiem
+    // tra tenant cua user (cung quyet dinh nhu SchedulingService).
+    private void checkDirectorManagerExists(Department department) {
+        if (department == null) {
+            return;
+        }
+        if (department.getDirector() != null
+                && StringUtils.isNotBlank(department.getDirector().getId())) {
+            User director = userDao.get(department.getDirector().getId());
+            if (director == null || !"0".equals(director.getDelFlag())) {
+                throw new ServiceException("Trưởng khoa/phòng không tồn tại: "
+                        + department.getDirector().getId());
+            }
+        }
+        if (department.getManager() != null
+                && StringUtils.isNotBlank(department.getManager().getId())) {
+            User manager = userDao.get(department.getManager().getId());
+            if (manager == null || !"0".equals(manager.getDelFlag())) {
+                throw new ServiceException("Quản lý khoa/phòng không tồn tại: "
+                        + department.getManager().getId());
+            }
+        }
+    }
 
 	@Override
 	@Transactional(readOnly = false)
@@ -47,6 +84,8 @@ public class DepartmentService extends TreeService<DepartmentDao, Department> {
         if (department.getSort() == null) {
             department.setSort(0);
         }
+        // DS737: chan director/manager ma (xem helper ben tren).
+        checkDirectorManagerExists(department);
         // Z3a: ep tenant theo session, theo mau ClinicOffice save (setCompany
         // session). Tao moi: company body bi ghi de bang tenant session, khong
         // tao duoc khoa/phong o tenant khac. Sua: dong cu thuoc tenant khac

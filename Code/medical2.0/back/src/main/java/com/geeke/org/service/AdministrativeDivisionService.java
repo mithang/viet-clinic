@@ -31,6 +31,24 @@ public class AdministrativeDivisionService extends CrudService<AdministrativeDiv
     // qua @Valid o save don). Kiem tra ton tai + name truoc moi ghi.
     // @Transactional (readOnly = false) tuong minh vi class-level la
     // readOnly = true (mau ManufactureFactoryService DS105).
+    // DS737: chan parten ma o save()/bulkInsert/bulkUpdate (mau
+    // DS731-736 ghost-FK). Truoc day save()/bulk* chi kiem tra ten
+    // roi ghi thang vao administrative_division: parten ma van 200 +
+    // dong mo coi (probe DS737 G1). Bang KHONG co FK that tren
+    // parten_id nen DB khong chan; bang cung KHONG co cot del_flag
+    // (hard delete, DS129) nen chi kiem tra ton tai. parten null/rong
+    // giu hop le (dong goc, vd id '0' co parten NULL).
+    private void checkParentExists(AdministrativeDivision entity) {
+        if (entity == null || entity.getParten() == null
+                || StringUtils.isBlank(entity.getParten().getId())) {
+            return;
+        }
+        if (dao.get(entity.getParten().getId()) == null) {
+            throw new ServiceException("Khu vực hành chính cấp cha không tồn tại: "
+                    + entity.getParten().getId());
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public AdministrativeDivision save(AdministrativeDivision entity) {
@@ -42,6 +60,8 @@ public class AdministrativeDivisionService extends CrudService<AdministrativeDiv
         if (entity != null && StringUtils.isBlank(entity.getName())) {
             throw new ServiceException("Tên khu vực không được để trống");
         }
+        // DS737: chan parten ma (xem helper ben tren).
+        checkParentExists(entity);
         return super.save(entity);
     }
 
@@ -80,6 +100,8 @@ public class AdministrativeDivisionService extends CrudService<AdministrativeDiv
             if (entity == null || StringUtils.isBlank(entity.getName())) {
                 throw new ServiceException("Tên khu vực không được để trống");
             }
+            // DS737: chan parten ma (xem helper checkParentExists).
+            checkParentExists(entity);
         }
         return super.bulkInsert(entitys);
     }
@@ -106,6 +128,8 @@ public class AdministrativeDivisionService extends CrudService<AdministrativeDiv
             if (StringUtils.isBlank(entity.getName())) {
                 throw new ServiceException("Tên khu vực không được để trống");
             }
+            // DS737: chan parten ma (xem helper checkParentExists).
+            checkParentExists(entity);
         }
         return super.bulkUpdate(entitys);
     }

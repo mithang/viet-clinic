@@ -4,6 +4,7 @@ import com.geeke.admin.dao.RoleDao;
 import com.geeke.admin.entity.Role;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
+import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,35 @@ public class RoleService extends CrudService<RoleDao, Role>{
      * tao role moi khong id; nhanh update cua ClinicVersionService truyen
      * roleId da luu (da kiem tra o DS5) nen qua duoc.
      */
+    // DS737: fail-closed 400 khi vai tro cap cha khong ton tai (mau
+    // DS731-736 ghost-FK). Truoc day save()/bulk* chi kiem tra ten/
+    // code/company/isLocked roi ghi thang vao sys_role: parentId ma
+    // van 200 + dong mo coi (probe DS737 K1). Bang KHONG co FK that
+    // tren parent_id nen DB khong chan. dao.get() khong loc del_flag
+    // nen dong da xoa mem cung 400. parentId null/rong/'0' giu hop le
+    // (dong goc, dong live co parent NULL hoac '0'). Vai tro cha khac
+    // tenant cung 400 (mau DS710), tru company '0' (vai tro he thong).
+    private void checkParentExists(Role role) {
+        if (role == null || StringUtils.isBlank(role.getParentId())
+                || "0".equals(role.getParentId())) {
+            return;
+        }
+        Role parent = dao.get(role.getParentId());
+        if (parent == null || !"0".equals(parent.getDelFlag())) {
+            throw new ServiceException("Vai trò cấp cha không tồn tại: "
+                    + role.getParentId());
+        }
+        if (parent.getCompany() != null
+                && StringUtils.isNotBlank(parent.getCompany().getId())
+                && !"0".equals(parent.getCompany().getId())) {
+            String tenantId = SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)
+                    && !tenantId.equals(parent.getCompany().getId())) {
+                throw new ServiceException("Vai trò cấp cha không thuộc phòng khám hiện tại");
+            }
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Role save(Role role) {
@@ -41,6 +71,8 @@ public class RoleService extends CrudService<RoleDao, Role>{
         }
         // DS361: chan isLocked ngoai mien {0,1}.
         checkRoleIsLockedValues(role);
+        // DS737: chan parent ma (xem helper ben tren).
+        checkParentExists(role);
         return super.save(role);
     }
 
@@ -128,6 +160,8 @@ public class RoleService extends CrudService<RoleDao, Role>{
         if (StringUtils.isBlank(role.getCode())) {
             throw new ServiceException("Mã vai trò không được để trống");
         }
+        // DS737: chan parent ma (xem helper checkParentExists).
+        checkParentExists(role);
         if (role.getCompany() == null || StringUtils.isBlank(role.getCompany().getId())) {
             throw new ServiceException("Công ty không được để trống");
         }
