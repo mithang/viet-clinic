@@ -74,6 +74,8 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             checkMemberManagementTypeValues(memberManagement);
             // DS734: chan FK ma (benh nhan / the hoi vien) truoc moi ghi.
             checkMemberManagementRefsExist(memberManagement);
+            // DS736: chan hang muc ma trong cascade chi tiet (xem helper).
+            checkMemberManagementDetailItemsExist(memberManagement);
             // Sửa (id đã có) trước đây rơi vào cùng nhánh INSERT với Tạo nên
             // luôn lỗi trùng khóa chính — form Sửa qua UI không bao giờ lưu
             // được dù dialog Sửa đã có sẵn. Nhánh update dùng mapper update
@@ -279,6 +281,50 @@ public class MemberManagementService extends CrudService<MemberManagementDao, Me
             if (memberSet == null || !"0".equals(memberSet.getDelFlag())) {
                 throw new ServiceException("Thẻ hội viên không tồn tại: "
                         + entity.getMemberSet().getId());
+            }
+        }
+    }
+
+    // DS736: chan hang muc ma trong cascade chi tiet khi phat the.
+    // Truoc day save() chi kiem tra patient/memberSet ton tai
+    // (checkMemberManagementRefsExist, DS734) roi ghi thang
+    // memberSet.memberItem tu payload xuong member_management_detail
+    // qua memberManagementDetailService.save (khong co controller
+    // rieng cho detail, khong caller bulk nao): id ma van 200 +
+    // dong mo coi (probe DS736 A1), item cua tenant khac van 200 +
+    // dong mo coi xuyen tenant (A4). Khong co FK that tren cot
+    // member_item_id nen DB khong chan. Chi goi o save() (bulk*
+    // theo thiet ke khong sinh dong chi tiet). Kiem tra truoc moi
+    // ghi, ca list: phan tu null / id rong -> 400; khong ton tai /
+    // da xoa mem -> 400; ngoai tenant -> 400 (memberItemService.get
+    // nem tenant qua CrudService.get); item khong thuoc dung set
+    // cua the -> 400 (luong that chi gui hang muc cua chinh set).
+    private void checkMemberManagementDetailItemsExist(
+            MemberManagement entity) {
+        if (entity == null || entity.getMemberSet() == null) {
+            return;
+        }
+        List<MemberItem> items = entity.getMemberSet().getMemberItem();
+        if (items == null) {
+            return;
+        }
+        for (MemberItem item : items) {
+            if (item == null || StringUtils.isBlank(item.getId())) {
+                throw new ServiceException(
+                        "Chi tiết thẻ hội viên không được để trống");
+            }
+            MemberItem stored = memberItemService.get(item.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
+                throw new ServiceException(
+                        "Chi tiết thẻ hội viên không tồn tại: "
+                                + item.getId());
+            }
+            if (stored.getMember() == null
+                    || !entity.getMemberSet().getId().equals(
+                            stored.getMember().getId())) {
+                throw new ServiceException(
+                        "Chi tiết thẻ hội viên không thuộc gói thẻ này: "
+                                + item.getId());
             }
         }
     }

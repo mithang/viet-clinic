@@ -2,6 +2,7 @@ package com.geeke.sys.service;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +10,9 @@ import com.geeke.common.data.Page;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
+import com.geeke.sys.dao.CodeRuleDao;
 import com.geeke.sys.dao.CompanyCodeRuleDao;
+import com.geeke.sys.entity.CodeRule;
 import com.geeke.sys.entity.CompanyCodeRule;
 import com.geeke.utils.SessionUtils;
 import com.geeke.utils.StringUtils;
@@ -25,6 +28,9 @@ import com.google.common.collect.Maps;
 @Service("companyCodeRuleService")
 @Transactional(readOnly = true)
 public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, CompanyCodeRule>{
+
+    @Autowired
+    private CodeRuleDao codeRuleDao;
 
     /**
      * N3d: chặn ghi quy tắc mã của tenant khác theo chuỗi companyId.
@@ -99,6 +105,8 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
     @Transactional(readOnly = false)
     public CompanyCodeRule save(CompanyCodeRule companyCodeRule) {
         checkRuleWriteTenant(companyCodeRule);
+        // DS736: chan sysRule ma (xem helper ben duoi).
+        checkSysRuleExists(companyCodeRule);
         Map<String, String> colMaps = Maps.newHashMap();
         // company_id
         colMaps.clear();
@@ -177,9 +185,39 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
             for (CompanyCodeRule entity : entitys) {
                 checkRuleWriteTenant(entity);
                 validateRequired(entity);
+                // DS736: chan sysRule ma (xem helper ben duoi).
+                checkSysRuleExists(entity);
             }
         }
         return super.bulkInsert(entitys);
+    }
+
+    /**
+     * DS736: chan sysRule ma o save()/bulkInsert (mau
+     * DictItemService.checkDictTypeExists, DS731). Truoc day save()
+     * khong kiem tra sysRule, bulkInsert chi kiem tra rong qua
+     * validateRequired: id ma van 200 + dong mo coi (probe DS736
+     * B1/B4), trong khi live da co 2 dong mo coi tro toi sys_rule
+     * da xoa (ghi chu N3d). Khong co FK that tren cot sys_rule_id
+     * nen DB khong chan. sys_code_rule la catalogue dung chung
+     * theo tenant (khong loc tenant, chi ton tai + chua xoa mem);
+     * id rong bo qua o day vi @Valid (save) / validateRequired
+     * (bulkInsert) da chan 400. bulkUpdate khong can: mapper chi
+     * ghi rule_def + remarks, khong dong den sysRule.
+     */
+    private void checkSysRuleExists(CompanyCodeRule companyCodeRule) {
+        if (companyCodeRule == null || companyCodeRule.getSysRule() == null
+                || StringUtils.isBlank(
+                        companyCodeRule.getSysRule().getId())) {
+            return;
+        }
+        CodeRule sysRule =
+                codeRuleDao.get(companyCodeRule.getSysRule().getId());
+        if (sysRule == null || !"0".equals(sysRule.getDelFlag())) {
+            throw new ServiceException(
+                    "Quy tắc mã hệ thống không tồn tại: "
+                            + companyCodeRule.getSysRule().getId());
+        }
     }
 
     /**
