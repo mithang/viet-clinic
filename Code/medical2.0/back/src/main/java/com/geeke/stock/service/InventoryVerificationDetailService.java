@@ -293,6 +293,55 @@ public class InventoryVerificationDetailService extends CrudService<InventoryVer
                     }
                 }
             }
+            // DS727: bulkUpdate ghi thang drug_id/stuff_id/
+            // medicinal_storage_id theo payload ma khong kiem tra
+            // su ton tai / tenant cua cac ref nay (mau DS690 chi
+            // guard phieu cha + company o bulkInsert/bulkUpdate).
+            // Probe live: saveAll voi drug/stuff/MSC id gia hoac
+            // cua tenant khac (4464/3300) -> 200 + dong bi ghi
+            // ref mo coi / ref sang tenant khac (L03-L07, L25);
+            // detail id gia / thieu id / id rong -> 200 im lang
+            // (bulkUpdate ghi 0 dong, mau DS125C/DS146) (L01/L02/
+            // L27). Chan fail-closed 400 truoc khi khoa phieu /
+            // ghi, tren MOI nhom. Chi kiem tra ref khi id
+            // non-blank: ca hai null van cho phep (dong cu,
+            // DS92); drug/stuff/MSC cua co so (institution)
+            // van qua nhu get() cua chinh service do.
+            for (List<InventoryVerificationDetail> group : inventoryVerificationDetailDTOS) {
+                if (CollectionUtils.isEmpty(group)) {
+                    continue;
+                }
+                for (InventoryVerificationDetail detail : group) {
+                    if (detail == null) {
+                        continue;
+                    }
+                    if (StringUtils.isBlank(detail.getId())) {
+                        throw new com.geeke.common.service.ServiceException("Không xác định được chi tiết kiểm kê cần cập nhật.");
+                    }
+                    if (this.dao.getOwnership(detail.getId()) == null) {
+                        throw new com.geeke.common.service.ServiceException(
+                                "Chi tiết kiểm kê không tồn tại: " + detail.getId());
+                    }
+                    if (detail.getDrug() != null
+                            && StringUtils.isNotBlank(detail.getDrug().getId())
+                            && drugService.get(detail.getDrug().getId()) == null) {
+                        throw new com.geeke.common.service.ServiceException(
+                                "Thuốc không tồn tại: " + detail.getDrug().getId());
+                    }
+                    if (detail.getStuff() != null
+                            && StringUtils.isNotBlank(detail.getStuff().getId())
+                            && stuffService.get(detail.getStuff().getId()) == null) {
+                        throw new com.geeke.common.service.ServiceException(
+                                "Vật tư không tồn tại: " + detail.getStuff().getId());
+                    }
+                    if (detail.getMedicinalStorageControl() != null
+                            && StringUtils.isNotBlank(detail.getMedicinalStorageControl().getId())
+                            && medicinalStockControlService.get(detail.getMedicinalStorageControl().getId()) == null) {
+                        throw new com.geeke.common.service.ServiceException(
+                                "Chi tiết tồn kho không tồn tại: " + detail.getMedicinalStorageControl().getId());
+                    }
+                }
+            }
             // L2 (iteration 34): chong crash ho get(0)/null o duong ghi:
             // - loc phan tu null truoc khi preUpdate/bulkUpdate (null trong
             //   nhom truoc day NPE, rollback ca save);
