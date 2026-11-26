@@ -21,6 +21,8 @@ import com.geeke.common.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.geeke.cure.dao.InspectionCheckInfoDao;
 import com.geeke.cure.entity.InspectionCheckInfo;
+import com.geeke.outpatient.dao.PatientDao;
+import com.geeke.outpatient.entity.Patient;
 import com.geeke.utils.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +52,11 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
     @Autowired
     private SysFileDao sysFileDao;
 
+    // DS735: lookup benh nhan truc tiep qua DAO, mau R3 (khong autowire
+    // PatientService — chi can get + delFlag cho guard FK ma).
+    @Autowired
+    private PatientDao patientDao;
+
     @Transactional(readOnly = false)
     public void save(InspectionCheckInfo inspectionCheckInfo, MultipartFile[] fileIdUploads, String[] deleteIds) throws IOException {
 
@@ -66,6 +73,9 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                 && dao.get(inspectionCheckInfo.getId()) == null) {
             throw new ServiceException("Chi tiết kiểm tra không tồn tại: " + inspectionCheckInfo.getId());
         }
+        // DS735: chan FK ma (phieu cha / benh nhan) truoc moi thao tac
+        // file/ghi (cha: T1/R3 o duoi lap lai cung luat; benh nhan: moi).
+        checkInspectionCheckInfoRefsExist(inspectionCheckInfo);
         // R1 (iteration 41): guard tenant TRUOC moi thao tac file/ghi.
         // Truoc day save() goi thang dao.update (mapper UPDATE WHERE id
         // tran, khong company_id) nen ne ca hai guard cua CrudService.save:
@@ -228,6 +238,8 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
                 && dao.get(inspectionCheckInfo.getId()) == null) {
             throw new ServiceException("Chi tiết kiểm tra không tồn tại: " + inspectionCheckInfo.getId());
         }
+        // DS735: chan FK ma (phieu cha / benh nhan) truoc moi ghi.
+        checkInspectionCheckInfoRefsExist(inspectionCheckInfo);
         checkInspectionCheckInfoLengths(inspectionCheckInfo);
         checkInspectionCheckInfoDatesNotFuture(inspectionCheckInfo);
         return super.save(inspectionCheckInfo);
@@ -240,6 +252,8 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
             throw new ServiceException("Danh sách chi tiết kiểm tra không được để trống");
         }
         for (InspectionCheckInfo entity : entitys) {
+            // DS735: tien kiem FK ma TOAN BO list truoc khi ghi dong nao.
+            checkInspectionCheckInfoRefsExist(entity);
             checkInspectionCheckInfoLengths(entity);
             checkInspectionCheckInfoDatesNotFuture(entity);
         }
@@ -253,10 +267,62 @@ public class InspectionCheckInfoService extends CrudService<InspectionCheckInfoD
             throw new ServiceException("Danh sách chi tiết kiểm tra không được để trống");
         }
         for (InspectionCheckInfo entity : entitys) {
+            // DS735: tien kiem FK ma TOAN BO list truoc khi ghi dong nao.
+            checkInspectionCheckInfoRefsExist(entity);
             checkInspectionCheckInfoLengths(entity);
             checkInspectionCheckInfoDatesNotFuture(entity);
         }
         return super.bulkUpdate(entitys);
+    }
+
+    // DS735: chan FK ma (phieu kiem tra cha / benh nhan) truoc moi ghi,
+    // mau DS734 (Registration/Drug/Stuff...). Truoc day save() don +
+    // bulkInsert/bulkUpdate chi kiem tra do dai/ngay roi ghi thang
+    // #{inspectionCheck.id} / #{patient.id} vao DB: id ma van 200 +
+    // dong mo coi (probe DS735 A1/A2/B1/B2/B4/B5; khong co FK that tren
+    // cac cot nen DB khong chan). Chi saveWithFile (multipart) guard
+    // cha (T1/R3) — duong /save + /bulk* chung khong co.
+    // - Cha: thieu -> 400 (T2); ton tai qua existsById (bang khong co
+    //   del_flag, hard delete) + tenant nhu R3 (cha la -> 400). Khac
+    //   DS734 Registration (null cho qua vi co luong tao khong patient
+    //   hop le): o day CA HAI cot FK deu NOT NULL nen null khong bao
+    //   gio luu duoc — bulk (khong @Valid) truoc day 500 NOT NULL,
+    //   duong /save da 400 nho @NotNull; guard o service de ca 3
+    //   duong deu 400 ro nghia.
+    // - Benh nhan: thieu -> 400; ton tai + delFlag='0' qua
+    //   patientDao.get, mau DS734 checkRegistrationRefsExist.
+    private void checkInspectionCheckInfoRefsExist(InspectionCheckInfo entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getInspectionCheck() == null
+                || StringUtils.isBlank(entity.getInspectionCheck().getId())) {
+            throw new ServiceException("Thiếu phiếu kiểm tra");
+        }
+        {
+            String parentId = entity.getInspectionCheck().getId();
+            String parentCompanyId = inspectionCheckDao.getCompanyIdById(parentId);
+            if (StringUtils.isNotBlank(parentCompanyId)) {
+                String tenantId = com.geeke.utils.SessionUtils.getLoginTenantId();
+                if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)
+                        && !tenantId.equals(parentCompanyId)) {
+                    throw new ServiceException("Không có quyền truy cập tenant khác Dữ liệu");
+                }
+            } else if (inspectionCheckDao.existsById(parentId) == 0) {
+                throw new ServiceException("Phiếu kiểm tra không tồn tại");
+            }
+        }
+        if (entity.getPatient() == null
+                || StringUtils.isBlank(entity.getPatient().getId())) {
+            throw new ServiceException("Thiếu bệnh nhân");
+        }
+        {
+            Patient patient = patientDao.get(entity.getPatient().getId());
+            if (patient == null || !"0".equals(patient.getDelFlag())) {
+                throw new ServiceException("Bệnh nhân không tồn tại: "
+                        + entity.getPatient().getId());
+            }
+        }
     }
 
     // DS149 C: xem ghi chu o save().
