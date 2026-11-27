@@ -200,6 +200,25 @@ public class CompanyService extends TreeService<CompanyDao, Company> {
         checkCompanyDateOrder(company);
         // DS329: chan status gia mao ngoai {0,1} (null giu hop le).
         checkCompanyStatus(company);
+        // DS749: save voi id khong ton tai truoc day roi qua super.save
+        // -> doUpdate 0 dong roi van 200 + ghi them dong audit UPDATED
+        // gia cho id ma (probe pre-fix: POST /org/company/save id ghost
+        // + payload hop le -> 200 code 100 data ghost, khong co dong
+        // org_company nao, nhung sys_action tang 1 dong UPDATED voi
+        // object_id ghost; Z3h chi noi stored-row tenant check bo qua
+        // stored==null, khong phai giay phep ghi cho id khong ton tai).
+        // Cung lop DS94/DS99/DS104/DS180. Chi chap nhan update khi dong
+        // da ton tai + con song (del_flag='0'), cung mau delete() cua
+        // chinh service nay; bao ca saveWithFile / saveTenant /
+        // saveClinicAndRole / ClinicService.save (deu qua save() nay).
+        // Tao moi (id rong) giu nguyen duong insert.
+        if (company != null && StringUtils.isNotBlank(company.getId())) {
+            Company stored = dao.get(company.getId());
+            if (stored == null || !"0".equals(stored.getDelFlag())) {
+                throw new ServiceException("Công ty không tồn tại: "
+                        + company.getId());
+            }
+        }
         return super.save(company);
     }
 
