@@ -4,8 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.geeke.common.service.ServiceException;
+import com.geeke.member.dao.MemberItemDao;
+import com.geeke.member.dao.MemberSetDao;
+import com.geeke.member.entity.MemberItem;
+import com.geeke.member.entity.MemberSet;
+import com.geeke.org.entity.Company;
 import com.geeke.treatment.entity.CostItem;
 import com.geeke.treatment.service.CostItemService;
+import com.geeke.utils.SessionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.geeke.common.service.CrudService;
@@ -26,6 +32,9 @@ import com.google.common.collect.Maps;
 public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
     @Autowired
     private CostItemService costItemService;
+
+    @Autowired
+    private MemberSetDao memberSetDao;
 
     // DS125 B: single delete truoc day de lo: ghost id / dong da xoa mem
     // roi van 200 silent no-op (verifyTenantOwnershipAgainstStoredRow bo
@@ -192,6 +201,19 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
                 || StringUtils.isBlank(entity.getCostItem().getId())) {
             throw new ServiceException("Hạng mục khám chữa bệnh không được để trống");
         }
+        // DS746: chan FK ma (mau DS731-DS737): truoc day chi check member/
+        // costItem non-blank nen id ma / the cua tenant khac van 200 + dong
+        // mo coi (member_item KHONG CO FK o DB; costItemService.get tra null
+        // im lang cho id ma; probe A1/A2r/A5/A6r/A7/D2). Kiem tra ton tai +
+        // tenant truoc moi ghi; bao ca save()/bulkInsert()/bulkUpdate() (deu
+        // qua day) va cascade tu MemberSetService (set vua insert nen get
+        // thay; the cua tenant khac van 400 nhu DS710 voi costItem).
+        MemberSet memberSet = memberSetDao.get(entity.getMember().getId());
+        if (memberSet == null || !"0".equals(memberSet.getDelFlag())) {
+            throw new ServiceException("Thẻ hội viên không tồn tại: "
+                    + entity.getMember().getId());
+        }
+        checkSameTenant(memberSet.getCompany(), entity.getMember().getId());
         // DS710: chan hang muc khac tenant (mau DS690/DS696): cascade tu
         // MemberSetService + save/bulk* truoc day chi kiem tra costItem id
         // non-blank, nen cost item cua phong kham khac van ghi duoc (200 +
@@ -199,9 +221,26 @@ public class MemberItemService extends CrudService<MemberItemDao, MemberItem>{
         // do 400 vi getByMemberSetId -> costItemService.get nem tenant).
         // costItemService.get tu nem ServiceException 400 cho cost item
         // ngoai tenant (CrudService.get -> verifyTenantOwnership, cho phep
-        // tenant phien + co so dung chung); id ma tra null -> giu hanh vi
-        // cu (400 FK o DAO, DS708).
-        costItemService.get(entity.getCostItem().getId());
+        // tenant phien + co so dung chung); id ma tra null -> 400 ro nghia
+        // o day (DS746: truoc day cho qua roi ghi dong mo coi, probe A2r).
+        CostItem costItem = costItemService.get(entity.getCostItem().getId());
+        if (costItem == null || !"0".equals(costItem.getDelFlag())) {
+            throw new ServiceException("Hạng mục khám chữa bệnh không tồn tại: "
+                    + entity.getCostItem().getId());
+        }
+    }
+
+    // DS746: the phai thuoc phong kham hien tai (mau DS737 UserService).
+    private static void checkSameTenant(Company company, String memberId) {
+        if (company != null && StringUtils.isNotBlank(company.getId())) {
+            String tenantId = SessionUtils.getLoginTenantId();
+            if (StringUtils.isNotBlank(tenantId) && !"null".equals(tenantId)
+                    && !tenantId.equals(company.getId())) {
+                throw new ServiceException(
+                        "Thẻ hội viên không thuộc phòng khám hiện tại: "
+                                + memberId);
+            }
+        }
     }
 
     @Transactional(readOnly = false)

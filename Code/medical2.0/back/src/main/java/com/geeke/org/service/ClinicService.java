@@ -8,12 +8,15 @@ import com.geeke.admin.entity.User;
 import com.geeke.admin.entity.UserRole;
 import com.geeke.admin.service.RoleService;
 import com.geeke.admin.service.UserService;
+import com.geeke.clinic.dao.ClinicVersionDao;
 import com.geeke.clinic.entity.ClinicVersion;
 import com.geeke.common.service.CrudService;
 import com.geeke.common.service.ServiceException;
 import com.geeke.org.dao.ClinicDao;
+import com.geeke.org.dao.LesseeDao;
 import com.geeke.org.entity.Clinic;
 import com.geeke.org.entity.Company;
+import com.geeke.org.entity.Lessee;
 import com.geeke.sys.service.SysFileService;
 import com.geeke.utils.IdGen;
 import com.geeke.utils.StringUtils;
@@ -58,6 +61,12 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private ClinicVersionDao clinicVersionDao;
+
+    @Autowired
+    private LesseeDao lesseeDao;
 
 
     @Transactional(readOnly = false)
@@ -331,6 +340,38 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         }
     }
 
+    // DS746: chan FK ma qua save()/bulkInsert()/bulkUpdate() (mau DS731-
+    // DS737): version_id khong co FK o DB nen id ma van 200 + dong mo coi
+    // (probe B1/B3); lessee_id co FK that nen id ma da 400 qua handler
+    // (probe D1) nhung van chan ro o day de co thong diep ro nghia truoc
+    // moi ghi. Version/lessee la du lieu dung chung thuc te (version cua
+    // phong kham seed thuoc company khac, lessee khong co company) nen chi
+    // check ton tai + con live, KHONG ep tenant. Chi controller generic goi
+    // 3 duong nay; company-create (save(Company,...)) khong qua day.
+    private void checkClinicRefsExist(Clinic clinic) {
+        if (clinic == null) {
+            return;
+        }
+        if (clinic.getLesseeId() == null
+                || StringUtils.isBlank(clinic.getLesseeId().getId())) {
+            throw new ServiceException("Đơn vị thuê không được để trống");
+        }
+        Lessee lessee = lesseeDao.get(clinic.getLesseeId().getId());
+        if (lessee == null || !"0".equals(lessee.getDelFlag())) {
+            throw new ServiceException("Đơn vị thuê không tồn tại: "
+                    + clinic.getLesseeId().getId());
+        }
+        if (clinic.getVersion() == null
+                || StringUtils.isBlank(clinic.getVersion().getId())) {
+            throw new ServiceException("Phiên bản phòng khám không được để trống");
+        }
+        ClinicVersion version = clinicVersionDao.get(clinic.getVersion().getId());
+        if (version == null || !"0".equals(version.getDelFlag())) {
+            throw new ServiceException("Phiên bản phòng khám không tồn tại: "
+                    + clinic.getVersion().getId());
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Clinic save(Clinic clinic) {
@@ -339,6 +380,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
         // choke point neu caller noi bo dung; guard cung cap ngay nhu bulk.
         checkClinicDateOrder(clinic);
         checkClinicBlankFields(clinic);
+        checkClinicRefsExist(clinic);
         return super.save(clinic);
     }
 
@@ -351,6 +393,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
             for (Clinic clinic : entitys) {
                 checkClinicDateOrder(clinic);
                 checkClinicBlankFields(clinic);
+                checkClinicRefsExist(clinic);
             }
         }
         return super.bulkInsert(entitys);
@@ -365,6 +408,7 @@ public class ClinicService extends CrudService<ClinicDao, Clinic> {
             for (Clinic clinic : entitys) {
                 checkClinicDateOrder(clinic);
                 checkClinicBlankFields(clinic);
+                checkClinicRefsExist(clinic);
             }
         }
         return super.bulkUpdate(entitys);
