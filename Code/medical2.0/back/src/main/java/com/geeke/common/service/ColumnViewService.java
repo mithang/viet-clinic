@@ -12,12 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.geeke.admin.dao.RouterDao;
+import com.geeke.admin.entity.Router;
 import com.geeke.common.dao.ColumnViewDao;
 import com.geeke.common.data.PageRequest;
 import com.geeke.common.data.Parameter;
 import com.geeke.common.data.SearchParamsBuilder;
 import com.geeke.common.entity.ColumnView;
 import com.geeke.gen.dao.GenTableColumnDao;
+import com.geeke.gen.dao.GenTableDao;
+import com.geeke.gen.entity.GenTable;
 import com.geeke.gen.entity.GenScheme;
 import com.geeke.gen.entity.GenTableColumn;
 import com.geeke.gen.entity.GenTableColumnEx;
@@ -46,6 +50,12 @@ public class ColumnViewService {
 
 	@Autowired
 	private GenSchemeDao genSchemeDao;
+
+	@Autowired
+	private RouterDao routerDao;
+
+	@Autowired
+	private GenTableDao genTableDao;
 
 	/**
 	 * Lấyhiển thịDanh sách
@@ -246,7 +256,16 @@ public class ColumnViewService {
 			dao.bulkUpdate(updates);
 		}
 		if(adds.size() > 0) {
-			dao.bulkInsert(adds);
+			// DS747: nhu save() — chi luu cau hinh moi khi router/bang
+			// con song; GET voi router ma truoc day chen 21 dong mo coi
+			// (probe). Tra danh sach tinh nhu cu, khong ghi; dong da co
+			// (updates) giu nguyen vi chung chi cap nhat display/sort.
+			if (columnViewRefsExist(routerId, tableId)) {
+				dao.bulkInsert(adds);
+			} else {
+				logger.warn("DS747: bo qua luu cau hinh cot moi cho router/table khong ton tai: {}/{}",
+						routerId, tableId);
+			}
 		}
 		
 		return list;
@@ -257,12 +276,51 @@ public class ColumnViewService {
 	 * 
 	 * @param cv
 	 */
+	// DS747: router/table ma -> 200 + dong mo coi (sys_column_view KHONG
+	// CO FK o DB, bang khong loc del_flag; probe E1 pre-fix: insert
+	// router 999999999999999999 + table 4004 that -> 200 data 1 + dong
+	// mo coi; GET listColumn voi router ma cung chen 21 dong mo coi).
+	// Chi chan o duong GHI router_id/table_id: insert cua save() va
+	// bulkInsert cua listColumn(). Duong update don chi ghi
+	// display/sort/width (mapper update WHERE id) nen khong doi
+	// router/table, khong can chan — dong cu tro toi router da xoa
+	// (6 router_id mo coi co san trong DB) van sua duoc binh thuong.
+	// Router/table phai ton tai + dang song (del_flag='0'): mapper
+	// get() cua ca hai deu khong loc del_flag nen kiem tra them o day,
+	// mau QueryConditionService DS737.
+	private void checkColumnViewRefs(String routerId, String tableId) {
+		if (StringUtils.isBlank(routerId)) {
+			throw new ServiceException("Định tuyến không được để trống");
+		}
+		Router router = routerDao.get(routerId);
+		if (router == null || !"0".equals(router.getDelFlag())) {
+			throw new ServiceException("Định tuyến không tồn tại: " + routerId);
+		}
+		if (StringUtils.isBlank(tableId)) {
+			throw new ServiceException("Bảng không được để trống");
+		}
+		GenTable table = genTableDao.get(tableId);
+		if (table == null || !"0".equals(table.getDelFlag())) {
+			throw new ServiceException("Bảng không tồn tại: " + tableId);
+		}
+	}
+
+	private boolean columnViewRefsExist(String routerId, String tableId) {
+		try {
+			checkColumnViewRefs(routerId, tableId);
+			return true;
+		} catch (ServiceException e) {
+			return false;
+		}
+	}
+
 	@Transactional(readOnly = false)
 	public int save(ColumnView cv) {
 		String userId = SessionUtils.getUserJson().getString("id");
 		cv.setUserId(userId);
 		int rows = 0;
 		if (StringUtils.isBlank(cv.getId())) {
+			checkColumnViewRefs(cv.getRouterId(), cv.getTableId());
 			cv.preInsert();
 			rows = dao.insert(cv);
 		} else {
