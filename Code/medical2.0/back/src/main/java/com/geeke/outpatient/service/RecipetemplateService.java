@@ -600,8 +600,19 @@ public class RecipetemplateService extends CrudService<RecipetemplateDao, Recipe
         return a;
     }
 
+    // DS753: fail-closed 400 thay vi 500 voi MOI id — cung mau DS697
+    // (SysCollect bulk* khi mapper khong co statement). listAi khong bao
+    // gio chay duoc: (1) mapper <include Common.whereParams/> danh gia
+    // 'params' tren tham so String duy nhat -> BuilderException "Return
+    // value ... was not iterable" (log backend, probe pre-fix L5/L6 500);
+    // (2) ke ca sua (1), SQL con loc a.patient_id nhung bang
+    // recipetemplate KHONG CO cot patient_id (cac statement khac da
+    // comment dong nay tu initial commit; entity chi co field transient
+    // khong persist). Khong co caller UI (grep front/src khong co listAi)
+    // va khong co internal caller nao dung listAi cua service nay, nen
+    // dong cua thay vi 500. Controller giu 403 truoc voi token 0 quyen.
     public List<Recipetemplate> listAi(String id) {
-        return dao.listAi(id);
+        throw new ServiceException("Tra cứu mẫu đơn theo bệnh nhân không được hỗ trợ!");
     }
 
     /**
