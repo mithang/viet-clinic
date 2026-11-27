@@ -399,11 +399,28 @@ public class SupplierOutboundService extends CrudService<SupplierOutboundDao, Su
     @Override
     @Transactional(readOnly = false)
     public int delete(SupplierOutbound entity) {
-        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
-            SupplierOutbound stored = this.get(entity.getId());
-            if (stored != null && (stored.getStatus() == null || stored.getStatus() != 3)) {
-                throw new ServiceException("Phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu xuất kho trước.");
-            }
+        // DS748: fail-closed 400 cho single delete ghost/blank id va
+        // phieu da xoa mem (lop DS94/DS308/DS739-DS747, cung mau
+        // SupplierOutboundDetail DS743): gate DS40 chi chan khi stored
+        // resolve duoc (this.get JOIN ...) va phieu chua huy; ghost/
+        // blank id thi stored null -> cho qua -> super.delete xoa 0
+        // dong ma van 200 data 0 (probe B1/B2/B3); phieu da xoa mem
+        // cung tra 200 data 1 vi mapper delete/get khong loc del_flag
+        // (probe B8). Chi chap nhan xoa khi dong LIVE ton tai; gate
+        // DS40 giu nguyen ben duoi, dung lai stored da load. UI xoa
+        // phieu qua cancel() + delete, khong qua duong nay voi id bia.
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Không xác định được phiếu xuất kho cần xóa.");
+        }
+        SupplierOutbound stored = this.get(entity.getId());
+        // DS748: get() khong chon a.del_flag (DataEntity mac dinh '0')
+        // nen khong phan biet duoc phieu da xoa mem; dung
+        // countLiveById (loc del_flag='0' o DB) de xac dinh dong LIVE.
+        if (stored == null || supplierOutboundDao.countLiveById(entity.getId()) == 0) {
+            throw new ServiceException("Phiếu xuất kho không tồn tại: " + entity.getId());
+        }
+        if (stored.getStatus() == null || stored.getStatus() != 3) {
+            throw new ServiceException("Phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy hủy phiếu xuất kho trước.");
         }
         return super.delete(entity);
     }

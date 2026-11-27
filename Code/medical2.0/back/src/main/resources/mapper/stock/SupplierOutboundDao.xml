@@ -199,6 +199,13 @@
         WHERE a.id = #{id}
     </select>
 
+    <!-- DS748: live-row existence check for delete() (xem SupplierOutboundDao.countLiveById).
+         Live = del_flag '0' HOAC NULL: <insert> cua bang nay khong ghi
+         del_flag nen dong moi co del_flag NULL (chi delete moi set '1'). -->
+    <select id="countLiveById" resultType="int">
+        SELECT COUNT(*) FROM supplier_outbound WHERE id = #{id} AND (del_flag IS NULL OR del_flag = '0')
+    </select>
+
 
     <select id="count" resultType="int">
         SELECT COUNT(*) FROM supplier_outbound a

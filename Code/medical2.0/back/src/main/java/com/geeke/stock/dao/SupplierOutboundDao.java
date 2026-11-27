@@ -25,6 +25,14 @@ public interface SupplierOutboundDao extends CrudDao<SupplierOutbound> {
     // claim won, 0 when another thread already cancelled/examined the slip.
     int cancel(SupplierOutbound entity);
 
+    // DS748: live-row existence check for delete() — the mapper get()
+    // select does not include a.del_flag (DataEntity defaults it to
+    // '0'), so get() cannot tell a soft-deleted slip from a live one;
+    // delete() must not 200 a re-delete of an already-deleted slip.
+    // Live = del_flag '0' OR NULL: the table's <insert> never writes
+    // del_flag, so a fresh row carries NULL (only delete sets '1').
+    int countLiveById(@Param("id") String id);
+
     // DS34: conditional examine claim, for the same reason: examine() applied
     // the stock moves for every line FIRST and only set status=2 at the end,
     // so 8 parallel examines of one slip of 5 all applied the confirm move

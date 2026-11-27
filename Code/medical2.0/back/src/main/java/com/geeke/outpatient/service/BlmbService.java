@@ -110,6 +110,21 @@ public class BlmbService {
         // Q3 (iteration 40): nhu insert — companyId la bi ghi de bang
         // session tenant nen WHERE khong khop dong la.
         forceSessionTenant(blmcxrc);
+        // DS748: fail-closed 400 cho delete mau khong ton tai (lop
+        // DS94/DS308/DS739-DS747): truoc day mbbm ma/rong/thieu di
+        // thang xuong mapper (UPDATE ... WHERE company_id + mbbm) tra
+        // 0 dong roi 200 data 0 im lang; mau da xoa mem cung tra 200
+        // data 1 vi mapper khong loc del_flag (probe A1/A2/A3/A6).
+        // Kiem tra dong LIVE truoc moi ghi, nhu updatembbm (DS117)
+        // kiem tra rows==0; o day dung selectmbbm (da loc
+        // del_flag='0') de ca mau da xoa cung 400 nhu lop DS134.
+        if (StringUtils.isBlank(blmcxrc.getMbbm())) {
+            throw new ServiceException("Mã mẫu không được để trống");
+        }
+        List<Blmb> live = blmbdao.selectmbbm(blmcxrc);
+        if (live == null || live.isEmpty()) {
+            throw new ServiceException("Mẫu bệnh án không tồn tại");
+        }
         blmcxrc.setUpdatedTime(new Date());
         return blmbdao.deletembbm(blmcxrc);
     }
