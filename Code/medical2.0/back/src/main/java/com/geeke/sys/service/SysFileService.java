@@ -269,6 +269,15 @@ public class SysFileService extends CrudService<SysFileDao, SysFile>{
     @Override
     @Transactional(readOnly = false)
     public int delete(SysFile sysFile) {
+        // DS744: fail-closed 400 cho single delete ghost/blank id (lop
+        // DS94/DS308/DS739/DS740/DS741/DS743): truoc day khong id ma
+        // di thang super.delete tra 200 data 0. Kiem tra ton tai
+        // truoc khi load bang con.
+        if (sysFile == null || StringUtils.isBlank(sysFile.getId())
+                || this.get(sysFile.getId()) == null) {
+            throw new ServiceException("Tệp đính kèm không tồn tại: "
+                    + (sysFile == null ? null : sysFile.getId()));
+        }
         /* Xử lý bảng con     Bảng byte tệp đính kèm */
         List<Parameter> params = SearchParamsBuilder.create().eq("id", sysFile.getId()).build();
         PageRequest pageRequest = new PageRequest(params);

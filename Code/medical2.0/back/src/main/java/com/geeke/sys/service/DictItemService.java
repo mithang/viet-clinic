@@ -190,6 +190,12 @@ public class DictItemService extends CrudService<DictItemDao, DictItem>{
         if (entity == null || StringUtils.isBlank(entity.getId())) {
             throw new com.geeke.common.service.ServiceException("Không xác định được mục từ điển cần xóa.");
         }
+        // DS744: fail-closed 400 cho single delete ghost id (lop
+        // DS94/DS308/DS739/DS740/DS741/DS743): blank da chan (DS119 B),
+        // id ma di thang super.delete tra 200 data 0.
+        if (this.get(entity.getId()) == null) {
+            throw new com.geeke.common.service.ServiceException("Mục từ điển không tồn tại: " + entity.getId());
+        }
         return super.delete(entity);
     }
 

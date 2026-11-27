@@ -227,6 +227,12 @@ public class RecipelDetailService extends CrudService<RecipelDetailDao, RecipelD
         if (entity == null || StringUtils.isBlank(entity.getId())) {
             throw new ServiceException("Không xác định được chi tiết đơn thuốc cần xóa.");
         }
+        // DS744: fail-closed 400 cho single delete ghost id (lop
+        // DS94/DS308/DS739/DS740/DS741/DS743): blank da chan (DS119 A),
+        // id ma di thang super.delete tra 200 data 0.
+        if (this.get(entity.getId()) == null) {
+            throw new ServiceException("Chi tiết đơn thuốc không tồn tại: " + entity.getId());
+        }
         return super.delete(entity);
     }
 

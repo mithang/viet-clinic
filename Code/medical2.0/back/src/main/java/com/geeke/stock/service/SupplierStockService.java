@@ -541,6 +541,13 @@ public class SupplierStockService extends CrudService<SupplierStockDao, Supplier
         if (entity == null || StringUtils.isBlank(entity.getId())) {
             throw new ServiceException("Không xác định được chi tiết nhập kho cần xóa.");
         }
+        // DS744: fail-closed 400 cho single delete ghost id (lop
+        // DS94/DS308/DS739/DS740/DS741/DS743): blank da chan (DS119 C),
+        // id ma di thang super.delete tra 200 data 0 (checkLineDeletable
+        // cho qua vi stored null). Kiem tra ton tai truoc gate DS39.
+        if (this.get(entity.getId()) == null) {
+            throw new ServiceException("Chi tiết nhập kho không tồn tại: " + entity.getId());
+        }
         checkLineDeletable(entity);
         return super.delete(entity);
     }

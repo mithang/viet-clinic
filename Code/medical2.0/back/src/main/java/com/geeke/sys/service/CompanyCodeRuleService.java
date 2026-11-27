@@ -140,6 +140,16 @@ public class CompanyCodeRuleService extends CrudService<CompanyCodeRuleDao, Comp
     @Transactional(readOnly = false)
     public int delete(CompanyCodeRule entity) {
         checkRuleWriteTenant(entity);
+        // DS744: fail-closed 400 cho single delete ghost/blank id (lop
+        // DS94/DS308/DS739/DS740/DS741/DS743): checkRuleWriteTenant cho
+        // qua im lang id ma (getCompanyIdById tra null), super.delete
+        // tra 200 data 0. Dung getCompanyIdById nhu save() (DS101/N3d):
+        // chi null khi dong that su khong ton tai.
+        if (entity == null || StringUtils.isBlank(entity.getId())
+                || dao.getCompanyIdById(entity.getId()) == null) {
+            throw new ServiceException("Quy tắc mã công ty không tồn tại: "
+                    + (entity == null ? null : entity.getId()));
+        }
         return super.delete(entity);
     }
 
