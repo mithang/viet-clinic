@@ -282,7 +282,14 @@ export default {
       if(currentRow !== oldCurrentRow) {
         this.currentRouter = currentRow
         this.queryModel['router'] = currentRow
-        this.initOptions(this.queryModel)
+        // DS738: component chi mixin listViewMixin (khong dinh nghia
+        // initOptions; chi reportViewMixin.js:153 co) nen goi tran se
+        // vang TypeError moi lan doi dong trai (ca luc mount qua
+        // setCurrentRow) va chan onSearch() chay sau no. Guard nhu
+        // listViewMixin.js:129 / formDialogMixin.js:98,164.
+        if (this.initOptions) {
+          this.initOptions(this.queryModel)
+        }
         this.onSearch()
       }
     },
