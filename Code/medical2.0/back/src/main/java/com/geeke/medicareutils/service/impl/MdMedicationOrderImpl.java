@@ -74,6 +74,33 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
 
     private final MedicareConfigProperties  properties ;
 
+    // DS756: getOne() nem TooManyResultsException -> 500 khi co >1 dong
+    // dzcf_d001_output cho cung (cfh, organizeid) — bang khong co unique
+    // index tren cfh (tien le DS755, chi fix ban sao Ld7802; cac ban sao
+    // con lai o Ld7804, Ld7805, Ld7104 van getOne). Dong trung legacy
+    // fail-closed 400 thay vi 500; dong thieu -> null (caller giu thong
+    // bao 400 nhu cu).
+    private DzcfD001Output getUniqueD001Output(String cfh) {
+        List<DzcfD001Output> list = dzcfD001OutputService.list(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, cfh).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        if (list.size() > 1) {
+            throw new ServiceException("Dữ liệu đơn thuốc điện tử đã tải lên bị trùng lặp, liên hệ quản trị viên");
+        }
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    // DS756: getOne() nem TooManyResultsException -> 500 khi co >1 dong
+    // patient_md_data cho cung patient_id — bang chi co PK tren id, khong
+    // co unique index tren patient_id; writer saveOrUpdate nen khong sinh
+    // trung qua API, nhung dong trung legacy lam moi review/save/query BHYT
+    // 500 truoc moi WS call (Ld7801, Ld7802, Ld7805, Ld7804, Ld7101).
+    // Dong trung legacy fail-closed 400; dong thieu -> null.
+    private PatientMdData getUniquePatientMdData(String patientId) {
+        List<PatientMdData> list = patientMdDataService.list(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, patientId));
+        if (list.size() > 1) {
+            throw new ServiceException("Thông tin BHYT của bệnh nhân bị trùng lặp, liên hệ quản trị viên");
+        }
+        return list.isEmpty() ? null : list.get(0);
+    }
 
     /**[Ld7801]Tải lên đơn thuốc điện tửkiểm tra trước
      * @return
@@ -125,7 +152,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         if (doctor == null || doctor.getUserExt() == null) {
             throw new ServiceException("Không tìm thấy bác sĩ kê đơn");
         }
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = getUniquePatientMdData(registration.getPatientId().getId());
         if (patientMdData == null) {
             throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
         }
@@ -483,7 +510,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         }
         MedicalRecord medicalRecord = recipelInfoReview.getMedicalRecord();
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = getUniquePatientMdData(registration.getPatientId().getId());
         if (patientMdData == null) {
             throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
         }
@@ -532,11 +559,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         // thu 2 sinh dong trung (probe tools/ds755-probe.py L2 500).
         // Dong trung cu (truoc fix Ld7801 idempotent) fail-closed 400 thay
         // vi 500; dong thieu van 400 nhu DS182.
-        List<DzcfD001Output> d001List = dzcfD001OutputService.list(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
-        if (d001List.size() > 1) {
-            throw new ServiceException("Dữ liệu đơn thuốc điện tử đã tải lên bị trùng lặp, liên hệ quản trị viên");
-        }
-        DzcfD001Output one = d001List.isEmpty() ? null : d001List.get(0);
+        DzcfD001Output one = getUniqueD001Output(recipelInfo.getId());
         // DS182: Ld7801 chua chay / D001 bi xoa thi one null — truoc day NPE 500.
         if (one == null) {
             throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
@@ -667,7 +690,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         if (ysDoctor.getDepartment() == null) {
             throw new ServiceException("Không tìm thấy khoa của dược sĩ thẩm định");
         }
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = getUniquePatientMdData(registration.getPatientId().getId());
         if (patientMdData == null) {
             throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
         }
@@ -754,7 +777,7 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
                throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
            }
            JSONObject data = new JSONObject();
-           DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+           DzcfD001Output one001 = getUniqueD001Output(recipelInfo.getId());
            if (one001 == null) {
                throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
            }
@@ -819,11 +842,11 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
             throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
         }
         JSONObject data  = new JSONObject(true);
-        DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        DzcfD001Output one001 = getUniqueD001Output(recipelInfo.getId());
         if (one001 == null) {
             throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
         }
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = getUniquePatientMdData(registration.getPatientId().getId());
         if (patientMdData == null) {
             throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
         }
@@ -865,11 +888,11 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
             throw new ServiceException("Không tìm thấy đăng ký khám của đơn thuốc");
         }
         JSONObject data  = new JSONObject(true);
-        DzcfD001Output one001 = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        DzcfD001Output one001 = getUniqueD001Output(recipelInfo.getId());
         if (one001 == null) {
             throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
         }
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = getUniquePatientMdData(registration.getPatientId().getId());
         if (patientMdData == null) {
             throw new ServiceException("Không tìm thấy thông tin BHYT của bệnh nhân");
         }
