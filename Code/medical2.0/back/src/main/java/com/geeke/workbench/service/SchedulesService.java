@@ -45,10 +45,21 @@ public  class SchedulesService  {
         // nhu cu, update tra 0; tenant la -> ServiceException -> 400
         // fail-closed, khong ghi). Luong updateoverlookidlist chi dua id
         // tu list da ep tenant nen khong cham nhanh nay khi chay dung.
+        // DS741: id khong ton tai truoc day tra 0 dong roi controller van
+        // tra 200 success (silent no-op, cung lop DS94/DS308/DS739) --
+        // UI that chi gui id dang ky da ton tai (nut An tren workbench)
+        // nen 400 chi ban khi caller bia id. Blank id cung qua day
+        // (getRegistrationCompanyId tra null). Fail-closed 400.
+        if (strRecipelInfoIds == null || strRecipelInfoIds.trim().isEmpty()) {
+            throw new ServiceException("Đăng ký khám không tồn tại: " + strRecipelInfoIds);
+        }
         String tenant = com.geeke.utils.SessionUtils.getLoginTenantId();
         if (tenant != null && !tenant.isEmpty() && !"null".equals(tenant)) {
             String companyId = schedulesDao.getRegistrationCompanyId(strRecipelInfoIds);
-            if (companyId != null && !companyId.isEmpty() && !tenant.equals(companyId)) {
+            if (companyId == null || companyId.isEmpty()) {
+                throw new ServiceException("Đăng ký khám không tồn tại: " + strRecipelInfoIds);
+            }
+            if (!tenant.equals(companyId)) {
                 throw new ServiceException("Không có quyền truy cập tenant khác");
             }
         }
