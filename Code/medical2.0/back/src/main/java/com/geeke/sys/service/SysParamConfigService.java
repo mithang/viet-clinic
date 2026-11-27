@@ -121,7 +121,21 @@ public class SysParamConfigService extends CrudService<SysParamConfigDao, SysPar
 
     @Override
     public int delete(SysParamConfig entity) {
+        // DS743: fail-closed 400 cho single delete ghost/blank id (lop
+        // DS94/DS308/DS739/DS740/DS741): checkParamWriteTenant chi chan
+        // tenant khac, dao.get(id) null thi cho qua, super.delete xoa 0
+        // dong ma van 200 data 0 (probe A1-A4). Chi chap nhan xoa khi
+        // dong da ton tai; UI chi gui id dong dang hien nen 400 chi ban
+        // khi caller bia id.
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Cấu hình tham số không tồn tại: "
+                    + (entity == null ? "" : entity.getId()));
+        }
         checkParamWriteTenant(entity);
+        if (dao.get(entity.getId()) == null) {
+            throw new ServiceException("Cấu hình tham số không tồn tại: "
+                    + entity.getId());
+        }
         return super.delete(entity);
     }
 

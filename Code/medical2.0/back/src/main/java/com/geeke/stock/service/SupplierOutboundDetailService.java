@@ -239,14 +239,30 @@ public class SupplierOutboundDetailService extends CrudService<SupplierOutboundD
     @Override
     @Transactional(readOnly = false)
     public int delete(SupplierOutboundDetail entity) {
-        if (entity != null && StringUtils.isNotBlank(entity.getId())) {
-            SupplierOutboundDetail stored = this.get(entity.getId());
-            if (stored != null && stored.getSupplierOutbound() != null
-                    && StringUtils.isNotBlank(stored.getSupplierOutbound().getId())) {
-                SupplierOutbound parent = supplierOutboundService.get(stored.getSupplierOutbound().getId());
-                if (parent != null && parent.getStatus() != null && parent.getStatus() != 3) {
-                    throw new ServiceException("Chi tiết thuộc phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy sửa phiếu xuất kho để xóa dòng.");
-                }
+        // DS743: fail-closed 400 cho single delete ghost/blank id (lop
+        // DS94/DS308/DS739/DS740/DS741): gate DS38 chi chan khi stored
+        // resolve duoc (this.get JOIN medicinal_storage_control) va
+        // phieu me chua huy; ghost/blank id thi stored null -> cho qua
+        // -> super.delete xoa 0 dong ma van 200 data 0 (probe B1-B4).
+        // Chi chap nhan xoa khi dong ton tai (get() null = khong ton
+        // tai hoac khong resolve duoc, cung ngu nghia DS176); gate DS38
+        // giu nguyen ben duoi, dung lai stored da load. UI xoa dong qua
+        // saveEvt (deleteSupplierOutboundDetail), khong qua endpoint
+        // nay, nen 400 chi ban khi caller bia id.
+        if (entity == null || StringUtils.isBlank(entity.getId())) {
+            throw new ServiceException("Chi tiết xuất kho không tồn tại: "
+                    + (entity == null ? "" : entity.getId()));
+        }
+        SupplierOutboundDetail stored = this.get(entity.getId());
+        if (stored == null) {
+            throw new ServiceException("Chi tiết xuất kho không tồn tại: "
+                    + entity.getId());
+        }
+        if (stored.getSupplierOutbound() != null
+                && StringUtils.isNotBlank(stored.getSupplierOutbound().getId())) {
+            SupplierOutbound parent = supplierOutboundService.get(stored.getSupplierOutbound().getId());
+            if (parent != null && parent.getStatus() != null && parent.getStatus() != 3) {
+                throw new ServiceException("Chi tiết thuộc phiếu xuất kho chưa hủy, không thể xóa trực tiếp. Hãy sửa phiếu xuất kho để xóa dòng.");
             }
         }
         return super.delete(entity);
