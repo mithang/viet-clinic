@@ -963,9 +963,13 @@ public class RecipelInfoService extends CrudService<RecipelInfoDao, RecipelInfo>
 
     @Transactional(readOnly = false)
     public int updateNotShowById(String id) {
+        // DS739: id khong ton tai truoc day tra 0 dong roi controller van
+        // tra 200 success (silent no-op, cung lop DS94/DS308) -- UI that
+        // chi gui id don da ton tai (nut An tren danh sach don) nen 400
+        // chi ban khi caller bia id. Blank id cung qua day (get tra null).
         RecipelInfo recipelInfo = this.get(id);
         if (ObjectUtil.isNull(recipelInfo)) {
-            return 0;
+            throw new ServiceException("Đơn thuốc không tồn tại");
         }
         recipelInfo.setNotShow(0);
         return this.doUpdate(recipelInfo);
