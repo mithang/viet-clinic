@@ -1272,6 +1272,18 @@ public class RegistrationService extends CrudService<RegistrationDao, Registrati
         // hanh vi cu (khong phan duoc chuyen doi). Job het han va
         // hoan phi goi thang DAO nen khong anh huong.
         Registration stored = dao.get(id);
+        // DS745: fail-closed 400 cho updateStatus ghost/blank id (lop
+        // DS94/DS308/DS739-DS744). Truoc day ghost/blank -> dao.updateStatus
+        // ghi 0 dong roi controller tra 200 data 0 im lang (probe pre-fix
+        // A1-A5: ghost18/19 + blank deu 200 data 0 voi ca 3 status dich
+        // hop le; comment cu ghi nhan "Id rong / dong khong ton tai van
+        // qua nhu ngu nghia cu"). Dong da xoa mem (del_flag '1') cung
+        // 400 (dao.get khong loc del_flag nen tra ca dong da xoa, delFlag
+        // phan biet) theo mau delete() DS134 C. Luong noi bo job het han
+        // va hoan phi goi thang DAO nen khong anh huong.
+        if (stored == null || !"0".equals(stored.getDelFlag())) {
+            throw new ServiceException("Lượt đăng ký không tồn tại: " + id);
+        }
         if (stored != null && stored.getStatus() != null
                 && stored.getStatus().getValue() != null) {
             String from = stored.getStatus().getValue();
