@@ -433,17 +433,30 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
 
         //JSONObject ld7801 = mdRequestUtil.dzcfUpload("Ld7801", jsonObject);
         //Ngàynhật kýlưuđịa phươngbảng
-        DzcfD001Output dzcfD001Output = new DzcfD001Output();
-        dzcfD001Output.setMzh(registration.getId());
-        dzcfD001Output.setCfh(recipelInfo.getId());
-        dzcfD001Output.setOrganizeid(SessionUtils.getUserJson().getJSONObject("company").getString("id"));
-        dzcfD001Output.setInputcontent(jsonObject.getString("data"));
-        dzcfD001Output.setRxtracecode(ld7801.getString("rxtracecode"));
-        dzcfD001Output.setHirxno(ld7801.getString("hirxno"));
-        dzcfD001Output.setCzydm(SessionUtils.getUserJson().getString("loginName"));
-        dzcfD001Output.setCzrq(LocalDateTime.now());
-        dzcfD001Output.setZt(1);
-        dzcfD001OutputService.save(dzcfD001Output);
+        // DS755: insert vo dieu kien — moi lan luu review BHYT lai them 1
+        // dong dzcf_d001_output cho cung (cfh, organizeid); bang khong co
+        // unique index tren cfh nen lan luu thu 2 lam getOne() o Ld7802
+        // (:516) nem TooManyResultsException -> 500 (probe
+        // tools/ds755-probe.py: L1 400 + dzcf=1, L2 500 + dzcf=2).
+        // Idempotent: dong log pre-check da co thi khong insert them —
+        // retry sau loi WS (Ld7802/Ld7101 400) van chay lai binh thuong,
+        // chi khong sinh dong trung.
+        boolean d001Exists = !dzcfD001OutputService.list(new LambdaQueryWrapper<DzcfD001Output>()
+                .eq(DzcfD001Output::getCfh, recipelInfo.getId())
+                .eq(DzcfD001Output::getOrganizeid, SessionUtils.getUserJson().getJSONObject("company").getString("id"))).isEmpty();
+        if (!d001Exists) {
+            DzcfD001Output dzcfD001Output = new DzcfD001Output();
+            dzcfD001Output.setMzh(registration.getId());
+            dzcfD001Output.setCfh(recipelInfo.getId());
+            dzcfD001Output.setOrganizeid(SessionUtils.getUserJson().getJSONObject("company").getString("id"));
+            dzcfD001Output.setInputcontent(jsonObject.getString("data"));
+            dzcfD001Output.setRxtracecode(ld7801.getString("rxtracecode"));
+            dzcfD001Output.setHirxno(ld7801.getString("hirxno"));
+            dzcfD001Output.setCzydm(SessionUtils.getUserJson().getString("loginName"));
+            dzcfD001Output.setCzrq(LocalDateTime.now());
+            dzcfD001Output.setZt(1);
+            dzcfD001OutputService.save(dzcfD001Output);
+        }
         return ld7801 ;
     }
 
@@ -513,7 +526,17 @@ public class MdMedicationOrderImpl implements MdMedicationOrderService {
         data.put("originalRxFile", pdfInfo);
         //Tải lên đơn thuốc điện tửTham số1-20JsonString của Base64chữký tựGiá trị
         JSONObject top20  = new JSONObject();
-         DzcfD001Output one = dzcfD001OutputService.getOne(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        // DS755: getOne() nem TooManyResultsException -> 500 khi co >1 dong
+        // dzcf_d001_output cho cung (cfh, organizeid) — bang khong co unique
+        // index tren cfh; Ld7801 cu insert moi lan luu review nen lan luu
+        // thu 2 sinh dong trung (probe tools/ds755-probe.py L2 500).
+        // Dong trung cu (truoc fix Ld7801 idempotent) fail-closed 400 thay
+        // vi 500; dong thieu van 400 nhu DS182.
+        List<DzcfD001Output> d001List = dzcfD001OutputService.list(new LambdaQueryWrapper<DzcfD001Output>().eq(DzcfD001Output::getCfh, recipelInfo.getId()).eq(DzcfD001Output::getOrganizeid, SessionUtils.getLoginTenantId()));
+        if (d001List.size() > 1) {
+            throw new ServiceException("Dữ liệu đơn thuốc điện tử đã tải lên bị trùng lặp, liên hệ quản trị viên");
+        }
+        DzcfD001Output one = d001List.isEmpty() ? null : d001List.get(0);
         // DS182: Ld7801 chua chay / D001 bi xoa thi one null — truoc day NPE 500.
         if (one == null) {
             throw new ServiceException("Không tìm thấy dữ liệu đơn thuốc điện tử đã tải lên");
