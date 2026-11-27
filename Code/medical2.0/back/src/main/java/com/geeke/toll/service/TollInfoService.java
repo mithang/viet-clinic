@@ -1026,7 +1026,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         if (registration.getPatientId() == null || StringUtils.isBlank(registration.getPatientId().getId())) {
             throw new ServiceException("Lượt khám chưa có bệnh nhân để tải lên BHYT");
         }
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         if (patientMdData == null || StringUtils.isBlank(patientMdData.getPsnNo())) {
             throw new ServiceException("Bệnh nhân chưa có thông tin BHYT (mã số BHXH)");
         }
@@ -1234,7 +1234,7 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
         if ("true".equals(medicareConfigProperties.getCheck())) {
             Registration registration = registrationService.get(tollInfo.getMedical().getRegistration().getId());
             mdPsnDataService.getAndSetPsnData(registration);
-            PatientMdData psnData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+            PatientMdData psnData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
             mdRegistrationService.revokeOutpatientSettlement_2208(registration.getSetlId(), psnData.getPsnNo(), registration.getMdtrtId());
         }
     }

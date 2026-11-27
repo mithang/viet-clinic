@@ -10,4 +10,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PatientMdDataService extends IService<PatientMdData> {
 
+    /**
+     * DS757: lấy duy nhất một dòng thông tin BHYT của bệnh nhân.
+     * Bảng patient_md_data không có unique index trên patient_id nên
+     * getOne() ném TooManyResultsException (500) khi tồn tại dòng trùng
+     * (họ DS755/DS756). Trả null khi chưa có dòng nào (caller giữ
+     * thông báo 400 như cũ), fail-closed 400 khi trùng lặp.
+     */
+    PatientMdData getUniqueByPatientId(String patientId);
+
 }

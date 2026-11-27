@@ -69,7 +69,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     public String getRegistrationInfo_2201(Registration registration) {
         Map<String,Object> data = new HashMap<>();
         //LấyThông tin BHYT của bệnh nhân
-        PatientMdData patientMdData = patientMdDataService.getOne( new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId,registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         //Đăng ký khámBác sĩThông tin
         User doctor = registration.getDoctor();
         //Đăng ký khámThông tin khoa
@@ -114,7 +114,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
             throw new ServiceException("Không tìm thấy lượt đăng ký khám cần hủy số BHYT");
         }
         //LấyThông tin BHYT của bệnh nhân
-        PatientMdData patientMdData = patientMdDataService.getOne( new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId,registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         if (patientMdData == null || StringUtils.isBlank(patientMdData.getPsnNo())) {
             throw new ServiceException("Bệnh nhân chưa có thông tin BHYT (mã số BHXH)");
         }
@@ -151,7 +151,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
             throw new ServiceException("Lượt khám chưa có bệnh nhân để tải lên BHYT");
         }
         //Thông tin BHYT của bệnh nhân
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         if (patientMdData == null || StringUtils.isBlank(patientMdData.getPsnNo())) {
             throw new ServiceException("Bệnh nhân chưa có thông tin BHYT (mã số BHXH)");
         }
@@ -249,7 +249,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         JSONObject jsonObject = new JSONObject();
 
         //Thông tin BHYT của bệnh nhân
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
         //Thông tin bác sĩ của bệnh nhân
@@ -353,7 +353,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     public String processOutpatientPreSettlement_2206(Registration registration, MdFeeDetail mdFeeDetail, String chrgBchno, String acctUsedFlag) {
         JSONObject data = new JSONObject();
         JSONObject jsonObject = new JSONObject();
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         data.put("psn_no", patientMdData.getPsnNo());
         //Loại giấy tờ khám bệnh TODO
         data.put("mdtrt_cert_type","");
@@ -386,7 +386,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     public String executeOutpatientPreSettlement_2207(Registration registration, MdFeeDetail mdFeeDetail, String chrgBchno, String acctUsedFlag) {
         JSONObject data = new JSONObject();
         JSONObject jsonObject = new JSONObject();
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         data.put("psn_no", patientMdData.getPsnNo());
         //Loại giấy tờ khám bệnh TODO
         data.put("mdtrt_cert_type","");
@@ -442,7 +442,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     @Override
     public String getPsnVisitData_5201(Registration registration, LocalDateTime begntime, LocalDateTime endtime) {
         JSONObject data = new JSONObject();
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         data.put("psn_no",patientMdData.getPsnNo());
         data.put("begntime",begntime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         data.put("endtime",endtime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -455,7 +455,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     @Override
     public String getPsnDiseData_5202(Registration registration) {
         JSONObject data = new JSONObject();
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         data.put("psn_no",patientMdData.getPsnNo());
         data.put("mdtrt_id",registration.getMdtrtId());
         JSONObject jsonObject = new JSONObject();
@@ -605,7 +605,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
     @Override
     public String analyzeDetailReviewPreCheck_3301(Registration registration) {
         //Thông tin BHYT của bệnh nhân
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
         //Thông tin bác sĩ của bệnh nhân
@@ -742,7 +742,7 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
         JSONObject jsonObject = new JSONObject();
         JSONObject patientDto = new JSONObject();
         //Thông tin BHYT của bệnh nhân
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         //Thông tin khoa của bệnh nhân
         ClinicOffice clinicOffice = registration.getClinicOffice();
         //Thông tin bác sĩ của bệnh nhân

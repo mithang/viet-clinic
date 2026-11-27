@@ -59,7 +59,7 @@ public class MdCommonServiceImpl implements MdCommonService {
         List< MedicalRecord> record = medicalRecordService.getByOrder(registration.getId());
         MedicalRecord medicalRecord = record.get(0);
         //nhân viênBHYTThông tin
-        PatientMdData patientMdData = patientMdDataService.getOne(new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId, registration.getPatientId().getId()));
+        PatientMdData patientMdData = patientMdDataService.getUniqueByPatientId(registration.getPatientId().getId());
         //Thông tin khoa
         ClinicOffice clinicOffice = registration.getClinicOffice();
         //nhân viênThông tin
