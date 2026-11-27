@@ -107,6 +107,12 @@
         FROM recipetemplate_info a
         <include refid="recipetemplateInfoJoins"/>
         WHERE a.recipetemplate_id = #{recipeTemplateId}
+        <!-- DS758: selectOne khong limit 1 truoc day 500
+             TooManyResultsException khi mot mau co 2 dong info (khong co
+             unique index tren recipetemplate_id, khong co guard ngan tao
+             dong thu 2); limit 1 (tien le DS602/DS611/DS613) de GET
+             /outpatient/recipetemplate/{id} va POST list khong 500. -->
+        limit 1
     </select>
 
     
