@@ -100,8 +100,24 @@ public class MdRegistrationServiceImpl implements MdRegistrationService {
 
     @Override
     public String revokeRegistrationInfo_2202(Registration registration) {
+        // DS750: fail-closed 400 truoc moi deref (mau DS225 o
+        // upRegistrationInfo_2203 cung file): truoc day registration null
+        // (luot kham ma o refundRegistrationPay -- controller chi guard
+        // nhanh remarks = _2 theo DS153 A, nhanh else goi thang service
+        // tra 0 roi toi day) NPE 500 o getPatientId().getId() (:104);
+        // benh nhan chua co PatientMdData NPE 500 o getPsnNo() (:106).
+        // Guard chay truoc goi web service BHYT nen middleware chet
+        // khong anh huong. Khong doi thu tu service-truoc-BHYT-sau
+        // cua controller (hanh vi cu khi gateway loi van giu nguyen).
+        if (registration == null || registration.getPatientId() == null
+                || StringUtils.isBlank(registration.getPatientId().getId())) {
+            throw new ServiceException("Không tìm thấy lượt đăng ký khám cần hủy số BHYT");
+        }
         //LấyThông tin BHYT của bệnh nhân
         PatientMdData patientMdData = patientMdDataService.getOne( new LambdaQueryWrapper<PatientMdData>().eq(PatientMdData::getPatientId,registration.getPatientId().getId()));
+        if (patientMdData == null || StringUtils.isBlank(patientMdData.getPsnNo())) {
+            throw new ServiceException("Bệnh nhân chưa có thông tin BHYT (mã số BHXH)");
+        }
         Map<String,Object> data = new HashMap<>();
         data.put("psn_no",patientMdData.getPsnNo());
         data.put("mdtrt_id",registration.getMdtrtId());
