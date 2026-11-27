@@ -797,6 +797,14 @@ public class UserService extends CrudService<UserDao, User>{
                 throw new ServiceException("Đã tồn tại một tên đăng nhập giống hệt. ");
             }
         }
+        // DS740: update chi cho user da ton tai — truoc day ghost id roi qua
+        // super.save -> doUpdate 0 dong roi van 200 silent (D1), id rong thi
+        // super.save INSERT user moi qua duong update (D2, cung lop DS163 A7 /
+        // DS94/DS99). UI quan tri nguoi dung chi gui id user da ton tai nen
+        // 400 chi ban khi caller bia id. Chan truoc moi ghi.
+        if (StringUtils.isBlank(user.getId()) || super.get(user.getId()) == null) {
+            throw new ServiceException("Người dùng không tồn tại");
+        }
         String id = super.save(user).getId();
         // H3: duong sua cua UI (POST /admin/user/update) cung chi doi
         // sys_user — dong bo tenant ngay sau save, truoc khi xu ly role/ext.
