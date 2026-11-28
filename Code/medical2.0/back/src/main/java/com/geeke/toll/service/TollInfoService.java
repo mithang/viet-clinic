@@ -730,7 +730,17 @@ public class TollInfoService extends CrudService<TollInfoDao, TollInfo>{
             for (RecipelInfoEvt recipelInfo:tollEvt.getRecipelInfos()){
                 List<RecipelDetail> entity = recipelDetailService.getRecipelDetail(recipelInfo.getRecipelInfo().getId());
                 for (RecipelDetail e:entity){
-                    BigDecimal c = BigDecimal.valueOf(tollEvt.getTollInfo().getDiscount());
+                    // DS765: discount la Float (TollInfo :33, cot DB float).
+                    // BigDecimal.valueOf(Float) mo rong Float -> double truoc
+                    // (0.9f -> 0.8999999761581421) roi moi toString nen
+                    // actualPayment lech: hoa don 1.000.000 x 0.9 ghi
+                    // 899999.98 thay vi 900000.00 (chung minh live o
+                    // ds765-probe B4; control discount=1 dung 1000000.00).
+                    // Float.toString tra ve dang ngan gon round-trip
+                    // ("0.9") nen new BigDecimal(String) la chinh xac.
+                    // discount null da guard 400 o tren (DS98) nen
+                    // .toString() o day khong doi hanh vi null.
+                    BigDecimal c = new BigDecimal(tollEvt.getTollInfo().getDiscount().toString());
                     // DS170 A: allFee NULL (chi tiet chua tinh tien, DS90)
                     // thi getAllFee().multiply(c) NPE 500 o day, sau khi
                     // claimPaid + thu phi da ghi (cung transaction nen
